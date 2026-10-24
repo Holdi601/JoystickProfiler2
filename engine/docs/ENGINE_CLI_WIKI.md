@@ -152,6 +152,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine starcitizen import [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]
   engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (clean releases the ship binds of the written devices, nuke those of the devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke))
   engine starcitizen list-devices [<sc-root-or-profile-path>] [--path <path>] [--source <path>]   (aliases: devices, list)
+  engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)
   engine db summary [--keyboard] [--no-keyboard] [--strict-names]
   engine db list [filter] [--missing] [--keyboard] [--no-keyboard] [--strict-names]
   engine db check [--keyboard] [--no-keyboard] [--strict-names]
@@ -426,8 +427,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations item remove <relation-name> --node game:id[:plane1|plane2] [--node ...] [--all]
   engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]
+  engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)
   engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]
-  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all]
+  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]
   engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass split <postfix> [--plane <game:plane|plane>] [--planes <csv>] [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass add-prefix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
@@ -441,6 +443,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations suggest apply <relation> [--add game:id:plane1|plane2]... [--never game:id:plane1|plane2]... [--remove game:id:planes]... [--move game:id:planes=>relation]... [--take game:id:planes]...
   engine relations search "<words>" [--game g1|g2] [--plane p1|p2] [--category <name>] [--axis|--button] [--limit N] [--per-game N] [--batch <file>]
   engine relations browse [--game <game> [--plane p1|p2]] [--axis|--button]   (alias: relations catalog)
+  engine relations pair "<title A>" "<title B>" [--game <game>]   (twin, opposite or different, for the recommended-action hints)
   engine relations resolve "<query>" [--game g1|g2] [--plane p1|p2] [--axis|--button] [--per-game N]
   engine relations functions [--category <id>] [--query "<words>"] [--coverage] [--dump <file.tsv>]
   engine relations chat <relation>|--relation <relation> "<message>" [--llm off|auto|on] [--show-prompt] [--apply]
@@ -1443,6 +1446,19 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
 - `--source`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `<install>`: Command argument. See examples for typical values.
+- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
 
 Examples:
 ```powershell
@@ -5267,6 +5283,22 @@ Examples:
 engine relations item disable 'Gear Toggle' --node DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50 --text
 ```
 
+### `engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<relation-name>`: Name of target relation. Example: Gear Toggle.
+- `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--to`: Command argument. See examples for typical values.
+- `<position>`: Command argument. See examples for typical values.
+- `--up`: Command argument. See examples for typical values.
+- `--down`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
 ### `engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]`
 What it does: Deletes many relations in one command using explicit names, query filter, or --all.
 
@@ -5288,7 +5320,7 @@ engine relations mass delete --query 'Temporary' --text
 engine relations mass delete --all --text
 ```
 
-### `engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all]`
+### `engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]`
 What it does: Duplicates many relations in one command.
 
 Arguments and example values:
@@ -5299,6 +5331,7 @@ Arguments and example values:
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
 - `<text>`: Command argument. See examples for typical values.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
+- `--no-bind`: Command argument. See examples for typical values.
 
 How arguments interact:
 - Selection supports explicit --relation/--relations, filter --query, and --all.
@@ -5539,6 +5572,20 @@ Arguments and example values:
 - `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
 - `--axis`: Set relation type to axis (explicit override).
 - `--button`: Set relation type to button (explicit override).
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations pair "<title A>" "<title B>" [--game <game>]   (twin, opposite or different, for the recommended-action hints)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<title A>`: Command argument. See examples for typical values.
+- `<title B>`: Command argument. See examples for typical values.
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

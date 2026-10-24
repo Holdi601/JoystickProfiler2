@@ -33,8 +33,28 @@ namespace JoyPro.Engine
         private static readonly Dictionary<string, Dictionary<string, StarCitizenP4kEntryDescriptor>> StarCitizenP4kIndexCache =
             new Dictionary<string, Dictionary<string, StarCitizenP4kEntryDescriptor>>(StringComparer.OrdinalIgnoreCase);
 
+        // JOYPRO_ARGS_FILE: the app passes a long argument list (hundreds of actions in one call) as a JSON string array
+        // in a file, because a Windows command line holds at most 32767 characters. Cleared, so engines this one starts
+        // do not read it again.
+        internal const string ArgsFileVariable = "JOYPRO_ARGS_FILE";
+
+        internal static string[] ExpandArgsFile(string[] args)
+        {
+            string path = Environment.GetEnvironmentVariable(ArgsFileVariable);
+            if (string.IsNullOrWhiteSpace(path))
+                return args;
+            Environment.SetEnvironmentVariable(ArgsFileVariable, null);
+            string[] fromFile = EngineSerialization.FromJson<string[]>(File.ReadAllText(path, Encoding.UTF8));
+            return (args ?? new string[0]).Concat(fromFile ?? new string[0]).ToArray();
+        }
+
         private static int Main(string[] args)
         {
+            args = ExpandArgsFile(args);
+            EngineSampler.StartIfAsked();
+            // The engine uses the static Regex methods with many patterns (lua field lookups, cockpit guide templates):
+            // the default cache of 15 made them build most patterns again on every call.
+            System.Text.RegularExpressions.Regex.CacheSize = 512;
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
                 JoyPro.Logging.JoyProLog.Error("Crash", "Unhandled exception (terminating: " + e.IsTerminating + ")", e.ExceptionObject as Exception);
@@ -42,7 +62,30 @@ namespace JoyPro.Engine
             };
             // Background log (docs/logging.md): header, every step, the files written and what the run printed.
             JoyPro.Logging.JoyProLog.Start("engine", EngineVersion, args);
+            EngineLogging.UseUtf8ConsoleIfAsked();
+            // The app's engine server (EngineServer): one process runs the app's commands one after another.
+            if (args != null && args.Length > 0 && string.Equals(args[0], EngineServer.Command, StringComparison.Ordinal))
+            {
+                int served = EngineServer.Serve(args.Skip(1).ToArray());
+                JoyPro.Logging.JoyProLog.Flush();
+                EngineSampler.Finish();
+                return served;
+            }
             EngineLogging.CaptureConsole();
+            try
+            {
+                return Execute(args);
+            }
+            finally
+            {
+                EngineSampler.Finish();
+            }
+        }
+
+        // One engine command with its error handling and log lines: the process's only one, or one of the engine
+        // server's (Console.Out/Error are then the request's writers).
+        internal static int Execute(string[] args)
+        {
             Stopwatch runClock = Stopwatch.StartNew();
             int exitCode = 1;
             try
@@ -73,6 +116,8 @@ namespace JoyPro.Engine
             }
             finally
             {
+                // A command that threw: the backup manifests of its sets still in full (no-op when written already).
+                GameBackups.Flush();
                 EngineLogging.LogCapturedOutput();
                 JoyPro.Logging.JoyProLog.Info("Engine", "Run finished: exit code " + exitCode.ToString(CultureInfo.InvariantCulture) +
                                                         " after " + runClock.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture) + " ms");
@@ -178,6 +223,8 @@ namespace JoyPro.Engine
             EngineProgress.Enabled = statusRequested || progressRequested;
             BenchmarkEnabled = benchmarkRequested;
             ResetDiscoveryCaches();
+            RunFileCache.Clear();
+            GameBackups.ResetRun();
             BenchmarksMs.Clear();
             Stopwatch totalRun = Stopwatch.StartNew();
 
@@ -411,6 +458,7 @@ namespace JoyPro.Engine
                 vjoyScope.Dispose();
             }
             // The files the run changed (stamps after writing); a failed run prints its environment and files.
+            GameBackups.Flush();
             EngineDiagnostics.EndRun(exitCode);
             // Detent mode: games that could not express an aircraft's detent curve (the export used their normal curve).
             if (!string.Equals(area, "binds", StringComparison.OrdinalIgnoreCase))
@@ -492,6 +540,8 @@ namespace JoyPro.Engine
                 case "browse":
                 case "catalog":
                     return BrowseRelationActions(command, outPath, textOutput);
+                case "pair":
+                    return RelationPair(command, outPath, textOutput);
                 case "functions":
                     return ListRelationFunctions(command, outPath, textOutput);
                 case "resolve":
@@ -502,6 +552,10 @@ namespace JoyPro.Engine
                     return AssistantRelations(command, outPath, textOutput);
                 case "plan":
                     return RelationPlanCommand(command, outPath, textOutput);
+                case "ai-matrix":
+                    return AiMatrixCommand(command, outPath, textOutput);
+                case "phrase-check":
+                    return PhraseCheckCommand(command, outPath, textOutput);
                 case "rename":
                     return RenameRelationCommand(command, outPath, textOutput);
                 case "function":
@@ -1020,7 +1074,13 @@ namespace JoyPro.Engine
             }
 
             if (!dryRun)
+            {
                 DbUpdateCheck.RecordCurrent("StarCitizen", null);
+                List<string> labelNotes = new List<string>();
+                RefreshStarCitizenLabels(installPath, labelNotes);
+                foreach (string note in labelNotes)
+                    Console.Error.WriteLine("Note: " + note);
+            }
             return 0;
         }
 
@@ -1039,6 +1099,7 @@ namespace JoyPro.Engine
                 return false;
             }
             DbUpdateCheck.RecordCurrent("StarCitizen", null);
+            RefreshStarCitizenLabels(null, warnings);
             warnings?.Add("JoyPro had no Star Citizen command list yet: built it from the installed game (" + result.ActionCount.ToString(CultureInfo.InvariantCulture) +
                           " actions, " + result.DbPath + ").");
             return true;
@@ -2390,9 +2451,12 @@ namespace JoyPro.Engine
                     stream.Position = centralDirectoryOffset;
                     long remaining = centralDirectorySize;
                     byte[] fixedHeader = new byte[46];
+                    // The central directory (1.4 million entries) is read in large blocks, and only the entries the refresh
+                    // can use (IsStarCitizenInterestingP4kEntry: action maps, defaultProfile.xml) are decoded and kept.
+                    BufferedStream buffered = new BufferedStream(stream, 1 << 20);
                     while (remaining >= 46)
                     {
-                        if (!TryReadExact(stream, fixedHeader, 0, fixedHeader.Length))
+                        if (!TryReadExact(buffered, fixedHeader, 0, fixedHeader.Length))
                         {
                             error = "Could not read P4K central-directory header.";
                             return false;
@@ -2419,26 +2483,28 @@ namespace JoyPro.Engine
                         }
 
                         byte[] entryNameBytes = new byte[entryNameLength];
-                        if (!TryReadExact(stream, entryNameBytes, 0, entryNameBytes.Length))
+                        if (!TryReadExact(buffered, entryNameBytes, 0, entryNameBytes.Length))
                         {
                             error = "Could not read P4K central-directory entry name.";
                             return false;
                         }
 
                         byte[] extraBytes = new byte[extraLength];
-                        if (extraBytes.Length > 0 && !TryReadExact(stream, extraBytes, 0, extraBytes.Length))
+                        if (extraBytes.Length > 0 && !TryReadExact(buffered, extraBytes, 0, extraBytes.Length))
                         {
                             error = "Could not read P4K central-directory extra block.";
                             return false;
                         }
 
                         if (commentLength > 0)
-                            stream.Position += commentLength;
+                            buffered.Seek(commentLength, SeekOrigin.Current);
 
                         remaining -= variableLength;
 
+                        if (!MayBeXmlEntryName(entryNameBytes))
+                            continue;
                         string entryPath = NormalizeStarCitizenArchiveEntryPath(DecodeZipEntryName(entryNameBytes));
-                        if (string.IsNullOrWhiteSpace(entryPath))
+                        if (string.IsNullOrWhiteSpace(entryPath) || !IsStarCitizenInterestingP4kEntry(entryPath))
                             continue;
 
                         long compressedSize = compressedSize32;
@@ -2472,6 +2538,18 @@ namespace JoyPro.Engine
                 error = ex.Message;
                 return false;
             }
+        }
+
+        // False only for a name that cannot end in ".xml" once decoded and trimmed (the cheap test before decoding
+        // it); a name ending in a non-ASCII byte is decoded.
+        private static bool MayBeXmlEntryName(byte[] name)
+        {
+            int k = name.Length - 1;
+            while (k >= 0 && (name[k] == 0x20 || (name[k] >= 0x09 && name[k] <= 0x0D)))
+                k--;
+            if (k >= 0 && name[k] >= 0x80)
+                return true;
+            return k >= 3 && name[k - 3] == (byte)'.' && (name[k - 2] | 0x20) == (byte)'x' && (name[k - 1] | 0x20) == (byte)'m' && (name[k] | 0x20) == (byte)'l';
         }
 
         private static bool TryReadStarCitizenP4kEntryBytes(
@@ -3365,7 +3443,10 @@ namespace JoyPro.Engine
                 .Where(i => filters.Count == 0 || filters.Any(f => GameInstalls.Resolve(f) == i.GameId))
                 .ToList();
             foreach (GameInstall install in installs)
+            {
                 install.ConfigPaths = GameInstalls.ConfigPaths(install.GameId, warnings);
+                GameInstalls.CountActions(install);
+            }
             EmitPayload(textOutput ? GameInstalls.ToText(installs) : EngineSerialization.ToJson(new { Games = installs, Warnings = warnings }), outPath);
             return 0;
         }
@@ -4071,6 +4152,39 @@ namespace JoyPro.Engine
             }
         }
 
+        // starcitizen labels [--path <install>] [--dry-run]: the game's English names of the controls (EngineScLabels).
+        private static int RunStarCitizenLabels(List<string> args, string outPath, bool textOutput)
+        {
+            string path = NormalizePath(PopOptionValue(args, "--path"));
+            bool dryRun = PopFlag(args, "--dry-run");
+            if (args.Count > 0)
+                return Fail("starcitizen labels [--path <install>] [--dry-run]");
+            EngineScLabels.Result result = EngineScLabels.Build(path, dryRun);
+            if (result.Error.Length > 0)
+                return Fail(result.Error);
+            EmitPayload(textOutput
+                ? "Star Citizen labels: " + result.Labels.ToString(CultureInfo.InvariantCulture) + " of " + result.Keys.ToString(CultureInfo.InvariantCulture) +
+                  " text keys named (" + result.Archive + ")" + (dryRun ? ", dry run: nothing written" : " -> " + result.File) +
+                  string.Concat(result.Warnings.Select(w => Environment.NewLine + "  Note: " + w))
+                : EngineSerialization.ToJson(result), outPath);
+            return 0;
+        }
+
+        // After a refresh of the command list: the names of its controls too (a failure is a note, not an error).
+        private static void RefreshStarCitizenLabels(string installPath, List<string> warnings)
+        {
+            try
+            {
+                EngineScLabels.Result labels = EngineScLabels.Build(installPath, false);
+                if (labels.Error.Length > 0)
+                    warnings?.Add("Star Citizen's names of the controls were not read: " + labels.Error);
+            }
+            catch (Exception ex)
+            {
+                warnings?.Add("Star Citizen's names of the controls were not read: " + ex.Message);
+            }
+        }
+
         private static int RunStarCitizen(List<string> command, string outPath, bool textOutput)
         {
             string action = command.Count == 0 ? "scan" : command[0].ToLowerInvariant();
@@ -4078,6 +4192,8 @@ namespace JoyPro.Engine
             if (refusal != null)
                 return Fail(refusal);
             List<string> args = command.Skip(1).ToList();
+            if (action == "labels")
+                return RunStarCitizenLabels(args, outPath, textOutput);
             bool merge = PopFlag(args, "--merge");
             bool saveLast = PopFlag(args, "--save-last");
             string saveProfile = PopOptionValue(args, "--save-profile");
@@ -4300,6 +4416,7 @@ namespace JoyPro.Engine
             EngineRelationDto relation = relationsDoc.Relations.FirstOrDefault(r => string.Equals(r.Name, relationName, StringComparison.Ordinal));
             if (relation == null)
                 return Fail("Relation not found: " + relationName);
+            EngineSerialization.AddStoredTitles(relation);
 
             string payload = textOutput
                 ? EngineSerialization.ToText(relation)
@@ -4626,6 +4743,20 @@ namespace JoyPro.Engine
             {
                 EmitPayload(EngineSerialization.ToJson(result), outPath);
             }
+            return 0;
+        }
+
+        // relations pair "<title A>" "<title B>" [--game g]: how two actions of one game relate for the recommended-action
+        // hints: twin (the same thing, told apart by nothing), opposite (increase / decrease, up / down ...: never the
+        // same thing) or different.
+        private static int RelationPair(List<string> command, string outPath, bool textOutput)
+        {
+            List<string> args = command.Skip(1).ToList();
+            string game = PopOptionValue(args, "--game") ?? string.Empty;
+            if (args.Count != 2)
+                return Fail("relations pair \"<title A>\" \"<title B>\" [--game <game>]");
+            string relation = EngineActionChoice.Relation(game, args[0], args[1]);
+            EmitPayload(textOutput ? args[0] + " / " + args[1] + ": " + relation : EngineSerialization.ToJson(new { A = args[0], B = args[1], Game = game, Relation = relation }), outPath);
             return 0;
         }
 
@@ -7171,7 +7302,7 @@ namespace JoyPro.Engine
         {
             List<string> args = command.Skip(1).ToList();
             if (args.Count < 2)
-                return Fail("relations item requires: add|remove|enable|disable <relation-name> [--node ... | --id ...].");
+                return Fail("relations item requires: add|remove|enable|disable|move <relation-name> [--node ... | --id ...] [--to <position>|--up|--down].");
 
             string operation = args[0].ToLowerInvariant();
             string relationQuery = args[1];
@@ -7182,6 +7313,10 @@ namespace JoyPro.Engine
             string gameOption = PopOptionValue(options, "--game");
             string planesOption = PopOptionValue(options, "--planes");
             bool clearAll = PopFlag(options, "--all");
+            // move: the action's new place in the relation (1 = first, as relations show numbers them), or one up/down.
+            string moveTo = PopOptionValue(options, "--to");
+            bool moveUp = PopFlag(options, "--up");
+            bool moveDown = PopFlag(options, "--down");
 
             if (options.Count > 0)
                 return Fail("Unknown relations item argument(s): " + string.Join(" ", options));
@@ -7206,7 +7341,7 @@ namespace JoyPro.Engine
 
             if (operation == "add")
                 ApplyCatalogAircraft(targets);
-            if ((operation == "add" || operation == "enable" || operation == "disable") && targets.Count == 0)
+            if ((operation == "add" || operation == "enable" || operation == "disable" || operation == "move") && targets.Count == 0)
                 return Fail("relations item " + operation + " requires at least one target via --node or --id.");
             if (operation == "remove" && !clearAll && targets.Count == 0)
                 return Fail("relations item remove requires --all or at least one target via --node or --id.");
@@ -7237,6 +7372,20 @@ namespace JoyPro.Engine
                 case "disable":
                     changed = ApplyRelationItemEnableDisable(relation, targets, false);
                     break;
+                case "move":
+                {
+                    string moveError;
+                    changed = ApplyRelationItemMove(relation, targets[0], moveTo, moveUp, moveDown, out moveError);
+                    if (moveError != null)
+                        return Fail(moveError);
+                    if (changed == 0)
+                    {
+                        // Already there: nothing to save, the relation as it is.
+                        CommandChangedNothing = true;
+                        return ShowRelation(new List<string> { "show", relationName }, outPath, textOutput);
+                    }
+                    break;
+                }
                 default:
                     return Fail("Unknown relations item action: " + operation);
             }
@@ -7247,6 +7396,43 @@ namespace JoyPro.Engine
             InternalDataManagement.ResyncRelations();
             InternalDataManagement.RecalcFigures();
             return ShowRelation(new List<string> { "show", relationName }, outPath, textOutput);
+        }
+
+        // relations item move: the order of the relation's actions is the user's (the editor's drag and drop, Alt+Up/Down).
+        private static int ApplyRelationItemMove(Relation relation, NodeSpec target, string to, bool up, bool down, out string error)
+        {
+            error = null;
+            if ((to != null ? 1 : 0) + (up ? 1 : 0) + (down ? 1 : 0) != 1)
+            {
+                error = "relations item move needs one of --to <position>, --up and --down.";
+                return 0;
+            }
+            RelationItem item = FindMatchingRelationItems(relation, target).FirstOrDefault();
+            if (item == null)
+            {
+                error = "Not in '" + relation.NAME + "': " + target.Game + ":" + target.Id;
+                return 0;
+            }
+            int from = relation.NODES.IndexOf(item);
+            int position;
+            if (to != null)
+            {
+                if (!int.TryParse(to, NumberStyles.Integer, CultureInfo.InvariantCulture, out position) || position < 1)
+                {
+                    error = "--to takes a position from 1 (the first action) to " + relation.NODES.Count.ToString(CultureInfo.InvariantCulture) + ".";
+                    return 0;
+                }
+                position = Math.Min(position, relation.NODES.Count) - 1;
+            }
+            else
+            {
+                position = Math.Max(0, Math.Min(relation.NODES.Count - 1, from + (up ? -1 : 1)));
+            }
+            if (position == from)
+                return 0;
+            relation.NODES.RemoveAt(from);
+            relation.NODES.Insert(position, item);
+            return 1;
         }
 
         private static int ApplyRelationItemAdd(Relation relation, List<NodeSpec> targets)
@@ -7456,8 +7642,10 @@ namespace JoyPro.Engine
             return EmitRelationMassResult(result, outPath, textOutput);
         }
 
+        // --no-bind: the copies come without the bind (and its modifiers): the same actions for another input.
         private static int RunRelationMassDuplicate(List<string> args, string outPath, bool textOutput)
         {
+            bool noBind = PopFlag(args, "--no-bind");
             if (!TryResolveMassRelationSelection(args, out List<Relation> selected, out List<string> selectedNames, out string error))
                 return Fail(error);
             if (args.Count > 0)
@@ -7472,6 +7660,8 @@ namespace JoyPro.Engine
 
                 Relation duplicate = source.Copy();
                 duplicate.NAME = BuildDuplicateRelationName(source.NAME);
+                if (noBind)
+                    duplicate.bind = null;
                 if (duplicate.bind != null)
                     duplicate.bind.Rl = duplicate;
 
@@ -7522,6 +7712,18 @@ namespace JoyPro.Engine
                     return Fail("relations mass merge requires selected relations to be either all axis or all button.");
             }
 
+            // All merged relations bound the same (one input, the same modifiers): the merged relation keeps that bind.
+            // Different binds cannot be one bind, they go (the GUI keeps their modifiers in the library).
+            List<Bind> sourceBinds = selected
+                .Where(r => r != null && !string.IsNullOrWhiteSpace(r.NAME) && InternalDataManagement.AllBinds.ContainsKey(r.NAME) && InternalDataManagement.AllBinds[r.NAME] != null)
+                .Select(r => InternalDataManagement.AllBinds[r.NAME])
+                .ToList();
+            bool sameBind = sourceBinds.Count > 0 && sourceBinds
+                .Select(b => (b.Joystick ?? string.Empty).Trim().ToLowerInvariant() + "|" + (b.JAxis ?? string.Empty).Trim().ToLowerInvariant() + "|" + (b.JButton ?? string.Empty).Trim().ToLowerInvariant() + "|" +
+                           string.Join("+", (b.AllReformers ?? new List<string>()).Select(r => (r ?? string.Empty).Trim().ToLowerInvariant()).OrderBy(r => r, StringComparer.Ordinal)))
+                .Distinct()
+                .Count() == 1;
+
             List<string> deleted = new List<string>();
             for (int i = 0; i < selectedNames.Count; i++)
             {
@@ -7549,6 +7751,12 @@ namespace JoyPro.Engine
             }
             merged.RecalculateElementCount();
             InternalDataManagement.AllRelations[merged.NAME] = merged;
+            if (sameBind)
+            {
+                Bind kept = sourceBinds[0].Copy(merged);
+                merged.bind = kept;
+                InternalDataManagement.AllBinds[merged.NAME] = kept;
+            }
 
             InternalDataManagement.ResyncBindsToMods();
             InternalDataManagement.ResyncRelations();
@@ -8172,7 +8380,7 @@ namespace JoyPro.Engine
         {
             if (string.IsNullOrWhiteSpace(outPath))
             {
-                Console.WriteLine(payload);
+                Console.WriteLine(EngineSerialization.LooksLikeJson(payload) ? EngineSerialization.ForConsole(payload) : payload);
                 return;
             }
 
@@ -11972,17 +12180,21 @@ namespace JoyPro.Engine
             return result;
         }
 
+        // Removes one device instance: "Name {GUID}" matches only the same GUID, so other devices of the same model (a
+        // second unit, the connected one after Windows gave it a new GUID) keep their binds and modifiers. Modifiers of
+        // other devices that lose their last bind here are listed in ModifiersWithoutBinds (the GUI keeps them).
         private static DeviceRemoveResult RemoveDeviceReferences(string deviceName)
         {
             DeviceRemoveResult result = new DeviceRemoveResult();
             result.Device = (deviceName ?? string.Empty).Trim();
+            List<Modifier> modifiersBefore = InternalDataManagement.AllModifiers.Values.Where(m => m != null).ToList();
 
             foreach (string relationName in InternalDataManagement.AllBinds.Keys.ToList())
             {
                 if (!InternalDataManagement.AllBinds.TryGetValue(relationName, out Bind bind) || bind == null)
                     continue;
 
-                if (DeviceNameMatches(bind.Joystick, result.Device))
+                if (ReplaceSameInstance(bind.Joystick, result.Device))
                 {
                     InternalDataManagement.AllBinds.Remove(relationName);
                     if (InternalDataManagement.AllRelations.ContainsKey(relationName) && InternalDataManagement.AllRelations[relationName] != null)
@@ -11994,13 +12206,13 @@ namespace JoyPro.Engine
                 }
 
                 bool relationChanged = false;
-                if (DeviceNameMatches(bind.JoyBackup, result.Device))
+                if (ReplaceSameInstance(bind.JoyBackup, result.Device))
                 {
                     bind.JoyBackup = string.Empty;
                     result.ClearedBindBackups++;
                     relationChanged = true;
                 }
-                if (DeviceNameMatches(bind.AliasJoystick, result.Device))
+                if (ReplaceSameInstance(bind.AliasJoystick, result.Device))
                 {
                     bind.AliasJoystick = string.Empty;
                     result.ClearedBindAliases++;
@@ -12013,7 +12225,7 @@ namespace JoyPro.Engine
                     {
                         string reformer = bind.AllReformers[i];
                         Modifier parsed = Modifier.ReformerToMod(reformer);
-                        if (parsed == null || !DeviceNameMatches(parsed.device, result.Device))
+                        if (parsed == null || !ReplaceSameInstance(parsed.device, result.Device))
                             continue;
 
                         bind.AllReformers.RemoveAt(i);
@@ -12036,7 +12248,7 @@ namespace JoyPro.Engine
             {
                 if (!InternalDataManagement.AllModifiers.TryGetValue(modifierName, out Modifier modifier) || modifier == null)
                     continue;
-                if (!DeviceNameMatches(modifier.device, result.Device))
+                if (!ReplaceSameInstance(modifier.device, result.Device))
                     continue;
 
                 InternalDataManagement.AllModifiers.Remove(modifierName);
@@ -12059,43 +12271,13 @@ namespace JoyPro.Engine
             InternalDataManagement.ResyncBindsToMods();
             InternalDataManagement.ResyncRelations();
             InternalDataManagement.RecalcFigures();
-            return result;
-        }
-
-        private static int MoveDeviceKeyEntries<T>(
-            IDictionary<string, T> map,
-            string oldDevice,
-            string newDevice)
-        {
-            if (map == null)
-                return 0;
-
-            List<string> keys = map.Keys
-                .Where(key => DeviceNameMatches(key, oldDevice))
+            result.ModifiersWithoutBinds = modifiersBefore
+                .Where(m => !string.IsNullOrWhiteSpace(m.name) && !ReplaceSameInstance(m.device, result.Device) && !InternalDataManagement.AllModifiers.ContainsKey(m.name))
+                .Select(m => m.toReformerString())
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(v => v, StringComparer.OrdinalIgnoreCase)
                 .ToList();
-            if (keys.Count == 0)
-                return 0;
-
-            int moved = 0;
-            bool newExists = map.Keys.Any(key => string.Equals(key, newDevice, StringComparison.OrdinalIgnoreCase));
-            for (int i = 0; i < keys.Count; i++)
-            {
-                string key = keys[i];
-                if (DeviceNameMatches(key, newDevice))
-                    continue;
-
-                T value = map[key];
-                map.Remove(key);
-                moved++;
-
-                if (!newExists)
-                {
-                    map[newDevice] = value;
-                    newExists = true;
-                }
-            }
-
-            return moved;
+            return result;
         }
 
         // Device exchange works on one device instance: "Name {GUID}" must match including the GUID, so other devices
@@ -12178,44 +12360,11 @@ namespace JoyPro.Engine
                 return 0;
 
             List<string> keys = map.Keys
-                .Where(key => DeviceNameMatches(key, deviceName))
+                .Where(key => ReplaceSameInstance(key, deviceName))
                 .ToList();
             for (int i = 0; i < keys.Count; i++)
                 map.Remove(keys[i]);
             return keys.Count;
-        }
-
-        private static int ReplaceLocalJoystickEntries(string oldDevice, string newDevice)
-        {
-            string[] source = InternalDataManagement.LocalJoysticks ?? new string[0];
-            if (source.Length == 0)
-                return 0;
-
-            int updated = 0;
-            List<string> values = new List<string>();
-            for (int i = 0; i < source.Length; i++)
-            {
-                string item = (source[i] ?? string.Empty).Trim();
-                if (item.Length == 0)
-                    continue;
-
-                if (DeviceNameMatches(item, oldDevice))
-                {
-                    values.Add((newDevice ?? string.Empty).Trim());
-                    updated++;
-                }
-                else
-                {
-                    values.Add(item);
-                }
-            }
-
-            InternalDataManagement.LocalJoysticks = values
-                .Where(v => !string.IsNullOrWhiteSpace(v))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(v => v, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-            return updated;
         }
 
         private static int RemoveLocalJoystickEntries(string deviceName)
@@ -12231,7 +12380,7 @@ namespace JoyPro.Engine
                 string item = (source[i] ?? string.Empty).Trim();
                 if (item.Length == 0)
                     continue;
-                if (DeviceNameMatches(item, deviceName))
+                if (ReplaceSameInstance(item, deviceName))
                 {
                     removed++;
                     continue;
@@ -13434,6 +13583,9 @@ namespace JoyPro.Engine
             sb.AppendLine("Removed Joystick FFB: " + result.RemovedJoystickFfb);
             sb.AppendLine("Removed Joystick Activity: " + result.RemovedJoystickActivity);
             sb.AppendLine("Removed Local Joysticks: " + result.RemovedLocalJoysticks);
+            sb.AppendLine("Modifiers Without Binds: " + result.ModifiersWithoutBinds.Count);
+            for (int i = 0; i < result.ModifiersWithoutBinds.Count; i++)
+                sb.AppendLine("  - " + result.ModifiersWithoutBinds[i]);
             sb.AppendLine("Updated Relations: " + result.UpdatedRelations.Count);
             for (int i = 0; i < result.UpdatedRelations.Count; i++)
                 sb.AppendLine("  - " + result.UpdatedRelations[i]);
@@ -14313,6 +14465,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine starcitizen import [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]");
             Console.WriteLine("  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (clean releases the ship binds of the written devices, nuke those of the devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke))");
             Console.WriteLine("  engine starcitizen list-devices [<sc-root-or-profile-path>] [--path <path>] [--source <path>]   (aliases: devices, list)");
+            Console.WriteLine("  engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)");
             Console.WriteLine("  engine db summary [--keyboard] [--no-keyboard] [--strict-names]");
             Console.WriteLine("  engine db list [filter] [--missing] [--keyboard] [--no-keyboard] [--strict-names]");
             Console.WriteLine("  engine db check [--keyboard] [--no-keyboard] [--strict-names]");
@@ -14422,8 +14575,9 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine relations item remove <relation-name> --node game:id[:plane1|plane2] [--node ...] [--all]");
             Console.WriteLine("  engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]");
             Console.WriteLine("  engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]");
+            Console.WriteLine("  engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)");
             Console.WriteLine("  engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
-            Console.WriteLine("  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
+            Console.WriteLine("  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]");
             Console.WriteLine("  engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
             Console.WriteLine("  engine relations mass split <postfix> [--plane <game:plane|plane>] [--planes <csv>] [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
             Console.WriteLine("  engine relations mass add-prefix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
@@ -14450,6 +14604,7 @@ namespace JoyPro.Engine
             Console.WriteLine("      function, synonym, described, words; grouped by game and function; every game keeps its best rows within --limit.");
             Console.WriteLine("      --category alone lists a whole category of a game's list; --batch runs one query per line (JSON array).");
             Console.WriteLine("  engine relations browse [--game <game> [--plane p1|p2]] [--axis|--button]   (alias: relations catalog)");
+            Console.WriteLine("  engine relations pair \"<title A>\" \"<title B>\" [--game <game>]   (twin, opposite or different, for the recommended-action hints)");
             Console.WriteLine("      what exists: every game with its aircraft; with a game (DCS: and aircraft) every action of its list by the");
             Console.WriteLine("      game's own categories (games without: JoyPro's function categories), with the relations that use each.");
             Console.WriteLine("  engine relations resolve \"<query>\" [--game g1|g2] [--plane p1|p2] [--axis|--button] [--per-game N]");
@@ -14932,6 +15087,7 @@ namespace JoyPro.Engine
             public int RemovedJoystickFfb { get; set; }
             public int RemovedJoystickActivity { get; set; }
             public int RemovedLocalJoysticks { get; set; }
+            public List<string> ModifiersWithoutBinds { get; set; }
             public List<string> UpdatedRelations { get; set; }
             public List<string> Warnings { get; set; }
 
@@ -14969,6 +15125,7 @@ namespace JoyPro.Engine
                 RemovedJoystickFfb = 0;
                 RemovedJoystickActivity = 0;
                 RemovedLocalJoysticks = 0;
+                ModifiersWithoutBinds = new List<string>();
                 UpdatedRelations = new List<string>();
                 Warnings = new List<string>();
             }

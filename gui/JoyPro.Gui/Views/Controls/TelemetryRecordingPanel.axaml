@@ -52,7 +52,7 @@
                 <DataTemplate x:DataType="models:TelemetryRecordingGameItem">
                     <StackPanel Width="410" Spacing="0">
                         <CheckBox Content="{Binding Title}" IsChecked="{Binding Enabled}" />
-                        <TextBlock Text="{Binding Details}" Classes="caption" FontSize="11" Opacity="0.7" TextWrapping="Wrap" Margin="28,-4,0,2" />
+                        <TextBlock Text="{Binding Details}" Classes="caption" FontSize="11" TextWrapping="Wrap" Margin="28,-4,0,2" />
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -61,7 +61,7 @@
         <Grid ColumnDefinitions="*,Auto" Margin="0,6,0,0">
             <StackPanel Spacing="2">
                 <TextBlock Text="{l:T 'Recorded sessions'}" FontWeight="SemiBold" />
-                <TextBlock Text="{Binding TelemetrySessionsSummary}" Classes="caption" Opacity="0.75" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding TelemetrySessionsSummary}" Classes="caption" TextWrapping="Wrap" />
             </StackPanel>
             <Button Grid.Column="1" Classes="icon" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Refresh'}" Command="{Binding RefreshTelemetrySessionsCommand}" VerticalAlignment="Top" />
         </Grid>
@@ -90,7 +90,7 @@
                     ToolTip.Tip="{l:T 'A folder with one table of every value per moment, the events, the channel list and one small file per channel (comma separated, decimal point).'}" />
             <Button Classes="icon" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Delete'}" Command="{Binding DeleteTelemetrySessionCommand}" IsEnabled="{Binding CanChangeSelectedTelemetrySession}" />
         </WrapPanel>
-        <TextBlock Text="{Binding TelemetryPreviewText}" Classes="caption" Opacity="0.8" TextWrapping="Wrap" IsVisible="{Binding HasSelectedTelemetrySession}" />
+        <TextBlock Text="{Binding TelemetryPreviewText}" Classes="caption" TextWrapping="Wrap" IsVisible="{Binding HasSelectedTelemetrySession}" />
         <controls:TelemetryTimelineView Tracks="{Binding TelemetryPreviewTracks}" IsVisible="{Binding HasSelectedTelemetrySession}" HorizontalAlignment="Stretch" />
         <TextBlock Text="{Binding TelemetryRecordingMessage}" TextWrapping="Wrap" FontWeight="SemiBold" />
     </StackPanel>

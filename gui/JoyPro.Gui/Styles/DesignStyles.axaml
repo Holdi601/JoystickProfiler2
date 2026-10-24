@@ -341,7 +341,16 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
+    <!-- Red text on the surface color with a red frame: Fluent's gray button face is too dark for red text in the light theme. -->
     <Style Selector="Button.danger">
+        <Setter Property="Foreground" Value="{DynamicResource JP.DangerTextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource JP.SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StatusErrorBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.SurfaceRaisedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource StatusErrorBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource JP.DangerTextBrush}" />
     </Style>
     <Style Selector="Button.icon.iconOnly">
@@ -401,6 +410,15 @@
     </Style>
     <Style Selector="ListBox.cards ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource JP.AccentSoftBrush}" />
+    </Style>
+    <!-- Where a dragged card lands (the relation editor's action order): a line above or below the card under the pointer -->
+    <Style Selector="ListBox.cards ListBoxItem.dropAbove /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="BorderThickness" Value="0,3,0,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
+    </Style>
+    <Style Selector="ListBox.cards ListBoxItem.dropBelow /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="BorderThickness" Value="0,0,0,3" />
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
     </Style>
 
     <!-- Follow input's note over the bind list -->
@@ -517,6 +535,13 @@
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0,0,12,12" />
         <Setter Property="CornerRadius" Value="12" />
+    </Style>
+
+    <!-- The hint in an empty text box: Fluent draws the text color at half opacity (3.9:1 on white); the muted text color
+         reads better in both themes and still looks like a hint. The template sets the opacity itself, so only a selector with a state (:empty) is strong enough to change it. -->
+    <Style Selector="TextBox:empty /template/ TextBlock#PART_Watermark">
+        <Setter Property="Foreground" Value="{DynamicResource JP.TextMutedBrush}" />
+        <Setter Property="Opacity" Value="1" />
     </Style>
 
     <!-- Search boxes: a magnifier in front -->

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -19,6 +19,10 @@ namespace JoyPro.Engine
         public const string DataFolderVariable = "JOYPRO_DATA_DIR";
         public const int KeepPerGame = 30;
         private const string ManifestName = "manifest.json";
+        // Entries after the set's first file: one JSON line each, appended (the manifest of a big export was rewritten
+        // after every file: minutes of JSON for 1000+ DCS files). Flush writes the whole manifest once at the end of the
+        // run; a run that crashed leaves the journal, and Load reads it, so the set still lists every file.
+        private const string JournalName = "manifest.journal";
 
         private static string currentGame = string.Empty;
         private static string currentCommand = string.Empty;
@@ -30,6 +34,9 @@ namespace JoyPro.Engine
             public string Folder = string.Empty;
             public GameBackupManifest Manifest = new GameBackupManifest();
             public HashSet<string> Paths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            public bool ManifestWritten;
+            public bool Journaled;
+            public FileStream Journal;
         }
 
         // Called once per engine run with the game the command works on ("DCS", "StarCitizen", "IL2Game", a registry id).
@@ -84,7 +91,21 @@ namespace JoyPro.Engine
                     entry.Size = new FileInfo(target).Length;
                 }
                 set.Manifest.Files.Add(entry);
-                File.WriteAllText(Path.Combine(set.Folder, ManifestName), EngineSerialization.ToJson(set.Manifest), new UTF8Encoding(false));
+                if (!set.ManifestWritten)
+                {
+                    WriteManifest(set);
+                }
+                else
+                {
+                    // One open journal per set (opening the file for each entry cost more than the entry); every line
+                    // goes to the file at once, so a crash keeps the entries written so far.
+                    if (set.Journal == null)
+                        set.Journal = new FileStream(Path.Combine(set.Folder, JournalName), FileMode.Append, FileAccess.Write, FileShare.Read);
+                    byte[] line = new UTF8Encoding(false).GetBytes(EngineSerialization.ToJson(entry) + "\n");
+                    set.Journal.Write(line, 0, line.Length);
+                    set.Journal.Flush();
+                    set.Journaled = true;
+                }
                 JoyPro.Logging.JoyProLog.Info("Backups", "Game file about to change (" + (string.IsNullOrWhiteSpace(game) ? "Other" : game) + "): " + fullPath +
                                                          (entry.Existed ? " (" + entry.Size.ToString(CultureInfo.InvariantCulture) + " bytes, backed up to set " + set.Manifest.Id + ")" : " (new file, set " + set.Manifest.Id + ")"));
             }
@@ -117,7 +138,7 @@ namespace JoyPro.Engine
                 Directory.CreateDirectory(Path.GetDirectoryName(target));
                 File.WriteAllText(target, EngineSerialization.ToJson(RegistrySnapshot.Read(keyPath.Trim(), ownedPrefix)), new UTF8Encoding(false));
                 set.Manifest.RegistryExports.Add(name);
-                File.WriteAllText(Path.Combine(set.Folder, ManifestName), EngineSerialization.ToJson(set.Manifest), new UTF8Encoding(false));
+                WriteManifest(set);
                 return target;
             }
             catch (Exception ex)
@@ -125,6 +146,52 @@ namespace JoyPro.Engine
                 warnings?.Add("Could not back up the registry key '" + keyPath + "' before changing it: " + ex.Message);
                 return string.Empty;
             }
+        }
+
+        private static void WriteManifest(OpenSet set)
+        {
+            File.WriteAllText(Path.Combine(set.Folder, ManifestName), EngineSerialization.ToJson(set.Manifest), new UTF8Encoding(false));
+            set.ManifestWritten = true;
+            if (set.Journal != null)
+            {
+                set.Journal.Dispose();
+                set.Journal = null;
+            }
+            if (set.Journaled)
+            {
+                File.Delete(Path.Combine(set.Folder, JournalName));
+                set.Journaled = false;
+            }
+        }
+
+        // End of the run: every set's manifest in full (its journal folded in).
+        public static void Flush()
+        {
+            foreach (OpenSet set in OpenSets.Values)
+            {
+                if (!set.Journaled)
+                    continue;
+                try
+                {
+                    WriteManifest(set);
+                }
+                catch (Exception ex)
+                {
+                    JoyPro.Logging.JoyProLog.Warn("Backups", "Could not write the manifest of backup set " + set.Manifest.Id + " (its journal stays)", ex);
+                }
+            }
+        }
+
+        // A new engine run in the same process (the app's engine server): the sets of the last run are finished.
+        public static void ResetRun()
+        {
+            Flush();
+            foreach (OpenSet set in OpenSets.Values)
+            {
+                if (set.Journal != null)
+                    set.Journal.Dispose();
+            }
+            OpenSets.Clear();
         }
 
         // The backup sets of this run (for the command's result).
@@ -302,6 +369,26 @@ namespace JoyPro.Engine
                 GameBackupManifest manifest = EngineSerialization.FromJson<GameBackupManifest>(File.ReadAllText(path, Encoding.UTF8));
                 if (manifest != null && string.IsNullOrWhiteSpace(manifest.Id))
                     manifest.Id = Path.GetFileName(folder);
+                string journal = Path.Combine(folder, JournalName);
+                if (manifest != null && File.Exists(journal))
+                {
+                    HashSet<string> listed = new HashSet<string>(manifest.Files.Select(f => f.Original ?? string.Empty), StringComparer.OrdinalIgnoreCase);
+                    foreach (string line in File.ReadAllLines(journal, Encoding.UTF8))
+                    {
+                        if (line.Trim().Length == 0)
+                            continue;
+                        try
+                        {
+                            GameBackupFile entry = EngineSerialization.FromJson<GameBackupFile>(line);
+                            if (entry != null && listed.Add(entry.Original ?? string.Empty))
+                                manifest.Files.Add(entry);
+                        }
+                        catch (Exception)
+                        {
+                            // A line cut off by the crash: the entries before it count.
+                        }
+                    }
+                }
                 return manifest;
             }
             catch (Exception)

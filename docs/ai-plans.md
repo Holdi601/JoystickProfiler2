@@ -83,6 +83,37 @@ DCS 52%, X-Plane 61-64%, IL-2 54-69%, War Thunder 61%, VTOL VR 64%, Falcon BMS 5
 41%, Project Wingman 40%, Nuclear Option 44%, X4 45%. With the cockpit pack installed the cockpit guide adds the
 per-control texts (mainly DCS).
 
+## Every game
+
+Every AI path (the JoyPro assistant, Manage / Edit with AI, Expand with AI = fill, By description, the relation chat)
+understands every game JoyPro has a command list for, not only DCS:
+
+- **Game names** in a request, full or short ("X-Plane 12", "xp12", "msfs" = 2024 and 2020, "wt", "sc", "elite", "x4",
+  "bms", "IL-2 1946", "Cliffs of Dover", "ACE COMBAT 7", "p3d"): `EngineGameWords` reads them from
+  `DB/Functions/language.json` and the game integrations, so the actions come from that game only. "every game" means all.
+- **Offline rules** (no model): "make a relation for landing lights in X-Plane 12" (create, named "Landing Lights
+  (X-Plane 12)"), "put the landing gear of every game into Gear" (add, or create when Gear does not exist), "expand
+  Roll with Star Citizen" (fill of that game into Roll), in Edit with AI "add MSFS" / "also War Thunder" (the open
+  relation's function there) and "add the flaps of X-Plane 12", "remove War Thunder from Throttle".
+- **Questions** ("what does Landing gear down do in X-Plane 12", "what is boost in Elite") get JoyPro's answer and change
+  nothing: the action's readable title, the game, axis or button, its category, what it does (cockpit guide, the
+  game's own description or the function's general text; "the game has no description of it" otherwise) and the
+  relations that have it. Without and with the model (the model would only repeat it).
+- **Ships**: Star Citizen, Elite Dangerous and X4 have their words (boost, strafe up/down/left/right, landing gear, jump
+  drive: FSD, supercruise, quantum, travel drive); a ship's boost is the afterburner function there.
+- **What the model sees**: every prompt names the games with a command list (name = id), the games the request names
+  and, per named game, its actions for the request's words by readable title; the assistant's `resolve`, `search` and
+  `suggest` take `games`, and a call without them keeps to the games the request names. The fill prompt says the
+  target is a DCS aircraft or a whole game. By description shows example commands of the named games first.
+- **No ids** in any answer: actions by readable title (Star Citizen "v_toggle_landing_system" = "Toggle landing
+  system"), games by name ("X-Plane 12", not "XPlane12"), categories in words.
+
+`engine --profile p.pr0file relations ai-matrix [--games g1|g2] [--paths p1|p2] [--examples N]` asks every path
+typical requests for every game (flaps, landing gear, pitch, landing lights; boost, strafe up, jump drive for the
+space games; short names; questions; what the model would be shown) on the profile in memory, judges each answer (the
+named game's actions only, a readable answer, an answer at all; a game without the function gets none of another
+game's) and saves nothing. `JOYPRO_AI_MATRIX_CONTEXT=1` adds the whole model context to the answers.
+
 ## Command line
 
 ```

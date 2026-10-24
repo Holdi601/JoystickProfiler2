@@ -56,7 +56,7 @@ namespace JoyPro.Engine
             }
             else
             {
-                Console.WriteLine(EngineSerialization.ToJson(new { Root = root, Games = games }));
+                Console.WriteLine(EngineSerialization.ForConsole(EngineSerialization.ToJson(new { Root = root, Games = games })));
             }
             return 0;
         }
@@ -247,7 +247,7 @@ namespace JoyPro.Engine
                 }
             }
             if (!textOutput)
-                Console.WriteLine(EngineSerialization.ToJson(new { Root = root, Games = report, Warnings = warnings }));
+                Console.WriteLine(EngineSerialization.ForConsole(EngineSerialization.ToJson(new { Root = root, Games = report, Warnings = warnings })));
             return 0;
         }
 
@@ -290,7 +290,7 @@ namespace JoyPro.Engine
                 }
             }
             if (!textOutput)
-                Console.WriteLine(EngineSerialization.ToJson(new { Root = root, Sets = report }));
+                Console.WriteLine(EngineSerialization.ForConsole(EngineSerialization.ToJson(new { Root = root, Sets = report })));
             return 0;
         }
 
@@ -427,7 +427,7 @@ namespace JoyPro.Engine
             }
         }
 
-        private static byte[] UnpackZstd(byte[] data, int offset, int length)
+        internal static byte[] UnpackZstd(byte[] data, int offset, int length)
         {
             using (MemoryStream packed = new MemoryStream(data, offset, length))
             using (ZstdSharp.DecompressionStream z = new ZstdSharp.DecompressionStream(packed))

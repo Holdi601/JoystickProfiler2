@@ -24,6 +24,18 @@ $a7Profile = Join-Path $a7Dir "ac7.pr0file"
 $a7Ini = Join-Path $a7Dir "Input.ini"
 Copy-Item (Join-Path $engineDir "tests\fixtures\acecombat7\Input.ini") $a7Ini
 try {
+    # ---- 0. before the game wrote Input.ini: JoyPro's own table in the catalog, and games installs counts it
+    if (-not (Test-Path (Join-Path $a7CatalogDir "actions.tsv"))) {
+        $a7Known = Run-Engine @("relations", "browse", "--game", "AceCombat7", "--text")
+        Assert-Match $a7Known.Output "Catalog: AceCombat7 \| 20 actions" ("Without a list the catalog must show JoyPro's own AC7 table: " + $a7Known.Output)
+        Assert-Match $a7Known.Output "Flight_Gun \| Fire gun" ("The AC7 table must have the gun: " + $a7Known.Output)
+        $a7Installs = Run-Engine @("games", "installs", "--game", "AceCombat7")
+        $a7Json = $a7Installs.Output.Substring($a7Installs.Output.IndexOf('{'))
+        $a7Install = @(($a7Json.Substring(0, $a7Json.LastIndexOf('}') + 1) | ConvertFrom-Json).Games)[0]
+        Assert-True ($a7Install.Actions -eq 20) ("games installs must count AC7's 20 known actions: " + $a7Installs.Output)
+        Assert-True (-not (Test-Path (Join-Path $a7CatalogDir "actions.tsv"))) "Reading JoyPro's own AC7 table must not write a list."
+    }
+
     # ---- 1. catalog
     $a7Refresh = Run-Engine @("ac7", "refresh-db", $a7Ini, "--text")
     Assert-True ($a7Refresh.ExitCode -eq 0) "ac7 refresh-db failed. Output: $($a7Refresh.Output)"

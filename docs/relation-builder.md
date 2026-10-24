@@ -18,9 +18,18 @@ Binding the relation to a button or axis happens on the Binds page.
   import/export, next relation with suggestions, save).
 - **The open relation:** its name in a text box (edit in place: Enter or leaving the box renames, Esc cancels;
   `engine relations rename`), its kind (Axis / Button), its input (or `Not bound yet: Binds page`), the function chip
-  (see [The function chip](#the-function-chip)), `Suggest missing (n)`, `Expand with AI`, delete; below, **Its actions**: one row per game action with
+  (see [The function chip](#the-function-chip)), `Suggest missing (n)`, `Expand with AI`, `Duplicate` (a menu:
+  `Duplicate`, `Duplicate without bind` = `relations mass duplicate --no-bind`), delete; the row wraps in a narrow
+  window. Below, **Its actions**: one row per game action with
   the game badge, the aircraft, the title and the kind, `x` removes it after "Remove this action?" (with `Do not ask
   again`; Settings > Confirmations asks again). A click on a DCS action opens its aircraft (below).
+- **Order of the actions:** drag a card by its grip (a line shows where it lands), or Alt+Up / Alt+Down, or the card's
+  context menu (Move up / down / to the top / to the bottom). The engine keeps the order in the profile
+  (`relations item move <relation> --node game:id --to <position>|--up|--down`), one undo step per move.
+- **Relation card context menu** (right-click in the list): `Duplicate`, `Duplicate without bind`, `Delete`.
+- **Many actions at once:** `Add selected` and `Add all` send one engine call; single `Add` / `Dismiss` clicks in a
+  row are sent together (one call per batch, one reload at the end). Outdated background reads (suggestions, search,
+  aircraft of a relation that changed again) are dropped instead of queued.
 - **No relation open:** "Pick a relation or make one" and the four steps; they show only then (never over a relation's
   actions). A refresh of the relation list (after an edit, an undo, a save) keeps the open relation open; when it
   leaves the list (deleted, filtered out) its actions leave the editor with it.
@@ -99,6 +108,38 @@ relation`, `in '<relation>'` and, when that relation is bound, `bound: WarBRD ·
 the filter box opens the categories with a match. Ticked actions go in with `Add selected (n)` (or `Create relation
 with n actions`); a DCS action takes its ticked aircraft (the browsed one; its aircraft selector adds more with the same
 meaning). The open relation's kind decides what is listed (an axis relation: only axes).
+
+**Sort** (the catalog and the search results have the same sort bar as the Relations and Binds lists,
+`ListSortViewModel.ForActions`, remembered as `catalog` / `action-search`): game, aircraft, category, title, axis /
+button, last updated (the date of the game's command list; DCS: of the aircraft's DB file). No level = their own order
+(the catalog by the game's categories, the search best matches first). A first level `Category` orders the catalog's
+categories, a first level `Game` the search's games; the other levels order the rows inside. The search still shows
+each game's best matches (`Show n more` loads the rest); the levels order what is shown.
+
+**Titles are never raw ids or lua keys.** Every title shown (relation cards, bind peek, catalog, search, layout titles
+and cheat sheets, sync changes, describe-group proposals) goes through one resolver (`engine/DcsCommandNames.cs`,
+shared by the engine and the GUI): the DB title; a DCS localization key in it ("Input.SpitfireLFMkIX.pitch_minus",
+"29Fulcrum:Inp:...") takes DCS's English text (`<DCS>\l10n\en\LC_MESSAGES\input.mo`); else the title the profile stored
+for the node (`relations show` lists it as `stored-title` lines); else the same command in a sibling DB file (`_easy`,
+`CW`); else a readable form of the key ("Flaps 1"). A command no list and no profile names says "Command not in this
+aircraft's current list". See [DCS](games/dcs.md) "Command names". A key or id still finds the command (search,
+catalog filter): `pitch_minus`, `flaps_1`, `Input.SpitfireLFMkIX.pitch_minus`, `29Fulcrum:Inp:...` or a DCS command id
+such as `dnilp3007unilcd2vdnilvp-1vunil` list it by its readable title (`DcsCommandNames.KeyMatches`: the stored key, or
+the keys DCS's English catalog has for the title).
+
+**Readable names outside DCS** (`engine/EngineReadableNames.cs`). The game lists keep the game's ids (the integrations
+use them); catalog, search, suggestions and the relation editor show:
+- categories: a table per game where the game has group names of its own (MSFS contexts `AIRCRAFT` -> "Aircraft",
+  `BASIC_CONTROL_HELICOPTER` -> "Basic controls: helicopter"; Elite `ship_flight` -> "Ship: flight"; Star Citizen action
+  maps `spaceship_movement` -> "Flight: movement"; X-Plane `FMS2` -> "FMS 2"; VTOL VR `NumPad` -> "Number pad"), else an
+  id-like category as words (`flight_controls` -> "Flight controls", BMS `2.06 AUX COMM PANEL` -> "2.06 Aux Comm
+  Panel"); a readable one ("Helicopter and plane") stays as the game writes it;
+- titles: Star Citizen's own names from its `global.ini` (`engine starcitizen labels` builds `DB\StarCitizen\labels.tsv`
+  from Data.p4k, read only, also after `db refresh-starcitizen`; without it `v_strafe_up` -> "Strafe up"); two controls
+  with the same game name are told apart by their id ("Pitch" / "Pitch (mouse)"); MSFS 2020 lists with raw event names
+  take MSFS 2024's menu name of the event, else the name made from the event; IL-2 text keys without a text
+  (`inpcam_rotate_gopro_yaw` -> "Camera rotate GoPro yaw"); underscores, run-together words ("HeliBrakes" -> "Heli
+  Brakes") and titles in capitals ("TOGGLE PUSHBACK") as words; abbreviations stay in capitals.
 
 Every button has a tooltip. No list on the page scrolls sideways: long titles end in "...", aircraft lists show the
 first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuilderRenderTests`).
@@ -272,8 +313,11 @@ others sit collapsed under it (`+2 other actions in this game`), never ticked, e
 - variant rules (title or the game's category): trim, alternate set, landing mode, mouse, combined axis (`Aileron /
   Elevator`), gyroscope, another seat, view / camera, weapon aiming, propeller, reset, "free"; a rule whose words are the
   function's own (trim for `Pitch trim`) does not count;
-- a word the game gives no meaning for: `variant ('Mc') - meaning not documented by the game` (never guessed); no
-  rule and no such word: `the game does not say how it differs`;
+- a word the game gives no meaning for: `variant ('Mc') - meaning not documented by the game` (never guessed), only
+  when the action has every word of the recommended one and more (`Pitch Mc` next to `Pitch`); no rule and no such
+  word: `the game does not say how it differs`, only for a real twin of the recommended action (the same words without
+  axis/set/ex: MSFS `Elevator Set` next to `Elevator Axis`). Another control the function map merely groups with it
+  (`Condition Lever 1 Axis` next to `Condition Lever Axis`) gets no hint;
 - families: a helicopter (or ground vehicle) action next to a plane action of the same game is recommended too, `for
   helicopters` / `for planes` (space games: `for ships`);
 - a game or aircraft the relation has an action for already gets no recommendation.
@@ -318,7 +362,8 @@ One sentence; JoyPro changes the relations **at once** (the page shows them righ
 
 with the steps it took (`What JoyPro did`), ids it rejected, and **Undo this**: one answer is one engine command, so
 one undo snapshot takes the whole answer back (Ctrl+Z works too). Relation names in the answer open the relation.
-`Expand with AI` on the open relation sends `--relation <name>`: "this relation" and "it" mean that one.
+`Expand with AI` on the open relation sends `--relation <name>`: "this relation" and "it" mean that one. Every game
+works the same way (game names, ship words, questions; see [ai-plans.md](ai-plans.md#every-game)).
 
 ### With the local AI model: a tool loop
 
@@ -336,9 +381,9 @@ answer (`EngineLlm.Session`: start, load, many requests, kill; a job object kill
 |---|---|
 | `{"tool":"list_relations"}` | the relations with kind, action count and games |
 | `{"tool":"show_relation","relation":"NAME"}` | the relation's actions as ids (`A<n>`) and a set id (`S<n>`) |
-| `{"tool":"resolve","query":"WHAT IT DOES","kind":"axis\|button\|any"}` | the offline brain: `relations resolve` on the [function map](#function-map), every game's action of the functions the words name, with synonyms and game terms (`throttle` = thrust, collective, Star Citizen's strafe longitudinal); side actions left out ("throttle" never brings "Throttle friction"); the word search when the map knows none of the words |
+| `{"tool":"resolve","query":"WHAT IT DOES","kind":"axis\|button\|any","games":["XPlane12"]}` (games optional) | the offline brain: `relations resolve` on the [function map](#function-map), every game's action of the functions the words name, with synonyms and game terms (`throttle` = thrust, collective, Star Citizen's strafe longitudinal); side actions left out ("throttle" never brings "Throttle friction"); the word search when the map knows none of the words |
 | `{"tool":"search","query":"WORDS","kind":"...","games":["DCS"]}` | the word search over every game's titles (`relations search`) |
-| `{"tool":"suggest","relation":"NAME"}` | the relation's suggestions with confidence and reason (`relations suggest`) |
+| `{"tool":"suggest","relation":"NAME","games":["StarCitizen"]}` | the relation's suggestions with confidence and reason (`relations suggest`), only for those games when given ("expand Roll with Star Citizen") |
 | `{"tool":"create_relation","name":"NAME","kind":"axis\|button"}` | a new, empty relation (refused when the name exists) |
 | `{"tool":"rename_relation","relation":"NAME","new_name":"NAME"}` | renames it (the bind stays) |
 | `{"tool":"add_to_relation","relation":"NAME","ids":["A3","S2"]}` | adds the actions (`S<n>`: every action of that result) |
@@ -407,8 +452,24 @@ simulator), each with:
 - `dirs`: the function's direction words (`noseup` = "nose up", "aft", "pull"), `sided` (per engine or wheel), `keyed`
   (PTT 1, OSB 12, UFC 7);
 - `slots`: the function catalog's slots it stands for (`"cms_fwd_start_program_or_just_flare": "@0.85"` for flares);
-- `related`: functions a search lists along with it; plus `describe` (plain-English phrases), `lexicon` and
-  `queryFiller` for described queries.
+- `related`: functions a search lists along with it; plus `describe` (plain-English phrases, slang, paraphrases and
+  German: "fast travel", "go to hyperspace", "drop the wheels", "Fahrwerk ausfahren"; matched in queries only, never in
+  titles), `plain` (everyday sentences: words of the function's search document only), `lexicon` and `queryFiller`
+  for described queries.
+
+**Words people use.** Every function has a phrase set in `engine/tests/fixtures/phrases/phrases.json`: its name,
+synonyms, slang and paraphrases, two or three everyday sentences ("the button that makes my ship go really far really
+fast") and German phrases (2232 in all). `describe` and `plain` carry them into the map. `engine relations phrase-check
+--file <phrases.json> [--entries search|catalog|assistant|plan|describe] [--functions ...] [--kinds ...]` checks every
+phrase offline on every entry point (the search box, the catalog filter, the JoyPro assistant, Manage / Edit with AI,
+By description): the function must come first (second for a phrase that may also mean another function,
+`ambiguous_with`), and the top rows of each game must be it (the opposite direction counts as wrong). The quality
+gate's I11 runs it (docs/testing.md). A sentence ("open the thing so I can climb out") is read as a whole: a name that
+covers only a small part of it does not decide when another function's document fits the whole sentence clearly
+better. Typos count only for long words JoyPro does not know ("warp" never finds "Warm Air" or "Warn"), and a generic
+word (drive, set, system, mode) alone never makes a match. The catalog filter finds rows by meaning too (the search,
+restricted to the open list). By description and Manage / Edit with AI use the map where the word rules know nothing
+or something else: every function, not only the catalog's.
 
 Every action of every game list on the PC is mapped at run time: the function catalog where it knows the action (slot
 -> function), the map's rules for everything else (a synonym or game term in the title or the game's readable id, the

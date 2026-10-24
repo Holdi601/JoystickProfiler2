@@ -218,9 +218,15 @@ public sealed partial class MainWindowViewModel
                                 foreach (JsonProperty plane in keptIn.EnumerateObject())
                                     kept.Add(T("{0} in {1}", plane.Name, plane.Value.GetString()));
                             }
+                            string nodeGame = ReadJsonString(node, "Game");
+                            string nodeId = ReadJsonString(node, "Id");
+                            List<string> nodePlanes = ReadStringArray(node, "Planes");
                             nodes.Add(new DescribeGroupNodeItem(
-                                ReadJsonString(node, "Spec"), ReadJsonString(node, "Game"), ReadJsonString(node, "Id"), ReadStringArray(node, "Planes"),
-                                confidence, ReadStringArray(node, "Explanations"), kept));
+                                ReadJsonString(node, "Spec"), nodeGame, nodeId, nodePlanes,
+                                confidence, ReadStringArray(node, "Explanations"), kept)
+                            {
+                                Title = ResolveNodeTitle(nodeGame, nodePlanes.FirstOrDefault() ?? "Default", nodeId)
+                            });
                         }
                     }
                     DescribeGroupProposals.Add(new DescribeGroupProposalItem(

@@ -52,6 +52,11 @@ namespace JoyPro.Engine
             // Games / DCS aircraft the list's relation has an action for already (no recommendation there).
             public HashSet<string> Covered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             internal bool HasOne;
+            // The recommended action of its group (an alternative only).
+            internal Item Best;
+            // Worked out once per Mark: the direction it names and its words without the filler.
+            internal string Dir;
+            internal HashSet<string> Twin;
 
             // The function's general explanation fits it: no word the game leaves unexplained, no rule that makes it
             // something else (a view, a weapon, another seat).
@@ -199,6 +204,8 @@ namespace JoyPro.Engine
             {
                 string title = EngineFunctionMap.CleanTitle(item.Game, item.Title);
                 string[] tokens = EngineFunctionMap.Tokenize(title);
+                item.Dir = DirectionOf(tokens);
+                item.Twin = new HashSet<string>(tokens.Where(t => !TwinFiller.Contains(t)), StringComparer.Ordinal);
                 List<string> text = tokens.Concat(EngineFunctionMap.Tokenize(item.Category)).ToList();
                 item.Rules = all.Where(r => Fits(r, text, title, item.Known)).ToList();
                 Rule family = item.Rules.FirstOrDefault(r => r.Family.Length > 0);
@@ -212,13 +219,15 @@ namespace JoyPro.Engine
                 item.RecommendedFor = item.Variant = item.Group = string.Empty;
                 item.Alternatives = 0;
                 item.HasOne = false;
+                item.Best = null;
             }
             Dictionary<string, List<Item>> groups = new Dictionary<string, List<Item>>(StringComparer.OrdinalIgnoreCase);
             foreach (Item item in items)
             {
                 IEnumerable<string> places = item.Game == "DCS" && item.Planes.Count > 0 ? item.Planes : new List<string> { item.Game };
                 foreach (string place in places)
-                    Add(groups, item.Game + "|" + place + "|" + item.Function + "|" + item.FamilyId, item);
+                    // Opposite directions ("increase" / "decrease") are groups of their own: each gets its recommendation.
+                    Add(groups, item.Game + "|" + place + "|" + item.Function + "~" + item.Dir + "|" + item.FamilyId, item);
             }
             Dictionary<Item, HashSet<Item>> under = new Dictionary<Item, HashSet<Item>>();
             Dictionary<string, HashSet<string>> familiesOf = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
@@ -244,6 +253,8 @@ namespace JoyPro.Engine
                 {
                     if (other.Group.Length == 0)
                         other.Group = best.Key;
+                    if (other.Best == null)
+                        other.Best = best;
                     set.Add(other);
                 }
                 string place = group.Key.Substring(0, group.Key.LastIndexOf('|'));
@@ -283,9 +294,114 @@ namespace JoyPro.Engine
             List<string> texts = item.Rules.Where(r => (r.Demote || r.Family.Length > 0 && r.Family != "plane") && r.Text.Length > 0).Select(r => r.Text).Distinct().ToList();
             if (texts.Count > 0)
                 return string.Join("; ", texts);
+            // Words the game does not explain: only for a variant of the recommended action (its words and more, "Pitch
+            // Axis Mc" next to "Pitch Axis"), not for another control the map groups with it.
+            if (item.Unknown.Count > 0 && item.Best != null && !Extends(item, item.Best))
+                return string.Empty;
             if (item.Unknown.Count > 0)
                 return "variant ('" + string.Join("', '", item.Unknown.Take(3).Select(u => OriginalWord(item.Title, u))) + "') - meaning not documented by the game";
-            return item.HasOne ? "another action for the same thing; the relation has one for this game already" : "another action for the same thing; the game does not say how it differs";
+            if (item.HasOne)
+                return "another action for the same thing; the relation has one for this game already";
+            // Only a real twin of the recommended action gets the generic hint ("Elevator Set" next to "Elevator Axis");
+            // a distinct control the function map merely groups with it ("Condition Lever 1 Axis" next to "Condition
+            // Lever Axis") gets none: there is nothing to tell apart.
+            return item.Best != null && !NearDuplicate(item, item.Best) ? string.Empty : "another action for the same thing; the game does not say how it differs";
+        }
+
+        // Words that do not tell two actions apart: "Elevator Set" / "Elevator Axis" / "Axis Elevator Set Ex1".
+        private static readonly HashSet<string> TwinFiller = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "axis", "set", "ex", "ex1", "value", "control", "command", "input", "the", "a", "of", "and"
+        };
+
+        // Opposite directions are never "the same thing": "Engine RPM INCREASE" / "DECREASE", gear up / down, light on /
+        // off. Each pair: the words of one side, then of the other.
+        private static readonly string[][][] OppositePairs =
+        {
+            new[] { new[] { "increase", "inc", "incr", "raise" }, new[] { "decrease", "dec", "decr", "lower" } },
+            new[] { new[] { "up" }, new[] { "down", "dn" } },
+            new[] { new[] { "on" }, new[] { "off" } },
+            new[] { new[] { "left" }, new[] { "right" } },
+            new[] { new[] { "plus" }, new[] { "minus" } },
+            new[] { new[] { "open" }, new[] { "close", "closed" } },
+            new[] { new[] { "extend", "extended" }, new[] { "retract", "retracted" } },
+            new[] { new[] { "forward", "fwd" }, new[] { "backward", "back", "aft" } },
+        };
+
+        private static Dictionary<string, string> directionWords;
+
+        // The direction an action names ("0+" / "0-" for increase / decrease ...), empty for none or several.
+        internal static string Direction(string game, string title)
+        {
+            if (directionWords == null)
+            {
+                Dictionary<string, string> words = new Dictionary<string, string>(StringComparer.Ordinal);
+                for (int p = 0; p < OppositePairs.Length; p++)
+                    for (int side = 0; side < 2; side++)
+                        foreach (string w in OppositePairs[p][side])
+                            foreach (string t in EngineFunctionMap.Tokenize(w).Concat(new[] { w }))
+                                words[t] = p.ToString(CultureInfo.InvariantCulture) + (side == 0 ? "+" : "-");
+                directionWords = words;
+            }
+            return DirectionOf(EngineFunctionMap.Tokenize(EngineFunctionMap.CleanTitle(game, title)));
+        }
+
+        private static string DirectionOf(IEnumerable<string> tokens)
+        {
+            if (directionWords == null)
+                Direction(string.Empty, string.Empty);
+            HashSet<string> found = new HashSet<string>(StringComparer.Ordinal);
+            foreach (string token in tokens)
+            {
+                string d;
+                if (directionWords.TryGetValue(token, out d))
+                    found.Add(d);
+            }
+            return found.Count == 1 ? found.First() : string.Empty;
+        }
+
+        // Opposite directions of one pair.
+        internal static bool Opposite(string game, string titleA, string titleB)
+        {
+            return OppositeDirs(Direction(game, titleA), Direction(game, titleB));
+        }
+
+        private static bool OppositeDirs(string a, string b)
+        {
+            return a.Length > 0 && b.Length > 0 && a[0] == b[0] && a.Substring(0, a.Length - 1) == b.Substring(0, b.Length - 1) && a != b;
+        }
+
+        // "twin" (the same thing: the generic hint is right), "opposite" (never the same thing) or "different".
+        internal static string Relation(string game, string titleA, string titleB)
+        {
+            Item a = new Item { Game = game, Title = titleA };
+            Item b = new Item { Game = game, Title = titleB };
+            return Opposite(game, titleA, titleB) ? "opposite" : NearDuplicate(a, b) ? "twin" : "different";
+        }
+
+        private static HashSet<string> TwinWords(Item i)
+        {
+            if (i.Twin != null)
+                return new HashSet<string>(i.Twin, StringComparer.Ordinal);
+            return new HashSet<string>(EngineFunctionMap.Tokenize(EngineFunctionMap.CleanTitle(i.Game, i.Title)).Where(t => !TwinFiller.Contains(t)), StringComparer.Ordinal);
+        }
+
+        // Same words once the filler is gone: a twin of the recommended action.
+        internal static bool NearDuplicate(Item a, Item b)
+        {
+            if (OppositeDirs(a.Dir ?? Direction(a.Game, a.Title), b.Dir ?? Direction(b.Game, b.Title)))
+                return false;
+            HashSet<string> x = TwinWords(a);
+            return x.Count > 0 && x.SetEquals(TwinWords(b));
+        }
+
+        // a is b's control plus words the game does not explain ("Mc pitch" next to "Rpc pitch", "Fuel Selector 2 Left AUX"
+        // next to "Fuel Selector 2 Left"): all its other words are b's.
+        internal static bool Extends(Item a, Item b)
+        {
+            HashSet<string> rest = TwinWords(a);
+            rest.ExceptWith(a.Unknown ?? new List<string>());
+            return rest.Count > 0 && rest.IsSubsetOf(TwinWords(b));
         }
 
         // The word as the game writes it ("Mc" for the token "mc").

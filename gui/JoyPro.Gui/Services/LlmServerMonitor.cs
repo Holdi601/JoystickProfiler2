@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading;
 
 namespace JoyPro.Gui.Services;
 
@@ -14,7 +15,10 @@ public sealed record LlmServerSnapshot(bool Running, int Pid, string Model, long
 
 // The warm local AI model (engine EngineLlmServer.cs): the engine leaves llama-server loaded between requests and
 // describes it in <data>\Llm\server.json; the app owns it. Poll() reports it, puts it into the app's kill-on-close job
-// (it dies with the app, even on a crash) and stops it after IdleMinutes without a request; StopNow() ends it at once.
+// (it dies with the app, even on a crash) and stops it after IdleMinutes without AI work; StopNow() ends it at once.
+// AI work: a request the engine has in flight (BusyPid) and any work the app holds with BeginWork() (an engine command
+// that uses the model: its answer streaming in, a plan being made or applied, the pauses between its requests). While
+// work runs the idle time does not count down; it starts again from the end of the last request or work.
 public sealed class LlmServerMonitor
 {
     public const string OwnerPidVariable = "JOYPRO_LLM_OWNER_PID";
@@ -35,7 +39,40 @@ public sealed class LlmServerMonitor
 
     public string StateFile { get; }
 
-    public double IdleMinutes { get; set; } = 2;
+    public const double DefaultIdleMinutes = 30;
+
+    public double IdleMinutes { get; set; } = DefaultIdleMinutes;
+
+    private int activeWork;
+    private DateTime lastWorkEndedUtc = DateTime.MinValue;
+
+    // AI work the app is doing now (BeginWork scopes that have not ended).
+    public bool IsWorking => Volatile.Read(ref activeWork) > 0;
+
+    // Holds the idle stop until the returned scope is disposed; the idle time then starts from that moment.
+    public IDisposable BeginWork()
+    {
+        Interlocked.Increment(ref activeWork);
+        return new WorkScope(this);
+    }
+
+    private void EndWork()
+    {
+        lock (gate)
+            lastWorkEndedUtc = UtcNow();
+        Interlocked.Decrement(ref activeWork);
+    }
+
+    private sealed class WorkScope(LlmServerMonitor owner) : IDisposable
+    {
+        private int disposed;
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref disposed, 1) == 0)
+                owner.EndWork();
+        }
+    }
 
     public Func<DateTime> UtcNow { get; set; } = () => DateTime.UtcNow;
 
@@ -71,10 +108,17 @@ public sealed class LlmServerMonitor
                 return LlmServerSnapshot.Stopped;
             }
             KeepWithApp(process);
-            bool busy = IsAlive(state.BusyPid);
+            bool busy = IsWorking || IsAlive(state.BusyPid);
             double idleLeft = IdleMinutes * 60;
-            if (!busy && DateTime.TryParse(state.LastUsedUtc, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime lastUsed))
-                idleLeft = IdleMinutes * 60 - (UtcNow() - lastUsed.ToUniversalTime()).TotalSeconds;
+            if (!busy)
+            {
+                // Idle since the last request of the engine or the end of the app's last AI work, whichever is later.
+                DateTime since = lastWorkEndedUtc;
+                if (DateTime.TryParse(state.LastUsedUtc, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime lastUsed) && lastUsed.ToUniversalTime() > since)
+                    since = lastUsed.ToUniversalTime();
+                if (since > DateTime.MinValue)
+                    idleLeft = IdleMinutes * 60 - (UtcNow() - since).TotalSeconds;
+            }
             if (!busy && idleLeft <= 0)
             {
                 Kill(process);

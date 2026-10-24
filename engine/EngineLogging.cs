@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -17,9 +17,28 @@ namespace JoyPro.Engine
         private static CaptureWriter stdout;
         private static CaptureWriter stderr;
 
-        public static void CaptureConsole()
+        // JOYPRO_STDIO=utf8 (the app's engine calls): stdout and stderr in UTF-8 instead of the console's code page. The
+        // code page cannot hold every title (curly quotes, CJK names): its best-fit mapping turned a title's quote marks
+        // into plain '"' and broke the JSON the app reads ("relations suggest" of a relation with such a title).
+        public static void UseUtf8ConsoleIfAsked()
         {
-            if (!JoyProLog.IsStarted || stdout != null)
+            if (!string.Equals(Environment.GetEnvironmentVariable("JOYPRO_STDIO"), "utf8", StringComparison.OrdinalIgnoreCase))
+                return;
+            try
+            {
+                Encoding utf8 = new UTF8Encoding(false);
+                Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), utf8) { AutoFlush = true });
+                Console.SetError(new StreamWriter(Console.OpenStandardError(), utf8) { AutoFlush = true });
+            }
+            catch (Exception)
+            {
+                // The console's own writers stay; JSON payloads are ASCII anyway (EngineSerialization.ToJson).
+            }
+        }
+
+        public static void CaptureConsole(bool force = false)
+        {
+            if (!JoyProLog.IsStarted || (stdout != null && !force))
                 return;
             try
             {
@@ -33,6 +52,13 @@ namespace JoyPro.Engine
                 stdout = null;
                 stderr = null;
             }
+        }
+
+        // The engine server after a command: the next one captures its own writers.
+        public static void ReleaseConsole()
+        {
+            stdout = null;
+            stderr = null;
         }
 
         // Logs the captured output (once, at the end of the run).

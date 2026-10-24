@@ -465,6 +465,7 @@ public partial class MainWindowViewModel
             args.Add(ReplaceMerge);
         }
         string note = T("Replaced {0} with {1}", oldName, newName);
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: T("Moving the binds of {0}...", oldName),
             forceText: false, historyNote: note);
         if (result == null || result.ExitCode != 0)
@@ -496,7 +497,9 @@ public partial class MainWindowViewModel
         CanUndoDeviceRemap = true;
         RefreshHistoryState();
         StatusText = DeviceRemapNoticeTitle;
-        await RefreshBindsAndModifiersAfterChangeAsync();
+        // "Replace" takes binds of the new device away: a modifier that only they used stays in the library.
+        if (await RefreshAndKeepModifiersAsync(modifiersBefore) > 0)
+            StatusText = DeviceRemapNoticeTitle + " " + StatusText;
         await LoadDeviceCardsAsync();
         return true;
     }

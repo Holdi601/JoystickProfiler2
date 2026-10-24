@@ -1,4 +1,4 @@
-#if NET
+﻿#if NET
 #nullable disable
 #endif
 using System;
@@ -249,6 +249,13 @@ namespace JoyPro.Logging
                 RateLimits[key ?? string.Empty] = now;
                 return true;
             }
+        }
+
+        // The call a long-running process (the engine server) works for now: its log lines carry this id (c:gui-17).
+        public static void SetParent(string callId)
+        {
+            lock (Gate)
+                parentId = string.IsNullOrWhiteSpace(callId) ? string.Empty : CleanToken(callId);
         }
 
         // A new id for a child process this process starts ("gui-17"); log it with the call, pass it with ChildEnvironment.

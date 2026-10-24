@@ -390,7 +390,7 @@ public sealed partial class MainWindowViewModel
 
     private sealed record LayoutMarkerState(string Token, string Type, string Modifier, double X, double Y);
 
-    private sealed record ReferencePartState(string Id, double X, double Y, bool IsPlaced);
+    private sealed record ReferencePartState(string Id, double X, double Y, bool IsPlaced, bool IsShown);
 
     // The markers of the shown picture before a change: the layout file's markers, or the reference's parts.
     private sealed record LayoutEditSnapshot(string Description, bool Reference, IReadOnlyList<LayoutMarkerState> Markers, IReadOnlyList<ReferencePartState> Parts, string SelectedToken);
@@ -398,7 +398,7 @@ public sealed partial class MainWindowViewModel
     private LayoutEditSnapshot CaptureLayoutSnapshot(string description)
     {
         if (LayoutShowsReference && deviceReference != null)
-            return new(description, true, [], deviceReference.Markers.Select(m => new ReferencePartState(m.Id, m.X, m.Y, m.IsPlaced)).ToList(), deviceReference.SelectedMarker?.Id ?? string.Empty);
+            return new(description, true, [], deviceReference.Markers.Select(m => new ReferencePartState(m.Id, m.X, m.Y, m.IsPlaced, m.IsShown)).ToList(), deviceReference.SelectedMarker?.Id ?? string.Empty);
         return new(description, false,
             LayoutEditorMarkers.Select(m => new LayoutMarkerState(m.Token ?? string.Empty, m.Type ?? "button", m.Modifier ?? string.Empty, m.X, m.Y)).ToList(), [],
             SelectedLayoutEditorMarker?.Token ?? string.Empty);
@@ -530,9 +530,13 @@ public sealed partial class MainWindowViewModel
             if (Math.Abs(part.X - state.X) > 1e-6 || Math.Abs(part.Y - state.Y) > 1e-6)
                 deviceReference.MoveMarker(part, state.X, state.Y);
             part.IsPlaced = state.IsPlaced;
+            // A part placed by drag or click that had no place before goes back among the unplaced ones.
+            if (part.IsShown != state.IsShown)
+                part.IsShown = state.IsShown;
         }
         deviceReference.SelectedMarker = deviceReference.Markers.FirstOrDefault(m => m.Id == snapshot.SelectedToken);
         deviceReference.HasUnsavedChanges = true;
+        deviceReference.Assistant?.RefreshUnplaced();
     }
 
     // ---- Bind on the picture ----

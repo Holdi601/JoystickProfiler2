@@ -403,12 +403,13 @@ public sealed partial class MainWindowViewModel
                 T("{0}{1} and their binds leave the profile. Undo (Ctrl+Z) brings them back.", string.Join(", ", names.Take(8)), (names.Count > 8 ? " and " + (names.Count - 8) + " more" : string.Empty)), T("Delete"), isDanger: true))
             return;
         List<string> args = ["relations", "mass", "delete", "--relations", string.Join(",", names)];
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Deleting relations..."));
         if (result?.ExitCode == 0)
         {
             RelationNodes.Clear();
             await RefreshRelationsAsync();
-            await RefreshBindsAsync();
+            await RefreshAndKeepModifiersAsync(modifiersBefore);
         }
     }
 

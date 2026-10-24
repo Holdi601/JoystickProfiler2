@@ -34,7 +34,13 @@ relations:
      disconnect, laser, HMD, targeting pod, seat change, master modes and crew AI;
    - **games**: DCS, MSFS (both MSFS 2020 and 2024; "MSFS 2020" / "MSFS 2024" for one), IL-2 (Great Battles), IL-2 Korea,
      War Thunder (WT), Falcon BMS, Star Citizen, X-Plane (11 and 12; "X-Plane 11" / "XP12" for one), Elite Dangerous,
-     X4, VTOL VR, Nuclear Option, Arma 2/3/Reforger, WARDOGS (a game word with `members` in language.json stands for several games);
+     X4, VTOL VR, Nuclear Option, Arma 2/3/Reforger ("Arma" for all), WARDOGS, IL-2 1946, IL-2 Cliffs of Dover (and Blitz),
+     Project Wingman, ACE COMBAT 7/8, Battlefield 6/2042, Tiny Combat Arena, G-Rebels, Hell Let Loose: Vietnam, FSX (SE),
+     Prepar3D v4/v5/v6, with short names ("msfs24", "xp12", "wt", "sc", "elite", "bms", "p3d") (a game word with
+     `members` in language.json stands for several games);
+   - **space words**: strafe up/down/left/right/forward/back, jump drive (FSD, frame shift, hyperspace, supercruise,
+     quantum, travel drive), decoupled / flight assist, cruise control, shields, power distribution; "boost" is the
+     afterburner / ship boost;
    - **aircraft classes**: jets, prop aircraft, turboprops, warbirds, helicopters, fixed wing, spaceships, airliners,
      general aviation; roles (fighters, bombers, attack, multirole, trainers, transports, attack/utility
      helicopters, aerobatic); eras (WW2, Korea, Cold War early/late, modern); carrier, VTOL and multi-crew aircraft;
@@ -60,7 +66,11 @@ relations:
    the aircraft and its close relatives (flares: CMS, chaff). The relatives are offered to the local model and named
    for aircraft that lack the asked function ("has CMS Aft").
 2. **Function catalog.** Every function is a slot of `DB/Functions/slots.json`; the per-game `<Game>.tsv` files give
-   each aircraft's command for it (checked against the manuals). Only an aircraft's own commands are used;
+   each aircraft's command for it (checked against the manuals). A game without a `<Game>.tsv` of its own (FSX, Prepar3D, IL-2 1946,
+   Cliffs of Dover, Project Wingman, ACE COMBAT, Battlefield, Tiny Combat Arena, G-Rebels, Hell Let Loose: Vietnam, any
+   game added later) gets a table derived from the [function map](relation-builder.md#function-map): per slot its best
+   action of that function and direction, status `derived` (`EngineFunctionTable`); a slot a game's table leaves out
+   takes the function map's action, with a lower confidence and the reason in the explanation. Only an aircraft's own commands are used;
    `--substitutes` also takes the catalog's stand-ins. DCS commands must exist in the local DCS database, the others
    in the game's catalog.
 3. **Proposals.** One relation per function and direction, named after it and the aircraft ("Speed Brake Out
@@ -95,7 +105,7 @@ have.
 - It runs **only while you use it**: JoyPro starts `llama-server` on 127.0.0.1 on a free port with one slot
   (`-np 1`) and waits until the model is loaded. From the command line the process is killed after the request (a
   Windows job object kills it with the engine, too). From the app (`JOYPRO_LLM_OWNER_PID`) the model stays loaded for
-  the next request and the app stops it after the idle minutes (default 2, Settings > Local AI), with **Stop now**,
+  the next request and the app stops it after the idle minutes (default 30, Settings > Local AI; it only counts while JoyPro does no AI work: a request, an answer streaming in or a plan being made or applied holds it, and it starts again when the last one ends. A ui-settings.json of 2.2.17 or older with the old default 2 gets 30; another value the user chose stays), with **Stop now**,
   and when JoyPro ends (the app's kill-on-close job, also on a crash). `<data>\Llm\server.json` describes the running
   server; the panel and a chip next to the AI buttons show it with its video memory (`nvidia-smi`, else the working
   set). `engine llm server` shows it, `engine llm stop` ends it, `engine llm start` loads it now (Settings > Local AI >

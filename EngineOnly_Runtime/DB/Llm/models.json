@@ -217,9 +217,9 @@
    "Tools:",
    "{\"tool\":\"list_relations\"} - the relations of the profile.",
    "{\"tool\":\"show_relation\",\"relation\":\"NAME\"} - the actions in a relation, with ids.",
-   "{\"tool\":\"resolve\",\"query\":\"WHAT IT DOES\",\"kind\":\"axis|button|any\"} - JoyPro's knowledge of every game's action for a function, with synonyms. Returns a set id S<n> and action ids A<n>. Try it first.",
+   "{\"tool\":\"resolve\",\"query\":\"WHAT IT DOES\",\"kind\":\"axis|button|any\",\"games\":[\"XPlane12\"]} - JoyPro's knowledge of every game's action for a function, with synonyms (games optional: only those games). Returns a set id S<n> and action ids A<n>. Try it first.",
    "{\"tool\":\"search\",\"query\":\"WORDS\",\"kind\":\"axis|button|any\",\"games\":[\"DCS\"]} - word search in the action titles of every game (games optional). For what resolve misses.",
-   "{\"tool\":\"suggest\",\"relation\":\"NAME\"} - what JoyPro's catalog says fits a relation, with the reason.",
+   "{\"tool\":\"suggest\",\"relation\":\"NAME\",\"games\":[\"StarCitizen\"]} - what JoyPro's catalog says fits a relation, with the reason (games optional: \"expand Roll with X-Plane 12\" = suggest for Roll in XPlane12, then add).",
    "{\"tool\":\"create_relation\",\"name\":\"NAME\",\"kind\":\"axis|button\"}",
    "{\"tool\":\"rename_relation\",\"relation\":\"NAME\",\"new_name\":\"NAME\"}",
    "{\"tool\":\"add_to_relation\",\"relation\":\"NAME\",\"ids\":[\"A3\",\"S2\"]} - S<n> adds every action of that result.",
@@ -231,7 +231,7 @@
    "3. Add a whole set S<n> only when every line of it fits; else list the fitting A ids. Check the lines of a set before you add it.",
    "4. Throttle, thrust, power lever, helicopter collective and spaceship forward/backward thrust are axes. A twin-engine aircraft's left and right throttle both belong to an all-throttle relation.",
    "5. Create a relation only when the user asks for a new one or names one that does not exist. Never touch relations the user did not mention. There is no delete.",
-   "6. When the request names several things (\"X including Y and Z\"), look up each one, add what fits of each, and only then call done.",
+   "6. When the request names several things (\"X including Y and Z\"), look up each one, add what fits of each, and only then call done.", "6b. When the request names games (\"the flaps of X-Plane 12\", \"boost in Elite\", \"msfs\", \"sc\"), pass them as games (the ids of the GAMES line) and add only their actions. Star Citizen, Elite Dangerous and X4 fly ships: boost, strafe, landing gear and the jump drive (FSD, quantum) are their words.",
    "7. Be quick: a few resolve or search calls, then add, then done. In done, say in plain words only what you really added.\n8. A DCS action id belongs to its aircraft: the same id can mean something else in another aircraft (\"Pitch\" in a jet, \"Collective\" in a helicopter; cockpit switch ids are another switch in every module). Each RESULT line is ONE meaning with only the aircraft where the id means that. \"same id means something else in N other aircraft\" means those aircraft were left out on purpose: never add them through that line; look up their own action."
   ],
   "example": [

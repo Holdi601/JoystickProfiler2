@@ -38,9 +38,9 @@ try {
     # (a missing bidirectionalthrottle is On in the game).
     $xsImport = Run-Engine @("--profile", $xsProfile, "x4", "import", "--path", $xsMap, "--replace", "--text")
     Assert-True ($xsImport.ExitCode -eq 0) ("x4 import failed: " + $xsImport.Output)
-    $xsPitch = "Steer Up-Down"
+    $xsPitch = "Pitch (Steer Up-Down)"
     $xsThrottle = "Throttle"
-    $xsYaw = "Primary Steering Axis"
+    $xsYaw = "Yaw (Primary Steering Axis)"
     $xsPitchShow = Run-Engine @("--profile", $xsProfile, "binds", "tuning", "show", $xsPitch, "--game", "X4", "--text")
     Assert-Match $xsPitchShow.Output "base: inv=0;" ("X4's inverted pitch (its HOTAS default) must import as a relation without invert: " + $xsPitchShow.Output)
     $xsThrottleShow = Run-Engine @("--profile", $xsProfile, "binds", "tuning", "show", $xsThrottle, "--game", "X4", "--text")
@@ -151,9 +151,9 @@ try {
     Assert-Match $xc.Output "6 controls, 3 space flight, 2 new; control names from order\.tsv" ("x4 refresh-db should read the menu from the newer archive: " + $xc.Output)
     Assert-Match $xc.Output "actions 9999 has no known id" "a menu control without a known id should be reported and skipped."
     $xcCatalog = [System.IO.File]::ReadAllText((Join-Path $xcList "actions.tsv"))
-    Assert-Match $xcCatalog "(?m)^INPUT_RANGE_STEERING_YAW\tSmoke Yaw & Roll\taxis\tspace/Smoke Group\r?$" "a new menu axis should come in with its game title (translator comment removed)."
-    Assert-Match $xcCatalog "(?m)^INPUT_ACTION_TOGGLE_AUTO_SPEED\tSmoke Function\tbutton\tspace/Smoke Group; function 1\r?$" "a menu function should come in under its defining control and function name."
-    Assert-Match $xcCatalog "(?m)^INPUT_RANGE_THROTTLE\tThrottle\taxis\tspace/Steering: Analog\r?$" "known controls must keep their title and category."
+    Assert-Match $xcCatalog "(?m)^INPUT_RANGE_STEERING_YAW\tSmoke Yaw & Roll\taxis\tSmoke Group\r?$" "a new menu axis should come in with its game title (translator comment removed) and its menu group (no section)."
+    Assert-Match $xcCatalog "(?m)^INPUT_ACTION_TOGGLE_AUTO_SPEED\tSmoke Function\tbutton\tSmoke Group\r?$" "a menu function should come in under its defining control and function name, the category without the builder's notes."
+    Assert-Match $xcCatalog "(?m)^INPUT_RANGE_THROTTLE\tThrottle\taxis\tSteering: Analog\r?$" "known controls must keep their title and category."
     Assert-NotMatch $xcCatalog "INPUT_RANGE_MOUSEWHEEL|INPUT_ACTION_DEBUG_7|INPUT_STATE_DIALOG_MENU" "mouse-only rows, the Options Menu group and the menus section are no flight controls."
     Assert-Match ([System.IO.File]::ReadAllText((Join-Path $xcList "functions.tsv"))) "(?m)^INPUT_ACTION_TOGGLE_AUTO_SPEED\tINPUT_ACTION_TOGGLE_AUTO_SPEED,INPUT_ACTION_TOGGLECURSOR\r?$" "a new menu function should be added to functions.tsv."
     Assert-True ([System.IO.File]::ReadAllText((Join-Path $xcList "order.tsv")) -eq $xcOrderBefore) "without X4.exe order.tsv must stay as it is."

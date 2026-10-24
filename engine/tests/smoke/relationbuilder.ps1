@@ -152,6 +152,25 @@ try {
     $rbJunk = Invoke-RbJson $rbProfile @("relations", "chat", "Flare", "remove the A-10", "--llm", "on")
     Assert-True ($rbJunk.ExitCode -eq 0 -and $rbJunk.Json.Method -eq "offline rules") "an invalid model answer must keep the offline rules."
     Assert-True (@($rbJunk.Json.Remove | Where-Object { @($_.Planes) -contains "A-10C" }).Count -eq 1) "the offline result was lost after an invalid model answer."
+
+    # The order of a relation's actions is the user's (relations item move), kept in the profile.
+    $rbOrder = Run-Engine @("--profile", $rbProfile, "relations", "add", "Order", "--axis", "--node", "DCS:a2001cdnil:FA-18C_hornet", "--node", "IL2Game:mc_pitch:IL2Game", "--node", "WarThunder:elevator:WarThunder", "--text")
+    Assert-True ($rbOrder.ExitCode -eq 0) ("relations add for the order failed: " + $rbOrder.Output)
+    $rbMoved = Run-Engine @("--profile", $rbProfile, "relations", "item", "move", "Order", "--node", "WarThunder:elevator", "--to", "1", "--text")
+    Assert-True ($rbMoved.ExitCode -eq 0) ("relations item move --to failed: " + $rbMoved.Output)
+    Run-Engine @("--profile", $rbProfile, "relations", "item", "move", "Order", "--node", "DCS:a2001cdnil", "--down", "--text") | Out-Null
+    $rbOrderShow = Run-Engine @("--profile", $rbProfile, "relations", "show", "Order", "--text")
+    Assert-Match $rbOrderShow.Output "(?s)\[1\] game=WarThunder, id=elevator.*\[2\] game=IL2Game, id=mc_pitch.*\[3\] game=DCS, id=a2001cdnil" "relations item move did not keep the new order."
+    $rbBadMove = Run-Engine @("--profile", $rbProfile, "relations", "item", "move", "Order", "--node", "WarThunder:elevator", "--text")
+    Assert-True ($rbBadMove.ExitCode -ne 0) "relations item move without --to/--up/--down must fail."
+
+    # Duplicate without bind: the copy has the actions, not the bind.
+    Run-Engine @("--profile", $rbProfile, "relations", "add", "Bound one", "--button", "--node", "FalconBMS:SimCMSUp:FalconBMS", "--device", "Joystick - HOTAS Warthog {00000000-0000-0000-0000-0000000000a1}", "--input", "JOY_BTN7", "--text") | Out-Null
+    $rbDup = Run-Engine @("--profile", $rbProfile, "relations", "mass", "duplicate", "--relation", "Bound one", "--no-bind", "--text")
+    Assert-True ($rbDup.ExitCode -eq 0) ("relations mass duplicate --no-bind failed: " + $rbDup.Output)
+    $rbDupList = Run-Engine @("--profile", $rbProfile, "relations", "list", "--text")
+    Assert-Match $rbDupList.Output "(?m)^Bound one \| .*bind=Joystick - HOTAS Warthog" "the original lost its bind."
+    Assert-Match $rbDupList.Output "(?m)^Bound one \(copy\) \| .*bind=unbound" "the copy without bind is bound."
 }
 finally {
     $env:JOYPRO_DATA_DIR = $rbPreviousData

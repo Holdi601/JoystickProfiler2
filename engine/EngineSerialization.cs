@@ -17,9 +17,79 @@ namespace JoyPro.Engine
             return serializer;
         }
 
+        // ASCII only: every other character as \uXXXX (only strings hold them), so the JSON survives any output code page
+        // (a console's best-fit mapping makes '"' of a title's curly quotes and breaks the document).
         public static string ToJson<T>(T value)
         {
-            return CreateSerializer().Serialize(value);
+            return AsciiOnly(CreateSerializer().Serialize(value));
+        }
+
+        internal static string AsciiOnly(string json)
+        {
+            if (json == null)
+                return null;
+            int first = -1;
+            for (int i = 0; i < json.Length; i++)
+            {
+                if (json[i] > 0x7E)
+                {
+                    first = i;
+                    break;
+                }
+            }
+            if (first < 0)
+                return json;
+            StringBuilder sb = new StringBuilder(json.Length + 64);
+            sb.Append(json, 0, first);
+            for (int i = first; i < json.Length; i++)
+            {
+                char c = json[i];
+                if (c <= 0x7E)
+                    sb.Append(c);
+                else
+                    sb.Append("\\u").Append(((int)c).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            return sb.ToString();
+        }
+
+        // JSON for the console: every character outside printable ASCII as \uXXXX. The engine's stdout uses the
+        // console's code page (the GUI reads it the same way), which has no curly quotes, dashes or most accents; a
+        // best-fit mapping turned a game text's “ into " and broke the JSON (the MSFS catalog of the relation editor
+        // listed nothing). Escaped, the JSON reads the same in every code page.
+        public static string ForConsole(string json)
+        {
+            if (string.IsNullOrEmpty(json))
+                return json ?? string.Empty;
+            int first = 0;
+            while (first < json.Length && json[first] < 0x7F)
+                first++;
+            if (first == json.Length)
+                return json;
+            StringBuilder sb = new StringBuilder(json.Length + 64);
+            sb.Append(json, 0, first);
+            for (int i = first; i < json.Length; i++)
+            {
+                char c = json[i];
+                if (c < 0x7F)
+                    sb.Append(c);
+                else
+                    sb.Append("\\u").Append(((int)c).ToString("x4", System.Globalization.CultureInfo.InvariantCulture));
+            }
+            return sb.ToString();
+        }
+
+        // A payload that is JSON (an object or an array), not text.
+        public static bool LooksLikeJson(string payload)
+        {
+            if (string.IsNullOrEmpty(payload))
+                return false;
+            foreach (char c in payload)
+            {
+                if (char.IsWhiteSpace(c))
+                    continue;
+                return c == '{' || c == '[';
+            }
+            return false;
         }
 
         public static T FromJson<T>(string json)
@@ -120,6 +190,14 @@ namespace JoyPro.Engine
                 {
                     EngineRelationItemDto node = relation.Nodes[i];
                     sb.AppendLine("  [" + (i + 1) + "] game=" + Safe(node.Game) + ", id=" + Safe(node.Id) + ", aircraft=" + FormatAircraft(node.Aircraft));
+                    // "      stored-title<TAB>plane<TAB>title<TAB>category": what the profile stored (GUI fallback title).
+                    foreach (KeyValuePair<string, string> stored in (node.StoredTitles ?? new Dictionary<string, string>()).OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase))
+                    {
+                        string category;
+                        if (node.StoredCategories == null || !node.StoredCategories.TryGetValue(stored.Key, out category))
+                            category = string.Empty;
+                        sb.AppendLine("      stored-title\t" + OneLine(stored.Key) + "\t" + OneLine(stored.Value) + "\t" + OneLine(category));
+                    }
                 }
             }
             return sb.ToString();
@@ -185,6 +263,63 @@ namespace JoyPro.Engine
                 doc.Relations.Add(relationDto);
             }
             return doc;
+        }
+
+        // "relations show": the stored titles of the relation's nodes (only there: the list of every relation stays small).
+        public static void AddStoredTitles(EngineRelationDto relationDto)
+        {
+            Relation relation;
+            if (relationDto == null || relationDto.Nodes == null || InternalDataManagement.AllRelations == null ||
+                !InternalDataManagement.AllRelations.TryGetValue(relationDto.Name ?? string.Empty, out relation) || relation == null || relation.NODES == null)
+                return;
+            for (int i = 0; i < relationDto.Nodes.Count && i < relation.NODES.Count; i++)
+                AddStoredTitles(relation.NODES[i], relationDto.Nodes[i]);
+        }
+
+        // The stored title and category of every active aircraft of a node; DCS localization keys become DCS's English
+        // text (or a readable form), raw ids are left out.
+        private static void AddStoredTitles(RelationItem item, EngineRelationItemDto itemDto)
+        {
+            if (item == null || item.AIRCRAFT == null)
+                return;
+            bool dcs = string.IsNullOrWhiteSpace(item.Game) || string.Equals(item.Game, "DCS", StringComparison.OrdinalIgnoreCase);
+            IDictionary<string, string> english = null;
+            foreach (KeyValuePair<string, bool> plane in item.AIRCRAFT)
+            {
+                if (!plane.Value || string.IsNullOrWhiteSpace(plane.Key))
+                    continue;
+                string title = null, category = null;
+                if (dcs)
+                {
+                    DCSInput input = (item.AllInputs ?? new DCSInput[0]).FirstOrDefault(x => x != null && string.Equals((x.Plane ?? string.Empty).Trim(), plane.Key.Trim(), StringComparison.OrdinalIgnoreCase));
+                    if (input != null)
+                    {
+                        if (english == null && (DcsCommandNames.IsRawTitle(input.Title, item.ID) || DcsCommandNames.HasLocalizationKey(input.Cat)))
+                            english = InternalDataManagement.DcsEnglishNames();
+                        title = DcsCommandNames.Resolve(input.Title, item.ID, english);
+                        category = DcsCommandNames.ResolveCategory(input.Cat, english);
+                    }
+                }
+                else
+                {
+                    OtherGameInput input = (item.OtherInputs ?? new OtherGameInput[0]).FirstOrDefault(x => x != null && string.Equals((x.Plane ?? string.Empty).Trim(), plane.Key.Trim(), StringComparison.OrdinalIgnoreCase));
+                    if (input != null && !string.IsNullOrWhiteSpace(input.Title) && !string.Equals(input.Title.Trim(), (item.ID ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        title = input.Title.Trim();
+                        category = input.Category;
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(title))
+                {
+                    itemDto.StoredTitles[plane.Key] = title;
+                    itemDto.StoredCategories[plane.Key] = (category ?? string.Empty).Trim();
+                }
+            }
+        }
+
+        private static string OneLine(string value)
+        {
+            return (value ?? string.Empty).Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim();
         }
 
         public static EngineBindsDocument ExportBinds()

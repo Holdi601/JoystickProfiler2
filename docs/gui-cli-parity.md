@@ -65,7 +65,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `games paths`, `<game> paths` | Settings: "Command lists (DB) and game paths" expander; Expert import **Detect** | EXPERT | The paths are used automatically. |
 | `games integrations` | Used automatically for the Start cards; Expert import **Load Games** | FULL | |
 | `games support` | Start: **Supported games** next to "Your games" (the page opens in the browser) | FULL | `--markdown` / `--notes` are for the maintainer's page (tools/game_support.ps1). |
-| `starcitizen list-devices` | Expert import **Refresh SC** | EXPERT | |
+| `starcitizen list-devices` | Expert import **Refresh Star Citizen** | EXPERT | |
 
 ## Game command lists (DB)
 

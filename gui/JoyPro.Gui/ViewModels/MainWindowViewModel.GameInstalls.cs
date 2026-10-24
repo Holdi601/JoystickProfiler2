@@ -130,10 +130,15 @@ public sealed partial class MainWindowViewModel
             {
                 foreach (JsonElement game in games.EnumerateArray())
                 {
-                    items.Add(new GameInstallItem(ReadJsonString(game, "GameId"), ReadJsonString(game, "Name"), ReadJsonBool(game, "Installed"),
+                    items.Add(new GameInstallItem(ReadJsonString(game, "GameId"), DisplayText.GameName(ReadJsonString(game, "GameId"), ReadJsonString(game, "Name")), ReadJsonBool(game, "Installed"),
                         ReadJsonString(game, "InstallPath"), ReadJsonString(game, "Source"), ReadJsonBool(game, "Overridden"), ReadJsonBool(game, "MarkerFound"),
                         ReadJsonString(game, "Note"), ReadStringArray(game, "ConfigPaths"), ReadJsonBool(game, "Disabled"), ReadStringArray(game, "Markers"),
-                        ReadJsonBool(game, "ConfigOverridden") ? ReadJsonString(game, "ConfigOverride") : string.Empty, ReadJsonBool(game, "ConfigInInstallation")));
+                        ReadJsonBool(game, "ConfigOverridden") ? ReadJsonString(game, "ConfigOverride") : string.Empty, ReadJsonBool(game, "ConfigInInstallation"))
+                    {
+                        // "games installs set" and older engines do not count: -1 (nothing is left out for it).
+                        Actions = game.TryGetProperty("Actions", out JsonElement actions) && actions.ValueKind == JsonValueKind.Number && actions.TryGetInt32(out int n) ? n : -1,
+                        ActionsNote = ReadJsonString(game, "ActionsNote")
+                    });
                 }
             }
         }
@@ -152,6 +157,11 @@ public sealed partial class MainWindowViewModel
             if (old != null)
             {
                 item.Cover = old.Cover;
+                if (item.Actions < 0)
+                {
+                    item.Actions = old.Actions;
+                    item.ActionsNote = old.ActionsNote;
+                }
                 GameInstalls.Remove(old);
             }
             GameInstalls.Insert(index, item);

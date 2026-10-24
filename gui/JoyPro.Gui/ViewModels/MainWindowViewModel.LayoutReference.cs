@@ -223,6 +223,12 @@ public sealed partial class MainWindowViewModel
         // The grip picked for a base is kept: the Layout page shows it next time, the device cards show it.
         reference.GripChosen += (_, grip) => OnReferenceGripChosen(reference.DeviceName, grip);
         reference.DeviceChosen += (_, choice) => OnReferenceDeviceChosen(reference.DeviceName, choice);
+        // A shared layout with a page of several views was imported: the page's button says so.
+        reference.MultiViewImported += (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasMultiViewPage));
+            OnPropertyChanged(nameof(MultiViewButtonLabel));
+        };
     }
 
     // The user said what a device is ("Which one is it?"): kept per device like a grip.
@@ -371,6 +377,7 @@ public sealed partial class MainWindowViewModel
     partial void OnLayoutShowsLayoutFileChanged(bool value)
     {
         OnPropertyChanged(nameof(LayoutShowsReference));
+        NotifyLayoutVariantCredit();
         NotifyCallouts();
         ClearLayoutUndo();
         NotifyWorkspacePicture();
@@ -404,8 +411,14 @@ public sealed partial class MainWindowViewModel
             // this session); a layout the engine generated (its drawing, a placeholder) only feeds the cheat sheets.
             bool ownLayout = layoutHasTextStyle || (SelectedLayoutSuggestion != null && PrefersLayoutFile(SelectedLayoutSuggestion)) ||
                              savedLayoutDevices.Contains(layoutEditorContextDevice ?? string.Empty);
-            if (ownLayout && !string.IsNullOrWhiteSpace(LayoutEditorSourcePath) && (LayoutEditorPreviewImage != null || LayoutEditorMarkers.Count > 0))
+            // A 2D layout picked for the device is its own entry of the strip (below), not "Your layout".
+            bool variantFile = LayoutVariantStore.IsVariantCopy(LayoutEditorSourcePath) ||
+                               (VariantLayoutOf(ResolveLayoutEditorContextDevice()) is { } picked && string.Equals(NormalizeUiPath(picked), NormalizeUiPath(LayoutEditorSourcePath), StringComparison.OrdinalIgnoreCase));
+            if (ownLayout && !variantFile && !string.IsNullOrWhiteSpace(LayoutEditorSourcePath) && (LayoutEditorPreviewImage != null || LayoutEditorMarkers.Count > 0))
                 WorkspacePictures.Insert(0, new WorkspacePictureChoice { Title = layoutHasTextStyle ? T("Your layout") : T("Layout file: {0}", LayoutWorkspaceTemplateName), IsLayoutFile = true });
+            // The model's 2D layouts (cheat sheets with boxes the bound commands are written into).
+            foreach (WorkspacePictureChoice variant in VariantPictureChoices())
+                WorkspacePictures.Add(variant);
         }
         finally
         {
@@ -420,8 +433,10 @@ public sealed partial class MainWindowViewModel
         syncingWorkspacePicture = true;
         try
         {
+            string variantId = ShownVariantId();
             SelectedWorkspacePicture = LayoutShowsLayoutFile
-                ? WorkspacePictures.FirstOrDefault(p => p.IsLayoutFile)
+                ? (variantId.Length > 0 ? WorkspacePictures.FirstOrDefault(p => p.Variant != null && string.Equals(p.Variant.Id, variantId, StringComparison.OrdinalIgnoreCase)) : null)
+                  ?? WorkspacePictures.FirstOrDefault(p => p.IsLayoutFile)
                 : WorkspacePictures.FirstOrDefault(p => p.Reference != null && ReferenceEquals(p.Reference, deviceReference?.SelectedPicture))
                   ?? WorkspacePictures.FirstOrDefault(p => p.Reference != null && p.Reference.Kind == deviceReference?.PictureKind);
         }
@@ -449,11 +464,21 @@ public sealed partial class MainWindowViewModel
     {
         if (syncingWorkspacePicture || value == null)
             return;
+        if (value.Variant != null)
+        {
+            if (!string.Equals(ShownVariantId(), value.Variant.Id, StringComparison.OrdinalIgnoreCase))
+                _ = UseLayoutVariantAsync(value.Variant);
+            return;
+        }
         if (value.IsLayoutFile)
         {
             LayoutShowsLayoutFile = true;
             return;
         }
+        // A picture of the reference instead of the device's 2D layout: the device gets its earlier layout back.
+        string device = ResolveLayoutEditorContextDevice();
+        if (device.Length > 0 && VariantLayoutOf(device) != null)
+            _ = ForgetLayoutVariantAsync(device);
         LayoutShowsLayoutFile = false;
         if (deviceReference != null && value.Reference != null && !ReferenceEquals(deviceReference.SelectedPicture, value.Reference))
             deviceReference.SelectedPicture = value.Reference;
@@ -553,12 +578,20 @@ public sealed partial class MainWindowViewModel
             previous?.Dispose();
             LayoutEditorSourcePath = string.Empty;
             LayoutEditorOutputPath = string.Empty;
-            if (TryResolveRememberedLayoutPathForDevice(wanted, out string path) && File.Exists(path))
+            // The 2D layout picked for the device (kept over restarts) is its layout.
+            string? variantLayout = VariantLayoutOf(wanted);
+            if (variantLayout != null)
+            {
+                savedLayoutDevices.Add(wanted);
+                LayoutEditorSourcePath = variantLayout;
+                await LoadLayoutEditorSourceAsync();
+            }
+            else if (TryResolveRememberedLayoutPathForDevice(wanted, out string path) && File.Exists(path))
             {
                 LayoutEditorSourcePath = path;
                 await LoadLayoutEditorSourceAsync();
             }
-            LayoutShowsLayoutFile = false;
+            LayoutShowsLayoutFile = variantLayout != null;
             ClearLayoutUndo();
         }
         await ShowDeviceReferenceForAsync(wanted);
@@ -659,8 +692,21 @@ public sealed partial class MainWindowViewModel
         LayoutShowsLayoutFile = false;
         LayoutCanvasMode = DeviceCanvasMode.EditMarkers;
         deviceReference.OpenAssistantCommand.Execute(null);
+        // Every placement of the assistant (press and click, Now place, a dropped chip) is undone with the page's Undo too.
+        if (deviceReference.Assistant != null)
+            deviceReference.Assistant.BeforePlacement = description => PushLayoutUndo(description);
         OnPropertyChanged(nameof(HasReferenceAssistant));
         OnPropertyChanged(nameof(ShowWorkspaceLabel));
+    }
+
+    // A chip of an unplaced input dropped on the picture (Layout page, marker assistant open).
+    [RelayCommand]
+    private void LayoutPartDropped(DevicePartDrop? drop)
+    {
+        if (drop == null || !LayoutShowsReference || deviceReference == null)
+            return;
+        if (deviceReference.DropAssistantPart(drop.PartId, drop.X, drop.Y))
+            OnPropertyChanged(nameof(WorkspaceHasUnsavedChanges));
     }
 
     [RelayCommand]
@@ -679,10 +725,15 @@ public sealed partial class WorkspacePictureChoice : ObservableObject
     public string Title { get; init; } = string.Empty;
     public ReferencePictureOption? Reference { get; init; }
     public bool IsLayoutFile { get; init; }
+    // A 2D layout of the model (DB\DeviceLayouts2D): picking it makes it the device's layout.
+    public JoyPro.DeviceReference.LayoutVariant? Variant { get; init; }
 
     [ObservableProperty] private bool isSelected;
 
-    public string Tip => IsLayoutFile ? T("Your layout file (the cheat sheets use it)")
+    public string Tip => Variant != null
+        ? Variant.Credit.Length > 0 ? T("A 2D cheat sheet made by {0}: your bound commands are written into its boxes; the cheat sheets print it", Variant.Credit)
+          : T("A 2D cheat sheet: your bound commands are written into its boxes; the cheat sheets print it")
+        : IsLayoutFile ? T("Your layout file (the cheat sheets use it)")
         : Reference?.Kind switch
         {
             "user" => "Your photo of the device",

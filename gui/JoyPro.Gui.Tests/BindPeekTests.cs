@@ -22,8 +22,11 @@ public sealed class BindPeekTests
             await vm.RefreshBindsCommand.ExecuteAsync(null);
             vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Flare");
             await RelationBuilderTests.WaitForAsync(() => vm.HasBindPeekActions);
+            // The peek reads the text lines of "relations show" (the engine answers JSON without --text: the real
+            // engine's peek was empty).
+            Assert.All(fake.Calls.Where(c => AxisTuningTests.Seq(c, "relations", "show")), c => Assert.Contains("--text", c));
             BindPeekGroup dcs = Assert.Single(vm.BindPeekGroups);
-            Assert.Equal("DCS (1)", dcs.Header);
+            Assert.Equal("DCS World (1)", dcs.Header);
             BindPeekAction action = Assert.Single(dcs.Actions);
             Assert.Equal("1 aircraft", action.PlanesText);
             Assert.Equal("F-16C_50", action.PlaneNames);
@@ -44,6 +47,37 @@ public sealed class BindPeekTests
             await vm.OpenBindPeekInRelationsCommand.ExecuteAsync(null);
             Assert.Equal(UiStage.Relations, vm.CurrentStage);
             Assert.Equal("Flare", vm.SelectedRelation?.Name);
+        }
+        finally
+        {
+            await RelationBuilderTests.SettleAllAsync();
+        }
+    }
+
+    // An action of another game that the profile stored without a title shows its title in the game (as the relation
+    // editor does), not its id ("elevator").
+    [Fact]
+    public async Task OtherGamesAction_WithoutStoredTitle_ShowsItsGameTitle()
+    {
+        BuilderFakeEngine fake = new();
+        fake.AddElevatorRelation();
+        fake.AircraftJson = "{\"Relation\":\"Elevator\",\"Nodes\":[{\"Game\":\"DCS\",\"Id\":\"a2001cdnil\",\"Title\":\"Pitch\",\"Aircraft\":[]}," +
+                            "{\"Game\":\"WarThunder\",\"Id\":\"elevator\",\"Title\":\"Pitch axis\",\"Aircraft\":[]}]}";
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake, "bind-peek-titles.pr0file");
+        try
+        {
+            vm.CurrentStage = UiStage.Binds;
+            await vm.RefreshBindsCommand.ExecuteAsync(null);
+            vm.IsBindPeekOpen = true;
+            await vm.LoadBindPeekAsync("Elevator");
+            BindPeekAction warThunder = Assert.Single(vm.BindPeekGroups.Single(g => g.Game == "WarThunder").Actions);
+            Assert.Equal("Pitch axis", warThunder.Title);
+            Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "aircraft", "Elevator"));
+
+            // A relation of DCS actions only asks nothing more.
+            int before = fake.Calls.Count(c => AxisTuningTests.Seq(c, "relations", "aircraft"));
+            await vm.LoadBindPeekAsync("Flare");
+            Assert.Equal(before, fake.Calls.Count(c => AxisTuningTests.Seq(c, "relations", "aircraft")));
         }
         finally
         {

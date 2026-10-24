@@ -15,8 +15,43 @@ namespace JoyPro.Engine.Games
     // devices to slots by DirectInput instance GUID once the user assigned them in the game. JoyPro only writes the
     // space-flight controls and only to pinned slots; the file is edited as text so every other line stays as it was
     // (see docs/games/x4.md).
-    internal sealed class X4Integration : IGameIntegration, IGameSettingsExport, IGameSettingsReader, IGameSettingsSource, IGameCatalogRefreshFiles
+    internal sealed class X4Integration : IGameIntegration, IGameSettingsExport, IGameSettingsReader, IGameSettingsSource, IGameCatalogRefreshFiles, IGameCatalogTidy
     {
+        // The game's menu names of the steering controls say neither yaw nor roll: X4's primary steering axis is yaw
+        // (left-right) and its secondary axis roll unless adaptive steering is on (the game's own tooltips, text page
+        // 1026 ids 2629/2630). The game's name stays in brackets so it can still be found in the game's menu.
+        private static readonly Dictionary<string, string> ReadableTitles = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "INPUT_RANGE_STEERING_PRIMARY", "Yaw (Primary Steering Axis)" },
+            { "INPUT_RANGE_STEERING_SECONDARY", "Roll (Secondary Steering Axis)" },
+            { "INPUT_RANGE_STEERING_PITCH", "Pitch (Steer Up-Down)" },
+            { "INPUT_RANGE_STRAFE_LEFT_RIGHT", "Strafe Left-Right (lateral thrust)" },
+            { "INPUT_RANGE_STRAFE_UP_DOWN", "Strafe Up-Down (vertical thrust)" },
+            { "INPUT_STATE_STEER_UP", "Pitch Up (Steer Up)" },
+            { "INPUT_STATE_STEER_DOWN", "Pitch Down (Steer Down)" },
+            { "INPUT_STATE_STEER_LEFT", "Yaw Left (Steer Left)" },
+            { "INPUT_STATE_STEER_RIGHT", "Yaw Right (Steer Right)" },
+        };
+
+        // "space/Steering: Analog; function 16; also in ..." (lists built by older versions) -> "Steering: Analog": the menu
+        // group only; the builder's notes were split into categories of their own by the catalog ("function 16").
+        public void TidyCatalog(GameCatalog catalog)
+        {
+            foreach (GameAction action in catalog.Actions)
+            {
+                action.Category = TidyCategory(action.Category);
+                string title;
+                if (ReadableTitles.TryGetValue(action.Id, out title))
+                    action.Title = title;
+            }
+        }
+
+        internal static string TidyCategory(string category)
+        {
+            string group = (category ?? string.Empty).Split(';')[0].Trim();
+            return group.StartsWith("space/", StringComparison.OrdinalIgnoreCase) ? group.Substring("space/".Length).Trim() : group;
+        }
+
         private const int MaxSlots = 8;
         private const string ThrottleRange = "INPUT_RANGE_THROTTLE";
         private const int MaxButtons = 64;
@@ -716,7 +751,8 @@ namespace JoyPro.Engine.Games
             int added = 0;
             foreach (X4CatalogSource.Row row in flight.Where(r => catalog.Find(r.Id) == null))
             {
-                catalog.Add(new GameAction { Id = row.Id, Title = row.Title.Replace('\t', ' '), IsAxis = row.IsAxis, Category = row.Category.Replace('\t', ' ') });
+                string readable;
+                catalog.Add(new GameAction { Id = row.Id, Title = ReadableTitles.TryGetValue(row.Id, out readable) ? readable : row.Title.Replace('\t', ' '), IsAxis = row.IsAxis, Category = TidyCategory(row.Category.Replace('\t', ' ')) });
                 added++;
             }
 

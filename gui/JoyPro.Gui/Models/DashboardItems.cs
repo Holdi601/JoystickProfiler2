@@ -135,7 +135,8 @@ public static class DisplayText
                (mods.Length > 0 ? T("Modifiers: hold {0}", mods) : T("No modifier"));
     }
 
-    // A game id as people say it (the badge's short name: "WarThunder" -> "War Thunder").
+    // A game id as people read it, the whole name ("WarThunder" -> "War Thunder", "ProjectWingman" -> "Project Wingman",
+    // "FalconBMS" -> "Falcon BMS"; no "PW" or "BMS" chips).
     public static string Game(string gameId)
     {
         string id = (gameId ?? string.Empty).Trim();
@@ -143,13 +144,21 @@ public static class DisplayText
             return string.Empty;
         try
         {
-            string name = Views.Controls.GameBadge.StyleOf(id, string.Empty).Short;
+            string full = Views.Controls.GameBadge.FullName(id);
+            string name = full.Length > 0 ? full : Views.Controls.GameBadge.StyleOf(id, string.Empty).Short;
             return string.IsNullOrWhiteSpace(name) ? id : name.Replace('\n', ' ');
         }
         catch (Exception)
         {
             return id;
         }
+    }
+
+    // The one name of a game JoyPro knows; a game it does not know keeps the engine's name.
+    public static string GameName(string gameId, string engineName)
+    {
+        string known = Views.Controls.GameBadge.FullName((gameId ?? string.Empty).Trim());
+        return known.Length > 0 ? known : (engineName ?? string.Empty).Trim();
     }
 
     // "a, b, c" -> [a, b, c] without the placeholders the engine prints for none.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -1534,6 +1534,13 @@ namespace JoyPro.Engine
         }
 
         private static Dictionary<string, string> connectedProducts;
+
+        // The engine server between two commands: the devices are enumerated again.
+        internal static void ResetConnectedDevices()
+        {
+            connectedProducts = null;
+            connectedInOrder = new List<KeyValuePair<string, string>>();
+        }
         // The same pairs (instance name, product name) in DirectInput order: two devices of one product are told apart by it.
         private static List<KeyValuePair<string, string>> connectedInOrder = new List<KeyValuePair<string, string>>();
 
@@ -1737,9 +1744,13 @@ namespace JoyPro.Engine
                     input = NormalizePath(discovered.PreferredInstallPath);
             }
 
-            string profileDir = ResolveProfileDirectoryCandidate(source, warnings);
+            // An export (createIfMissing) writes where its path names; the source (the import's folder) only when no path
+            // is given. Source first there wrote into the game's live profile while --path named a copy.
+            string first = createIfMissing ? input : source;
+            string second = createIfMissing ? source : input;
+            string profileDir = ResolveProfileDirectoryCandidate(first, warnings);
             if (string.IsNullOrWhiteSpace(profileDir))
-                profileDir = ResolveProfileDirectoryCandidate(input, warnings);
+                profileDir = ResolveProfileDirectoryCandidate(second, warnings);
 
             if (string.IsNullOrWhiteSpace(profileDir))
             {

@@ -3,7 +3,13 @@
 JoyPro checks which of its games are installed, and where. A game that is neither found nor set by you is blocked:
 
 - **Commands that refuse it:** import, scan, export, DB refresh, the DCS stick-defaults commands and restoring a backup. The engine refuses them with a message saying how to set the folder.
-- **In the GUI:** its buttons are off. The registry game lists show "(not installed)". The export page has no tile for it and names it in a hint.
+- **In the GUI:** its buttons are off (their tooltips and the card say why). The registry game lists show "(not installed)". The export page has no tile for it and names it in a hint.
+
+`engine games installs` also counts the actions JoyPro knows of each game (`Actions`: its command list, or JoyPro's own
+table for ACE COMBAT 7/8 and Battlefield 6/2042; DCS: the aircraft lists) and says why there are none
+(`ActionsNote`). A game with no action anywhere that is not installed (nothing to build its list from) is left off the
+Start page's cards; Settings > Games keeps it with the reason. An installed game without a list stays on the cards:
+Update builds the list from its files.
 
 Paths, catalogs, lists and everything that only changes the profile keep working.
 

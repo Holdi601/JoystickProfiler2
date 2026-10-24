@@ -76,6 +76,47 @@ public sealed class AiAssistRenderTests
                 foreach ((int w, int h) in new[] { (2267, 1250), (1280, 800) })
                     UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "fill-with-ai-" + w + ".png"));
 
+                // Every game: a relation for another game's function, and a question about a game's action.
+                vm.AiPlanText = "make a relation for landing lights in X-Plane 12";
+                AvaloniaRenderThread.Wait(vm.AskAiPlanCommand.ExecuteAsync(null));
+                AvaloniaRenderThread.Pump();
+                foreach ((int w, int h) in new[] { (2267, 1250), (1280, 800) })
+                    UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "manage-games-" + w + ".png"));
+                vm.AiPlanText = "what does Landing gear down do in X-Plane 12";
+                AvaloniaRenderThread.Wait(vm.AskAiPlanCommand.ExecuteAsync(null));
+                AvaloniaRenderThread.Pump();
+                UiDesignRenderTests.RenderWindow(vm, 2267, 1250, Path.Combine(outDir, "manage-question-2267.png"));
+                vm.DiscardAiPlanCommand.Execute(null);
+                vm.CloseAiPlanCommand.Execute(null);
+
+                // The JoyPro assistant (local AI off: its offline brain) on Star Citizen and Elite Dangerous.
+                vm.LlmEnabled = false;
+                vm.OpenAssistantCommand.Execute(null);
+                vm.AssistantInput = "put the landing gear of sc into Landing Gear";
+                AvaloniaRenderThread.Wait(vm.AskAssistantAsync());
+                vm.AssistantInput = "what is boost in Elite Dangerous";
+                AvaloniaRenderThread.Wait(vm.AskAssistantAsync());
+                AvaloniaRenderThread.Pump();
+                foreach ((int w, int h) in new[] { (2267, 1250), (1280, 800) })
+                    UiDesignRenderTests.RenderWindow(vm, w, h, Path.Combine(outDir, "assistant-games-" + w + ".png"));
+                vm.LlmEnabled = true;
+
+                // While a request runs (the server's BusyPid is a living process) the chip says so and counts nothing down.
+                File.WriteAllText(state, "{\"Pid\":" + server.Id.ToString(CultureInfo.InvariantCulture) + ",\"Model\":\"Qwen3 8B (Q4_K_M, non-thinking)\",\"StartedUtc\":\"" +
+                    server.StartTime.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture) + "\",\"LastUsedUtc\":\"" + DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture) +
+                    "\",\"BusyPid\":" + Environment.ProcessId.ToString(CultureInfo.InvariantCulture) + "}");
+                AvaloniaRenderThread.Wait(vm.PollLlmServerAsync());
+                AvaloniaRenderThread.Pump();
+                Assert.Contains("answering", vm.LlmServerChipText);
+                Assert.DoesNotContain("stops in", vm.LlmServerChipText);
+                UiDesignRenderTests.RenderWindow(vm, 1280, 800, Path.Combine(outDir, "assistant-busy-1280.png"));
+                File.WriteAllText(state, "{\"Pid\":" + server.Id.ToString(CultureInfo.InvariantCulture) + ",\"Model\":\"Qwen3 8B (Q4_K_M, non-thinking)\",\"StartedUtc\":\"" +
+                    server.StartTime.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture) + "\",\"LastUsedUtc\":\"" + DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture) + "\",\"BusyPid\":0}");
+                AvaloniaRenderThread.Wait(vm.PollLlmServerAsync());
+                AvaloniaRenderThread.Pump();
+                // Idle again: the default idle time of 30 minutes counts down from the last request.
+                Assert.Matches(@"stops in (29|30):", vm.LlmServerChipText);
+
                 vm.ShowEditWithAiCommand.Execute(null);
                 vm.AiPlanText = "rename it to Brakes in";
                 AvaloniaRenderThread.Wait(vm.AskAiPlanCommand.ExecuteAsync(null));

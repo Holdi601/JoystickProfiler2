@@ -55,10 +55,17 @@ public sealed class HeaderPointerTests
         AvaloniaRenderThread.Pump();
     }
 
+    // These tests need a real, shown window (real pointer input and the composed scene). A test window must never
+    // appear on the user's desktop (it did, although placed far off the screen), so they run only with
+    // JOYPRO_TEST_WINDOWS=1; everything else renders the page in a hidden root (HiddenWindow).
+    internal static bool WindowsAllowed => Environment.GetEnvironmentVariable("JOYPRO_TEST_WINDOWS") == "1";
+
     // A real window far off the screen, never activated (no focus taken from other programs), so that the compositor
-    // has a scene and hit tests the way the user's window does.
+    // has a scene and hit tests the way the user's window does. Only with WindowsAllowed.
     internal static T OffscreenWindow<T>(T window, Size size) where T : Window
     {
+        if (!WindowsAllowed)
+            throw new InvalidOperationException("A shown test window needs JOYPRO_TEST_WINDOWS=1 (use HiddenWindow).");
         window.Width = size.Width;
         window.Height = size.Height;
         window.ShowActivated = false;
@@ -144,6 +151,8 @@ public sealed class HeaderPointerTests
     [Fact]
     public void SettingsTabs_ClickTogglesDoubleClickShowsOnlyThatSection_AndTheHandleClickToggles()
     {
+        if (!WindowsAllowed)
+            return;
         AvaloniaRenderThread.Run(() =>
         {
             MainWindowViewModel vm = new(new DescribeGroupFakeEngine(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
@@ -201,7 +210,7 @@ public sealed class HeaderPointerTests
     [Fact]
     public void RenderLocalAiSettingsComponentsAndManagePanel()
     {
-        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("JOYPRO_GUI_PARITY_PREVIEW")))
+        if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("JOYPRO_GUI_PARITY_PREVIEW")) || !WindowsAllowed)
             return;
         AvaloniaRenderThread.Run(() =>
         {
@@ -245,6 +254,8 @@ public sealed class HeaderPointerTests
     [Fact]
     public void SettingsSections_PressAndReleaseOnTheChevronAndTheEmptyHeaderRowToggle()
     {
+        if (!WindowsAllowed)
+            return;
         AvaloniaRenderThread.Run(() =>
         {
             MainWindowViewModel vm = new(new DescribeGroupFakeEngine(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false)

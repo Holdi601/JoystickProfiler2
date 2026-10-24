@@ -260,7 +260,23 @@ internal static class AvaloniaRenderThread
         using CancellationTokenSource done = new();
         task.ContinueWith(_ => done.Cancel(), System.Threading.Tasks.TaskScheduler.Default);
         if (!task.IsCompleted)
-            Avalonia.Threading.Dispatcher.UIThread.MainLoop(done.Token);
+        {
+            try
+            {
+                Avalonia.Threading.Dispatcher.UIThread.MainLoop(done.Token);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                // A view model test on another thread created the dispatcher before this thread set up the Win32
+                // platform (whole-suite runs): that dispatcher has no main loop. Running its jobs until the task ends
+                // does the same.
+                while (!task.IsCompleted)
+                {
+                    Pump();
+                    Thread.Sleep(5);
+                }
+            }
+        }
         return task.GetAwaiter().GetResult();
     }
 

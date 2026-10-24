@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -52,6 +52,18 @@ namespace JoyPro.Engine
             {
                 result.Errors.Add("Could not create output input path: " + ex.Message);
                 return result;
+            }
+
+            // The input files the export merges with (and the state record after it reads): read once, several at once.
+            try
+            {
+                RunFileCache.Prefetch(Directory.EnumerateFiles(result.InputPath, "*", SearchOption.AllDirectories)
+                    .Where(f => f.EndsWith(".diff.lua", StringComparison.OrdinalIgnoreCase) || f.EndsWith(".jp", StringComparison.OrdinalIgnoreCase) ||
+                                string.Equals(Path.GetFileName(f), "modifiers.lua", StringComparison.OrdinalIgnoreCase)));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                // The export reads each file itself then (and reports what it cannot read).
             }
 
             ReportStatus(effectiveOptions, "Building export payloads from current profile.");
@@ -1077,7 +1089,7 @@ namespace JoyPro.Engine
         {
             try
             {
-                string text = File.ReadAllText(filePath);
+                string text = RunFileCache.ReadAllText(filePath);
                 DiffPayload payload = new DiffPayload();
                 ParseSectionIntoPayload(text, "axisDiffs", payload.Axis);
                 ParseSectionIntoPayload(text, "keyDiffs", payload.Keys);
@@ -1154,13 +1166,13 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(fileText, "ffDiffs", out ffBlock))
                 return;
 
-            bool hasInvertX = Regex.IsMatch(ffBlock, "\\[\"invertX\"\\]\\s*=", RegexOptions.IgnoreCase);
-            bool hasInvertY = Regex.IsMatch(ffBlock, "\\[\"invertY\"\\]\\s*=", RegexOptions.IgnoreCase);
-            bool hasSwapAxes = Regex.IsMatch(ffBlock, "\\[\"swapAxes\"\\]\\s*=", RegexOptions.IgnoreCase);
-            bool hasSwapAxis = Regex.IsMatch(ffBlock, "\\[\"swapAxis\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasInvertX = CachedRegex.IsMatch(ffBlock, "\\[\"invertX\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasInvertY = CachedRegex.IsMatch(ffBlock, "\\[\"invertY\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasSwapAxes = CachedRegex.IsMatch(ffBlock, "\\[\"swapAxes\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasSwapAxis = CachedRegex.IsMatch(ffBlock, "\\[\"swapAxis\"\\]\\s*=", RegexOptions.IgnoreCase);
 
             // DCS's other force feedback settings of the device (trimmer, shake, ignore, ...) are kept as written.
-            foreach (Match other in Regex.Matches(ffBlock, "\\[\"(?<key>[A-Za-z_][A-Za-z0-9_]*)\"\\]\\s*=\\s*(?<value>[^,\\r\\n{}]+?)\\s*,"))
+            foreach (Match other in CachedRegex.Matches(ffBlock, "\\[\"(?<key>[A-Za-z_][A-Za-z0-9_]*)\"\\]\\s*=\\s*(?<value>[^,\\r\\n{}]+?)\\s*,"))
             {
                 string key = other.Groups["key"].Value;
                 if (FfbFlagKeys.Contains(key) || payload.Ffb.Other.ContainsKey(key))
@@ -1366,7 +1378,7 @@ namespace JoyPro.Engine
             {
                 Directory.CreateDirectory(outputDirectory);
                 GameBackups.Protect(filePath, result.Warnings);
-                File.WriteAllText(filePath, RenderDiffLua(payload, includeBackupMetadata), NoBom);
+                RunFileCache.WriteAllText(filePath, RenderDiffLua(payload, includeBackupMetadata));
                 result.FilesWritten++;
                 if (includeBackupMetadata)
                     result.BackupFilesWritten++;
@@ -1418,7 +1430,7 @@ namespace JoyPro.Engine
             Dictionary<string, ModifierPayload> parsed = new Dictionary<string, ModifierPayload>(StringComparer.OrdinalIgnoreCase);
             try
             {
-                string text = File.ReadAllText(filePath);
+                string text = RunFileCache.ReadAllText(filePath);
                 string modifiersBlock;
                 if (!TryExtractModifiersBlock(text, out modifiersBlock))
                     return parsed;
@@ -1457,7 +1469,7 @@ namespace JoyPro.Engine
             if (string.IsNullOrWhiteSpace(text))
                 return false;
 
-            Match match = Regex.Match(text, "local\\s+modifiers\\s*=\\s*\\{", RegexOptions.IgnoreCase);
+            Match match = CachedRegex.Match(text, "local\\s+modifiers\\s*=\\s*\\{", RegexOptions.IgnoreCase);
             if (!match.Success)
                 return false;
 
@@ -1549,7 +1561,7 @@ namespace JoyPro.Engine
             {
                 Directory.CreateDirectory(outputDirectory);
                 GameBackups.Protect(filePath, result.Warnings);
-                File.WriteAllText(filePath, RenderModifiersLua(modifiers), NoBom);
+                RunFileCache.WriteAllText(filePath, RenderModifiersLua(modifiers));
                 result.FilesWritten++;
                 result.WrittenFiles.Add(filePath);
             }
@@ -2369,7 +2381,7 @@ namespace JoyPro.Engine
                 return string.Empty;
 
             string pattern = "\\[\"" + Regex.Escape(fieldName) + "\"\\]\\s*=\\s*\"(?<value>(?:\\\\.|[^\"])*)\"";
-            Match match = Regex.Match(text, pattern);
+            Match match = CachedRegex.Match(text, pattern);
             if (!match.Success)
                 return string.Empty;
             return UnescapeLuaString(match.Groups["value"].Value ?? string.Empty);
@@ -2382,7 +2394,7 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(text, fieldName, out block))
                 return values;
 
-            MatchCollection matches = Regex.Matches(
+            MatchCollection matches = CachedRegex.Matches(
                 block,
                 "\\[\\s*(?:\\d+|\"[^\"]+\")\\s*\\]\\s*=\\s*\"(?<value>(?:\\\\.|[^\"])*)\"");
             for (int i = 0; i < matches.Count; i++)
@@ -2402,7 +2414,7 @@ namespace JoyPro.Engine
                 return defaultValue;
 
             string pattern = "\\[\"" + Regex.Escape(fieldName) + "\"\\]\\s*=\\s*(?<value>true|false|1|0)";
-            Match match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            Match match = CachedRegex.Match(text, pattern, RegexOptions.IgnoreCase);
             if (!match.Success)
                 return defaultValue;
 
@@ -2425,7 +2437,7 @@ namespace JoyPro.Engine
                 return false;
 
             string pattern = "\\[\"" + Regex.Escape(fieldName) + "\"\\]\\s*=\\s*(?<value>-?\\d+(?:\\.\\d+)?)";
-            Match match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            Match match = CachedRegex.Match(text, pattern, RegexOptions.IgnoreCase);
             if (!match.Success)
                 return false;
 
@@ -2443,7 +2455,7 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(text, fieldName, out block))
                 return values;
 
-            MatchCollection matches = Regex.Matches(
+            MatchCollection matches = CachedRegex.Matches(
                 block,
                 "\\[\\s*(?:\\d+|\"[^\"]+\")\\s*\\]\\s*=\\s*(?<value>-?\\d+(?:\\.\\d+)?)",
                 RegexOptions.IgnoreCase);
@@ -2472,14 +2484,14 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(entryBlock, "filter", out filterBlock))
                 return;
 
-            bool hasInvert = Regex.IsMatch(filterBlock, "\\[\"invert\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasInvert = CachedRegex.IsMatch(filterBlock, "\\[\"invert\"\\]\\s*=", RegexOptions.IgnoreCase);
             if (hasInvert)
             {
                 entry.HasInverted = true;
                 entry.Inverted = ExtractNamedBool(filterBlock, "invert", Bind.Inverted_Default);
             }
 
-            bool hasSlider = Regex.IsMatch(filterBlock, "\\[\"slider\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasSlider = CachedRegex.IsMatch(filterBlock, "\\[\"slider\"\\]\\s*=", RegexOptions.IgnoreCase);
             if (hasSlider)
             {
                 entry.HasSlider = true;

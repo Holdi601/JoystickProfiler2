@@ -164,6 +164,12 @@ public sealed partial class UserJourneyTests
                             case "big-profile":
                                 RunBigProfile();
                                 break;
+                            case "titles":
+                                RunTitles();
+                                break;
+                            case "ids":
+                                RunIds();
+                                break;
                             case "settings-updates":
                                 RunSettingsUpdates();
                                 break;
@@ -531,6 +537,51 @@ public sealed partial class UserJourneyTests
                 });
                 Step("layout: reset undone", async () => await vm.UndoLayoutResetCommand.ExecuteAsync(null));
             }
+            // Placing by drag: the marker assistant's "Now place" and the chips of the inputs without a place; a chip
+            // dropped on the picture, then undone with the page's Undo.
+            if (vm!.LayoutSuggestions.Count > 0)
+            {
+                Step("layout: marker assistant, now place and chips", () =>
+                {
+                    vm.LayoutShowsLayoutFile = false;
+                    vm.OpenReferenceAssistantCommand.Execute(null);
+                    MarkerAssistantViewModel? assistant = vm.DeviceReference.Assistant;
+                    Note("assistant: " + (assistant == null ? "none" : assistant.NowPlaceText + "; chips " + assistant.UnplacedParts.Count));
+                    return Task.CompletedTask;
+                });
+                Step("layout: a chip dropped on the picture", () =>
+                {
+                    if (vm.DeviceReference.Assistant is { UnplacedParts.Count: > 0 } assistant)
+                    {
+                        ReferenceMarker part = assistant.UnplacedParts[0];
+                        vm.LayoutPartDroppedCommand.Execute(new DevicePartDrop(part.Id, vm.DeviceReference.PictureWidth / 2, vm.DeviceReference.PictureHeight / 2));
+                        Note("dropped " + part.Name + ": shown " + part.IsShown + "; undo " + vm.CanUndoLayoutEdit);
+                    }
+                    return Task.CompletedTask;
+                });
+                Step("layout: the drop undone, assistant closed", () =>
+                {
+                    vm.UndoLayoutEditCommand.Execute(null);
+                    vm.CloseReferenceAssistantCommand.Execute(null);
+                    return Task.CompletedTask;
+                });
+                // A 2D layout of the shown model (JoyPro 1's sheets, maogowzeg's sheets), then the earlier picture back.
+                WorkspacePictureChoice? sheet = vm.WorkspacePictures.FirstOrDefault(p => p.Variant != null);
+                Note("2D layouts of the shown model: " + string.Join(" | ", vm.WorkspacePictures.Where(p => p.Variant != null).Select(p => p.Title)));
+                if (sheet != null)
+                {
+                    Step("layout: 2D layout picked", async () =>
+                    {
+                        await vm.UseLayoutVariantAsync(sheet.Variant!);
+                        Note("2D layout: " + vm.LayoutEditorStatus + " | credit: " + vm.LayoutVariantCreditText);
+                    });
+                    Step("layout: earlier picture back", () =>
+                    {
+                        vm.SelectWorkspacePictureCommand.Execute(vm.WorkspacePictures.FirstOrDefault(p => p.Reference != null));
+                        return Task.CompletedTask;
+                    });
+                }
+            }
             // The 3D views are packs of JoyPro's releases: from the local release folder (tools\build_device_3d_packs.ps1),
             // offered for the connected devices plus a Warthog stick, downloaded, shown as the default view.
             string feed3d = Path.Combine(Environment.GetEnvironmentVariable("JOYPRO_RELEASE_DIR") ?? string.Empty, "device-3d");
@@ -587,6 +638,24 @@ public sealed partial class UserJourneyTests
                 extraRender: slug => RenderTall(slug, 3000));
             foreach ((string name, UiStage stage) in new[] { ("settings", UiStage.Settings), ("cockpits", UiStage.Cockpits), ("virtual joystick", UiStage.VirtualJoystick), ("ffb telemetry", UiStage.FfbTelemetry) })
                 Step(name + " page", () => { vm!.CurrentStage = stage; return Task.CompletedTask; });
+            // Settings > Pages in the bottom bar: Cockpits hidden, Layout first; Cockpits opened anyway shows while open.
+            Step("settings: pages in the bottom bar", () =>
+            {
+                vm!.CurrentStage = UiStage.Settings;
+                vm.FindSettingsSection("pages")!.IsExpanded = true;
+                vm.MoveSettingsSection(vm.FindSettingsSection("pages")!, 0);
+                vm.FindNavPage("cockpits")!.IsVisible = false;
+                vm.MoveNavPage(vm.FindNavPage("layout")!, 0);
+                Note("bar: " + string.Join(", ", vm.NavPages.Where(p => p.IsShownInBar).Select(p => p.Id)));
+                return Task.CompletedTask;
+            });
+            Step("settings: a hidden page opened shows while open", () => { vm!.CurrentStage = UiStage.Cockpits; return Task.CompletedTask; });
+            Step("settings: pages reset to default", () =>
+            {
+                vm!.ResetNavPagesCommand.Execute(null);
+                vm.CurrentStage = UiStage.Settings;
+                return Task.CompletedTask;
+            });
             // Cockpits with the pictures made from the user's games (JOYPRO_JOURNEY_PICTURES names the folder with the
             // games' picture folders DCS, XPlane12, as "engine cockpits pictures build --out <folder>" makes it): overview,
             // a game panel, the stick, then JoyPro's drawing of the panel.
@@ -1286,6 +1355,24 @@ public sealed partial class UserJourneyTests
                 await WaitForAsync(() => !vm.IsBusy, 30000);
                 Note("actions " + before + " -> " + vm.RelationNodes.Count + "; status: " + vm.StatusText + " / " + vm.CatalogStatus);
             });
+            // Report 2.2.17: "MSFS 2024 (1787 actions)" picked in the catalog listed no rows; X4's names.
+            foreach (string catalogGame in new[] { "MSFS2024", "X4", "StarCitizen", "EliteDangerous" })
+            {
+                Step("relations: catalog, pick " + catalogGame + " in the game picker", async () =>
+                {
+                    vm!.CatalogGame = vm.CatalogGames.FirstOrDefault(o => o.Game == catalogGame);
+                    await Task.Delay(100);
+                    await WaitForAsync(() => !vm.IsCatalogLoading, 60000);
+                    CatalogCategoryItem? first = vm.CatalogCategories.FirstOrDefault(c => c.IsVisible);
+                    if (first != null && !first.IsExpanded)
+                        vm.ToggleCatalogCategoryCommand.Execute(first);
+                    int visible = vm.CatalogCategories.Where(c => c.IsVisible).Sum(c => c.VisibleRows.Count);
+                    Note("catalog " + catalogGame + ": " + vm.CatalogGame?.Label + "; " + vm.CatalogStatus + "; rows " + vm.CatalogRowItems.Count + ", shown " + visible +
+                         "; categories: " + string.Join(", ", vm.CatalogCategories.Take(16).Select(c => c.Name + " (" + c.CountText + ")")));
+                    if (vm.CatalogRowItems.Count == 0 || visible == 0)
+                        Failures.Add("catalog " + catalogGame + " lists no rows: " + vm.CatalogStatus);
+                }, extraRender: slug => RenderTall(slug, 2400));
+            }
             Step("relations: x on an action asks first", async () =>
             {
                 ConfirmRequest? asked = null;

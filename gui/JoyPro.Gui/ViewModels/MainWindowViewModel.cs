@@ -22,6 +22,7 @@ using CommunityToolkit.Mvvm.Input;
 using JoyPro.Gui.Models;
 using JoyPro.Gui.Services;
 using JoyPro.Logging;
+using DcsCommandNames = JoyPro.Engine.DcsCommandNames;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -950,7 +951,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private LayoutSuggestionItem? selectedLayoutSuggestion;
 
     public ObservableCollection<RelationListItem> Relations { get; } = [];
-    public ObservableCollection<RelationNodeItem> RelationNodes { get; } = [];
+    public RangeObservableCollection<RelationNodeItem> RelationNodes { get; } = [];
     public ObservableCollection<string> RelationNodeGameOptions { get; } = [];
     public ObservableCollection<SelectableTagItem> RelationNodePlaneOptions { get; } = [];
     public ObservableCollection<DbNodeSearchResultItem> RelationNodeSearchResults { get; } = [];
@@ -1070,6 +1071,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
         ApplyLlmServerSnapshot(LlmServerSnapshot.Stopped);
         EnginePath = TryResolveEnginePath();
+        // The app's engine server reads the game lists while the app starts (EngineServerPool).
+        if (loadPersistedUiSettings && this.cliClient is EngineCliClient)
+            _ = EngineServerPool.PrewarmAsync(EnginePath);
         PrefillLayoutAutomationPaths();
         DcsSavedGamesPath = GuessSavedGamesDcsPath();
         DcsInstallPath = GuessDcsInstallPath();
@@ -1399,17 +1403,23 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // (both stay one click apart in the picture choice).
         if (layoutEditorContextDevice.Length > 0 && (otherDevice || deviceReference?.HasModel != true))
             _ = ShowDeviceReferenceForAsync(layoutEditorContextDevice);
+        // A 2D layout picked for this device (Layout page, kept over restarts) is its layout file.
+        string? variantLayout = layoutEditorContextDevice.Length > 0 ? VariantLayoutOf(layoutEditorContextDevice) : null;
+        if (variantLayout != null)
+            savedLayoutDevices.Add(layoutEditorContextDevice);
         if (otherDevice)
         {
             ClearLayoutUndo();
-            LayoutShowsLayoutFile = PrefersLayoutFile(value);
+            LayoutShowsLayoutFile = variantLayout != null || PrefersLayoutFile(value);
             // The page with several views belongs to the last device.
             if (IsMultiViewOpen)
                 CloseMultiView();
         }
-        RememberLayoutDeviceMapping(layoutEditorContextDevice, value.LayoutPath);
+        if (variantLayout == null)
+            RememberLayoutDeviceMapping(layoutEditorContextDevice, value.LayoutPath);
         string candidate = TryFindFirstExistingFile(
         [
+            variantLayout ?? string.Empty,
             value.LayoutPath,
             value.BackdropPath
         ]);
@@ -2832,7 +2842,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         await ShowRelationAsync(SelectedRelation.Name);
     }
 
-    private async Task ShowRelationAsync(string relationName)
+    internal async Task ShowRelationAsync(string relationName)
     {
         if (string.IsNullOrWhiteSpace(relationName))
             return;
@@ -2901,20 +2911,44 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     // Duplicates the open relation ("<name> (copy)") with its actions, aircraft, groups, tuning and bind, and opens the copy.
     // One engine call, so one undo step.
     [RelayCommand]
-    private async Task DuplicateSelectedRelationAsync()
+    private Task DuplicateSelectedRelationAsync() => DuplicateRelationCoreAsync(SelectedRelation, withBind: true);
+
+    // The same without the bind: the same actions for another input (the copy is not bound).
+    [RelayCommand]
+    private Task DuplicateSelectedRelationWithoutBindAsync() => DuplicateRelationCoreAsync(SelectedRelation, withBind: false);
+
+    // The relation card's context menu: the card that was right-clicked.
+    [RelayCommand]
+    private Task DuplicateRelationAsync(RelationListItem? relation) => DuplicateRelationCoreAsync(relation ?? SelectedRelation, withBind: true);
+
+    [RelayCommand]
+    private Task DuplicateRelationWithoutBindAsync(RelationListItem? relation) => DuplicateRelationCoreAsync(relation ?? SelectedRelation, withBind: false);
+
+    [RelayCommand]
+    private async Task DeleteRelationAsync(RelationListItem? relation)
     {
-        if (SelectedRelation == null)
+        if (relation != null && !ReferenceEquals(relation, SelectedRelation))
+            SelectedRelation = relation;
+        await DeleteSelectedRelationAsync();
+    }
+
+    private async Task DuplicateRelationCoreAsync(RelationListItem? relation, bool withBind)
+    {
+        if (relation == null)
         {
             StatusText = T("Select a relation first.");
             return;
         }
 
         HashSet<string> before = new(allRelations.Select(r => r.Name), StringComparer.OrdinalIgnoreCase);
+        List<string> args = ["relations", "mass", "duplicate", "--relation", relation.Name];
+        if (!withBind)
+            args.Add("--no-bind");
         EngineCommandResult? result = await RunEngineAsync(
-            ["relations", "mass", "duplicate", "--relation", SelectedRelation.Name],
+            args,
             includeProfile: true,
             mutatesProfile: true,
-            busyLabel: N("Duplicating relation..."));
+            busyLabel: withBind ? N("Duplicating relation...") : N("Duplicating relation without its bind..."));
 
         if (result?.ExitCode == 0)
         {
@@ -2924,7 +2958,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             if (created != null)
             {
                 SelectRelationByName(created);
-                StatusText = T("Duplicated as \"{0}\". Ctrl+Z undoes it.", created);
+                StatusText = withBind
+                    ? T("Duplicated as \"{0}\". Ctrl+Z undoes it.", created)
+                    : T("Duplicated as \"{0}\" without the bind: bind it on the Binds page. Ctrl+Z undoes it.", created);
             }
         }
     }
@@ -2941,6 +2977,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 T("The relation and its bind leave the profile. Undo (Ctrl+Z) brings it back."), T("Delete"), isDanger: true))
             return;
 
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(
             ["relations", "mass", "delete", "--relation", SelectedRelation.Name],
             includeProfile: true,
@@ -2951,7 +2988,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             RelationNodes.Clear();
             await RefreshRelationsAsync();
-            await RefreshBindsAsync();
+            await RefreshAndKeepModifiersAsync(modifiersBefore);
         }
     }
 
@@ -3377,11 +3414,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (op == "delete" && !await ConfirmAsync(T("Delete {0}?", (target == "all" ? "all relations" : target == "query" ? "the matching relations" : "the selected relations")),
                 T("The relations and their binds leave the profile. Undo (Ctrl+Z) brings them back."), T("Delete"), isDanger: true))
             return;
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Running mass operation..."));
         if (result?.ExitCode == 0)
         {
             await RefreshRelationsAsync();
-            await RefreshBindsAsync();
+            if (op is "delete" or "merge")
+                await RefreshAndKeepModifiersAsync(modifiersBefore);
+            else
+                await RefreshBindsAsync();
         }
     }
 
@@ -3776,7 +3817,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private void ParseRelationNodes(string output)
     {
-        RelationNodes.Clear();
+        Dictionary<string, string> storedTitles = ParseStoredNodeTitles(output);
+        // All actions at once: one change of the list (item by item re-marked the search rows per action).
+        List<RelationNodeItem> parsed = [];
         foreach (string raw in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
         {
             Match match = RelationNodeLine.Match(raw.TrimEnd());
@@ -3800,13 +3843,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 : string.Join(Environment.NewLine, planes);
             string titlesDisplay = planes.Length == 0
                 ? ResolveNodeTitle(game, "Default", nodeId)
-                : string.Join(Environment.NewLine, planes.Select(plane => ResolveNodeTitle(game, plane, nodeId)));
+                : string.Join(Environment.NewLine, planes.Select(plane => ResolveNodeTitle(game, plane, nodeId, StoredNodeTitle(storedTitles, nodeId, plane))));
             string planesSummary = planes.Length == 0
                 ? T("No active aircraft")
                 : BuildNodeListSummary(planes);
             string titlesSummary = planes.Length == 0
                 ? ResolveNodeTitle(game, "Default", nodeId)
-                : BuildNodeListSummary(planes.Select(plane => ResolveNodeTitle(game, plane, nodeId)));
+                : BuildNodeListSummary(planes.Select(plane => ResolveNodeTitle(game, plane, nodeId, StoredNodeTitle(storedTitles, nodeId, plane))));
 
             RelationNodeItem node = new()
             {
@@ -3825,9 +3868,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 foreach (string plane in planes.Take(12))
                     node.PlanePictures.Add(new PlaneChoice(plane));
             }
-            RelationNodes.Add(node);
+            parsed.Add(node);
             AddRelationNodeGameOption(game);
         }
+        if (parsed.Count == 0)
+            RelationNodes.Clear();
+        else
+            RelationNodes.ReplaceAll(parsed);
         _ = LoadRelationNodePicturesAsync(RelationNodes.ToList());
     }
 
@@ -4156,6 +4203,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             inspect.Joystick = GetJsonString(root, "Joystick");
             inspect.FontName = GetJsonString(root, "FontName");
             inspect.TextColor = GetJsonString(root, "TextColor");
+            inspect.Credit = GetJsonString(root, "Credit");
             if (root.TryGetProperty("FontSize", out JsonElement fontSizeEl) && fontSizeEl.TryGetInt32(out int fontSize))
                 inspect.FontSize = Math.Max(0, fontSize);
 
@@ -4879,11 +4927,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (ClearInputOnly)
             args.Add("--input-only");
 
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Clearing bind..."));
         if (result?.ExitCode == 0)
         {
-            await RefreshBindsAndModifiersAfterChangeAsync();
-            StatusText = ClearInputOnly ? T("Took the input off {0}.", target) : T("Cleared the bind of {0}.", target);
+            int kept = await RefreshAndKeepModifiersAsync(modifiersBefore);
+            string keptText = kept > 0 ? " " + StatusText : string.Empty;
+            StatusText = (ClearInputOnly ? T("Took the input off {0}.", target) : T("Cleared the bind of {0}.", target)) + keptText;
         }
     }
 
@@ -4932,11 +4982,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (UnbindAll)
             args.Add("--all");
 
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Unbinding input..."));
         if (result?.ExitCode == 0)
         {
-            await RefreshBindsAndModifiersAfterChangeAsync();
-            StatusText = T("Unbound {0}{1}.", target, (string.IsNullOrWhiteSpace(UnbindDevice) ? string.Empty : T(" on {0}", DeviceLabelForStatus(UnbindDevice))));
+            int kept = await RefreshAndKeepModifiersAsync(modifiersBefore);
+            string keptText = kept > 0 ? " " + StatusText : string.Empty;
+            StatusText = T("Unbound {0}{1}.", target, (string.IsNullOrWhiteSpace(UnbindDevice) ? string.Empty : T(" on {0}", DeviceLabelForStatus(UnbindDevice)))) + keptText;
         }
     }
 
@@ -6029,6 +6081,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             LayoutEditorOutputPath = BuildDefaultLayoutEditorOutputPath(LayoutEditorSourcePath);
         LoadLayoutEditorPreview(inspectDoc.PreviewImagePath, inspectDoc.Width, inspectDoc.Height);
         ApplyLayoutTextStyle(inspectDoc.FontName, inspectDoc.FontSize, inspectDoc.TextColor);
+        LayoutSourceCredit = (inspectDoc.Credit ?? string.Empty).Trim();
 
         LayoutEditorMarkers.Clear();
         foreach (LayoutEditorMarkerItem marker in inspectDoc.Markers)
@@ -6529,6 +6582,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             RememberLayoutDeviceMapping(contextDevice, LayoutEditorOutputPath);
             if (contextDevice.Length > 0)
                 savedLayoutDevices.Add(contextDevice);
+            OnLayoutFileSaved(contextDevice, LayoutEditorOutputPath);
             UpdateLayoutMapInputFromRememberedMappings(BuildEffectiveLayoutDeviceFilter());
             await LoadLayoutEditorSourceAsync();
         }
@@ -7145,15 +7199,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         BackupProfileBeforeChange("before-device-remove");
 
+        string removedDevice = DeviceRemoveName.Trim();
+        List<PendingModifierDefinition> modifiersBefore = SnapshotProfileModifiers();
         EngineCommandResult? result = await RunEngineAsync(
-            ["devices", "remove", DeviceRemoveName.Trim(), "--confirm", "false"],
+            ["devices", "remove", removedDevice, "--confirm", "false"],
             includeProfile: true,
             mutatesProfile: true,
             busyLabel: N("Removing device references..."));
         if (result?.ExitCode == 0)
         {
             await RefreshDevicesAsync();
-            await RefreshBindsAndModifiersAfterChangeAsync();
+            await RefreshAndKeepModifiersAsync(modifiersBefore, removedDevice);
         }
     }
 
@@ -7776,6 +7832,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    // Every relation of the profile and a read-only engine call with it (the journey's title checks).
+    internal IReadOnlyList<RelationListItem> AllRelationsForTests() => allRelations;
+
+    internal Task<EngineCommandResult?> RunEngineForTestsAsync(IEnumerable<string> commandArgs, bool text = true) =>
+        RunEngineAsync(commandArgs, includeProfile: HasProfile, mutatesProfile: false, busyLabel: "Test", forceText: text, background: true);
+
+    internal string ResolveNodeTitleForTests(string game, string plane, string nodeId) => ResolveNodeTitle(game, plane, nodeId);
+
     private async Task<EngineCommandResult?> RunEngineAsync(
         IEnumerable<string> commandArgs,
         bool includeProfile,
@@ -7784,7 +7848,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         bool forceText = true,
         bool isCustomCommand = false,
         bool background = false,
-        string? historyNote = null)
+        string? historyNote = null,
+        Func<bool>? stillWanted = null)
     {
         List<string> commandList = commandArgs as List<string> ?? commandArgs.ToList();
         commandArgs = commandList;
@@ -7890,8 +7955,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         pendingEngineCalls++;
         IsBusy = true;
         await engineCallGate.WaitAsync();
+        // An engine command that uses the local AI model holds its idle stop until it ends (docs/natural-language-grouping.md).
+        using IDisposable? aiWork = IsAiWorkCommand(commandList) ? llmServerMonitor.BeginWork() : null;
         try
         {
+            // A read that waited behind other calls and is no longer wanted (a newer one of the same kind was asked
+            // for meanwhile: the suggestions of the relation after the next add) does not run: queued reads made every
+            // change after a big add wait for seconds of outdated engine runs.
+            if (stillWanted != null && !stillWanted())
+                return null;
             // Background checks (the game config watcher) keep the output pane and status line of the user's last command.
             if (background)
             {
@@ -9510,7 +9582,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     private static bool NodeEntryMatches(DbNodeCatalogEntry entry, string term) =>
-        NodeTextMatches(entry.NodeId, entry.Title, entry.Description, entry.Plane, term);
+        NodeTextMatches(entry.NodeId, entry.Title, entry.Description, entry.Plane, term) ||
+        entry.Keys.Contains(term, StringComparison.OrdinalIgnoreCase);
 
     internal static bool NodeTextMatches(string? id, string? title, string? description, string? plane, string term) =>
         (id ?? string.Empty).Contains(term, StringComparison.OrdinalIgnoreCase) ||
@@ -9667,8 +9740,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 continue;
             }
 
-            // Titles stored as the raw lua key resolve like in the relation editor (sibling file, else "Flaps 1"); the key
-            // stays findable in the description.
+            // Titles stored as a localization key resolve like in the relation editor (DCS's English text, sibling file,
+            // else "Flaps 1"); the key itself is never shown.
             Dictionary<string, string>? resolved = null;
             foreach (Match match in DcsDbSearchRowLine.Matches(html))
             {
@@ -9677,14 +9750,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     continue;
 
                 string title = CleanHtmlCell(match.Groups["command"].Value);
-                string description = CleanHtmlCell(match.Groups["description"].Value);
-                if (IsRawDcsTitle(title, nodeId) && !string.IsNullOrWhiteSpace(title) && !title.Trim().Equals(nodeId, StringComparison.OrdinalIgnoreCase))
+                string description = DcsCommandNames.ResolveCategory(CleanHtmlCell(match.Groups["description"].Value), DcsEnglishNames());
+                // The key stays findable ("flaps_1"): the stored key, or the keys DCS's English catalog has for the title.
+                string keys = DcsCommandNames.IsLocalizationKey(title) ? title.Trim() : string.Join(" ", DcsCommandNames.KeysFor(title, DcsEnglishNames()));
+                if (IsRawDcsTitle(title, nodeId))
                 {
-                    resolved ??= LoadDcsTitleFile(file);
-                    string rawKey = title.Trim();
-                    if (resolved.TryGetValue(nodeId, out string? better) && !string.IsNullOrWhiteSpace(better))
-                        title = better;
-                    description = string.IsNullOrWhiteSpace(description) ? rawKey : description + " · " + rawKey;
+                    resolved ??= LoadDcsTitleFile(file, DcsEnglishNames());
+                    if (!resolved.TryGetValue(nodeId, out string? better) || string.IsNullOrWhiteSpace(better))
+                        continue;
+                    title = better;
                 }
 
                 entries.Add(new DbNodeCatalogEntry(
@@ -9693,7 +9767,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     nodeId,
                     string.IsNullOrWhiteSpace(title) ? nodeId : title,
                     description,
-                    CleanHtmlCell(match.Groups["category"].Value)));
+                    CleanHtmlCell(match.Groups["category"].Value)) { Keys = keys });
             }
         }
 
@@ -9967,7 +10041,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private string ResolveNodeTitle(string game, string plane, string nodeId)
+    // The one title resolver of the GUI (DcsCommandNames): the aircraft's DB title (a localization key there becomes
+    // DCS's English text, else the sibling file's title), else the title the profile stored for the node (engine
+    // "relations show" stored-title lines), else a readable form of a key. Never the raw id or lua key.
+    private string ResolveNodeTitle(string game, string plane, string nodeId, string? storedTitle = null)
     {
         if (string.IsNullOrWhiteSpace(nodeId))
             return string.Empty;
@@ -9975,10 +10052,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
         {
             string title = TryGetDcsNodeTitle(plane, nodeId);
-            if (!string.IsNullOrWhiteSpace(title))
+            if (!string.IsNullOrWhiteSpace(title) && !IsRawDcsTitle(title, nodeId.Trim()))
                 return title;
-            // The id is not in this aircraft's command list (any more): say so instead of showing only the raw id.
-            return T("{0} (not in this aircraft's current command list)", ReadableDcsKey(nodeId.Trim()));
+            string resolved = DcsCommandNames.Resolve(title, nodeId.Trim(), DcsEnglishNames(), storedTitle);
+            if (!string.IsNullOrWhiteSpace(resolved))
+                return resolved;
+            // The id is not in this aircraft's command list (any more) and the profile stored no title: say so instead
+            // of showing the raw id.
+            return T("Command not in this aircraft's current list");
         }
         else if (game.StartsWith("IL2", StringComparison.OrdinalIgnoreCase))
         {
@@ -9987,8 +10068,41 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 return title;
         }
 
+        if (!string.IsNullOrWhiteSpace(storedTitle) && !string.Equals(storedTitle.Trim(), nodeId.Trim(), StringComparison.OrdinalIgnoreCase))
+            return storedTitle.Trim();
         return nodeId;
     }
+
+    // "id|plane" -> stored title, from the "stored-title<TAB>plane<TAB>title<TAB>category" lines under each node line
+    // of "relations show".
+    internal static Dictionary<string, string> ParseStoredNodeTitles(string output)
+    {
+        Dictionary<string, string> titles = new(StringComparer.OrdinalIgnoreCase);
+        string currentId = string.Empty;
+        foreach (string raw in (output ?? string.Empty).Split('\n'))
+        {
+            string line = raw.TrimEnd('\r');
+            Match node = RelationNodeLine.Match(line.TrimEnd());
+            if (node.Success)
+            {
+                currentId = node.Groups["id"].Value.Trim();
+                continue;
+            }
+            string trimmed = line.TrimStart();
+            if (currentId.Length == 0 || !trimmed.StartsWith("stored-title\t", StringComparison.Ordinal))
+                continue;
+            string[] parts = trimmed.Split('\t');
+            if (parts.Length >= 3 && parts[1].Trim().Length > 0 && parts[2].Trim().Length > 0)
+                titles[currentId + "|" + parts[1].Trim()] = parts[2].Trim();
+        }
+        return titles;
+    }
+
+    internal static string? StoredNodeTitle(Dictionary<string, string> stored, string nodeId, string plane) =>
+        stored.TryGetValue(nodeId.Trim() + "|" + (plane ?? string.Empty).Trim(), out string? title) ? title : null;
+
+    // DCS's English command names of the DCS install JoyPro uses (empty without one).
+    private IDictionary<string, string> DcsEnglishNames() => DcsCommandNames.EnglishCatalog(DcsInstallPath);
 
     // When a title lookup misses, the DB folder is looked at again (at most every few seconds per aircraft): a DB refresh
     // or a module installed after the first lookup otherwise left the editor on raw ids until a restart.
@@ -10020,25 +10134,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             : string.Empty;
     }
 
-    // "Input.SpitfireLFMkIX.flaps_1": some modules name their commands by a localization key, and the DB then holds the key.
-    private static readonly Regex DcsRawLuaKey = new(@"^Input\.[^.\s]+\.\S+$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-
-    internal static bool IsRawDcsTitle(string title, string id) =>
-        string.IsNullOrWhiteSpace(title) || string.Equals(title.Trim(), id, StringComparison.OrdinalIgnoreCase) || DcsRawLuaKey.IsMatch(title.Trim());
+    // "Input.SpitfireLFMkIX.flaps_1", "29Fulcrum:Inp:...": some modules name their commands by a localization key, and a
+    // DB built before the refresh translated them holds the key (DcsCommandNames).
+    internal static bool IsRawDcsTitle(string title, string id) => DcsCommandNames.IsRawTitle(title, id);
 
     // "Input.SpitfireLFMkIX.flaps_1" -> "Flaps 1"; any other text stays as it is.
-    internal static string ReadableDcsKey(string value)
-    {
-        string text = (value ?? string.Empty).Trim();
-        if (!DcsRawLuaKey.IsMatch(text))
-            return text;
-        string last = text[(text.LastIndexOf('.') + 1)..].Replace('_', ' ').Trim();
-        return last.Length == 0 ? text : char.ToUpperInvariant(last[0]) + last[1..];
-    }
+    internal static string ReadableDcsKey(string value) => DcsCommandNames.ReadableKey(value);
 
-    // Titles of one DCS DB file; a title stored as the raw key takes the title of the same id from the aircraft's
-    // sibling files (SpitfireLFMkIX_easy, SpitfireLFMkIXCW, ...), else a readable form of the key ("Flaps 1").
-    internal static Dictionary<string, string> LoadDcsTitleFile(string filePath)
+    // Titles of one DCS DB file; a title stored as a localization key takes DCS's English text (englishNames), else the
+    // title of the same id from the aircraft's sibling files (SpitfireLFMkIX_easy, SpitfireLFMkIXCW, ...), else a
+    // readable form of the key ("Flaps 1").
+    internal static Dictionary<string, string> LoadDcsTitleFile(string filePath, IDictionary<string, string>? englishNames = null)
     {
         Dictionary<string, string> map = new(StringComparer.OrdinalIgnoreCase);
         ReadDcsTitleFile(filePath, map, skipRaw: false);
@@ -10046,16 +10152,37 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (raw.Count == 0)
             return map;
 
-        Dictionary<string, string> sibling = new(StringComparer.OrdinalIgnoreCase);
-        foreach (string file in DcsSiblingFiles(filePath))
-            ReadDcsTitleFile(file, sibling, skipRaw: true);
+        Dictionary<string, string>? sibling = null;
         foreach (string id in raw)
-            map[id] = sibling.TryGetValue(id, out string? better) ? better : ReadableDcsKey(map[id]);
+        {
+            string resolved = DcsCommandNames.Resolve(map[id], id, englishNames, null, () =>
+            {
+                if (sibling == null)
+                {
+                    sibling = new(StringComparer.OrdinalIgnoreCase);
+                    foreach (string file in DcsSiblingFiles(filePath))
+                        ReadDcsTitleFile(file, sibling, skipRaw: true);
+                }
+                return sibling.TryGetValue(id, out string? better) ? better : null;
+            });
+            if (!string.IsNullOrWhiteSpace(resolved))
+                map[id] = resolved;
+            else
+                map.Remove(id);
+        }
         return map;
     }
 
     private Dictionary<string, string> LoadDcsTitleMap(string plane) =>
-        TryResolveDcsPlaneFile(plane, out string filePath) ? LoadDcsTitleFile(filePath) : new(StringComparer.OrdinalIgnoreCase);
+        TryResolveDcsPlaneFile(plane, out string filePath) ? LoadDcsTitleFile(filePath, DcsEnglishNames()) : new(StringComparer.OrdinalIgnoreCase);
+
+    // The titles of one DB file as stored (id -> title), for the tests.
+    internal static Dictionary<string, string> ReadDcsTitleRows(string filePath)
+    {
+        Dictionary<string, string> map = new(StringComparer.OrdinalIgnoreCase);
+        ReadDcsTitleFile(filePath, map, skipRaw: false);
+        return map;
+    }
 
     private static void ReadDcsTitleFile(string filePath, Dictionary<string, string> map, bool skipRaw)
     {
@@ -10409,6 +10536,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             if (!Relations.SequenceEqual(shown))
             {
+                // The multi-select list box keeps the indexes of its selection through a Reset and reads them from the
+                // emptied list (ArgumentOutOfRange after a JoyPro assistant answer created a relation): the selection
+                // goes first and comes back below.
+                if (SelectedRelation != null)
+                    SelectedRelation = null;
                 Relations.Clear();
                 foreach (RelationListItem relation in shown)
                     Relations.Add(relation);
@@ -11825,8 +11957,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             UpdateRepository = state.UpdateRepository ?? string.Empty;
             SkippedUpdateVersion = state.SkippedUpdateVersion ?? string.Empty;
             if (state.LlmIdleMinutes is double idleMinutes && idleMinutes > 0)
-                LlmIdleMinutes = Math.Clamp((decimal)idleMinutes, 0.5m, 120m);
+                LlmIdleMinutes = IsOldLlmIdleDefault(state) ? DefaultLlmIdleMinutes : Math.Clamp((decimal)idleMinutes, 0.5m, 120m);
             ApplySettingsLayout(state.SettingsSectionOrder, state.SettingsSectionsOpen);
+            ApplyNavPageLayout(state.NavPageOrder, state.HiddenNavPages);
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
             {
                 if (!OverlayPlaneOptions.Contains(state.OverlayPlaneChoice))
@@ -11887,8 +12020,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 UpdateRepository = UpdateRepository,
                 SkippedUpdateVersion = SkippedUpdateVersion,
                 LlmIdleMinutes = (double)LlmIdleMinutes,
+                LlmIdleDefault = (double)DefaultLlmIdleMinutes,
                 SettingsSectionOrder = SettingsSectionOrderForSave(),
-                SettingsSectionsOpen = OpenSettingsSectionsForSave()
+                SettingsSectionsOpen = OpenSettingsSectionsForSave(),
+                NavPageOrder = NavPageOrderForSave(),
+                HiddenNavPages = HiddenNavPagesForSave()
             };
 
             string json = JsonSerializer.Serialize(state, UiSettingsJsonOptions);
@@ -12112,13 +12248,22 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         public string? SkippedUpdateVersion { get; set; }
 
-        // The local AI model stops after this many minutes without a request (null: 2).
+        // The local AI model stops after this many minutes without AI work (null: 30).
         public double? LlmIdleMinutes { get; set; }
+
+        // The default when the file was written (null: written by JoyPro 2.2.17 or older, when the default was 2 minutes and every
+        // save wrote it): a 2 there was JoyPro's default, not the user's choice, and becomes the new default.
+        public double? LlmIdleDefault { get; set; }
 
         // The Settings page: the sections in the user's order and the open ones (null: JoyPro's order, Games open).
         public List<string>? SettingsSectionOrder { get; set; }
 
         public List<string>? SettingsSectionsOpen { get; set; }
+
+        // The bottom bar's pages in the user's order and the ones he hid (Settings > Pages, MainWindowViewModel.NavPages.cs).
+        public List<string>? NavPageOrder { get; set; }
+
+        public List<string>? HiddenNavPages { get; set; }
     }
 
     private sealed class LayoutTemplateInspectDocument
@@ -12145,6 +12290,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public int FontSize { get; set; }
 
         public string TextColor { get; set; } = string.Empty;
+
+        // Who made the sheet (a 2D layout): shown under the picture.
+        public string Credit { get; set; } = string.Empty;
     }
 
     private sealed class LayoutTemplateSaveDocument
@@ -12264,6 +12412,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         // The DB's category (DCS: the category column of the plane's HTML; Star Citizen: the action map).
         public string Category { get; }
+
+        // DCS: the localization keys of the command ("Input.SpitfireLFMkIX.flaps_1"), searchable but never shown.
+        public string Keys { get; init; } = string.Empty;
     }
 
     private sealed class DbNodeCatalogEntryComparer : IEqualityComparer<DbNodeCatalogEntry>

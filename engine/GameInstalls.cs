@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -173,6 +173,40 @@ namespace JoyPro.Engine
         public static List<GameInstall> All(List<string> warnings)
         {
             return Specs.Select(s => Find(s.GameId, warnings)).ToList();
+        }
+
+        // Fills Actions and ActionsNote: a game whose actions JoyPro cannot find anywhere is not offered as supported
+        // (the Start page leaves it out; Settings > Games says why).
+        public static void CountActions(GameInstall install)
+        {
+            int count;
+            switch (install.GameId)
+            {
+                case "DCS":
+                    string dcs = GameDataPaths.DbFolder("DCS");
+                    count = Directory.Exists(dcs) ? Directory.GetFiles(dcs, "*.html").Length : 0;
+                    break;
+                case "IL2Game":
+                    count = File.Exists(Path.Combine(GameDataPaths.DbFolder("IL2"), "IL2.actions")) ? 1 : 0;
+                    break;
+                case "StarCitizen":
+                    count = File.Exists(Path.Combine(GameDataPaths.DbFolder("StarCitizen"), "AllBinds.xml")) ? 1 : 0;
+                    break;
+                default:
+                    IGameIntegration game;
+                    count = GameRegistry.TryResolve(install.GameId, out game) ? GameCatalogStore.Load(game, null).Actions.Count : 0;
+                    break;
+            }
+            install.Actions = count;
+            install.ActionsNote = count > 0 ? string.Empty
+                : install.Installed ? "JoyPro has no command list of it yet: Update on its card builds it from the game's own files."
+                : "JoyPro has no command list of it: the list is built from the installed game, and the game was not found on this PC.";
+        }
+
+        // Detected again on the next Find (the engine server between two commands: a game may have been installed).
+        public static void ResetCache()
+        {
+            cache = null;
         }
 
         public static GameInstall Find(string game, List<string> warnings)
@@ -937,10 +971,16 @@ namespace JoyPro.Engine
         public string ConfigOverride { get; set; }
         public List<string> ConfigPaths { get; set; }
         public string Note { get; set; }
+        // How many actions JoyPro knows for the game on this PC (its command list, or JoyPro's own table; DCS: the
+        // aircraft lists, IL-2 / Star Citizen: 1 when the list is there). -1 = not counted (engine games installs counts).
+        public int Actions { get; set; }
+        // Why there are none (empty when there are).
+        public string ActionsNote { get; set; }
 
         public GameInstall()
         {
-            GameId = Name = InstallPath = Source = Note = ConfigOverride = string.Empty;
+            Actions = -1;
+            GameId = Name = InstallPath = Source = Note = ConfigOverride = ActionsNote = string.Empty;
             Markers = new List<string>();
             ConfigPaths = new List<string>();
         }

@@ -222,6 +222,8 @@ namespace JoyPro.Engine
 
                 try
                 {
+                    StampCredit(layout.backup, layout.Credit);
+                    currentLabelWidth = layout.LabelWidth;
                     string alias = ResolveJoystickAlias(joystick);
                     Dictionary<string, System.Windows.Point> labels = NormalizeLayoutLabelPositions(layout.Positions);
                     List<LayoutTemplateTableDto> tables = LoadTemplateTables(layoutPath, result.Warnings);
@@ -249,6 +251,7 @@ namespace JoyPro.Engine
                 }
                 finally
                 {
+                    currentLabelWidth = 0;
                     if (layout != null && layout.backup != null)
                         layout.backup.Dispose();
                 }
@@ -794,7 +797,7 @@ namespace JoyPro.Engine
                     if (options.DrawMarkers)
                         DrawMarkerSymbol(graphics, entry.Type, entry.Symbol, entry.Color, entry.Position.X - 14f, entry.Position.Y + 1f, options.MarkerSize);
 
-                    DrawLabel(graphics, entry.Description ?? string.Empty, font, brush, entry.Position.X, entry.Position.Y, labelOutline, labelBackground);
+                    DrawFittedLabel(graphics, entry, legendEntries, output.Width, font, brush, labelOutline, labelBackground);
                 }
 
                 if (tables != null && tables.Count > 0)
@@ -1384,6 +1387,49 @@ namespace JoyPro.Engine
             }
         }
 
+        // A label that would run into the next label on its line (a sheet's boxes side by side) or off the picture is drawn
+        // smaller (down to 60 %), and cut with "..." if it still does not fit; a label with room is drawn as it is.
+        // The label room of the layout being drawn (LayoutFile.LabelWidth; 0 = up to the next label).
+        [ThreadStatic] private static float currentLabelWidth;
+
+        private static void DrawFittedLabel(Graphics graphics, LayoutLegendEntry entry, List<LayoutLegendEntry> all, int pictureWidth, Font font, Brush brush, Color outline, Color background)
+        {
+            string text = entry.Description ?? string.Empty;
+            if (text.Length == 0)
+                return;
+            float x = entry.Position.X, y = entry.Position.Y;
+            float lineHeight = font.GetHeight(graphics);
+            float room = pictureWidth - x - 4f;
+            if (currentLabelWidth > 0)
+                room = Math.Min(room, currentLabelWidth);
+            foreach (LayoutLegendEntry other in all)
+            {
+                if (ReferenceEquals(other, entry) || string.IsNullOrEmpty(other.Description) && string.IsNullOrEmpty(other.Token))
+                    continue;
+                float dx = other.Position.X - x;
+                if (dx > 4f && Math.Abs(other.Position.Y - y) < lineHeight * 0.8f)
+                    room = Math.Min(room, dx - 6f);
+            }
+            SizeF size = graphics.MeasureString(text, font);
+            if (room < 24f || size.Width <= room)
+            {
+                DrawLabel(graphics, text, font, brush, x, y, outline, background);
+                return;
+            }
+            float scale = Math.Max(0.6f, room / size.Width);
+            using (Font smaller = new Font(font.FontFamily, font.Size * scale, font.Style, font.Unit))
+            {
+                string shown = text;
+                while (shown.Length > 1 && graphics.MeasureString(shown + (shown.Length < text.Length ? "..." : string.Empty), smaller).Width > room)
+                    shown = shown.Substring(0, shown.Length - 1).TrimEnd();
+                if (shown.Length < text.Length)
+                    shown += "...";
+                // Vertically centred on the line the full size would take.
+                float offset = (lineHeight - smaller.GetHeight(graphics)) / 2f;
+                DrawLabel(graphics, shown, smaller, brush, x, y + offset, outline, background);
+            }
+        }
+
         // A label like the layout editor shows it: optional box behind the text, optional outline around the glyphs.
         private static void DrawLabel(Graphics graphics, string text, Font font, Brush brush, float x, float y, Color outline, Color background)
         {
@@ -1502,6 +1548,73 @@ namespace JoyPro.Engine
             return GetRelationNameForJoystickButton(joystick, token);
         }
 
+        // A 2D layout variant (DB\DeviceLayouts2D, or the user's copy of one): its picture (a picture file, or the picture
+        // inside a JoyPro 1 .layout), text style and positions as a layout file.
+        internal static bool TryLoadLayoutVariant(string path, out LayoutFile layout, out string error)
+        {
+            layout = null;
+            error = string.Empty;
+            JoyPro.DeviceReference.LayoutVariant variant;
+            try
+            {
+                variant = JoyPro.DeviceReference.LayoutVariant.Parse(File.ReadAllText(path), path);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+            string picture = variant.ResolvePicture(new[] { Path.GetDirectoryName(path), JoyPro.DeviceReference.DeviceCatalog.ImportedLayoutFolder(), JoyPro.DeviceReference.DeviceCatalog.CommunityLayoutFolder() });
+            if (picture == null)
+            {
+                error = "The picture of the 2D layout '" + variant.Id + "' is not on this PC.";
+                return false;
+            }
+            Bitmap bitmap;
+            if (picture.EndsWith(".layout", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!TryLoadLayoutTemplate(picture, out LayoutFile inner, out error))
+                    return false;
+                bitmap = inner.backup;
+            }
+            else
+            {
+                // A copy, so the picture file is not kept open.
+                using (Bitmap loaded = new Bitmap(picture))
+                    bitmap = new Bitmap(loaded);
+            }
+            layout = new LayoutFile();
+            layout.Joystick = variant.Title.Length > 0 ? variant.Title : variant.Id;
+            layout.Font = variant.Font;
+            layout.Size = Math.Max(1, (int)Math.Round(variant.FontSize));
+            layout.Credit = variant.Credit ?? string.Empty;
+            layout.LabelWidth = (float)Math.Max(0, variant.LabelWidth);
+            if (TryParseColor(variant.TextColor, out Color color))
+                layout.SetDrawingColor(color);
+            layout.Positions = new Dictionary<string, System.Windows.Point>(StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, double[]> pair in variant.Positions)
+                layout.Positions[pair.Key] = new System.Windows.Point(pair.Value[0], pair.Value[1]);
+            layout.backup = bitmap;
+            return true;
+        }
+
+        // The sheet's maker in small grey letters in the bottom left corner of the picture (a community 2D layout; the
+        // sheets keep their own title in the bottom right).
+        internal static void StampCredit(Bitmap picture, string credit)
+        {
+            if (picture == null || string.IsNullOrWhiteSpace(credit))
+                return;
+            using (Graphics graphics = Graphics.FromImage(picture))
+            using (Font font = CreateFont("Segoe UI", Math.Max(8f, picture.Width / 160f)))
+            using (Brush brush = new SolidBrush(Color.FromArgb(200, 110, 110, 110)))
+            {
+                graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+                string text = "Layout sheet: " + credit.Trim();
+                SizeF size = graphics.MeasureString(text, font);
+                graphics.DrawString(text, font, brush, picture.Width / 120f, picture.Height - size.Height - picture.Height / 200f);
+            }
+        }
+
         internal static bool TryLoadLayoutTemplate(string layoutPath, out LayoutFile layout, out string error)
         {
             layout = null;
@@ -1533,6 +1646,11 @@ namespace JoyPro.Engine
                     layout.Size = 12;
                     layout.Positions = new Dictionary<string, System.Windows.Point>();
                     layout.backup = new Bitmap(fullPath);
+                }
+                else if (ext == ".json" && JoyPro.DeviceReference.LayoutVariant.IsVariantFile(fullPath))
+                {
+                    if (!TryLoadLayoutVariant(fullPath, out layout, out error))
+                        return false;
                 }
                 else
                 {
@@ -1674,7 +1792,13 @@ namespace JoyPro.Engine
                     foreach (DCSInput input in node.AllInputs ?? new DCSInput[0])
                     {
                         if (input != null && string.Equals((input.Plane ?? string.Empty).Trim(), plane, StringComparison.OrdinalIgnoreCase))
-                            return (input.Title ?? string.Empty).Trim();
+                        {
+                            // Never the raw key or id: the DB's readable title, else the stored one (DcsCommandNames).
+                            string stored = (input.Title ?? string.Empty).Trim();
+                            return DcsCommandNames.IsRawTitle(stored, input.ID ?? node.ID)
+                                ? InternalDataManagement.DcsDisplayTitle(input.ID ?? node.ID, plane, stored)
+                                : stored;
+                        }
                     }
                 }
                 else

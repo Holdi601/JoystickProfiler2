@@ -121,8 +121,21 @@ public sealed partial class MainWindowViewModel
     private void SeedBuilderSearch(string relationName)
     {
         string query = System.Text.RegularExpressions.Regex.Replace(relationName ?? string.Empty, @"\s*\(\d+\)\s*$", string.Empty).Trim();
-        if (query.Length > 0 && !string.Equals((BuilderSearchText ?? string.Empty).Trim(), query, StringComparison.Ordinal))
+        // A name that says nothing ("Relation 024", "New relation (2)") is no search: the box stays empty instead of
+        // "Nothing found for 'Relation 024'".
+        if (IsPlaceholderRelationName(query))
+            query = string.Empty;
+        if (!string.Equals((BuilderSearchText ?? string.Empty).Trim(), query, StringComparison.Ordinal) && (query.Length > 0 || IsPlaceholderRelationName(relationName)))
             BuilderSearchText = query;
+    }
+
+    // "Relation 024", "Relation", "New relation", "New relation 3", "Relation 024 (copy)" (also the translated "New relation").
+    internal static bool IsPlaceholderRelationName(string? name)
+    {
+        string text = System.Text.RegularExpressions.Regex.Replace((name ?? string.Empty).Trim(), @"(\s*\((\d+|copy)\))+\s*$", string.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
+        text = System.Text.RegularExpressions.Regex.Replace(text, @"\s*\d+$", string.Empty).Trim();
+        return text.Length == 0 || text.Equals("Relation", StringComparison.OrdinalIgnoreCase) || text.Equals("New relation", StringComparison.OrdinalIgnoreCase) ||
+               text.Equals(T("New relation"), StringComparison.OrdinalIgnoreCase);
     }
 
     // Coming back to the Relations page or closing a tool: the open relation's suggestions are loaded if they are not yet.
@@ -189,7 +202,7 @@ public sealed partial class MainWindowViewModel
     internal bool BuilderSuggestionsMatchOpenRelation =>
         SelectedRelation != null && string.Equals(builderSuggestionsRelation, SelectedRelation.Name, StringComparison.Ordinal);
 
-    public ObservableCollection<BuilderSuggestionItem> BuilderSuggestions { get; } = [];
+    public RangeObservableCollection<BuilderSuggestionItem> BuilderSuggestions { get; } = [];
 
     public ObservableCollection<BuilderGameChip> BuilderSuggestionGames { get; } = [];
 
@@ -242,6 +255,8 @@ public sealed partial class MainWindowViewModel
             ? T("This relation has no actions yet. Add the first ones under Add actions; then JoyPro suggests the same function in your other games and aircraft.")
             : allBuilderSuggestions.Count > 0
                 ? T("Nothing fits with these filters. Tick another game or show the weak matches.")
+                : builderSuggestReadError.Length > 0
+                    ? T("JoyPro could not read the suggestions for this relation: {0}", builderSuggestReadError)
                 : IsBuilderFunctionMixed
                     ? T("This relation is a button position: each aircraft uses it for its own function, so JoyPro cannot suggest one for the others. Add them by hand under Add actions, or give the relation one function with the chip under its name.")
                 : BuilderFunctionText.Length > 0
@@ -305,7 +320,7 @@ public sealed partial class MainWindowViewModel
         try
         {
             EngineCommandResult? result = await RunEngineAsync(["relations", "suggest", relation, "--min", "low"], includeProfile: true, mutatesProfile: false,
-                busyLabel: "Finding suggestions for '" + relation + "'...", forceText: false, background: true);
+                busyLabel: "Finding suggestions for '" + relation + "'...", forceText: false, background: true, stillWanted: () => version == builderSuggestVersion);
             if (version != builderSuggestVersion)
                 return;
             // No run (the engine was busy with another command): what is shown for this relation stays (the journey
@@ -317,9 +332,10 @@ public sealed partial class MainWindowViewModel
             RelationMisfits.Clear();
             BuilderFunctionText = string.Empty;
             BuilderFunctionState = string.Empty;
+            builderSuggestReadError = string.Empty;
             if (result.ExitCode != 0)
             {
-                BuilderSuggestStatus = result.StandardError.Trim();
+                builderSuggestReadError = result.StandardError.Trim();
                 return;
             }
             ParseBuilderSuggestions(result.StandardOutput);
@@ -388,11 +404,17 @@ public sealed partial class MainWindowViewModel
                 }
             }
         }
-        catch (JsonException)
+        catch (Exception ex) when (ex is JsonException or InvalidOperationException or FormatException)
         {
-            BuilderSuggestStatus = T("Could not read the suggestions.");
+            // Said in the panel (the filter keeps it), never "does not know this function": the function is unknown
+            // only because the answer could not be read.
+            builderSuggestReadError = T("Could not read the suggestions.");
+            JoyPro.Logging.JoyProLog.Warn("Relations", "relations suggest: unreadable answer", ex);
         }
     }
+
+    // Why the last suggestion run shows nothing although it ran ("Could not read the suggestions.").
+    private string builderSuggestReadError = string.Empty;
 
     private void RebuildBuilderGameChips()
     {
@@ -420,20 +442,21 @@ public sealed partial class MainWindowViewModel
         HashSet<string> games = BuilderSuggestionGames.Where(c => c.IsSelected).Select(c => c.GameId).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (BuilderSuggestionItem item in BuilderSuggestions)
             item.PropertyChanged -= OnBuilderSuggestionTicked;
-        BuilderSuggestions.Clear();
+        List<BuilderSuggestionItem> shown = [];
         foreach (BuilderSuggestionItem item in allBuilderSuggestions)
         {
             if (!BuilderShowWeakMatches && item.IsLow)
                 continue;
             if (games.Count > 0 && !games.Contains(item.Game))
                 continue;
-            BuilderSuggestions.Add(item);
+            shown.Add(item);
             item.PropertyChanged += OnBuilderSuggestionTicked;
         }
+        BuilderSuggestions.ReplaceAll(shown);
         RebuildBuilderSuggestionSections();
         int hidden = allBuilderSuggestions.Count - BuilderSuggestions.Count;
         BuilderSuggestStatus = allBuilderSuggestions.Count == 0
-            ? string.Empty
+            ? builderSuggestReadError
             : BuilderSuggestions.Count.ToString(CultureInfo.InvariantCulture) + " suggested" +
               (hidden > 0 ? T(" ({0} hidden by the filters)", hidden.ToString(CultureInfo.InvariantCulture)) : string.Empty);
         OnBuilderSuggestionsChanged();
@@ -470,7 +493,7 @@ public sealed partial class MainWindowViewModel
         if (item == null || !allBuilderSuggestions.Contains(item))
             return;
         RemoveBuilderSuggestionRow(item);
-        await ApplyToBuilderRelationAsync(["--add", item.NodeSpec], T("Adding '{0}'...", item.Title), T("'{0}' ({1}) added.", item.Title, item.Where));
+        await QueueSuggestionClickAsync("--add", item.NodeSpec, T("Adding '{0}'...", item.Title), T("'{0}' ({1}) added.", item.Title, item.Where));
     }
 
     // A command another relation uses: it leaves that relation and comes here.
@@ -480,7 +503,7 @@ public sealed partial class MainWindowViewModel
         if (item == null || !allBuilderSuggestions.Contains(item))
             return;
         RemoveBuilderSuggestionRow(item);
-        await ApplyToBuilderRelationAsync(["--take", item.NodeSpec], T("Moving '{0}' here...", item.Title),
+        await QueueSuggestionClickAsync("--take", item.NodeSpec, T("Moving '{0}' here...", item.Title),
             T("'{0}' moved here from '{1}'.", item.Title, string.Join("', '", item.OtherRelations)));
     }
 
@@ -491,7 +514,50 @@ public sealed partial class MainWindowViewModel
         if (item == null || !allBuilderSuggestions.Contains(item))
             return;
         RemoveBuilderSuggestionRow(item);
-        await ApplyToBuilderRelationAsync(["--never", item.NodeSpec], T("Dismissing '{0}'...", item.Title), T("'{0}' dismissed for this relation.", item.Title));
+        await QueueSuggestionClickAsync("--never", item.NodeSpec, T("Dismissing '{0}'...", item.Title), T("'{0}' dismissed for this relation.", item.Title));
+    }
+
+    // Add, Move here and Dismiss of single rows, clicked one after the other while JoyPro still works on the first:
+    // the rows leave the list at once and go to the engine together (one "relations suggest apply" per batch, the
+    // relation and its suggestions reloaded once at the end). One engine call and a reload per click made a quick
+    // series of clicks queue minutes of engine work.
+    private readonly List<(string Option, string Spec, string Done)> pendingSuggestionClicks = [];
+    private Task? suggestionClickFlush;
+
+    private Task QueueSuggestionClickAsync(string option, string spec, string busyLabel, string done)
+    {
+        pendingSuggestionClicks.Add((option, spec, done));
+        if (suggestionClickFlush is { IsCompleted: false })
+            return suggestionClickFlush;
+        suggestionClickFlush = FlushSuggestionClicksAsync(busyLabel);
+        return suggestionClickFlush;
+    }
+
+    private async Task FlushSuggestionClicksAsync(string firstBusyLabel)
+    {
+        string relation = SelectedRelation?.Name ?? BuilderRelationName;
+        List<string> done = [];
+        string busyLabel = firstBusyLabel;
+        while (pendingSuggestionClicks.Count > 0)
+        {
+            List<(string Option, string Spec, string Done)> batch = [.. pendingSuggestionClicks];
+            pendingSuggestionClicks.Clear();
+            List<string> options = [];
+            foreach ((string option, string spec, _) in batch)
+                options.AddRange([option, spec]);
+            if (batch.Count > 1 || done.Count > 0)
+                busyLabel = Plural("Applying {0} change...", "Applying {0} changes...", batch.Count);
+            if (!await ApplyToBuilderRelationAsync(options, busyLabel, string.Empty, reload: false))
+            {
+                pendingSuggestionClicks.Clear();
+                return;
+            }
+            done.AddRange(batch.Select(b => b.Done));
+        }
+        if (done.Count == 0)
+            return;
+        await ReloadBuilderRelationAsync(relation);
+        StatusText = T("{0} Ctrl+Z undoes it.", done.Count == 1 ? done[0] : Plural("{0} change from the suggestions applied.", "{0} changes from the suggestions applied.", done.Count));
     }
 
     [RelayCommand]
@@ -529,7 +595,8 @@ public sealed partial class MainWindowViewModel
     }
 
     // engine relations suggest apply <open relation> <options>, then the relation and its suggestions are reloaded.
-    private async Task<bool> ApplyToBuilderRelationAsync(List<string> options, string busyLabel, string done, bool fromSuggestions = true)
+    // reload: false leaves the reload to the caller (several batches, one reload).
+    private async Task<bool> ApplyToBuilderRelationAsync(List<string> options, string busyLabel, string done, bool fromSuggestions = true, bool reload = true)
     {
         string relation = SelectedRelation?.Name ?? BuilderRelationName;
         if (relation.Length == 0)
@@ -549,6 +616,8 @@ public sealed partial class MainWindowViewModel
             await LoadBuilderSuggestionsAsync(relation);
             return false;
         }
+        if (!reload)
+            return true;
         await ReloadBuilderRelationAsync(relation);
         // After the reload: its own engine calls write the status line too.
         StatusText = T("{0} Ctrl+Z undoes it.", done);
@@ -631,7 +700,7 @@ public sealed partial class MainWindowViewModel
     private readonly List<BuilderSearchResultItem> allBuilderSearchResults = [];
 
     // The list as shown: a header per game, then its rows (BuilderSearchGroupItem, BuilderSearchResultItem).
-    public ObservableCollection<object> BuilderSearchRows { get; } = [];
+    public RangeObservableCollection<object> BuilderSearchRows { get; } = [];
 
     // The rows of the last search (all games, before the game chips); kept for the tests and pictures.
     public IReadOnlyList<BuilderSearchResultItem> BuilderSearchResults => allBuilderSearchResults;
@@ -863,7 +932,8 @@ public sealed partial class MainWindowViewModel
         IsBuilderSearching = true;
         try
         {
-            EngineCommandResult? result = await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: N("Searching every game..."), forceText: false, background: true);
+            EngineCommandResult? result = await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: N("Searching every game..."), forceText: false, background: true,
+                stillWanted: () => version == builderSearchVersion);
             if (version != builderSearchVersion)
                 return;
             if (result == null)
@@ -1000,7 +1070,8 @@ public sealed partial class MainWindowViewModel
     // A header per game (or per function), then its rows; at most BuilderRowsShown rows.
     private void RebuildBuilderSearchRows()
     {
-        BuilderSearchRows.Clear();
+        EnsureActionSorts();
+        List<object> next = [];
         int budget = BuilderRowsShown;
         bool filtered = BuilderSearchGames.Any(c => c.IsSelected);
         if (BuilderGroupByFunction)
@@ -1011,17 +1082,23 @@ public sealed partial class MainWindowViewModel
             {
                 List<BuilderSearchResultItem> rows = function.ToList();
                 int take = Math.Max(Math.Min(rows.Count, 6), Math.Min(rows.Count, budget));
-                List<BuilderSearchResultItem> shown = rows.Take(take).ToList();
+                List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
                 budget = Math.Max(0, budget - shown.Count);
-                BuilderSearchRows.Add(new BuilderSearchGroupItem(string.Empty, shown, rows.Count - shown.Count, function.Key));
+                next.Add(new BuilderSearchGroupItem(string.Empty, shown, rows.Count - shown.Count, function.Key));
                 foreach (BuilderSearchResultItem row in shown)
-                    BuilderSearchRows.Add(row);
+                    next.Add(row);
             }
         }
         else
         {
-            foreach (IGrouping<string, BuilderSearchResultItem> game in allBuilderSearchResults.GroupBy(r => r.Game, StringComparer.OrdinalIgnoreCase)
-                         .OrderByDescending(g => builderGameTotals.TryGetValue(g.Key, out int all) && all > 0 ? all : g.Count()).ThenBy(g => DisplayText.Game(g.Key), StringComparer.OrdinalIgnoreCase))
+            IEnumerable<IGrouping<string, BuilderSearchResultItem>> gameGroups = allBuilderSearchResults.GroupBy(r => r.Game, StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(g => builderGameTotals.TryGetValue(g.Key, out int all) && all > 0 ? all : g.Count()).ThenBy(g => DisplayText.Game(g.Key), StringComparer.OrdinalIgnoreCase);
+            // A first sort level "Game" orders the games by name; otherwise the games with the most matches come first.
+            if (BuilderSearchSort.PrimaryKey == "game")
+                gameGroups = BuilderSearchSort.PrimaryDescending
+                    ? gameGroups.OrderByDescending(g => DisplayText.Game(g.Key), Comparer<string>.Create(ListSortRow.Natural))
+                    : gameGroups.OrderBy(g => DisplayText.Game(g.Key), Comparer<string>.Create(ListSortRow.Natural));
+            foreach (IGrouping<string, BuilderSearchResultItem> game in gameGroups)
             {
                 List<BuilderSearchResultItem> rows = game.ToList();
                 bool expanded = builderExpandedGames.Contains(game.Key);
@@ -1033,19 +1110,24 @@ public sealed partial class MainWindowViewModel
                     take = rows.Count;
                 else if (!filtered)
                     take = Math.Min(take, Math.Max(BuilderSearchPerGame, Math.Min(rows.Count, 6)));
-                List<BuilderSearchResultItem> shown = rows.Take(take).ToList();
+                // The best matches are shown (and "Show n more" loads the rest); the sort levels order what is shown.
+                List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
                 budget = Math.Max(0, budget - shown.Count);
                 int all = !filtered && builderGameTotals.TryGetValue(game.Key, out int known) && known > rows.Count ? known : rows.Count;
-                BuilderSearchRows.Add(new BuilderSearchGroupItem(game.Key, shown, Math.Max(0, all - shown.Count)) { IsExpanded = expanded });
+                next.Add(new BuilderSearchGroupItem(game.Key, shown, Math.Max(0, all - shown.Count)) { IsExpanded = expanded });
                 foreach (BuilderSearchResultItem row in shown)
-                    BuilderSearchRows.Add(row);
+                    next.Add(row);
             }
         }
+        BuilderSearchRows.ReplaceAll(next);
         OnPropertyChanged(nameof(CanExpandAllBuilderGames));
         OnPropertyChanged(nameof(CanCollapseAllBuilderGames));
         OnPropertyChanged(nameof(HasBuilderSearchResults));
         OnBuilderCheckedChanged();
     }
+
+    private List<BuilderSearchResultItem> SortBuilderRows(IEnumerable<BuilderSearchResultItem> rows) =>
+        BuilderSearchSort.HasLevels ? BuilderSearchSort.Sort(rows, r => SortRowOfAction(r)).ToList() : rows.ToList();
 
     // Rows whose every aircraft is in the open relation are shown as "already in this relation".
     private void MarkBuilderRowsInRelation()
@@ -1260,7 +1342,8 @@ public sealed partial class MainWindowViewModel
 
     public bool HasAssistantContext => AssistantContextRelation.Length > 0;
 
-    public bool IsBuilderChatAvailable => LlmEnabled && LlmReady;
+    // A model that is running right now (the AI chip says "loaded") is ready too, so the hint never contradicts the chip.
+    public bool IsBuilderChatAvailable => LlmEnabled && (LlmReady || llmSnapshot.Running);
 
     public string AssistantModeText => IsBuilderChatAvailable
         ? T("Local AI model ready{0}: say it in your own words. It runs on this PC only.", (SelectedLlmModel != null && !IsLlmUsingLocal ? " (" + SelectedLlmModel.Label + ")" : IsLlmUsingLocal ? T(" (your own model)") : string.Empty))
@@ -1382,7 +1465,7 @@ public sealed partial class MainWindowViewModel
         AddAssistantAnswer(answer);
         if (!answer.Changed)
         {
-            StatusText = answer.NeedsModel ? T("That needs the local AI model; nothing changed.") : T("Nothing changed.");
+            StatusText = answer.NeedsModel ? T("That needs the local AI model; nothing changed.") : answer.IsQuestion ? T("Answered; nothing changed.") : T("Nothing changed.");
             return;
         }
         string focus = answer.FocusRelation.Length > 0 ? answer.FocusRelation : SelectedRelation?.Name ?? string.Empty;
@@ -1392,7 +1475,24 @@ public sealed partial class MainWindowViewModel
             await RefreshRelationsAsync();
         if (context.Length > 0 && !string.Equals(context, focus, StringComparison.Ordinal) && !allRelations.Any(r => r.Name == context))
             AssistantContextRelation = focus;
-        StatusText = T("The assistant changed {0}{1}. Undo in its answer (or Ctrl+Z) takes it all back.", answer.Relations.Count.ToString(CultureInfo.InvariantCulture), (answer.Relations.Count == 1 ? " relation" : " relations"));
+        StatusText = AssistantStatus(answer);
+    }
+
+    // What the answer did, in one line: "'Landing Gear' created, 3 actions added. Ctrl+Z undoes it."
+    internal static string AssistantStatus(AssistantMessageItem answer)
+    {
+        if (answer.Changes.Count != 1)
+            return Plural("The assistant changed {0} relation. Ctrl+Z undoes it.", "The assistant changed {0} relations. Ctrl+Z undoes it.", answer.Changes.Count);
+        AssistantChangeCount change = answer.Changes[0];
+        if (change.Created)
+            return Plural("'{1}' created, {0} action added. Ctrl+Z undoes it.", "'{1}' created, {0} actions added. Ctrl+Z undoes it.", change.Added, change.Added, change.Name);
+        if (change.RenamedFrom.Length > 0 && change.Added == 0 && change.Removed == 0)
+            return T("'{0}' renamed to '{1}'. Ctrl+Z undoes it.", change.RenamedFrom, change.Name);
+        if (change.Removed > 0 && change.Added == 0)
+            return Plural("'{1}': {0} action removed. Ctrl+Z undoes it.", "'{1}': {0} actions removed. Ctrl+Z undoes it.", change.Removed, change.Removed, change.Name);
+        if (change.Removed > 0)
+            return T("'{0}': {1} added, {2} removed. Ctrl+Z undoes it.", change.Name, change.Added, change.Removed);
+        return Plural("'{1}': {0} action added. Ctrl+Z undoes it.", "'{1}': {0} actions added. Ctrl+Z undoes it.", change.Added, change.Added, change.Name);
     }
 
     private void AddAssistantAnswer(AssistantMessageItem item)
@@ -1416,6 +1516,7 @@ public sealed partial class MainWindowViewModel
             item.Text = ReadJsonString(root, "Reply");
             item.Changed = ReadJsonBool(root, "Changed");
             item.NeedsModel = ReadJsonBool(root, "NeedsModel");
+            item.IsQuestion = ReadJsonBool(root, "Question");
             item.FocusRelation = ReadJsonString(root, "FocusRelation");
             string method = ReadJsonString(root, "Method");
             item.Method = method.Length > 0 ? "Answered by the " + method : string.Empty;
@@ -1441,6 +1542,11 @@ public sealed partial class MainWindowViewModel
                     if (actions > 0)
                         text += T(" · now {0}{1}", actions.ToString(CultureInfo.InvariantCulture), (actions == 1 ? " action" : " actions"));
                     item.Relations.Add(new AssistantRelationSummary(ReadJsonString(relation, "Name"), text));
+                    string name = ReadJsonString(relation, "Name");
+                    int CountOf(string kind) => root.TryGetProperty("Changes", out JsonElement changes) && changes.ValueKind == JsonValueKind.Array
+                        ? changes.EnumerateArray().Count(c => ReadJsonString(c, "Kind") == kind && ReadJsonString(c, "Relation") == name)
+                        : 0;
+                    item.Changes.Add(new AssistantChangeCount { Name = name, Created = ReadJsonBool(relation, "Created"), RenamedFrom = renamed, Added = CountOf("added"), Removed = CountOf("removed") });
                 }
             }
             if (root.TryGetProperty("Steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array)

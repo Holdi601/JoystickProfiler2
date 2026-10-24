@@ -16,9 +16,57 @@ namespace JoyPro.Engine.Games
     // (flight and general ones; menus, world map and developer tools stay the sim's, see IsManagedContext);
     // JoyPro's ownership data and backups live under %LOCALAPPDATA%\JoyPro, never in the synced folder.
     // See docs/games/msfs.md.
-    internal sealed partial class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameSimDefaults, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles
+    internal sealed partial class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameSimDefaults, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles, IGameCatalogTidy
     {
         private readonly int sim;
+
+        // A list built before the readable names (or without the sim's locPak) has raw event names ("ADF STBY SET"): the
+        // other sim's menu name of the same event when its list has one, else the name made from the event
+        // (MsfsGameData.TitleFromEventName). The ids and contexts stay as they are.
+        public void TidyCatalog(GameCatalog catalog)
+        {
+            Dictionary<string, string> other = null;
+            foreach (GameAction action in catalog.Actions)
+            {
+                if (action.Title.Length > 0 && action.Title != MsfsGameData.RawTitle(action.Id) && action.Title.Any(char.IsLower))
+                    continue;
+                if (other == null)
+                    other = SiblingTitles();
+                string title;
+                if (other.TryGetValue(action.Id, out title) && title.Any(char.IsLower))
+                    action.Title = title;
+                else
+                {
+                    string made = MsfsGameData.TitleFromEventName(action.Id);
+                    if (made.Length > 0)
+                        action.Title = made;
+                }
+            }
+        }
+
+        // The other sim's titles (read straight from its list, so the two never read each other in turn).
+        private Dictionary<string, string> SiblingTitles()
+        {
+            Dictionary<string, string> titles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                string path = GameDataPaths.DbFile("MSFS" + (sim == 2020 ? "2024" : "2020"), GameCatalogStore.FileName);
+                if (!File.Exists(path))
+                    return titles;
+                foreach (string line in File.ReadAllLines(path, System.Text.Encoding.UTF8))
+                {
+                    if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal))
+                        continue;
+                    string[] parts = line.Split('\t');
+                    if (parts.Length > 1 && parts[0].Trim().Length > 0 && parts[1].Trim().Length > 0)
+                        titles[parts[0].Trim()] = parts[1].Trim();
+                }
+            }
+            catch (IOException)
+            {
+            }
+            return titles;
+        }
 
         // sim 2020 or 2024.
         public MsfsIntegration(int sim)
@@ -1889,7 +1937,7 @@ namespace JoyPro.Engine.Games
             }
             int named = 0;
             int fromEvent = 0;
-            foreach (GameAction action in catalog.Actions.Where(a => current == null || !current.Contains(a.Id) || a.Title == MsfsGameData.RawTitle(a.Id)))
+            foreach (GameAction action in catalog.Actions.Where(a => current == null || !current.Contains(a.Id) || a.Title == MsfsGameData.RawTitle(a.Id) || a.Title == MsfsGameData.TitleFromEventName(a.Id)))
             {
                 string title;
                 bool menu = titles.TryGetValue(action.Id, out title);

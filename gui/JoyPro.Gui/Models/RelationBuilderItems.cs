@@ -140,8 +140,11 @@ public sealed partial class BuilderSuggestionItem : ObservableObject
 
     public string FunctionName { get; init; } = string.Empty;
 
-    // "Pitch axis · KEY_AXIS_ELEVATOR_SET" under the title (DCS ids are codes: the function only).
-    public string FunctionAndId => IsDcs ? FunctionName : FunctionName.Length > 0 ? FunctionName + " · " + Id : Id;
+    // The function under the title; the game's id is never shown (only in the title's tooltip, IdTip).
+    public string FunctionAndId => FunctionName;
+
+    // The title's tooltip: the game's own id, for people who know it (never for DCS, whose ids are codes).
+    public string IdTip => IsDcs || Id.Length == 0 ? DisplayTitle : DisplayTitle + "\n" + T("The game's own id: {0}", Id);
 
     public bool HasFunctionAndId => FunctionAndId.Length > 0;
 
@@ -282,9 +285,15 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
 
     public string KindLabel => IsAxis ? "axis" : "button";
 
-    // The aircraft (DCS) in one line; the full list in the tooltip.
-    // Outside DCS the caption also names the game's own id (e.g. KEY_AXIS_ELEVATOR_SET), so look-alike titles can be told apart.
-    public string PlanesText => Game == "DCS" ? BuilderText.Where(Game, SelectedPlanes) : string.Join(" · ", new[] { Category, Id }.Where(t => t.Length > 0));
+    // No raw id on screen (only in the title's tooltip, IdTip); the catalog filter and the search still find it.
+    public string IdHint => string.Empty;
+
+    public string IdTip => Game == "DCS" || Id.Length == 0 ? DisplayTitle : DisplayTitle + "\n" + T("The game's own id: {0}", Id);
+
+    public bool HasIdHint => IdHint.Length > 0;
+
+    // The aircraft (DCS) in one line, the full list in the tooltip; outside DCS the category (never the raw id).
+    public string PlanesText => Game == "DCS" ? BuilderText.Where(Game, SelectedPlanes) : Category;
 
     public string PlanesTooltip => Game == "DCS" ? string.Join(", ", Planes) : DisplayText.Game(Game) + (Category.Length > 0 ? " · " + Category : string.Empty);
 
@@ -337,8 +346,8 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
         _ => string.Empty
     };
 
-    // The game's own id, small under the title (DCS ids are codes: not shown).
-    public string IdText => Game == "DCS" ? string.Empty : Id;
+    // No raw id under the title (IdTip has it).
+    public string IdText => string.Empty;
 
     public bool HasIdText => IdText.Length > 0;
 
@@ -559,6 +568,12 @@ public sealed partial class AssistantMessageItem : ObservableObject
 
     public bool HasRelations => Relations.Count > 0;
 
+    // Per changed relation: created / renamed and how many actions came in or went out (the status line).
+    public List<AssistantChangeCount> Changes { get; } = [];
+
+    // A question JoyPro answered (nothing changes).
+    public bool IsQuestion { get; set; }
+
     public List<string> Steps { get; } = [];
 
     public bool HasSteps => Steps.Count > 0;
@@ -590,6 +605,16 @@ public sealed partial class AssistantMessageItem : ObservableObject
 }
 
 // "Throttle ALL — created · added DCS 48 aircraft, IL-2 5, Star Citizen 2".
+// One relation an assistant answer changed, counted: for the status line.
+public sealed class AssistantChangeCount
+{
+    public string Name { get; init; } = string.Empty;
+    public bool Created { get; init; }
+    public string RenamedFrom { get; init; } = string.Empty;
+    public int Added { get; init; }
+    public int Removed { get; init; }
+}
+
 public sealed class AssistantRelationSummary
 {
     public AssistantRelationSummary(string name, string text)

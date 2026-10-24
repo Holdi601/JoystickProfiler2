@@ -40,7 +40,7 @@ namespace JoyPro.Engine
             if (!int.TryParse(Environment.GetEnvironmentVariable(OwnerPidVariable), NumberStyles.Integer, CultureInfo.InvariantCulture, out owner) || owner <= 0)
                 return null;
             if (!double.TryParse(Environment.GetEnvironmentVariable(IdleMinutesVariable), NumberStyles.Float, CultureInfo.InvariantCulture, out idle))
-                idle = 2;
+                idle = 30;
             if (idle <= 0 || !IsAlive(owner))
                 return null;
             return new ServerState { OwnerPid = owner, IdleMinutes = idle };
@@ -73,7 +73,7 @@ namespace JoyPro.Engine
                     StartedUtc = EngineNlGroup.Text(data, "StartedUtc"),
                     LastUsedUtc = EngineNlGroup.Text(data, "LastUsedUtc"),
                     BusyPid = (int)Long(data, "BusyPid", 0),
-                    IdleMinutes = Double(data, "IdleMinutes", 2)
+                    IdleMinutes = Double(data, "IdleMinutes", 30)
                 };
             }
             catch

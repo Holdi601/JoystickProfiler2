@@ -3,8 +3,9 @@
 // engine's live progress can be seen. Built with the .NET Framework csc.exe (C# 5, no newer syntax).
 //   probe script ("JoyPro DCS input profile probe"): per module the InputProfiles of its entry.lua
 //     (["<unit>"] = current_mod_path .. '/Input/<folder>'), JOYPRO_PROBE_PROGRESS, JOYPRO_PROBE_DONE;
-//   ID refresh: per profile JOYPRO_PROGRESS|i|n|export|<unit>, an HTML file in <saved games>\InputLayoutsTxt\<unit>,
+//   ID refresh: per profile JOYPRO_PROGRESS|i|n|export|<unit>, an HTML file in <exportPath>\InputLayoutsTxt\<unit>,
 //     JOYPRO_PROFILE_OK; clean refresh: load/clear/save progress and the fake stick's diff in Config\Input\<unit>.
+//   The engine runs several at once: only the profiles of assignedProfiles (1-based, all when nil) are this run's.
 // FAKE_LUAE_CANCEL_AT=<n> with JOYPRO_CANCEL_FILE: creates the cancel file at profile n (the user presses Cancel),
 // FAKE_LUAE_DELAY_MS: the time per profile (default 40).
 using System;
@@ -66,25 +67,56 @@ internal static class FakeLuae
     private static int Refresh(string script, bool exportHtml, int delay)
     {
         string savedGames = Regex.Match(script, @"^local savedGamesPath = '(.*)'\s*$", RegexOptions.Multiline).Groups[1].Value.Replace("\\\\", "\\");
+        // The ID refresh's makeHtml writes into exportPath (a temporary folder per run).
+        Match export = Regex.Match(script, @"^local exportPath = '(.*)'\s*$", RegexOptions.Multiline);
+        string exportRoot = export.Success ? export.Groups[1].Value.Replace("\\\\", "\\") : savedGames;
+        // Several runs at once: every script lists all profiles, assignedProfiles names this run's share (nil = all).
+        HashSet<int> assigned = null;
+        Match share = Regex.Match(script, @"^local assignedProfiles = \{(.*)\}\s*$", RegexOptions.Multiline);
+        if (share.Success)
+        {
+            assigned = new HashSet<int>();
+            foreach (Match m in Regex.Matches(share.Groups[1].Value, @"\[(\d+)\] = true"))
+                assigned.Add(int.Parse(m.Groups[1].Value));
+        }
         List<string> units = new List<string>();
+        List<int> unitNumbers = new List<int>();
+        int listed = 0;
         foreach (Match m in Regex.Matches(script, @"^\s*\{ unit = '(.*?)', folder = '(.*?)' \},\s*$", RegexOptions.Multiline))
-            units.Add(m.Groups[1].Value);
+        {
+            listed++;
+            if (assigned == null || assigned.Contains(listed))
+            {
+                units.Add(m.Groups[1].Value);
+                unitNumbers.Add(listed);
+            }
+        }
         int cancelAt;
         if (!int.TryParse(Environment.GetEnvironmentVariable("FAKE_LUAE_CANCEL_AT") ?? string.Empty, out cancelAt))
             cancelAt = 0;
         string cancelFile = Environment.GetEnvironmentVariable("JOYPRO_CANCEL_FILE") ?? string.Empty;
+        // FAKE_LUAE_CRASH_ONCE=<marker file>: the first run with a profile crashes (as luae.exe now and then does with
+        // 0xC000041D) and creates the marker; the engine must repeat the run.
+        string crashMarker = Environment.GetEnvironmentVariable("FAKE_LUAE_CRASH_ONCE") ?? string.Empty;
+        if (crashMarker.Length > 0 && units.Count > 0 && !File.Exists(crashMarker))
+        {
+            File.WriteAllText(crashMarker, units[0]);
+            Console.WriteLine("JOYPRO_DEVICES|2");
+            return -1073740771;
+        }
         Console.WriteLine("JOYPRO_DEVICES|2");
         for (int i = 0; i < units.Count; i++)
         {
             string unit = units[i];
-            if (cancelAt == i + 1 && cancelFile.Length > 0)
+            // The n-th profile of the whole list, whichever run has it.
+            if (cancelAt == unitNumbers[i] && cancelFile.Length > 0)
                 File.WriteAllText(cancelFile, "cancel");
             Console.WriteLine("JOYPRO_PROGRESS|" + (i + 1) + "|" + units.Count + "|" + (exportHtml ? "export" : "clear") + "|" + unit);
             Console.Out.Flush();
             Thread.Sleep(cancelAt > 0 ? Math.Max(delay, 1500) : delay);
             if (exportHtml)
             {
-                string folder = Path.Combine(savedGames, "InputLayoutsTxt", unit);
+                string folder = Path.Combine(exportRoot, "InputLayoutsTxt", unit);
                 Directory.CreateDirectory(folder);
                 string html = Path.Combine(folder, "Fake Stick.html");
                 File.WriteAllText(html, "<html><body><table><tr><td>JOY_BTN1</td><td>" + unit + " fire</td><td>Weapons</td></tr></table></body></html>");

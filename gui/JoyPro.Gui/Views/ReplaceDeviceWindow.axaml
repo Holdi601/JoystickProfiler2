@@ -46,8 +46,8 @@
                 <TextBlock Text="{Binding ReplaceSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding ReplaceModels}" TextWrapping="Wrap" FontSize="12" Opacity="0.85" IsVisible="{Binding ReplaceHasPreview}" />
                 <TextBlock Text="{Binding ReplaceCounts}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding ReplaceHasPreview}" />
-                <TextBlock Text="{Binding ReplaceUnmappedText}" TextWrapping="Wrap" FontSize="12" Foreground="#D97706" IsVisible="{Binding HasReplaceUnmapped}" />
-                <TextBlock Text="{Binding ReplaceWarnings}" TextWrapping="Wrap" FontSize="12" Foreground="#D97706" IsVisible="{Binding HasReplaceWarnings}" />
+                <TextBlock Text="{Binding ReplaceUnmappedText}" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasReplaceUnmapped}" />
+                <TextBlock Text="{Binding ReplaceWarnings}" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasReplaceWarnings}" />
                 <TextBlock Text="{l:T 'Working out the inputs...'}" FontSize="12" Opacity="0.7" IsVisible="{Binding IsReplacePreviewing}" />
             </StackPanel>
         </Border>
@@ -75,8 +75,8 @@
                                     <StackPanel Grid.Column="3" Spacing="2" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsPlainMethod}" />
                                         <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsUnmapped}" Opacity="0.6" FontStyle="Italic" />
-                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsGuess}" Foreground="#D97706" />
-                                        <TextBlock Text="{Binding OverlapText}" FontSize="11" TextWrapping="Wrap" Foreground="#D97706" IsVisible="{Binding HasOverlap}" />
+                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsGuess}" Foreground="{DynamicResource JP.WarnTextBrush}" />
+                                        <TextBlock Text="{Binding OverlapText}" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasOverlap}" />
                                     </StackPanel>
                                     <TextBlock Grid.Column="4" Text="{Binding UsedByText}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip.Tip="{Binding UsedByTip}" />
                                 </Grid>
@@ -102,7 +102,7 @@
         </Border>
 
         <Grid Grid.Row="6" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-            <TextBlock Text="{Binding ReplaceStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="#D97706" />
+            <TextBlock Text="{Binding ReplaceStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource JP.WarnTextBrush}" />
             <Button Grid.Column="1" Content="{l:T 'Cancel'}" Click="CancelClicked" />
             <Button Grid.Column="2" Content="{l:T 'Move binds'}" Classes="accent" IsEnabled="{Binding CanApplyReplace}" Click="ApplyClicked"
                     ToolTip.Tip="{l:T 'Moves the binds as shown above; Undo (top bar or the notice) takes it back'}" />

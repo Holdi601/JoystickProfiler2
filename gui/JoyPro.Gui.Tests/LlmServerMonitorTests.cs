@@ -154,7 +154,7 @@ public sealed class LlmServerMonitorTests
     public void IdleMinutes_AreKeptInRange()
     {
         MainWindowViewModel vm = new(new AxisTuningFakeEngine(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false);
-        Assert.Equal(2m, vm.LlmIdleMinutes);
+        Assert.Equal(30m, vm.LlmIdleMinutes);
         vm.LlmIdleMinutes = 0;
         Assert.Equal(0.5m, vm.LlmIdleMinutes);
         vm.LlmIdleMinutes = 500;

@@ -47,6 +47,8 @@ namespace JoyPro.Engine
             // DCS: the aircraft where the same id means something else (not in Planes, never added through this id).
             public int SameIdDifferent;
             public string MeaningNote = string.Empty;
+            // suggest: how sure the catalog is (high, medium, low).
+            public string Confidence = string.Empty;
 
             public string Spec(IEnumerable<string> planes)
             {
@@ -74,6 +76,7 @@ namespace JoyPro.Engine
                     case "resolve":
                         return Tool + "(\"" + Query + "\"" + (Kind.Length > 0 ? ", " + Kind : string.Empty) + (Games.Count > 0 ? ", " + string.Join("|", Games) : string.Empty) + ")";
                     case "suggest":
+                        return Tool + "(\"" + Relation + "\"" + (Games.Count > 0 ? ", " + string.Join("|", Games) : string.Empty) + ")";
                     case "show_relation":
                         return Tool + "(\"" + Relation + "\")";
                     case "create_relation":
@@ -122,6 +125,17 @@ namespace JoyPro.Engine
             if (mode.Length == 0)
                 mode = "auto";
             result.Llm.Mode = mode;
+            box.RequestGames = EngineGameWords.EveryGame(result.Message) ? new List<string>() : EngineGameWords.Games(result.Message);
+            // A question is answered from JoyPro's own knowledge of every game (the model would only repeat it).
+            if (!options.ShowPrompt && EngineAiExplain.IsQuestion(result.Message))
+            {
+                result.Method = "knowledge JoyPro has of every game (no change)";
+                result.Question = true;
+                result.Reply = EngineAiExplain.Answer(result.Message);
+                result.Finished = true;
+                box.Finish();
+                return result;
+            }
             EngineLlm.ModelInfo model = null;
             string problem = string.Empty;
             bool usable = mode != "off" && EngineLlm.TryGetUsableModel(out model, out problem);
@@ -296,6 +310,11 @@ namespace JoyPro.Engine
             return messages;
         }
 
+        private static string GameContext(string message)
+        {
+            return EngineAiExplain.ModelGameContext(message);
+        }
+
         private static string UserTurn(string message, Toolbox box, string focus)
         {
             StringBuilder sb = new StringBuilder();
@@ -306,6 +325,7 @@ namespace JoyPro.Engine
             if (parts.Count > 1)
                 sb.AppendLine("The request has " + parts.Count.ToString(CultureInfo.InvariantCulture) + " parts; look up each one: " +
                               string.Join("; ", parts.Select((p, i) => (i + 1).ToString(CultureInfo.InvariantCulture) + ") " + p)) + ".");
+            sb.AppendLine(GameContext(message));
             int count = InternalDataManagement.AllRelations.Count;
             sb.Append("The profile has " + count.ToString(CultureInfo.InvariantCulture) + " relations.");
             return sb.ToString();
@@ -341,9 +361,9 @@ namespace JoyPro.Engine
             "Tools:\n" +
             "{\"tool\":\"list_relations\"} - the relations of the profile.\n" +
             "{\"tool\":\"show_relation\",\"relation\":\"NAME\"} - the actions in a relation, with ids.\n" +
-            "{\"tool\":\"resolve\",\"query\":\"WHAT IT DOES\",\"kind\":\"axis|button|any\"} - JoyPro's knowledge of every game's action for a function, with synonyms. Returns a set id S<n> and action ids A<n>. Try it first.\n" +
+            "{\"tool\":\"resolve\",\"query\":\"WHAT IT DOES\",\"kind\":\"axis|button|any\",\"games\":[\"XPlane12\"]} - JoyPro's knowledge of every game's action for a function, with synonyms (games optional: only those games). Returns a set id S<n> and action ids A<n>. Try it first.\n" +
             "{\"tool\":\"search\",\"query\":\"WORDS\",\"kind\":\"axis|button|any\",\"games\":[\"DCS\"]} - word search in the action titles of every game (games optional). For what resolve misses.\n" +
-            "{\"tool\":\"suggest\",\"relation\":\"NAME\"} - what JoyPro's catalog says fits a relation, with the reason.\n" +
+            "{\"tool\":\"suggest\",\"relation\":\"NAME\",\"games\":[\"StarCitizen\"]} - what JoyPro's catalog says fits a relation, with the reason (games optional: \"expand Roll with X-Plane 12\" = suggest for Roll in XPlane12, then add).\n" +
             "{\"tool\":\"create_relation\",\"name\":\"NAME\",\"kind\":\"axis|button\"}\n" +
             "{\"tool\":\"rename_relation\",\"relation\":\"NAME\",\"new_name\":\"NAME\"}\n" +
             "{\"tool\":\"add_to_relation\",\"relation\":\"NAME\",\"ids\":[\"A3\",\"S2\"]} - S<n> adds every action of that result.\n" +
@@ -356,6 +376,7 @@ namespace JoyPro.Engine
             "4. Throttle, thrust, power lever, helicopter collective and spaceship forward/backward thrust are axes. A twin-engine aircraft's left and right throttle both belong to an all-throttle relation.\n" +
             "5. Create a relation only when the user asks for a new one or names one that does not exist. Never touch relations the user did not mention. There is no delete.\n" +
             "6. When the request names several things (\"X including Y and Z\"), look up each one, add what fits of each, and only then call done.\n" +
+            "6b. When the request names games (\"the flaps of X-Plane 12\", \"boost in Elite\", \"msfs\", \"sc\"), pass them as games (the ids of the GAMES line) and add only their actions. Star Citizen, Elite Dangerous and X4 fly ships: boost, strafe, landing gear and the jump drive (FSD, quantum) are their words.\n" +
             "7. Be quick: a few resolve or search calls, then add, then done. In done, say in plain words only what you really added.\n" +
             "8. A DCS action id belongs to its aircraft: the same id can mean something else in another aircraft (\"Pitch\" in a jet, \"Collective\" in a helicopter; cockpit switch ids are another switch in every module). " +
             "Each RESULT line is ONE meaning with only the aircraft where the id means that. \"same id means something else in N other aircraft\" means those aircraft were left out on purpose: never add them through that line; look up their own action.";
@@ -387,15 +408,60 @@ namespace JoyPro.Engine
                 OfflineRemove(box, result, relation ?? string.Empty, m.Groups["what"].Value.Trim());
                 return;
             }
-            // "add <what> [to <relation>]"
-            m = Regex.Match(text, @"^(?:add|also add|include|put)\s+(?<what>.+?)(?:\s+(?:to|into|in)\s+(?:""(?<rel>[^""]+)""|'(?<rel>[^']+)'|(?<rel>[^""']+)))?$", RegexOptions.IgnoreCase);
-            if (m.Success && (m.Groups["rel"].Success || !string.IsNullOrEmpty(result.FocusRelation)))
+            // "expand Roll with X-Plane 12", "extend Pitch to Star Citizen and Elite", "fill Gear with MSFS": the
+            // relation's own function in those games.
+            m = Regex.Match(text, @"^(?:please\s+)?(?:expand|extend|fill|complete|grow|update|also\s+add\s+to)\s+(?:the\s+)?(?:relation\s+)?(?:""(?<rel>[^""]+)""|'(?<rel>[^']+)'|(?<rel>.+?))\s+(?:with|by|for|to|on|into|in)\s+(?<what>.+)$", RegexOptions.IgnoreCase);
+            if (m.Success && box.FindRelation(m.Groups["rel"].Value) != null)
             {
-                string relation = m.Groups["rel"].Success ? m.Groups["rel"].Value.Trim() : result.FocusRelation;
-                string existing = box.FindRelation(relation);
-                if (existing != null || !m.Groups["rel"].Success)
+                OfflineAdd(box, result, box.FindRelation(m.Groups["rel"].Value), new List<string> { m.Groups["what"].Value.Trim() }, false, true);
+                return;
+            }
+            // "make a relation for landing lights in X-Plane 12", "create a new relation called Lights with the landing
+            // lights of MSFS"
+            m = Regex.Match(text, @"^(?:please\s+)?(?:create|make|build|add|new)\s+(?:me\s+)?(?:a\s+|an\s+)?(?:new\s+)?relation\s+(?:(?:called|named)\s+(?:""(?<name>[^""]+)""|'(?<name>[^']+)'|(?<name>.+?))\s+)?(?:for|with|of|from|that\s+has|containing)\s+(?<what>.+)$", RegexOptions.IgnoreCase);
+            if (m.Success)
+            {
+                string what = m.Groups["what"].Value.Trim();
+                string name = m.Groups["name"].Success && m.Groups["name"].Value.Trim().Length > 0 ? m.Groups["name"].Value.Trim() : NameFor(what);
+                string existing = box.FindRelation(name);
+                OfflineAdd(box, result, existing ?? name, new List<string> { what }, existing == null, false);
+                return;
+            }
+            // "add <what> [to <relation>]"; a relation named there that does not exist yet is made ("put the landing
+            // gear of every game into Gear").
+            m = Regex.Match(text, @"^(?:add|also add|include|put|move|bring)\s+(?<what>.+?)(?:\s+(?:to|into|in)\s+(?:the\s+)?(?:relation\s+)?(?:""(?<rel>[^""]+)""|'(?<rel>[^']+)'|(?<rel>[^""']+?))(?:\s+relation)?)?$", RegexOptions.IgnoreCase);
+            if (m.Success)
+            {
+                string what = m.Groups["what"].Value.Trim();
+                string relation = m.Groups["rel"].Success ? m.Groups["rel"].Value.Trim() : result.FocusRelation ?? string.Empty;
+                bool named = m.Groups["rel"].Success;
+                // "add the landing lights in X-Plane 12": the game belongs to the what, the target is the open relation
+                // (or a new one named after what it holds).
+                if (named && box.FindRelation(relation) == null && EngineGameWords.Resolve(relation).Count > 0)
                 {
-                    OfflineAdd(box, result, existing ?? relation, m.Groups["what"].Value.Trim(), false);
+                    what = text.Substring(text.IndexOf(' ') + 1);
+                    relation = result.FocusRelation ?? string.Empty;
+                    named = false;
+                }
+                if (Regex.IsMatch(relation, @"^(?:it|this|this relation|here)$", RegexOptions.IgnoreCase))
+                    relation = result.FocusRelation ?? string.Empty;
+                if (relation.Length == 0 && EngineGameWords.Games(what).Count > 0)
+                    relation = NameFor(what);
+                if (relation.Length > 0)
+                {
+                    string existing = box.FindRelation(relation);
+                    OfflineAdd(box, result, existing ?? relation, new List<string> { what }, existing == null, true);
+                    return;
+                }
+            }
+            // "also War Thunder", "X-Plane 12 too", "and MSFS" with a relation open: its function in those games.
+            if (!string.IsNullOrEmpty(result.FocusRelation))
+            {
+                string rest;
+                List<string> games = EngineGameWords.Extract(text, out rest);
+                if (games.Count > 0 && Regex.Replace(rest, @"\b(?:also|too|and|as well|please|the|all|of|game|games|for|in)\b", " ", RegexOptions.IgnoreCase).Trim(' ', ',', '.').Length == 0)
+                {
+                    OfflineAdd(box, result, result.FocusRelation, new List<string> { text }, false, true);
                     return;
                 }
             }
@@ -420,59 +486,96 @@ namespace JoyPro.Engine
                 List<string> whats = new List<string> { m.Groups["what"].Value.Trim() };
                 whats.AddRange(extras);
                 string existing = box.FindRelation(name);
-                OfflineAdd(box, result, existing ?? name, whats, existing == null);
+                OfflineAdd(box, result, existing ?? name, whats, existing == null, false);
                 return;
             }
             // Only a function ("all throttle axes") with a relation open: add it there.
             if (!string.IsNullOrEmpty(result.FocusRelation))
             {
-                OfflineAdd(box, result, result.FocusRelation, text, false);
+                OfflineAdd(box, result, result.FocusRelation, new List<string> { text }, false, true);
                 return;
             }
             result.NeedsModel = true;
             result.Reply = "Without the local AI model I understand simple commands: \"Throttle ALL: all throttle axes\", \"add the collectives to Throttle\", " +
-                           "\"remove War Thunder from Throttle\", \"rename Throttle to Throttle ALL\". Free sentences need the local AI model.";
+                           "\"make a relation for landing lights in X-Plane 12\", \"expand Roll with Star Citizen\", \"remove War Thunder from Throttle\", " +
+                           "\"rename Throttle to Throttle ALL\" and questions like \"what does Landing gear down do in MSFS 2024\". Free sentences need the local AI model.";
         }
 
-        private static void OfflineAdd(Toolbox box, EngineRelationAssistantResult result, string relation, string what, bool create)
+        // A new relation's name from what it holds: "landing lights in X-Plane 12" -> "Landing Lights (X-Plane 12)".
+        internal static string NameFor(string what)
         {
-            OfflineAdd(box, result, relation, new List<string> { what }, create);
+            string rest = what;
+            List<string> games = EngineGameWords.EveryGame(what) ? new List<string>() : EngineGameWords.Extract(what, out rest);
+            if (games.Count == 0)
+                rest = what;
+            // The user's words as written ("landing lights" stays plural), without filler.
+            string words = Regex.Replace(rest, @"\b(?:in|of|for|on|from|all|every|each|the|games?|and|or|my|to|into|actions?|relation|aircraft|planes?|buttons?|axis|axes)\b", " ", RegexOptions.IgnoreCase);
+            words = Regex.Replace(words, @"\s+", " ").Trim(' ', ',', '.');
+            if (words.Length == 0)
+                words = "New relation";
+            // Each word capitalised; words the user wrote in capitals stay so ("FSD Jump", "CMS Aft").
+            string title = string.Join(" ", words.Split(' ').Select(w => w.Length > 1 && w == w.ToUpperInvariant() && w.Any(char.IsLetter) ? w : CultureInfo.InvariantCulture.TextInfo.ToTitleCase(w.ToLowerInvariant())));
+            string labels = string.Join(", ", games.Select(EngineGameWords.Label).Distinct());
+            string name = labels.Length > 0 ? title + " (" + labels + ")" : title;
+            return name.Length > 80 ? name.Substring(0, 80).Trim() : name;
         }
 
-        // Every part ("all thrust axes", "collectives", "spaceship forward/backward thrusters") is resolved on its own;
-        // the kind comes from the open relation, the words ("axis", "buttons") or what most results are.
-        private static void OfflineAdd(Toolbox box, EngineRelationAssistantResult result, string relation, List<string> whats, bool create)
+        // Every part ("all thrust axes", "collectives", "the flaps of X-Plane 12") is resolved on its own, in the games
+        // it names (all games without one); a part that is only games ("X-Plane 12") takes the relation's own function
+        // in those games. The kind comes from the open relation, the words ("axis", "buttons") or what most results are.
+        private static void OfflineAdd(Toolbox box, EngineRelationAssistantResult result, string relation, List<string> whats, bool create, bool gamesOnlyMeansFunction)
         {
             string existing = box.FindRelation(relation);
             string kind = existing != null ? (InternalDataManagement.AllRelations[existing].ISAXIS ? "axis" : "button") : whats.Select(KindOf).FirstOrDefault(k => k.Length > 0) ?? string.Empty;
             List<string> sets = new List<string>();
             List<ActionRef> found = new List<ActionRef>();
             List<string> missed = new List<string>();
+            List<string> ids = new List<string>();
             foreach (string what in whats)
             {
-                string query = CleanQuery(what);
+                string rest = what;
+                bool every = EngineGameWords.EveryGame(what);
+                List<string> games = every ? new List<string>() : EngineGameWords.Extract(what, out rest);
+                if (every || games.Count == 0)
+                    rest = what;
+                string query = CleanQuery(Regex.Replace(rest, @"\b(?:every|each|all)\s+(?:games?|sims?)\b", " ", RegexOptions.IgnoreCase));
+                if (query.Length == 0 && games.Count > 0 && existing != null && gamesOnlyMeansFunction)
+                {
+                    ids.AddRange(AddGames(box, result, existing, games, missed));
+                    continue;
+                }
                 if (query.Length == 0)
                     continue;
                 EngineRelationAssistantStep resolve = new EngineRelationAssistantStep { Step = result.Steps.Count + 1 };
                 result.Steps.Add(resolve);
-                ToolCall call = new ToolCall { Tool = "resolve", Query = query, Kind = kind };
+                ToolCall call = new ToolCall { Tool = "resolve", Query = query, Kind = kind, Games = games };
                 resolve.Tool = call.Tool;
                 resolve.Call = call.Describe();
+                List<string> saved = box.RequestGames;
+                box.RequestGames = new List<string>();
                 box.Execute(call, resolve);
+                box.RequestGames = saved;
                 if (box.LastSet.Count == 0)
                 {
-                    missed.Add(query);
+                    missed.Add(query + (games.Count > 0 ? " in " + string.Join(", ", games.Select(EngineGameWords.Label).Distinct()) : string.Empty));
                     continue;
                 }
                 sets.Add(box.LastSetRef);
                 found.AddRange(box.LastSet);
             }
+            found.AddRange(ids.Select(box.Ref).Where(a => a != null));
+            if (found.Count == 0 && missed.Count > 0 && missed.All(x => x.Contains("has it already") || x.Contains("has every") || x.Contains(" has no ")))
+            {
+                result.Finished = true;
+                result.Reply = "Nothing added: " + string.Join(" ", missed.Select(x => x.TrimEnd('.') + "."));
+                return;
+            }
             if (found.Count == 0)
             {
                 result.NeedsModel = missed.Count == 0;
                 result.Reply = missed.Count == 0
-                    ? "I did not understand what to add. Name the function, e.g. \"all throttle axes\"."
-                    : "I found nothing for \"" + string.Join("\", \"", missed) + "\". Try other words, or use the search under Add actions.";
+                    ? "I did not understand what to add. Name the function, e.g. \"all throttle axes\" or \"the flaps of X-Plane 12\"."
+                    : "I found nothing for " + string.Join(", ", missed.Select(x => "\"" + x + "\"")) + ". Try other words, or use the search under Add actions.";
                 return;
             }
             bool isAxis = existing != null ? InternalDataManagement.AllRelations[existing].ISAXIS : (kind.Length > 0 ? kind == "axis" : found.Count(a => a.IsAxis) * 2 >= found.Count);
@@ -488,9 +591,84 @@ namespace JoyPro.Engine
                 if (existing == null)
                     return;
             }
-            Offline(box, result, new ToolCall { Tool = "add_to_relation", Relation = existing, Ids = sets });
+            List<string> add = sets.Concat(ids).ToList();
+            Offline(box, result, new ToolCall { Tool = "add_to_relation", Relation = existing, Ids = add });
             result.Finished = true;
-            result.Reply = box.SummaryLine(existing) + (missed.Count > 0 ? " Nothing found for \"" + string.Join("\", \"", missed) + "\"." : string.Empty);
+            string summary = box.SummaryLine(existing);
+            if (summary.StartsWith("Nothing changed", StringComparison.Ordinal))
+                summary = "\"" + existing + "\" has all of it already.";
+            result.Reply = summary + (missed.Count > 0 ? " Nothing found for " + string.Join(", ", missed.Select(x => "\"" + x + "\"")) + "." : string.Empty);
+        }
+
+        // The relation's own function in the named games: its suggestions there (the best per game; DCS: the confident
+        // ones), else a lookup of its name in those games. Returns the A ids; games without one go to missed.
+        private static List<string> AddGames(Toolbox box, EngineRelationAssistantResult result, string relation, List<string> games, List<string> missed)
+        {
+            List<string> ids = new List<string>();
+            // A game the relation has already (switched on) needs nothing; DCS: its aircraft that are missing.
+            HashSet<string> have = new HashSet<string>((InternalDataManagement.AllRelations[relation].NODES ?? new List<RelationItem>())
+                .Where(n => n != null && (n.AIRCRAFT == null || n.AIRCRAFT.Count == 0 || n.AIRCRAFT.Values.Any(a => a)))
+                .Select(n => EngineRelationSuggest.GameKey(n.Game ?? string.Empty)), StringComparer.OrdinalIgnoreCase);
+            List<string> already = games.Where(g => g != "DCS" && have.Contains(g)).ToList();
+            foreach (string game in already)
+                missed.Add(EngineGameWords.Label(game) + " (\"" + relation + "\" has it already)");
+            games = games.Where(g => !already.Contains(g)).ToList();
+            if (games.Count == 0)
+                return ids;
+            EngineRelationAssistantStep suggestStep = new EngineRelationAssistantStep { Step = result.Steps.Count + 1, Tool = "suggest" };
+            ToolCall suggest = new ToolCall { Tool = "suggest", Relation = relation, Games = games };
+            suggestStep.Call = suggest.Describe();
+            result.Steps.Add(suggestStep);
+            box.Execute(suggest, suggestStep);
+            List<ActionRef> offered = box.LastSet.ToList();
+            List<string> hints = box.LastHints.ToList();
+            bool isAxis = InternalDataManagement.AllRelations[relation].ISAXIS;
+            foreach (string game in games)
+            {
+                // Only other directions there (Arma 3 has gear up and down, no toggle): say what to do instead.
+                string hint = hints.FirstOrDefault(h => h.StartsWith(EngineGameWords.Label(game) + " has no ", StringComparison.Ordinal));
+                if (hint != null && !offered.Any(a => string.Equals(a.Game, game, StringComparison.OrdinalIgnoreCase)))
+                {
+                    missed.Add(hint);
+                    continue;
+                }
+                List<ActionRef> mine = offered.Where(a => string.Equals(a.Game, game, StringComparison.OrdinalIgnoreCase) && a.IsAxis == isAxis).ToList();
+                if (game == "DCS")
+                {
+                    // DCS: only what the catalog is sure of (a missing aircraft's own command), never a guess.
+                    mine = mine.Where(a => string.Equals(a.Confidence, "high", StringComparison.OrdinalIgnoreCase)).ToList();
+                    if (mine.Count == 0 && have.Contains("DCS"))
+                    {
+                        missed.Add("DCS (\"" + relation + "\" has every DCS aircraft the catalog is sure of)");
+                        continue;
+                    }
+                }
+                if (mine.Count == 0)
+                {
+                    EngineRelationAssistantStep resolveStep = new EngineRelationAssistantStep { Step = result.Steps.Count + 1, Tool = "resolve" };
+                    ToolCall resolve = new ToolCall { Tool = "resolve", Query = CleanQuery(Regex.Replace(relation, @"\s*\[[^\]]*\]|\([^)]*\)", " ")), Kind = isAxis ? "axis" : "button", Games = new List<string> { game } };
+                    resolveStep.Call = resolve.Describe();
+                    result.Steps.Add(resolveStep);
+                    box.Execute(resolve, resolveStep);
+                    mine = box.LastSet.Where(a => string.Equals(a.Game, game, StringComparison.OrdinalIgnoreCase)).Take(game == "DCS" ? 40 : 1).ToList();
+                }
+                else if (game != "DCS")
+                {
+                    mine = mine.Take(1).ToList();
+                }
+                if (mine.Count == 0)
+                {
+                    // The other kind only ("Roll left (cyclic)" buttons for an axis relation): say so.
+                    string understood;
+                    List<string> other = EngineRelationAssistantBrain.Resolve(CleanQuery(Regex.Replace(relation, @"\s*\[[^\]]*\]|\([^)]*\)", " ")), !isAxis, new List<string> { game }, new List<string>(), out understood)
+                        .Where(h => string.Equals(h.Game, game, StringComparison.OrdinalIgnoreCase)).Select(h => EngineActionInfo.Readable(h.Game, h.Id, h.Title)).Distinct().Take(3).ToList();
+                    missed.Add(EngineGameWords.Label(game) + (other.Count > 0
+                        ? " (has it only as " + (isAxis ? "buttons" : "axes") + ": " + string.Join(", ", other) + "; \"" + relation + "\" is " + (isAxis ? "an axis" : "a button") + " relation)"
+                        : " (no action for \"" + relation + "\")"));
+                }
+                ids.AddRange(mine.Select(a => a.Ref));
+            }
+            return ids;
         }
 
         // Offline remove: the relation's actions whose game, aircraft or title has the words.
@@ -610,9 +788,9 @@ namespace JoyPro.Engine
             sb.AppendLine("root ::= ws ( listrel | showrel | resolve | search | suggest | create | rename | add | remove | done ) ws");
             sb.AppendLine("listrel ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"list_relations\\\"\" ws \"}\"");
             sb.AppendLine("showrel ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"show_relation\\\"\" ws \",\" ws \"\\\"relation\\\":\" ws str ws \"}\"");
-            sb.AppendLine("resolve ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"resolve\\\"\" ws \",\" ws \"\\\"query\\\":\" ws str ws \",\" ws \"\\\"kind\\\":\" ws kind ws \"}\"");
+            sb.AppendLine("resolve ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"resolve\\\"\" ws \",\" ws \"\\\"query\\\":\" ws str ws \",\" ws \"\\\"kind\\\":\" ws kind ( ws \",\" ws \"\\\"games\\\":\" ws strlist )? ws \"}\"");
             sb.AppendLine("search ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"search\\\"\" ws \",\" ws \"\\\"query\\\":\" ws str ws \",\" ws \"\\\"kind\\\":\" ws kind ( ws \",\" ws \"\\\"games\\\":\" ws strlist )? ws \"}\"");
-            sb.AppendLine("suggest ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"suggest\\\"\" ws \",\" ws \"\\\"relation\\\":\" ws str ws \"}\"");
+            sb.AppendLine("suggest ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"suggest\\\"\" ws \",\" ws \"\\\"relation\\\":\" ws str ( ws \",\" ws \"\\\"games\\\":\" ws strlist )? ws \"}\"");
             sb.AppendLine("create ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"create_relation\\\"\" ws \",\" ws \"\\\"name\\\":\" ws str ws \",\" ws \"\\\"kind\\\":\" ws relkind ws \"}\"");
             sb.AppendLine("rename ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"rename_relation\\\"\" ws \",\" ws \"\\\"relation\\\":\" ws str ws \",\" ws \"\\\"new_name\\\":\" ws str ws \"}\"");
             sb.AppendLine("add ::= \"{\" ws \"\\\"tool\\\":\" ws \"\\\"add_to_relation\\\"\" ws \",\" ws \"\\\"relation\\\":\" ws str ws \",\" ws \"\\\"ids\\\":\" ws ids ws \"}\"");
@@ -645,6 +823,25 @@ namespace JoyPro.Engine
 
             public List<ActionRef> LastSet = new List<ActionRef>();
             public int MaxLines = 45;
+            // The games the request names ("the flaps of X-Plane 12"): a resolve, search or suggest without games keeps to
+            // them (empty: every game).
+            public List<string> RequestGames = new List<string>();
+            // The last suggest's notes: a game that has the function only in other directions (a pair instead).
+            public List<string> LastHints = new List<string>();
+
+            // Game names as the model or the user wrote them ("X-Plane 12", "xp12", "XPlane12") -> game ids.
+            private List<string> GamesOf(ToolCall call)
+            {
+                List<string> games = new List<string>();
+                foreach (string name in call.Games)
+                {
+                    List<string> resolved = EngineGameWords.Resolve(name);
+                    games.AddRange(resolved.Count > 0 ? resolved : new List<string> { EngineRelationSuggest.GameKey(name) });
+                }
+                if (games.Count == 0)
+                    games.AddRange(RequestGames);
+                return games.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            }
             private readonly List<string> queries = new List<string>();
 
             // A part of the request counts as looked up when a resolve or search of this turn shared a word with it.
@@ -685,6 +882,12 @@ namespace JoyPro.Engine
                     }
                 }
                 return index;
+            }
+
+            public ActionRef Ref(string id)
+            {
+                ActionRef action;
+                return refs.TryGetValue(id ?? string.Empty, out action) ? action : null;
             }
 
             public string FindRelation(string name)
@@ -786,13 +989,14 @@ namespace JoyPro.Engine
                 queries.Add(call.Query);
                 List<EngineRelationSearchHit> hits;
                 string understood = string.Empty;
+                List<string> games = GamesOf(call);
                 if (brain)
                 {
-                    hits = EngineRelationAssistantBrain.Resolve(call.Query, axis, call.Games, result.Warnings, out understood);
+                    hits = EngineRelationAssistantBrain.Resolve(call.Query, axis, games, result.Warnings, out understood);
                 }
                 else
                 {
-                    EngineRelationSearchResult search = EngineRelationSearch.Search(call.Query, call.Games.Count > 0 ? call.Games : null, null, axis, 120);
+                    EngineRelationSearchResult search = EngineRelationSearch.Search(call.Query, games.Count > 0 ? games : null, null, axis, 120);
                     hits = search.Results;
                     if (search.Functions.Count > 0)
                         understood = string.Join(", ", search.Functions);
@@ -810,9 +1014,10 @@ namespace JoyPro.Engine
                         actions.Add(action);
                 }
                 string set = NewSet(actions);
+                string only = games.Count > 0 ? " in " + string.Join(", ", games.Select(EngineGameWords.Label).Distinct()) : string.Empty;
                 if (actions.Count == 0)
-                    return "RESULT " + set + " " + call.Tool + " \"" + call.Query + "\": nothing found" + (understood.Length > 0 ? " (understood as " + understood + ")" : string.Empty) + ". Try other words.";
-                return "RESULT " + set + " " + call.Tool + " \"" + call.Query + "\": " + actions.Count.ToString(CultureInfo.InvariantCulture) + " actions" +
+                    return "RESULT " + set + " " + call.Tool + " \"" + call.Query + "\"" + only + ": nothing found" + (understood.Length > 0 ? " (understood as " + understood + ")" : string.Empty) + ". Try other words.";
+                return "RESULT " + set + " " + call.Tool + " \"" + call.Query + "\"" + only + ": " + actions.Count.ToString(CultureInfo.InvariantCulture) + " actions" +
                        (understood.Length > 0 ? " (understood as " + understood + ")" : string.Empty) + " in " + GameCounts(actions) +
                        ". " + set + " stands for all " + actions.Count.ToString(CultureInfo.InvariantCulture) + "." + Lines(actions, MaxLines);
             }
@@ -823,7 +1028,8 @@ namespace JoyPro.Engine
                 if (name == null)
                     return NoRelation(call.Relation);
                 LastActivity = "asking what fits '" + name + "'";
-                EngineRelationSuggestResult suggest = EngineRelationSuggest.Suggest(name, "medium", 60);
+                List<string> games = GamesOf(call);
+                EngineRelationSuggestResult suggest = EngineRelationSuggest.Suggest(name, "medium", 60, games.Count > 0 ? games : null);
                 List<ActionRef> actions = new List<ActionRef>();
                 StringBuilder lines = new StringBuilder();
                 foreach (EngineRelationSuggestion suggestion in suggest.Suggestions)
@@ -834,10 +1040,14 @@ namespace JoyPro.Engine
                     action.SameIdDifferent = Math.Max(action.SameIdDifferent, suggestion.SameIdDifferent);
                     if (suggestion.MeaningNote.Length > 0)
                         action.MeaningNote = suggestion.MeaningNote;
+                    action.Confidence = suggestion.Confidence ?? string.Empty;
                     actions.Add(action);
                     if (actions.Count <= 40)
                         lines.Append('\n').Append(Line(action)).Append(" | ").Append(suggestion.Confidence).Append(": ").Append(suggestion.Why);
                 }
+                LastHints = suggest.Hints.ToList();
+                foreach (string hint in suggest.Hints)
+                    lines.Append('\n').Append("NOTE ").Append(hint);
                 string set = NewSet(actions);
                 string function = string.Join(", ", suggest.Functions.Where(f => f.Weight >= 0.5).Select(f => f.Name));
                 return "RESULT " + set + " suggest \"" + name + "\"" + (function.Length > 0 ? " (function: " + function + ")" : string.Empty) + ": " +
@@ -1029,7 +1239,8 @@ namespace JoyPro.Engine
                 {
                     action = new ActionRef
                     {
-                        Ref = "A" + (refs.Count + 1).ToString(CultureInfo.InvariantCulture), Game = gameKey, Id = id ?? string.Empty, Title = title ?? string.Empty, IsAxis = isAxis, KindKnown = kindKnown
+                        Ref = "A" + (refs.Count + 1).ToString(CultureInfo.InvariantCulture), Game = gameKey, Id = id ?? string.Empty,
+                        Title = EngineActionInfo.Readable(gameKey, id, title ?? string.Empty), IsAxis = isAxis, KindKnown = kindKnown
                     };
                     refs[action.Ref] = action;
                     byKey[key] = action;
@@ -1210,6 +1421,10 @@ namespace JoyPro.Engine
             List<EngineRelationSearchHit> mapped = ResolveByMap(query, axis, games, warnings, out understood);
             if (mapped.Count > 0)
                 return mapped;
+            // Named games and a function the map knows, but none of it there: the game has no such action (a word
+            // search would bring "Landing gear" for "landing lights").
+            if (games != null && games.Count > 0 && understood.Length > 0 && !understood.StartsWith("did you mean", StringComparison.Ordinal))
+                return mapped;
             return ResolveBySearch(query, axis, games, warnings, out understood);
         }
 
@@ -1231,12 +1446,18 @@ namespace JoyPro.Engine
             HashSet<string> direct = new HashSet<string>(resolved.Functions.Where(f => !f.Related).Select(f => f.Id), StringComparer.OrdinalIgnoreCase);
             bool onlyRelated = direct.Count == 0;
             string lower = " " + (query ?? string.Empty).ToLowerInvariant() + " ";
+            // A side word that is the function's own ("trim" of the roll trim, "light" of the landing lights) stays.
+            Dictionary<string, string> ownWords = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (EngineResolvedFunction f in resolved.Functions)
+                ownWords[f.Id] = " " + string.Join(" ", new[] { f.Name }.Concat(f.Synonyms ?? new List<string>())).ToLowerInvariant() + " ";
             foreach (EngineResolvedAction action in resolved.Games.SelectMany(g => g.Actions))
             {
                 if (!onlyRelated && !direct.Contains(action.Function))
                     continue;
                 string title = " " + action.Title.ToLowerInvariant().Replace('_', ' ') + " ";
-                if (SideWords.Any(w => title.Contains(w) && !lower.Contains(w.Trim())))
+                string own;
+                ownWords.TryGetValue(action.Function ?? string.Empty, out own);
+                if (SideWords.Any(w => title.Contains(w) && !lower.Contains(w.Trim()) && (own == null || !own.Contains(w.Trim()))))
                     continue;
                 hits.Add(new EngineRelationSearchHit
                 {
@@ -1301,10 +1522,13 @@ namespace JoyPro.Engine
             { "VTOLVR", "VTOL VR" }, { "VTOLVRNative", "VTOL VR" }, { "ArmaReforger", "Arma Reforger" }, { "TinyCombatArena", "Tiny Combat Arena" }, { "GRebels", "G-Rebels" }
         };
 
+        // The readable name of every game (EngineGameWords: language.json, then the game integrations).
         public static string Label(string game)
         {
             string name;
-            return Names.TryGetValue(game ?? string.Empty, out name) ? name : game ?? string.Empty;
+            if (Names.TryGetValue(game ?? string.Empty, out name))
+                return name;
+            return EngineGameWords.Label(game ?? string.Empty);
         }
     }
 
@@ -1398,6 +1622,8 @@ namespace JoyPro.Engine
         public bool Finished { get; set; }
         public bool Changed { get; set; }
         public bool NeedsModel { get; set; }
+        // A question JoyPro answered from its knowledge (nothing changes).
+        public bool Question { get; set; }
         public string Reply { get; set; }
         public string Summary { get; set; }
         public List<EngineRelationAssistantRelation> Relations { get; set; }
@@ -1449,6 +1675,11 @@ namespace JoyPro.Engine
             {
                 InternalDataManagement.ResyncRelations();
                 InternalDataManagement.RecalcFigures();
+            }
+            else
+            {
+                // A question or a turn that changed nothing writes no new profile version.
+                CommandChangedNothing = true;
             }
             EmitPayload(textOutput ? EngineRelationAssistant.ToText(result) : EngineSerialization.ToJson(result), outPath);
             return 0;

@@ -42,6 +42,19 @@ public sealed partial class GameCardItem : ObservableObject
 
     public string InstallText => Installed ? T("Installed") : T("Not found on this PC");
 
+    // Why the card's buttons are off (report 2.2.17: "HLL is greyed out"): the game was not found, so JoyPro has no
+    // folder to read or write.
+    public string NotInstalledReason => T("JoyPro did not find {0} on this PC (Steam, its launcher, Windows' apps list), so import, export and undo are off. If it is installed, choose its folder in Settings > Games.", Name);
+
+    // The same, short, on the card.
+    public string NotInstalledHint => T("Import and export are off until JoyPro finds the game: Settings > Games, choose its folder.");
+
+    public string ImportTip => Installed ? T("Take the binds you made in this game into JoyPro") : NotInstalledReason;
+
+    public string ExportTip => Installed ? T("Write your profile into this game (Export page)") : NotInstalledReason;
+
+    public string UndoTip => Installed ? T("Put the game's control files back from before JoyPro's last export (asks first)") : NotInstalledReason;
+
     // "Watch for changes" (docs/sync-watcher.md#which-games-are-watched): JoyPro's watcher offers to take over binds the
     // user changes in the game. Ticked for installed games unless the user unticked it; a game not found has nothing
     // to watch (the box is off and greyed, and ticks itself once the game is installed unless the user unticked it).

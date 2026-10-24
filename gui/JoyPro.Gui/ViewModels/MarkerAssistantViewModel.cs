@@ -20,20 +20,132 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
 {
     private readonly DeviceReferenceViewModel reference;
     private readonly IJoystickCaptureService capture;
-    private readonly Stack<(ReferenceMarker Marker, double X, double Y, bool WasPlaced)> undo = new();
+    private readonly Stack<(ReferenceMarker Marker, double X, double Y, bool WasPlaced, bool WasShown)> undo = new();
     private CancellationTokenSource? cancel;
     private bool definitionChanged;
+    // Parts the user skipped in "Now place" (asked again after the others).
+    private readonly List<string> skipped = [];
 
     public MarkerAssistantViewModel(DeviceReferenceViewModel reference, IJoystickCaptureService capture)
     {
         this.reference = reference;
         this.capture = capture;
         reference.Assistant = this;
+        reference.PictureChanged += OnPictureChanged;
+        RefreshUnplaced();
+    }
+
+    // The assistant closes: it no longer follows the picture.
+    public void Detach() => reference.PictureChanged -= OnPictureChanged;
+
+    private void OnPictureChanged(object? sender, EventArgs e) => RefreshUnplaced();
+
+    // ------------------------------------------------------------------ drag to place, "Now place: X"
+
+    // The inputs without a place on the shown picture, as chips to drag onto the picture (the next one to place first).
+    public System.Collections.ObjectModel.ObservableCollection<ReferenceMarker> UnplacedParts { get; } = [];
+
+    // The part a click on the picture places now (the first unplaced one, the skipped ones last).
+    [ObservableProperty] private ReferenceMarker? nextToPlace;
+
+    // The rarely used tools (Axis, Stop, Add control, Remove from picture) behind "More".
+    [ObservableProperty] private bool showMoreTools;
+
+    // Before every placement (the page's undo remembers the parts as they were).
+    public Action<string>? BeforePlacement { get; set; }
+
+    public bool HasUnplacedParts => UnplacedParts.Count > 0;
+
+    public bool HasNextToPlace => NowPlacing != null;
+
+    // The part asked for: the pressed input's part while it waits for its click, else the next unplaced one.
+    public ReferenceMarker? NowPlacing => Step == "Place" && Current != null ? Current : NextToPlace;
+
+    public string NowPlaceText => NowPlacing is { } part ? T("Now place: {0}", PartLabel(part)) : T("Every input has its place on this picture.");
+
+    public string UnplacedSummary => Plural("{0} input without a place: drag it onto the picture", "{0} inputs without a place: drag one onto the picture", UnplacedParts.Count);
+
+    private static string PartLabel(ReferenceMarker part)
+    {
+        string inputs = string.Join(", ", part.Inputs.Where(i => i.Input.Length > 0).Select(i => DeviceMarkerText.ShortLabel(i.Input)).Distinct().Take(3));
+        return inputs.Length > 0 ? part.Name + " (" + inputs + ")" : part.Name;
+    }
+
+    public void RefreshUnplaced()
+    {
+        List<ReferenceMarker> parts = reference.Markers.Where(m => !m.IsShown && m.Inputs.Any(i => i.Input.Length > 0)).ToList();
+        List<ReferenceMarker> ordered = parts.Where(p => !skipped.Contains(p.Id)).Concat(skipped.Select(id => parts.FirstOrDefault(p => p.Id == id)).OfType<ReferenceMarker>()).ToList();
+        if (!ordered.SequenceEqual(UnplacedParts))
+        {
+            UnplacedParts.Clear();
+            foreach (ReferenceMarker part in ordered)
+                UnplacedParts.Add(part);
+        }
+        NextToPlace = UnplacedParts.FirstOrDefault();
+        NotifyNowPlace();
+    }
+
+    private void NotifyNowPlace()
+    {
+        OnPropertyChanged(nameof(HasUnplacedParts));
+        OnPropertyChanged(nameof(NowPlacing));
+        OnPropertyChanged(nameof(HasNextToPlace));
+        OnPropertyChanged(nameof(NowPlaceText));
+        OnPropertyChanged(nameof(UnplacedSummary));
+    }
+
+    partial void OnNextToPlaceChanged(ReferenceMarker? value) => NotifyNowPlace();
+
+    partial void OnCurrentChanged(ReferenceMarker? value) => NotifyNowPlace();
+
+    // "Skip" in Now place: this part is asked again after the others.
+    [RelayCommand]
+    private void SkipNext()
+    {
+        if (NextToPlace == null)
+            return;
+        skipped.Remove(NextToPlace.Id);
+        skipped.Add(NextToPlace.Id);
+        RefreshUnplaced();
+    }
+
+    // A click on the picture while no press waits for its click: the part of "Now place" goes there (0..1).
+    public bool PlaceNextAt(double x, double y)
+    {
+        ReferenceMarker? part = NextToPlace;
+        if (part == null)
+            return false;
+        PlacePart(part, x, y);
+        Prompt = T("Placed \"{0}\". Click the next one, drag a chip onto the picture, or press a button.", part.Name);
+        return true;
+    }
+
+    // A chip dropped on the picture (0..1): its part goes there.
+    public bool DropPart(string partId, double x, double y)
+    {
+        ReferenceMarker? part = reference.Markers.FirstOrDefault(m => string.Equals(m.Id, partId, StringComparison.OrdinalIgnoreCase));
+        if (part == null)
+            return false;
+        PlacePart(part, x, y);
+        Prompt = T("Placed \"{0}\".", part.Name);
+        return true;
+    }
+
+    // Every placement (press and click, Now place, a dropped chip): undoable here and on the page.
+    private void PlacePart(ReferenceMarker part, double x, double y)
+    {
+        BeforePlacement?.Invoke(T("place {0}", part.Name));
+        undo.Push((part, part.X, part.Y, part.IsPlaced, part.IsShown));
+        reference.MoveMarker(part, x, y);
+        reference.SelectedMarker = part;
+        skipped.Remove(part.Id);
+        PlacedCount++;
+        RefreshUnplaced();
     }
 
     // Idle, Input (waiting for a button / hat / axis), Place (waiting for the click on the picture), Done.
     [ObservableProperty] private string step = "Idle";
-    [ObservableProperty] private string prompt = "Start the assistant, then press each button of the device and click where it is on the picture.";
+    [ObservableProperty] private string prompt = T("Click the picture where the asked input is, drag a chip onto it, or press Start and then a button of the device.");
     [ObservableProperty] private ReferenceMarker? current;
     [ObservableProperty] private string currentInput = string.Empty;
     [ObservableProperty] private int placedCount;
@@ -48,6 +160,7 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(IsWaitingForClick));
         OnPropertyChanged(nameof(IsWaitingForInput));
+        NotifyNowPlace();
     }
 
     [RelayCommand]
@@ -192,9 +305,7 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
     {
         if (Step != "Place" || Current == null)
             return false;
-        undo.Push((Current, Current.X, Current.Y, Current.IsPlaced));
-        reference.MoveMarker(Current, x, y);
-        PlacedCount++;
+        PlacePart(Current, x, y);
         if (addingControl)
         {
             // A control added by its kind: done; the next one is added the same way or by pressing.
@@ -381,8 +492,10 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
             Prompt = T("Pick a part in the legend or on the picture first.");
             return;
         }
-        undo.Push((marker, marker.X, marker.Y, marker.IsPlaced));
+        BeforePlacement?.Invoke(T("remove {0}", marker.Name));
+        undo.Push((marker, marker.X, marker.Y, marker.IsPlaced, marker.IsShown));
         reference.RemoveFromPicture(marker);
+        RefreshUnplaced();
         Prompt = T("\"{0}\" is off the picture now; place it again with Start or a click after picking it.", marker.Name);
     }
 
@@ -398,7 +511,7 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
     {
         if (undo.Count == 0)
             return;
-        (ReferenceMarker marker, double x, double y, bool wasPlaced) = undo.Pop();
+        (ReferenceMarker marker, double x, double y, bool wasPlaced, bool wasShown) = undo.Pop();
         marker.X = x;
         marker.Y = y;
         marker.IsPlaced = wasPlaced;
@@ -406,6 +519,9 @@ public sealed partial class MarkerAssistantViewModel : ObservableObject
         reference.SelectedMarker = marker;
         reference.MoveMarker(marker, x, y);
         marker.IsPlaced = wasPlaced;
+        // A part that had no place before has none again (back among the chips).
+        marker.IsShown = wasShown;
+        RefreshUnplaced();
     }
 
     [RelayCommand]

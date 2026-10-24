@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JoyPro.Gui.Models;
+using JoyPro.Logging;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -26,6 +27,8 @@ public sealed partial class MainWindowViewModel
     public ObservableCollection<CatalogCategoryItem> CatalogCategories { get; } = [];
 
     private readonly List<CatalogRowItem> catalogRows = [];
+    // The engine's category order (the catalog's own order).
+    private readonly List<string> catalogCategoryOrder = [];
     private string catalogLoadedKey = string.Empty;
     private int catalogVersion;
     private bool catalogOverviewLoaded;
@@ -140,7 +143,66 @@ public sealed partial class MainWindowViewModel
             _ = LoadCatalogListAsync();
     }
 
-    partial void OnCatalogFilterTextChanged(string value) => ApplyCatalogFilter();
+    partial void OnCatalogFilterTextChanged(string value)
+    {
+        ApplyCatalogFilter();
+        _ = RefreshCatalogMeaningAsync(value);
+    }
+
+    // The filter by meaning: what the engine's search finds for the words in this game's list ("fast travel" = the
+    // jump drive, "drop the wheels" = gear down), besides the rows whose title has the words.
+    private HashSet<string> catalogMeaningKeys = new(StringComparer.OrdinalIgnoreCase);
+    private string catalogMeaningText = string.Empty;
+
+    internal async Task RefreshCatalogMeaningAsync(string text)
+    {
+        string wanted = (text ?? string.Empty).Trim();
+        CatalogGameOption? game = CatalogGame;
+        if (wanted.Length < 3 || game == null)
+        {
+            if (catalogMeaningKeys.Count > 0)
+            {
+                catalogMeaningKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                catalogMeaningText = string.Empty;
+                ApplyCatalogFilter();
+            }
+            return;
+        }
+        // Typing: only the last text asks the engine.
+        await Task.Delay(CatalogMeaningDelayMs);
+        if (!string.Equals((CatalogFilterText ?? string.Empty).Trim(), wanted, StringComparison.Ordinal) || game != CatalogGame)
+            return;
+        List<string> args = ["relations", "search", wanted, "--game", game.Game, "--limit", "200"];
+        if (game.HasPlanes && CatalogPlane != null)
+            args.AddRange(["--plane", CatalogPlane.Plane]);
+        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: T("Looking up \"{0}\"...", wanted), forceText: false, background: true);
+        if (result == null || result.ExitCode != 0 || !string.Equals((CatalogFilterText ?? string.Empty).Trim(), wanted, StringComparison.Ordinal))
+            return;
+        HashSet<string> keys = new(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
+            if (doc.RootElement.TryGetProperty("Results", out JsonElement rows) && rows.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement row in rows.EnumerateArray())
+                {
+                    // Rows found as the function the words mean, not plain word matches (those the title filter has).
+                    string match = ReadJsonString(row, "Match");
+                    if (match is "exact" or "function" or "synonym" or "described" or "catalog")
+                        keys.Add(ReadJsonString(row, "Game") + "|" + ReadJsonString(row, "Id"));
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            return;
+        }
+        catalogMeaningKeys = keys;
+        catalogMeaningText = wanted;
+        ApplyCatalogFilter();
+    }
+
+    internal static int CatalogMeaningDelayMs = 300;
 
     partial void OnCatalogOnlyFreeChanged(bool value) => ApplyCatalogFilter();
 
@@ -238,9 +300,12 @@ public sealed partial class MainWindowViewModel
                         rows.Add(CatalogRowOf(ParseBuilderSearchHit(item)));
                 }
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
-                CatalogStatus = T("Could not read the catalog.");
+                SetCatalogRows([], []);
+                CatalogStatus = T("Could not read the catalog.") + " " + ex.Message;
+                JoyProLog.Warn("Catalog", "relations browse --game " + game.Game + ": the output could not be read: " + ex.Message);
+                return;
             }
             catalogLoadedKey = key;
             SetCatalogRows(rows, categories.Select(c => c.Name).ToList());
@@ -267,14 +332,20 @@ public sealed partial class MainWindowViewModel
         return new CatalogRowItem(row, used, bound != null ? T("bound: {0}", bound.BindLabel) : string.Empty);
     }
 
-    private void SetCatalogRows(List<CatalogRowItem> rows, List<string> categoryOrder)
+    private void SetCatalogRows(List<CatalogRowItem> rows, List<string> categoryOrder, bool keepExpanded = false)
     {
+        EnsureActionSorts();
+        catalogCategoryOrder.Clear();
+        catalogCategoryOrder.AddRange(categoryOrder);
+        HashSet<string> expanded = CatalogCategories.Where(c => keepExpanded && c.IsExpanded).Select(c => c.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (CatalogRowItem row in catalogRows)
             row.Row.PropertyChanged -= OnCatalogRowChanged;
         catalogRows.Clear();
         catalogRows.AddRange(rows);
         foreach (CatalogRowItem row in catalogRows)
             row.Row.PropertyChanged += OnCatalogRowChanged;
+        // The rows of the open relation are known before the categories are ordered by what matters for it.
+        MarkBuilderRowsInRelation();
         CatalogCategories.Clear();
         Dictionary<string, List<CatalogRowItem>> byCategory = new(StringComparer.OrdinalIgnoreCase);
         foreach (CatalogRowItem row in rows)
@@ -286,15 +357,56 @@ public sealed partial class MainWindowViewModel
                 list.Add(row);
             }
         }
-        foreach (string name in categoryOrder.Concat(byCategory.Keys).Distinct(StringComparer.OrdinalIgnoreCase))
+        // A first sort level "Category" orders the categories by name; otherwise the engine's order.
+        IEnumerable<string> names = categoryOrder.Concat(byCategory.Keys).Distinct(StringComparer.OrdinalIgnoreCase);
+        if (CatalogSort.PrimaryKey == "category")
+            names = CatalogSort.PrimaryDescending
+                ? names.OrderByDescending(n => n, Comparer<string>.Create(ListSortRow.Natural))
+                : names.OrderBy(n => n, Comparer<string>.Create(ListSortRow.Natural));
+        else
+        {
+            // Own order: the categories that matter for the open relation first (its own actions, then the recommended
+            // actions of its function, then any action of its function, then any recommended action), the rest by name.
+            List<string> ordered = names.ToList();
+            names = ordered.OrderByDescending(n => byCategory.TryGetValue(n, out List<CatalogRowItem>? l) ? CatalogCategoryRelevance(l) : 0)
+                .ThenBy(n => n, Comparer<string>.Create(ListSortRow.Natural));
+        }
+        string plane = CatalogPlane?.Plane ?? string.Empty;
+        foreach (string name in names)
         {
             if (byCategory.TryGetValue(name, out List<CatalogRowItem>? list))
-                CatalogCategories.Add(new CatalogCategoryItem(name, list));
+            {
+                List<CatalogRowItem> sorted = CatalogSort.HasLevels ? CatalogSort.Sort(list, r => SortRowOfAction(r.Row, plane) with { Category = name }).ToList() : list;
+                CatalogCategoryItem category = new(name, sorted);
+                if (expanded.Contains(name))
+                    category.IsExpanded = true;
+                CatalogCategories.Add(category);
+            }
         }
         MarkBuilderRowsInRelation();
         ApplyCatalogFilter();
         OnPropertyChanged(nameof(HasCatalogRows));
         OnCatalogCheckedChanged();
+    }
+
+    // 4: holds an action of the open relation; 3: a recommended action of the relation's function; 2: an action of that
+    // function; 1: a recommended action; 0: none (Star Citizen's "Character customizer" pitch for a Pitch relation).
+    internal int CatalogCategoryRelevance(IEnumerable<CatalogRowItem> rows)
+    {
+        string function = (BuilderFunctionText ?? string.Empty).Trim();
+        int best = 0;
+        foreach (CatalogRowItem item in rows)
+        {
+            BuilderSearchResultItem row = item.Row;
+            bool fits = function.Length > 0 && row.FunctionName.Length > 0 &&
+                        (row.FunctionName.Contains(function, StringComparison.OrdinalIgnoreCase) || function.Contains(row.FunctionName, StringComparison.OrdinalIgnoreCase));
+            int score = row.IsInOpenRelation ? 4 : row.IsRecommended && fits ? 3 : fits ? 2 : row.IsRecommended ? 1 : 0;
+            if (score > best)
+                best = score;
+            if (best == 4)
+                break;
+        }
+        return best;
     }
 
     // DCS "Control Stick; HOTAS" is in both.
@@ -324,11 +436,14 @@ public sealed partial class MainWindowViewModel
     {
         string[] words = (CatalogFilterText ?? string.Empty).ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         bool filtering = words.Length > 0;
+        // The engine's meaning matches count for this text only.
+        HashSet<string> meaning = string.Equals(catalogMeaningText, (CatalogFilterText ?? string.Empty).Trim(), StringComparison.Ordinal) ? catalogMeaningKeys : [];
         foreach (CatalogCategoryItem category in CatalogCategories)
         {
             bool nameHit = filtering && words.All(w => category.Name.Contains(w, StringComparison.OrdinalIgnoreCase));
             List<CatalogRowItem> matching = category.Rows.Where(r => (!CatalogOnlyFree || !r.IsUsed) &&
-                (!filtering || nameHit || words.All(w => (r.Row.Title + " " + r.Row.Id).Contains(w, StringComparison.OrdinalIgnoreCase)))).ToList();
+                (!filtering || nameHit || meaning.Contains(r.Row.Game + "|" + r.Row.Id) || words.All(w => (r.Row.Title + " " + r.Row.Id).Contains(w, StringComparison.OrdinalIgnoreCase) ||
+                                        (r.Row.Game == "DCS" && JoyPro.Engine.DcsCommandNames.KeyMatches(w, r.Row.Title, DcsEnglishNames()))))).ToList();
             category.Matching = matching.Count;
             category.IsVisible = matching.Count > 0;
             if (filtering && matching.Count > 0)

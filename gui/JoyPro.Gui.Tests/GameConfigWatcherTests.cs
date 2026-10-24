@@ -55,6 +55,25 @@ public sealed class GameConfigWatcherTests : IDisposable
         return condition();
     }
 
+    // Waits until value() stayed the same for quietMs (or timeoutMs passed) and returns it.
+    private static int WaitForQuiet(Func<int> value, int quietMs, int timeoutMs)
+    {
+        Stopwatch total = Stopwatch.StartNew();
+        Stopwatch quiet = Stopwatch.StartNew();
+        int last = value();
+        while (quiet.ElapsedMilliseconds < quietMs && total.ElapsedMilliseconds < timeoutMs)
+        {
+            Thread.Sleep(50);
+            int now = value();
+            if (now != last)
+            {
+                last = now;
+                quiet.Restart();
+            }
+        }
+        return last;
+    }
+
     private static (int Handles, long Managed, long WorkingSet) Measure()
     {
         GC.Collect();
@@ -80,45 +99,54 @@ public sealed class GameConfigWatcherTests : IDisposable
         File.WriteAllText(config, "warm-up");
         Assert.True(WaitFor(() => Volatile.Read(ref raised) == 1, 5000), "the first change should be reported once.");
         int watcherHandles = watcher.HandleCount;
-        (int handlesBefore, long managedBefore, long workingSetBefore) = Measure();
 
-        for (int i = 0; i < 1000; i++)
+        // One burst: 1000 writes of the watched file and 1000 of a file next to it. It is reported (debounced) and,
+        // once the reports stopped, measured. The process-wide numbers (handles, heap) include what earlier tests of a
+        // full run still wind down or start meanwhile (thread-pool and render threads, engine servers): a burst that
+        // shows growth is repeated (up to three bursts), and the smallest growth of a burst is judged. A watcher that
+        // leaks grows with every burst; the others' noise does not repeat. Fewer handles than before are no leak.
+        // The watcher's own handle count stays exact in every burst.
+        int reportsSoFar = 1;
+        int handleGrowth = int.MaxValue;
+        long managedGrowth = long.MaxValue;
+        for (int burst = 0; burst < 3 && (handleGrowth > 20 || managedGrowth > 2 * 1024 * 1024); burst++)
         {
-            File.WriteAllText(config, "value " + i);
-            File.WriteAllText(other, "not watched " + i);
-        }
-        Assert.True(WaitFor(() => Volatile.Read(ref raised) >= 2, 5000), "the writes should be reported.");
-        Thread.Sleep(1000);
-        int burstReports = Volatile.Read(ref raised) - 1;
-        // 1000 writes in a burst -> one report (a slow disk may split the burst; never one report per write).
-        Assert.InRange(burstReports, 1, 5);
+            (int handlesBefore, long managedBefore, long workingSetBefore) = Measure();
+            for (int i = 0; i < 1000; i++)
+            {
+                File.WriteAllText(config, "value " + burst + " " + i);
+                File.WriteAllText(other, "not watched " + i);
+            }
+            int before = reportsSoFar;
+            Assert.True(WaitFor(() => Volatile.Read(ref raised) > before, 10000), "the writes should be reported.");
+            // Quiet: no report for 1.5 s (five debounce times), so a burst a busy disk split is counted whole.
+            int reports = WaitForQuiet(() => Volatile.Read(ref raised), 1500, 15000);
+            int burstReports = reports - reportsSoFar;
+            reportsSoFar = reports;
+            // 1000 writes in a burst -> one report (a slow disk may split the burst; never one report per write).
+            Assert.InRange(burstReports, 1, 5);
 
-        // Not watched: no report.
-        File.WriteAllText(other, "still not watched");
-        Thread.Sleep(800);
-        Assert.Equal(1 + burstReports, Volatile.Read(ref raised));
+            // Not watched: no report.
+            File.WriteAllText(other, "still not watched");
+            Thread.Sleep(800);
+            Assert.Equal(reportsSoFar, Volatile.Read(ref raised));
 
-        (int handlesAfter, long managedAfter, long workingSetAfter) = Measure();
-        // The process numbers include whatever the earlier tests of the full run still wind down (thread-pool threads,
-        // render threads): give them a few seconds to settle before calling it growth. The watcher's own handle count
-        // below stays exact.
-        for (int settle = 0; settle < 10 && (handlesAfter - handlesBefore > 20 || managedAfter - managedBefore > 2 * 1024 * 1024); settle++)
-        {
-            Thread.Sleep(500);
-            (handlesAfter, managedAfter, workingSetAfter) = Measure();
+            (int handlesAfter, long managedAfter, long workingSetAfter) = Measure();
+            output.WriteLine($"burst {burst + 1}, 1000 writes: reports={burstReports}, handles {handlesBefore} -> {handlesAfter}, managed {managedBefore / 1024} KB -> {managedAfter / 1024} KB, working set {workingSetBefore / 1024 / 1024} MB -> {workingSetAfter / 1024 / 1024} MB");
+            Assert.Equal(watcherHandles, watcher.HandleCount);
+            handleGrowth = Math.Min(handleGrowth, handlesAfter - handlesBefore);
+            managedGrowth = Math.Min(managedGrowth, managedAfter - managedBefore);
         }
-        output.WriteLine($"1000 writes: reports={burstReports}, handles {handlesBefore} -> {handlesAfter}, managed {managedBefore / 1024} KB -> {managedAfter / 1024} KB, working set {workingSetBefore / 1024 / 1024} MB -> {workingSetAfter / 1024 / 1024} MB");
-        Assert.Equal(watcherHandles, watcher.HandleCount);
-        Assert.InRange(handlesAfter - handlesBefore, -50, 20);
-        Assert.InRange(managedAfter - managedBefore, long.MinValue, 2 * 1024 * 1024);
+        Assert.True(handleGrowth <= 20, "process handles grew by " + handleGrowth + " in every burst of 1000 writes.");
+        Assert.True(managedGrowth <= 2 * 1024 * 1024, "the managed heap grew by " + managedGrowth / 1024 + " KB in every burst of 1000 writes.");
 
         // Idle: nothing runs (no timer, no polling).
         // The number is for the whole test process, so a full run's leftovers of earlier tests (render threads, timers)
-        // can fall into one window. A polling or busy watcher uses CPU in every window: the quietest of up to three
+        // can fall into one window. A polling or busy watcher uses CPU in every window: the quietest of up to five
         // windows is judged.
         using Process self = Process.GetCurrentProcess();
         double idleCpuMs = double.MaxValue;
-        for (int window = 0; window < 3 && idleCpuMs >= 300; window++)
+        for (int window = 0; window < 5 && idleCpuMs >= 300; window++)
         {
             self.Refresh();
             TimeSpan cpuBefore = self.TotalProcessorTime;

@@ -158,7 +158,7 @@ public sealed partial class MainWindowViewModel
     private bool HasLayoutSuggestions => LayoutSuggestions.Count > 0;
 
     // engine layout image <device> [--clear|--set <file>]: the previous layout file (the current one without an option).
-    private async Task<string> LayoutImageOfAsync(string device, string? option, string? value = null)
+    private async Task<string> LayoutImageOfAsync(string device, string? option, string? value = null, string? busyLabel = null)
     {
         List<string> args = ["layout", "image", device];
         if (option != null)
@@ -166,7 +166,7 @@ public sealed partial class MainWindowViewModel
         if (value != null)
             args.Add(value);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: option != null,
-            busyLabel: N("Resetting the device's picture..."), forceText: false, background: option == null);
+            busyLabel: busyLabel ?? N("Resetting the device's picture..."), forceText: false, background: option == null);
         if (result == null || result.ExitCode != 0)
             return string.Empty;
         try

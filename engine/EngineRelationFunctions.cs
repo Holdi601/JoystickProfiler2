@@ -126,11 +126,11 @@ namespace JoyPro.Engine
             Stopwatch watch = Stopwatch.StartNew();
             EngineResolveResult result = new EngineResolveResult { Query = (query ?? string.Empty).Trim() };
             EngineFunctionMap.Map map = EngineFunctionMap.Load(result.Warnings);
-            EngineFunctionMap.Understanding u = EngineFunctionMap.Resolve(map, result.Query);
+            HashSet<string> gameFilter = new HashSet<string>((games ?? new List<string>()).Select(EngineRelationSuggest.GameKey).Where(g => g.Length > 0), StringComparer.OrdinalIgnoreCase);
+            EngineFunctionMap.Understanding u = EngineFunctionMap.Resolve(map, result.Query, gameFilter);
             result.Direction = u.Dir;
             result.Extra = u.Extra.ToList();
             result.DidYouMean = u.DidYouMean;
-            HashSet<string> gameFilter = new HashSet<string>((games ?? new List<string>()).Select(EngineRelationSuggest.GameKey).Where(g => g.Length > 0), StringComparer.OrdinalIgnoreCase);
             HashSet<string> planeFilter = new HashSet<string>((planes ?? new List<string>()).Select(p => p.Trim()).Where(p => p.Length > 0), StringComparer.OrdinalIgnoreCase);
             Dictionary<string, EngineResolvedAction> rows = new Dictionary<string, EngineResolvedAction>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, double> rank = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);

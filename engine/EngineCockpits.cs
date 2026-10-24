@@ -486,7 +486,7 @@ namespace JoyPro.Engine
             }
             else
             {
-                Console.WriteLine(EngineSerialization.ToJson(new { Files = files, Pages = pages.Select(p => new { p.Id, p.Kind, p.Title, p.Width, p.Height }).ToList() }));
+                Console.WriteLine(EngineSerialization.ForConsole(EngineSerialization.ToJson(new { Files = files, Pages = pages.Select(p => new { p.Id, p.Kind, p.Title, p.Width, p.Height }).ToList() })));
             }
             return 0;
         }
@@ -576,11 +576,11 @@ namespace JoyPro.Engine
                 }
                 else
                 {
-                    Console.WriteLine(EngineSerialization.ToJson(new
+                    Console.WriteLine(EngineSerialization.ForConsole(EngineSerialization.ToJson(new
                     {
                         File = full,
                         Sheets = sheets.Select(s => new { s.Device, Drawing = s.Drawing.Id, Tables = s.Sheet.Tables.Count, Lines = s.Sheet.Lines.Count, s.Unplaced }).ToList()
-                    }));
+                    })));
                 }
                 return 0;
             }

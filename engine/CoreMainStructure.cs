@@ -131,7 +131,7 @@ namespace JoyPro
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), EngineDataFolderName);
         }
 
-        private static string GetMetaPath()
+        internal static string GetMetaPath()
         {
             return Path.Combine(GetEngineDataPath(), EngineMetaFileName);
         }

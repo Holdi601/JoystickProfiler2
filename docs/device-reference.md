@@ -345,6 +345,14 @@ Front, drawing", or "not placed yet"). A card over the picture offers the **mark
 2. Click the part's spot on the picture.
 3. *Skip*, *Undo* and *Stop* work at any step. *Finish* saves the positions.
 
+Without the device at hand: **Now place: X** names the next input without a place; a click on the picture puts it
+there (*Later* asks for it after the others). The inputs without a place are chips under it: drag one onto the
+picture and its marker goes where it is dropped. A pressed input still takes the next click. Every placement (press
+and click, Now place, a dropped chip) is undone with the assistant's *Undo* and with the page's Undo (Ctrl+Z); an
+undone part goes back among the chips. *More* holds the rarely used tools (Axis, Stop, Add control, Remove from
+picture). Saving is as before: the user's positions of that picture (`MarkerAssistantViewModel`: `UnplacedParts`,
+`NextToPlace`, `PlaceNextAt`, `DropPart`; the canvas: `PartDroppedCommand`, drag text `joypro-part:<part id>`).
+
 With the assistant, an unknown device also gets a device definition (`<data>\Devices\<id>.json`, see below).
 
 ### The look of the markers
@@ -470,6 +478,10 @@ input under exactly those modifiers (a bind with Shift A + Shift B is not shown 
   `devices.json` there maps each device to the sheet of the picture last shown for it.
 - **Share layout...** writes the positions and the tables and lines (never `photo.local`, never a maker's photo);
   **Import layout...** takes both over.
+- When the model has a page with several views, the shared file carries it too (`"multiview"`: the page format and
+  every view with its place and scale, plus the view's own `joypro-device-layout` or the user's plain image as base64;
+  the user's own photo inside a view's layout). *Import layout...* puts the views' sheets and images back and saves the
+  page (`Services/LayoutShare.cs`).
 
 ```json
 "callouts": { "version": 1, "width": 2056, "height": 1656, "picture": [514, 203, 1000, 1300],
@@ -679,7 +691,50 @@ mostly discontinued products whose maker no longer shows them.
    - The newest of several layouts of a device wins.
 6. Binds of a profile made on another PC match by device name too.
 
-These layouts are the user's own files and are never shipped.
+These layouts are the user's own files and are never shipped. JoyPro also offers them as 2D layouts of their models
+(below).
+
+## 2D layouts
+
+A 2D layout is a cheat-sheet picture with drawn boxes and the text position of every input in it, like a JoyPro 1
+layout: the bound commands are written into the boxes. JoyPro ships only the text positions (`DB/DeviceLayouts2D`,
+JSON); no picture ships, because the sheets hold the makers' product photos or renders. A 2D layout is offered in the
+Layout page's picture strip only when its picture is on this PC (found by name and SHA-256; nothing is offered
+otherwise):
+
+- **2D layout from your JoyPro 1 folder**: the JoyPro 1 sheets and button maps (VKB Gunfighter MCG Pro, also with a
+  modifier column; MFG Crosswind; Virpil Alpha L and R; MT-50 CM, also with a modifier column; MT-50CM3; Control Panel
+  1 and 2; Gladiator NXT; TWCS; MFD Cougar; T-Rudder Mk.IV; Thrustmaster F/A-18C grip and Warthog throttle). The
+  picture is looked up in the user's JoyPro 1 folders (taken over into `<data>\Layouts\JoyPro1`, the folders listed in
+  its `imported-from.txt`, and the ones found on this PC).
+- **2D layout by maogowzeg (Discord)**: his community sheets of the WinWing Orion 2 devices (ViperAce EX grip with
+  shaker, the throttle base with the StrikeAce F-15EX / F-15E handles, the take-off panel 2), positions mapped with his
+  consent. Users who received the sheets put the picture files into **`<data>\Layouts\Community`**
+  (`%LOCALAPPDATA%\JoyPro\Layouts\Community`; the Layout page's "Use your own picture" names the folder and opens it).
+  His name is shown under the picture and printed on the cheat sheets.
+
+The same picture may come as other files (the sheet as it was sent, another format): `localPictureAlternatives` lists
+them (name and SHA-256 each); the positions are the same on all of them.
+
+Picking one makes it the device's layout: JoyPro copies it with its picture to `<data>\Layouts\Variants\<id>.json`
+(the modifier column `MOD+<input>` filled with the profile's first modifier, else left out), sets it as the device's
+layout file in the profile (`layout image <device> --set`), shows it like the user's own layout and the cheat sheets
+print it. The pick is kept per device (`Variants\choices.json`) and survives a restart; another picture of the strip
+gives the device its earlier layout back. Saving edits writes the user's own `.layout` (it keeps the credit).
+
+Format (`DB/DeviceLayouts2D/<id>.json`, `LayoutVariant` in `engine/DeviceReference/LayoutVariants.cs`):
+
+```json
+{ "format": "joypro-2d-layout", "version": 1, "id": "maogowzeg-orion2-viperace-ex", "title": "...",
+  "models": ["winwing-viperace-ex-joystick-grip"], "localPicture": { "name": "maogowzeg-orion2-viperace-ex.jpg", "sha256": "..." },
+  "width": 1632, "height": 2318, "font": "Arial", "fontSize": 17, "textColor": "#FF000000", "labelWidth": 266,
+  "credit": "maogowzeg (Discord)", "positions": { "JOY_BTN1": [412, 1890], "MOD+JOY_BTN1": [612, 1890] } }
+```
+
+`picture` (a file next to the JSON) is for a picture JoyPro owns; the shipped files use `localPicture`. Positions are picture pixels
+(the top left of the text). The engine reads the file like a layout file (`layout render --layout-map`,
+`template-inspect`, `template-save`). On the cheat sheets a label that would run into the next box on its line, or
+past `labelWidth`, is drawn smaller (down to 60 %) and cut with "..." if it still does not fit.
 
 ## Device cards (Start page, Settings > Devices)
 

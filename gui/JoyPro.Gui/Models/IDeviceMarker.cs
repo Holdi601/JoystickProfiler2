@@ -59,6 +59,9 @@ public sealed record DeviceMarkerMove(IDeviceMarker Marker, double FromX, double
 // A click on the picture outside the markers, in picture pixels.
 public sealed record DeviceCanvasClick(double X, double Y, bool IsRightButton);
 
+// A chip of an unplaced input (the marker assistant's list) dropped on the picture, in picture pixels.
+public sealed record DevicePartDrop(string PartId, double X, double Y);
+
 public static class DeviceMarkerText
 {
     // "Throttle - HOTAS Warthog {GUID}" -> "Throttle - HOTAS Warthog".

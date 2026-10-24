@@ -69,13 +69,13 @@ public sealed class RelationFiltersTests : IAsyncLifetime
         // Untick A-10C: the A-10C II and A-10A relations stay.
         dcs.Planes.Single(p => p.Label == "A-10C").IsChecked = false;
         Assert.Equal(["A10 DMS Up", "A10A Gear"], Shown(filter, subjects));
-        Assert.Contains(filter.ActiveChips, c => c.Label == "DCS: A-10A, A-10C II");
+        Assert.Contains(filter.ActiveChips, c => c.Label == "DCS World: A-10A, A-10C II");
 
         // Every aircraft ticked again is the whole game.
         foreach (FilterOptionItem plane in dcs.Planes)
             plane.IsChecked = true;
         Assert.True(dcs.IsChecked);
-        Assert.Contains(filter.ActiveChips, c => c.Label == "DCS");
+        Assert.Contains(filter.ActiveChips, c => c.Label == "DCS World");
     }
 
     [Fact]
@@ -331,12 +331,12 @@ public sealed class RelationFiltersTests : IAsyncLifetime
         Assert.Equal("DCS", vm.CatalogGame?.Game);
         Assert.Equal("F-16C_50", vm.CatalogPlane?.Plane);
         Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "browse", "--game", "DCS", "--plane", "F-16C_50", "--button"));
-        Assert.Equal(["HOTAS", "Landing gear panel", "Stick"], vm.CatalogCategories.Select(c => c.Name).ToArray());
+        Assert.Equal(["HOTAS", "Stick", "Landing gear panel"], vm.CatalogCategories.Select(c => c.Name).ToArray()); // own order: categories with an action of the open relation first
         CatalogCategoryItem hotas = vm.CatalogCategories[0];
         Assert.Equal(2, hotas.Rows.Count);
         Assert.Empty(hotas.VisibleRows);
         // "HOTAS; Stick": the same row in both.
-        Assert.Same(hotas.Rows[0], vm.CatalogCategories[2].Rows[0]);
+        Assert.Same(hotas.Rows[0], vm.CatalogCategories[1].Rows[0]);
         CatalogRowItem fwd = hotas.Rows.Single(r => r.Row.Id == "d3014pnil");
         Assert.True(fwd.Row.IsInOpenRelation);
         Assert.False(fwd.Row.CanCheck);
@@ -349,10 +349,11 @@ public sealed class RelationFiltersTests : IAsyncLifetime
         Assert.False(hotas.IsVisible);
         vm.CatalogOnlyFree = false;
         vm.CatalogFilterText = "gear";
-        Assert.True(vm.CatalogCategories[1].IsExpanded);
-        Assert.Single(vm.CatalogCategories[1].VisibleRows);
+        CatalogCategoryItem gearPanel = vm.CatalogCategories.Single(c => c.Name == "Landing gear panel");
+        Assert.True(gearPanel.IsExpanded);
+        Assert.Single(gearPanel.VisibleRows);
 
-        vm.CatalogCategories[1].IsChecked = true;
+        gearPanel.IsChecked = true;
         Assert.Equal("Add selected (1)", vm.CatalogAddLabel);
         fake.Calls.Clear();
         await vm.AddCheckedCatalogCommand.ExecuteAsync(null);
@@ -364,5 +365,23 @@ public sealed class RelationFiltersTests : IAsyncLifetime
         Assert.Null(vm.CatalogPlane);
         Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "browse", "--game", "IL2Game", "--button"));
         Assert.Contains("grouped by what they do", vm.CatalogStatus);
+    }
+
+    // Report 2.2.17 "MSFS 2024 (1787 actions) lists nothing": the engine's JSON could not be read (a game text's curly
+    // quote became a straight one on the console). The catalog says so instead of "0 actions in 0 categories", and the
+    // rows of the game shown before are gone.
+    [Fact]
+    public async Task Catalog_UnreadableOutput_SaysWhyAndShowsNoStaleRows()
+    {
+        BuilderFakeEngine fake = new() { BrokenBrowseGame = "IL2Game" };
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake);
+        await RelationBuilderTests.OpenAsync(vm, "Flare");
+        await vm.OpenCatalogCommand.ExecuteAsync(null);
+        Assert.NotEmpty(vm.CatalogRowItems);
+        await vm.SelectCatalogAsync("IL2Game", string.Empty);
+        Assert.Empty(vm.CatalogRowItems);
+        Assert.Empty(vm.CatalogCategories);
+        Assert.StartsWith("Could not read the catalog.", vm.CatalogStatus);
+        Assert.DoesNotContain("0 actions", vm.CatalogStatus);
     }
 }

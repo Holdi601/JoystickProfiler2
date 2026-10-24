@@ -104,15 +104,27 @@ public sealed partial class DeviceReferenceViewModel
     public bool PlaceAssistantPart(double x, double y)
     {
         double width = PictureWidth, height = PictureHeight;
-        if (Assistant is not { IsWaitingForClick: true } assistant || width <= 0 || height <= 0)
+        if (Assistant is not { } assistant || width <= 0 || height <= 0)
             return false;
-        return assistant.PlaceAt(System.Math.Clamp(x / width, 0, 1), System.Math.Clamp(y / height, 0, 1));
+        double px = System.Math.Clamp(x / width, 0, 1), py = System.Math.Clamp(y / height, 0, 1);
+        // A pressed input waits for its click; else the part of "Now place: X" goes there.
+        return assistant.IsWaitingForClick ? assistant.PlaceAt(px, py) : assistant.PlaceNextAt(px, py);
+    }
+
+    // A chip of an unplaced input dropped on the picture (picture pixels): its part goes there.
+    public bool DropAssistantPart(string partId, double x, double y)
+    {
+        double width = PictureWidth, height = PictureHeight;
+        if (Assistant is not { } assistant || width <= 0 || height <= 0 || string.IsNullOrWhiteSpace(partId))
+            return false;
+        return assistant.DropPart(partId, System.Math.Clamp(x / width, 0, 1), System.Math.Clamp(y / height, 0, 1));
     }
 
     // Shows nothing (no device picked).
     public void Clear()
     {
         Assistant?.StopCommand.Execute(null);
+        Assistant?.Detach();
         Assistant = null;
         ClearQuestion();
         loadedPicture = null;

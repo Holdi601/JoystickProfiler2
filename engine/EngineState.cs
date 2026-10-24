@@ -66,7 +66,7 @@ namespace JoyPro.Engine
             Initialized = true;
         }
 
-        private static string ResolveProgramPath()
+        internal static string ResolveProgramPath()
         {
             List<string> candidates = new List<string>();
             string cwd = Environment.CurrentDirectory;

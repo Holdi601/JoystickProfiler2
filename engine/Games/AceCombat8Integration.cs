@@ -16,7 +16,7 @@ namespace JoyPro.Engine.Games
     //  - the catalog (engine ac8 refresh-db) holds one "Pad_*" action per gamepad control with that key in the 5th
     //    column, so the virtual-pad planner pins the HOTAS input to the control the game uses. The sticks (pitch, roll,
     //    camera) are fixed in the game and come from JoyPro's own table.
-    internal sealed class AceCombat8Integration : IGameIntegration, IGameDeviceLimit
+    internal sealed class AceCombat8Integration : IGameIntegration, IGameDeviceLimit, IGameBuiltInCatalog
     {
         public string GameId { get { return "AceCombat8"; } }
         public string DisplayName { get { return "ACE COMBAT 8: Wings of Theve"; } }
@@ -105,7 +105,17 @@ namespace JoyPro.Engine.Games
             }
             if (keys.Count == 0)
                 result.Steps.Add("No gamepad keys read from the game's settings (start the game once); JoyPro's table of the default gamepad layout is used.");
+            return CatalogOf(keys);
+        }
 
+        // Before the first refresh: JoyPro's table of the default gamepad layout (what the refresh writes without a save).
+        public GameCatalog BuiltInCatalog()
+        {
+            return CatalogOf(new Dictionary<string, string>(StringComparer.Ordinal));
+        }
+
+        private GameCatalog CatalogOf(Dictionary<string, string> keys)
+        {
             GameCatalog catalog = new GameCatalog { GameId = GameId };
             foreach (string[] row in FixedPadActions)
                 catalog.Add(new GameAction { Id = row[0], Title = row[1], IsAxis = row[2] == "axis", Category = "Gamepad", NativeId = row[3] });

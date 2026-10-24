@@ -88,6 +88,10 @@ public sealed partial class MainWindowViewModel
             (string kind, string command, bool canRefresh) = GameCardKind(game.GameId);
             if (kind.Length == 0)
                 continue;
+            // No action of the game anywhere in JoyPro and not installed (nothing to build the list from): not offered as
+            // supported here; Settings > Games says why.
+            if (!game.OfferedOnStartPage)
+                continue;
             GameCardItem card = new(game.GameId, game.Name, kind, command, game.Installed, canRefresh);
             if (old.TryGetValue(game.GameId, out GameCardItem? previous))
             {

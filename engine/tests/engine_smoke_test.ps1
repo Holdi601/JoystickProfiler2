@@ -894,6 +894,93 @@ Assert-True ($dcsRefreshIdDryRun.ExitCode -eq 0) "engine dcs refresh id --dry-ru
 Assert-True ($dcsRefreshIdDryRun.Output -match "(?m)^Action:\s+id") "engine dcs refresh id --dry-run output missing action."
 Assert-True ($dcsRefreshIdDryRun.Output -match "(?m)^Dry Run:\s+true") "engine dcs refresh id --dry-run output missing dry-run marker."
 
+# DCS commands named by a localization key ("Input.SpitfireLFMkIX.pitch_minus", "29Fulcrum:Inp:..."): a DB built before
+# the refresh translated them still shows DCS's English text (l10n\en\LC_MESSAGES\input.mo of the DCS folder), in the
+# search and the catalog, and never the key.
+function New-MoFile {
+    param([string]$Path, [System.Collections.IDictionary]$Entries)
+    $keys = @($Entries.Keys | Sort-Object -CaseSensitive)
+    $utf8 = New-Object System.Text.UTF8Encoding($false)
+    $count = $keys.Count
+    $origTable = 28
+    $transTable = $origTable + 8 * $count
+    $dataStart = $transTable + 8 * $count
+    $data = New-Object System.Collections.Generic.List[byte]
+    $origEntries = @()
+    $transEntries = @()
+    foreach ($key in $keys) {
+        $bytes = $utf8.GetBytes([string]$key)
+        $origEntries += , @($bytes.Length, ($dataStart + $data.Count))
+        $data.AddRange([byte[]]$bytes); $data.Add(0)
+    }
+    foreach ($key in $keys) {
+        $bytes = $utf8.GetBytes([string]$Entries[$key])
+        $transEntries += , @($bytes.Length, ($dataStart + $data.Count))
+        $data.AddRange([byte[]]$bytes); $data.Add(0)
+    }
+    $stream = New-Object System.IO.MemoryStream
+    $writer = New-Object System.IO.BinaryWriter($stream)
+    foreach ($v in @([uint32]2500072158, 0, $count, $origTable, $transTable, 0, $dataStart)) { $writer.Write([uint32]$v) }
+    foreach ($e in $origEntries + $transEntries) { $writer.Write([uint32]$e[0]); $writer.Write([uint32]$e[1]) }
+    $writer.Write($data.ToArray())
+    $writer.Flush()
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $Path) | Out-Null
+    [System.IO.File]::WriteAllBytes($Path, $stream.ToArray())
+}
+
+$previousNamesDataDir = $env:JOYPRO_DATA_DIR
+$previousNamesDetection = $env:JOYPRO_INSTALL_DETECTION
+try {
+    $env:JOYPRO_DATA_DIR = Join-Path $tempDir "names-data"
+    $env:JOYPRO_INSTALL_DETECTION = "off"
+    $namesInstall = Join-Path $tempDir "names-install\DCS World"
+    New-MoFile (Join-Path $namesInstall "l10n\en\LC_MESSAGES\input.mo") ([ordered]@{
+        "Input.TestKeyPlane.pitch_minus" = "Engine RPM DECREASE"
+        "Input.TestKeyPlane.pitch_plus" = "Engine RPM INCREASE"
+        "29Test:Inp:Gear Lever - UP" = "Gear Lever - UP"
+        "29Test:Cat:Gear Panel" = "Gear Panel"
+        "Gear up" = "Landing Gear - UP (reworded)"
+    })
+    $namesDb = Join-Path $env:JOYPRO_DATA_DIR "GameData\DB\DCS"
+    New-Item -ItemType Directory -Force -Path $namesDb | Out-Null
+    $namesRow = { param($t, $c, $i) "        <tr>`n          <td></td>`n          <td>$t</td>`n          <td>$c</td>`n          <td>$i</td>`n        </tr>`n" }
+    $namesHtml = "<html><body><table>`n" +
+        (& $namesRow "Input.TestKeyPlane.pitch_minus" "Engine Controls" "dnilp3007unilcd2vdnilvp-1vunil") +
+        (& $namesRow "Input.TestKeyPlane.pitch_plus" "Engine Controls" "dnilp3007unilcd2vdnilvp1vunil") +
+        (& $namesRow "29Test:Inp:Gear Lever - UP" "29Test:Cat:Gear Panel" "d3001pnilunilcd5vd1vpnilvunil") +
+        (& $namesRow "Input.TestKeyPlane.canopy_open" "Systems" "d3002pnilunilcd5vd1vpnilvunil") +
+        (& $namesRow "Gear up" "Systems" "d68pnilunilcdnilvdnilvpnilvunil") +
+        "</table></body></html>`n"
+    [System.IO.File]::WriteAllText((Join-Path $namesDb "TestKeyPlane.html"), $namesHtml, (New-Object System.Text.UTF8Encoding($false)))
+    $namesSet = Run-Engine @("games", "install", "set", "dcs", $namesInstall, "--text")
+    Assert-True ($namesSet.ExitCode -eq 0) "games install set dcs (names fixture) failed. Output: $($namesSet.Output)"
+
+    $namesSearch = Run-Engine @("relations", "search", "engine rpm", "--game", "DCS", "--plane", "TestKeyPlane", "--text")
+    Assert-True ($namesSearch.ExitCode -eq 0) "relations search (localization keys) failed. Output: $($namesSearch.Output)"
+    Assert-Match $namesSearch.Output "Engine RPM DECREASE" "relations search did not find the English name of a localization-key command."
+    Assert-Match $namesSearch.Output "Engine RPM INCREASE" "relations search did not find the second English name."
+    Assert-NotMatch $namesSearch.Output "Input\.TestKeyPlane" "relations search showed a raw localization key."
+
+    # The key or the id still finds the command (shown by its readable title, never by the key).
+    $namesKey = Run-Engine @("relations", "search", "pitch_minus", "--game", "DCS", "--plane", "TestKeyPlane", "--text")
+    Assert-Match $namesKey.Output "Engine RPM DECREASE" "relations search did not find a command by its key."
+    Assert-NotMatch $namesKey.Output "Input\.TestKeyPlane" "relations search by key showed the raw key."
+    $namesId = Run-Engine @("relations", "search", "dnilp3007unilcd2vdnilvp1vunil", "--game", "DCS", "--plane", "TestKeyPlane", "--text")
+    Assert-Match $namesId.Output "Engine RPM INCREASE \| Command id" "relations search did not find a command by its id."
+    $namesBrowse = Run-Engine @("relations", "browse", "--game", "DCS", "--plane", "TestKeyPlane", "--text")
+    Assert-True ($namesBrowse.ExitCode -eq 0) "relations browse (localization keys) failed. Output: $($namesBrowse.Output)"
+    Assert-Match $namesBrowse.Output "Gear Lever - UP" "relations browse did not translate a <module>:Inp: key."
+    Assert-Match $namesBrowse.Output "Gear Panel" "relations browse did not translate a <module>:Cat: category."
+    Assert-Match $namesBrowse.Output "Canopy open" "relations browse did not make a key without English text readable."
+    Assert-Match $namesBrowse.Output "Gear up" "relations browse reworded a name that already is English text."
+    Assert-NotMatch $namesBrowse.Output "Input\.TestKeyPlane|29Test:" "relations browse showed a raw localization key."
+    $null = Run-Engine @("games", "install", "unset", "dcs", "--text")
+}
+finally {
+    $env:JOYPRO_DATA_DIR = $previousNamesDataDir
+    $env:JOYPRO_INSTALL_DETECTION = $previousNamesDetection
+}
+
 $dcsRefreshIdHeadlessFilteredDryRun = Run-Engine @(
     "dcs", "refresh", "id",
     $dcsDefaultsSavedGames,
@@ -3262,9 +3349,9 @@ return diff
         Assert-True ($msRoundTrip.ExitCode -eq 0) "msfs export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($msSting) -eq $msStingText) "msfs import/export round trip must leave the profile byte-identical."
 
-        $msSetGear = Run-Engine @("--profile", $msProfile, "binds", "set", "GEAR TOGGLE", "--input", "JOY_BTN5", "--text")
+        $msSetGear = Run-Engine @("--profile", $msProfile, "binds", "set", "Gear Toggle", "--input", "JOY_BTN5", "--text")
         Assert-True ($msSetGear.ExitCode -eq 0) "binds set on the imported MSFS relation failed."
-        $msSetElevator = Run-Engine @("--profile", $msProfile, "binds", "set", "AXIS ELEVATOR SET", "--inverted", "false", "--text")
+        $msSetElevator = Run-Engine @("--profile", $msProfile, "binds", "set", "Elevator Axis", "--inverted", "false", "--text")
         Assert-True ($msSetElevator.ExitCode -eq 0) "binds set --inverted on the MSFS elevator failed."
         $msAddAp = Run-Engine @("--profile", $msProfile, "relations", "add", "MSFS AP", "--button", "--node", "MSFS:KEY_AP_MASTER", "--device", $msStick, "--input", "JOY_BTN2", "--text")
         Assert-True ($msAddAp.ExitCode -eq 0) "relations add for MSFS autopilot failed."
@@ -3287,7 +3374,7 @@ return diff
         Assert-True ([System.IO.File]::ReadAllText($ms2024) -eq $ms2024Text) "msfs 2024 import/export round trip must leave the export byte-identical."
         $ms2024Flaps = Run-Engine @("--profile", $ms2024Profile, "relations", "add", "MSFS Flaps axis", "--axis", "--node", "MSFS2024:KEY_AXIS_FLAPS_SET", "--device", $msStick, "--input", "JOY_SLIDER1", "--text")
         Assert-True ($ms2024Flaps.ExitCode -eq 0) "relations add for the MSFS 2024 flaps axis failed."
-        $ms2024Delete = Run-Engine @("--profile", $ms2024Profile, "relations", "mass", "delete", "--relation", "AP MASTER", "--text")
+        $ms2024Delete = Run-Engine @("--profile", $ms2024Profile, "relations", "mass", "delete", "--relation", "AP Master", "--text")
         Assert-True ($ms2024Delete.ExitCode -eq 0) "relations mass delete for the MSFS 2024 autopilot failed."
         $ms2024Export = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "export", $ms2024, "--text")
         Assert-True ($ms2024Export.ExitCode -eq 0) "msfs 2024 export failed."
@@ -3368,7 +3455,7 @@ return diff
     # $tempDir and $engineDir, and clean up what they change.
     # The parts that read real game catalogs (DB\<game>, CleanProfile) run only with the development game lists. A new
     # part that needs them goes into this list (check: it must pass in a checkout without EngineOnly_Runtime\DB\<game>).
-    $smokeNeedingGameData = @("arma.ps1", "bms.ps1", "elite.ps1", "grebels.ps1", "il2.ps1", "legacyids.ps1", "msfs.ps1",
+    $smokeNeedingGameData = @("aiallgames.ps1", "arma.ps1", "bms.ps1", "elite.ps1", "grebels.ps1", "il2.ps1", "legacyids.ps1", "msfs.ps1",
         "nlgroup.ps1", "nuclearoption.ps1", "progress.ps1", "reforger.ps1", "relationassistant.ps1", "relationbuilder.ps1", "searchranking.ps1", "autogroupown.ps1", "setupwizard.ps1", "sync.ps1",
         "tinycombatarena.ps1", "vtolvr.ps1", "wardogs.ps1", "warthunder.ps1", "x4.ps1", "xplane.ps1")
     foreach ($gameSmoke in @(Get-ChildItem -Path (Join-Path $engineDir "tests\smoke") -Filter "*.ps1" -ErrorAction SilentlyContinue | Sort-Object Name)) {

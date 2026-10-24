@@ -197,6 +197,33 @@ try {
     $drTaken = Run-Engine @("layout", "suggest", "--device", "L-Smoke Stick Thing {22222222-0000-0000-0000-000000000002}", "--apply", "false", "--text")
     Assert-Match $drTaken.Output "Template: MyOldStick" "a layout in <data>\Layouts\JoyPro1 was not found."
 
+    # 2D layouts: only their text positions ship (no picture in DB\DeviceLayouts2D); a sheet's picture is found by name
+    # and SHA-256 in <data>\Layouts\Community (or a JoyPro 1 folder), else the engine says it is not on this PC.
+    $dr2dShipped = Join-Path (Split-Path -Parent $script:EngineExe) "DB\DeviceLayouts2D"
+    Assert-True (@(Get-ChildItem -Path $dr2dShipped -Filter "*.json" -ErrorAction SilentlyContinue).Count -ge 20) "the 2D layouts (DB\DeviceLayouts2D) are missing."
+    $dr2dPictures = @(Get-ChildItem -Path $dr2dShipped -File -ErrorAction SilentlyContinue | Where-Object { $_.Extension -ne ".json" })
+    Assert-True ($dr2dPictures.Count -eq 0) "a picture ships in DB\DeviceLayouts2D: $($dr2dPictures.Name -join ', ')"
+    $dr2dReceived = Join-Path $drDir "received"
+    New-Item -Path $dr2dReceived -ItemType Directory -Force | Out-Null
+    $dr2dSheet = Join-Path $dr2dReceived "community-sheet.png"
+    $dr2dBitmap = New-Object System.Drawing.Bitmap 400, 300
+    $dr2dBitmap.Save($dr2dSheet, [System.Drawing.Imaging.ImageFormat]::Png)
+    $dr2dBitmap.Dispose()
+    $dr2dHash = (Get-FileHash -Algorithm SHA256 -Path $dr2dSheet).Hash.ToLowerInvariant()
+    $dr2dJson = Join-Path $drDir "smoke-2d.json"
+    $dr2dText = '{ "format": "joypro-2d-layout", "version": 1, "id": "smoke-2d", "title": "Smoke sheet", "models": ["vkb-gunfighter-mcg-pro"], ' +
+        '"localPicture": { "name": "community-sheet.png", "sha256": "' + $dr2dHash + '" }, "width": 400, "height": 300, "font": "Arial", "fontSize": 10, ' +
+        '"credit": "Smoke Maker", "positions": { "JOY_BTN1": [10, 10], "JOY_BTN2": [10, 40] } }'
+    [System.IO.File]::WriteAllText($dr2dJson, $dr2dText, (New-Object System.Text.UTF8Encoding($false)))
+    $dr2dMissing = Run-Engine @("layout", "template-inspect", "--source", $dr2dJson)
+    Assert-Match $dr2dMissing.Output "not on this PC" "a 2D layout without its picture was read."
+    New-Item -Path (Join-Path $drData "Layouts\Community") -ItemType Directory -Force | Out-Null
+    Copy-Item $dr2dSheet (Join-Path $drData "Layouts\Community\community-sheet.png")
+    $dr2dFound = Run-Engine @("layout", "template-inspect", "--source", $dr2dJson)
+    Assert-Match $dr2dFound.Output '"Width":400' "the 2D layout's picture in <data>\Layouts\Community was not used."
+    Assert-Match $dr2dFound.Output '"Credit":"Smoke Maker"' "template-inspect does not report the 2D layout's credit."
+    Assert-Match $dr2dFound.Output '"MarkerCount":2' "template-inspect does not report the 2D layout's positions."
+
     $drBadAction = Run-Engine @("devices", "reference", "paint")
     Assert-True ($drBadAction.ExitCode -ne 0) "an unknown devices reference action was accepted."
 }

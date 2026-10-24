@@ -52,6 +52,14 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        VirtualListGrowth.Attach(RelationsListBox);
+        VirtualListGrowth.Attach(RelationNodeList, followSelected: false);
+        RelationNodeList.AddHandler(DragDrop.DragOverEvent, RelationNodeListDragOver);
+        RelationNodeList.AddHandler(DragDrop.DragLeaveEvent, RelationNodeListDragLeave);
+        RelationNodeList.AddHandler(DragDrop.DropEvent, RelationNodeListDrop);
+        // Before the list's own arrow keys (which would move the selection instead).
+        RelationNodeList.AddHandler(KeyDownEvent, RelationNodeListKeyDown, RoutingStrategies.Tunnel);
+        AttachNavPagesDrag();
         notificationManager = new WindowNotificationManager(this)
         {
             Position = NotificationPosition.TopRight,
@@ -546,6 +554,7 @@ public partial class MainWindow : Window
             observedViewModel.FollowInputActivity -= OnFollowInputActivity;
             observedViewModel.FollowInputJumped -= OnFollowInputActivity;
             observedViewModel.MultiViewRedraw -= OnMultiViewRedraw;
+            observedViewModel.NavBarChanged -= OnNavBarChanged;
             observedViewModel.TextInputFocusProbe = null;
             observedViewModel.ConfirmHandler = null;
         }
@@ -555,6 +564,8 @@ public partial class MainWindow : Window
         {
             observedViewModel.PropertyChanged += OnViewModelPropertyChanged;
             observedViewModel.MultiViewRedraw += OnMultiViewRedraw;
+            observedViewModel.NavBarChanged += OnNavBarChanged;
+            ApplyNavBar();
             observedViewModel.WarningRequested += OnWarningRequested;
             observedViewModel.GameChangesOffered += OnGameChangesOffered;
             observedViewModel.ShutdownRequested += OnShutdownRequested;
@@ -754,6 +765,127 @@ public partial class MainWindow : Window
         if (e.Source is Visual source && source.GetSelfAndVisualAncestors().TakeWhile(v => !ReferenceEquals(v, sender)).Any(v => v is Button))
             return;
         vm.ToggleNodeAircraftCommand.Execute(node);
+    }
+
+    // ---- The order of the open relation's actions: drag by the grip, drop above or below another card; Alt+Up/Down.
+
+    private const string RelationNodeDragFormat = "joypro-relation-node:";
+    private RelationNodeItem? relationNodeDragItem;
+    private Point relationNodeDragStart;
+    private ListBoxItem? relationNodeDropTarget;
+
+    private void RelationNodeGripPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            return;
+        relationNodeDragItem = (sender as Control)?.DataContext as RelationNodeItem;
+        relationNodeDragStart = e.GetPosition(this);
+        // A press on the grip is no click on the card (that opens its aircraft).
+        e.Handled = true;
+    }
+
+    private async void RelationNodeGripMoved(object? sender, PointerEventArgs e)
+    {
+        if (relationNodeDragItem == null || DataContext is not MainWindowViewModel vm || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            return;
+        Point now = e.GetPosition(this);
+        if (Math.Abs(now.X - relationNodeDragStart.X) + Math.Abs(now.Y - relationNodeDragStart.Y) < 6)
+            return;
+        int index = vm.RelationNodes.IndexOf(relationNodeDragItem);
+        relationNodeDragItem = null;
+        if (index < 0)
+            return;
+#pragma warning disable CS0618 // DataObject / DoDragDrop: the Avalonia 11 drag data API
+        DataObject data = new();
+        data.Set(DataFormats.Text, RelationNodeDragFormat + index.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+#pragma warning restore CS0618
+        ShowRelationNodeDropTarget(null, false);
+    }
+
+    // The dragged action's index, or -1 when the drag is something else.
+    private static int DraggedRelationNode(DragEventArgs e)
+    {
+#pragma warning disable CS0618
+        string? text = e.Data.Contains(DataFormats.Text) ? e.Data.GetText() : null;
+#pragma warning restore CS0618
+        return text != null && text.StartsWith(RelationNodeDragFormat, StringComparison.Ordinal) &&
+               int.TryParse(text[RelationNodeDragFormat.Length..], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int index)
+            ? index
+            : -1;
+    }
+
+    // The card under the pointer and whether the drop goes below it (lower half).
+    private (ListBoxItem? Item, bool Below) RelationNodeDropPlace(DragEventArgs e)
+    {
+        ListBoxItem? item = (e.Source as Visual)?.GetSelfAndVisualAncestors().OfType<ListBoxItem>().FirstOrDefault();
+        if (item == null)
+            return (null, false);
+        return (item, e.GetPosition(item).Y > item.Bounds.Height / 2);
+    }
+
+    private void ShowRelationNodeDropTarget(ListBoxItem? item, bool below)
+    {
+        if (relationNodeDropTarget != null && !ReferenceEquals(relationNodeDropTarget, item))
+        {
+            relationNodeDropTarget.Classes.Remove("dropAbove");
+            relationNodeDropTarget.Classes.Remove("dropBelow");
+        }
+        relationNodeDropTarget = item;
+        if (item == null)
+            return;
+        item.Classes.Set("dropAbove", !below);
+        item.Classes.Set("dropBelow", below);
+    }
+
+    private void RelationNodeListDragOver(object? sender, DragEventArgs e)
+    {
+        if (DraggedRelationNode(e) < 0)
+            return;
+        (ListBoxItem? item, bool below) = RelationNodeDropPlace(e);
+        ShowRelationNodeDropTarget(item, below);
+        e.DragEffects = item == null ? DragDropEffects.None : DragDropEffects.Move;
+        e.Handled = true;
+    }
+
+    private void RelationNodeListDragLeave(object? sender, DragEventArgs e) => ShowRelationNodeDropTarget(null, false);
+
+    private async void RelationNodeListDrop(object? sender, DragEventArgs e)
+    {
+        int from = DraggedRelationNode(e);
+        (ListBoxItem? item, bool below) = RelationNodeDropPlace(e);
+        ShowRelationNodeDropTarget(null, false);
+        if (from < 0 || item?.DataContext is not RelationNodeItem over || DataContext is not MainWindowViewModel vm || from >= vm.RelationNodes.Count)
+            return;
+        e.Handled = true;
+        int target = RelationNodeDropIndex(from, vm.RelationNodes.IndexOf(over), below);
+        await vm.MoveRelationNodeAsync(vm.RelationNodes[from], target);
+    }
+
+    // Where the dragged action lands (its index after the move) when dropped above or below the card at `over`.
+    internal static int RelationNodeDropIndex(int from, int over, bool below)
+    {
+        if (over < 0)
+            return from;
+        int place = below ? over + 1 : over;
+        return place > from ? place - 1 : place;
+    }
+
+    // Alt+Up / Alt+Down: the selected action one place up or down.
+    private async void RelationNodeListKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm || !e.KeyModifiers.HasFlag(KeyModifiers.Alt) || vm.SelectedRelationNode == null || e.Source is TextBox)
+            return;
+        if (e.Key == Key.Up)
+        {
+            e.Handled = true;
+            await vm.MoveRelationNodeUpCommand.ExecuteAsync(vm.SelectedRelationNode);
+        }
+        else if (e.Key == Key.Down)
+        {
+            e.Handled = true;
+            await vm.MoveRelationNodeDownCommand.ExecuteAsync(vm.SelectedRelationNode);
+        }
     }
 
     private void ClearRelationSelectionClicked(object? sender, RoutedEventArgs e)

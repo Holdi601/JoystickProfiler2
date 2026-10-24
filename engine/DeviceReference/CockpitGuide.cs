@@ -1,4 +1,4 @@
-#if NET
+﻿#if NET
 #nullable disable
 #endif
 using System;
@@ -959,16 +959,21 @@ namespace JoyPro.DeviceReference
         }
 
         // The template for a name: the one with the longest matching word (whole words, any case); null for none.
+        private static readonly Regex NonWordRun = new Regex(@"[^\p{L}\p{Nd}]+");
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string> PaddedWords =
+            new System.Collections.Concurrent.ConcurrentDictionary<string, string>(StringComparer.Ordinal);
+
         public Template Find(string name)
         {
-            string text = " " + Regex.Replace((name ?? string.Empty).ToLowerInvariant(), @"[^\p{L}\p{Nd}]+", " ") + " ";
+            string text = " " + NonWordRun.Replace((name ?? string.Empty).ToLowerInvariant(), " ") + " ";
             Template best = null;
             int bestLength = 0;
             foreach (Template t in Items)
             {
                 foreach (string w in t.Words)
                 {
-                    string word = " " + Regex.Replace(w, @"[^\p{L}\p{Nd}]+", " ").Trim() + " ";
+                    // The template words' padded forms are worked out once (Find runs for every action described).
+                    string word = PaddedWords.GetOrAdd(w ?? string.Empty, x => " " + NonWordRun.Replace(x, " ").Trim() + " ");
                     if (word.Length > bestLength + 0 && word.Trim().Length > 0 && text.Contains(word) && word.Length > bestLength)
                     {
                         best = t;

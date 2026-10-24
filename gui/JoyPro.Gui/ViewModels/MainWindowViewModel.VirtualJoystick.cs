@@ -326,7 +326,7 @@ public sealed partial class MainWindowViewModel
             if (relations == 0 && !isVirtual)
                 continue;
             virtualJoystickModes[id] = isVirtual ? mode : VirtualJoystickGameItem.ModeNative;
-            items.Add(new VirtualJoystickGameItem(id, ReadJsonString(game, "Name"), relations, isVirtual ? mode : VirtualJoystickGameItem.ModeNative, ReadStringArray(game, "Exes"),
+            items.Add(new VirtualJoystickGameItem(id, DisplayText.GameName(id, ReadJsonString(game, "Name")), relations, isVirtual ? mode : VirtualJoystickGameItem.ModeNative, ReadStringArray(game, "Exes"),
                 OnVirtualJoystickModeToggled, ReadJsonInt(game, "GamepadLayout"), ReadJsonBool(game, "WritesGamepadBinds"),
                 ReadJsonString(game, "SuggestedMode"), ReadJsonString(game, "DeviceLimitNote")));
         }

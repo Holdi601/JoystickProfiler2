@@ -21,7 +21,7 @@ namespace JoyPro.Engine.Games
     //    bind per input (tools/e2e/games/BattlefieldJoystickSurvey.ps1 writes TOOLS\Conversions\<game>JoystickMap.tsv,
     //    JoyPro's own shipped data, not game data). Until then
     //    it writes keyboard keys (--include-keyboard) and reads joystick binds with a warning.
-    internal sealed class BattlefieldIntegration : IGameIntegration, IGameDeviceLimit
+    internal sealed class BattlefieldIntegration : IGameIntegration, IGameDeviceLimit, IGameBuiltInCatalog
     {
         public const int TypeMouse = 0;
         public const int TypePad = 1;
@@ -151,6 +151,34 @@ namespace JoyPro.Engine.Games
                 }
             }
             result.Steps.Add("Read the jet and helicopter controls from " + path + " (" + catalog.Actions.Count.ToString(CultureInfo.InvariantCulture) + " action(s)).");
+            return catalog;
+        }
+
+        // Before the game wrote its settings profile: the jet and helicopter concepts JoyPro knows (seen in Battlefield 6's
+        // profile, 2026-10), the axes as the profile marks them ("negate 1"). The concepts of the user's own profile
+        // replace them with the first refresh, import or export.
+        private static readonly string[] BuiltInAxes = { "ConceptMoveFB", "ConceptPitch", "ConceptRoll", "ConceptYaw", "ConceptCameraPitch", "ConceptCameraYaw" };
+        private static readonly string[] BuiltInButtons = { "ConceptFire", "ConceptZoom", "ConceptToggleCamera", "ConceptChangeVehicle", "ConceptSwitchToDynamicGadget1", "ConceptSwitchToDynamicGadget2" };
+
+        public GameCatalog BuiltInCatalog()
+        {
+            GameCatalog catalog = new GameCatalog { GameId = GameId };
+            foreach (string category in FlightCategories)
+            {
+                IEnumerable<KeyValuePair<string, bool>> concepts = BuiltInAxes.Select(a => new KeyValuePair<string, bool>(a, true))
+                    .Concat(category == "helicopter" ? new[] { new KeyValuePair<string, bool>("ConceptBrake", true) } : new KeyValuePair<string, bool>[0])
+                    .Concat(BuiltInButtons.Select(b => new KeyValuePair<string, bool>(b, false)));
+                foreach (KeyValuePair<string, bool> concept in concepts)
+                {
+                    catalog.Add(new GameAction
+                    {
+                        Id = category + "." + concept.Key,
+                        Title = (category == "jet" ? "Jet" : "Helicopter") + ": " + ConceptTitle(concept.Key),
+                        IsAxis = concept.Value,
+                        Category = category == "jet" ? "Jet" : "Helicopter"
+                    });
+                }
+            }
             return catalog;
         }
 

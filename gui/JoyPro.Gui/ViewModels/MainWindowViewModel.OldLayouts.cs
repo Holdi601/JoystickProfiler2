@@ -38,6 +38,9 @@ public sealed partial class MainWindowViewModel
         oldLayoutsChecked = true;
         List<string> found = await Task.Run(() => OldJoyProLayouts.Detect());
         OldLayoutsSuggestedFolder = found.FirstOrDefault() ?? string.Empty;
+        // Their pictures also give the 2D layouts JoyPro does not ship (button maps of the makers).
+        foreach (string folder in found)
+            RememberVariantPictureFolder(folder);
         List<string> done = OldJoyProLayouts.ImportedSources();
         List<string> fresh = found.Where(f => !done.Contains(f, StringComparer.OrdinalIgnoreCase)).ToList();
         if (fresh.Count == 0)
@@ -67,6 +70,7 @@ public sealed partial class MainWindowViewModel
             return;
         }
         int copied = await Task.Run(() => OldJoyProLayouts.Import(withLayouts));
+        RememberVariantPictureFolder(withLayouts);
         int all = OldJoyProLayouts.CountLayouts(withLayouts);
         OldLayoutsStatus = copied > 0
             ? T("Took over {0} layout(s) from {1}.", copied.ToString(CultureInfo.InvariantCulture), ShortFolder(withLayouts))

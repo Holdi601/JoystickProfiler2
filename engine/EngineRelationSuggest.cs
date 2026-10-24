@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -165,6 +165,8 @@ namespace JoyPro.Engine
             HashSet<string> gameFilter = new HashSet<string>((games ?? new List<string>()).Select(GameKey).Where(g => g.Length > 0), StringComparer.OrdinalIgnoreCase);
             int min = Rank(minConfidence);
             Coverage coverage = Coverage.Of(relation);
+            Dictionary<string, List<string>> otherDirections = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            string directionName = string.Empty;
             foreach (Candidate candidate in candidates.OrderByDescending(c => c.Score).ThenBy(c => c.Game, StringComparer.Ordinal).ThenBy(c => c.Title, StringComparer.OrdinalIgnoreCase))
             {
                 string confidence = Confidence(candidate.Score);
@@ -172,6 +174,21 @@ namespace JoyPro.Engine
                     continue;
                 if (gameFilter.Count > 0 && !gameFilter.Contains(candidate.Game))
                     continue;
+                // A button relation of one direction (toggle, up, down, on, off) never takes another direction of the
+                // same function: Arma 3's "Landing gear down" is no gear toggle.
+                string wantedDirection;
+                if (!relation.ISAXIS && OtherDirection(candidate, context, out wantedDirection))
+                {
+                    directionName = wantedDirection;
+                    List<string> titles;
+                    string label = EngineGameWords.Label(candidate.Game);
+                    if (!otherDirections.TryGetValue(label, out titles))
+                        otherDirections[label] = titles = new List<string>();
+                    string title = EngineActionInfo.Readable(candidate.Game, candidate.Id, candidate.Title);
+                    if (!titles.Contains(title, StringComparer.OrdinalIgnoreCase))
+                        titles.Add(title);
+                    continue;
+                }
                 if (limit > 0 && result.Suggestions.Count >= limit)
                     break;
                 int near = 0;
@@ -201,8 +218,38 @@ namespace JoyPro.Engine
                 });
                 MarkMissing(result.Suggestions[result.Suggestions.Count - 1], coverage);
             }
+            // Games the relation has already (their action of this direction is in it): no hint.
+            HashSet<string> present = new HashSet<string>((relation.NODES ?? new List<RelationItem>())
+                .Where(n => n != null && GameKey(n.Game ?? string.Empty) != "DCS" && (n.AIRCRAFT == null || n.AIRCRAFT.Count == 0 || n.AIRCRAFT.Values.Any(a => a)))
+                .Select(n => EngineGameWords.Label(GameKey(n.Game))), StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, List<string>> game in otherDirections)
+            {
+                if (present.Contains(game.Key) || result.Suggestions.Any(x => EngineGameWords.Label(x.Game) == game.Key))
+                    continue;
+                result.Hints.Add(game.Key + " has no " + directionName + "; it has " + string.Join(" and ", game.Value.Take(4).Select(t => "\"" + t + "\"")) +
+                                 ": put them into a pair of relations, one per direction (e.g. Gear Up and Gear Down), not into this one.");
+            }
             Choose(result.Suggestions, context, relation);
             return result;
+        }
+
+        // The candidate is the relation's function in another direction (the relation's main meaning has one).
+        private static bool OtherDirection(Candidate candidate, Context context, out string wanted)
+        {
+            wanted = string.Empty;
+            // The manual-checked function catalog decides itself.
+            if (candidate.CatalogPlanes.Count > 0)
+                return false;
+            MapMeaning meaning = (context.LastMapMeanings ?? new List<MapMeaning>()).FirstOrDefault(m => m.Weight >= 0.99 && m.Dir.Length > 0);
+            EngineFunctionMap.Entry entry;
+            if (meaning == null || context.Map == null ||
+                !context.Map.ByKey.TryGetValue(candidate.Game + "|" + candidate.Id + "|" + (candidate.Game == "DCS" ? candidate.Planes.FirstOrDefault() ?? string.Empty : candidate.Game), out entry))
+                return false;
+            EngineFunctionMap.Assignment a = entry.Of(meaning.Function.Id);
+            if (a == null || a.Dir.Length == 0 || a.Weight < 0.9 || string.Equals(a.Dir, meaning.Dir, StringComparison.OrdinalIgnoreCase))
+                return false;
+            wanted = EngineFunctionMap.Describe(meaning.Function, meaning.Dir, false).ToLowerInvariant();
+            return true;
         }
 
         // The recommended action per game (DCS: aircraft) among the suggestions, the others explained, and what each
@@ -879,23 +926,13 @@ namespace JoyPro.Engine
             {
                 List<string> references = mine.Select(m => m.Title).Concat(new[] { Regex.Replace(relation.NAME ?? string.Empty, @"\s*\[[^\]]*\]$", string.Empty) })
                     .Where(t => Tokens(t).Count > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-                foreach (Command command in context.ByTokens(references.SelectMany(Tokens)))
+                TitleMatcher matcher = new TitleMatcher(references);
+                foreach (Command command in context.ByTokens(matcher.AllTokens))
                 {
                     if (command.IsAxis != relation.ISAXIS || present.Contains(command.Game + "|" + command.Id + "|" + command.Plane) || !allowed(command.Game, command.Plane))
                         continue;
-                    string best = string.Empty;
-                    int score = 0;
-                    foreach (string reference in references)
-                    {
-                        if (InternalDataManagement.HaveOppositeDirections(reference, command.Title))
-                            continue;
-                        int value = Similarity(reference, command.Title);
-                        if (value > score)
-                        {
-                            score = value;
-                            best = reference;
-                        }
-                    }
+                    string best;
+                    int score = matcher.Best(command.Title, out best);
                     if (score < 70)
                         continue;
                     Candidate candidate = Get(candidates, command, score >= 90 ? 70 : score >= 80 ? 55 : 40, "title");
@@ -1006,21 +1043,123 @@ namespace JoyPro.Engine
         {
             HashSet<string> a = Tokens(left);
             HashSet<string> b = Tokens(right);
-            if (a.Count == 0 || b.Count == 0)
+            return Similarity(a.Count(b.Contains), a.Count, b.Count);
+        }
+
+        // common words of two titles with leftCount and rightCount words.
+        private static int Similarity(int common, int leftCount, int rightCount)
+        {
+            if (leftCount == 0 || rightCount == 0)
                 return 0;
-            int common = a.Count(b.Contains);
-            if (common < 2 && !(a.Count == 1 && b.Count == 1 && common == 1))
+            if (common < 2 && !(leftCount == 1 && rightCount == 1 && common == 1))
                 return 0;
-            int smaller = Math.Min(a.Count, b.Count);
-            int larger = Math.Max(a.Count, b.Count);
+            int smaller = Math.Min(leftCount, rightCount);
+            int larger = Math.Max(leftCount, rightCount);
             // Penalise a one-word overlap between long titles.
             return (int)Math.Round(100.0 * common / smaller * (0.6 + 0.4 * smaller / larger));
         }
 
+        // The best reference title for a command title, as "foreach reference: skip opposite directions, keep the first
+        // highest Similarity" did, without comparing every title with every reference: the references' words are indexed
+        // once, only references that share a word are scored, and each distinct title is scored once (a relation of 200+
+        // actions took seconds here: references x every command of every game).
+        internal sealed class TitleMatcher
+        {
+            private readonly List<string> references;
+            private readonly List<int> counts = new List<int>();
+            private readonly List<HashSet<string>> directions = new List<HashSet<string>>();
+            private readonly Dictionary<string, List<int>> byToken = new Dictionary<string, List<int>>(StringComparer.Ordinal);
+            private readonly Dictionary<string, KeyValuePair<int, int>> scored = new Dictionary<string, KeyValuePair<int, int>>(StringComparer.Ordinal);
+
+            public TitleMatcher(List<string> references)
+            {
+                this.references = references;
+                for (int i = 0; i < references.Count; i++)
+                {
+                    HashSet<string> tokens = Tokens(references[i]);
+                    counts.Add(tokens.Count);
+                    directions.Add(null);
+                    foreach (string token in tokens)
+                    {
+                        List<int> list;
+                        if (!byToken.TryGetValue(token, out list))
+                            byToken[token] = list = new List<int>();
+                        list.Add(i);
+                    }
+                }
+            }
+
+            public IEnumerable<string> AllTokens { get { return byToken.Keys; } }
+
+            public int Best(string title, out string best)
+            {
+                KeyValuePair<int, int> known;
+                if (!scored.TryGetValue(title ?? string.Empty, out known))
+                {
+                    known = Score(title ?? string.Empty);
+                    scored[title ?? string.Empty] = known;
+                }
+                best = known.Value >= 0 ? references[known.Value] : string.Empty;
+                return known.Key;
+            }
+
+            private KeyValuePair<int, int> Score(string title)
+            {
+                HashSet<string> tokens = Tokens(title);
+                Dictionary<int, int> common = new Dictionary<int, int>();
+                foreach (string token in tokens)
+                {
+                    List<int> list;
+                    if (!byToken.TryGetValue(token, out list))
+                        continue;
+                    foreach (int i in list)
+                        common[i] = (common.ContainsKey(i) ? common[i] : 0) + 1;
+                }
+                int score = 0;
+                int bestIndex = -1;
+                HashSet<string> titleDirections = null;
+                foreach (int i in common.Keys.OrderBy(i => i))
+                {
+                    int value = Similarity(common[i], counts[i], tokens.Count);
+                    if (value <= score)
+                        continue;
+                    if (titleDirections == null)
+                        titleDirections = InternalDataManagement.DirectionWords(title);
+                    if (directions[i] == null)
+                        directions[i] = InternalDataManagement.DirectionWords(references[i]);
+                    if (InternalDataManagement.HaveOppositeDirections(directions[i], titleDirections))
+                        continue;
+                    score = value;
+                    bestIndex = i;
+                }
+                return new KeyValuePair<int, int>(score, bestIndex);
+            }
+        }
+
+        private static readonly Regex CamelCase = new Regex("([a-z])([A-Z])");
+        private static readonly Regex NonWord = new Regex("[^a-z0-9+-]+");
+
+        // The engine server's warm-up: the suggestions' command catalog built before the first suggestion needs it.
+        internal static void WarmSuggestionCatalog()
+        {
+            if (EngineProfileCache.Enabled)
+                Context.Load(new List<string>());
+        }
+
+        // Tokens of a command title in Tokens' order, worked out once per title (the suggestions' context reads the
+        // titles of every game's commands on every call).
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string[]> TitleTokenCache =
+            new System.Collections.Concurrent.ConcurrentDictionary<string, string[]>(StringComparer.Ordinal);
+
+        private static string[] TitleTokens(string title)
+        {
+            return TitleTokenCache.GetOrAdd(title ?? string.Empty, t => Tokens(t).ToArray());
+        }
+
         internal static HashSet<string> Tokens(string text)
         {
-            string spaced = Regex.Replace(text ?? string.Empty, "([a-z])([A-Z])", "$1 $2").Replace('_', ' ');
-            return new HashSet<string>(Regex.Split(spaced.ToLowerInvariant(), "[^a-z0-9+-]+").Where(t => t.Length > 1 && !StopWords.Contains(t)), StringComparer.Ordinal);
+            string spaced = CamelCase.Replace(text ?? string.Empty, "$1 $2").Replace('_', ' ');
+            return new HashSet<string>(NonWord.Split(spaced.ToLowerInvariant()).Where(t => t.Length > 1 && !StopWords.Contains(t)), StringComparer.Ordinal);
         }
 
         private static string Normalize(string text)
@@ -1049,19 +1188,72 @@ namespace JoyPro.Engine
             private Dictionary<string, string> slotByName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             private Dictionary<string, List<string>> slotsByCommand = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
+            // The engine server builds the catalog part (every game's commands, the function catalog) once and every call
+            // shares it (read only); it ends when the lists change on disk (EngineServer.DataStamp). A normal engine
+            // run builds it per call as before.
+            private static Context keptCatalog;
+            private static List<string> keptCatalogWarnings;
+            private static readonly object KeptCatalogSync = new object();
+
             public static Context Load(List<string> warnings)
             {
                 Context context = new Context();
                 context.Map = EngineFunctionMap.Load(warnings);
+                Context catalog;
+                if (EngineProfileCache.Enabled)
+                {
+                    lock (KeptCatalogSync)
+                    {
+                        if (keptCatalog == null)
+                        {
+                            keptCatalogWarnings = new List<string>();
+                            keptCatalog = BuildCatalog(keptCatalogWarnings);
+                        }
+                        catalog = keptCatalog;
+                        warnings.AddRange(keptCatalogWarnings);
+                    }
+                }
+                else
+                {
+                    catalog = BuildCatalog(warnings);
+                }
+                context.Rows = catalog.Rows;
+                context.Slots = catalog.Slots;
+                context.Aircraft = catalog.Aircraft;
+                context.Functions = catalog.Functions;
+                context.byKey = catalog.byKey;
+                context.byId = catalog.byId;
+                context.byToken = catalog.byToken;
+                context.slotByName = catalog.slotByName;
+                context.slotsByCommand = catalog.slotsByCommand;
+
+                foreach (Relation relation in InternalDataManagement.AllRelations.Values.Where(r => r != null))
+                {
+                    foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
+                    {
+                        if (node == null)
+                            continue;
+                        string game = GameKey(node.Game);
+                        IEnumerable<string> planes = game == "DCS" ? (node.AIRCRAFT ?? new Dictionary<string, bool>()).Where(p => p.Value).Select(p => p.Key) : new[] { game };
+                        foreach (string plane in planes)
+                            context.Add(context.users, game + "|" + NodeId(game, node.ID) + "|" + plane, relation.NAME);
+                    }
+                }
+                return context;
+            }
+
+            private static Context BuildCatalog(List<string> warnings)
+            {
+                Context context = new Context();
                 foreach (Command command in Index(warnings))
                 {
                     string key = command.Game + "|" + command.Id + "|" + command.Plane;
                     if (context.byKey.ContainsKey(key))
                         continue;
                     context.byKey[key] = command;
-                    Add(context.byId, command.Game + "|" + command.Id, command);
-                    foreach (string token in Tokens(command.Title))
-                        Add(context.byToken, token, command);
+                    context.Add(context.byId, command.Game + "|" + command.Id, command);
+                    foreach (string token in TitleTokens(command.Title))
+                        context.Add(context.byToken, token, command);
                 }
 
                 EngineAutoGroupResult errors = new EngineAutoGroupResult();
@@ -1090,29 +1282,37 @@ namespace JoyPro.Engine
                 {
                     warnings.AddRange(errors.Errors);
                 }
-
-                foreach (Relation relation in InternalDataManagement.AllRelations.Values.Where(r => r != null))
-                {
-                    foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
-                    {
-                        if (node == null)
-                            continue;
-                        string game = GameKey(node.Game);
-                        IEnumerable<string> planes = game == "DCS" ? (node.AIRCRAFT ?? new Dictionary<string, bool>()).Where(p => p.Value).Select(p => p.Key) : new[] { game };
-                        foreach (string plane in planes)
-                            Add(context.users, game + "|" + NodeId(game, node.ID) + "|" + plane, relation.NAME);
-                    }
-                }
                 return context;
             }
 
-            private static void Add<T>(Dictionary<string, List<T>> map, string key, T value)
+            // The lists keep their order; a set per list answers "already in it" (List.Contains on lists of thousands of
+            // commands per word took most of the suggestions' time).
+            private readonly Dictionary<object, HashSet<object>> members = new Dictionary<object, HashSet<object>>();
+
+            private void Add<T>(Dictionary<string, List<T>> map, string key, T value)
             {
                 List<T> list;
                 if (!map.TryGetValue(key, out list))
                     map[key] = list = new List<T>();
-                if (!list.Contains(value))
+                HashSet<object> set;
+                if (!members.TryGetValue(list, out set))
+                    members[list] = set = new HashSet<object>(new ElementComparer<T>());
+                if (set.Add(value))
                     list.Add(value);
+            }
+
+            // EqualityComparer<T>.Default (what List.Contains uses) for the boxed elements.
+            private sealed class ElementComparer<T> : IEqualityComparer<object>
+            {
+                public new bool Equals(object x, object y)
+                {
+                    return EqualityComparer<T>.Default.Equals((T)x, (T)y);
+                }
+
+                public int GetHashCode(object obj)
+                {
+                    return obj == null ? 0 : EqualityComparer<T>.Default.GetHashCode((T)obj);
+                }
             }
 
             public Command Find(string game, string id, string plane)
@@ -1418,8 +1618,10 @@ namespace JoyPro.Engine
                     string plane = Path.GetFileNameWithoutExtension(file);
                     try
                     {
-                        foreach (DCSInput input in InternalDataManagement.ParseDcsHtmlInputs(file, plane))
-                            commands.Add(new Command { Game = "DCS", Plane = plane, Id = input.ID, Title = input.Title ?? string.Empty, Category = input.Cat ?? string.Empty, IsAxis = input.IsAxis });
+                        // A list's table header ("<th>Hash</th>") is no command (it made every aircraft's overview count
+                        // one action more than its catalog).
+                        foreach (DCSInput input in InternalDataManagement.ParseDcsHtmlInputs(file, plane).Where(i => !(i.ID ?? string.Empty).StartsWith("<", StringComparison.Ordinal) && !(i.Title ?? string.Empty).StartsWith("<", StringComparison.Ordinal)))
+                            commands.Add(new Command { Game = "DCS", Plane = plane, Id = input.ID, Title = EngineReadableNames.DcsTitle(input.Title), Category = EngineReadableNames.DcsCategory(input.Cat, input.IsAxis), IsAxis = input.IsAxis });
                     }
                     catch (Exception ex)
                     {
@@ -1435,24 +1637,44 @@ namespace JoyPro.Engine
                 {
                     Match match = Regex.Match(line, @"^\s*([A-Za-z0-9_]+)\s*,.*//\s*([ab])\s*(.*)$");
                     if (match.Success)
-                        commands.Add(new Command { Game = "IL2Game", Plane = "IL2Game", Id = match.Groups[1].Value, Title = match.Groups[3].Value.Trim(), IsAxis = match.Groups[2].Value == "a" });
+                        commands.Add(new Command { Game = "IL2Game", Plane = "IL2Game", Id = match.Groups[1].Value, Title = EngineReadableNames.Il2Title(match.Groups[1].Value, match.Groups[3].Value), IsAxis = match.Groups[2].Value == "a" });
                 }
             }
 
             string sc = Path.Combine(ListFolder("StarCitizen"), "AllBinds.xml");
             if (File.Exists(sc))
             {
+                // The game's own names of the controls (EngineScLabels, built from global.ini), else a readable id.
+                Dictionary<string, string> labels = IndexOverrideFolder().Length > 0 ? new Dictionary<string, string>() : EngineScLabels.Load();
                 string category = string.Empty;
                 foreach (string line in File.ReadAllLines(sc))
                 {
                     Match map = Regex.Match(line, "<actionmap name=\"([^\"]+)\"");
                     if (map.Success)
                         category = map.Groups[1].Value;
-                    Match action = Regex.Match(line, "<action name=\"([^\"]+)\"><!--[^/]*//(true|false)");
+                    Match action = Regex.Match(line, "<action name=\"([^\"]+)\"><!--@?([^/]*)//(true|false)");
                     if (action.Success)
                     {
                         string id = action.Groups[1].Value;
-                        commands.Add(new Command { Game = "StarCitizen", Plane = "StarCitizen", Id = category.Length > 0 ? category + "|" + id : id, Title = id.Replace('_', ' '), Category = category, IsAxis = action.Groups[2].Value == "true" });
+                        string label;
+                        string title = labels.TryGetValue(action.Groups[2].Value.Trim(), out label) && label.Length > 0 ? label : EngineReadableNames.FromStarCitizenId(id);
+                        commands.Add(new Command { Game = "StarCitizen", Plane = "StarCitizen", Id = category.Length > 0 ? category + "|" + id : id, Title = title,
+                                                   Category = EngineReadableNames.Category("StarCitizen", category), IsAxis = action.Groups[3].Value == "true" });
+                    }
+                }
+                // The game gives some controls the same name ("Pitch" for v_pitch and v_pitch_mouse): the words the id
+                // has beyond its namesake's say which one it is ("Pitch (mouse)").
+                foreach (IGrouping<string, Command> same in commands.Where(c => c.Game == "StarCitizen").GroupBy(c => c.Category + "\u0001" + c.Title, StringComparer.OrdinalIgnoreCase).Where(g => g.Count() > 1))
+                {
+                    List<Command> list = same.ToList();
+                    Func<Command, string[]> words = c => c.Id.Substring(c.Id.IndexOf('|') + 1).ToLowerInvariant().Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                    Command shortest = list.OrderBy(c => words(c).Length).First();
+                    HashSet<string> baseWords = new HashSet<string>(words(shortest), StringComparer.Ordinal);
+                    foreach (Command c in list.Where(c => c != shortest))
+                    {
+                        string[] extra = words(c).Where(w => !baseWords.Contains(w)).ToArray();
+                        if (extra.Length > 0)
+                            c.Title = c.Title + " (" + string.Join(" ", extra) + ")";
                     }
                 }
             }
@@ -1462,8 +1684,9 @@ namespace JoyPro.Engine
             {
                 if (over.Length == 0)
                 {
+                    // The game's raw category ids stay in its list (the integrations use them); these show readable ones.
                     foreach (GameAction action in GameCatalogStore.Load(game, warnings).Actions)
-                        commands.Add(new Command { Game = game.GameId, Plane = game.GameId, Id = action.Id, Title = action.Title, Category = action.Category, IsAxis = action.IsAxis });
+                        commands.Add(new Command { Game = game.GameId, Plane = game.GameId, Id = action.Id, Title = action.Title, Category = EngineReadableNames.Category(game.GameId, action.Category), IsAxis = action.IsAxis });
                     continue;
                 }
                 string file = Path.Combine(ListFolder(game.DbFolder), GameCatalogStore.FileName);
@@ -1691,6 +1914,9 @@ namespace JoyPro.Engine
         public List<EngineRelationMisfit> Misfits { get; set; }
         public List<EngineRelationDismissed> Dismissed { get; set; }
         public List<EngineRelationSuggestSummary> Relations { get; set; }
+        // A game without the relation's direction ("Gear TOGGLE" in Arma 3, which has only gear up and down): not
+        // suggested, said here with what to do instead (a Gear Up / Gear Down pair).
+        public List<string> Hints { get; set; }
         public List<string> Warnings { get; set; }
         public List<string> Errors { get; set; }
 
@@ -1705,6 +1931,7 @@ namespace JoyPro.Engine
             Misfits = new List<EngineRelationMisfit>();
             Dismissed = new List<EngineRelationDismissed>();
             Relations = new List<EngineRelationSuggestSummary>();
+            Hints = new List<string>();
             Warnings = new List<string>();
             Errors = new List<string>();
         }

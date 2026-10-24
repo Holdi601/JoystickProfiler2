@@ -209,6 +209,12 @@ namespace JoyPro.Engine
 
             ReportStatus(options, "Found " + files.Length.ToString() + " candidate DCS input file(s).");
             Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+            // Every file this import reads (the input files, a backup's own .diff.lua, the clean profiles and modifiers
+            // of their planes) is read once, several at once; the parse below then runs on the texts in memory.
+            List<string> prefetch = PrefetchList(files, options, planeFilter, deviceFilter, deviceFilterByName, ignoredDeviceFilter, ignoredDeviceFilterByName);
+            RunFileCache.Prefetch(prefetch);
+            HashSet<string> fileSet = new HashSet<string>(files, StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, FilePreParse> preParsed = PreParse(prefetch.Where(fileSet.Contains).ToList());
             for (int i = 0; i < files.Length; i++)
             {
                 string file = files[i];
@@ -232,7 +238,7 @@ namespace JoyPro.Engine
                     result.BackupFilesScanned++;
                 matchedPlanes.Add(plane);
                 matchedDevices.Add(device);
-                ParseInputFile(file, isBackup, parsed, parsedFfbByDevice, modifierLookupByPlane, ffbCorrections, result);
+                ParseInputFile(file, isBackup, parsed, parsedFfbByDevice, modifierLookupByPlane, ffbCorrections, result, preParsed);
 
                 int done = i + 1;
                 if (done == files.Length || done % 200 == 0)
@@ -257,6 +263,47 @@ namespace JoyPro.Engine
                 .ThenBy(v => v.Id ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(v => v.Plane ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 .ToList();
+        }
+
+        // The files ParseAllInputFiles will read for these input files (same filters).
+        private static List<string> PrefetchList(string[] files, EngineDcsImportOptions options, HashSet<string> planeFilter, HashSet<string> deviceFilter,
+            HashSet<string> deviceFilterByName, HashSet<string> ignoredDeviceFilter, HashSet<string> ignoredDeviceFilterByName)
+        {
+            List<string> list = new List<string>();
+            HashSet<string> planeDirs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string file in files)
+            {
+                string plane = ExtractPlaneName(file);
+                string device = ExtractDeviceName(file);
+                if (options != null && options.IgnoreEasyPlanes && IsEasyPlaneToken(plane))
+                    continue;
+                if (options != null && !options.IncludeKeyboard && string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (planeFilter.Count > 0 && !planeFilter.Contains(plane))
+                    continue;
+                if (deviceFilter.Count > 0 && !MatchesDeviceFilter(device, deviceFilter, deviceFilterByName))
+                    continue;
+                if (ignoredDeviceFilter.Count > 0 && MatchesDeviceFilter(device, ignoredDeviceFilter, ignoredDeviceFilterByName))
+                    continue;
+                list.Add(file);
+                try
+                {
+                    string deviceDir = Path.GetDirectoryName(file);
+                    string planeDir = string.IsNullOrEmpty(deviceDir) ? null : Path.GetDirectoryName(deviceDir);
+                    if (!string.IsNullOrEmpty(planeDir) && planeDirs.Add(planeDir))
+                        list.Add(Path.Combine(planeDir, "modifiers.lua"));
+                    if (IsBackupFile(file))
+                    {
+                        list.Add(file.Substring(0, file.Length - ".jp".Length) + ".diff.lua");
+                        bool keyboard = string.Equals(new DirectoryInfo(deviceDir ?? string.Empty).Name, "keyboard", StringComparison.OrdinalIgnoreCase);
+                        list.Add(DefaultsProfilePath(file, plane, keyboard));
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return list;
         }
 
         private static HashSet<string> BuildGuidlessDeviceFilterSet(IEnumerable<string> filters)
@@ -472,7 +519,7 @@ namespace JoyPro.Engine
             string text;
             try
             {
-                text = File.ReadAllText(filePath);
+                text = RunFileCache.ReadAllText(filePath);
             }
             catch (Exception ex)
             {
@@ -550,12 +597,13 @@ namespace JoyPro.Engine
             Dictionary<string, ParsedFfbSetting> parsedFfbByDevice,
             Dictionary<string, Dictionary<string, string>> modifierLookupByPlane,
             Dictionary<string, EngineDcsFfbPlaneCorrection> ffbCorrections,
-            EngineDcsImportResult result)
+            EngineDcsImportResult result,
+            Dictionary<string, FilePreParse> preParsed = null)
         {
             string text;
             try
             {
-                text = File.ReadAllText(filePath);
+                text = RunFileCache.ReadAllText(filePath);
             }
             catch (Exception ex)
             {
@@ -566,10 +614,71 @@ namespace JoyPro.Engine
             string plane = ExtractPlaneName(filePath);
             string device = ExtractDeviceName(filePath);
             Dictionary<string, string> modifierLookup = GetModifierLookupForPlane(filePath, plane, modifierLookupByPlane, result);
-            HashSet<string> backupAllowed = isBackupFile ? BuildBackupAllowedBinds(filePath, plane) : null;
-            ParseSection(text, "axisDiffs", true, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed);
-            ParseSection(text, "keyDiffs", false, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed);
+            FilePreParse pre = null;
+            if (preParsed != null && preParsed.TryGetValue(filePath, out pre) && !ReferenceEquals(pre.Text, text))
+                pre = null;
+            HashSet<string> backupAllowed = pre != null ? pre.BackupAllowed : isBackupFile ? BuildBackupAllowedBinds(filePath, plane) : null;
+            ParseSection(text, "axisDiffs", true, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Axis);
+            ParseSection(text, "keyDiffs", false, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Keys);
             ParseForceFeedbackSection(text, plane, device, filePath, isBackupFile, ffbCorrections, parsedFfbByDevice, result);
+        }
+
+        // The text work of one input file (sections, entries, binds, a backup's allowed binds), done for many files at
+        // once before the files are merged one after another in their usual order (ParseAllInputFiles).
+        private sealed class FilePreParse
+        {
+            public string Text;
+            public SectionParse Axis;
+            public SectionParse Keys;
+            public HashSet<string> BackupAllowed;
+        }
+
+        private sealed class SectionParse
+        {
+            public bool Found;
+            public List<SectionEntry> Entries = new List<SectionEntry>();
+            public List<List<AddedEntry>> Added = new List<List<AddedEntry>>();
+            public List<string> Names = new List<string>();
+        }
+
+        private static SectionParse PreParseSection(string fileText, string sectionName)
+        {
+            SectionParse parse = new SectionParse();
+            string sectionBlock;
+            if (!TryExtractNamedBlock(fileText, sectionName, out sectionBlock))
+                return parse;
+            parse.Found = true;
+            parse.Entries = ParseTopLevelEntries(sectionBlock);
+            foreach (SectionEntry entry in parse.Entries)
+            {
+                parse.Added.Add(ExtractAddedEntries(entry.Block));
+                parse.Names.Add(ExtractEntryName(entry.Block));
+            }
+            return parse;
+        }
+
+        private static Dictionary<string, FilePreParse> PreParse(List<string> files)
+        {
+            System.Collections.Concurrent.ConcurrentDictionary<string, FilePreParse> parsed =
+                new System.Collections.Concurrent.ConcurrentDictionary<string, FilePreParse>(StringComparer.OrdinalIgnoreCase);
+            System.Threading.Tasks.Parallel.ForEach(files, new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Math.Min(16, Environment.ProcessorCount)) }, file =>
+            {
+                try
+                {
+                    string text = RunFileCache.ReadAllText(file);
+                    FilePreParse pre = new FilePreParse { Text = text };
+                    pre.Axis = PreParseSection(text, "axisDiffs");
+                    pre.Keys = PreParseSection(text, "keyDiffs");
+                    if (IsBackupFile(file))
+                        pre.BackupAllowed = BuildBackupAllowedBinds(file, ExtractPlaneName(file));
+                    parsed[file] = pre;
+                }
+                catch (Exception)
+                {
+                    // The sequential pass reads and reports this file itself.
+                }
+            });
+            return new Dictionary<string, FilePreParse>(parsed, StringComparer.OrdinalIgnoreCase);
         }
 
         private static void ParseSection(
@@ -583,17 +692,19 @@ namespace JoyPro.Engine
             Dictionary<string, string> modifierLookup,
             Dictionary<string, ParsedBind> parsedBySignature,
             EngineDcsImportResult result,
-            HashSet<string> backupAllowed = null)
+            HashSet<string> backupAllowed = null,
+            SectionParse pre = null)
         {
-            string sectionBlock;
-            if (!TryExtractNamedBlock(fileText, sectionName, out sectionBlock))
+            if (pre == null)
+                pre = PreParseSection(fileText, sectionName);
+            if (!pre.Found)
                 return;
 
-            List<SectionEntry> entries = ParseTopLevelEntries(sectionBlock);
+            List<SectionEntry> entries = pre.Entries;
             for (int i = 0; i < entries.Count; i++)
             {
                 SectionEntry entry = entries[i];
-                List<AddedEntry> added = ExtractAddedEntries(entry.Block);
+                List<AddedEntry> added = pre.Added[i];
                 if (backupAllowed != null)
                 {
                     int before = added.Count;
@@ -609,7 +720,7 @@ namespace JoyPro.Engine
                     continue;
                 }
 
-                string displayName = ExtractEntryName(entry.Block);
+                string displayName = pre.Names[i];
                 for (int a = 0; a < added.Count; a++)
                 {
                     AddedEntry addedEntry = added[a];
@@ -672,10 +783,10 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(fileText, "ffDiffs", out ffBlock))
                 return;
 
-            bool hasInvertX = Regex.IsMatch(ffBlock, "\\[\"invertX\"\\]\\s*=", RegexOptions.IgnoreCase);
-            bool hasInvertY = Regex.IsMatch(ffBlock, "\\[\"invertY\"\\]\\s*=", RegexOptions.IgnoreCase);
-            bool hasSwapAxes = Regex.IsMatch(ffBlock, "\\[\"swapAxes\"\\]\\s*=", RegexOptions.IgnoreCase);
-            bool hasSwapAxis = Regex.IsMatch(ffBlock, "\\[\"swapAxis\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasInvertX = CachedRegex.IsMatch(ffBlock, "\\[\"invertX\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasInvertY = CachedRegex.IsMatch(ffBlock, "\\[\"invertY\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasSwapAxes = CachedRegex.IsMatch(ffBlock, "\\[\"swapAxes\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasSwapAxis = CachedRegex.IsMatch(ffBlock, "\\[\"swapAxis\"\\]\\s*=", RegexOptions.IgnoreCase);
             if (!hasInvertX && !hasInvertY && !hasSwapAxes && !hasSwapAxis)
                 return;
 
@@ -864,6 +975,7 @@ namespace JoyPro.Engine
                 ? new Dictionary<string, Bind>(InternalDataManagement.AllBinds, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase);
 
+            Dictionary<string, int> nextSuffix = new Dictionary<string, int>(StringComparer.Ordinal);
             for (int i = 0; i < parsed.Count; i++)
             {
                 ParsedBind parsedBind = parsed[i];
@@ -883,7 +995,7 @@ namespace JoyPro.Engine
                 }
 
                 if (relations.ContainsKey(relationName))
-                    relationName = BuildUniqueRelationNameFromBase(preferredName, relations);
+                    relationName = BuildUniqueRelationNameFromBase(preferredName, relations, nextSuffix);
 
                 Relation relation = CreateRelation(parsedBind, relationName);
                 Bind bind = CreateBind(parsedBind, relation, options);
@@ -1094,7 +1206,7 @@ namespace JoyPro.Engine
             string diffText;
             try
             {
-                diffText = File.ReadAllText(diffPath);
+                diffText = RunFileCache.ReadAllText(diffPath);
             }
             catch (IOException)
             {
@@ -1117,7 +1229,7 @@ namespace JoyPro.Engine
                 HashSet<string> unused = new HashSet<string>(StringComparer.Ordinal);
                 try
                 {
-                    CollectBackupBindKeys(File.ReadAllText(cleanPath), unused, defaults);
+                    CollectBackupBindKeys(RunFileCache.ReadAllText(cleanPath), unused, defaults);
                 }
                 catch (IOException)
                 {
@@ -1155,7 +1267,7 @@ namespace JoyPro.Engine
                 string folder = Path.Combine(root, plane);
                 if (!Directory.Exists(folder))
                     return generic;
-                foreach (string file in Directory.GetFiles(folder, "*.cf"))
+                foreach (string file in RunFileCache.ListFiles(folder, "*.cf"))
                 {
                     string type = Path.GetFileName(file);
                     type = type.Substring(0, type.Length - ".cf".Length);
@@ -1265,7 +1377,7 @@ namespace JoyPro.Engine
                     return empty;
                 }
 
-                string text = File.ReadAllText(modifiersPath);
+                string text = RunFileCache.ReadAllText(modifiersPath);
                 Dictionary<string, string> parsed = ParseModifierLookup(text);
                 modifierLookupByPlane[plane] = parsed;
                 return parsed;
@@ -1537,7 +1649,7 @@ namespace JoyPro.Engine
                 return string.Empty;
 
             string pattern = "\\[\"" + Regex.Escape(fieldName) + "\"\\]\\s*=\\s*\"(?<value>(?:\\\\.|[^\"])*)\"";
-            Match match = Regex.Match(text, pattern);
+            Match match = CachedRegex.Match(text, pattern);
             if (!match.Success)
                 return string.Empty;
             return UnescapeLuaString(match.Groups["value"].Value ?? string.Empty);
@@ -1550,7 +1662,7 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(text, fieldName, out block))
                 return values;
 
-            MatchCollection matches = Regex.Matches(
+            MatchCollection matches = CachedRegex.Matches(
                 block,
                 "\\[\\s*(?:\\d+|\"[^\"]+\")\\s*\\]\\s*=\\s*\"(?<value>(?:\\\\.|[^\"])*)\"");
             for (int i = 0; i < matches.Count; i++)
@@ -1570,7 +1682,7 @@ namespace JoyPro.Engine
                 return defaultValue;
 
             string pattern = "\\[\"" + Regex.Escape(fieldName) + "\"\\]\\s*=\\s*(?<value>true|false|1|0)";
-            Match match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            Match match = CachedRegex.Match(text, pattern, RegexOptions.IgnoreCase);
             if (!match.Success)
                 return defaultValue;
 
@@ -1593,7 +1705,7 @@ namespace JoyPro.Engine
                 return false;
 
             string pattern = "\\[\"" + Regex.Escape(fieldName) + "\"\\]\\s*=\\s*(?<value>-?\\d+(?:\\.\\d+)?)";
-            Match match = Regex.Match(text, pattern, RegexOptions.IgnoreCase);
+            Match match = CachedRegex.Match(text, pattern, RegexOptions.IgnoreCase);
             if (!match.Success)
                 return false;
 
@@ -1611,7 +1723,7 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(text, fieldName, out block))
                 return values;
 
-            MatchCollection matches = Regex.Matches(
+            MatchCollection matches = CachedRegex.Matches(
                 block,
                 "\\[\\s*(?:\\d+|\"[^\"]+\")\\s*\\]\\s*=\\s*(?<value>-?\\d+(?:\\.\\d+)?)",
                 RegexOptions.IgnoreCase);
@@ -1639,14 +1751,14 @@ namespace JoyPro.Engine
             if (!TryExtractNamedBlock(entryBlock, "filter", out filterBlock))
                 return;
 
-            bool hasInvert = Regex.IsMatch(filterBlock, "\\[\"invert\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasInvert = CachedRegex.IsMatch(filterBlock, "\\[\"invert\"\\]\\s*=", RegexOptions.IgnoreCase);
             if (hasInvert)
             {
                 entry.HasInverted = true;
                 entry.Inverted = ExtractNamedBool(filterBlock, "invert", Bind.Inverted_Default);
             }
 
-            bool hasSlider = Regex.IsMatch(filterBlock, "\\[\"slider\"\\]\\s*=", RegexOptions.IgnoreCase);
+            bool hasSlider = CachedRegex.IsMatch(filterBlock, "\\[\"slider\"\\]\\s*=", RegexOptions.IgnoreCase);
             if (hasSlider)
             {
                 entry.HasSlider = true;
@@ -1768,17 +1880,33 @@ namespace JoyPro.Engine
             return baseName + "__" + device + "__" + key + "__" + id + "__" + isAxis;
         }
 
-        private static string BuildUniqueRelationNameFromBase(string baseName, Dictionary<string, Relation> current)
+        // The first free "<base>__<n>" (n from 1). The import only adds relations, so the search for a name goes on where
+        // the last one for the same base stopped (nextSuffix); a case-insensitive dictionary answers with one lookup.
+        // (Was a scan of every key for every candidate: minutes on a big Saved Games folder.)
+        private static string BuildUniqueRelationNameFromBase(string baseName, Dictionary<string, Relation> current, Dictionary<string, int> nextSuffix = null)
         {
             string candidate = string.IsNullOrWhiteSpace(baseName) ? "Relation" : baseName.Trim();
+            bool ignoreCase = StringComparer.OrdinalIgnoreCase.Equals(current.Comparer);
+            Func<string, bool> taken = ignoreCase
+                ? (Func<string, bool>)current.ContainsKey
+                : name => current.Keys.Any(k => string.Equals(k, name, StringComparison.OrdinalIgnoreCase));
             int count = 1;
+            string memoKey = baseName ?? string.Empty;
+            int remembered;
+            if (ignoreCase && nextSuffix != null && taken(candidate) && nextSuffix.TryGetValue(memoKey, out remembered) && remembered > 1)
+            {
+                count = remembered;
+                candidate = baseName + "__" + (count - 1);
+            }
 
-            while (current.Keys.Any(k => string.Equals(k, candidate, StringComparison.OrdinalIgnoreCase)))
+            while (taken(candidate))
             {
                 candidate = baseName + "__" + count;
                 count++;
             }
 
+            if (nextSuffix != null)
+                nextSuffix[memoKey] = count;
             return candidate;
         }
 

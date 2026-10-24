@@ -20,6 +20,7 @@ public sealed partial class MainWindowViewModel
         ("games", N("Games"), "hidden games hide show installed folder portable watch config detect setup war thunder archives hell let loose vietnam oodle", N("Games")),
         ("binds", N("Binds"), "follow input record button held pressed switch binds page", N("Binds")),
         ("startup", N("Startup"), "last profile open start autosave history versions", N("Startup")),
+        ("pages", N("Pages in the bottom bar"), "pages tabs navigation bottom bar menu hide show order reorder move drag", N("Pages")),
         ("language", N("Language"), "language translation locale english deutsch windows", N("Language")),
         ("tray", N("Run in the background (system tray)"), "tray windows autostart sign in close to tray helper watcher", N("System tray")),
         ("confirmations", N("Confirmations"), "ask confirm question before delete remove warning dialog", N("Confirmations")),
@@ -58,6 +59,7 @@ public sealed partial class MainWindowViewModel
         SettingsSections.CollectionChanged += OnSettingsSectionsChanged;
         foreach (SettingsSectionItem item in SettingsSections)
             item.PropertyChanged += OnSettingsSectionPropertyChanged;
+        InitializeNavPages();
     }
 
     private void OnSettingsSectionsChanged(object? sender, NotifyCollectionChangedEventArgs e)

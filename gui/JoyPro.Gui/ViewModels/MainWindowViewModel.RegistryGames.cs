@@ -215,7 +215,7 @@ public sealed partial class MainWindowViewModel
                     : gameId;
                 games.Add(new RegistryGameItem(
                     gameId,
-                    ReadJsonString(item, "DisplayName"),
+                    DisplayText.GameName(gameId, ReadJsonString(item, "DisplayName")),
                     command,
                     ReadJsonString(item, "Notes"),
                     ReadJsonBool(item, "Experimental"),
@@ -505,12 +505,58 @@ public sealed partial class MainWindowViewModel
                 if (parts.Length < 3 || parts[0].Trim().Length == 0)
                     continue;
                 string kind = parts[2].Trim().Equals("axis", StringComparison.OrdinalIgnoreCase) ? "Axis" : "Button";
-                string category = parts.Length > 3 ? parts[3].Trim() : string.Empty;
-                entries.Add(new DbNodeCatalogEntry(gameId, gameId, parts[0].Trim(), parts[1].Trim(), category.Length > 0 ? kind + " | " + category : kind));
+                (string title, string category) = TidyRegistryCatalogRow(gameId, parts[0].Trim(), parts[1].Trim(), parts.Length > 3 ? parts[3].Trim() : string.Empty);
+                entries.Add(new DbNodeCatalogEntry(gameId, gameId, parts[0].Trim(), title, category.Length > 0 ? kind + " | " + category : kind));
             }
 
             if (entries.Count > 0)
                 dbNodeCatalogByGame[gameId] = entries.Distinct(DbNodeCatalogEntryComparer.Instance).ToList();
         }
+    }
+
+    // The same readable rows the engine makes when it reads a list (engine X4Integration.TidyCatalog): a list built by an
+    // older version still has X4's "space/Steering: Analog; function 16" categories and the menu names without yaw/roll.
+    private static readonly Dictionary<string, string> X4ReadableTitles = new(StringComparer.Ordinal)
+    {
+        ["INPUT_RANGE_STEERING_PRIMARY"] = "Yaw (Primary Steering Axis)",
+        ["INPUT_RANGE_STEERING_SECONDARY"] = "Roll (Secondary Steering Axis)",
+        ["INPUT_RANGE_STEERING_PITCH"] = "Pitch (Steer Up-Down)",
+        ["INPUT_RANGE_STRAFE_LEFT_RIGHT"] = "Strafe Left-Right (lateral thrust)",
+        ["INPUT_RANGE_STRAFE_UP_DOWN"] = "Strafe Up-Down (vertical thrust)",
+        ["INPUT_STATE_STEER_UP"] = "Pitch Up (Steer Up)",
+        ["INPUT_STATE_STEER_DOWN"] = "Pitch Down (Steer Down)",
+        ["INPUT_STATE_STEER_LEFT"] = "Yaw Left (Steer Left)",
+        ["INPUT_STATE_STEER_RIGHT"] = "Yaw Right (Steer Right)",
+    };
+
+    internal static (string Title, string Category) TidyRegistryCatalogRow(string gameId, string id, string title, string category)
+    {
+        if (!string.Equals(gameId, "X4", StringComparison.OrdinalIgnoreCase))
+            return (ReadableId(title.Replace('_', ' '), sentence: false, onlyIfIdLike: true), ReadableId(category, sentence: true, onlyIfIdLike: true));
+        string group = category.Split(';')[0].Trim();
+        if (group.StartsWith("space/", StringComparison.OrdinalIgnoreCase))
+            group = group["space/".Length..].Trim();
+        return (X4ReadableTitles.TryGetValue(id, out string? readable) ? readable : title, group);
+    }
+
+    // The same rule as the engine's catalog (engine EngineReadableNames, without its per-game tables): an id-like text
+    // ("flight_controls", "AIRCRAFT", "TOGGLE PUSHBACK") reads as words; anything else stays as the game writes it.
+    internal static string ReadableId(string text, bool sentence, bool onlyIfIdLike)
+    {
+        string t = (text ?? string.Empty).Trim();
+        bool snake = t.Contains('_') || (t.Length > 0 && t.All(c => !char.IsLetter(c) || char.IsLower(c)));
+        bool caps = t.Any(char.IsLetter) && !t.Any(char.IsLower) && System.Text.RegularExpressions.Regex.IsMatch(t, "[A-Z]{4,}");
+        if (onlyIfIdLike && !snake && !caps)
+            return t;
+        string[] words = t.Replace('_', ' ').Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < words.Length; i++)
+        {
+            string w = words[i];
+            if (w.Length <= 3 && w.All(char.IsUpper))
+                continue;
+            string lower = w.ToLowerInvariant();
+            words[i] = i == 0 || !(sentence || snake) ? char.ToUpperInvariant(lower[0]) + lower[1..] : lower;
+        }
+        return words.Length == 0 ? t : string.Join(" ", words);
     }
 }

@@ -71,6 +71,9 @@ public sealed partial class DescribeGroupNodeItem : ObservableObject
 
     public string Id { get; }
 
+    // The action's readable title (never the raw id; MainWindowViewModel.ResolveNodeTitle).
+    public string Title { get; init; } = string.Empty;
+
     public IReadOnlyList<string> Planes { get; }
 
     public double Confidence { get; }

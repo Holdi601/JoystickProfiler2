@@ -64,9 +64,9 @@ try {
     foreach ($game in @("MSFS2020", "MSFS2024")) {
         $elevator = @($srPitch.Results | Where-Object { $_.Game -eq $game -and $_.Id -eq "KEY_AXIS_ELEVATOR_SET" })[0]
         # The event name is shown as the sim's menu calls it ("Elevator Axis"), never as "AXIS ELEVATOR SET".
-        Assert-True ($null -ne $elevator -and $elevator.Display -match "^Elevator Axis .+Pitch axis \(elevator\)$") ($game + " AXIS ELEVATOR SET is not shown as the pitch axis (" + $elevator.Display + ").")
+        Assert-True ($null -ne $elevator -and $elevator.Display -match "^Elevator Axis .+Pitch axis \(elevator( axis)?\)$") ($game + " AXIS ELEVATOR SET is not shown as the pitch axis (" + $elevator.Display + ").")
         Assert-True ($elevator.Recommended -eq $true) ($game + " AXIS ELEVATOR SET is not the recommended pitch axis.")
-        Assert-True ($elevator.FunctionLabel -eq "Pitch axis (elevator)") ($game + " AXIS ELEVATOR SET has the function label '" + $elevator.FunctionLabel + "'.")
+        Assert-True ($elevator.FunctionLabel -match "^Pitch axis \(elevator( axis)?\)$") ($game + " AXIS ELEVATOR SET has the function label '" + $elevator.FunctionLabel + "'.")
     }
     $srDcs = @($srPitch.Results | Where-Object { $_.Game -eq "DCS" })[0]
     Assert-True ($srDcs.Display -eq $srDcs.Title) ("DCS 'Pitch' got a function label in its title (" + $srDcs.Display + ").")

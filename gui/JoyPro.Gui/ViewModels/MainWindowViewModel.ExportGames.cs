@@ -57,7 +57,7 @@ public sealed partial class MainWindowViewModel
                         continue;
                     bool installed = !item.TryGetProperty("Installed", out JsonElement installedValue) || installedValue.ValueKind != JsonValueKind.False;
                     bool notOwned = ReadJsonBool(item, "Disabled") || IsGameHidden(gameId);
-                    ExportGameItem game = new(gameId, ReadJsonString(item, "Name"), ReadJsonString(item, "Exporter"), ReadJsonInt(item, "Relations"), ReadJsonInt(item, "Bound"),
+                    ExportGameItem game = new(gameId, DisplayText.GameName(gameId, ReadJsonString(item, "Name")), ReadJsonString(item, "Exporter"), ReadJsonInt(item, "Relations"), ReadJsonInt(item, "Bound"),
                         installed && !notOwned, notOwned, started: GameWasStarted(gameId))
                     {
                         HasBackup = gamesWithBackups.Contains(gameId)

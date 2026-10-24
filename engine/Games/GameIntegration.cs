@@ -392,6 +392,23 @@ namespace JoyPro.Engine.Games
         List<string> SaveRefreshFiles(List<string> warnings);
     }
 
+    // A game whose catalog rows get readable titles and categories when the list is read (GameCatalogStore.Load), so a
+    // list built or refreshed by an older version reads the same as a new one (X4: "Yaw (Primary Steering Axis)", the
+    // menu group without the section and the builder's notes).
+    internal interface IGameCatalogTidy
+    {
+        void TidyCatalog(GameCatalog catalog);
+    }
+
+    // A game whose actions JoyPro knows by itself (its own table of the game's flight controls), used while the PC has
+    // no list built from the game yet (GameCatalogStore.Load): the catalog, search and relation editor list the game
+    // before its first start or DB refresh. A list built from the game (refresh-db, the first import or export) replaces
+    // it. ACE COMBAT 7/8, Battlefield 6/2042.
+    internal interface IGameBuiltInCatalog
+    {
+        GameCatalog BuiltInCatalog();
+    }
+
     // A game supported through the registry. Implementations only deal with their file format;
     // profile access, CLI parsing, catalogs and safety checks are shared.
     // A game whose config file may also be given as a folder (its installation, launcher folder or input folder) or as

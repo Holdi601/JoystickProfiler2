@@ -37,6 +37,15 @@ $bfProfile = Join-Path $bfDir "bf6.pr0file"
 $bfShippedMap = Join-Path $engineBin "TOOLS\Conversions\Battlefield6JoystickMap.tsv"
 $bfShippedBackup = Join-Path $bfDir "shipped-map-backup.tsv"
 try {
+    # ---- 0. before the game wrote its profile: JoyPro's own jet/helicopter table (Battlefield 2042 too)
+    if (-not (Test-Path (Join-Path $bfCatalogDir "actions.tsv"))) {
+        $bfKnown = Run-Engine @("relations", "browse", "--game", "Battlefield6", "--axis", "--text")
+        Assert-Match $bfKnown.Output "Catalog: Battlefield6 \| 13 actions" ("Without a list the catalog must show JoyPro's own Battlefield axes: " + $bfKnown.Output)
+        Assert-Match $bfKnown.Output "jet\.ConceptPitch \| Jet: Pitch \| axis" ("The Battlefield table must have the jet pitch axis: " + $bfKnown.Output)
+    }
+    $bf2042Known = Run-Engine @("relations", "search", "fire", "--game", "Battlefield2042", "--text")
+    Assert-Match $bf2042Known.Output "Battlefield2042:jet\.ConceptFire" ("Battlefield 2042 must be found through JoyPro's own table: " + $bf2042Known.Output)
+
     # ---- 1. catalog from the user's profile
     $bfRefresh = Run-Engine @("bf6", "refresh-db", $bfMp, "--text")
     Assert-True ($bfRefresh.ExitCode -eq 0) "bf6 refresh-db failed. Output: $($bfRefresh.Output)"

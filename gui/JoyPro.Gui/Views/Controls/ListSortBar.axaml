@@ -14,11 +14,11 @@
                 <StackPanel Width="380" Spacing="6">
                     <Grid ColumnDefinitions="*,Auto">
                         <TextBlock Classes="h3" Text="{l:T 'Sort by'}" VerticalAlignment="Center" />
-                        <Button Grid.Column="1" Classes="small ghost" Content="{l:T 'Name only'}" Command="{Binding ResetCommand}" IsVisible="{Binding HasLevels}"
-                                ToolTip.Tip="{l:T 'Back to the list\'s own order (by name)'}" />
+                        <Button Grid.Column="1" Classes="small ghost" Content="{Binding ResetLabel}" Command="{Binding ResetCommand}" IsVisible="{Binding HasLevels}"
+                                ToolTip.Tip="{Binding ResetTip}" />
                     </Grid>
                     <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding !HasLevels}"
-                               Text="{l:T 'Sorted by name. Add a level to sort by something else first; equal rows go by name.'}" />
+                               Text="{Binding NoLevelsHint}" />
                     <ItemsControl ItemsSource="{Binding Levels}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:SortLevelItem">

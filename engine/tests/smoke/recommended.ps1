@@ -77,6 +77,35 @@ try {
     $rcLanding = Get-RcRow $rcBrowse.Results "EliteDangerous" "PitchAxis_Landing"
     Assert-True ($rcRaw.Recommended -eq $true -and $rcLanding.Recommended -ne $true -and $rcLanding.Variant -match "landing") "relations browse did not mark the recommended Elite pitch axis."
 
+    # Opposite directions are never "the same thing" (report: DCS Spitfire "Engine RPM INCREASE" was a variant of
+    # DECREASE); only real twins get the generic "the game does not say how it differs".
+    $rcPairs = @(
+        @("Engine RPM INCREASE", "Engine RPM DECREASE", "opposite"),
+        @("Trim Up", "Trim Down", "opposite"),
+        @("Landing Lights On", "Landing Lights Off", "opposite"),
+        @("Rudder Trim Left", "Rudder Trim Right", "opposite"),
+        @("Zoom Plus", "Zoom Minus", "opposite"),
+        @("Canopy Open", "Canopy Close", "opposite"),
+        @("Gear Extend", "Gear Retract", "opposite"),
+        @("Elevator Set", "Elevator Axis", "twin"),
+        @("Condition Lever 1 Axis", "Condition Lever Axis", "different")
+    )
+    foreach ($rcPair in $rcPairs) {
+        $rcPairRun = Run-Engine @("relations", "pair", $rcPair[0], $rcPair[1], "--text")
+        Assert-Match $rcPairRun.Output (": " + $rcPair[2] + "\s*$") ("relations pair '" + $rcPair[0] + "' / '" + $rcPair[1] + "' should be " + $rcPair[2] + ": " + $rcPairRun.Output)
+    }
+
+    # JSON on the console is plain ASCII (\uXXXX): the console code page has no curly quotes, and a best-fit quote broke
+    # the GUI's catalog (2.2.17, MSFS 2024 listed nothing).
+    $rcQuoted = "Pitch " + [char]0x201C + "quoted" + [char]0x201D + " " + [char]0x2013 + " " + [char]0x00E9
+    Run-Engine @("--profile", $rcProfile, "relations", "add", $rcQuoted, "--axis", "--node", "EliteDangerous:PitchAxisRaw:EliteDangerous", "--text") | Out-Null
+    $rcList = Run-Engine @("--profile", $rcProfile, "relations", "list")
+    Assert-True ($rcList.ExitCode -eq 0) ("relations list failed: " + $rcList.Output)
+    $rcJson = $rcList.Output.Substring($rcList.Output.IndexOf('{'))
+    $rcJson = $rcJson.Substring(0, $rcJson.LastIndexOf('}') + 1)
+    Assert-True (-not ($rcJson -match '[^\x00-\x7E]')) "relations list wrote JSON with characters outside ASCII to the console."
+    Assert-True (@(($rcJson | ConvertFrom-Json).Relations | Where-Object { $_.Name -eq $rcQuoted }).Count -eq 1) "relations list JSON did not give back the relation name with curly quotes."
+
     $rcCoverage = Invoke-RcJson @("relations", "action-info", "--coverage")
     $rcElite = @($rcCoverage.Games | Where-Object { $_.Game -eq "EliteDangerous" })[0]
     Assert-True ($null -ne $rcElite -and $rcElite.Actions -eq 6 -and $rcElite.Readable -eq 6 -and $rcElite.Functions -ge 2) "relations action-info --coverage miscounted the Elite fixture."

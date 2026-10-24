@@ -50,10 +50,12 @@ public sealed partial class SortLevelItem : ObservableObject
 
     public IReadOnlyList<SortKeyOption> Options => owner.Options;
 
-    // "A to Z" / "Z to A"; numbers and states read "low to high" / "high to low".
+    // "A to Z" / "Z to A"; dates "Oldest first" / "Newest first"; numbers and states "low to high" / "high to low".
     public string DirectionLabel => ListSortViewModel.IsTextKey(Key.Key)
         ? (Descending ? T("Z to A") : T("A to Z"))
-        : (Descending ? T("High to low") : T("Low to high"));
+        : Key.Key == "updated"
+            ? (Descending ? T("Newest first") : T("Oldest first"))
+            : (Descending ? T("High to low") : T("Low to high"));
 
     partial void OnKeyChanged(SortKeyOption value) => owner.LevelChanged();
 
@@ -72,16 +74,47 @@ public sealed partial class SortLevelItem : ObservableObject
     private void MoveDown() => owner.MoveLevel(this, 1);
 }
 
-// The tiered sort of a list (Relations page, Binds page): levels in order, each a key and a direction, e.g. 1) Device,
-// 2) Input (natural: BTN 2 before BTN 10, the axes X, Y, Z, RX, RY, RZ, sliders), 3) Name. No level = the list's own
-// order (by name). Remembered per list (list-preferences.json "Sorts": "key:asc").
+// The tiered sort of a list (Relations page, Binds page, the action catalog and the action search): levels in order,
+// each a key and a direction, e.g. 1) Device, 2) Input (natural: BTN 2 before BTN 10, the axes X, Y, Z, RX, RY, RZ,
+// sliders), 3) Name. No level = the list's own order (by name; the catalog and the search: their own order).
+// Remembered per list (list-preferences.json "Sorts": "key:asc").
 public sealed partial class ListSortViewModel : ObservableObject
 {
     private bool loading;
 
+    // The keys of an action list (catalog, search results): game, aircraft, category, title, axis / button, the date of
+    // the game's command list.
+    public static ListSortViewModel ForActions(string page) => new(page,
+        [
+            new SortKeyOption("game", T("Game")),
+            new SortKeyOption("plane", T("Aircraft")),
+            new SortKeyOption("category", T("Category")),
+            new SortKeyOption("name", T("Title")),
+            new SortKeyOption("kind", T("Axis / button")),
+            new SortKeyOption("updated", T("Last updated"))
+        ],
+        T("Sort: own order"), T("Own order"),
+        T("In the list's own order (best matches first, by category). Add a level to sort by something else; equal rows go by title."),
+        T("Back to the list's own order"));
+
+    private ListSortViewModel(string page, IReadOnlyList<SortKeyOption> options, string noLevelsLabel, string resetLabel, string noLevelsHint, string resetTip)
+    {
+        Page = page;
+        Options = options;
+        NoLevelsLabel = noLevelsLabel;
+        ResetLabel = resetLabel;
+        NoLevelsHint = noLevelsHint;
+        ResetTip = resetTip;
+        Levels.CollectionChanged += (_, _) => Renumber();
+    }
+
     public ListSortViewModel(string page)
     {
         Page = page;
+        NoLevelsLabel = T("Sort: Name");
+        ResetLabel = T("Name only");
+        NoLevelsHint = T("Sorted by name. Add a level to sort by something else first; equal rows go by name.");
+        ResetTip = T("Back to the list's own order (by name)");
         Options =
         [
             new SortKeyOption("name", T("Name")),
@@ -101,6 +134,15 @@ public sealed partial class ListSortViewModel : ObservableObject
 
     public IReadOnlyList<SortKeyOption> Options { get; }
 
+    // The texts of the bar without levels (the Relations and Binds lists: by name; action lists: their own order).
+    public string NoLevelsLabel { get; }
+
+    public string ResetLabel { get; }
+
+    public string NoLevelsHint { get; }
+
+    public string ResetTip { get; }
+
     public ObservableCollection<SortLevelItem> Levels { get; } = [];
 
     public event EventHandler? Changed;
@@ -110,9 +152,14 @@ public sealed partial class ListSortViewModel : ObservableObject
     public bool CanAddLevel => Levels.Count < Options.Count;
 
     // "Sort: Device, Input" / "Sort: Name".
-    public string Label => Levels.Count == 0 ? T("Sort: Name") : T("Sort: {0}", string.Join(", ", Levels.Select(l => l.Key.Label + (l.Descending ? " ↓" : string.Empty))));
+    public string Label => Levels.Count == 0 ? NoLevelsLabel : T("Sort: {0}", string.Join(", ", Levels.Select(l => l.Key.Label + (l.Descending ? " ↓" : string.Empty))));
 
-    internal static bool IsTextKey(string key) => key is "name" or "device" or "games" or "group" or "modifiers" or "input";
+    internal static bool IsTextKey(string key) => key is "name" or "device" or "games" or "group" or "modifiers" or "input" or "game" or "plane" or "category";
+
+    // The first level's key ("" without levels).
+    public string PrimaryKey => Levels.Count == 0 ? string.Empty : Levels[0].Key.Key;
+
+    public bool PrimaryDescending => Levels.Count > 0 && Levels[0].Descending;
 
     private SortKeyOption Option(string key) => Options.FirstOrDefault(o => string.Equals(o.Key, key, StringComparison.OrdinalIgnoreCase)) ?? Options[0];
 
@@ -187,6 +234,7 @@ public sealed partial class ListSortViewModel : ObservableObject
         OnPropertyChanged(nameof(HasLevels));
         OnPropertyChanged(nameof(CanAddLevel));
         OnPropertyChanged(nameof(Label));
+        OnPropertyChanged(nameof(PrimaryKey));
         if (!loading)
             Changed?.Invoke(this, EventArgs.Empty);
     }
@@ -240,11 +288,19 @@ public sealed partial class ListSortViewModel : ObservableObject
     }
 }
 
-// What a list row is sorted by.
-public sealed record ListSortRow(string Name, string Device, string Input, bool IsAxis, string Games, int Aircraft, string Groups, bool IsBound, string Modifiers)
+// What a list row is sorted by (an action row: Name = its title, plus game, aircraft, category and the list's date).
+public sealed record ListSortRow(string Name, string Device, string Input, bool IsAxis, string Games, int Aircraft, string Groups, bool IsBound, string Modifiers,
+    string Game = "", string Plane = "", string Category = "", DateTime Updated = default)
 {
+    public static ListSortRow ForAction(string title, string game, string plane, string category, bool isAxis, DateTime updated) =>
+        new(title, string.Empty, string.Empty, isAxis, game, 0, string.Empty, false, string.Empty, game, plane, category, updated);
+
     public static int Compare(ListSortRow a, ListSortRow b, string key) => key switch
     {
+        "game" => Empty(a.Game, b.Game) ?? Natural(a.Game, b.Game),
+        "plane" => Empty(a.Plane, b.Plane) ?? Natural(a.Plane, b.Plane),
+        "category" => Empty(a.Category, b.Category) ?? Natural(a.Category, b.Category),
+        "updated" => a.Updated.CompareTo(b.Updated),
         "name" => Natural(a.Name, b.Name),
         // Unbound rows (no device, no input) after the bound ones.
         "device" => Empty(a.Device, b.Device) ?? Natural(a.Device, b.Device),

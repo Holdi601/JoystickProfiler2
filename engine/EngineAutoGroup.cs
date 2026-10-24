@@ -72,8 +72,10 @@ namespace JoyPro.Engine
             Dictionary<string, Slot> slots;
             Dictionary<string, Aircraft> aircraft;
             List<Row> rows;
-            if (!TryLoadCatalog(folder, result, out slots, out aircraft, out rows))
+            if (!TryLoadCatalog(folder, result, out slots, out aircraft, out rows, true))
                 return result;
+            // Only the tables of the files: with the map Auto Group maps what they do not know itself, and --no-map
+            // means the hand-made tables alone (no derived rows either).
             HashSet<string> rejected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (string file in Directory.GetFiles(folder, "*.rejected.tsv"))
                 rejected.UnionWith(LoadRejected(file));
@@ -416,6 +418,9 @@ namespace JoyPro.Engine
                 }
             }
             int added = 0;
+            // Aircraft and games with no row of their own in the tables: joined by the map (also a game that has an
+            // aircraft.json entry but no table, e.g. Tiny Combat Arena).
+            HashSet<string> ownPlanes = new HashSet<string>(usable.Select(r => EngineRelationSuggest.GameKey(r.Game) == "DCS" ? r.Plane : EngineRelationSuggest.GameKey(r.Game)), StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, KeyValuePair<EngineFunctionMap.Entry, double>> pick in best.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
             {
                 EngineRelationSuggest.Command c = pick.Value.Key.Command;
@@ -429,8 +434,9 @@ namespace JoyPro.Engine
                         Type = cls == "heli" ? "rotary_wing" : cls == "space" ? "spaceship" : "fixed_wing",
                         Era = string.Empty
                     };
-                    AddUnique(result.MapAircraft, plane);
                 }
+                if (!ownPlanes.Contains(plane))
+                    AddUnique(result.MapAircraft, plane);
                 usable.Add(new Row { Game = c.Game, Plane = plane, Slot = slotOf[pick.Key], Action = c.Id, Status = "map" });
                 added++;
             }
@@ -775,6 +781,17 @@ namespace JoyPro.Engine
         }
 
         internal static bool TryLoadCatalog(string folder, EngineAutoGroupResult result, out Dictionary<string, Slot> slots, out Dictionary<string, Aircraft> aircraft, out List<Row> rows)
+        {
+            if (!TryLoadCatalog(folder, result, out slots, out aircraft, out rows, false))
+                return false;
+            // Games without a table of their own get one from the function map (EngineFunctionTable), so every game
+            // reaches search by function, suggestions, Auto Assign and the AI paths.
+            EngineFunctionTable.AddDerived(folder, slots, aircraft, rows);
+            return true;
+        }
+
+        // ownOnly: only the files (the function map reads this; Auto Group uses the map itself for the rest).
+        internal static bool TryLoadCatalog(string folder, EngineAutoGroupResult result, out Dictionary<string, Slot> slots, out Dictionary<string, Aircraft> aircraft, out List<Row> rows, bool ownOnly)
         {
             slots = new Dictionary<string, Slot>(StringComparer.OrdinalIgnoreCase);
             aircraft = new Dictionary<string, Aircraft>(StringComparer.OrdinalIgnoreCase);

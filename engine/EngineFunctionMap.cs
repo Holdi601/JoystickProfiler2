@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -54,6 +54,8 @@ namespace JoyPro.Engine
             // Plain-English words for what it does ("release drop deploy flares decoys"): searched like a document, not
             // matched in action titles.
             public List<string> Keywords = new List<string>();
+            // Everyday sentences about it (function-map.json "plain"): search document words only.
+            public List<string> Plain = new List<string>();
             // The function as a search document (BM25): token -> weighted count over name and synonyms (1.0), keywords
             // (0.8) and the description (0.4).
             internal readonly Dictionary<string, double> Doc = new Dictionary<string, double>(StringComparer.Ordinal);
@@ -157,6 +159,8 @@ namespace JoyPro.Engine
             // Of LoadMilliseconds: reading the game lists (the rest is mapping them).
             public long IndexMilliseconds;
             public bool FromCache;
+            // Of Warnings: those of the knowledge file (the rest came from building the action index).
+            public int KnowledgeWarnings;
             public int Version;
         }
 
@@ -172,6 +176,7 @@ namespace JoyPro.Engine
                 {
                     Stopwatch watch = Stopwatch.StartNew();
                     Map map = LoadKnowledge(KnowledgeFile());
+                    map.KnowledgeWarnings = map.Warnings.Count;
                     string fingerprint = EngineFunctionMapCache.Fingerprint(map);
                     List<EngineRelationSuggest.Command> commands;
                     if (EngineFunctionMapCache.TryRead(map, fingerprint, out commands))
@@ -195,6 +200,20 @@ namespace JoyPro.Engine
                 if (warnings != null)
                     warnings.AddRange(cached.Warnings.Where(w => !warnings.Contains(w)));
                 return cached;
+            }
+        }
+
+        // The engine server after a command: the next command sees the kept map as a new engine process sees the map it
+        // reads from the map cache, without the warnings of building it (EngineServer.ResetBetweenCommands).
+        internal static void ForgetBuildWarnings()
+        {
+            lock (Sync)
+            {
+                if (cached == null || cached.FromCache)
+                    return;
+                if (cached.Warnings.Count > cached.KnowledgeWarnings)
+                    cached.Warnings.RemoveRange(cached.KnowledgeWarnings, cached.Warnings.Count - cached.KnowledgeWarnings);
+                cached.FromCache = File.Exists(EngineFunctionMapCache.CacheFile());
             }
         }
 
@@ -323,6 +342,12 @@ namespace JoyPro.Engine
             if (bar >= 0)
                 text = text.Substring(bar + 1);
             text = Regex.Replace(text, "^(v_|KEY_|ID_|INPUT_(RANGE|STATE|ACTION)_)", string.Empty, RegexOptions.IgnoreCase);
+            // X-Plane's namespace ("sim/autopilot/rate_hold") is no word of the command: "sim" + "rate" is no "sim rate".
+            text = Regex.Replace(text, "^(sim|laminar|xplane)/", string.Empty, RegexOptions.IgnoreCase);
+            // Its folder ("autopilot/", "pressurization/") is the menu it sits in, not what the command does: "HSI select up"
+            // is no autopilot command, "Cabin vertical speed down" no bleed air one.
+            if (game.StartsWith("XPlane", StringComparison.OrdinalIgnoreCase) && text.IndexOf('/') > 0)
+                text = text.Substring(text.LastIndexOf('/') + 1);
             return Tokenize(text.Replace('.', ' ').Replace('/', ' '));
         }
 
@@ -451,6 +476,16 @@ namespace JoyPro.Engine
                 else
                     map.Warnings.Add("Function map: 'describe' names an unknown function " + described.Key + ".");
             }
+            // "plain": function id -> what a player says in everyday words ("the button that makes my ship go really far
+            // really fast"): words of the function's search document only (never matched as a phrase or in a title).
+            foreach (KeyValuePair<string, object> plain in Dict(Get(root, "plain")))
+            {
+                Function f;
+                if (map.ById.TryGetValue(plain.Key, out f))
+                    f.Plain.AddRange(Strings(plain.Value));
+                else
+                    map.Warnings.Add("Function map: 'plain' names an unknown function " + plain.Key + ".");
+            }
             BuildDocuments(map);
             return map;
         }
@@ -486,6 +521,7 @@ namespace JoyPro.Engine
                 add(f.Terms.Values.SelectMany(v => v), 0.6);
                 add(f.Keywords, 0.8);
                 add(new[] { f.Description }, 0.4);
+                add(f.Plain, 0.7);
                 f.DocLength = Math.Max(1, f.Doc.Count);
                 foreach (string t in f.Doc.Keys)
                     map.DocFrequency[t] = (map.DocFrequency.ContainsKey(t) ? map.DocFrequency[t] : 0) + 1;
@@ -1065,7 +1101,7 @@ namespace JoyPro.Engine
             Dictionary<string, EngineAutoGroup.Slot> slots;
             Dictionary<string, EngineAutoGroup.Aircraft> aircraft;
             List<EngineAutoGroup.Row> rows;
-            if (EngineAutoGroup.TryLoadCatalog(EngineNlGroup.FunctionsFolder(), probe, out slots, out aircraft, out rows))
+            if (EngineAutoGroup.TryLoadCatalog(EngineNlGroup.FunctionsFolder(), probe, out slots, out aircraft, out rows, true))
             {
                 foreach (KeyValuePair<string, EngineAutoGroup.Aircraft> plane in aircraft)
                     map.PlaneTypes[plane.Key] = plane.Value.Type ?? string.Empty;
@@ -1233,6 +1269,14 @@ namespace JoyPro.Engine
         // Misspelt words are corrected against every word JoyPro knows first.
         internal static Understanding Resolve(Map map, string query)
         {
+            return Resolve(map, query, null);
+        }
+
+        // games: the query is about these games only ("boost" in Star Citizen): a game term of theirs ("class:space":
+        // "boost" = afterburner) wins over a general synonym of another function ("boost" = supercharger), and terms of
+        // other games do not count.
+        internal static Understanding Resolve(Map map, string query, ICollection<string> games)
+        {
             Understanding u = new Understanding();
             string[] tokens = Tokenize(query).Where(t => !map.Stopwords.Contains(t)).ToArray();
             if (tokens.Length == 0)
@@ -1245,7 +1289,30 @@ namespace JoyPro.Engine
             }
             u.Words = tokens.ToList();
             bool[] union = new bool[tokens.Length];
-            List<Resolved> chosen = Phrases(map, tokens, union);
+            List<Resolved> chosen = Phrases(map, tokens, union, games);
+
+            // A sentence in everyday words ("open the thing so I can climb out"): a name that covers only a small part of
+            // it ("climb") does not decide; the function whose document fits the whole sentence best does, when it fits
+            // clearly better.
+            string[] content = tokens.Where(t => !map.QueryFiller.Contains(t)).ToArray();
+            if (tokens.Length >= 3 && content.Length >= 2 && chosen.Count > 0 && chosen.All(c => c.Covered < content.Length))
+            {
+                bool[] all;
+                List<Resolved> whole = Describe(map, content, false, out all);
+                Resolved best = whole.FirstOrDefault();
+                // The whole sentence fits the other function clearly better than the named one(s).
+                double named = chosen.Max(c => DocScore(map, c.Function, content));
+                if (best != null && chosen.All(c => c.Function != best.Function) && best.Covered * 2 >= content.Length && DocScore(map, best.Function, content) > 1.4 * named)
+                {
+                    double top = chosen.Count == 0 ? 0 : chosen.Max(c => c.Score);
+                    best.Score = Math.Max(best.Score, top + 1);
+                    // A name of one word in a sentence about something else ("shoot" in "shoot me out of the jet") goes.
+                    chosen.RemoveAll(c => c.Covered <= 1);
+                    chosen.Insert(0, best);
+                    for (int i = 0; i < tokens.Length; i++)
+                        union[i] |= content.Contains(tokens[i]) && DocHas(map, best.Function, tokens[i]);
+                }
+            }
 
             // 2. The words pass 1 left: a direction, filler, or a description of the function.
             List<int> open = new List<int>();
@@ -1270,6 +1337,10 @@ namespace JoyPro.Engine
                         open.Add(i);
                 }
             }
+            // One word left next to a named function ("distance" of "long distance jump") brings no second function: it
+            // only lifts the titles that have it.
+            if (open.Count == 1 && chosen.Any(c => !c.Related && c.Covered >= 2))
+                open.Clear();
             if (open.Count > 0)
             {
                 bool[] explained;
@@ -1313,12 +1384,24 @@ namespace JoyPro.Engine
         }
 
         // Pass 1: the names, synonyms and terms in the query. union: the query words they cover.
-        private static List<Resolved> Phrases(Map map, string[] tokens, bool[] union)
+        private static string ClassOfGame(Map map, string game)
         {
+            foreach (KeyValuePair<string, List<string>> pair in map.ClassGames)
+            {
+                if (pair.Value.Contains(game, StringComparer.OrdinalIgnoreCase))
+                    return pair.Key;
+            }
+            return string.Empty;
+        }
+
+        private static List<Resolved> Phrases(Map map, string[] tokens, bool[] union, ICollection<string> games)
+        {
+            List<string> scopeGames = (games ?? new List<string>()).Where(g => !string.IsNullOrWhiteSpace(g)).ToList();
             Dictionary<string, Resolved> best = new Dictionary<string, Resolved>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, bool[]> coverage = new Dictionary<string, bool[]>(StringComparer.OrdinalIgnoreCase);
             int[] leanIndex = Enumerable.Range(0, tokens.Length).Where(i => !map.QueryFiller.Contains(tokens[i])).ToArray();
             string[] leanTokens = leanIndex.Select(i => tokens[i]).ToArray();
+            Func<string, bool> known = w => map.DocFrequency.ContainsKey(w) || map.Lexicon.ContainsKey(w);
             foreach (Function f in map.Functions)
             {
                 IEnumerable<Phrase> phrases = f.Phrases.Concat(new[] { new Phrase { Function = f, Text = f.Id, Tokens = Tokenize(f.Id.Replace('_', ' ')) } })
@@ -1328,20 +1411,28 @@ namespace JoyPro.Engine
                     int typos;
                     string[] words = phrase.QueryTokens.Length > 0 ? phrase.QueryTokens : phrase.Tokens;
                     int[] positions = null;
-                    int at = FindFuzzy(tokens, words, out typos);
+                    int at = FindFuzzy(tokens, words, out typos, known);
                     if (at >= 0)
                         positions = Enumerable.Range(at, words.Length).ToArray();
                     else if (leanTokens.Length < tokens.Length)
                     {
                         // Also with the filler left out: "slow the ship down" has "slow down".
-                        int leanAt = FindFuzzy(leanTokens, words, out typos);
+                        int leanAt = FindFuzzy(leanTokens, words, out typos, known);
                         if (leanAt >= 0)
                             positions = Enumerable.Range(leanAt, words.Length).Select(i => leanIndex[i]).ToArray();
                     }
                     if (positions == null)
                         continue;
+                    // A game term: with games given it counts only for them, and then more than a general synonym.
+                    double scopeBonus = phrase.Scope.Length == 0 ? 1 : 0;
+                    if (phrase.Scope.Length > 0 && scopeGames.Count > 0)
+                    {
+                        if (!scopeGames.Any(g => ScopeApplies(phrase.Scope, g, ClassOfGame(map, g))))
+                            continue;
+                        scopeBonus = 2;
+                    }
                     // A described phrase ("go faster", "get out") counts a little less than a name of the same length.
-                    double score = (words.Length * 10 - typos * 4 + (phrase.IsName ? 2 : 0) + (phrase.Scope.Length == 0 ? 1 : 0) + Math.Min(2, f.Priority) * 0.5) *
+                    double score = (words.Length * 10 - typos * 4 + (phrase.IsName ? 2 : 0) + scopeBonus + Math.Min(2, f.Priority) * 0.5) *
                                    (phrase.IsKeyword ? 0.95 : 1.0);
                     Resolved existing;
                     if (best.TryGetValue(f.Id, out existing) && existing.Score >= score)
@@ -1396,6 +1487,33 @@ namespace JoyPro.Engine
             return map.Lexicon.TryGetValue(word, out neighbours) && neighbours.Any(f.Doc.ContainsKey);
         }
 
+        // BM25 of one function's document for the words (as Describe weighs them, lexicon neighbours less).
+        private static double DocScore(Map map, Function f, string[] words)
+        {
+            int n = Math.Max(1, map.Functions.Count);
+            double sum = 0;
+            foreach (string word in words)
+            {
+                double weight = map.DirectionWords.Contains(word) ? 0.35 : 1.0;
+                List<KeyValuePair<string, double>> forms = new List<KeyValuePair<string, double>> { new KeyValuePair<string, double>(word, weight) };
+                List<string> neighbours;
+                if (map.Lexicon.TryGetValue(word, out neighbours))
+                    forms.AddRange(neighbours.Where(x => x != word).Select(x => new KeyValuePair<string, double>(x, 0.6 * weight)));
+                double best = 0;
+                foreach (KeyValuePair<string, double> form in forms)
+                {
+                    double tf;
+                    int df;
+                    if (!f.Doc.TryGetValue(form.Key, out tf) || !map.DocFrequency.TryGetValue(form.Key, out df))
+                        continue;
+                    double idf = Math.Log(1 + (n - df + 0.5) / (df + 0.5));
+                    best = Math.Max(best, form.Value * idf * tf * (Bm25K1 + 1) / (tf + Bm25K1 * (1 - Bm25B + Bm25B * f.DocLength / map.AverageDocLength)));
+                }
+                sum += best;
+            }
+            return sum;
+        }
+
         private const double Bm25K1 = 1.2;
         private const double Bm25B = 0.3;
 
@@ -1413,10 +1531,12 @@ namespace JoyPro.Engine
             Dictionary<Function, bool[]> hits = new Dictionary<Function, bool[]>();
             for (int w = 0; w < words.Length; w++)
             {
-                List<KeyValuePair<string, double>> forms = new List<KeyValuePair<string, double>> { new KeyValuePair<string, double>(words[w], 1.0) };
+                // A direction word ("up", "down", "left") says little about which function: it weighs less.
+                double weight = map.DirectionWords.Contains(words[w]) ? 0.35 : 1.0;
+                List<KeyValuePair<string, double>> forms = new List<KeyValuePair<string, double>> { new KeyValuePair<string, double>(words[w], weight) };
                 List<string> neighbours;
                 if (map.Lexicon.TryGetValue(words[w], out neighbours))
-                    forms.AddRange(neighbours.Where(x => x != words[w]).Select(x => new KeyValuePair<string, double>(x, 0.6)));
+                    forms.AddRange(neighbours.Where(x => x != words[w]).Select(x => new KeyValuePair<string, double>(x, 0.6 * weight)));
                 foreach (Function f in map.Functions)
                 {
                     double best = 0;
@@ -1453,7 +1573,8 @@ namespace JoyPro.Engine
                 return result;
             foreach (KeyValuePair<Function, double> s in ranked.Take(withNamed ? 1 : 4))
             {
-                if (s.Value < top * (withNamed ? 1.0 : 0.6))
+                // Only functions close to the best one ride along (a sentence about the canopy does not bring the seat).
+                if (s.Value < top * (withNamed ? 1.0 : 0.8))
                     break;
                 bool[] mine = hits[s.Key];
                 for (int w = 0; w < words.Length; w++)
@@ -1503,7 +1624,7 @@ namespace JoyPro.Engine
 
         // Fuzzy phrase match in the query: every phrase word in order, contiguous, each exact, a word start (3+ letters,
         // query word shorter) or with one typo (5+ letters; two from 8).
-        private static int FindFuzzy(string[] tokens, string[] phrase, out int typos)
+        private static int FindFuzzy(string[] tokens, string[] phrase, out int typos, Func<string, bool> known)
         {
             typos = 0;
             if (phrase.Length == 0 || phrase.Length > tokens.Length)
@@ -1518,7 +1639,8 @@ namespace JoyPro.Engine
                     string p = phrase[j];
                     if (q == p)
                         continue;
-                    if (q.Length >= 5 && p.Length >= 5 && q[0] == p[0] && WithinDistance(q, p, q.Length >= 8 ? 2 : 1))
+                    // A typo only of a word JoyPro does not know itself ("radio" is no typo of "ratio").
+                    if (q.Length >= 5 && p.Length >= 5 && q[0] == p[0] && (known == null || !known(q)) && WithinDistance(q, p, q.Length >= 8 ? 2 : 1))
                         t++;
                     else
                         ok = false;

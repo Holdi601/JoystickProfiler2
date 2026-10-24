@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace JoyPro.Engine.Games
@@ -144,16 +145,36 @@ namespace JoyPro.Engine.Games
                     foreach (KeyValuePair<string, string> container in Containers(folder, holder.Sim))
                     {
                         List<string> packages = SafeDirectories(container.Key).ToList();
+                        // Several packages are read at once (a package's manifest, aircraft.cfg files and layout.json;
+                        // MSFS 2024 has hundreds); the results are merged in folder order as before.
+                        bool[] read = packages.Select(p => scannedPackages.Add(Path.GetFullPath(p) + "|" + container.Value)).ToArray();
+                        MsfsAircraft[] results = new MsfsAircraft[packages.Count];
+                        List<string>[] packageWarnings = new List<string>[packages.Count];
                         int packageIndex = 0;
-                        foreach (string package in packages)
+                        object progressGate = new object();
+                        string packageSim = container.Value;
+                        string phase = "MSFS " + holder.Sim + ", looking for aircraft";
+                        Parallel.For(0, packages.Count, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Math.Min(8, Environment.ProcessorCount)) }, (i, state) =>
                         {
-                            EngineProgress.ThrowIfCancelled("looking for MSFS aircraft");
-                            EngineProgress.Report(++packageIndex, packages.Count, "MSFS " + holder.Sim + ", looking for aircraft", Path.GetFileName(package));
-                            if (!scannedPackages.Add(Path.GetFullPath(package) + "|" + container.Value))
-                                continue;
-                            MsfsAircraft aircraft = ReadPackage(package, container.Value, warnings);
-                            if (aircraft != null)
-                                MergeInto(found, aircraft);
+                            if (EngineProgress.CancelRequested)
+                            {
+                                state.Stop();
+                                return;
+                            }
+                            lock (progressGate)
+                                EngineProgress.Report(++packageIndex, packages.Count, phase, Path.GetFileName(packages[i]));
+                            if (!read[i])
+                                return;
+                            packageWarnings[i] = new List<string>();
+                            results[i] = ReadPackage(packages[i], packageSim, packageWarnings[i]);
+                        });
+                        EngineProgress.ThrowIfCancelled("looking for MSFS aircraft");
+                        for (int i = 0; i < packages.Count; i++)
+                        {
+                            if (packageWarnings[i] != null)
+                                warnings.AddRange(packageWarnings[i]);
+                            if (results[i] != null)
+                                MergeInto(found, results[i]);
                         }
                     }
                 }

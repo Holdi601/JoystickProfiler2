@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
@@ -687,46 +688,93 @@ namespace JoyPro.Engine
                 try
                 {
                     Directory.CreateDirectory(scratchSavedGames);
-                    // One luae process per few aircraft: every profile times every fake stick is loaded at once
-                    // otherwise (all modules: > 4 GB and over the time limit).
-                    const int chunkSize = 8;
-                    int total = headlessCandidates.Count;
-                    for (int start = 0; start < headlessCandidates.Count; start += chunkSize)
+                    // Several luae runs at once, a few aircraft each (EngineDcsRefresh.Parallel.cs), every run in a
+                    // temporary Saved Games folder of its own: every profile times every fake stick in one run needed
+                    // more than 4 GB and took over a quarter of an hour.
+                    const string cleanWhat = "building the DCS clean profiles";
+                    DcsTemplateCache templateCache = new DcsTemplateCache(normalizedOptions.InstallPath, normalizedOptions.SavedGamesPath);
+                    DcsLuaPlan plan = PlanLuaJobs(headlessCandidates, false, LoadLuaCosts(false));
+                    int runNumber = -1;
+                    Action<DcsLuaJob> prepare = job =>
                     {
-                        EngineProgress.ThrowIfCancelled("building the DCS clean profiles");
-                        List<DcsHeadlessProfileCandidate> chunk = headlessCandidates.Skip(start).Take(chunkSize).ToList();
-                        ReportStatus(normalizedOptions, "Running headless Lua clean refresh (" + (start + chunk.Count).ToString(CultureInfo.InvariantCulture) + "/" + headlessCandidates.Count.ToString(CultureInfo.InvariantCulture) + " profiles).");
-                        // DCS's Lua names the profile it clears; the count is the chunk's share of all aircraft.
-                        int chunkStart = start;
-                        int chunkCount = chunk.Count;
-                        Action<string, int, int, string> cleanProgress = (stage, index, count, profile) =>
+                        job.SavedGames = Path.Combine(scratchSavedGames, "run" + Interlocked.Increment(ref runNumber).ToString("D3", CultureInfo.InvariantCulture));
+                        Directory.CreateDirectory(job.SavedGames);
+                        job.DeviceTemplates = templateCache.ForRun(job.Assigned);
+                        // The folders DCS's saveChanges writes the aircraft's diffs into, made here: DCS's lfs.mkdir in
+                        // luae.exe starts cmd.exe (see AppendHeadlessPrelude). Left empty when nothing is saved there.
+                        foreach (DcsHeadlessProfileCandidate candidate in job.Assigned)
                         {
-                            int done = count <= 0 ? 1 : (int)Math.Ceiling((double)Math.Max(1, index) / count * chunkCount);
-                            string what = stage == "load" ? "DCS World, loading the default binds" : stage == "save" ? "DCS World, saving the cleared binds" : "DCS World, clearing the binds";
-                            EngineProgress.Report(chunkStart + Math.Min(chunkCount, Math.Max(1, done)), total, what, profile);
-                        };
-                        int errorsBefore = result.Errors.Count;
-                        if (RunHeadlessLuaRefresh(normalizedOptions, result, chunk, exportHtml: false, savedGamesOverride: scratchSavedGames, luaProgress: cleanProgress))
-                            continue;
-                        // luae.exe can crash on one module's profile: retry the chunk one profile at a time and skip
-                        // only the profiles that still fail (their previous clean profiles stay).
-                        result.Errors.RemoveRange(errorsBefore, result.Errors.Count - errorsBefore);
-                        foreach (DcsHeadlessProfileCandidate single in chunk)
-                        {
-                            EngineProgress.ThrowIfCancelled("building the DCS clean profiles");
-                            int singleErrors = result.Errors.Count;
-                            if (RunHeadlessLuaRefresh(normalizedOptions, result, new List<DcsHeadlessProfileCandidate> { single }, exportHtml: false, savedGamesOverride: scratchSavedGames))
+                            if (DcsUserFolderName(candidate.UnitName).Trim().Length == 0)
                                 continue;
-                            string reason = string.Join(" ", result.Errors.Skip(singleErrors));
-                            result.Errors.RemoveRange(singleErrors, result.Errors.Count - singleErrors);
-                            result.Warnings.Add("DCS clean refresh skipped '" + single.UnitName + "' (" + reason + "); its previous clean profiles stay.");
+                            string unitFolder = Path.Combine(job.SavedGames, "Config", "Input", DcsUserFolderName(candidate.UnitName));
+                            foreach (string deviceFolder in DcsInputDeviceFolderNames)
+                                Directory.CreateDirectory(Path.Combine(unitFolder, deviceFolder));
                         }
+                    };
+                    plan.Jobs.ForEach(prepare);
+                    // DCS's Lua names the profile it loads, clears and saves; per stage the count is the sum of every
+                    // run's share of its aircraft.
+                    int total = headlessCandidates.Count;
+                    object progressGate = new object();
+                    Dictionary<string, Dictionary<DcsLuaJob, int>> stageDone = new Dictionary<string, Dictionary<DcsLuaJob, int>>(StringComparer.Ordinal);
+                    Action<DcsLuaJob, string, int, int, string> cleanProgress = (job, stage, index, count, profile) =>
+                    {
+                        // A slow aircraft cleared by several runs counts once (its first part).
+                        int share = job.FakePart == 0 ? job.Assigned.Count : 0;
+                        if (share <= 0)
+                            return;
+                        string what = stage == "load" ? "DCS World, loading the default binds" : stage == "save" ? "DCS World, saving the cleared binds" : "DCS World, clearing the binds";
+                        int done = count <= 0 ? share : (int)Math.Ceiling((double)Math.Max(1, index) / count * share);
+                        lock (progressGate)
+                        {
+                            Dictionary<DcsLuaJob, int> perJob;
+                            if (!stageDone.TryGetValue(what, out perJob))
+                                stageDone[what] = perJob = new Dictionary<DcsLuaJob, int>();
+                            int before;
+                            perJob.TryGetValue(job, out before);
+                            perJob[job] = Math.Max(before, Math.Min(share, Math.Max(1, done)));
+                            EngineProgress.Report(perJob.Values.Sum(), total, what, profile);
+                        }
+                    };
+                    // luae.exe can crash on one module's profile (or now and then, 0xC000041D): a failed run is repeated at
+                    // once, one aircraft per run, and only the aircraft that still fail are skipped (their previous clean
+                    // profiles stay).
+                    Func<DcsLuaJob, List<DcsLuaJob>> retry = failedJob =>
+                    {
+                        List<DcsLuaJob> again = failedJob.Assigned.Count == 0
+                            ? new List<DcsLuaJob> { new DcsLuaJob { Order = failedJob.Order + 1, Name = failedJob.Name, WithDefaults = true } }
+                            : SplitLuaJob(failedJob);
+                        again.ForEach(prepare);
+                        return again;
+                    };
+                    RunLuaJobs(normalizedOptions, result, headlessCandidates, plan.Jobs, plan.Workers, false, cleanProgress, cleanWhat, retry);
+                    if (result.Errors.Count > 0)
+                        return result;
+                    List<DcsLuaJob> finished = new List<DcsLuaJob>();
+                    List<DcsLuaJob> reported = new List<DcsLuaJob>();
+                    foreach (DcsLuaJob job in plan.Jobs)
+                    {
+                        foreach (DcsLuaJob run in job.Ok ? new List<DcsLuaJob> { job } : job.Retries)
+                        {
+                            reported.Add(run);
+                            if (run.Ok)
+                                finished.Add(run);
+                            else if (run.Assigned.Count == 0)
+                                result.Warnings.Add("DCS clean refresh could not clear DCS's default profiles (" + string.Join(" ", run.Errors) + "); their previous clean profiles stay.");
+                            else
+                                result.Warnings.Add("DCS clean refresh skipped '" + run.Assigned[0].UnitName + "' (" + string.Join(" ", run.Errors) + "); its previous clean profiles stay.");
+                        }
+                        if (!job.Ok && job.Retries.Count == 0)
+                            result.Warnings.Add("DCS clean refresh skipped '" + job.Name + "' (" + string.Join(" ", job.Errors) + "); the previous clean profiles stay.");
                     }
+                    MergeLuaJobs(result, plan, reported, exportHtml: false);
+                    SaveLuaCosts(false, finished, headlessCandidates);
 
-                    EngineProgress.ThrowIfCancelled("building the DCS clean profiles");
+                    EngineProgress.ThrowIfCancelled(cleanWhat);
                     EngineProgress.SetCancelable(false);
                     ReportStatus(normalizedOptions, "Rebuilding clean profile files.");
-                    if (!RecreateCleanProfiles(scratchSavedGames, result.DefaultStickReference, result, result.Errors, TemplatesByPlane(headlessCandidates)))
+                    List<string> inputRoots = finished.OrderBy(j => j.Order).Select(j => j.SavedGames).ToList();
+                    if (!RecreateCleanProfiles(inputRoots, result.DefaultStickReference, result, result.Errors, templateCache.ByPlane(headlessCandidates)))
                         return result;
                     bool someAircraft = normalizedOptions.PlaneFilter != null && normalizedOptions.PlaneFilter.Count > 0;
                     WriteCoveredDeviceTypes(result, someAircraft);
@@ -944,15 +992,67 @@ namespace JoyPro.Engine
 
                 ReportStatus(normalizedOptions, "Running headless Lua id refresh.");
                 EngineProgress.Report(0, headlessCandidates.Count, "DCS World, starting DCS's Lua", "luae.exe");
-                if (!RunHeadlessLuaRefresh(normalizedOptions, result, headlessCandidates, exportHtml: true,
-                        luaProgress: (stage, index, count, profile) => EngineProgress.Report(index, count, "DCS World, reading inputs", profile)))
-                    return result;
-                EngineProgress.ThrowIfCancelled("reading the DCS aircraft inputs");
+                // Several luae runs at once (EngineDcsRefresh.Parallel.cs). DCS's Lua reads the user's Config\Input
+                // (as DCS's own "Make HTML" does) and writes its InputLayoutsTxt into a temporary folder per run, never
+                // into the Saved Games folder.
+                string exportRoot = Path.Combine(Path.GetTempPath(), "JoyPro_dcs_id_" + Guid.NewGuid().ToString("N"));
+                result.InputLayoutsPath = exportRoot;
+                try
+                {
+                    DcsLuaPlan plan = PlanLuaJobs(headlessCandidates, true, LoadLuaCosts(true));
+                    for (int i = 0; i < plan.Jobs.Count; i++)
+                    {
+                        DcsLuaJob job = plan.Jobs[i];
+                        job.SavedGames = normalizedOptions.SavedGamesPath;
+                        job.ExportPath = Path.Combine(exportRoot, "run" + i.ToString("D3", CultureInfo.InvariantCulture));
+                        Directory.CreateDirectory(Path.Combine(job.ExportPath, "InputLayoutsTxt"));
+                    }
+                    // One line per aircraft DCS's Lua reads, counted over all runs.
+                    int read = 0;
+                    object progressGate = new object();
+                    Action<DcsLuaJob, string, int, int, string> idProgress = (job, stage, index, count, profile) =>
+                    {
+                        if (stage != "export")
+                            return;
+                        lock (progressGate)
+                            EngineProgress.Report(++read, headlessCandidates.Count, "DCS World, reading inputs", profile);
+                    };
+                    // A run that failed (luae.exe crashes now and then, 0xC000041D) is repeated once, into a new folder.
+                    int retryNumber = 0;
+                    Func<DcsLuaJob, List<DcsLuaJob>> retry = failedJob =>
+                    {
+                        DcsLuaJob again = new DcsLuaJob { Order = failedJob.Order + 1, Name = failedJob.Name, WithDefaults = failedJob.WithDefaults, SavedGames = failedJob.SavedGames };
+                        again.Assigned.AddRange(failedJob.Assigned);
+                        again.AssignedIndexes.AddRange(failedJob.AssignedIndexes);
+                        again.ExportPath = Path.Combine(exportRoot, "retry" + Interlocked.Increment(ref retryNumber).ToString("D3", CultureInfo.InvariantCulture));
+                        Directory.CreateDirectory(Path.Combine(again.ExportPath, "InputLayoutsTxt"));
+                        return new List<DcsLuaJob> { again };
+                    };
+                    RunLuaJobs(normalizedOptions, result, headlessCandidates, plan.Jobs, plan.Workers, true, idProgress, "reading the DCS aircraft inputs", retry);
+                    if (result.Errors.Count > 0)
+                        return result;
+                    List<DcsLuaJob> runs = plan.Jobs.SelectMany(j => j.Ok ? new List<DcsLuaJob> { j } : j.Retries.Count > 0 ? j.Retries : new List<DcsLuaJob> { j }).ToList();
+                    MergeLuaJobs(result, plan, runs, exportHtml: true);
+                    SaveLuaCosts(true, runs.Where(j => j.Ok), headlessCandidates);
+                    foreach (DcsLuaJob job in runs.OrderBy(j => j.Order))
+                        result.Errors.AddRange(job.Errors);
+                    if (result.Errors.Count > 0)
+                        return result;
+                    EngineProgress.ThrowIfCancelled("reading the DCS aircraft inputs");
+                    if (read < headlessCandidates.Count)
+                        EngineProgress.Report(headlessCandidates.Count, headlessCandidates.Count, "DCS World, reading inputs", string.Empty);
 
-                EngineProgress.SetCancelable(false);
-                ReportStatus(normalizedOptions, "Copying largest exported HTML files into DB.");
-                if (!CopyLargestExportedHtml(normalizedOptions, result, result.Errors))
-                    return result;
+                    EngineProgress.SetCancelable(false);
+                    ReportStatus(normalizedOptions, "Copying largest exported HTML files into DB.");
+                    List<string> sourceRoots = runs.OrderBy(j => j.Order).Select(j => Path.Combine(j.ExportPath, "InputLayoutsTxt")).ToList();
+                    if (!CopyLargestExportedHtml(normalizedOptions, result, result.Errors, sourceRoots))
+                        return result;
+                }
+                finally
+                {
+                    List<string> ignored = new List<string>();
+                    SafeDeleteDirectory(exportRoot, ignored, ignored);
+                }
 
                 ReportStatus(normalizedOptions, "DCS refresh id complete.");
                 return result;
@@ -2344,10 +2444,17 @@ namespace JoyPro.Engine
         // - KeyboardCleanProfile\DCS\<plane>.cf: the keyboard.
         private static bool RecreateCleanProfiles(string savedGamesPath, string defaultStickReference, DcsRefreshResult result, List<string> errors, Dictionary<string, HashSet<string>> templatesByPlane = null)
         {
-            string inputRoot = Path.Combine(savedGamesPath, "Config", "Input");
-            if (!Directory.Exists(inputRoot))
+            return RecreateCleanProfiles(new List<string> { savedGamesPath }, defaultStickReference, result, errors, templatesByPlane);
+        }
+
+        // savedGamesPaths: the Saved Games folders DCS's Lua wrote into (one per luae run, in run order); a plane two
+        // runs wrote has its files merged, the later run's file winning, as if both had written into one folder.
+        private static bool RecreateCleanProfiles(List<string> savedGamesPaths, string defaultStickReference, DcsRefreshResult result, List<string> errors, Dictionary<string, HashSet<string>> templatesByPlane = null)
+        {
+            List<string> inputRoots = savedGamesPaths.Select(p => Path.Combine(p, "Config", "Input")).Where(Directory.Exists).ToList();
+            if (inputRoots.Count == 0)
             {
-                errors.Add("DCS input folder does not exist after refresh: " + inputRoot);
+                errors.Add("DCS input folder does not exist after refresh: " + Path.Combine(savedGamesPaths.FirstOrDefault() ?? string.Empty, "Config", "Input"));
                 return false;
             }
 
@@ -2355,37 +2462,59 @@ namespace JoyPro.Engine
             string cleanRoot = GameDataPaths.WritableCleanProfileFolder("DCS", false);
             string keyboardRoot = GameDataPaths.WritableCleanProfileFolder("DCS", true);
 
-            DirectoryInfo[] planeDirectories;
-            try
+            // Plane name -> its folders (run order). Listed once per run folder.
+            Dictionary<string, List<DirectoryInfo>> planeFolders = new Dictionary<string, List<DirectoryInfo>>(StringComparer.OrdinalIgnoreCase);
+            List<string> planeNames = new List<string>();
+            foreach (string inputRoot in inputRoots)
             {
-                planeDirectories = new DirectoryInfo(inputRoot).GetDirectories();
+                try
+                {
+                    foreach (DirectoryInfo planeDirectory in new DirectoryInfo(inputRoot).GetDirectories())
+                    {
+                        // A folder JoyPro made for DCS that DCS saved nothing into (DCS itself never leaves one empty).
+                        if (!planeDirectory.EnumerateFiles("*", SearchOption.AllDirectories).Any())
+                            continue;
+                        List<DirectoryInfo> folders;
+                        if (!planeFolders.TryGetValue(planeDirectory.Name, out folders))
+                        {
+                            planeFolders[planeDirectory.Name] = folders = new List<DirectoryInfo>();
+                            planeNames.Add(planeDirectory.Name);
+                        }
+                        folders.Add(planeDirectory);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errors.Add("Failed listing DCS input planes in '" + inputRoot + "': " + ex.Message);
+                    return false;
+                }
             }
-            catch (Exception ex)
-            {
-                errors.Add("Failed listing DCS input planes in '" + inputRoot + "': " + ex.Message);
-                return false;
-            }
+            if (inputRoots.Count > 1)
+                planeNames.Sort(StringComparer.OrdinalIgnoreCase);
 
+            // Every plane's files are its own: several planes are read and written at once.
             int planeIndex = 0;
-            foreach (DirectoryInfo planeDirectory in planeDirectories)
+            int cleanWritten = 0;
+            int deviceWritten = 0;
+            int keyboardWritten = 0;
+            object writeGate = new object();
+            Parallel.ForEach(planeNames, new ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Math.Min(8, Environment.ProcessorCount)) }, planeName =>
             {
-                planeIndex++;
-                if (planeDirectory == null)
-                    continue;
-                string planeName = planeDirectory.Name ?? string.Empty;
-                if (planeName.Length == 0)
-                    continue;
-                EngineProgress.Report(planeIndex, planeDirectories.Length, "DCS World, writing the clean profiles", planeName);
+                lock (writeGate)
+                    EngineProgress.Report(++planeIndex, planeNames.Count, "DCS World, writing the clean profiles", planeName);
+                if (string.IsNullOrEmpty(planeName))
+                    return;
+                List<DirectoryInfo> folders = planeFolders[planeName];
 
                 try
                 {
                     string genericText = null;
                     Dictionary<string, string> deviceTexts = new Dictionary<string, string>(StringComparer.Ordinal);
                     FileInfo fallbackJoystickFile = null;
-                    string joystickFolder = Path.Combine(planeDirectory.FullName, "joystick");
-                    if (Directory.Exists(joystickFolder))
+                    List<FileInfo> joystickFiles = MergedFolderFiles(folders, "joystick", "*.diff.lua");
+                    if (joystickFiles != null)
                     {
-                        foreach (FileInfo file in new DirectoryInfo(joystickFolder).GetFiles("*.diff.lua"))
+                        foreach (FileInfo file in joystickFiles)
                         {
                             Match fake = FakeDeviceDiff.Match(file.Name);
                             if (fake.Success)
@@ -2407,11 +2536,11 @@ namespace JoyPro.Engine
                         // Older flow (no generic fake stick): the reference stick, else the largest real-device diff.
                         if (genericText == null)
                         {
-                            string preferred = string.IsNullOrWhiteSpace(defaultStickReference)
-                                ? string.Empty
-                                : Path.Combine(joystickFolder, defaultStickReference + ".diff.lua");
-                            if (!string.IsNullOrWhiteSpace(preferred) && File.Exists(preferred))
-                                genericText = File.ReadAllText(preferred);
+                            FileInfo preferred = string.IsNullOrWhiteSpace(defaultStickReference)
+                                ? null
+                                : joystickFiles.LastOrDefault(f => string.Equals(f.Name, defaultStickReference + ".diff.lua", StringComparison.OrdinalIgnoreCase));
+                            if (preferred != null)
+                                genericText = File.ReadAllText(preferred.FullName);
                             else if (fallbackJoystickFile != null)
                                 genericText = File.ReadAllText(fallbackJoystickFile.FullName);
                         }
@@ -2419,7 +2548,7 @@ namespace JoyPro.Engine
 
                     string cleanTarget = Path.Combine(cleanRoot, planeName + ".cf");
                     File.WriteAllText(cleanTarget, genericText ?? string.Empty);
-                    result.CleanFilesWritten++;
+                    Interlocked.Increment(ref cleanWritten);
 
                     string deviceRoot = Path.Combine(cleanRoot, planeName);
                     if (Directory.Exists(deviceRoot))
@@ -2436,26 +2565,63 @@ namespace JoyPro.Engine
                             continue;
                         Directory.CreateDirectory(deviceRoot);
                         File.WriteAllText(Path.Combine(deviceRoot, device.Key + ".cf"), device.Value);
-                        result.DeviceCleanFilesWritten++;
+                        Interlocked.Increment(ref deviceWritten);
                     }
                     if (Directory.Exists(deviceRoot) && Directory.GetFileSystemEntries(deviceRoot).Length == 0)
                         Directory.Delete(deviceRoot);
 
-                    string keyboardSource = Path.Combine(planeDirectory.FullName, "Keyboard", "Keyboard.diff.lua");
-                    if (File.Exists(keyboardSource))
+                    string keyboardSource = folders.Select(f => Path.Combine(f.FullName, "Keyboard", "Keyboard.diff.lua")).LastOrDefault(File.Exists);
+                    if (keyboardSource != null)
                     {
                         string keyboardTarget = Path.Combine(keyboardRoot, planeName + ".cf");
                         File.Copy(keyboardSource, keyboardTarget, true);
-                        result.KeyboardCleanFilesWritten++;
+                        Interlocked.Increment(ref keyboardWritten);
                     }
                 }
                 catch (Exception ex)
                 {
-                    errors.Add("Failed recreating clean profile for plane '" + planeName + "': " + ex.Message);
+                    lock (writeGate)
+                        errors.Add("Failed recreating clean profile for plane '" + planeName + "': " + ex.Message);
                 }
-            }
+            });
+            result.CleanFilesWritten += cleanWritten;
+            result.DeviceCleanFilesWritten += deviceWritten;
+            result.KeyboardCleanFilesWritten += keyboardWritten;
 
             return errors.Count == 0;
+        }
+
+        // The files of <folder>\<sub> over several run folders of one plane, a later run's file of the same name
+        // replacing an earlier one; null when no run has the sub folder. One folder: its own listing order.
+        private static List<FileInfo> MergedFolderFiles(List<DirectoryInfo> folders, string sub, string pattern)
+        {
+            List<FileInfo> single = null;
+            Dictionary<string, FileInfo> merged = null;
+            int found = 0;
+            foreach (DirectoryInfo folder in folders)
+            {
+                DirectoryInfo subFolder = new DirectoryInfo(Path.Combine(folder.FullName, sub));
+                if (!subFolder.Exists)
+                    continue;
+                FileInfo[] files = subFolder.GetFiles(pattern);
+                found++;
+                if (found == 1)
+                {
+                    single = files.ToList();
+                    continue;
+                }
+                if (merged == null)
+                {
+                    merged = new Dictionary<string, FileInfo>(StringComparer.OrdinalIgnoreCase);
+                    foreach (FileInfo file in single)
+                        merged[file.Name] = file;
+                }
+                foreach (FileInfo file in files)
+                    merged[file.Name] = file;
+            }
+            if (merged == null)
+                return single;
+            return merged.Values.OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         public const string CoveredDeviceTypesFile = "device-types.txt";
@@ -2507,25 +2673,6 @@ namespace JoyPro.Engine
             return types;
         }
 
-        // Per profile (unit) name: the device types that have a default file in that unit's own joystick folder.
-        private static Dictionary<string, HashSet<string>> TemplatesByPlane(List<DcsHeadlessProfileCandidate> candidates)
-        {
-            Dictionary<string, HashSet<string>> map = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-            if (candidates == null)
-                return map;
-            foreach (DcsHeadlessProfileCandidate candidate in candidates)
-            {
-                if (candidate == null || string.IsNullOrWhiteSpace(candidate.UnitName) || string.IsNullOrWhiteSpace(candidate.FolderPath))
-                    continue;
-                HashSet<string> set;
-                if (!map.TryGetValue(candidate.UnitName, out set))
-                    map[candidate.UnitName] = set = new HashSet<string>(StringComparer.Ordinal);
-                foreach (string template in CollectDeviceTemplates(null, new List<DcsHeadlessProfileCandidate> { candidate }))
-                    set.Add(template);
-            }
-            return map;
-        }
-
         private static int CountInstalledAircraft(string installPath, string savedGamesPath, int modulesToScan)
         {
             int count = Math.Max(0, modulesToScan);
@@ -2571,261 +2718,6 @@ namespace JoyPro.Engine
         {
             "joystick", "keyboard", "mouse", "trackir", "headtracker"
         };
-
-        private static bool RunHeadlessLuaRefresh(
-            DcsRefreshOptions options,
-            DcsRefreshResult result,
-            List<DcsHeadlessProfileCandidate> candidates,
-            bool exportHtml,
-            string savedGamesOverride = null,
-            Action<string, int, int, string> luaProgress = null)
-        {
-            string modeLabel = exportHtml ? "ID" : "clean";
-            ReportStatus(
-                options,
-                "Headless Lua " +
-                modeLabel +
-                " refresh started for " +
-                (candidates == null ? 0 : candidates.Count).ToString(CultureInfo.InvariantCulture) +
-                " profile candidate(s).");
-            string luaePath = ResolveLuaExecutable(options);
-            if (string.IsNullOrWhiteSpace(luaePath) || !File.Exists(luaePath))
-            {
-                result.Errors.Add("luae.exe was not found for headless " + modeLabel + " refresh. Expected under DCS install bin folder.");
-                return false;
-            }
-
-            string workingDirectory = NormalizePath(options.InstallPath);
-            if (string.IsNullOrWhiteSpace(workingDirectory) || !Directory.Exists(workingDirectory))
-            {
-                result.Errors.Add("DCS install path is missing for headless " + modeLabel + " refresh.");
-                return false;
-            }
-
-            List<DcsHeadlessProfileCandidate> selectedCandidates = candidates ?? new List<DcsHeadlessProfileCandidate>();
-            if (selectedCandidates.Count == 0)
-            {
-                result.Errors.Add("No DCS profile candidates were selected for headless " + modeLabel + " refresh.");
-                return false;
-            }
-
-            if (exportHtml)
-            {
-                SafeDeleteDirectory(result.InputLayoutsPath, result.Warnings, result.Errors);
-                if (result.Errors.Count > 0)
-                    return false;
-            }
-
-            List<string> deviceTemplates = null;
-            if (!exportHtml)
-            {
-                deviceTemplates = CollectDeviceTemplates(options.InstallPath, selectedCandidates);
-                // The user's own devices, also those not connected now: every device DCS wrote a file for.
-                foreach (string template in CollectSavedGamesDeviceTemplates(options.SavedGamesPath))
-                    if (!deviceTemplates.Contains(template))
-                        deviceTemplates.Add(template);
-            }
-            if (deviceTemplates != null)
-                result.Steps.Add("Device types with their own DCS default files: " + deviceTemplates.Count.ToString(CultureInfo.InvariantCulture) + ".");
-            string scriptContent = BuildHeadlessLuaRefreshScript(savedGamesOverride ?? options.SavedGamesPath, selectedCandidates, exportHtml, deviceTemplates);
-            string scriptPath = Path.Combine(Path.GetTempPath(), "joypro_dcs_headless_refresh_" + (exportHtml ? "id_" : "clean_") + Guid.NewGuid().ToString("N") + ".lua");
-
-            try
-            {
-                // Lua 5.1 opens files with the ANSI code page, so embedded paths must use it too.
-                File.WriteAllText(scriptPath, scriptContent, Encoding.Default);
-            }
-            catch (Exception ex)
-            {
-                result.Errors.Add("Failed writing headless Lua " + modeLabel + " refresh script: " + ex.Message);
-                return false;
-            }
-
-            List<string> outputLines = new List<string>();
-            List<string> errorLines = new List<string>();
-            object outputLock = new object();
-
-            try
-            {
-                ProcessStartInfo startInfo = new ProcessStartInfo(luaePath)
-                {
-                    Arguments = "\"" + scriptPath + "\"",
-                    WorkingDirectory = workingDirectory,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    StandardOutputEncoding = Encoding.Default,
-                    StandardErrorEncoding = Encoding.Default,
-                    CreateNoWindow = true
-                };
-
-                using (Process process = new Process())
-                {
-                    process.StartInfo = startInfo;
-                    process.OutputDataReceived += (sender, args) =>
-                    {
-                        if (args != null && args.Data != null)
-                        {
-                            // "JOYPRO_PROGRESS|<i>|<n>|<stage>|<profile>": the profile luae works on now.
-                            if (args.Data.StartsWith("JOYPRO_PROGRESS|", StringComparison.Ordinal))
-                            {
-                                string[] progress = args.Data.Split(new[] { '|' }, 5);
-                                if (luaProgress != null && progress.Length >= 5 &&
-                                    int.TryParse(progress[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int index) &&
-                                    int.TryParse(progress[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out int count))
-                                    luaProgress(progress[3], index, count, progress[4]);
-                                return;
-                            }
-                            lock (outputLock)
-                                outputLines.Add(args.Data);
-                        }
-                    };
-                    process.ErrorDataReceived += (sender, args) =>
-                    {
-                        if (args != null && args.Data != null)
-                        {
-                            lock (outputLock)
-                                errorLines.Add(args.Data);
-                        }
-                    };
-
-                    try
-                    {
-                        process.Start();
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Errors.Add("Failed launching luae.exe for headless " + modeLabel + " refresh: " + ex.Message);
-                        return false;
-                    }
-
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-                    ReportStatus(options, "Headless Lua process launched. Waiting for completion.");
-
-                    const int timeoutMs = 15 * 60 * 1000;
-                    if (!WaitForExitOrCancel(process, timeoutMs, exportHtml ? "reading the DCS aircraft inputs" : "building the DCS clean profiles"))
-                    {
-                        try
-                        {
-                            process.Kill();
-                        }
-                        catch
-                        {
-                            // ignore kill exceptions
-                        }
-
-                        result.Errors.Add("Headless Lua " + modeLabel + " refresh timed out after 900 seconds.");
-                        return false;
-                    }
-
-                    process.WaitForExit();
-
-                    int profileSucceeded = 0;
-                    int profileFailed = 0;
-                    int unclassifiedOutputLines = 0;
-                    bool sawDoneMarker = false;
-
-                    lock (outputLock)
-                    {
-                        for (int i = 0; i < outputLines.Count; i++)
-                        {
-                            string line = outputLines[i] ?? string.Empty;
-                            if (line.StartsWith("JOYPRO_PROFILE_OK|", StringComparison.Ordinal))
-                            {
-                                profileSucceeded++;
-                                continue;
-                            }
-                            if (line.StartsWith("JOYPRO_PROFILE_ERR|", StringComparison.Ordinal))
-                            {
-                                profileFailed++;
-                                result.Warnings.Add("[headless-lua] " + line.Substring("JOYPRO_PROFILE_ERR|".Length));
-                                continue;
-                            }
-                            if (line.StartsWith("JOYPRO_TEMPLATE|", StringComparison.Ordinal))
-                            {
-                                string template = line.Substring("JOYPRO_TEMPLATE|".Length);
-                                if (!result.CoveredDeviceTypes.Contains(template))
-                                    result.CoveredDeviceTypes.Add(template);
-                                continue;
-                            }
-                            if (line.StartsWith("JOYPRO_DEVICES|", StringComparison.Ordinal))
-                            {
-                                result.Steps.Add("Headless Lua device count: " + line.Substring("JOYPRO_DEVICES|".Length));
-                                continue;
-                            }
-                            if (line.StartsWith("JOYPRO_DONE|", StringComparison.Ordinal))
-                            {
-                                sawDoneMarker = true;
-                                result.Steps.Add("Headless Lua " + modeLabel + " summary: " + line.Substring("JOYPRO_DONE|".Length));
-                                continue;
-                            }
-                            if (line.StartsWith("JOYPRO_FATAL|", StringComparison.Ordinal))
-                            {
-                                result.Errors.Add("Headless Lua fatal error: " + line.Substring("JOYPRO_FATAL|".Length));
-                                continue;
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(line) && unclassifiedOutputLines < 20)
-                            {
-                                unclassifiedOutputLines++;
-                                result.Warnings.Add("[headless-lua] " + line);
-                            }
-                        }
-
-                        for (int i = 0; i < errorLines.Count; i++)
-                        {
-                            string err = errorLines[i];
-                            if (!string.IsNullOrWhiteSpace(err))
-                                result.Warnings.Add("[headless-lua stderr] " + err);
-                        }
-                    }
-
-                    result.PlanesScanned = Math.Max(result.PlanesScanned, profileSucceeded);
-                    result.ModulesToScanResolved = Math.Max(result.ModulesToScanResolved, profileSucceeded);
-                    if (exportHtml)
-                    {
-                        result.Steps.Add("Headless Lua exported HTML for " + profileSucceeded.ToString(CultureInfo.InvariantCulture) + " profile(s).");
-                    }
-                    else
-                    {
-                        result.Steps.Add("Headless Lua cleared/saved assignments for " + profileSucceeded.ToString(CultureInfo.InvariantCulture) + " profile(s).");
-                    }
-
-                    if (!sawDoneMarker)
-                        result.Warnings.Add("Headless Lua run did not emit completion marker.");
-
-                    if (process.ExitCode != 0 && result.Errors.Count == 0)
-                        result.Errors.Add("Headless Lua " + modeLabel + " refresh failed with exit code " + process.ExitCode.ToString(CultureInfo.InvariantCulture) + ".");
-
-                    if (profileSucceeded <= 0 && result.Errors.Count == 0)
-                    {
-                        if (exportHtml)
-                            result.Errors.Add("Headless Lua refresh did not export any profile HTML.");
-                        else
-                            result.Errors.Add("Headless Lua clean refresh did not clear/save any profile assignments.");
-                    }
-
-                    if (profileFailed > 0)
-                        result.Warnings.Add("Headless Lua " + modeLabel + " refresh reported " + profileFailed.ToString(CultureInfo.InvariantCulture) + " profile error(s).");
-                }
-            }
-            finally
-            {
-                try
-                {
-                    if (File.Exists(scriptPath))
-                        File.Delete(scriptPath);
-                }
-                catch (Exception ex)
-                {
-                    result.Warnings.Add("Failed deleting temporary headless " + modeLabel + " refresh script: " + ex.Message);
-                }
-            }
-
-            ReportStatus(options, "Headless Lua " + modeLabel + " refresh completed.");
-            return result.Errors.Count == 0;
-        }
 
         // Waits for a luae.exe run; false on timeout. When the user cancels (EngineProgress), the run is stopped and the
         // command ends with EngineCancelledException: luae only writes into temporary or export folders, never the DB.
@@ -3836,52 +3728,6 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
 
         internal const string HeadlessGenericDevice = "JoyPro Headless Device";
 
-        // Device type names (DCS template names) that have their own default file in some aircraft's joystick input
-        // folder: "<template>.lua" or the template diff "<template>.diff.lua". default.lua is the generic file.
-        private static List<string> CollectDeviceTemplates(string installPath, List<DcsHeadlessProfileCandidate> candidates)
-        {
-            List<string> folders = new List<string>();
-            if (candidates != null)
-                folders.AddRange(candidates.Where(c => c != null && !string.IsNullOrWhiteSpace(c.FolderPath)).Select(c => Path.Combine(c.FolderPath, "joystick")));
-            string aircrafts = Path.Combine(installPath ?? string.Empty, "Config", "Input", "Aircrafts");
-            try
-            {
-                if (Directory.Exists(aircrafts))
-                    folders.AddRange(Directory.GetDirectories(aircrafts).Select(d => Path.Combine(d, "joystick")));
-            }
-            catch (Exception)
-            {
-            }
-
-            SortedSet<string> templates = new SortedSet<string>(StringComparer.Ordinal);
-            foreach (string folder in folders.Distinct(StringComparer.OrdinalIgnoreCase))
-            {
-                string[] files;
-                try
-                {
-                    if (!Directory.Exists(folder))
-                        continue;
-                    files = Directory.GetFiles(folder, "*.lua");
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-                foreach (string file in files)
-                {
-                    string name = Path.GetFileName(file);
-                    if (name.EndsWith(".diff.lua", StringComparison.OrdinalIgnoreCase))
-                        name = name.Substring(0, name.Length - ".diff.lua".Length);
-                    else
-                        name = name.Substring(0, name.Length - ".lua".Length);
-                    if (name.Length == 0 || string.Equals(name, "default", StringComparison.OrdinalIgnoreCase) || name.Trim().Length == 0)
-                        continue;
-                    templates.Add(name);
-                }
-            }
-            return templates.ToList();
-        }
-
         // Device types of the joystick files in the user's Saved Games\DCS\Config\Input (read only): DCS writes a
         // "<device> {GUID}.diff.lua" per device it saw, so these are the user's devices, connected or not.
         internal static List<string> CollectSavedGamesDeviceTemplates(string savedGamesPath)
@@ -3915,15 +3761,23 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             return templates.ToList();
         }
 
+        // One luae run of a refresh: every profile candidate is listed (so DCS's own merging of profiles with the same
+        // key or name is the same in every run), the run works on its share (assignedIndexes, 1-based; null = all) and,
+        // with withDefaults, on DCS's default profiles (General, UiLayer, ...). exportPath: where makeHtml writes.
         private static string BuildHeadlessLuaRefreshScript(
             string savedGamesPath,
             List<DcsHeadlessProfileCandidate> candidates,
             bool exportHtml,
-            List<string> deviceTemplates = null)
+            List<string> deviceTemplates = null,
+            ICollection<int> assignedIndexes = null,
+            bool withDefaults = true,
+            string exportPath = null,
+            int fakePart = 0,
+            int fakeParts = 1)
         {
             StringBuilder script = new StringBuilder();
             script.AppendLine("-- JoyPro headless DCS " + (exportHtml ? "ID" : "clean") + " refresh");
-            AppendHeadlessPrelude(script, savedGamesPath, candidates, deviceTemplates, exportHtml);
+            AppendHeadlessPrelude(script, savedGamesPath, candidates, deviceTemplates, exportHtml, assignedIndexes, withDefaults, exportPath, fakePart, fakeParts);
             return AppendHeadlessRefreshBody(script, exportHtml);
         }
 
@@ -3942,15 +3796,33 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             string savedGamesPath,
             List<DcsHeadlessProfileCandidate> candidates,
             List<string> deviceTemplates,
-            bool requireMakeLayout)
+            bool requireMakeLayout,
+            ICollection<int> assignedIndexes = null,
+            bool withDefaults = true,
+            string exportPath = null,
+            int fakePart = 0,
+            int fakeParts = 1)
         {
             bool exportHtml = requireMakeLayout;
-            string savedGames = savedGamesPath ?? string.Empty;
-            savedGames = savedGames.Replace('\\', '/');
-            if (!savedGames.EndsWith("/", StringComparison.Ordinal))
-                savedGames += "/";
+            string savedGames = ToLuaFolder(savedGamesPath);
 
             script.AppendLine("local savedGamesPath = '" + EscapeLuaString(savedGames) + "'");
+            // lfs.writedir(): DCS reads the user's files through it (autoexec.cfg, wizard.lua); MakeLayoutText writes its
+            // InputLayoutsTxt there. The ID refresh points it at exportPath only while makeHtml writes.
+            script.AppendLine("local jpWriteDir = savedGamesPath");
+            if (!string.IsNullOrWhiteSpace(exportPath))
+                script.AppendLine("local exportPath = '" + EscapeLuaString(ToLuaFolder(exportPath)) + "'");
+            else
+                script.AppendLine("local exportPath = savedGamesPath");
+            // This run's share of the profiles (1-based indexes of extraProfiles; nil = all) and whether it handles DCS's
+            // default profiles: several runs at once each take a part, every run lists all profiles.
+            if (assignedIndexes == null)
+                script.AppendLine("local assignedProfiles = nil");
+            else
+                script.AppendLine("local assignedProfiles = { " + string.Join(" ", assignedIndexes.OrderBy(i => i).Select(i => "[" + i.ToString(CultureInfo.InvariantCulture) + "] = true,")) + " }");
+            script.AppendLine("local withDefaults = " + (withDefaults ? "true" : "false"));
+            script.AppendLine("local fakePart = " + Math.Max(0, fakePart).ToString(CultureInfo.InvariantCulture));
+            script.AppendLine("local fakeParts = " + Math.Max(1, fakeParts).ToString(CultureInfo.InvariantCulture));
             script.AppendLine("local extraProfiles = {");
             if (candidates != null)
             {
@@ -4005,6 +3877,8 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("  if not f then error('cannot load i_18n: ' .. tostring(err)) end");
             script.AppendLine("  return f()");
             script.AppendLine("end");
+            if (exportHtml)
+                AppendEnglishNamesShim(script);
             script.AppendLine("package.preload['log'] = function()");
             script.AppendLine("  return {");
             script.AppendLine("    error = function(...) end,");
@@ -4033,12 +3907,23 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("    end");
             script.AppendLine("  }");
             script.AppendLine("end");
+            script.AppendLine("local madeDirs = {}");
+            script.AppendLine("local madeDirs = {}");
             script.AppendLine("package.preload['lfs'] = function()");
             script.AppendLine("  local M = {}");
-            script.AppendLine("  function M.writedir() return savedGamesPath end");
+            script.AppendLine("  function M.writedir() return jpWriteDir end");
             script.AppendLine("  function M.realpath(p) return abs_norm(p) end");
+            // DCS's saveChanges asks for the device type folder once per device (~100 fake sticks): each mkdir started
+            // cmd.exe (DCS's os.execute: at most ~255 characters), and with several runs at once luae.exe crashed now
+            // and then while saving (0xC000041D). A folder made once, or there already, is not made again.
             script.AppendLine("  function M.mkdir(p)");
+            script.AppendLine("    local key = string.lower((to_slash(p):gsub('/+$', '')))");
+            script.AppendLine("    if madeDirs[key] then return true end");
+            // A folder that is there already (JoyPro makes the aircraft's folders before the run) needs no cmd.exe.
+            script.AppendLine("    local slashed = to_slash(p):gsub('/+$', '')");
+            script.AppendLine("    if os.rename(slashed, slashed) then madeDirs[key] = true; return true end");
             script.AppendLine("    os.execute(string.format('mkdir \"%s\" >nul 2>nul', to_slash(p):gsub('/', '\\\\\\\\')))");
+            script.AppendLine("    madeDirs[key] = true");
             script.AppendLine("    return true");
             script.AppendLine("  end");
             script.AppendLine("  function M.attributes(p)");
@@ -4100,14 +3985,16 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("  InputData.initialize(userConfigPath, sysConfigPath)");
             script.AppendLine("  InputData.enablePrintToLog(false)");
             script.AppendLine("  local merged = {}");
+            script.AppendLine("  local mergedCandidate = {}");
             script.AppendLine("  local seen = {}");
-            script.AppendLine("  local function push_profile(info)");
+            script.AppendLine("  local function push_profile(info, candidate)");
             // Hidden profiles (GeoTerrain, JFT, Explorations, ...) never appear in the DCS controls dropdown.
             script.AppendLine("    if not info or info.visible == false then return end");
             script.AppendLine("    local key = tostring(info.name or '') .. '|' .. tostring(info.folder or '')");
             script.AppendLine("    if not seen[key] then");
             script.AppendLine("      seen[key] = true");
             script.AppendLine("      table.insert(merged, info)");
+            script.AppendLine("      mergedCandidate[#merged] = candidate");
             script.AppendLine("    end");
             script.AppendLine("  end");
             script.AppendLine("  local defaults = ProfileDatabase.createDefaultProfilesSet(sysConfigPath)");
@@ -4116,11 +4003,217 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("    local p = extraProfiles[i]");
             script.AppendLine("    local okProfile, profileOrErr = pcall(ProfileDatabase.createUnitProfileInfo, p.unit, p.folder)");
             script.AppendLine("    if okProfile and profileOrErr then");
-            script.AppendLine("      push_profile(profileOrErr)");
-            script.AppendLine("    else");
+            script.AppendLine("      push_profile(profileOrErr, i)");
+            script.AppendLine("    elseif assignedProfiles == nil or assignedProfiles[i] then");
             script.AppendLine("      print('JOYPRO_PROFILE_ERR|' .. tostring(p.unit) .. '|createUnitProfileInfo failed: ' .. tostring(profileOrErr))");
             script.AppendLine("    end");
             script.AppendLine("  end");
+            // jp_mine(i): whether merged[i] is this run's (and whether it is an aircraft profile, not a default one).
+            // jp_first(i): DCS loads one profile per name (Data.createProfile); a later profile of the same name from
+            // another folder becomes an alias of the first and adds nothing of its own (one run with all profiles did
+            // the same, so the runs skip it).
+            script.AppendLine("  local function jp_mine(i)");
+            script.AppendLine("    local c = mergedCandidate[i]");
+            script.AppendLine("    if c == nil then return withDefaults, false end");
+            script.AppendLine("    return assignedProfiles == nil or assignedProfiles[c] == true, true");
+            script.AppendLine("  end");
+            script.AppendLine("  local firstByName = {}");
+            script.AppendLine("  for i = 1, #merged do");
+            script.AppendLine("    local n = tostring(merged[i].name)");
+            script.AppendLine("    if firstByName[n] == nil then firstByName[n] = i end");
+            script.AppendLine("  end");
+            script.AppendLine("  local function jp_first(i) return firstByName[tostring(merged[i].name)] == i end");
+            // The CPU seconds an aircraft took (JOYPRO_COST|<extraProfiles index>|<s>): the next refresh starts the slow
+            // ones first.
+            script.AppendLine("  local function jp_cost(candidate, started)");
+            script.AppendLine("    if candidate then print('JOYPRO_COST|' .. tostring(candidate) .. '|' .. string.format('%.3f', os.clock() - started)) end");
+            script.AppendLine("  end");
+            // A default profile another run handles: loaded all the same, as one run with every profile did.
+            script.AppendLine("  local function jp_load_default(info)");
+            script.AppendLine("    if pcall(InputData.createProfile, info) then");
+            script.AppendLine("      pcall(InputData.getProfileKeyCommands, info.name)");
+            script.AppendLine("      pcall(InputData.getProfileAxisCommands, info.name)");
+            script.AppendLine("    end");
+            script.AppendLine("  end");
+        }
+
+        // jp_clear(profileName, devices) = InputData.clearProfile. DCS's clearProfile validates a command again after
+        // every device it clears (validateProfileCommandCombos over all devices' combos), which made one aircraft with
+        // ~60 fake sticks take 10 s. jp_clear removes the combos the same way and validates each command once, after
+        // its last device, which is the validation DCS's own loop ends with. Without Lua's debug library or with a
+        // changed Data.lua (other upvalue names) it is clearProfile itself.
+        // jp_make_html(profileName, devices) = MakeLayoutText.makeHtml. makeHtml writes one page per device and asks for
+        // the profile's commands again for every page (a copy of all commands, sorted by their translated names): 13
+        // devices sorted the same list 13 times. jp_make_html answers the repeated calls of one makeHtml with the first
+        // answer, which is what a new call returns too (same profile, same order; the pages only read it). Without
+        // Lua's debug library or with other upvalue names it is makeHtml itself.
+        private static void AppendMemoizedMakeHtml(StringBuilder script)
+        {
+            script.AppendLine("  local jp_make_html = MakeLayoutText.makeHtml");
+            script.AppendLine("  if type(debug) == 'table' and debug.getupvalue and debug.setupvalue then");
+            script.AppendLine("    local htmlFn = MakeLayoutText.makeHtml");
+            script.AppendLine("    local keyIndex, keyFn, axisIndex, axisFn");
+            script.AppendLine("    for u = 1, 64 do");
+            script.AppendLine("      local n, v = debug.getupvalue(htmlFn, u)");
+            script.AppendLine("      if n == nil then break end");
+            script.AppendLine("      if n == 'getProfileKeyCommands_' and type(v) == 'function' then keyIndex, keyFn = u, v end");
+            script.AppendLine("      if n == 'getProfileAxisCommands_' and type(v) == 'function' then axisIndex, axisFn = u, v end");
+            script.AppendLine("    end");
+            script.AppendLine("    if keyIndex and axisIndex then");
+            script.AppendLine("      jp_make_html = function(profileName, deviceNames)");
+            script.AppendLine("        local keys, axes");
+            script.AppendLine("        debug.setupvalue(htmlFn, keyIndex, function(p)");
+            script.AppendLine("          if p ~= profileName then return keyFn(p) end");
+            script.AppendLine("          if keys == nil then keys = keyFn(p) end");
+            script.AppendLine("          return keys");
+            script.AppendLine("        end)");
+            script.AppendLine("        debug.setupvalue(htmlFn, axisIndex, function(p)");
+            script.AppendLine("          if p ~= profileName then return axisFn(p) end");
+            script.AppendLine("          if axes == nil then axes = axisFn(p) end");
+            script.AppendLine("          return axes");
+            script.AppendLine("        end)");
+            script.AppendLine("        local okRun, result = pcall(htmlFn, profileName, deviceNames)");
+            script.AppendLine("        debug.setupvalue(htmlFn, keyIndex, keyFn)");
+            script.AppendLine("        debug.setupvalue(htmlFn, axisIndex, axisFn)");
+            script.AppendLine("        if not okRun then error(result, 0) end");
+            script.AppendLine("        return result");
+            script.AppendLine("      end");
+            script.AppendLine("    end");
+            script.AppendLine("  end");
+        }
+
+        private static void AppendFastClear(StringBuilder script)
+        {
+            script.AppendLine("  local jp_clear = InputData.clearProfile");
+            script.AppendLine("  local jp_fast = 0");
+            script.AppendLine("  if type(debug) == 'table' and debug.getupvalue and debug.setupvalue then");
+            script.AppendLine("    local clearFn = InputData.clearProfile");
+            script.AppendLine("    local removeIndex, removeFn, validateFn");
+            script.AppendLine("    for u = 1, 64 do");
+            script.AppendLine("      local n, v = debug.getupvalue(clearFn, u)");
+            script.AppendLine("      if n == nil then break end");
+            script.AppendLine("      if n == 'removeCombosFromCommand_' and type(v) == 'function' then removeIndex, removeFn = u, v end");
+            script.AppendLine("    end");
+            script.AppendLine("    if removeFn then");
+            script.AppendLine("      for u = 1, 64 do");
+            script.AppendLine("        local n, v = debug.getupvalue(removeFn, u)");
+            script.AppendLine("        if n == nil then break end");
+            script.AppendLine("        if n == 'validateProfileCommandCombos' and type(v) == 'function' then validateFn = v end");
+            script.AppendLine("      end");
+            script.AppendLine("    end");
+            script.AppendLine("    if removeIndex and validateFn then");
+            script.AppendLine("      jp_fast = 1");
+            script.AppendLine("      jp_clear = function(profileName, deviceNames)");
+            script.AppendLine("        local pending, order = {}, {}");
+            script.AppendLine("        debug.setupvalue(clearFn, removeIndex, function(pName, command, deviceName)");
+            script.AppendLine("          if command then");
+            script.AppendLine("            local deviceCombos = command.combos[deviceName]");
+            script.AppendLine("            if deviceCombos then");
+            script.AppendLine("              while #deviceCombos > 0 do table.remove(deviceCombos) end");
+            script.AppendLine("            end");
+            script.AppendLine("            command.updated = false");
+            script.AppendLine("            if not pending[command] then pending[command] = pName; table.insert(order, command) end");
+            script.AppendLine("          end");
+            script.AppendLine("        end)");
+            script.AppendLine("        local okRun, errRun = pcall(clearFn, profileName, deviceNames)");
+            script.AppendLine("        debug.setupvalue(clearFn, removeIndex, removeFn)");
+            script.AppendLine("        for k = 1, #order do");
+            script.AppendLine("          local command = order[k]");
+            script.AppendLine("          command.updated = false");
+            script.AppendLine("          command.valid = validateFn(pending[command], command)");
+            script.AppendLine("        end");
+            script.AppendLine("        if not okRun then error(errRun, 0) end");
+            script.AppendLine("      end");
+            script.AppendLine("    end");
+            script.AppendLine("  end");
+            script.AppendLine("  print('JOYPRO_FASTCLEAR|' .. tostring(jp_fast))");
+        }
+
+        // The folder DCS keeps a profile's diffs in under Config\Input: the unit name without * / ? < > | \ : " (Input/Data.lua
+        // getProfileUserConfigPath_).
+        internal static string DcsUserFolderName(string unitName)
+        {
+            StringBuilder name = new StringBuilder();
+            foreach (char c in unitName ?? string.Empty)
+            {
+                if ("*/?<>|\\:\"".IndexOf(c) < 0)
+                    name.Append(c);
+            }
+            return name.ToString();
+        }
+
+        // A folder for the Lua script: forward slashes and a trailing slash.
+        private static string ToLuaFolder(string path)
+        {
+            string folder = (path ?? string.Empty).Replace('\\', '/');
+            if (!folder.EndsWith("/", StringComparison.Ordinal))
+                folder += "/";
+            return folder;
+        }
+
+        // DCS shows command names and categories through gettext (Scripts/Input/Data.lua loads the input files with
+        // "_ = InputUtils.localizeInputString" = i_18n.dtranslate('input', s); MakeLayoutText translates again). luae.exe
+        // has no locale set up, so i_18n returned every key unchanged and modules that name their commands by a key
+        // ("Input.SpitfireLFMkIX.pitch_minus", "29Fulcrum:Inp:...") ended up in the DB as the raw key. The ID refresh
+        // therefore reads DCS's English catalog (l10n/en/LC_MESSAGES/input.mo) itself and answers the translate calls
+        // for those keys from it: they get the English text of Options > Controls, whatever language DCS or Windows uses.
+        // Names that already are English text keep DCS's source text (the catalog rewords about 1000 of them, e.g.
+        // "Throttle Up" -> "Throttle Levers - UP"): lists built before and after this change, and relations and learned
+        // styles that use these titles, keep matching. Only the ID refresh (HTML export) uses it; the clean refresh
+        // writes diffs, where names do not matter.
+        private static void AppendEnglishNamesShim(StringBuilder script)
+        {
+            script.AppendLine("local jp_en = {}");
+            script.AppendLine("local function jp_load_mo(path)");
+            script.AppendLine("  local f = io.open(path, 'rb')");
+            script.AppendLine("  if not f then return 0 end");
+            script.AppendLine("  local d = f:read('*a') or ''");
+            script.AppendLine("  f:close()");
+            script.AppendLine("  if #d < 28 then return 0 end");
+            script.AppendLine("  local b1, b2, b3, b4 = d:byte(1, 4)");
+            script.AppendLine("  local little");
+            script.AppendLine("  if b1 == 0xde and b2 == 0x12 and b3 == 0x04 and b4 == 0x95 then little = true");
+            script.AppendLine("  elseif b1 == 0x95 and b2 == 0x04 and b3 == 0x12 and b4 == 0xde then little = false");
+            script.AppendLine("  else return 0 end");
+            script.AppendLine("  local function u32(o)");
+            script.AppendLine("    local a, b, c, e = d:byte(o + 1, o + 4)");
+            script.AppendLine("    if not e then return 0 end");
+            script.AppendLine("    if little then return a + b * 256 + c * 65536 + e * 16777216 end");
+            script.AppendLine("    return e + c * 256 + b * 65536 + a * 16777216");
+            script.AppendLine("  end");
+            script.AppendLine("  local n, oo, to = u32(8), u32(12), u32(16)");
+            script.AppendLine("  local count = 0");
+            script.AppendLine("  for i = 0, n - 1 do");
+            script.AppendLine("    local kl, ko = u32(oo + 8 * i), u32(oo + 8 * i + 4)");
+            script.AppendLine("    local vl, vo = u32(to + 8 * i), u32(to + 8 * i + 4)");
+            script.AppendLine("    if kl > 0 and vl > 0 then");
+            script.AppendLine("      local k = d:sub(ko + 1, ko + kl)");
+            script.AppendLine("      local v = d:sub(vo + 1, vo + vl)");
+            script.AppendLine("      if not k:find('\\4', 1, true) then");
+            script.AppendLine("        k = k:match('^[^%z]*')");
+            script.AppendLine("        v = v:match('^[^%z]*')");
+            script.AppendLine("        if v ~= '' and jp_en[k] == nil then jp_en[k] = v; count = count + 1 end");
+            script.AppendLine("      end");
+            script.AppendLine("    end");
+            script.AppendLine("  end");
+            script.AppendLine("  return count");
+            script.AppendLine("end");
+            script.AppendLine("local jp_en_count = 0");
+            foreach (string relative in DcsCommandNames.EnglishCatalogFiles)
+                script.AppendLine("jp_en_count = jp_en_count + jp_load_mo('./" + EscapeLuaString(relative.Replace('\\', '/')) + "')");
+            script.AppendLine("print('JOYPRO_NAMES|' .. tostring(jp_en_count))");
+            script.AppendLine("local jp_raw_i18n = package.preload['i_18n']");
+            script.AppendLine("package.preload['i_18n'] = function()");
+            script.AppendLine("  local okReal, real = pcall(jp_raw_i18n)");
+            script.AppendLine("  local base = (okReal and type(real) == 'table') and real or {}");
+            script.AppendLine("  local shim = setmetatable({}, { __index = base })");
+            script.AppendLine("  shim.dtranslate = function(domain, s, ...)");
+            script.AppendLine("    if domain == 'input' and type(s) == 'string' and (s:find('^Input%.') or s:find('^[%w_%-]+:%a+:')) then return jp_en[s] or s end");
+            script.AppendLine("    if base.dtranslate then return base.dtranslate(domain, s, ...) end");
+            script.AppendLine("    return s");
+            script.AppendLine("  end");
+            script.AppendLine("  return shim");
+            script.AppendLine("end");
         }
 
         private static string AppendHeadlessRefreshBody(StringBuilder script, bool exportHtml)
@@ -4147,11 +4240,16 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
                 //   stick even without a file of their own;
                 // - every joystick connected now (luae.exe sees the PC's DirectInput devices).
                 // Each type is printed (JOYPRO_TEMPLATE), so JoyPro knows which types the clean profiles cover.
+                // A slow aircraft (F-4E: ~100 fake sticks, a minute and a half) is cleared by several runs at once,
+                // each with every fakeParts-th type (fakePart); a device's diff does not depend on the other devices.
                 script.AppendLine("  Input.addFakeJoystick('" + HeadlessGenericDevice + "')");
                 script.AppendLine("  local fakeSeen = {}");
+                script.AppendLine("  local fakeOrdinal = 0");
                 script.AppendLine("  local function add_fake(t)");
                 script.AppendLine("    if type(t) ~= 'string' or t == '' or fakeSeen[t] or t == '" + HeadlessGenericDevice + "' then return end");
                 script.AppendLine("    fakeSeen[t] = true");
+                script.AppendLine("    fakeOrdinal = fakeOrdinal + 1");
+                script.AppendLine("    if (fakeOrdinal - 1) % fakeParts ~= fakePart then return end");
                 script.AppendLine("    if pcall(Input.addFakeJoystick, t) then print('JOYPRO_TEMPLATE|' .. (t:gsub('[|\\r\\n]', ' '))) end");
                 script.AppendLine("  end");
                 script.AppendLine("  for i = 1, #deviceTemplates do add_fake(deviceTemplates[i]) end");
@@ -4168,6 +4266,17 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
                 script.AppendLine("  end");
                 script.AppendLine("  for _, d in ipairs(rawGetDevices() or {}) do");
                 script.AppendLine("    if d ~= keyboardName and rawGetDeviceTypeName(d) == 'joystick' and not string.find(d, '{FAKE-JOYSTICK-', 1, true) then add_fake(InputUtils.getDeviceTemplateName(d)) end");
+                script.AppendLine("  end");
+                // The connected joysticks themselves are never cleared or read (their fake sticks are): DCS need not
+                // load every profile for them. A fake stick comes after the real one, so DCS's template -> device map
+                // (modifiers) pointed at the fake stick before too.
+                script.AppendLine("  local listedGetDevices = Input.getDevices");
+                script.AppendLine("  Input.getDevices = function()");
+                script.AppendLine("    local kept = {}");
+                script.AppendLine("    for _, d in ipairs(listedGetDevices() or {}) do");
+                script.AppendLine("      if d == keyboardName or string.find(d, '{FAKE-JOYSTICK-', 1, true) or rawGetDeviceTypeName(d) ~= 'joystick' then table.insert(kept, d) end");
+                script.AppendLine("    end");
+                script.AppendLine("    return kept");
                 script.AppendLine("  end");
                 script.AppendLine("  local devices = InputUtils.getDevices() or {}");
             }
@@ -4187,31 +4296,67 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("  local failed = 0");
             if (exportHtml)
             {
+                // The default profiles another run exports are loaded all the same (DCS loads them first).
+                AppendMemoizedMakeHtml(script);
+                script.AppendLine("  local mineCount = 0");
+                script.AppendLine("  for i = 1, #merged do if jp_mine(i) then mineCount = mineCount + 1 end end");
+                script.AppendLine("  local mineIndex = 0");
                 script.AppendLine("  for i = 1, #merged do");
                 script.AppendLine("    local info = merged[i]");
-                script.AppendLine("    jp_progress(i, #merged, 'export', info and (info.name or info.unitName))");
-                script.AppendLine("    local okCreate, createErr = pcall(InputData.createProfile, info)");
-                script.AppendLine("    if not okCreate then");
-                script.AppendLine("      failed = failed + 1");
-                script.AppendLine("      print('JOYPRO_PROFILE_ERR|' .. tostring(info and (info.name or info.unitName) or '<unknown>') .. '|createProfile failed: ' .. tostring(createErr))");
+                script.AppendLine("    local mine, isUnit = jp_mine(i)");
+                script.AppendLine("    if mine then");
+                script.AppendLine("      mineIndex = mineIndex + 1");
+                script.AppendLine("      jp_progress(mineIndex, mineCount, isUnit and 'export' or 'export-default', info and (info.name or info.unitName))");
+                script.AppendLine("    end");
+                script.AppendLine("    if mine and not jp_first(i) then");
+                script.AppendLine("      success = success + 1");
+                script.AppendLine("      print('JOYPRO_PROFILE_OK|' .. tostring(info.name or '<unknown>') .. '|alias')");
+                script.AppendLine("    elseif not mine then");
+                script.AppendLine("      if not isUnit then jp_load_default(info) end");
                 script.AppendLine("    else");
-                script.AppendLine("      local okHtml, htmlOrErr = pcall(MakeLayoutText.makeHtml, info.name, devices)");
-                script.AppendLine("      if okHtml and htmlOrErr then");
-                script.AppendLine("        success = success + 1");
-                script.AppendLine("        print('JOYPRO_PROFILE_OK|' .. tostring(info.name or '<unknown>') .. '|' .. tostring(htmlOrErr))");
-                script.AppendLine("      else");
+                script.AppendLine("      local started = os.clock()");
+                script.AppendLine("      local okCreate, createErr = pcall(InputData.createProfile, info)");
+                script.AppendLine("      if not okCreate then");
                 script.AppendLine("        failed = failed + 1");
-                script.AppendLine("        print('JOYPRO_PROFILE_ERR|' .. tostring(info.name or '<unknown>') .. '|makeHtml failed: ' .. tostring(htmlOrErr))");
+                script.AppendLine("        print('JOYPRO_PROFILE_ERR|' .. tostring(info and (info.name or info.unitName) or '<unknown>') .. '|createProfile failed: ' .. tostring(createErr))");
+                script.AppendLine("      else");
+                script.AppendLine("        jpWriteDir = exportPath");
+                script.AppendLine("        local okHtml, htmlOrErr = pcall(jp_make_html, info.name, devices)");
+                script.AppendLine("        jpWriteDir = savedGamesPath");
+                script.AppendLine("        if okHtml and htmlOrErr then");
+                script.AppendLine("          success = success + 1");
+                script.AppendLine("          print('JOYPRO_PROFILE_OK|' .. tostring(info.name or '<unknown>') .. '|' .. tostring(htmlOrErr))");
+                script.AppendLine("        else");
+                script.AppendLine("          failed = failed + 1");
+                script.AppendLine("          print('JOYPRO_PROFILE_ERR|' .. tostring(info.name or '<unknown>') .. '|makeHtml failed: ' .. tostring(htmlOrErr))");
+                script.AppendLine("        end");
                 script.AppendLine("      end");
+                script.AppendLine("      if isUnit then jp_cost(mergedCandidate[i], started) end");
                 script.AppendLine("    end");
                 script.AppendLine("  end");
-                script.AppendLine("  print('JOYPRO_DONE|' .. tostring(#merged) .. '|' .. tostring(success) .. '|' .. tostring(failed))");
+                script.AppendLine("  print('JOYPRO_DONE|' .. tostring(mineCount) .. '|' .. tostring(success) .. '|' .. tostring(failed))");
             }
             else
             {
+                // Every run loads DCS's default profiles first, as DCS does; only the run withDefaults clears them.
+                script.AppendLine("  local runList = {}");
+                script.AppendLine("  local defaultNames = {}");
+                script.AppendLine("  local nameToCandidate = {}");
                 script.AppendLine("  for i = 1, #merged do");
                 script.AppendLine("    local info = merged[i]");
-                script.AppendLine("    jp_progress(i, #merged, 'load', info and (info.name or info.unitName))");
+                script.AppendLine("    local mine, isUnit = jp_mine(i)");
+                script.AppendLine("    if not isUnit then defaultNames[tostring(info.name)] = true end");
+                script.AppendLine("    if mine and isUnit and not jp_first(i) then");
+                script.AppendLine("      success = success + 1");
+                script.AppendLine("      print('JOYPRO_PROFILE_OK|' .. tostring(info.name or '<unknown>') .. '|alias')");
+                script.AppendLine("    elseif mine or not isUnit then");
+                script.AppendLine("      if isUnit then nameToCandidate[tostring(info.name)] = mergedCandidate[i] end");
+                script.AppendLine("      table.insert(runList, info)");
+                script.AppendLine("    end");
+                script.AppendLine("  end");
+                script.AppendLine("  for i = 1, #runList do");
+                script.AppendLine("    local info = runList[i]");
+                script.AppendLine("    jp_progress(i, #runList, 'load', info and (info.name or info.unitName))");
                 script.AppendLine("    local okCreate, createErr = pcall(InputData.createProfile, info)");
                 script.AppendLine("    if not okCreate then");
                 script.AppendLine("      failed = failed + 1");
@@ -4222,14 +4367,17 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
                 script.AppendLine("  local uiProfileName = InputData.getUiProfileName() or ''");
                 script.AppendLine("  local clearTargets = {}");
                 script.AppendLine("  for i = 1, #profileNames do");
-                script.AppendLine("    if profileNames[i] ~= uiProfileName then");
+                script.AppendLine("    if profileNames[i] ~= uiProfileName and (withDefaults or not defaultNames[tostring(profileNames[i])]) then");
                 script.AppendLine("      table.insert(clearTargets, profileNames[i])");
                 script.AppendLine("    end");
                 script.AppendLine("  end");
+                AppendFastClear(script);
                 script.AppendLine("  for i = 1, #clearTargets do");
                 script.AppendLine("    local profileName = clearTargets[i]");
                 script.AppendLine("    jp_progress(i, #clearTargets, 'clear', profileName)");
-                script.AppendLine("    local okClear, clearErr = pcall(InputData.clearProfile, profileName, clearDevices)");
+                script.AppendLine("    local started = os.clock()");
+                script.AppendLine("    local okClear, clearErr = pcall(jp_clear, profileName, clearDevices)");
+                script.AppendLine("    jp_cost(nameToCandidate[tostring(profileName)], started)");
                 script.AppendLine("    if okClear then");
                 script.AppendLine("      success = success + 1");
                 script.AppendLine("      print('JOYPRO_PROFILE_OK|' .. tostring(profileName) .. '|cleared')");
@@ -4276,10 +4424,17 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
 
         private static bool CopyLargestExportedHtml(DcsRefreshOptions options, DcsRefreshResult result, List<string> errors)
         {
-            string sourceRoot = result.InputLayoutsPath;
-            if (!Directory.Exists(sourceRoot))
+            return CopyLargestExportedHtml(options, result, errors, new List<string> { result.InputLayoutsPath });
+        }
+
+        // sourceRoots: the InputLayoutsTxt folders of the luae runs in run order (a later run's file of the same name
+        // replaces an earlier one's, as if all had written into one folder). They are deleted afterwards.
+        private static bool CopyLargestExportedHtml(DcsRefreshOptions options, DcsRefreshResult result, List<string> errors, List<string> sourceRoots)
+        {
+            List<string> existing = sourceRoots.Where(Directory.Exists).ToList();
+            if (existing.Count == 0)
             {
-                errors.Add("DCS HTML export folder not found: " + sourceRoot);
+                errors.Add("DCS HTML export folder not found: " + (sourceRoots.FirstOrDefault() ?? string.Empty));
                 return false;
             }
 
@@ -4288,16 +4443,30 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
 
             try
             {
-                DirectoryInfo[] planeDirs = new DirectoryInfo(sourceRoot).GetDirectories();
-                ReportStatus(options, "Scanning exported HTML folders: " + planeDirs.Length.ToString(CultureInfo.InvariantCulture) + " plane folder(s).");
+                Dictionary<string, List<DirectoryInfo>> planeFolders = new Dictionary<string, List<DirectoryInfo>>(StringComparer.OrdinalIgnoreCase);
+                List<string> planeNames = new List<string>();
+                foreach (string sourceRoot in existing)
+                {
+                    foreach (DirectoryInfo plane in new DirectoryInfo(sourceRoot).GetDirectories())
+                    {
+                        List<DirectoryInfo> folders;
+                        if (!planeFolders.TryGetValue(plane.Name, out folders))
+                        {
+                            planeFolders[plane.Name] = folders = new List<DirectoryInfo>();
+                            planeNames.Add(plane.Name);
+                        }
+                        folders.Add(plane);
+                    }
+                }
+                if (existing.Count > 1)
+                    planeNames.Sort(StringComparer.OrdinalIgnoreCase);
+                ReportStatus(options, "Scanning exported HTML folders: " + planeNames.Count.ToString(CultureInfo.InvariantCulture) + " plane folder(s).");
                 int planeIndex = 0;
-                foreach (DirectoryInfo plane in planeDirs)
+                foreach (string planeName in planeNames)
                 {
                     planeIndex++;
-                    if (plane == null)
-                        continue;
-                    EngineProgress.Report(planeIndex, planeDirs.Length, "DCS World, writing the command lists", plane.Name);
-                    FileInfo[] files = plane.GetFiles("*.html");
+                    EngineProgress.Report(planeIndex, planeNames.Count, "DCS World, writing the command lists", planeName);
+                    List<FileInfo> files = MergedFolderFiles(planeFolders[planeName], string.Empty, "*.html") ?? new List<FileInfo>();
                     FileInfo largest = null;
                     foreach (FileInfo file in files)
                     {
@@ -4312,7 +4481,7 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
 
                     if (largest != null)
                     {
-                        string targetFile = Path.Combine(targetRoot, plane.Name + ".html");
+                        string targetFile = Path.Combine(targetRoot, planeName + ".html");
                         File.WriteAllText(targetFile, ScrubLayoutHtml(File.ReadAllText(largest.FullName, Encoding.UTF8)), new UTF8Encoding(false));
                         result.HtmlFilesCopied++;
                     }
@@ -4330,14 +4499,17 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             }
             finally
             {
-                try
+                foreach (string sourceRoot in existing)
                 {
-                    if (Directory.Exists(sourceRoot))
-                        Directory.Delete(sourceRoot, true);
-                }
-                catch (Exception ex)
-                {
-                    result.Warnings.Add("Failed deleting InputLayoutsTxt after ID refresh: " + ex.Message);
+                    try
+                    {
+                        if (Directory.Exists(sourceRoot))
+                            Directory.Delete(sourceRoot, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        result.Warnings.Add("Failed deleting InputLayoutsTxt after ID refresh: " + ex.Message);
+                    }
                 }
             }
 

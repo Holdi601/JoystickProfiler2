@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -104,6 +104,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreInternalDataManagement.cs" />
+    <Compile Include="EngineSampler.cs" />
+    <Compile Include="ObjectGraphCloner.cs" />
+    <Compile Include="EngineProfileCache.cs" />
+    <Compile Include="EngineServer.cs" />
+    <Compile Include="RunFileCache.cs" />
+    <Compile Include="CachedRegex.cs" />
     <Compile Include="CoreLayoutFile.cs" />
     <Compile Include="CoreDbFingerprint.cs" />
     <Compile Include="CoreMainStructure.cs" />
@@ -114,11 +120,13 @@
     <Compile Include="DirectInputDeviceDiscovery.cs" />
     <Compile Include="EngineDatabase.cs" />
     <Compile Include="EngineDcsFfbCorrectionCatalog.cs" />
+    <Compile Include="DcsCommandNames.cs" />
     <Compile Include="DcsDeviceNames.cs" />
     <Compile Include="EngineDcsExport.cs" />
     <Compile Include="EngineDcsImport.cs" />
     <Compile Include="EngineDcsRefresh.cs" />
     <Compile Include="EngineDcsRefresh.Verify.cs" />
+    <Compile Include="EngineDcsRefresh.Parallel.cs" />
     <Compile Include="EngineDcsDefaultsStrip.cs" />
     <Compile Include="EngineAutoGroup.cs" />
     <Compile Include="EngineNlGroup.cs" />
@@ -138,6 +146,11 @@
     <Compile Include="EngineRelationAssistant.cs" />
     <Compile Include="EngineRelationPlan.cs" />
     <Compile Include="EngineRelationFill.cs" />
+    <Compile Include="EngineAiMatrix.cs" />
+    <Compile Include="EngineAiExplain.cs" />
+    <Compile Include="EngineGameWords.cs" />
+    <Compile Include="EngineFunctionTable.cs" />
+    <Compile Include="EnginePhraseCheck.cs" />
     <Compile Include="EngineFunctionMap.cs" />
     <Compile Include="EngineFunctionMapCache.cs" />
     <Compile Include="EngineIdMeanings.cs" />
@@ -146,6 +159,8 @@
     <Compile Include="EngineRelationSearch.cs" />
     <Compile Include="EngineRelationSuggest.cs" />
     <Compile Include="EngineActionChoice.cs" />
+    <Compile Include="EngineReadableNames.cs" />
+    <Compile Include="EngineScLabels.cs" />
     <Compile Include="EngineActionInfo.cs" />
     <Compile Include="EngineGameCovers.cs" />
     <Compile Include="EngineMedia.cs" />
@@ -221,6 +236,7 @@
     <Compile Include="EngineCockpitPictures.cs" />
     <Compile Include="DeviceReference\CalloutGrids.cs" />
     <Compile Include="DeviceReference\MultiViewLayout.cs" />
+    <Compile Include="DeviceReference\LayoutVariants.cs" />
     <Compile Include="EngineCalloutRenderer.cs" />
     <Compile Include="EngineLayoutCallouts.cs" />
     <Compile Include="EngineLayoutImageMap.cs" />

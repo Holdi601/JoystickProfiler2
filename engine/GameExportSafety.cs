@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -14,6 +14,12 @@ namespace JoyPro.Engine
         // Copies the current file to "<file>.jpbak" before the first overwrite in this engine run, so a bad
         // export can always be undone by hand, and into the versioned backup store (engine backups restore).
         // Later writes in the same run keep the original backup.
+        // A new run in the same process (the engine server).
+        public static void ResetRun()
+        {
+            BackedUpThisRun.Clear();
+        }
+
         public static void BackupBeforeOverwrite(string filePath, List<string> warnings)
         {
             GameBackups.Protect(filePath, warnings);

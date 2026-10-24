@@ -97,6 +97,15 @@ JoyPro 1's "replace entire joystick device". Code: `engine/EngineDeviceReplace.c
   method, relations, modifiers and the new device's relations on the same input.
 - Checked on the user's old-PC profile (copy): auto-remap moved the same five devices the user had relinked by hand,
   and the result (502 binds, reformers included) equals that hand-made profile.
+- **Remove**: `devices remove <device>` (the device card's Remove) works on one device instance: "Name {GUID}" only
+  with the same GUID. Other devices of the same model (a second unit, the connected one after Windows gave it a new
+  GUID) keep their binds and modifiers (up to 2.2.17 every device of the same name lost them). It removes the
+  instance's binds, its modifiers (also from other devices' binds, which stay), its name, picture, USB id, force
+  feedback and activity. A modifier of another device whose last bind was removed is listed under "Modifiers Without
+  Binds"; the GUI keeps it in the Modifier Library as a temporary modifier. The other bulk deletes of the GUI (delete
+  or merge relations, clear or unbind a bind, Replace with `--merge replace`) keep such modifiers the same way; only
+  "Delete the ticked modifiers" deletes modifiers. `relations mass merge` keeps the bind when all merged relations are
+  bound the same (one input, the same modifiers). Smoke check: `engine/tests/smoke/deviceremove.ps1`.
 
 ## Device names (aliases, `engine devices alias`)
 

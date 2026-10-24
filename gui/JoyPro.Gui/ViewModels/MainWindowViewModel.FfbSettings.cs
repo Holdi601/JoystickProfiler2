@@ -210,7 +210,7 @@ public sealed partial class MainWindowViewModel
             }
             string game = GetJsonString(model, "Game");
             if (game.Length > 0 && parameters.Count > 0)
-                games.Add(new FfbGameItem(game, GetJsonString(model, "Title") is { Length: > 0 } title ? title : game, GetJsonString(model, "Description"), parameters));
+                games.Add(new FfbGameItem(game, DisplayText.GameName(game, GetJsonString(model, "Title") is { Length: > 0 } title ? title : game), GetJsonString(model, "Description"), parameters));
         }
         return games;
     }

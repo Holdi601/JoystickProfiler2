@@ -17,11 +17,11 @@ $mcStickFile = Join-Path $mcRemote "inputprofile_0000000012"
 $mcThrottleText = [System.IO.File]::ReadAllText($mcThrottleFile)
 $mcStickText = [System.IO.File]::ReadAllText($mcStickFile)
 $mc2024Text = [System.IO.File]::ReadAllText($mc2024)
-$mcThrottle = "THROTTLE AXIS SET EX1"
-$mcElevator = "AXIS ELEVATOR SET"
-$mcElevator2024 = "AXIS ELEVATOR SET"
-$mcAilerons = "AXIS AILERONS SET"
-$mcRudder = "AXIS RUDDER SET"
+$mcThrottle = "Throttle Axis"
+$mcElevator = "Elevator Axis"
+$mcElevator2024 = "Elevator Axis"
+$mcAilerons = "Ailerons Axis"
+$mcRudder = "Rudder Axis"
 $mcWarBrd = "RIGHT VPC Stick WarBRD {CCCCCCCC-0000-1111-2222-333333333333}"
 $mcPreviousDataDir = $env:JOYPRO_DATA_DIR
 # Stand-in user folders without profiles: an import or scan of a package path also reads the user's own MSFS profiles,

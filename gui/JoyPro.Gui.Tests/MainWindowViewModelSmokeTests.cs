@@ -1353,6 +1353,39 @@ public sealed class MainWindowViewModelSmokeTests
         IReadOnlyList<string> call = Assert.Single(fake.Calls, c => ContainsSequence(c, "relations", "mass", "duplicate"));
         Assert.True(ContainsSequence(call, "--relation", name));
         Assert.DoesNotContain("--all", call);
+        Assert.DoesNotContain("--no-bind", call);
+    }
+
+    // "Duplicate without bind" (editor header menu) and the card's context menu (Duplicate / without bind / Delete on
+    // the right-clicked card, which need not be the open one).
+    [Fact]
+    public async Task DuplicateWithoutBind_AndTheCardContextMenu_ActOnTheirRelation()
+    {
+        FakeEngineCliClient fake = new() { UseMultiSortScenario = true };
+        MainWindowViewModel vm = CreateVm(fake);
+        await vm.RefreshRelationsCommand.ExecuteAsync(null);
+        vm.SelectedRelation = vm.Relations.First();
+        string open = vm.SelectedRelation.Name;
+        RelationListItem other = vm.Relations.Last();
+        Assert.NotEqual(open, other.Name);
+        fake.Calls.Clear();
+
+        await vm.DuplicateSelectedRelationWithoutBindCommand.ExecuteAsync(null);
+        IReadOnlyList<string> header = Assert.Single(fake.Calls, c => ContainsSequence(c, "relations", "mass", "duplicate"));
+        Assert.True(ContainsSequence(header, "--relation", open));
+        Assert.Contains("--no-bind", header);
+
+        fake.Calls.Clear();
+        await vm.DuplicateRelationCommand.ExecuteAsync(other);
+        IReadOnlyList<string> card = Assert.Single(fake.Calls, c => ContainsSequence(c, "relations", "mass", "duplicate"));
+        Assert.True(ContainsSequence(card, "--relation", other.Name));
+        Assert.DoesNotContain("--no-bind", card);
+
+        fake.Calls.Clear();
+        await vm.DuplicateRelationWithoutBindCommand.ExecuteAsync(other);
+        IReadOnlyList<string> cardNoBind = Assert.Single(fake.Calls, c => ContainsSequence(c, "relations", "mass", "duplicate"));
+        Assert.True(ContainsSequence(cardNoBind, "--relation", other.Name));
+        Assert.Contains("--no-bind", cardNoBind);
     }
 
     [Fact]

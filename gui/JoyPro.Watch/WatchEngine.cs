@@ -28,10 +28,11 @@ public interface IWatchEngine
     Task<EngineRun> RunAsync(IReadOnlyList<string> arguments, CancellationToken cancellationToken = default);
 }
 
-// engine.exe as a hidden process: closed stdin (never a prompt), output read in the console's code page.
+// engine.exe as a hidden process: closed stdin (never a prompt), output in UTF-8 (JOYPRO_STDIO=utf8).
 public sealed class ProcessWatchEngine : IWatchEngine
 {
-    private static readonly Encoding OutputEncoding = ResolveOutputEncoding();
+    // The engine writes UTF-8 when asked (JOYPRO_STDIO=utf8).
+    private static readonly Encoding OutputEncoding = new UTF8Encoding(false);
 
     public ProcessWatchEngine(string engineExePath)
     {
@@ -55,7 +56,7 @@ public sealed class ProcessWatchEngine : IWatchEngine
             UseShellExecute = false,
             CreateNoWindow = true,
             // Crash reports of engines the app started go where the app shows them.
-            Environment = { ["JOYPRO_CALLER"] = "gui" },
+            Environment = { ["JOYPRO_CALLER"] = "gui", ["JOYPRO_STDIO"] = "utf8" },
             WorkingDirectory = Path.GetDirectoryName(EnginePath) ?? string.Empty
         };
         foreach (string argument in arguments)
@@ -77,21 +78,5 @@ public sealed class ProcessWatchEngine : IWatchEngine
         {
             return new EngineRun(-1, string.Empty, ex.Message);
         }
-    }
-
-    private static Encoding ResolveOutputEncoding()
-    {
-        try
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            int codePage = CultureInfo.CurrentCulture.TextInfo.OEMCodePage;
-            if (codePage > 0)
-                return Encoding.GetEncoding(codePage);
-        }
-        catch (Exception)
-        {
-            // Fall back below.
-        }
-        return Encoding.UTF8;
     }
 }

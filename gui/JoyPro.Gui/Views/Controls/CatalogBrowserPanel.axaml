@@ -40,6 +40,7 @@
                                   ToolTip.Tip="{l:T 'Only actions no relation uses yet'}" />
                     <Button Classes="small ghost" Content="{l:T 'Open all'}" Command="{Binding ExpandAllCatalogCommand}" ToolTip.Tip="{l:T 'Open every category'}" />
                     <Button Classes="small ghost" Content="{l:T 'Close all'}" Command="{Binding CollapseAllCatalogCommand}" ToolTip.Tip="{l:T 'Close every category'}" />
+                    <controls:ListSortBar x:Name="CatalogSortBar" DataContext="{Binding CatalogSort}" />
                 </WrapPanel>
             </Grid>
         </StackPanel>
@@ -76,7 +77,7 @@
                                                       ToolTip.Tip="{Binding Row.PlanesTooltip}">
                                                 <StackPanel Spacing="1">
                                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                                                        <TextBlock Text="{Binding Row.DisplayTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Text="{Binding Row.DisplayTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Row.IdTip}" />
                                                         <TextBlock Grid.Column="1" Classes="caption" Text="{Binding Row.KindLabel}" VerticalAlignment="Center" />
                                                     </Grid>
                                                     <WrapPanel ItemSpacing="4" LineSpacing="2">
@@ -91,7 +92,6 @@
                                                         <Border Classes="keycap" IsVisible="{Binding IsBound}" ToolTip.Tip="{l:T 'Already on this input (through that relation)'}">
                                                             <TextBlock Text="{Binding BoundText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
                                                         </Border>
-                                                        <TextBlock Classes="caption" FontSize="11" Text="{Binding Row.Id}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="220" Opacity="0.7" />
                                                     </WrapPanel>
                                                     <TextBlock Classes="warnText" FontSize="11" Text="{Binding Row.VariantText}" IsVisible="{Binding Row.HasVariant}" TextWrapping="Wrap" />
                                                     <TextBlock Classes="caption" FontSize="11" Text="{Binding Row.Explanation}" IsVisible="{Binding Row.HasExplanation}" TextWrapping="Wrap" MaxLines="2"
@@ -102,10 +102,10 @@
                                             <StackPanel Margin="28,0,0,0" Spacing="4" IsVisible="{Binding Row.HasAircraft}">
                                                 <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" Command="{Binding Row.Aircraft.ToggleExpandedCommand, FallbackValue={x:Null}}"
                                                         ToolTip.Tip="{l:T 'Every aircraft with this id, each with its own title: tick the ones the action is for'}">
-                                                    <StackPanel Orientation="Horizontal" Spacing="4">
-                                                        <PathIcon Data="{StaticResource Icon.Airplane}" Width="12" Height="12" />
-                                                        <TextBlock Text="{Binding Row.Aircraft.ExpandLabel, FallbackValue=''}" FontSize="11.5" />
-                                                    </StackPanel>
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
+                                                        <PathIcon Data="{StaticResource Icon.Airplane}" Width="12" Height="12" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding Row.Aircraft.ExpandLabel, FallbackValue=''}" FontSize="11.5" TextWrapping="Wrap" />
+                                                    </Grid>
                                                 </Button>
                                                 <Panel IsVisible="{Binding Row.Aircraft.IsExpanded, FallbackValue=False}">
                                                     <controls:AircraftSelectorPanel DataContext="{Binding Row.Aircraft}" />

@@ -1694,6 +1694,8 @@ namespace JoyPro.Engine
                     change.ActionTitle = action.Title;
                 else if (il2Titles != null && (change.ActionTitle.Length == 0 || change.ActionTitle == change.ActionId) && il2Titles.TryGetValue(change.ActionId, out il2Title))
                     change.ActionTitle = il2Title;
+                else if (game.Kind == "dcs")
+                    change.ActionTitle = InternalDataManagement.DcsDisplayTitle(change.ActionId, change.Plane, change.ActionTitle);
                 Complete(game, change, profile);
             }
             diff.Changes = diff.Changes

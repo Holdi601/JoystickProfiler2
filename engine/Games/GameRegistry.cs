@@ -113,6 +113,14 @@ namespace JoyPro.Engine.Games
             catalog.SourcePath = CatalogPath(game);
             if (!File.Exists(catalog.SourcePath))
             {
+                IGameBuiltInCatalog builtIn = game as IGameBuiltInCatalog;
+                if (builtIn != null)
+                {
+                    GameCatalog known = builtIn.BuiltInCatalog();
+                    known.GameId = game.GameId;
+                    known.SourcePath = catalog.SourcePath;
+                    return known;
+                }
                 warnings?.Add(game.DisplayName + " action catalog not found: " + catalog.SourcePath);
                 return catalog;
             }
@@ -139,6 +147,17 @@ namespace JoyPro.Engine.Games
                 });
             }
 
+            IGameCatalogTidy tidy = game as IGameCatalogTidy;
+            if (tidy != null)
+                tidy.TidyCatalog(catalog);
+            // Titles that look like ids ("FMS: key_0", "HeliBrakes", "TOGGLE PUSHBACK") read as words.
+            foreach (GameAction action in catalog.Actions)
+            {
+                action.Title = EngineReadableNames.Title(game.GameId, action.Title);
+                // A bare key of a pad ("0" ... "9" of VTOL VR's number pad) names its group too: "Number pad 0".
+                if (action.Title.Length > 0 && action.Title.All(char.IsDigit) && (action.Category ?? string.Empty).Trim().Length > 0)
+                    action.Title = EngineReadableNames.Category(game.GameId, action.Category) + " " + action.Title;
+            }
             return catalog;
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using JoyPro.Gui.Models;
 using JoyPro.Gui.Services;
@@ -21,6 +22,74 @@ public sealed partial class MainWindowViewModel
     public ListSortViewModel RelationSort { get; } = new("relations");
 
     public ListSortViewModel BindSort { get; } = new("binds");
+
+    // The tiered sort of the action catalog and of the action search results (game, aircraft, category, title, axis /
+    // button, last updated); no level = their own order (categories, best matches first).
+    public ListSortViewModel CatalogSort { get; } = ListSortViewModel.ForActions("catalog");
+
+    public ListSortViewModel BuilderSearchSort { get; } = ListSortViewModel.ForActions("action-search");
+
+    private bool actionSortsInitialized;
+
+    private void EnsureActionSorts()
+    {
+        if (actionSortsInitialized)
+            return;
+        actionSortsInitialized = true;
+        if (ListPrefs.Sorts.TryGetValue(CatalogSort.Page, out List<string>? catalogSort))
+            CatalogSort.LoadState(catalogSort);
+        if (ListPrefs.Sorts.TryGetValue(BuilderSearchSort.Page, out List<string>? searchSort))
+            BuilderSearchSort.LoadState(searchSort);
+        CatalogSort.Changed += (_, _) =>
+        {
+            SetCatalogRows(catalogRows.ToList(), catalogCategoryOrder.ToList(), keepExpanded: true);
+            RememberSort(CatalogSort);
+        };
+        BuilderSearchSort.Changed += (_, _) =>
+        {
+            RebuildBuilderSearchRows();
+            RememberSort(BuilderSearchSort);
+        };
+    }
+
+    // What an action row (catalog, search) is sorted by: its readable title, game, aircraft, category, kind and the date
+    // of the game's command list.
+    internal ListSortRow SortRowOfAction(BuilderSearchResultItem row, string? plane = null)
+    {
+        string onPlane = plane ?? (row.Game == "DCS" ? row.SelectedPlanes.Concat(row.Planes).FirstOrDefault() ?? string.Empty : string.Empty);
+        return ListSortRow.ForAction(row.DisplayTitle, DisplayText.Game(row.Game), onPlane, row.Category, row.IsAxis, ActionListDate(row.Game, onPlane));
+    }
+
+    private readonly Dictionary<string, DateTime> actionListDates = new(StringComparer.OrdinalIgnoreCase);
+
+    // When the command list of a game (DCS: of the aircraft) was last built: the DB file's time; MinValue if unknown.
+    internal DateTime ActionListDate(string game, string plane)
+    {
+        string key = game + "|" + plane;
+        if (actionListDates.TryGetValue(key, out DateTime known))
+            return known;
+        DateTime date = DateTime.MinValue;
+        try
+        {
+            if (string.Equals(game, "DCS", StringComparison.OrdinalIgnoreCase))
+            {
+                if (TryResolveDcsPlaneFile(plane, out string file) && File.Exists(file))
+                    date = File.GetLastWriteTimeUtc(file);
+            }
+            else
+            {
+                string folder = GetGameDbDirectory(game);
+                if (Directory.Exists(folder))
+                    date = Directory.EnumerateFiles(folder).Select(File.GetLastWriteTimeUtc).DefaultIfEmpty(DateTime.MinValue).Max();
+            }
+        }
+        catch
+        {
+            date = DateTime.MinValue;
+        }
+        actionListDates[key] = date;
+        return date;
+    }
 
     private ListPreferences? listPreferences;
     private bool listFiltersInitialized;

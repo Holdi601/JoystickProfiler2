@@ -59,6 +59,18 @@ Assert-True ($scRoundTrip.ExitCode -eq 0) ("starcitizen export after import fail
 Assert-True ([System.IO.File]::ReadAllText($scImport.File) -eq $scBefore) ("import + export without changes must keep actionmaps.xml byte-identical: " + [System.IO.File]::ReadAllText($scImport.File))
 Assert-True (Test-Path ($scImport.File + ".jpbak")) "starcitizen export should back up actionmaps.xml (GameExportSafety)."
 
+# ---- Export target: --path wins over --source (the import's folder); source first wrote into the live profile -------
+$scCopyRoot = Join-Path $tempDir "sc_export_copy"
+Copy-Item -LiteralPath $scImport.Root -Destination $scCopyRoot -Recurse -Force
+$scCopyFile = $scImport.File.Replace($scImport.Root, $scCopyRoot)
+Remove-Item -LiteralPath ($scCopyFile + ".jpbak") -Force -ErrorAction SilentlyContinue
+$scSourceStamp = (Get-Item -LiteralPath $scImport.File).LastWriteTimeUtc
+Start-Sleep -Milliseconds 50
+$scPathExport = Run-Engine @("--profile", $scProfile, "starcitizen", "export", "--path", $scCopyRoot, "--source", $scImport.Root, "--prefer-local-order", "false", "--text")
+Assert-True ($scPathExport.ExitCode -eq 0) ("starcitizen export with --path and --source failed: " + $scPathExport.Output)
+Assert-True (Test-Path ($scCopyFile + ".jpbak")) "starcitizen export with --path must write into the --path folder."
+Assert-True ((Get-Item -LiteralPath $scImport.File).LastWriteTimeUtc -eq $scSourceStamp) "starcitizen export with --path must not touch the --source folder."
+
 # ---- Export of changed settings ----------------------------------------------------------------------------------------
 $scSet = Run-Engine @("--profile", $scProfile, "binds", "tuning", "set", "SC Pitch", "--scope", "game:StarCitizen", "--inverted", "true", "--param", "exponent=1.5", "--deadzone", "0.05", "--saturation-x", "0.95", "--text")
 Assert-True ($scSet.ExitCode -eq 0) ("binds tuning set for Star Citizen failed: " + $scSet.Output)

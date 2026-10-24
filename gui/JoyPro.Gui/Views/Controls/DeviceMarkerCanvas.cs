@@ -240,6 +240,13 @@ public sealed class DeviceMarkerCanvas : Control
     public static readonly StyledProperty<ICommand?> PictureFileDroppedCommandProperty =
         AvaloniaProperty.Register<DeviceMarkerCanvas, ICommand?>(nameof(PictureFileDroppedCommand));
 
+    // A chip of an unplaced input dropped on the picture (DevicePartDrop: the part and the point in picture pixels).
+    public static readonly StyledProperty<ICommand?> PartDroppedCommandProperty =
+        AvaloniaProperty.Register<DeviceMarkerCanvas, ICommand?>(nameof(PartDroppedCommand));
+
+    // The drag text of a part chip: "joypro-part:<part id>".
+    public const string PartDragFormat = "joypro-part";
+
     private static readonly IBrush BadgeBrush = new SolidColorBrush(Color.Parse("#EB0F172A"));
     private static readonly IBrush BadgeFreeBrush = new SolidColorBrush(Color.Parse("#B30F172A"));
     private static readonly IBrush BadgeSelectedBrush = new SolidColorBrush(Color.Parse("#2563EB"));
@@ -374,6 +381,8 @@ public sealed class DeviceMarkerCanvas : Control
     public IBrush? PictureBackground { get => GetValue(PictureBackgroundProperty); set => SetValue(PictureBackgroundProperty, value); }
 
     public ICommand? PictureFileDroppedCommand { get => GetValue(PictureFileDroppedCommandProperty); set => SetValue(PictureFileDroppedCommandProperty, value); }
+
+    public ICommand? PartDroppedCommand { get => GetValue(PartDroppedCommandProperty); set => SetValue(PartDroppedCommandProperty, value); }
 
     public event EventHandler<string>? PictureFileDropped;
 
@@ -1002,8 +1011,35 @@ public sealed class DeviceMarkerCanvas : Control
         badge.Label.Draw(context, new Point(rect.X + 5, rect.Y + (rect.Height - badge.Label.Height) / 2));
     }
 
+    // The part id of a dragged chip, or null.
+    public static string? PartOf(DragEventArgs e)
+    {
+#pragma warning disable CS0618 // DataFormats.Text / Get: the Avalonia 11 drag data API
+        string? text = e.Data.Contains(DataFormats.Text) ? e.Data.Get(DataFormats.Text) as string : null;
+#pragma warning restore CS0618
+        return text != null && text.StartsWith(PartDragFormat + ":", StringComparison.Ordinal) ? text[(PartDragFormat.Length + 1)..] : null;
+    }
+
+    // Drops a part chip at a view point: the part goes to that point of the picture. False outside the picture.
+    public bool DropPartAt(Point viewPoint, string partId)
+    {
+        Point p = ToCanvasPoint(viewPoint);
+        if (string.IsNullOrWhiteSpace(partId) || p.X < 0 || p.Y < 0 || (SourceWidth > 0 && p.X > SourceWidth) || (SourceHeight > 0 && p.Y > SourceHeight))
+            return false;
+        DevicePartDrop drop = new(partId, Math.Round(p.X, 2), Math.Round(p.Y, 2));
+        if (PartDroppedCommand?.CanExecute(drop) != true)
+            return false;
+        PartDroppedCommand.Execute(drop);
+        return true;
+    }
+
     private void OnDragOver(object? sender, DragEventArgs e)
     {
+        if (PartDroppedCommand != null && PartOf(e) != null)
+        {
+            e.DragEffects = DragDropEffects.Move;
+            return;
+        }
         if (RelationDroppedCommand != null && CalloutSheetCanvas.RelationOf(e) != null)
         {
             IDeviceMarker? hit = HitTest(e.GetPosition(this)) ?? NearestMarker(e.GetPosition(this), 28);
@@ -1066,6 +1102,12 @@ public sealed class DeviceMarkerCanvas : Control
 
     private void OnDrop(object? sender, DragEventArgs e)
     {
+        string? part = PartOf(e);
+        if (part != null && PartDroppedCommand != null)
+        {
+            DropPartAt(e.GetPosition(this), part);
+            return;
+        }
         string? relation = CalloutSheetCanvas.RelationOf(e);
         if (relation != null && RelationDroppedCommand != null)
         {

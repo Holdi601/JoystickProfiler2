@@ -74,6 +74,26 @@ namespace JoyPro.Engine
                 (t.Length == 0 || string.Equals(t, i, StringComparison.OrdinalIgnoreCase) || string.Equals(t, MsfsGameData.RawTitle(i), StringComparison.OrdinalIgnoreCase) ||
                  string.Equals(t.Replace(' ', '_'), i.StartsWith("KEY_", StringComparison.Ordinal) ? i.Substring(4) : i, StringComparison.OrdinalIgnoreCase)))
                 return MsfsGameData.TitleFromEventName(i.StartsWith("KEY_", StringComparison.Ordinal) ? i : "KEY_" + i);
+            // Star Citizen's lists name an action by its id ("v_toggle_landing_system" shown as "v toggle landing system"):
+            // its words without the vehicle prefix ("Toggle landing system"), EVA as EVA.
+            if (string.Equals(game, "StarCitizen", StringComparison.OrdinalIgnoreCase) && i.Length > 0)
+            {
+                string action = i.Substring(i.LastIndexOf('|') + 1);
+                int split = action.LastIndexOf("___", StringComparison.Ordinal);
+                if (split >= 0)
+                    action = action.Substring(split + 3);
+                if (t.Length == 0 || string.Equals(t, action.Replace('_', ' '), StringComparison.OrdinalIgnoreCase) || string.Equals(t, action, StringComparison.OrdinalIgnoreCase))
+                {
+                    List<string> parts = action.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    if (parts.Count > 1 && parts[0] == "v")
+                        parts.RemoveAt(0);
+                    if (parts.Count > 0)
+                    {
+                        string text = string.Join(" ", parts.Select(p => p == "eva" ? "EVA" : p == "ifcs" ? "IFCS" : p == "esp" ? "ESP" : p == "mfd" ? "MFD" : p));
+                        return char.ToUpperInvariant(text[0]) + text.Substring(1);
+                    }
+                }
+            }
             // An id shown as its title, also behind a key prefix of the game's string table (IL-2 "inpmc_pitch" for
             // "mc_pitch").
             bool idTitle = i.Length > 0 && Regex.IsMatch(t, @"^[A-Za-z0-9]+([_.][A-Za-z0-9]+)+$") && t.EndsWith(i, StringComparison.OrdinalIgnoreCase);
@@ -86,6 +106,25 @@ namespace JoyPro.Engine
                 return char.ToUpperInvariant(text[0]) + text.Substring(1);
             }
             return t;
+        }
+
+        // A general explanation in the game's words: the template says "aircraft"; Star Citizen, Elite Dangerous and X4 fly
+        // ships, a tank or vehicle action (War Thunder, Arma, Battlefield: by its category) drives one.
+        public static string InGameWords(string game, string category, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return text ?? string.Empty;
+            string cat = (category ?? string.Empty).ToLowerInvariant();
+            string noun = EngineGameWords.SpaceGames.Contains(game ?? string.Empty) ? "ship"
+                : Regex.IsMatch(cat, @"\btanks?\b|\barmou?r") ? "tank"
+                : Regex.IsMatch(cat, @"\b(?:vehicles?|cars?|ground|driving|wheeled|tracked|boats?|ships?|naval)\b") ? (Regex.IsMatch(cat, @"\b(?:boats?|ships?|naval)\b") ? "ship" : "vehicle")
+                : string.Empty;
+            if (noun.Length == 0)
+                return text;
+            string result = Regex.Replace(text, @"\baircraft\b", noun);
+            result = Regex.Replace(result, @"\bAircraft\b", char.ToUpperInvariant(noun[0]) + noun.Substring(1));
+            result = Regex.Replace(result, @"\b(?:aeroplane|airplane|plane)\b", noun);
+            return result;
         }
 
         // Is the title the game's own readable name (not an id or an event name)?

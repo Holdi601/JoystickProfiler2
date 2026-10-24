@@ -2,7 +2,7 @@
 
 CLI: `engine dcs scan | import | export`, `engine dcs refresh id | clean` (DB and clean profiles), `engine dcs verify-clean`,
 `engine dcs strip-defaults`, `engine dcs device-luas`. Code:
-`engine\EngineDcsImport.cs`, `engine\EngineDcsExport.cs`, `engine\EngineDcsRefresh.cs`, `engine\DcsDeviceNames.cs`, `engine\EngineDcsRefresh.Verify.cs`, `engine\EngineDcsDefaultsStrip.cs`.
+`engine\EngineDcsImport.cs`, `engine\EngineDcsExport.cs`, `engine\EngineDcsRefresh.cs`, `engine\DcsDeviceNames.cs`, `engine\DcsCommandNames.cs`, `engine\EngineDcsRefresh.Verify.cs`, `engine\EngineDcsDefaultsStrip.cs`.
 
 ## Files
 - `Saved Games\DCS\Config\Input\<profile>\joystick\<device>.diff.lua`: the user's changes against the defaults
@@ -27,6 +27,27 @@ converts between both:
 
 The device *type* (DCS: `Input.Utils.getDeviceTemplateName`) is the name without ` {GUID}`. It selects the device's
 default file (below).
+
+## Command names
+DCS shows every command with a name and a category (Options > Controls). Most modules write English text
+(`name = _('Gear up')`), some a localization key: `_('Input.SpitfireLFMkIX.pitch_minus')` (Spitfire, Bf-109, FW-190,
+I-16, Mosquito, P-47, Yak-52, CH-47F) or `_('29Fulcrum:Inp:AB Lock Latch ...')` / `_('29Fulcrum:Cat:Right Wall')`
+(MiG-29 Fulcrum). DCS loads the input files with `_ = InputUtils.localizeInputString` = `i_18n.dtranslate('input', s)`
+(`Scripts/Input/Data.lua`), and the English text is in `<DCS>\l10n\en\LC_MESSAGES\input.mo` ("Engine RPM DECREASE").
+
+Root cause of raw titles (fixed 2026-10-24): the headless refresh runs DCS's `luae.exe`, which has no locale, so
+`dtranslate` returned the key and the DB stored it (3682 titles and 512 categories in 11 lists, e.g. "Input.
+SpitfireLFMkIX.pitch_slider" for "Engine RPM (analog)": a search for "engine rpm" found nothing readable). The ID
+refresh now reads `input.mo` itself (`AppendEnglishNamesShim`) and answers `dtranslate('input', key)` for keys
+(`Input.*`, `<module>:Inp:` / `:Cat:`) with the English text, whatever language DCS or Windows uses; the step list says
+"English DCS command names: n". Names that already are English keep DCS's source text: the catalog rewords about 1000
+of them ("Throttle Up" -> "Throttle Levers - UP"), which would make lists built before and after disagree. Checked on
+the user's DCS 2.9.30 (read only, refresh into a temp data folder): 0 raw titles / categories after (3682 / 512
+before), ids and combos identical, only the key rows changed. The shipped list (`EngineOnly_Runtime\DB\DCS`) is rebuilt.
+
+A list built before (the user's, until the next DB refresh) is translated when it is read (`DcsCommandNames`, used by
+`InternalDataManagement.ParseDcsHtmlInputs` and the GUI's title lookups) from the installed DCS's `input.mo`; without a
+DCS install the sibling list's title (`_easy`, `CW`) or a readable form of the key ("Pitch minus") is shown.
 
 ## Default binds and clean profiles
 For each aircraft DCS loads the device's defaults from the profile's `joystick` folder: `<device type>.lua` when it
@@ -65,8 +86,33 @@ Everything is written into a temporary Saved Games folder; the user's `Config\In
 `--plane`/`--planes` limit the aircraft. A file the strip option (below) patched is read from its `.nocombo.bak`, so
 the clean profiles always hold DCS's real defaults (checked: FA-18C and F-15C from a stripped copy of the install are
 byte-identical to those from the untouched install). Before the refresh JoyPro re-applies the switched-on install
-options. The full refresh on a test PC (85 profiles, 136 device types) takes about 25 minutes and writes 5071 clean
-profiles (9 MB; before: 1145).
+options. It writes 5071 clean profiles on a test PC (85 profiles, 136 device types; 9 MB; before: 1145).
+
+### Speed of the headless refreshes (`dcs refresh id` and `clean`)
+Both run DCS's Lua in several `luae.exe` at once (`EngineDcsRefresh.Parallel.cs`): every run lists all input profiles
+(so DCS merges and aliases profiles of the same name the same way in every run) and works on its share: DCS's default
+profiles (General, UiLayer, ...) in a run of their own, the aircraft one per run (clean) or a few per run (ID). The
+aircraft that took longest in the last refresh start first (`<data>\Cache\dcs-refresh-times.tsv`; the clean refresh
+uses the ID refresh's times until it has its own). An aircraft slower than a worker's share of the whole is cleared by
+several runs, each with every n-th fake stick (a device's diff does not depend on the other devices); the connected
+joysticks themselves are left out of the clean runs (only their fake sticks are cleared). Runs at once: one per CPU
+but one, at most 16, and only as many as the free memory allows (clean ~0.9 GB, ID ~0.7 GB per run; one run measured
+at most 0.55 GB), at below normal priority. `luae.exe` crashes now and then while DCS saves the diffs (exit code
+0xC000041D, about 1 of 90 runs with 16 at once; the refresh retried a failed run before too): such a run is repeated at once,
+up to three runs per aircraft; an aircraft that still fails is skipped with a warning and keeps its previous clean
+profiles (as before). The folders DCS saves an aircraft's diffs into are made before its run (DCS's `lfs.mkdir` in
+`luae.exe` starts `cmd.exe`, once per device); a folder DCS saved nothing into is ignored. `JOYPRO_DCS_LUA_WORKERS=<n>` limits the runs at once (1 = one after the other), `JOYPRO_DCS_LUA_CHUNK=<n>`
+sets n aircraft per run. Two DCS functions are made cheaper in the runs: `InputData.clearProfile` validated a command
+again after every device (one A-10C with ~100 fake sticks: 10 s), now once after its last device; `makeHtml` sorted the
+profile's commands again for every device page, now once per profile. DCS's own code is called otherwise unchanged and
+both fall back to DCS's functions when DCS changes them. The ID refresh writes DCS's `InputLayoutsTxt` into a temporary
+folder (before: `<Saved Games>\InputLayoutsTxt`, which was deleted); it still reads the user's `Config\Input`.
+
+Measured on the test PC (16 cores, DCS 2.9.30, 85 aircraft, 13 connected devices; old vs new engine on copies, the
+written DB, clean and keyboard profiles byte-identical): `dcs refresh id` 277 s -> 12-14 s, `dcs refresh clean`
+1408 s -> 46-57 s (61-67 s on a first clean refresh with only the ID refresh's times or none; the F-4E alone took 75 s
+before its fake sticks were split over runs).
+A cancel (`JOYPRO_CANCEL_FILE`) stops every `luae.exe` and writes nothing.
 
 ### Root cause of "DCS defaults stay on my device" (fixed 2026-10-17)
 Checked with `engine dcs verify-clean` on a copy of the user's Saved Games after a GUI-default export (`merge`), with

@@ -167,6 +167,14 @@ namespace JoyPro.DeviceReference
             return root;
         }
 
+        // Cheat-sheet pictures the user received from others (community sheets) that JoyPro does not ship, e.g. because
+        // they hold vendor product renders: <data>\Layouts\Community. A 2D layout variant with a localPicture finds its
+        // picture here by name and SHA-256.
+        public static string CommunityLayoutFolder()
+        {
+            return Path.Combine(DataRoot(), "Layouts", "Community");
+        }
+
         // The user's JoyPro 1 layouts JoyPro took over ("Use my old JoyPro layouts..."): <data>\Layouts\JoyPro1. Copies;
         // the user's old folder is never written.
         public static string ImportedLayoutFolder()

@@ -38,7 +38,8 @@ namespace JoyPro.Gui.Models
         public string Confidence { get; }
         public string Why { get; }
         public bool IsAmbiguous => Confidence == "ambiguous";
-        public string Where => Game == "DCS" ? Plane : Game;
+        // The aircraft (DCS) or the game by its readable name ("X-Plane 12", not "XPlane12").
+        public string Where => Game == "DCS" ? Plane : (JoyPro.Gui.Views.Controls.GameBadge.FullName(Game) is { Length: > 0 } name ? name : Game);
         public string Line => Title + (Category.Length > 0 ? " [" + Category + "]" : string.Empty);
         public string SourceText => (Source == "both" ? "Rules + AI" : Source == "AI" ? "AI" : "Rules") + " · " + Confidence;
 

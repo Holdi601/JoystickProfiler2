@@ -98,7 +98,9 @@ namespace JoyPro.Engine
 
             // The relation's meaning: its suggestions know the functions (and give the candidates of step 2).
             EngineRelationSuggestResult suggest = EngineRelationSuggest.Suggest(relation.NAME, "low", 0);
-            List<string> relationSlots = suggest.Functions.Where(f => f.Weight >= 0.5).Select(f => f.Slot).ToList();
+            // Its main function only ("Gear TOGGLE" is the toggle, not gear up and down that ride along with less weight).
+            double topWeight = suggest.Functions.Count == 0 ? 0 : suggest.Functions.Max(f => f.Weight);
+            List<string> relationSlots = suggest.Functions.Where(f => f.Weight >= Math.Max(0.5, topWeight - 0.01)).Select(f => f.Slot).ToList();
             List<string> addSlots = namedSlots.Count > 0 ? namedSlots : relationSlots;
             Func<string, bool> inScope = plane => (!scopeNamed || scope.ContainsKey(plane)) && !excluded.ContainsKey(plane);
             // Games whose binds are shared by all their aircraft fit a class only partly ("jets": Arma also flies
@@ -223,7 +225,19 @@ namespace JoyPro.Engine
                 removes.AddRange(nodes.Where(n => !n.InScope));
             }
             result.Method = "offline rules";
-            result.Note = adds.Count + removes.Count == 0 ? "The offline rules found nothing to change." : string.Empty;
+            // What the rules would do, in words: the titles and games (no ids).
+            Func<List<Line>, string> words = lines => string.Join(", ", lines.GroupBy(l => EngineGameWords.Label(l.Game))
+                .Select(g => g.Key + " " + string.Join(" / ", g.Select(l => "\"" + EngineActionInfo.Readable(l.Game, l.Id, l.Title) + "\"").Distinct().Take(3))).Take(6));
+            // A named game that has the function only in other directions: what to do instead.
+            List<string> named = EngineGameWords.Games(result.Message).Select(EngineGameWords.Label).ToList();
+            string hints = string.Join(" ", suggest.Hints.Where(h => named.Any(n => h.StartsWith(n + " has no ", StringComparison.Ordinal))));
+            // A named game the relation has already.
+            List<string> already = named.Where(n => (relation.NODES ?? new List<RelationItem>()).Any(node => node != null && EngineGameWords.Label(EngineRelationSuggest.GameKey(node.Game ?? string.Empty)) == n &&
+                                                                                                         (node.AIRCRAFT == null || node.AIRCRAFT.Count == 0 || node.AIRCRAFT.Values.Any(a => a)))).ToList();
+            if (hints.Length == 0 && already.Count > 0 && already.Count == named.Count)
+                hints = "\"" + relation.NAME + "\" has " + string.Join(", ", already) + " already.";
+            result.Note = adds.Count + removes.Count == 0 ? (hints.Length > 0 ? hints : "The offline rules found nothing to change.") :
+                (adds.Count > 0 ? "Adds " + words(adds) + "." : string.Empty) + (removes.Count > 0 ? (adds.Count > 0 ? " " : string.Empty) + "Removes " + words(removes) + "." : string.Empty);
 
             // The local model, when the user switched it on: it re-picks from the numbered lists.
             string mode = (options.LlmMode ?? string.Empty).Trim().ToLowerInvariant();

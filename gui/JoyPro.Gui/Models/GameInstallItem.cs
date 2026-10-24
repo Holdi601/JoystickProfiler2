@@ -82,6 +82,24 @@ public sealed partial class GameInstallItem : ObservableObject
         ? InstallPath + (Source.Length > 0 && !Overridden ? T("  ·  found via {0}", Source) : string.Empty)
         : T("Not found on this PC");
 
+    // How many actions JoyPro knows for the game (engine games installs "Actions"; -1 = not reported).
+    public int Actions { get; set; } = -1;
+
+    // Why it has none (engine "ActionsNote").
+    public string ActionsNote { get; set; } = string.Empty;
+
+    // JoyPro cannot find any action of the game: no command list and no table of its own.
+    public bool HasNoActions => Actions == 0;
+
+    // Settings > Games: why it has none (and that the Start page leaves it out).
+    public string ActionsText => !HasNoActions ? string.Empty
+        : Installed ? T("JoyPro has no command list of it yet: Update on its Start page card builds it from the game's own files.")
+        : T("JoyPro has no command list of it: the list is built from the installed game, and the game was not found on this PC. Until then it is not offered on the Start page.");
+
+    // Not installed and nothing known: JoyPro cannot do anything for it on this PC, so the Start page leaves it out
+    // (an installed game without a list stays: Update builds the list from its files).
+    public bool OfferedOnStartPage => !(HasNoActions && !Installed);
+
     [ObservableProperty]
     private Bitmap? cover;
 }

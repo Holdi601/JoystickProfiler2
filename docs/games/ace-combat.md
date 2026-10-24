@@ -42,6 +42,7 @@ Flight_HatSwitchUp=POV_U1
 
 **What JoyPro does** (`engine/Games/AceCombat7Integration.cs`):
 - `engine ac7 refresh-db`: the `Flight_*` keys from the user's Input.ini, with JoyPro's own titles.
+- Before the game wrote Input.ini (and before a refresh), the catalog, search and relation editor use JoyPro's own table of the 20 `Flight_*` actions (`IGameBuiltInCatalog`); ACE COMBAT 8 uses its table of the default gamepad layout the same way. A refresh, import or export builds the real list.
 - Export:
   - writes into the section of each device;
   - an axis as `X`/`Y:R` (Invert = `:R`), buttons as `ButtonN`, hat directions as `POV_<U|D|L|R><n>`;

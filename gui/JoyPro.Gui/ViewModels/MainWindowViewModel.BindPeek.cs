@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -48,7 +49,9 @@ public sealed partial class MainWindowViewModel
     // "What 'Pitch' does: 3 actions in 2 games"
     public string BindPeekTitle => BindPeekActionCount == 1
         ? T("What it does: 1 action in 1 game")
-        : T("What it does: {0} actions in {1} games", BindPeekActionCount, BindPeekGroups.Count);
+        : BindPeekGroups.Count == 1
+            ? T("What it does: {0} actions in 1 game", BindPeekActionCount)
+            : T("What it does: {0} actions in {1} games", BindPeekActionCount, BindPeekGroups.Count);
 
     public string BindPeekToggleText => IsBindPeekOpen ? T("Hide") : T("Show");
 
@@ -67,11 +70,17 @@ public sealed partial class MainWindowViewModel
         if (!IsBindPeekOpen)
             return;
         EngineCommandResult? result = await RunEngineAsync(["relations", "show", relation], includeProfile: true, mutatesProfile: false,
-            busyLabel: N("Loading relation details..."), forceText: false, background: true);
+            busyLabel: N("Loading relation details..."), forceText: true, background: true);
         if (version != bindPeekVersion || result == null || result.ExitCode != 0)
             return;
         bool axis = IsAxisRelation(relation);
         List<BindPeekAction> actions = [];
+        Dictionary<string, string> storedTitles = ParseStoredNodeTitles(result.StandardOutput);
+        // The other games' titles (an MSFS or War Thunder action the profile stored without a title showed its id):
+        // "relations aircraft" names every node in its game, as the relation editor shows it.
+        Dictionary<string, string> gameTitles = await LoadBindPeekGameTitlesAsync(relation, result.StandardOutput);
+        if (version != bindPeekVersion)
+            return;
         foreach (string raw in result.StandardOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries))
         {
             Match match = RelationNodeLine.Match(raw.TrimEnd());
@@ -85,10 +94,44 @@ public sealed partial class MainWindowViewModel
             // One list per game (IL-2, Star Citizen ...): the game itself is no aircraft.
             if (planes.Count == 1 && string.Equals(planes[0], game, StringComparison.OrdinalIgnoreCase))
                 planes.Clear();
-            string title = ResolveNodeTitle(game, planes.Count > 0 ? planes[0] : "Default", id);
-            actions.Add(new BindPeekAction(game, title.Length > 0 ? title : id, axis, planes));
+            string firstPlane = planes.Count > 0 ? planes[0] : planesRaw.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).FirstOrDefault() ?? "Default";
+            string title = ResolveNodeTitle(game, planes.Count > 0 ? planes[0] : "Default", id, StoredNodeTitle(storedTitles, id, firstPlane));
+            if (string.Equals(title, id, StringComparison.OrdinalIgnoreCase) && gameTitles.TryGetValue(game + "|" + id, out string? gameTitle) && gameTitle.Length > 0)
+                title = gameTitle;
+            actions.Add(new BindPeekAction(game, title.Length > 0 ? title : T("Command not in this aircraft's current list"), axis, planes));
         }
         SetBindPeek(relation, actions);
+    }
+
+    // "game|id" -> the action's title in its game, for the relation's nodes of games other than DCS (only asked when
+    // the relation has such a node).
+    private async Task<Dictionary<string, string>> LoadBindPeekGameTitlesAsync(string relation, string showOutput)
+    {
+        Dictionary<string, string> titles = new(StringComparer.OrdinalIgnoreCase);
+        bool otherGames = showOutput.Split('\n').Select(l => RelationNodeLine.Match(l.TrimEnd())).Any(m => m.Success && !m.Groups["game"].Value.Trim().Equals("DCS", StringComparison.OrdinalIgnoreCase));
+        if (!otherGames)
+            return titles;
+        EngineCommandResult? result = await RunEngineAsync(["relations", "aircraft", relation], includeProfile: true, mutatesProfile: false,
+            busyLabel: N("Loading relation details..."), forceText: false, background: true);
+        if (result == null || result.ExitCode != 0)
+            return titles;
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
+            if (doc.RootElement.TryGetProperty("Nodes", out JsonElement nodes) && nodes.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement node in nodes.EnumerateArray())
+                {
+                    string title = ReadJsonString(node, "Title");
+                    if (title.Length > 0)
+                        titles[ReadJsonString(node, "Game") + "|" + ReadJsonString(node, "Id")] = title;
+                }
+            }
+        }
+        catch (JsonException)
+        {
+        }
+        return titles;
     }
 
     private void SetBindPeek(string relation, List<BindPeekAction> actions)

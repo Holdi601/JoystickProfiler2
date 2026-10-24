@@ -116,7 +116,17 @@ namespace JoyPro.Engine
                 }
                 FunctionHits(map, u, words, wanted, rows);
                 string[] content = words.Where(w => !map.QueryFiller.Contains(w)).ToArray();
-                WordHits(map, content.Length > 0 ? content : words, words, wanted, rows);
+                // A function named with all of the query's words: plain word matches must have all of them too.
+                int contentWords = (content.Length > 0 ? content : words).Count(w => !map.Stopwords.Contains(w));
+                bool named = u.Functions.Any(r => !r.Related && r.Covered >= contentWords);
+                WordHits(map, content.Length > 0 ? content : words, words, wanted, rows, named);
+                // A command id is no description: the functions guessed from its letters are not "understood as".
+                if (KeyHits(map, result.Query, wanted, rows) && DcsCommandNames.LooksLikeCommandId(result.Query))
+                {
+                    result.Functions.Clear();
+                    result.FunctionIds.Clear();
+                    result.Resolved.Clear();
+                }
             }
 
             Dictionary<string, List<string>> users = Users();
@@ -137,7 +147,7 @@ namespace JoyPro.Engine
                     capped.Add(row);
                 }
             }
-            List<Row> shown = Limit(capped, limit);
+            List<Row> shown = Limit(capped, limit, words.Where(w => !map.QueryFiller.Contains(w) && !map.Stopwords.Contains(w)).ToArray());
             result.More = shown.Count < ranked.Count;
             foreach (Row row in shown)
             {
@@ -482,7 +492,7 @@ namespace JoyPro.Engine
                         score -= 120;
                     // A function the query only describes ranks by how well it fits (its share of the best one).
                     if (r.Described && !exact)
-                        score -= 80 + (8 - Math.Min(8, r.Score)) * 15;
+                        score -= 80 + (8 - Math.Min(8, r.Score)) * 45;
                     string match = exact ? "exact" : r.Described && !own ? "described" : own ? "function" : "synonym";
                     // An axis only the function catalog reads as an axis function, its title without any of the
                     // function's words (a gunner seat's "Gun Up/Down" for pitch): listed after the function's own rows and the
@@ -589,7 +599,22 @@ namespace JoyPro.Engine
         // the readable id and the category. Every word must be found; from two words on one may be missing when the
         // found ones are the rarer ones ("gear up" still finds War Thunder's "Toggle Gear"). Rare words weigh more.
         // query: all the query's words (an exact title must be all of them, filler included).
+        // Words too common in titles to stand for a function on their own.
+        private static readonly HashSet<string> GenericWords = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "drive", "drives", "set", "system", "systems", "mode", "modes", "control", "controls", "switch", "button", "select", "selector", "toggle", "on", "off",
+            "power", "main", "master", "panel", "lever", "handle", "knob", "increase", "decrease", "inc", "dec", "up", "down", "left", "right", "fwd", "aft",
+            "forward", "back", "next", "previous", "prev", "cycle", "reset", "test", "auto", "manual", "unit", "display", "input", "axis", "key", "command"
+        };
+
         private static void WordHits(EngineFunctionMap.Map map, string[] words, string[] query, Func<EngineRelationSuggest.Command, bool> wanted, Dictionary<string, Row> rows)
+        {
+            WordHits(map, words, query, wanted, rows, false);
+        }
+
+        // allWords: every word must be found (the query named a function with all of its words: "jump drive" may not
+        // find "Radiators DRIVE OFF" by its second word alone).
+        private static void WordHits(EngineFunctionMap.Map map, string[] words, string[] query, Func<EngineRelationSuggest.Command, bool> wanted, Dictionary<string, Row> rows, bool allWords)
         {
             WordIndex index = Words(map);
             Dictionary<int, double[]> found = new Dictionary<int, double[]>();
@@ -600,14 +625,17 @@ namespace JoyPro.Engine
                 List<int> exact;
                 int df = index.Title.TryGetValue(term, out exact) ? exact.Count : 0;
                 weights[w] = 0.5 + Math.Log((index.Documents + 1.0) / (df + 1.0));
+                // A typo only for a long word that is no word JoyPro knows ("warp" never finds "Warm Air", "warn").
+                bool typosAllowed = term.Length >= 6 && df == 0 && !map.DocFrequency.ContainsKey(term) && !map.Lexicon.ContainsKey(term) &&
+                                    !(index.Id.ContainsKey(term));
                 foreach (string token in index.Vocabulary)
                 {
                     double value;
                     if (token == term)
                         value = 1.0;
-                    else if (term.Length >= 2 && token.StartsWith(term, StringComparison.Ordinal))
+                    else if (term.Length >= 3 && token.StartsWith(term, StringComparison.Ordinal))
                         value = 0.8;
-                    else if (term.Length >= 4 && token.Length >= 4 && token[0] == term[0] && EngineFunctionMap.WithinDistance(term, token, term.Length >= 7 ? 2 : 1))
+                    else if (typosAllowed && token.Length >= 6 && token[0] == term[0] && EngineFunctionMap.WithinDistance(term, token, term.Length >= 8 ? 2 : 1))
                         value = 0.6;
                     else
                         continue;
@@ -639,7 +667,13 @@ namespace JoyPro.Engine
                     }
                     sum += hit.Value[w] * weights[w];
                 }
-                if (missing > (words.Length >= 2 ? 1 : 0) || sum <= 0 || missedWeight > total * 0.45)
+                if (missing > (words.Length >= 2 && !allWords ? 1 : 0) || sum <= 0 || missedWeight > total * 0.45)
+                    continue;
+                // Only generic words found ("drive", "set", "mode", "system"): no lead to what the user means.
+                bool content = false;
+                for (int w = 0; w < words.Length && !content; w++)
+                    content = hit.Value[w] > 0 && !GenericWords.Contains(words[w]);
+                if (!content)
                     continue;
                 double score = 100.0 * sum / total - 20 * missing;
                 int titleWords = entry.TitleTokens.Length;
@@ -648,6 +682,56 @@ namespace JoyPro.Engine
                 bool exact = IsExact(entry, query);
                 Add(rows, entry, (exact ? ExactScore : WordScore) + score * 1.5, "Title match (" + ((int)Math.Round(score)).ToString(CultureInfo.InvariantCulture) + "%)", exact ? "exact" : "words", null);
             }
+        }
+
+        // A search for a command's key or id ("flaps_1", "pitch_minus", "Input.SpitfireLFMkIX.pitch_minus", a DCS command
+        // id): the commands it names, shown with their readable title (DcsCommandNames.KeyMatches; the key itself is never
+        // shown).
+        private static bool KeyHits(EngineFunctionMap.Map map, string query, Func<EngineRelationSuggest.Command, bool> wanted, Dictionary<string, Row> rows)
+        {
+            string q = (query ?? string.Empty).Trim();
+            bool found = false;
+            // Any other game: its own id ("KEY_AXIS_ELEVATOR_SET", "INPUT_RANGE_STEERING_PRIMARY", Star Citizen's "v_pitch"
+            // or "spaceship_movement|v_pitch") finds the action first; the id itself is never shown.
+            // Only a query written like an id (with "_" or "|"); a plain word that is also an id ("throttle") is a title search.
+            if (q.Length > 2 && q.IndexOf(' ') < 0 && (q.IndexOf('_') >= 0 || q.IndexOf('|') >= 0))
+            {
+                foreach (EngineFunctionMap.Entry entry in map.Entries)
+                {
+                    EngineRelationSuggest.Command command = entry.Command;
+                    if (command.Game == "DCS" || !wanted(command))
+                        continue;
+                    if (string.Equals(command.Id, q, StringComparison.OrdinalIgnoreCase) ||
+                        command.Id.EndsWith("|" + q, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Add(rows, entry, ExactScore + 500, "Game id", "exact", null);
+                        found = true;
+                    }
+                }
+            }
+            if (!DcsCommandNames.LooksLikeKeyQuery(q))
+                return found;
+            IDictionary<string, string> catalog = null;
+            foreach (EngineFunctionMap.Entry entry in map.Entries)
+            {
+                EngineRelationSuggest.Command command = entry.Command;
+                if (command.Game != "DCS" || !wanted(command))
+                    continue;
+                if (string.Equals(command.Id, q, StringComparison.OrdinalIgnoreCase))
+                {
+                    Add(rows, entry, ExactScore + 500, "Command id", "exact", null);
+                    found = true;
+                    continue;
+                }
+                if (catalog == null)
+                    catalog = InternalDataManagement.DcsEnglishNames();
+                if (DcsCommandNames.KeyMatches(q, command.Title, catalog))
+                {
+                    Add(rows, entry, ExactScore + 400, "Command key", "exact", null);
+                    found = true;
+                }
+            }
+            return found;
         }
 
         private static void Mark(Dictionary<int, double[]> found, List<int> entries, int word, int words, double value)
@@ -692,8 +776,9 @@ namespace JoyPro.Engine
 
         // The best rows up to the limit, but every game with a function hit keeps its best two and the best row of each
         // synonym it is found by (a search over all games must show every game's throttle and the helicopters'
-        // collective, not 80 DCS rows).
-        private static List<Row> Limit(List<Row> ranked, int limit)
+        // collective, not 80 DCS rows). A game found only by its titles keeps its best row when that title has every
+        // word of the query (MSFS 2024 "Toggle External View" for "view", not pushed out by other games' view rows).
+        private static List<Row> Limit(List<Row> ranked, int limit, string[] words)
         {
             if (limit <= 0 || ranked.Count <= limit)
                 return ranked;
@@ -703,6 +788,11 @@ namespace JoyPro.Engine
             List<Row> order = new List<Row>();
             order.AddRange(games.Select(g => g.First()));
             order.AddRange(games.Where(g => g.Count() > 1).Select(g => g.ElementAt(1)));
+            HashSet<string> found = new HashSet<string>(games.Select(g => g.Key), StringComparer.OrdinalIgnoreCase);
+            if (words.Length > 0)
+                order.AddRange(ranked.Where(r => r.Match == "words" && !found.Contains(r.First.Game))
+                    .Where(r => { string[] title = EngineFunctionMap.Tokenize(r.First.Title); return words.All(w => title.Contains(w)); })
+                    .GroupBy(r => r.First.Game).Select(g => g.First()));
             foreach (IGrouping<string, Row> game in games)
                 order.AddRange(game.Where(r => r.Match == "synonym").GroupBy(r => r.Term).Take(2).Select(s => s.First()));
             order.AddRange(ranked);

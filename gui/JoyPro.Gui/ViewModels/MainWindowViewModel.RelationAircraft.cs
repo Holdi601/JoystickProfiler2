@@ -34,7 +34,7 @@ public sealed partial class MainWindowViewModel
             Match = ReadJsonString(item, "Match"),
             Primary = ReadJsonBool(item, "Primary"),
             Display = ReadJsonString(item, "Display"),
-            FunctionName = builderFunctionGroups.FirstOrDefault(g => string.Equals(g.Id, function, StringComparison.OrdinalIgnoreCase)).Name ?? string.Empty,
+            FunctionName = builderFunctionGroups.FirstOrDefault(g => string.Equals(g.Id, function, StringComparison.OrdinalIgnoreCase)).Name is { Length: > 0 } groupName ? groupName : ReadJsonString(item, "FunctionName"),
             MeaningNote = ReadJsonString(item, "MeaningNote"),
             SameIdDifferent = ReadJsonInt(item, "SameIdDifferent"),
             NearCount = ReadJsonInt(item, "Near"),
@@ -218,7 +218,7 @@ public sealed partial class MainWindowViewModel
         if (RelationNodes.Count == 0)
             return;
         EngineCommandResult? result = await RunEngineAsync(["relations", "aircraft", relation], includeProfile: true, mutatesProfile: false,
-            busyLabel: "Reading the aircraft of '" + relation + "'...", forceText: false, background: true);
+            busyLabel: "Reading the aircraft of '" + relation + "'...", forceText: false, background: true, stillWanted: () => version == nodeAircraftVersion);
         if (version != nodeAircraftVersion || result == null || result.ExitCode != 0)
             return;
         ApplyNodeAircraft(result.StandardOutput);

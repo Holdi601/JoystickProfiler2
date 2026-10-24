@@ -13,7 +13,8 @@ namespace JoyPro.Engine
     // engine itself; any change rebuilds the cache. A cache that cannot be read or written is simply not used.
     internal static class EngineFunctionMapCache
     {
-        private const string Magic = "JoyProFunctionMap/1";
+        // 2: DCS titles stored as localization keys are resolved when the DB is read (DcsCommandNames).
+        private const string Magic = "JoyProFunctionMap/2";
 
         public static string CacheFile()
         {

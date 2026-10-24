@@ -64,8 +64,8 @@
                                             <Button Grid.Column="4" Content="{l:T 'Use detected'}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding UseDetectedFolderCommand}" IsVisible="{Binding HasLink}"
                                                     ToolTip.Tip="{l:T 'Forget your folder; JoyPro detects the game again'}" />
                                         </Grid>
-                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="11" TextWrapping="Wrap" Foreground="#16A34A" IsVisible="{Binding MarkerOk}" Margin="128,0,0,0" />
-                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="11" TextWrapping="Wrap" Foreground="#D97706" IsVisible="{Binding MarkerProblem}" Margin="128,0,0,0" />
+                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource JP.OkTextBrush}" IsVisible="{Binding MarkerOk}" Margin="128,0,0,0" />
+                                        <TextBlock Text="{Binding MarkerStatus}" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding MarkerProblem}" Margin="128,0,0,0" />
                                         <Grid ColumnDefinitions="120,*,90,60,110" ColumnSpacing="8">
                                             <TextBlock Text="{l:T 'Controls saved in'}" VerticalAlignment="Center" Opacity="0.8" />
                                             <TextBlock Grid.Column="1" Text="{Binding ConfigText}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="12" />
@@ -85,7 +85,7 @@
         </ScrollViewer>
 
         <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Margin="0,10,0,0">
-            <TextBlock Text="{Binding GameSetupStatus}" TextWrapping="Wrap" Foreground="#DC2626" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding GameSetupStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" VerticalAlignment="Center" />
             <Button Grid.Column="1" Content="{l:T 'Later'}" Click="LaterClicked" ToolTip.Tip="{l:T 'Change nothing; Settings &gt; Games &gt; Run setup again shows this again'}" />
             <Button Grid.Column="2" Content="{l:T 'Done'}" Classes="accent" Click="DoneClicked" IsEnabled="{Binding CanRun}" />
         </Grid>

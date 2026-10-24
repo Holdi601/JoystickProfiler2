@@ -53,10 +53,16 @@ namespace JoyPro.Engine
         public string Id { get; set; }
         public string Game { get; set; }
         public Dictionary<string, bool> Aircraft { get; set; }
+        // Per active aircraft the title and category the profile stored for this node (a localization key already
+        // turned into readable text): the GUI's fallback when the aircraft's current list no longer has the command.
+        public Dictionary<string, string> StoredTitles { get; set; }
+        public Dictionary<string, string> StoredCategories { get; set; }
 
         public EngineRelationItemDto()
         {
             Aircraft = new Dictionary<string, bool>();
+            StoredTitles = new Dictionary<string, string>();
+            StoredCategories = new Dictionary<string, string>();
         }
     }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -239,9 +239,8 @@ namespace JoyPro
                 throw new FileNotFoundException("profile does not exist.", filePath);
 
             bool json = LooksLikeJsonProfile(filePath);
-            Pr0file profile = json
-                ? LoadJsonProfile(filePath)
-                : LoadBinaryProfile(filePath);
+            // In the engine server: a copy of the profile it read before, while the file is unchanged (EngineProfileCache).
+            Pr0file profile = EngineProfileCache.Load(filePath, path => json ? LoadJsonProfile(path) : LoadBinaryProfile(path));
 
             ApplyProfile(profile, EnableLegacyLoadCorrections, AutoAddDbItemsOnLoad);
             MainStructure.msave.lastOpenedLocation = filePath;
@@ -298,6 +297,7 @@ namespace JoyPro
 
             // Atomic: a temp file next to the profile, then swapped in. A crash or a full disk leaves the old profile.
             JoyPro.History.ProfileHistory.WriteFileAtomic(fullPath, content);
+            EngineProfileCache.Saved(fullPath, content, profile);
             JoyPro.Logging.JoyProLog.Info("Profile", "Saved profile " + fullPath + " (" + content.Length + " bytes): " +
                                                      (AllRelations == null ? 0 : AllRelations.Count) + " relation(s), " + (AllBinds == null ? 0 : AllBinds.Count) + " bind(s)");
             if (recordHistory)
@@ -1654,8 +1654,12 @@ namespace JoyPro
 
         internal static bool HaveOppositeDirections(string left, string right)
         {
-            HashSet<string> a = DirectionWords(left);
-            HashSet<string> b = DirectionWords(right);
+            return HaveOppositeDirections(DirectionWords(left), DirectionWords(right));
+        }
+
+        // The same on direction words read once (DirectionWords).
+        internal static bool HaveOppositeDirections(HashSet<string> a, HashSet<string> b)
+        {
             foreach (string[] pair in OppositeDirectionWords)
             {
                 bool aFirst = a.Contains(pair[0]) && !a.Contains(pair[1]);
@@ -1668,7 +1672,7 @@ namespace JoyPro
             return false;
         }
 
-        private static HashSet<string> DirectionWords(string value)
+        internal static HashSet<string> DirectionWords(string value)
         {
             HashSet<string> words = new HashSet<string>(StringComparer.Ordinal);
             string raw = value ?? string.Empty;
@@ -2640,7 +2644,43 @@ namespace JoyPro
 
         // The command lists of DCS, IL-2 and Star Citizen, each read where GameDataPaths finds it (the game-data folder
         // first, else the program folder).
+        private static DbCorrectionIndex keptCorrectionIndex;
+        private static readonly object KeptCorrectionIndexSync = new object();
+
+        // The engine server (EngineProfileCache.Enabled) reads the DCS, IL-2 and Star Citizen lists for the load
+        // corrections once (1-2 s) and hands every command a copy of its own; it ends when the lists change on disk
+        // (EngineServer.DataStamp). A normal engine run reads them as before.
         private static DbCorrectionIndex BuildDbCorrectionIndex()
+        {
+            if (!EngineProfileCache.Enabled)
+                return BuildDbCorrectionIndexFromFiles();
+            lock (KeptCorrectionIndexSync)
+            {
+                if (keptCorrectionIndex == null)
+                    keptCorrectionIndex = BuildDbCorrectionIndexFromFiles();
+                return ObjectGraphCloner.Clone(keptCorrectionIndex);
+            }
+        }
+
+        // The engine server's warm-up: the correction lists read before the first command needs them.
+        internal static void WarmCorrectionIndex()
+        {
+            if (!EngineProfileCache.Enabled)
+                return;
+            lock (KeptCorrectionIndexSync)
+            {
+                if (keptCorrectionIndex == null)
+                    keptCorrectionIndex = BuildDbCorrectionIndexFromFiles();
+            }
+        }
+
+        // The engine server between two commands: the next command builds its lookup index again (from the kept lists).
+        internal static void ForgetPlaneLookupIndex()
+        {
+            planeLookupIndex = null;
+        }
+
+        private static DbCorrectionIndex BuildDbCorrectionIndexFromFiles()
         {
             DbCorrectionIndex index = new DbCorrectionIndex();
 
@@ -2689,7 +2729,137 @@ namespace JoyPro
             }
         }
 
+        private static readonly object DcsEnglishNamesSync = new object();
+        private static IDictionary<string, string> dcsEnglishNames;
+
+        // DCS's English command names of the installed DCS (DcsCommandNames; empty without an install).
+        internal static IDictionary<string, string> DcsEnglishNames()
+        {
+            lock (DcsEnglishNamesSync)
+            {
+                if (dcsEnglishNames != null)
+                    return dcsEnglishNames;
+                try
+                {
+                    string install = GamePathDiscovery.DiscoverDcsInstallPaths(new List<string>()).FirstOrDefault(Directory.Exists);
+                    dcsEnglishNames = DcsCommandNames.EnglishCatalog(install);
+                }
+                catch
+                {
+                    dcsEnglishNames = new Dictionary<string, string>(StringComparer.Ordinal);
+                }
+                return dcsEnglishNames;
+            }
+        }
+
+        // The commands of one DCS DB file with readable titles and categories: a title stored as a localization key or
+        // the raw id (a list built before the refresh translated keys) takes DCS's English text, else the same command's
+        // title in a sibling file (_easy, CW), else a readable form of the key (DcsCommandNames.Resolve).
         internal static List<DCSInput> ParseDcsHtmlInputs(string filePath, string plane)
+        {
+            List<DCSInput> result = ParseDcsHtmlInputsRaw(filePath, plane);
+            if (!result.Any(i => DcsCommandNames.IsRawTitle(i.Title, i.ID) || DcsCommandNames.HasLocalizationKey(i.Cat)))
+                return result;
+
+            IDictionary<string, string> catalog = DcsEnglishNames();
+            Dictionary<string, string> siblings = null;
+            Func<string, string> sibling = id =>
+            {
+                if (siblings == null)
+                {
+                    siblings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (string file in DcsSiblingDbFiles(filePath))
+                        foreach (DCSInput other in ParseDcsHtmlInputsRaw(file, plane))
+                            if (!siblings.ContainsKey(other.ID) && !DcsCommandNames.IsRawTitle(other.Title, other.ID))
+                                siblings[other.ID] = other.Title;
+                }
+                string title;
+                return siblings.TryGetValue(id, out title) ? title : null;
+            };
+            foreach (DCSInput input in result)
+            {
+                if (DcsCommandNames.IsRawTitle(input.Title, input.ID))
+                {
+                    string id = input.ID;
+                    string resolved = DcsCommandNames.Resolve(input.Title, id, catalog, null, () => sibling(id));
+                    if (!string.IsNullOrWhiteSpace(resolved))
+                        input.Title = resolved;
+                }
+                input.Cat = DcsCommandNames.ResolveCategory(input.Cat, catalog);
+            }
+            return result;
+        }
+
+        // The title to show for a DCS command of one aircraft: the DB's (readable) title, else the title the profile stored
+        // (a node whose command is no longer in the aircraft's list), else a readable form of a key. Never the raw id:
+        // with nothing readable at all it says the command is not in the aircraft's list.
+        internal static string DcsDisplayTitle(string id, string plane, string storedTitle)
+        {
+            string key = (id ?? string.Empty).Trim();
+            DCSInput fromDb = null;
+            try
+            {
+                if (planeLookupIndex == null)
+                    planeLookupIndex = BuildDbCorrectionIndex();
+                List<DCSInput> bucket;
+                if (key.Length > 0 && planeLookupIndex.DcsById.TryGetValue(key, out bucket))
+                    fromDb = bucket.FirstOrDefault(i => string.Equals((i.Plane ?? string.Empty).Trim(), (plane ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                fromDb = null;
+            }
+            string resolved = DcsCommandNames.Resolve(fromDb == null ? null : fromDb.Title, key, DcsEnglishNames(), storedTitle);
+            if (!string.IsNullOrWhiteSpace(resolved))
+                return resolved;
+            return "Command not in this aircraft's current list";
+        }
+
+        // The category to show for a DCS command (see DcsDisplayTitle).
+        internal static string DcsDisplayCategory(string id, string plane, string storedCategory)
+        {
+            string key = (id ?? string.Empty).Trim();
+            try
+            {
+                if (planeLookupIndex == null)
+                    planeLookupIndex = BuildDbCorrectionIndex();
+                List<DCSInput> bucket;
+                if (key.Length > 0 && planeLookupIndex.DcsById.TryGetValue(key, out bucket))
+                {
+                    DCSInput fromDb = bucket.FirstOrDefault(i => string.Equals((i.Plane ?? string.Empty).Trim(), (plane ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase));
+                    if (fromDb != null && !string.IsNullOrWhiteSpace(fromDb.Cat))
+                        return fromDb.Cat;
+                }
+            }
+            catch
+            {
+            }
+            return DcsCommandNames.ResolveCategory(storedCategory, DcsEnglishNames());
+        }
+
+        // The aircraft's other DB files: "<name>_easy", "<name>CW", "<name>CW_easy" (same base name, another variant).
+        internal static List<string> DcsSiblingDbFiles(string filePath)
+        {
+            try
+            {
+                string folder = Path.GetDirectoryName(filePath);
+                if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
+                    return new List<string>();
+                string name = Path.GetFileNameWithoutExtension(filePath);
+                string stem = name.EndsWith("_easy", StringComparison.OrdinalIgnoreCase) ? name.Substring(0, name.Length - 5) : name;
+                return Directory.GetFiles(folder, "*.html")
+                    .Where(f => !string.Equals(f, filePath, StringComparison.OrdinalIgnoreCase) &&
+                                Path.GetFileNameWithoutExtension(f).StartsWith(stem, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(f => f.Length)
+                    .ToList();
+            }
+            catch
+            {
+                return new List<string>();
+            }
+        }
+
+        private static List<DCSInput> ParseDcsHtmlInputsRaw(string filePath, string plane)
         {
             List<DCSInput> result = new List<DCSInput>();
             if (!File.Exists(filePath))

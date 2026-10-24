@@ -101,6 +101,8 @@ namespace JoyPro.Engine
         public string FontName { get; set; }
         public int FontSize { get; set; }
         public string TextColor { get; set; }
+        // Who made the sheet (a 2D layout variant), shown with the picture.
+        public string Credit { get; set; }
         public int MarkerCount { get; set; }
         public List<LayoutTemplateMarkerDto> Markers { get; set; }
         public int TableCount { get; set; }
@@ -120,6 +122,7 @@ namespace JoyPro.Engine
             FontName = string.Empty;
             FontSize = 0;
             TextColor = string.Empty;
+            Credit = string.Empty;
             MarkerCount = 0;
             Markers = new List<LayoutTemplateMarkerDto>();
             TableCount = 0;
@@ -187,6 +190,7 @@ namespace JoyPro.Engine
                 result.Joystick = (layout.Joystick ?? string.Empty).Trim();
                 result.FontName = (layout.Font ?? string.Empty).Trim();
                 result.FontSize = layout.Size;
+                result.Credit = (layout.Credit ?? string.Empty).Trim();
                 Color text = layout.ToDrawingColor();
                 result.TextColor = "#" + text.A.ToString("X2", CultureInfo.InvariantCulture) + text.R.ToString("X2", CultureInfo.InvariantCulture) +
                                    text.G.ToString("X2", CultureInfo.InvariantCulture) + text.B.ToString("X2", CultureInfo.InvariantCulture);

@@ -418,6 +418,13 @@ namespace JoyPro.Engine
             List<string> scope = op.Relations.Select(Find).Where(n => n != null).ToList();
             if (op.Relation.Length > 0 && Find(op.Relation) != null)
                 scope.Add(Find(op.Relation));
+            scope = scope.Distinct(StringComparer.Ordinal).ToList();
+            // A named relation that has every target already: nothing to fill, and it says so.
+            if (scope.Count > 0 && targets.All(t => scope.All(r => HasTarget(InternalDataManagement.AllRelations[r], t))))
+            {
+                step.Text = "Fill " + PlaneList(targets) + " into " + string.Join(", ", scope);
+                return string.Join(", ", scope.Select(r => "\"" + r + "\"")) + " has " + string.Join(", ", targets.Select(t => EngineRelationFill.GameOf(t) == "DCS" ? EngineRelationFill.PlaneOf(t) : EngineGameWords.Label(EngineRelationFill.GameOf(t))).Distinct()) + " already.";
+            }
             EngineFillResult fill = EngineRelationFill.Run(targets, scope, FillWithModel, unresolved);
             step.Fill = fill;
             step.Text = "Fill " + PlaneList(targets) + " into " + (scope.Count > 0 ? string.Join(", ", scope) : "every relation where it fits");
@@ -426,13 +433,24 @@ namespace JoyPro.Engine
             if (fill.Note.Length > 0)
                 step.Warnings.Add(fill.Note);
             step.Preview = true;
-            return fill.Relations.Count == 0 ? "No relation gets anything for " + PlaneList(targets) + "." : string.Empty;
+            string hint = fill.Warnings.FirstOrDefault(w => w.Contains(" has no "));
+            return fill.Relations.Count == 0 ? "No relation gets anything for " + PlaneList(targets) + "." + (hint != null ? " " + hint : string.Empty) : string.Empty;
+        }
+
+        // "DCS|F-16C_50" or "StarCitizen|StarCitizen" switched on in the relation.
+        private static bool HasTarget(Relation relation, string target)
+        {
+            string game = EngineRelationFill.GameOf(target), plane = EngineRelationFill.PlaneOf(target);
+            return (relation.NODES ?? new List<RelationItem>()).Any(n => n != null && string.Equals(EngineRelationSuggest.GameKey(n.Game ?? string.Empty), game, StringComparison.OrdinalIgnoreCase) &&
+                (game == "DCS" ? n.AIRCRAFT != null && n.AIRCRAFT.Any(p => p.Value && string.Equals(p.Key, plane, StringComparison.OrdinalIgnoreCase))
+                               : n.AIRCRAFT == null || n.AIRCRAFT.Count == 0 || n.AIRCRAFT.Values.Any(a => a)));
         }
 
         // A long aircraft list in a step's text: the first ones and how many more.
         private static string PlaneList(List<string> targets)
         {
-            List<string> planes = targets.Select(EngineRelationFill.PlaneOf).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            List<string> planes = targets.Select(t => EngineRelationFill.GameOf(t) == "DCS" ? EngineRelationFill.PlaneOf(t) : EngineGameWords.Label(EngineRelationFill.GameOf(t)))
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             return planes.Count <= 12 ? string.Join(", ", planes) : string.Join(", ", planes.Take(8)) + " and " + (planes.Count - 8).ToString(CultureInfo.InvariantCulture) + " more";
         }
 
@@ -585,6 +603,12 @@ namespace JoyPro.Engine
                    ", saturation " + bind.SaturationX.ToString("0.##", CultureInfo.InvariantCulture) + ", " + (bind.Inverted == true ? "inverted" : "not inverted");
         }
 
+        // For the phrase check (relations phrase-check): what a create step would find for a description.
+        internal static string ResolveDescription(string describe, string kind, out List<EngineNlGroupNode> nodes, out bool isAxis, out string function)
+        {
+            return Resolve(describe, kind, out nodes, out isAxis, out function);
+        }
+
         // The description through Group by description's offline rules: the catalog's nodes of one kind.
         private static string Resolve(string describe, string kind, out List<EngineNlGroupNode> nodes, out bool isAxis, out string function)
         {
@@ -597,7 +621,13 @@ namespace JoyPro.Engine
             if (kind == "axis" || kind == "button")
                 proposals = proposals.Where(p => p.IsAxis == (kind == "axis")).ToList();
             if (proposals.Count == 0)
+            {
+                // The function catalog has nothing: JoyPro's function knowledge of the named games (as the assistant
+                // finds it), e.g. a landing light toggle where the catalog knows only on and off.
+                if (FromFunctionMap(describe, kind, out nodes, out isAxis, out function))
+                    return string.Empty;
                 return "Nothing in the catalog fits \"" + describe + "\"" + (found.Errors.Count > 0 ? " (" + string.Join(" ", found.Errors) + ")" : string.Empty) + ".";
+            }
             isAxis = proposals[0].IsAxis;
             bool axis = isAxis;
             function = proposals[0].Name;
@@ -605,10 +635,42 @@ namespace JoyPro.Engine
             return nodes.Count == 0 ? "Nothing in the catalog fits \"" + describe + "\"." : string.Empty;
         }
 
+        private static bool FromFunctionMap(string describe, string kind, out List<EngineNlGroupNode> nodes, out bool isAxis, out string function)
+        {
+            nodes = new List<EngineNlGroupNode>();
+            isAxis = kind == "axis";
+            function = string.Empty;
+            string rest = describe;
+            List<string> games = EngineGameWords.EveryGame(describe) ? new List<string>() : EngineGameWords.Extract(describe, out rest);
+            if (games.Count == 0)
+                return false;
+            string query = Regex.Replace(" " + rest + " ", @"\b(?:all|every|each|the|of|in|on|for|from|my|games?|and|or)\b", " ", RegexOptions.IgnoreCase).Trim();
+            if (query.Length == 0)
+                return false;
+            string understood;
+            List<EngineRelationSearchHit> hits = EngineRelationAssistantBrain.Resolve(query, kind == "axis" ? true : kind == "button" ? (bool?)false : null, games, new List<string>(), out understood);
+            hits = hits.Where(h => games.Contains(h.Game, StringComparer.OrdinalIgnoreCase)).ToList();
+            if (hits.Count == 0)
+                return false;
+            bool axis = kind.Length > 0 ? kind == "axis" : hits.Count(h => h.IsAxis) * 2 > hits.Count;
+            foreach (EngineRelationSearchHit hit in hits.Where(h => h.IsAxis == axis).Take(40))
+            {
+                List<string> planes = hit.Game == "DCS" ? hit.Planes.ToList() : new List<string> { hit.Game };
+                nodes.Add(new EngineNlGroupNode { Game = hit.Game, Id = hit.Id, Planes = planes, Spec = hit.Game + ":" + hit.Id + ":" + string.Join("|", planes) });
+            }
+            isAxis = axis;
+            function = understood.Length > 0 ? understood : query;
+            return nodes.Count > 0;
+        }
+
         private static string NodeText(EngineNlGroupNode node)
         {
-            string game = EngineRelationAssistantGameNames.Label(EngineRelationSuggest.GameKey(node.Game ?? string.Empty));
-            return game + ": " + node.Id + (node.Planes.Count > 0 && game == "DCS" ? " (" + string.Join(", ", node.Planes.Take(6)) + (node.Planes.Count > 6 ? " ..." : string.Empty) + ")" : string.Empty);
+            string key = EngineRelationSuggest.GameKey(node.Game ?? string.Empty);
+            string game = EngineRelationAssistantGameNames.Label(key);
+            // The action by its readable title, never its id.
+            EngineRelationSuggest.Command command = EngineIdMeanings.Find(key, node.Id, node.Planes.Count > 0 ? node.Planes[0] : key);
+            string title = EngineActionInfo.Readable(key, node.Id, command != null ? command.Title : string.Empty);
+            return game + ": " + title + (node.Planes.Count > 0 && key == "DCS" ? " (" + string.Join(", ", node.Planes.Take(6)) + (node.Planes.Count > 6 ? " ..." : string.Empty) + ")" : string.Empty);
         }
 
         private static string GameKeyOf(string game)
@@ -705,6 +767,9 @@ namespace JoyPro.Engine
                 return names.Where(n => prefix ? !n.StartsWith(part, StringComparison.OrdinalIgnoreCase) : !n.EndsWith(part, StringComparison.OrdinalIgnoreCase))
                     .Select(n => new Op { Kind = "rename", Relation = n, To = prefix ? part + n : n + part }).ToList();
             }
+            List<Op> games = GameRules(text, scope, out note);
+            if (games != null)
+                return games;
             if (scope.Length == 0)
             {
                 List<Op> fillCheck = FillAndCheck(text, out note);
@@ -732,7 +797,92 @@ namespace JoyPro.Engine
             return null;
         }
 
-        private const string FillVerbs = @"\b(?:fill|filled|filling|complete|completed|part of|add|added|adding|expand|expanded|expanding|extend|extended|extending|update|updated|updating|include|included|including|bring|put|cover|covered)\b";
+        // Requests about games and functions, without the model:
+        //   "expand Roll with X-Plane 12" / (Edit with AI) "add Star Citizen", "also MSFS"   -> fill of those games
+        //   "make a relation for landing lights in X-Plane 12"                             -> create
+        //   "put the landing gear of every game into Gear" / "add the flaps of MSFS to Flaps" -> add (create when missing)
+        //   (Edit with AI) "add the flaps of X-Plane 12"                                    -> add to the open relation
+        //   "remove War Thunder from Throttle"                                               -> remove the game
+        internal static List<Op> GameRules(string text, string scope, out string note)
+        {
+            note = string.Empty;
+            Match m = Regex.Match(text, @"^(?:please\s+)?(?:expand|extend|fill|complete|grow|update)\s+(?:the\s+)?(?:relation\s+)?[""']?(?<r>.+?)[""']?\s+(?:with|by|for|to|on|into|in)\s+(?<g>.+)$", RegexOptions.IgnoreCase);
+            if (m.Success && Find(m.Groups["r"].Value) != null && (scope.Length == 0 || Find(m.Groups["r"].Value) == scope))
+            {
+                List<string> games = EngineGameWords.Resolve(m.Groups["g"].Value);
+                if (games.Count > 0)
+                {
+                    note = "offline rule: fill " + string.Join(", ", games.Select(EngineGameWords.Label).Distinct()) + " into \"" + Find(m.Groups["r"].Value) + "\"";
+                    return new List<Op> { new Op { Kind = "fill", Planes = games.Select(EngineGameWords.Label).Distinct().ToList(), Relations = new List<string> { Find(m.Groups["r"].Value) } } };
+                }
+            }
+            if (scope.Length > 0)
+            {
+                // Edit with AI: "add Star Citizen", "also MSFS", "X-Plane 12 too" = the open relation's function there.
+                m = Regex.Match(text, @"^(?:please\s+)?(?:(?:also\s+)?add|also|include|and|expand\s+(?:it\s+)?(?:with|to))?\s*(?<g>.+?)(?:\s+too|\s+as well)?$", RegexOptions.IgnoreCase);
+                List<string> only = m.Success ? EngineGameWords.Resolve(m.Groups["g"].Value) : new List<string>();
+                if (only.Count > 0)
+                {
+                    note = "offline rule: fill " + string.Join(", ", only.Select(EngineGameWords.Label).Distinct()) + " into \"" + scope + "\"";
+                    return new List<Op> { new Op { Kind = "fill", Planes = only.Select(EngineGameWords.Label).Distinct().ToList(), Relations = new List<string> { scope } } };
+                }
+            }
+            m = Regex.Match(text, @"^(?:please\s+)?(?:remove|delete|drop|take\s+out)\s+(?<g>.+?)\s+from\s+(?:the\s+relation\s+)?[""']?(?<r>.+?)[""']?$", RegexOptions.IgnoreCase);
+            if (m.Success && Find(m.Groups["r"].Value) != null && EngineGameWords.Resolve(m.Groups["g"].Value).Count > 0)
+            {
+                note = "offline rule: remove a game";
+                return new List<Op> { new Op { Kind = "remove", Relation = Find(m.Groups["r"].Value), Games = EngineGameWords.Resolve(m.Groups["g"].Value) } };
+            }
+            if (scope.Length == 0)
+            {
+                m = Regex.Match(text, @"^(?:please\s+)?(?:create|make|build|add|new)\s+(?:me\s+)?(?:a\s+|an\s+)?(?:new\s+)?relation\s+(?:(?:called|named)\s+[""']?(?<n>.+?)[""']?\s+)?(?:for|with|of|from|that\s+has|containing)\s+(?<d>.+)$", RegexOptions.IgnoreCase);
+                if (m.Success)
+                {
+                    string describe = m.Groups["d"].Value.Trim();
+                    string name = m.Groups["n"].Success && m.Groups["n"].Value.Trim().Length > 0 ? Clean(m.Groups["n"].Value) : EngineRelationAssistant.NameFor(describe);
+                    note = "offline rule: create \"" + name + "\"";
+                    return new List<Op> { Find(name) != null ? new Op { Kind = "add", Relation = Find(name), Describe = describe } : new Op { Kind = "create", Name = name, Describe = describe } };
+                }
+            }
+            m = Regex.Match(text, @"^(?:please\s+)?(?:put|add|move|group|bring|include)\s+(?<d>.+?)\s+(?:in|into|to)\s+(?:the\s+relation\s+|a\s+(?:new\s+)?relation\s+(?:called|named)\s+)?[""']?(?<r>[^""']+?)[""']?(?:\s+relation)?$", RegexOptions.IgnoreCase);
+            if (m.Success && !(EngineGameWords.Resolve(m.Groups["r"].Value).Count > 0 && Find(m.Groups["r"].Value) == null))
+            {
+                string target = Regex.IsMatch(m.Groups["r"].Value, @"^(?:it|this|this relation|here)$", RegexOptions.IgnoreCase) ? scope : Clean(m.Groups["r"].Value);
+                string describe = m.Groups["d"].Value.Trim();
+                // "... into my relations" / "into the profile" is a fill, not a relation's name.
+                bool notAName = Find(target) == null && Regex.IsMatch(target, @"\brelations\b|\bprofile\b|^(?:my|all|every|each|the)\b", RegexOptions.IgnoreCase);
+                if (target.Length > 0 && !notAName && (scope.Length == 0 || Find(target) == scope))
+                {
+                    note = "offline rule: " + (Find(target) != null ? "add to \"" + Find(target) + "\"" : "create \"" + target + "\"");
+                    return new List<Op> { Find(target) != null ? new Op { Kind = "add", Relation = Find(target), Describe = describe } : new Op { Kind = "create", Name = target, Describe = describe } };
+                }
+            }
+            if (scope.Length > 0)
+            {
+                // Edit with AI: "add the flaps of X-Plane 12" (no target: the open relation).
+                m = Regex.Match(text, @"^(?:please\s+)?(?:also\s+)?(?:add|put|include|bring)\s+(?<d>.+)$", RegexOptions.IgnoreCase);
+                if (m.Success)
+                {
+                    note = "offline rule: add to \"" + scope + "\"";
+                    return new List<Op> { new Op { Kind = "add", Relation = scope, Describe = m.Groups["d"].Value.Trim() } };
+                }
+            }
+            else
+            {
+                // "add the flaps of X-Plane 12", "landing lights for MSFS": a new relation named after what it holds.
+                m = Regex.Match(text, @"^(?:please\s+)?(?:add|put|include|bring|group)\s+(?<d>.+)$", RegexOptions.IgnoreCase);
+                if (m.Success && EngineGameWords.Games(m.Groups["d"].Value).Count > 0 && !Regex.IsMatch(text, @"\brelations?\b|\bmodules?\b", RegexOptions.IgnoreCase))
+                {
+                    string describe = m.Groups["d"].Value.Trim();
+                    string name = EngineRelationAssistant.NameFor(describe);
+                    note = "offline rule: create \"" + name + "\"";
+                    return new List<Op> { Find(name) != null ? new Op { Kind = "add", Relation = Find(name), Describe = describe } : new Op { Kind = "create", Name = name, Describe = describe } };
+                }
+            }
+            return null;
+        }
+
+        private const string FillVerbs =@"\b(?:fill|filled|filling|complete|completed|part of|add|added|adding|expand|expanded|expanding|extend|extended|extending|update|updated|updating|include|included|including|bring|put|cover|covered)\b";
         private const string FillNouns = @"\b(?:relations?|modules?|aircraft|airplanes?|planes?|helicopters?|jets?|profile)\b";
         private const string CheckWords = @"\b(?:check|checks|checking|verify|validate|make sure|ensure|review|go through|inspect|audit)\b|\bful+fil+s?\b|\bwork(?:s|ing)?\s+(?:properly|correctly|right)\b";
 
@@ -804,10 +954,17 @@ namespace JoyPro.Engine
                 ask.Errors.Add("Say what to do, e.g. \"append _sc to every relation that contains Star Citizen\".");
                 return ask;
             }
-            string note;
-            List<Op> ops = Offline(ask.Request, ask.Scope, out note);
             string mode = string.IsNullOrWhiteSpace(llmMode) ? "auto" : llmMode.Trim().ToLowerInvariant();
             ask.Llm.Mode = mode;
+            // A question ("what does Landing gear down do in X-Plane 12") gets JoyPro's answer and no steps.
+            if (EngineAiExplain.IsQuestion(ask.Request))
+            {
+                ask.Method = "knowledge JoyPro has of every game (no change)";
+                ask.Reply = EngineAiExplain.Answer(ask.Request);
+                return ask;
+            }
+            string note;
+            List<Op> ops = Offline(ask.Request, ask.Scope, out note);
             FillWithModel = mode != "off";
             EngineRelationFill.CheckAll = mode == "on";
             if (ops != null && (mode == "off" || mode == "auto" && ExactRule(ops)))
@@ -850,7 +1007,7 @@ namespace JoyPro.Engine
             return ask;
         }
 
-        private const string SystemPrompt =
+        internal const string SystemPrompt =
             "You turn a JoyPro user's request into a PLAN of relation operations. A relation groups the same function of many games and aircraft " +
             "(e.g. \"Pitch\" with the pitch axis of every DCS aircraft and of Star Citizen); it can have a bind (a device input) and groups (folders).\n" +
             "Answer with JSON only: {\"ops\":[...],\"reply\":\"one short sentence\"}. Allowed ops:\n" +
@@ -862,15 +1019,17 @@ namespace JoyPro.Engine
             "{\"op\":\"aircraft\",\"relation\":\"<exact name>\",\"planes\":[\"<aircraft>\"],\"on\":true|false}\n" +
             "{\"op\":\"groups\",\"relation\":\"<exact name>\",\"add\":[\"<group>\"],\"remove\":[\"<group>\"]}\n" +
             "{\"op\":\"tuning\",\"relation\":\"<exact name>\",\"curvature\":-1..1,\"deadzone\":0..0.5,\"saturation\":0.1..1,\"invert\":true|false}\n" +
-            "{\"op\":\"fill\",\"planes\":[\"<aircraft or game names as the user wrote them>\"]} fills those aircraft into every relation where they fit (add \"relations\":[...] to limit it); " +
+            "{\"op\":\"fill\",\"planes\":[\"<aircraft or game names as the user wrote them>\"]} fills those aircraft or games into every relation where they fit (add \"relations\":[...] to limit it; \"expand Roll with X-Plane 12\" = {\"op\":\"fill\",\"planes\":[\"X-Plane 12\"],\"relations\":[\"Roll\"]}); " +
             "\"planes\":[\"all DCS aircraft\"] fills every DCS aircraft\n" +
             "{\"op\":\"check\"} checks every relation on all its ticked aircraft and unticks aircraft where the action does something else (add \"relations\":[...] to limit it)\n" +
             "Rules: use only relation names from the PROFILE list, exactly as written; never invent action ids (\"describe\" says it in words, JoyPro finds the actions); " +
             "one op per change; only what the user asked. When the user names aircraft or modules to add, expand, extend, update or bring into the relations, ALWAYS answer with " +
             "a fill op of exactly those names (the profile list does not show which aircraft are missing: JoyPro finds that). When the user asks to check, verify or review " +
-            "the relations, ALWAYS add a check op. An empty ops list only when nothing of the request can be done with these ops.";
+            "the relations, ALWAYS add a check op. An empty ops list only when nothing of the request can be done with these ops. " +
+            "Every game of the GAMES line works the same way (MSFS, X-Plane, IL-2, War Thunder, Falcon BMS, Star Citizen, Elite Dangerous, X4, Arma, ...): keep the game's name in \"describe\" " +
+            "(\"landing lights in X-Plane 12\", \"boost in Star Citizen\"); Star Citizen, Elite Dangerous and X4 fly ships (boost, strafe, landing gear, jump drive / FSD / quantum).";
 
-        private static string Summary(EngineRelationPlanAsk ask, int budgetTokens)
+        internal static string Summary(EngineRelationPlanAsk ask, int budgetTokens)
         {
             StringBuilder sb = new StringBuilder();
             List<string> games = KnownGames().Select(g => EngineRelationAssistantGameNames.Label(g)).Distinct().OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList();
@@ -911,6 +1070,8 @@ namespace JoyPro.Engine
             }
             if (ask.Scope.Length > 0)
                 sb.AppendLine("The user has \"" + ask.Scope + "\" open: change ONLY this relation (no create, no delete).");
+            // Every game JoyPro knows (not only the profile's), what the request names and those games' actions.
+            sb.AppendLine(EngineAiExplain.ModelGameContext(ask.Request));
             return sb.ToString();
         }
 

@@ -247,7 +247,9 @@ public sealed class RelationBuilderTests : IAsyncLifetime
 
         BuilderSuggestionItem elevator = games.Items.Single(i => i.Id == "KEY_AXIS_ELEVATOR_SET");
         Assert.Equal("Elevator Axis", elevator.DisplayTitle);
-        Assert.Equal("Pitch axis · KEY_AXIS_ELEVATOR_SET", elevator.FunctionAndId);
+        Assert.Equal("Pitch axis", elevator.FunctionAndId);
+        // The game's id never shows under the title, only in its tooltip.
+        Assert.Contains("KEY_AXIS_ELEVATOR_SET", elevator.IdTip);
         Assert.Equal("Recommended for planes", elevator.RecommendedLabel);
         Assert.Equal("Control the elevator axis.", elevator.Explanation);
         BuilderSuggestionItem cyclic = games.Items.Single(i => i.Id == "KEY_AXIS_CYCLIC_LONGITUDINAL_SET");
@@ -629,6 +631,51 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         Assert.False(vm.IsAnyRelationToolOpen);
     }
 
+    // A name that says nothing ("Relation 024") is not searched for ("Nothing found for 'Relation 024'"): the box stays
+    // empty; a real name is searched.
+    [Theory]
+    [InlineData("Relation 024", true)]
+    [InlineData("Relation", true)]
+    [InlineData("New relation", true)]
+    [InlineData("New relation (2)", true)]
+    [InlineData("Relation 024 (copy)", true)]
+    [InlineData("Pitch", false)]
+    [InlineData("Relation lights", false)]
+    [InlineData("Flaps 2", false)]
+    public void PlaceholderRelationNames_AreRecognized(string name, bool placeholder) =>
+        Assert.Equal(placeholder, MainWindowViewModel.IsPlaceholderRelationName(name));
+
+    [Fact]
+    public async Task OpeningAPlaceholderNamedRelation_LeavesTheSearchEmpty()
+    {
+        LocalAiFakeEngine fake = new() { RelationCount = 30 };
+        MainWindowViewModel vm = await CreateVmAsync(fake, "relation-placeholder.pr0file");
+        vm.BuilderSearchText = "throttle";
+        vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Relation 024");
+        await WaitForAsync(() => vm.BuilderRelationName == "Relation 024" && !vm.IsBusy);
+        Assert.Equal(string.Empty, vm.BuilderSearchText);
+    }
+
+    // An answer the app cannot read says so; it never claims that JoyPro does not know the relation's function.
+    [Fact]
+    public async Task UnreadableSuggestions_SaySo_InsteadOfAnUnknownFunction()
+    {
+        BuilderFakeEngine fake = new() { BrokenSuggestions = true };
+        MainWindowViewModel vm = await CreateVmAsync(fake);
+        await OpenAsync(vm, "Flare");
+        Assert.Empty(vm.BuilderSuggestions);
+        Assert.True(vm.ShowBuilderSuggestEmpty);
+        Assert.Equal("Could not read the suggestions.", vm.BuilderSuggestStatus);
+        Assert.StartsWith("JoyPro could not read the suggestions", vm.BuilderSuggestEmptyText);
+        Assert.DoesNotContain("does not know", vm.BuilderSuggestEmptyText);
+
+        // The next readable answer clears it.
+        fake.BrokenSuggestions = false;
+        await vm.LoadBuilderSuggestionsAsync("Flare");
+        Assert.NotEmpty(vm.BuilderSuggestions);
+        Assert.Equal("covered", vm.BuilderFunctionState);
+    }
+
     [Fact]
     public async Task EmptyRelation_SaysToAddTheFirstActions()
     {
@@ -685,9 +732,22 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     // A second high suggestion (several DCS aircraft) for "Add all".
     public bool ExtraHigh { get; set; }
 
+    // relations browse --game <this> answers with the broken JSON of 2.2.17 (a game text's curly quote that the console
+    // code page turned into a straight one).
+    public string BrokenBrowseGame { get; set; } = string.Empty;
+
+    private const string BrokenBrowse = "{\"Games\":[],\"Game\":\"IL2Game\",\"Categories\":[{\"Name\":\"Weapons\",\"Count\":1}],\"Results\":[{\"Game\":\"IL2Game\",\"Id\":\"gyro\"," +
+                                        "\"Explanation\":\"Must be toggled ON by \"GYROSCOPE TOGGLE\".\"}]}";
+
     // An axis relation "Pitch" whose suggestions carry the recommended action per game (relations suggest Recommended,
     // Variant, Group, Readable, Explanation).
     public void AddPitchRelation() => relations.Add(("Pitch", true, string.Empty, [("EliteDangerous", "RollAxisRaw", "EliteDangerous")]));
+
+    // A bound relation with a DCS node and a War Thunder node the profile stored without a title (BindPeekTests).
+    public void AddElevatorRelation() => relations.Add(("Elevator", true, Stick + "::JOY_Y", [("DCS", "a2001cdnil", "F-16C_50"), ("WarThunder", "elevator", "WarThunder")]));
+
+    // "relations aircraft" answers with this when set (the nodes' titles in their games).
+    public string AircraftJson { get; set; } = string.Empty;
 
     private static string Choice(string game, string id, string title, string readable, bool recommended, string recommendedFor, string variant, string group, int alternatives, string explanation) =>
         "{\"Game\":\"" + game + "\",\"Id\":\"" + id + "\",\"Title\":\"" + title + "\",\"IsAxis\":true,\"Planes\":[\"" + game + "\"],\"Confidence\":\"high\",\"Score\":90," +
@@ -720,6 +780,10 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     public (string State, string Label) BoatFunction { get; set; } = ("mixed", string.Empty);
 
     public void AddBoatRelation() => relations.Add(("Boat Aft", false, string.Empty, [("DCS", "d3014pnil", "F-16C_50"), ("DCS", "d3601", "AJS37"), ("DCS", "d3005", "F-5E-3")]));
+
+    // "relations suggest" answers with a document the app cannot read (a title's quote marks as plain '"', as the
+    // console's code page used to deliver them).
+    public bool BrokenSuggestions { get; set; }
 
     // "relations suggest <GateRelation>" waits for this (an engine run that takes a while).
     public string GateRelation { get; set; } = string.Empty;
@@ -791,7 +855,7 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
             return "Relation: " + name + Environment.NewLine + "Added: 1";
         }
         if (AxisTuningTests.Seq(args, "relations", "browse"))
-            return Browse(args);
+            return BrokenBrowseGame.Length > 0 && args.Contains(BrokenBrowseGame) ? BrokenBrowse : Browse(args);
         if (AxisTuningTests.Seq(args, "relations", "suggest", "--all", "--missing"))
             return "{\"Relations\":[{\"Relation\":\"Chaff\",\"IsAxis\":false,\"Suggestions\":2,\"High\":2,\"Planes\":1,\"Misfits\":0,\"NewGames\":1,\"UsedElsewhere\":3,\"Items\":[" +
                    Row("FalconBMS", "SimCMSDown", "STICK: CMS Down", "FalconBMS", "high", 95, "Same function", "") + "," +
@@ -801,6 +865,9 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         if (AxisTuningTests.Seq(args, "relations", "suggest"))
         {
             string name = After(args, "suggest");
+            if (BrokenSuggestions)
+                return "{\"Relation\":\"" + name + "\",\"FunctionState\":\"named\",\"FunctionLabel\":\"Flare\",\"Suggestions\":[{\"Game\":\"MSFS2024\",\"Id\":\"X\"," +
+                       "\"Explanation\":\"Must be toggled ON by \"GYROSCOPE TOGGLE\".\"}],\"Errors\":[]}";
             if (name == "Pitch")
                 return PitchSuggestions();
             if (name == "Boat Aft")
@@ -902,6 +969,8 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
                    "{\"Id\":\"qwen3-8b-q4_k_m\",\"Label\":\"Qwen3 8B\",\"Tier\":\"large\",\"Size\":\"4.68 GB\",\"License\":\"Apache-2.0\",\"LicenseUrl\":\"\",\"Source\":\"\",\"Installed\":true,\"Recommended\":true}]}";
         if (AxisTuningTests.Seq(args, "binds", "list"))
             return "{\"Binds\":[]}";
+        if (AircraftJson.Length > 0 && AxisTuningTests.Seq(args, "relations", "aircraft"))
+            return AircraftJson;
         return "ok";
     }
 

@@ -99,6 +99,33 @@ try {
     Assert-True (Test-Path (Join-Path $pgLists "CleanProfile\DCS\Bravo-2 Gunner.cf")) "dcs refresh clean should write the clean profile of every aircraft."
     Assert-True (@(Get-ChildItem -Path (Join-Path $pgRoot "CleanProfile\DCS") -File).Count -eq 0) "dcs refresh clean must not write into the program folder."
 
+    # luae.exe crashes now and then (0xC000041D): the engine repeats the run at once and the refresh still writes every
+    # list (the fake luae.exe crashes in the first run that has a profile).
+    $pgCrash = Join-Path $pgDir "crash.marker"
+    try {
+        Remove-Item -Path $pgCrash -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path (Join-Path $pgLists "DB\DCS\*.html") -Force
+        $env:FAKE_LUAE_CRASH_ONCE = $pgCrash
+        $pgRetry = Run-Engine $pgRefreshArgs
+        Assert-True ($pgRetry.ExitCode -eq 0) ("dcs refresh id should repeat a crashed luae.exe run: " + $pgRetry.Output)
+        Assert-True (Test-Path $pgCrash) "the fake luae.exe should have crashed once in dcs refresh id."
+        foreach ($unit in $pgUnits) {
+            Assert-True (Test-Path (Join-Path $pgLists ("DB\DCS\" + $unit + ".html"))) ("dcs refresh id with a crashed run should still write the command list of " + $unit + ".")
+        }
+        Remove-Item -Path $pgCrash -Force
+        Remove-Item -Path (Join-Path $pgLists "CleanProfile\DCS\*.cf") -Force
+        $pgRetryClean = Run-Engine @("dcs", "refresh", "clean", "--path", $pgSaved, "--install-path", $pgInstall, "--headless-lua", "true", "--launch", "false", "--keep-running", "false", "--ocr", "false", "--confirm", "false", "--text")
+        Assert-True ($pgRetryClean.ExitCode -eq 0) ("dcs refresh clean should repeat a crashed luae.exe run: " + $pgRetryClean.Output)
+        Assert-True (Test-Path $pgCrash) "the fake luae.exe should have crashed once in dcs refresh clean."
+        foreach ($unit in $pgUnits) {
+            Assert-True (Test-Path (Join-Path $pgLists ("CleanProfile\DCS\" + $unit + ".cf"))) ("dcs refresh clean with a crashed run should still write the clean profile of " + $unit + ".")
+        }
+        Assert-NotMatch $pgRetryClean.Output "skipped" ("a repeated run that works should skip nothing: " + $pgRetryClean.Output)
+    }
+    finally {
+        Remove-Item Env:\FAKE_LUAE_CRASH_ONCE -ErrorAction SilentlyContinue
+    }
+
     # Cancel: the user presses Cancel while DCS's Lua reads the second profile. The engine stops luae.exe, writes
     # nothing into the DB and exits with code 3.
     Remove-Item -Path (Join-Path $pgLists "DB\DCS\*.html") -Force

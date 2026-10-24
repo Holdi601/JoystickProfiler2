@@ -113,6 +113,10 @@ namespace JoyPro.Engine
             string game = Games().FirstOrDefault(g => whole.Length >= 3 && (Norm(g) == whole || Norm(EngineRelationAssistantGameNames.Label(g)) == whole));
             if (game != null)
                 return new List<string> { game + "|" + game };
+            // A game by any of its names ("xp12", "msfs" = 2024 and 2020, "sc", "Elite", "IL-2 1946").
+            List<string> named = EngineGameWords.Resolve(name).Where(g => g != "DCS" && Games().Contains(g, StringComparer.OrdinalIgnoreCase)).ToList();
+            if (named.Count > 0)
+                return named.Select(g => g + "|" + g).ToList();
             foreach (string word in Regex.Split(name ?? string.Empty, @"[\s,;/()]+").Where(w => w.Any(char.IsDigit) && w.Any(char.IsLetter)))
             {
                 string designation = Norm(word);
@@ -178,7 +182,7 @@ namespace JoyPro.Engine
             EngineFillResult result = new EngineFillResult { Aircraft = planes.ToList(), Unresolved = unresolved ?? new List<string>() };
             HashSet<string> targets = new HashSet<string>(planes, StringComparer.OrdinalIgnoreCase);
             List<string> names = (relationNames != null && relationNames.Count > 0 ? relationNames : InternalDataManagement.AllRelations.Keys.ToList())
-                .Where(n => InternalDataManagement.AllRelations.ContainsKey(n)).OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+                .Where(n => InternalDataManagement.AllRelations.ContainsKey(n)).Distinct(StringComparer.Ordinal).OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
             Dictionary<string, EngineRelationSuggest.Command> byKey = new Dictionary<string, EngineRelationSuggest.Command>(StringComparer.OrdinalIgnoreCase);
             foreach (EngineRelationSuggest.Command command in EngineRelationSuggest.Index(result.Warnings))
             {
@@ -221,7 +225,7 @@ namespace JoyPro.Engine
                             byKey.TryGetValue(game + "|" + id + "|" + plane, out command);
                             pair.Rules.Add(new EngineFillAction
                             {
-                                Spec = spec, Game = game, Id = id, Title = command != null ? command.Title : id, Category = command != null ? command.Category : string.Empty, Plane = plane,
+                                Spec = spec, Game = game, Id = id, Title = EngineActionInfo.Readable(game, id, command != null ? command.Title : string.Empty), Category = command != null ? command.Category : string.Empty, Plane = plane,
                                 IsAxis = relation.ISAXIS, Source = "rules", Confidence = "high", Why = "same function in the manual-checked catalog (Auto Group)", Score = 100
                             });
                         }
@@ -258,6 +262,8 @@ namespace JoyPro.Engine
                     result.Warnings.Add(name + ": " + ex.Message);
                     continue;
                 }
+                foreach (string hint in suggest.Hints.Where(h => !result.Warnings.Contains(h)))
+                    result.Warnings.Add(name + ": " + hint);
                 foreach (EngineRelationSuggestion s in suggest.Suggestions)
                 {
                     string game = EngineRelationSuggest.GameKey(s.Game ?? string.Empty);
@@ -268,7 +274,7 @@ namespace JoyPro.Engine
                             continue;
                         pair.Rules.Add(new EngineFillAction
                         {
-                            Spec = game + ":" + s.Id + ":" + plane, Game = game, Id = s.Id, Title = s.Title ?? string.Empty, Category = s.Category ?? string.Empty, Plane = plane, IsAxis = s.IsAxis,
+                            Spec = game + ":" + s.Id + ":" + plane, Game = game, Id = s.Id, Title = EngineActionInfo.Readable(game, s.Id, s.Title ?? string.Empty), Category = s.Category ?? string.Empty, Plane = plane, IsAxis = s.IsAxis,
                             Source = "rules", Confidence = string.IsNullOrEmpty(s.Confidence) ? "medium" : s.Confidence, Why = s.Why ?? string.Empty, Score = s.Score,
                             Function = s.Function ?? string.Empty
                         });
@@ -292,7 +298,7 @@ namespace JoyPro.Engine
                     if (picked.Count == 0)
                     {
                         if (pair.Evidence >= 3)
-                            entry.NoMatch.Add(pair.Plane);
+                            entry.NoMatch.Add(pair.Game == "DCS" ? pair.Plane : EngineGameWords.Label(pair.Game));
                         continue;
                     }
                     entry.Actions.AddRange(picked);
@@ -305,7 +311,9 @@ namespace JoyPro.Engine
             result.AmbiguousRelations = result.Relations.Count(r => r.Actions.Any(a => a.Ambiguous));
             result.NoMatchCount = result.Relations.Sum(r => r.NoMatch.Count);
             result.Summary = result.RelationsWithActions.ToString(CultureInfo.InvariantCulture) + " relations get " + result.ActionCount.ToString(CultureInfo.InvariantCulture) +
-                             " actions for " + planes.Count.ToString(CultureInfo.InvariantCulture) + " aircraft; " + result.AmbiguousRelations.ToString(CultureInfo.InvariantCulture) +
+                             " actions for " + planes.Count.ToString(CultureInfo.InvariantCulture) +
+                             (planes.All(p => GameOf(p) == "DCS") ? " aircraft; " : planes.All(p => GameOf(p) != "DCS") ? (planes.Count == 1 ? " game (" + EngineGameWords.Label(GameOf(planes[0])) + "); " : " games; ") : " aircraft and games; ") +
+                             result.AmbiguousRelations.ToString(CultureInfo.InvariantCulture) +
                              " relations ambiguous; " + result.NoMatchCount.ToString(CultureInfo.InvariantCulture) + " functions found no match" +
                              (result.ButtonPositions.Count > 0 ? "; " + result.ButtonPositions.Count.ToString(CultureInfo.InvariantCulture) + " button-position relations (different functions per aircraft) left to you" : string.Empty) +
                              (result.Unresolved.Count > 0 ? "; not found: " + string.Join(", ", result.Unresolved) : string.Empty) + ".";
@@ -540,6 +548,21 @@ namespace JoyPro.Engine
         }
 
         // The aircraft's candidates: the rule picks, then a catalog search with the relation's name and action titles.
+        // The prompt the model sees for one relation x target ("GAME|plane"), for the AI matrix (relations ai-matrix).
+        internal static string ModelPrompt(string relation, string target)
+        {
+            Dictionary<string, EngineRelationSuggest.Command> byKey = new Dictionary<string, EngineRelationSuggest.Command>(StringComparer.OrdinalIgnoreCase);
+            foreach (EngineRelationSuggest.Command command in EngineRelationSuggest.Index(new List<string>()))
+            {
+                string key = command.Game + "|" + command.Id + "|" + command.Plane;
+                if (!byKey.ContainsKey(key))
+                    byKey[key] = command;
+            }
+            Pair pair = new Pair { Relation = relation, Game = GameOf(target), Plane = PlaneOf(target) };
+            pair.Offer = Offer(pair, byKey);
+            return string.Join(Environment.NewLine, Messages(new List<Pair> { pair }, byKey).Select(m => m.Content));
+        }
+
         private static List<EngineFillAction> Offer(Pair pair, Dictionary<string, EngineRelationSuggest.Command> byKey)
         {
             Relation relation = InternalDataManagement.AllRelations[pair.Relation];
@@ -574,7 +597,7 @@ namespace JoyPro.Engine
                         continue;
                     offer.Add(new EngineFillAction
                     {
-                        Spec = pair.Game + ":" + hit.Id + ":" + pair.Plane, Game = pair.Game, Id = hit.Id, Title = hit.Title ?? string.Empty, Category = hit.Category ?? string.Empty, Plane = pair.Plane,
+                        Spec = pair.Game + ":" + hit.Id + ":" + pair.Plane, Game = pair.Game, Id = hit.Id, Title = EngineActionInfo.Readable(pair.Game, hit.Id, hit.Title ?? string.Empty), Category = hit.Category ?? string.Empty, Plane = pair.Plane,
                         IsAxis = hit.IsAxis, Source = "AI", Confidence = "medium", Function = hit.Function ?? string.Empty
                     });
                 }
@@ -602,8 +625,9 @@ namespace JoyPro.Engine
         }
 
         private const string FillSystem =
-            "You check which action of a DCS aircraft belongs into a JoyPro relation. A relation groups the same function of many aircraft " +
-            "(its name and its current actions show the purpose). For every PAIR pick the one candidate that does the same thing in the new aircraft, " +
+            "You check which action of an aircraft or a game belongs into a JoyPro relation. A relation groups the same function of many aircraft and games " +
+            "(its name and its current actions show the purpose). The target is a DCS aircraft or a whole game (MSFS, X-Plane, IL-2, War Thunder, Falcon BMS, " +
+            "Star Citizen, Elite Dangerous, X4 and more; Star Citizen, Elite Dangerous and X4 fly ships). For every PAIR pick the one candidate that does the same thing in the target, " +
             "or \"none\" when no candidate fits. Same function and direction matter (gear up is not gear down, a toggle is not an on/off pair); " +
             "axes go to axis relations only. Answer JSON only: {\"picks\":[{\"pair\":1,\"pick\":\"c2\",\"why\":\"short reason\"}]}.";
 
@@ -644,7 +668,7 @@ namespace JoyPro.Engine
             sb.Append(isAxis ? " axis" : " button");
             if (!string.IsNullOrEmpty(function))
                 sb.Append(" | slot ").Append(function);
-            string does = Regex.Replace(info.Explanation ?? string.Empty, @"\s+", " ").Trim();
+            string does = EngineActionInfo.InGameWords(g, category, Regex.Replace(info.Explanation ?? string.Empty, @"\s+", " ").Trim());
             if (does.Length > 140)
                 does = does.Substring(0, 137) + "...";
             sb.Append(" | does: ").Append(does.Length > 0 ? does + " (" + info.Source + ")" : "no manual data");

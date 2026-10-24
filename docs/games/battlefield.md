@@ -17,6 +17,8 @@
 
 CLI: `engine bf6 refresh-db|scan|import|export`, `engine bf2042 ...`. Both are experimental.
 
+Before the game wrote its settings profile, the catalog, search and relation editor list JoyPro's own jet and helicopter table (the concepts seen in Battlefield 6's profile: throttle, pitch, roll, yaw, look, helicopter brake, fire, zoom, camera, seat, the two gadgets), for Battlefield 2042 too; the first refresh, import or export replaces it with the concepts of the user's own profile.
+
 ## Files
 | Game | Profile (text, LF, sorted `GstKeyBinding` lines) | Process | Steam |
 |---|---|---|---|

@@ -24,7 +24,7 @@ namespace JoyPro.Engine.Games
     // [JoystickMappingFormat] block of HelpComment= lines; ProductName is quoted when it has outer spaces; XInput-capable
     // devices get no section. Values JoyPro wrote survive the game's rewrite on exit. Experimental until the controls
     // menu / a flight confirmed that the game acts on them.
-    internal sealed class AceCombat7Integration : IGameIntegration
+    internal sealed class AceCombat7Integration : IGameIntegration, IGameBuiltInCatalog
     {
         public string GameId { get { return "AceCombat7"; } }
         public string DisplayName { get { return "ACE COMBAT 7: Skies Unknown"; } }
@@ -91,14 +91,7 @@ namespace JoyPro.Engine.Games
                                                .SelectMany(s => s.Keys()).Where(k => k.StartsWith(ActionPrefix, StringComparison.OrdinalIgnoreCase))
                                                .Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                string title;
-                catalog.Add(new GameAction
-                {
-                    Id = key,
-                    Title = Titles.TryGetValue(key, out title) ? title : key.Substring(ActionPrefix.Length),
-                    IsAxis = AxisActions.Contains(key),
-                    Category = key.StartsWith("Flight_HatSwitch", StringComparison.OrdinalIgnoreCase) ? "Hat" : AxisActions.Contains(key) ? "Flight axes" : "Flight"
-                });
+                catalog.Add(ActionOf(key));
             }
             if (catalog.Actions.Count == 0)
             {
@@ -109,6 +102,27 @@ namespace JoyPro.Engine.Games
             return catalog;
         }
 
+        private static GameAction ActionOf(string key)
+        {
+            string title;
+            return new GameAction
+            {
+                Id = key,
+                Title = Titles.TryGetValue(key, out title) ? title : key.Substring(ActionPrefix.Length),
+                IsAxis = AxisActions.Contains(key),
+                Category = key.StartsWith("Flight_HatSwitch", StringComparison.OrdinalIgnoreCase) ? "Hat" : AxisActions.Contains(key) ? "Flight axes" : "Flight"
+            };
+        }
+
+        // Before the game wrote Input.ini (it does when it closes with the devices connected): the Flight_* actions JoyPro
+        // knows (the table above, the keys of the game's own device sections).
+        public GameCatalog BuiltInCatalog()
+        {
+            GameCatalog catalog = new GameCatalog { GameId = GameId };
+            foreach (string key in Titles.Keys)
+                catalog.Add(ActionOf(key));
+            return catalog;
+        }
         // ------------------------------------------------------------------ inputs
 
         internal static string Encode(JoyInput input, bool inverted)

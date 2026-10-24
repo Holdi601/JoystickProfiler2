@@ -918,6 +918,9 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     // The picture the markers are shown on (its kind and content key).
     public ReferencePictureOption? LoadedPicture => loadedPicture;
 
+    // A shared layout was imported (the Layout page refreshes its "Several views" button).
+    public event EventHandler<string>? MultiViewImported;
+
     public DeviceLayoutSet? CurrentLayoutSet()
     {
         if (Model == null || loadedPicture == null)
@@ -946,22 +949,38 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         DeviceLayoutSet? set = CurrentLayoutSet();
         if (set == null)
             return;
-        File.WriteAllText(file, set.ToJson(), new UTF8Encoding(false));
+        // The model's page with several views goes along (each view's positions, tables and lines, or its image).
+        string json = LayoutShare.WithMultiView(set.ToJson(), set.Model);
+        File.WriteAllText(file, json, new UTF8Encoding(false));
         Status = T("Layout exported to {0}{1}", file, (set.PhotoKind == "vendor" ? T(" (the photo's address only; the photo itself is the maker's).") : "."));
+        if (json.Contains("\"multiview\"", StringComparison.Ordinal))
+            Status += " " + T("The page with several views is in it too.");
     }
 
     // A shared layout: the positions are kept for its model and photo; a photo of the user inside becomes his photo.
     public async Task<bool> ImportLayoutAsync(string file)
     {
         DeviceLayoutSet set;
+        string json;
         try
         {
-            set = DeviceLayoutSet.Parse(File.ReadAllText(file, Encoding.UTF8), file);
+            json = File.ReadAllText(file, Encoding.UTF8);
+            set = DeviceLayoutSet.Parse(json, file);
         }
         catch (Exception ex)
         {
             Status = T("Not a JoyPro layout: {0}", ex.Message);
             return false;
+        }
+        int views = 0;
+        try
+        {
+            // The page with several views of the shared file (its views' sheets and images).
+            views = LayoutShare.ImportMultiView(json, set.Model);
+        }
+        catch (Exception ex) when (ex is IOException or FormatException or UnauthorizedAccessException)
+        {
+            views = 0;
         }
         if (set.PhotoKind == "user" && set.PhotoFileBase64.Length > 0)
         {
@@ -1001,6 +1020,9 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
                 RebuildMarkers();
         }
         Status = T("{0} marker position(s) imported for {1}.", set.Markers.Count, set.Model);
+        if (views >= 2)
+            Status += " " + T("The page with {0} views is back too (Several views).", views);
+        MultiViewImported?.Invoke(this, set.Model);
         return true;
     }
 
@@ -1162,6 +1184,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     private void CloseAssistant()
     {
         Assistant?.StopCommand.Execute(null);
+        Assistant?.Detach();
         Assistant = null;
     }
 

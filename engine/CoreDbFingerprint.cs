@@ -98,34 +98,40 @@ namespace JoyPro
                 .ToList();
 
             result.FileCount = ordered.Count;
+            // Each file's content hash, read only for files new or changed since the last fingerprint (FileHashes:
+            // size and time stamp); the files to read are hashed several at once. The fingerprint is the same as from
+            // reading every file (27 MB, about a second, on every profile load and save with load corrections).
+            byte[][] hashes = new byte[ordered.Count][];
+            long[] lengths = new long[ordered.Count];
+            string[] errors = new string[ordered.Count];
+            FileHashes.Begin();
+            System.Threading.Tasks.Parallel.For(0, ordered.Count, new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = Math.Max(1, Math.Min(8, Environment.ProcessorCount)) }, i =>
+            {
+                try
+                {
+                    hashes[i] = FileHashes.Get(ordered[i].Value, out lengths[i]);
+                }
+                catch (Exception ex)
+                {
+                    hashes[i] = new byte[0];
+                    lengths[i] = 0L;
+                    errors[i] = "Could not hash file '" + ordered[i].Value + "': " + ex.Message;
+                }
+            });
+            FileHashes.End();
             using (SHA256 aggregate = SHA256.Create())
             {
                 AppendUtf8(aggregate, "joypro-db-fingerprint-v1");
                 for (int i = 0; i < ordered.Count; i++)
                 {
-                    string filePath = ordered[i].Value;
                     string relativePath = ordered[i].Key;
                     AppendUtf8(aggregate, relativePath);
-
-                    byte[] fileHash = new byte[0];
-                    long fileLength = 0L;
-                    try
-                    {
-                        using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                        using (SHA256 contentHash = SHA256.Create())
-                        {
-                            fileLength = stream.Length;
-                            fileHash = contentHash.ComputeHash(stream);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Warnings.Add("Could not hash file '" + filePath + "': " + ex.Message);
-                    }
-
+                    if (errors[i] != null)
+                        result.Warnings.Add(errors[i]);
+                    long fileLength = lengths[i];
                     result.TotalBytes += Math.Max(0L, fileLength);
                     AppendInt64(aggregate, fileLength);
-                    AppendBytes(aggregate, fileHash);
+                    AppendBytes(aggregate, hashes[i]);
                 }
 
                 aggregate.TransformFinalBlock(new byte[0], 0, 0);
@@ -133,6 +139,124 @@ namespace JoyPro
             }
 
             return result;
+        }
+
+        // SHA-256 of a file's content, kept per path with the file's size and time stamp in memory and in
+        // <data>\Cache\db-file-hashes.tsv (JOYPRO_FUNCTION_MAP_CACHE=off: memory only).
+        internal static class FileHashes
+        {
+            private sealed class Entry
+            {
+                public long Length;
+                public long Ticks;
+                public byte[] Hash;
+            }
+
+            private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Entry> Known =
+                new System.Collections.Concurrent.ConcurrentDictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
+            private static readonly object Gate = new object();
+            private static string loadedFrom;
+            private static int changed;
+
+            private static string CacheFile()
+            {
+                return Path.Combine(GameInstalls.DataRoot(), "Cache", "db-file-hashes.tsv");
+            }
+
+            public static void Begin()
+            {
+                lock (Gate)
+                {
+                    string file = CacheFile();
+                    if (string.Equals(loadedFrom, file, StringComparison.OrdinalIgnoreCase))
+                        return;
+                    loadedFrom = file;
+                    Known.Clear();
+                    changed = 0;
+                    if (EngineFunctionMapCache.Disabled || !File.Exists(file))
+                        return;
+                    try
+                    {
+                        foreach (string line in File.ReadAllLines(file, Encoding.UTF8))
+                        {
+                            string[] parts = line.Split('\t');
+                            long length, ticks;
+                            if (parts.Length != 4 || !long.TryParse(parts[1], out length) || !long.TryParse(parts[2], out ticks) || parts[3].Length != 64)
+                                continue;
+                            Known[parts[0]] = new Entry { Length = length, Ticks = ticks, Hash = FromHex(parts[3]) };
+                        }
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is FormatException)
+                    {
+                        Known.Clear();
+                    }
+                }
+            }
+
+            public static byte[] Get(string path, out long length)
+            {
+                FileInfo info = new FileInfo(path);
+                long ticks = info.LastWriteTimeUtc.Ticks;
+                length = info.Length;
+                Entry known;
+                if (Known.TryGetValue(path, out known) && known.Length == length && known.Ticks == ticks)
+                    return known.Hash;
+                byte[] hash;
+                using (FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (SHA256 contentHash = SHA256.Create())
+                {
+                    length = stream.Length;
+                    hash = contentHash.ComputeHash(stream);
+                }
+                // Kept only when the file did not change while it was read.
+                FileInfo after = new FileInfo(path);
+                if (after.Length == length && after.LastWriteTimeUtc.Ticks == ticks)
+                {
+                    Known[path] = new Entry { Length = length, Ticks = ticks, Hash = hash };
+                    System.Threading.Interlocked.Increment(ref changed);
+                }
+                return hash;
+            }
+
+            public static void End()
+            {
+                lock (Gate)
+                {
+                    if (changed == 0 || EngineFunctionMapCache.Disabled)
+                        return;
+                    changed = 0;
+                    try
+                    {
+                        string file = CacheFile();
+                        Directory.CreateDirectory(Path.GetDirectoryName(file));
+                        StringBuilder sb = new StringBuilder();
+                        foreach (KeyValuePair<string, Entry> pair in Known.OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase))
+                        {
+                            if (!File.Exists(pair.Key))
+                                continue;
+                            sb.Append(pair.Key).Append('\t').Append(pair.Value.Length).Append('\t').Append(pair.Value.Ticks).Append('\t').Append(ToHex(pair.Value.Hash).ToLowerInvariant()).Append('\n');
+                        }
+                        string temp = file + "." + System.Diagnostics.Process.GetCurrentProcess().Id + ".tmp";
+                        File.WriteAllText(temp, sb.ToString(), new UTF8Encoding(false));
+                        if (File.Exists(file))
+                            File.Replace(temp, file, null);
+                        else
+                            File.Move(temp, file);
+                    }
+                    catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+                    {
+                        // Next time the files are read again.
+                    }
+                }
+            }
+
+            private static byte[] FromHex(string hex)
+            {
+                byte[] bytes = new byte[hex.Length / 2];
+                for (int i = 0; i < bytes.Length; i++)
+                    bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+                return bytes;
+            }
         }
 
         private static string NormalizeRoot(string rootPath)

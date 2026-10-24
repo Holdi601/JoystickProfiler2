@@ -987,6 +987,19 @@ namespace JoyPro.Engine
                 if (variant != null)
                     return variant.Label;
             }
+            // A slot named like an id ("SPACE_STRAFE_VER", "SPACE_QUANTUM_ENGAGE"): its words, readable.
+            if (Regex.IsMatch(slot.Name ?? string.Empty, @"^[A-Z0-9]+(?:[_-][A-Za-z0-9]+)+$"))
+            {
+                List<string> words = Regex.Split(slot.Name, @"[_-]+").Where(w => w.Length > 0).Select(w => w.ToLowerInvariant()).ToList();
+                if (words.Count > 1 && words[0] == "space")
+                    words.RemoveAt(0);
+                Dictionary<string, string> spelled = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    { "ver", "up / down" }, { "hor", "left / right" }, { "fwdaft", "forward / back" }, { "esp", "ESP" }, { "ifcs", "IFCS" }, { "vtol", "VTOL" }, { "g", "G" }
+                };
+                string text = string.Join(" ", words.Select(w => spelled.ContainsKey(w) ? spelled[w] : w));
+                return char.ToUpperInvariant(text[0]) + text.Substring(1);
+            }
             return SplitCamel(slot.Name).Replace("__", " ").Replace('_', ' ').Trim();
         }
 
@@ -1186,6 +1199,15 @@ namespace JoyPro.Engine
             result.Understood.Aircraft = scopeLabel.Length > 0 ? scopeLabel : "all aircraft and games";
             result.Understood.AircraftCount = scope.Count;
 
+            // The function map understands every function by its names, synonyms, slang and everyday words ("fast
+            // travel", "drop the wheels", "Nachbrenner"); where the word rules found nothing, found it only by the
+            // catalog's words or found another function than the map names, the map's reading makes the proposals.
+            if (!result.Llm.Used && scope.Count > 0 && ProposeFromFunctionMap(options, u, selections, scope, scopeLabel, result))
+            {
+                Apply(options, result);
+                return result;
+            }
+
             if (selections.Count == 0)
             {
                 result.Errors.Add("No function recognised in \"" + options.Request + "\". Name it like the cockpit does, e.g. speed brake, gear, flaps, trim hat, CMS, TMS, master arm, NWS" +
@@ -1201,6 +1223,116 @@ namespace JoyPro.Engine
             BuildProposals(options, v, catalog, selections, scope, scopeLabel, result);
             Apply(options, result);
             return result;
+        }
+
+        private static bool ProposeFromFunctionMap(Options options, Understanding u, List<Selection> selections, Dictionary<string, ScopeHit> scope, string scopeLabel, EngineNlGroupResult result)
+        {
+            EngineFunctionMap.Map map;
+            try
+            {
+                map = EngineFunctionMap.Load(new List<string>());
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            // The words that are no aircraft, class or game ("flaps" of "flaps in X-Plane 12").
+            HashSet<int> scopeWords = new HashSet<int>(u.Spans.Where(s => s.Hit.Kind != HitKind.Function).SelectMany(s => Enumerable.Range(s.Start, s.Length)));
+            int excludeFrom = Math.Min(u.ExcludeFrom, u.Tokens.Count);
+            string words = string.Join(" ", u.Tokens.Where((w, i) => !scopeWords.Contains(i) && i < excludeFrom));
+            if (words.Trim().Length == 0)
+                return false;
+            EngineFunctionMap.Understanding understood = EngineFunctionMap.Resolve(map, words);
+            List<EngineFunctionMap.Resolved> named = understood.Functions.Where(r => !r.Related).ToList();
+            if (named.Count == 0)
+                return false;
+            bool rulesWeak = selections.Count == 0 || u.UsedRetrieval;
+            // The rules found a function: they stand unless the map names another one with the user's words.
+            HashSet<string> ruleSlots = new HashSet<string>(selections.SelectMany(s => s.Slots), StringComparer.OrdinalIgnoreCase);
+            EngineFunctionMap.Resolved top = named[0];
+            bool sameAsRules = named.Any(r => r.Function.Slots.Any(l => ruleSlots.Contains(l.Slot)));
+            if (!rulesWeak && (sameAsRules || top.Described && top.Covered < 2))
+                return false;
+            // Named functions all ("gear and flaps"); described ones: the best only.
+            List<EngineFunctionMap.Resolved> chosen = named.Where(r => !r.Described).ToList();
+            if (chosen.Count == 0)
+                chosen.Add(top);
+            HashSet<string> planes = new HashSet<string>(scope.Keys, StringComparer.OrdinalIgnoreCase);
+            foreach (EngineFunctionMap.Resolved r in chosen)
+            {
+                List<EngineFunctionMap.Entry> entries;
+                if (!map.ByFunction.TryGetValue(r.Function.Id, out entries))
+                    continue;
+                List<KeyValuePair<EngineFunctionMap.Entry, EngineFunctionMap.Assignment>> fitting = new List<KeyValuePair<EngineFunctionMap.Entry, EngineFunctionMap.Assignment>>();
+                foreach (EngineFunctionMap.Entry e in entries)
+                {
+                    string plane = e.Command.Game == "DCS" ? e.Command.Plane : e.Command.Game;
+                    if (!planes.Contains(plane))
+                        continue;
+                    EngineFunctionMap.Assignment a = e.Of(r.Function.Id);
+                    if (a == null || a.Weight < 0.6 || EngineIdMeanings.CatalogAgainstTitle(e, a))
+                        continue;
+                    if (r.Dir.Length > 0 && !e.Command.IsAxis && a.Dir.Length > 0 && !string.Equals(a.Dir, r.Dir, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    fitting.Add(new KeyValuePair<EngineFunctionMap.Entry, EngineFunctionMap.Assignment>(e, a));
+                }
+                if (fitting.Count == 0)
+                    continue;
+                bool isAxis = r.Function.Only == "axis" || (r.Function.Only != "button" && (r.Function.Kind == "axis" || (r.Function.Kind == "both" && fitting.Count(f => f.Key.Command.IsAxis) * 2 > fitting.Count)));
+                string label = EngineFunctionMap.Describe(r.Function, r.Dir, isAxis);
+                EngineNlGroupProposal proposal = new EngineNlGroupProposal
+                {
+                    Name = (string.IsNullOrWhiteSpace(options.Name) ? char.ToUpperInvariant(label[0]) + label.Substring(1) : options.Name.Trim()) + (scopeLabel.Length > 0 && string.IsNullOrWhiteSpace(options.Name) ? " (" + scopeLabel + ")" : string.Empty),
+                    Function = label,
+                    IsAxis = isAxis,
+                    Why = "function map ('" + r.Term + "')"
+                };
+                // Per aircraft or game its best action of the function and direction.
+                foreach (IGrouping<string, KeyValuePair<EngineFunctionMap.Entry, EngineFunctionMap.Assignment>> plane in fitting.Where(f => f.Key.Command.IsAxis == isAxis)
+                             .GroupBy(f => f.Key.Command.Game == "DCS" ? f.Key.Command.Plane : f.Key.Command.Game, StringComparer.OrdinalIgnoreCase))
+                {
+                    KeyValuePair<EngineFunctionMap.Entry, EngineFunctionMap.Assignment> best = plane
+                        .OrderByDescending(f => f.Value.Weight + (r.Dir.Length > 0 && string.Equals(f.Value.Dir, r.Dir, StringComparison.OrdinalIgnoreCase) ? 0.5 : 0) + (f.Value.Source == "catalog" ? 0.2 : 0))
+                        .ThenBy(f => EngineFunctionMap.PrimaryRank(f.Key, r.Function)).First();
+                    EngineRelationSuggest.Command c = best.Key.Command;
+                    string game = c.Game == "DCS" ? "DCS" : c.Game;
+                    EngineNlGroupNode node = proposal.Nodes.FirstOrDefault(n => n.Game == game && n.Id == c.Id);
+                    double confidence = Math.Round(0.7 * best.Value.Weight * scope[plane.Key].Quality, 2);
+                    if (node == null)
+                    {
+                        node = new EngineNlGroupNode { Game = game, Id = c.Id, Confidence = confidence };
+                        proposal.Nodes.Add(node);
+                    }
+                    if (!node.Planes.Contains(plane.Key, StringComparer.OrdinalIgnoreCase))
+                        node.Planes.Add(game == "DCS" ? plane.Key : game);
+                    node.Confidence = Math.Min(node.Confidence, confidence);
+                    string category = EngineAiExplain.ReadableCategory(c.Category);
+                    if (node.Explanations.Count < 8)
+                        node.Explanations.Add(PlaneLabel(c.Game, plane.Key) + ": \"" + EngineActionInfo.Readable(c.Game, c.Id, c.Title) + "\"" + (category.Length > 0 ? " [" + category + "]" : string.Empty) +
+                                              " (function map: " + r.Function.Name + "); " + scope[plane.Key].Reason);
+                }
+                foreach (EngineNlGroupNode node in proposal.Nodes)
+                {
+                    if (node.Game == "DCS")
+                    {
+                        List<string> excludedPlanes;
+                        List<string> notes;
+                        node.Planes = EngineIdMeanings.Guard("DCS", node.Id, node.Planes, proposal.Name, out excludedPlanes, out notes);
+                        node.Excluded = excludedPlanes;
+                        node.ExcludedReasons = notes;
+                    }
+                    node.Spec = node.Game + ":" + node.Id + ":" + string.Join("|", node.Planes);
+                }
+                proposal.Nodes.RemoveAll(n => n.Planes.Count == 0 && n.Excluded.Count == 0);
+                if (proposal.Nodes.Count > 0)
+                    result.Proposals.Add(proposal);
+            }
+            if (result.Proposals.Count == 0)
+                return false;
+            result.Method = "function map (offline)";
+            result.NotUnderstood.Clear();
+            result.Understood.Functions = chosen.Select(r => EngineFunctionMap.Describe(r.Function, r.Dir, false) + " from '" + r.Term + "' (function map)").ToList();
+            return true;
         }
 
         private static void ApplyFilters(Options options, Catalog catalog, Dictionary<string, ScopeHit> scope, EngineNlGroupResult result)
@@ -1256,6 +1388,8 @@ namespace JoyPro.Engine
                         List<RowInfo> own = planeRows.Where(r => !string.Equals(r.Row.Status, "substitute", StringComparison.OrdinalIgnoreCase)).ToList();
                         found.AddRange(own.Count > 0 ? own : (options.Substitutes ? planeRows : new List<RowInfo>()));
                     }
+                    if (found.Count == 0 && !EngineAutoGroup.IsDcs(info.Game) && AddFromFunctionMap(selection, proposal, hit))
+                        continue;
                     if (found.Count == 0)
                     {
                         if (info.Type != "layer" && info.Type != "ground")
@@ -1300,8 +1434,8 @@ namespace JoyPro.Engine
                             continue;
                         node.Planes.Add(row.Row.Plane);
                         node.Confidence = Math.Min(node.Confidence, confidence);
-                        node.Explanations.Add(row.Row.Plane + ": " + (row.Control.Length > 0 ? row.Control : catalog.Slots[row.Row.Slot].Name) +
-                                              DescribeCommand(command) + " (catalog " + row.Row.Status + "); " + hit.Reason);
+                        node.Explanations.Add(PlaneLabel(row.Row.Game, row.Row.Plane) + ": " + (row.Control.Length > 0 ? row.Control : SlotLabel(v, catalog.Slots[row.Row.Slot])) +
+                                              DescribeCommand(row.Row.Game, row.Row.Action, command) + " (catalog " + row.Row.Status + "); " + hit.Reason);
                     }
                 }
                 foreach (EngineNlGroupNode node in proposal.Nodes)
@@ -1351,7 +1485,8 @@ namespace JoyPro.Engine
                 if (others.Count > 0)
                     hint = " (has " + string.Join(", ", others) + ")";
             }
-            proposal.Missing.Add(plane + hint);
+            EngineAutoGroup.Aircraft aircraft;
+            proposal.Missing.Add((catalog.Aircraft.TryGetValue(plane, out aircraft) ? PlaneLabel(aircraft.Game, plane) : plane) + hint);
         }
 
         private static double StatusFactor(string status)
@@ -1609,6 +1744,19 @@ namespace JoyPro.Engine
                         }
                     }
                 }
+                else if (string.Equals(game, "StarCitizen", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Star Citizen: the game list (actionmap|action), also under the catalog's spelling (actionmap___action).
+                    foreach (EngineRelationSuggest.Command command in EngineRelationSuggest.Index(new List<string>()).Where(c => c.Game == "StarCitizen"))
+                    {
+                        CommandInfo info = new CommandInfo { Title = EngineActionInfo.Readable("StarCitizen", command.Id, command.Title), Category = command.Category ?? string.Empty, IsAxis = command.IsAxis };
+                        if (!map.ContainsKey(command.Id))
+                            map[command.Id] = info;
+                        string catalogId = command.Id.Replace("|", "___");
+                        if (!map.ContainsKey(catalogId))
+                            map[catalogId] = info;
+                    }
+                }
                 else
                 {
                     IGameIntegration integration;
@@ -1632,16 +1780,94 @@ namespace JoyPro.Engine
         internal static CommandInfo LookupCommand(string game, string plane, string id)
         {
             CommandInfo info;
-            return Commands(game, plane).TryGetValue(id ?? string.Empty, out info) ? info : null;
+            Dictionary<string, CommandInfo> commands = Commands(game, plane);
+            if (commands.TryGetValue(id ?? string.Empty, out info))
+                return info;
+            // Star Citizen: the catalog writes "actionmap___action", the game list "actionmap|action".
+            return commands.TryGetValue(EngineRelationSuggest.NodeId(game, id), out info) ? info : null;
+        }
+
+        // A DCS aircraft by its id, a game by its name ("StarCitizen" -> "Star Citizen").
+        private static string PlaneLabel(string game, string plane)
+        {
+            return EngineAutoGroup.IsDcs(game) ? plane : EngineGameWords.Label(plane);
         }
 
         // ' = "CMS Switch - FWD" [HOTAS]': the game's own name of the command and where the game files it.
-        private static string DescribeCommand(CommandInfo command)
+        private static string DescribeCommand(string game, string id, CommandInfo command)
         {
             if (command == null || command.Title.Length == 0)
                 return string.Empty;
-            string category = command.Category.Length > 60 ? command.Category.Substring(0, 60).TrimEnd() + "..." : command.Category;
-            return " = \"" + command.Title + "\"" + (category.Length > 0 ? " [" + category + "]" : string.Empty);
+            string readable = EngineActionInfo.Readable(EngineAutoGroup.IsDcs(game) ? "DCS" : game, id, command.Title);
+            string category = EngineAiExplain.ReadableCategory(command.Category);
+            category = category.Length > 60 ? category.Substring(0, 60).TrimEnd() + "..." : category;
+            return " = \"" + readable + "\"" + (category.Length > 0 ? " [" + category + "]" : string.Empty);
+        }
+
+        // A game without a catalog row for the function (Project Wingman, ACE COMBAT, Battlefield, FSX, a slot the
+        // game's table leaves out): the function map's action of the same function and direction there, by its own
+        // title, with a lower confidence and the reason said.
+        private static bool AddFromFunctionMap(Selection selection, EngineNlGroupProposal proposal, ScopeHit hit)
+        {
+            if (selection.Slots.Count == 0)
+                return false;
+            EngineFunctionMap.Map map;
+            try
+            {
+                map = EngineFunctionMap.Load(new List<string>());
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            string game = hit.Plane;
+            List<KeyValuePair<EngineFunctionMap.Entry, double>> picks = new List<KeyValuePair<EngineFunctionMap.Entry, double>>();
+            string functionName = string.Empty;
+            foreach (EngineFunctionMap.Function f in map.Functions)
+            {
+                foreach (EngineFunctionMap.SlotLink link in f.Slots.Where(l => selection.Slots.Contains(l.Slot, StringComparer.OrdinalIgnoreCase)))
+                {
+                    List<EngineFunctionMap.Entry> entries;
+                    if (!map.ByFunction.TryGetValue(f.Id, out entries))
+                        continue;
+                    foreach (EngineFunctionMap.Entry e in entries)
+                    {
+                        if (!string.Equals(e.Command.Game, game, StringComparison.OrdinalIgnoreCase) || e.Command.IsAxis != proposal.IsAxis)
+                            continue;
+                        EngineFunctionMap.Assignment a = e.Of(f.Id);
+                        if (a == null || EngineIdMeanings.CatalogAgainstTitle(e, a))
+                            continue;
+                        if (link.Dir.Length > 0 && !e.Command.IsAxis && !string.Equals(a.Dir, link.Dir, StringComparison.OrdinalIgnoreCase))
+                            continue;
+                        functionName = f.Name;
+                        picks.Add(new KeyValuePair<EngineFunctionMap.Entry, double>(e, a.Weight * link.Weight + (a.Source == "catalog" ? 0.2 : 0) - EngineFunctionMap.PrimaryRank(e, f) * 0.01));
+                    }
+                }
+            }
+            if (picks.Count == 0)
+                return false;
+            double best = picks.Max(p => p.Value);
+            bool added = false;
+            foreach (EngineFunctionMap.Entry e in picks.Where(p => p.Value >= best - 0.05).OrderByDescending(p => p.Value).Select(p => p.Key).Distinct().Take(2))
+            {
+                double confidence = Math.Round(0.65 * hit.Quality * selection.Factor, 2);
+                EngineNlGroupNode node = proposal.Nodes.FirstOrDefault(n => n.Game == e.Command.Game && n.Id == e.Command.Id);
+                if (node == null)
+                {
+                    node = new EngineNlGroupNode { Game = e.Command.Game, Id = e.Command.Id, Confidence = confidence };
+                    proposal.Nodes.Add(node);
+                }
+                if (node.Planes.Contains(game, StringComparer.OrdinalIgnoreCase))
+                    continue;
+                node.Planes.Add(game);
+                node.Confidence = Math.Min(node.Confidence, confidence);
+                string category = EngineAiExplain.ReadableCategory(e.Command.Category);
+                node.Explanations.Add(EngineGameWords.Label(game) + ": \"" + EngineActionInfo.Readable(e.Command.Game, e.Command.Id, e.Command.Title) + "\"" +
+                                      (category.Length > 0 ? " [" + category + "]" : string.Empty) + " (function map: " + functionName + "; " + EngineGameWords.Label(game) +
+                                      " has no catalog row for it); " + hit.Reason);
+                added = true;
+            }
+            return added;
         }
 
         // ------------------------------------------------------------------------------------------------------
@@ -1712,6 +1938,11 @@ namespace JoyPro.Engine
                 Concept concept = ConceptOfSlot(v, ranked.Key, out variant);
                 pool.Add(new Selection { Concept = concept, Variant = variant, Label = SlotLabel(v, catalog.Slots[ranked.Key]), Slots = new List<string> { ranked.Key }, Factor = RetrievalFactor, Why = "catalog words" });
             }
+            // The examples come from the aircraft and games the request names first ("landing gear in Star Citizen":
+            // Star Citizen's own command), then the well-known ones.
+            HashSet<string> preferred = u.Include.Count > 0 && u.Include.All(c => c.Games.Count > 0 || c.Aircraft.Count > 0)
+                ? new HashSet<string>(ResolveClauses(v, catalog, u.Include, false).Keys, StringComparer.OrdinalIgnoreCase)
+                : new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (Selection selection in pool)
             {
                 if (functions.Count >= limits.MaxFunctions)
@@ -1722,7 +1953,7 @@ namespace JoyPro.Engine
                 {
                     Label = selection.Label,
                     Group = FunctionHeading(selection.Concept),
-                    Detail = FunctionDetail(v, catalog, selection, limits.ExamplesPerFunction),
+                    Detail = FunctionDetail(v, catalog, selection, Math.Max(limits.ExamplesPerFunction, preferred.Count > 0 ? 1 : 0), preferred),
                     Selection = selection
                 });
             }
@@ -1755,7 +1986,7 @@ namespace JoyPro.Engine
         }
 
         // "button; 38 aircraft; e.g. F-16C_50 "CMS Switch - FWD" (stick: CMS forward), AH-64D_BLK_II_PLT "Flare Button" (cyclic: Flare button)"
-        private static string FunctionDetail(Vocabulary v, Catalog catalog, Selection selection, int examples)
+        private static string FunctionDetail(Vocabulary v, Catalog catalog, Selection selection, int examples, HashSet<string> preferred)
         {
             EngineAutoGroup.Slot slot = catalog.Slots[selection.Slots[0]];
             List<RowInfo> rows = selection.Slots.SelectMany(s =>
@@ -1778,7 +2009,8 @@ namespace JoyPro.Engine
                 HashSet<string> controls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (RowInfo row in rows
                              .Where(r => catalog.Aircraft.ContainsKey(r.Row.Plane) && catalog.Aircraft[r.Row.Plane].VariantOf.Length == 0)
-                             .OrderBy(r => { int i = Array.IndexOf(ExamplePlanes, r.Row.Plane); return i < 0 ? 100 : i; })
+                             .OrderBy(r => preferred != null && preferred.Contains(r.Row.Plane) ? 0 : 1)
+                             .ThenBy(r => { int i = Array.IndexOf(ExamplePlanes, r.Row.Plane); return i < 0 ? 100 : i; })
                              .ThenByDescending(r => frequency[r.Control])
                              .ThenBy(r => r.Row.Plane, StringComparer.OrdinalIgnoreCase))
                 {
@@ -1789,7 +2021,7 @@ namespace JoyPro.Engine
                     CommandInfo command = LookupCommand(row.Row.Game, row.Row.Plane, row.Row.Action);
                     if (EngineAutoGroup.IsDcs(row.Row.Game) && command == null)
                         continue;
-                    string title = command != null && command.Title.Length > 0 ? "\"" + Shorten(command.Title, 60) + "\"" : string.Empty;
+                    string title = command != null && command.Title.Length > 0 ? "\"" + Shorten(EngineActionInfo.Readable(EngineAutoGroup.IsDcs(row.Row.Game) ? "DCS" : row.Row.Game, row.Row.Action, command.Title), 60) + "\"" : string.Empty;
                     string control = row.Control.Length > 0 ? Shorten(row.Control, 50) : string.Empty;
                     string where = EngineAutoGroup.IsDcs(row.Row.Game) ? row.Row.Plane : GameLabel(v, row.Row.Game);
                     shown.Add(where + " " + (title.Length > 0 ? title + (control.Length > 0 ? " (" + control + ")" : string.Empty) : control));

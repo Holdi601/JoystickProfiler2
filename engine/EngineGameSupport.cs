@@ -209,7 +209,8 @@ namespace JoyPro.Engine
                             row.Settings.Add(parameter.Label);
                     }
                 }
-                row.Functions = FunctionRows(id);
+                bool derivedTable;
+                row.Functions = FunctionRows(id, out derivedTable);
                 row.Cockpits = cockpits == null ? 0 : CockpitCount(cockpits, id);
 
                 Set(row, "import", Yes, string.Empty);
@@ -233,7 +234,9 @@ namespace JoyPro.Engine
                 if (row.Cells["xbox"].Mark == Partial)
                     row.Cells["xbox"].Note = GenericXboxNote;
                 Set(row, "functions", vjoyGames.Contains(id) ? Yes : No, string.Empty);
-                Set(row, "wizard", row.Functions > 0 ? Yes : No, row.Functions > 0 ? row.Functions.ToString(CultureInfo.InvariantCulture) : string.Empty);
+                Set(row, "wizard", row.Functions == 0 ? No : derivedTable ? Partial : Yes, row.Functions > 0 && !derivedTable ? row.Functions.ToString(CultureInfo.InvariantCulture) : string.Empty);
+                if (derivedTable && row.Functions > 0)
+                    row.Cells["wizard"].Note = DerivedTableNote;
                 Set(row, "cockpits", row.Cockpits > 0 ? Yes : No, row.Cockpits > 0 ? row.Cockpits.ToString(CultureInfo.InvariantCulture) : string.Empty);
                 Set(row, "layout", Yes, string.Empty);
                 Set(row, "e2e", No, string.Empty);
@@ -266,14 +269,31 @@ namespace JoyPro.Engine
         }
 
         // Rows of JoyPro's function table of the game (DB\Functions\<game>.tsv), the base of Auto Assign and the setup wizard.
-        private static int FunctionRows(string gameId)
+        private const string DerivedTableNote = "No hand-made function table yet: JoyPro derives one from the function map (the game's own titles and categories).";
+
+        private static int FunctionRows(string gameId, out bool derived)
         {
+            derived = false;
             string folder = Environment.GetEnvironmentVariable("JOYPRO_FUNCTIONS_DB");
             string file = string.IsNullOrWhiteSpace(folder)
                 ? Path.Combine(MainStructure.PROGPATH ?? string.Empty, "DB", "Functions", gameId + ".tsv")
                 : Path.Combine(folder, gameId + ".tsv");
             if (!File.Exists(file))
-                return 0;
+            {
+                // No table of its own: the one JoyPro derives from the function map (EngineFunctionTable).
+                if (!string.IsNullOrWhiteSpace(folder))
+                    return 0;
+                try
+                {
+                    int count = EngineFunctionTable.DerivedCount(gameId);
+                    derived = count > 0;
+                    return count;
+                }
+                catch (Exception)
+                {
+                    return 0;
+                }
+            }
             return File.ReadLines(file, Encoding.UTF8).Count(l => l.Trim().Length > 0 && !l.StartsWith("#", StringComparison.Ordinal));
         }
 

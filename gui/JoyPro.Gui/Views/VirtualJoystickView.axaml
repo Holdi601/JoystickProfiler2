@@ -65,7 +65,7 @@
                                         <Button Command="{Binding SetUpVJoyMaximumCommand}" Content="{l:T 'Set up vJoy for maximum'}" IsVisible="{Binding !VJoyAtMaximum}"
                                                 ToolTip.Tip="{l:T '8 axes, 128 buttons and 4 hats on each vJoy device JoyPro uses (one administrator prompt). Windows must restart before it takes effect; JoyPro never restarts Windows.'}" />
                                     </StackPanel>
-                                    <TextBlock Text="{Binding VJoyMaximumText}" TextWrapping="Wrap" FontSize="12" Foreground="#B45309"
+                                    <TextBlock Text="{Binding VJoyMaximumText}" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource JP.WarnTextBrush}"
                                                IsVisible="{Binding VJoyMaximumText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                     <TextBlock Text="{Binding VirtualJoystickNeedsText}" TextWrapping="Wrap" FontSize="12"
                                                IsVisible="{Binding VirtualJoystickNeedsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -110,9 +110,9 @@
                                                                    IsVisible="{Binding InputLimitText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                         <TextBlock Text="{Binding FunctionsText}" FontSize="12" Opacity="0.7"
                                                                    IsVisible="{Binding FunctionsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                        <TextBlock Text="{Binding LimitWarningsText}" FontSize="12" TextWrapping="Wrap" Foreground="#B45309" IsVisible="{Binding HasLimitWarnings}" />
+                                                        <TextBlock Text="{Binding LimitWarningsText}" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasLimitWarnings}" />
                                                         <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding ShowSuggestion}">
-                                                            <TextBlock Text="{Binding SuggestionText}" FontSize="12" TextWrapping="Wrap" MaxWidth="520" VerticalAlignment="Center" Foreground="#B45309" />
+                                                            <TextBlock Text="{Binding SuggestionText}" FontSize="12" TextWrapping="Wrap" MaxWidth="520" VerticalAlignment="Center" Foreground="{DynamicResource JP.WarnTextBrush}" />
                                                             <Button Content="{l:T 'Use it'}" Command="{Binding ApplySuggestionCommand}" Padding="8,2" VerticalAlignment="Center"
                                                                     ToolTip.Tip="{l:T 'Switches this game to the suggested virtual mode. Export the game again afterwards.'}" />
                                                         </StackPanel>
@@ -218,7 +218,7 @@
                                                         <TextBlock Text="{Binding GameName}" FontSize="11" Opacity="0.75" />
                                                         <TextBlock Text="{Binding OutputsText}" FontSize="11" Opacity="0.75" TextWrapping="Wrap" />
                                                         <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold" />
-                                                        <TextBlock Text="{Binding LiveText}" FontSize="11" Foreground="#16A34A"
+                                                        <TextBlock Text="{Binding LiveText}" FontSize="11" Foreground="{DynamicResource JP.OkTextBrush}"
                                                                    IsVisible="{Binding LiveText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                         <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
                                                             <Button Content="{l:T 'Edit'}" Padding="8,2" Command="{Binding $parent[local:VirtualJoystickView].((vm:MainWindowViewModel)DataContext).EditVirtualFunctionCommand}" CommandParameter="{Binding}" />

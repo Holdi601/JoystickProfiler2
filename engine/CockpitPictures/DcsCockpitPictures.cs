@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using JoyPro.Engine;
 
 namespace JoyPro.CockpitPictures
 {
@@ -374,7 +375,7 @@ namespace JoyPro.CockpitPictures
                         files.AddRange(Directory.GetFiles(dir, Path.GetFileNameWithoutExtension(html) + "_*.html").Where(f => !Regex.IsMatch(Path.GetFileName(f), "_easy|_AI_Menu", RegexOptions.IgnoreCase)));
                     foreach (string f in files.Where(read.Add))
                     {
-                        foreach (InputCommand ic in ReadCommands(f))
+                        foreach (InputCommand ic in ReadCommands(f, DcsCommandNames.EnglishCatalog(job.DcsRoot)))
                         {
                             if (!commands.Any(x => x.Id == ic.Id))
                                 commands.Add(ic);
@@ -517,7 +518,8 @@ namespace JoyPro.CockpitPictures
         private static readonly Regex RowRx = new Regex("<tr>\\s*<td>(.*?)</td>\\s*<td>(.*?)</td>\\s*<td>(.*?)</td>\\s*<td>(.*?)</td>", RegexOptions.Singleline | RegexOptions.Compiled);
         private static readonly Regex HashRx = new Regex("^d(?<d>.+?)p(?<p>.+?)u(?<u>.+?)cd(?<cd>.+?)vd", RegexOptions.Compiled);
 
-        public static List<InputCommand> ReadCommands(string html)
+        // Titles and categories stored as a DCS localization key take DCS's English text (DcsCommandNames).
+        public static List<InputCommand> ReadCommands(string html, IDictionary<string, string> englishNames = null)
         {
             List<InputCommand> list = new List<InputCommand>();
             foreach (Match m in RowRx.Matches(File.ReadAllText(html, Encoding.UTF8)))
@@ -528,8 +530,8 @@ namespace JoyPro.CockpitPictures
                     continue;
                 list.Add(new InputCommand
                 {
-                    Name = WebUtility.HtmlDecode(m.Groups[2].Value).Trim(),
-                    Category = WebUtility.HtmlDecode(m.Groups[3].Value).Trim(),
+                    Name = ReadableName(WebUtility.HtmlDecode(m.Groups[2].Value).Trim(), id, englishNames),
+                    Category = DcsCommandNames.ResolveCategory(WebUtility.HtmlDecode(m.Groups[3].Value).Trim(), englishNames),
                     Id = id,
                     Down = h.Groups["d"].Value,
                     Pressed = h.Groups["p"].Value,
@@ -538,6 +540,14 @@ namespace JoyPro.CockpitPictures
                 });
             }
             return list;
+        }
+
+        private static string ReadableName(string name, string id, IDictionary<string, string> englishNames)
+        {
+            if (!DcsCommandNames.IsRawTitle(name, id))
+                return name;
+            string resolved = DcsCommandNames.Resolve(name, id, englishNames);
+            return string.IsNullOrWhiteSpace(resolved) ? name : resolved;
         }
 
         private static readonly Regex TokenRx = new Regex("^(?:PTR|PNT|PTN)[-_]+([A-Za-z0-9]+)[-_]", RegexOptions.Compiled);

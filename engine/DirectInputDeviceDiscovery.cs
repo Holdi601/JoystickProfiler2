@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -177,7 +177,32 @@ namespace JoyPro
             return id;
         }
 
+        // One enumeration answers every caller of the next two seconds (an export asks for the connected devices in the
+        // diagnostics, the device names and the vJoy scope; each DirectInput enumeration takes 100-200 ms).
+        private static readonly object EnumerationCacheLock = new object();
+        private static List<DirectInputDeviceInfo> enumerationCache;
+        private static List<string> enumerationCacheWarnings;
+        private static readonly System.Diagnostics.Stopwatch EnumerationCacheAge = new System.Diagnostics.Stopwatch();
+        private const int EnumerationCacheMs = 2000;
+
         private static List<DirectInputDeviceInfo> EnumerateConnectedDeviceDetails(List<string> warnings)
+        {
+            lock (EnumerationCacheLock)
+            {
+                if (enumerationCache == null || !EnumerationCacheAge.IsRunning || EnumerationCacheAge.ElapsedMilliseconds > EnumerationCacheMs)
+                {
+                    List<string> fresh = new List<string>();
+                    enumerationCache = EnumerateConnectedDeviceDetailsUncached(fresh);
+                    enumerationCacheWarnings = fresh;
+                    EnumerationCacheAge.Restart();
+                }
+                if (warnings != null)
+                    warnings.AddRange(enumerationCacheWarnings);
+                return new List<DirectInputDeviceInfo>(enumerationCache);
+            }
+        }
+
+        private static List<DirectInputDeviceInfo> EnumerateConnectedDeviceDetailsUncached(List<string> warnings)
         {
             List<DirectInputDeviceInfo> output = new List<DirectInputDeviceInfo>();
             IDirectInput8W directInput = null;
