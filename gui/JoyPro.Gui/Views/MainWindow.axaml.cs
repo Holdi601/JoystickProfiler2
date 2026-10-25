@@ -504,6 +504,7 @@ public partial class MainWindow : Window
         // The overlay window would keep the app alive.
         (DataContext as MainWindowViewModel)?.StopOverlayForShutdown();
         (DataContext as MainWindowViewModel)?.StopGameConfigWatcher();
+        (DataContext as MainWindowViewModel)?.StopUsageRecording();
         // JoyPro.Ffb follows the GUI's pid anyway; "stop" ends it at once (killed after 3 s).
         (DataContext as MainWindowViewModel)?.StopFfbTelemetryForShutdown();
         (DataContext as MainWindowViewModel)?.StopTelemetryRecordingForShutdown();

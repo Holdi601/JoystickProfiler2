@@ -87,10 +87,19 @@ accepted, the files compared; the user's files restored afterwards).
   (2026-10-12): JoyPro does not read Korea's `.gtp` archives, where its own texts are; so a title
   comes from IL-2 Great Battles where the id is the same (its built list, else the key mapping files the installed
   IL-2 GB writes, `data\input\*.actions`, comment after `//`; a comment the game left as `inp<id>` counts as none), else
-  JoyPro's own wording for the cryptic ids (`rc_*` rangefinder, `bc_*` pilot body, `mc_*` mouse control, `rb_*`
-  turret, `vc_*` vehicle, `gui_*` menu, `ext_action<n>` "Extra action n", `cockpit_input_command_<n>`), else the id in
-  words. The 60 page actions without an input are not in `general.actions` and need a game update of JoyPro's own
-  wording to come in.
+  JoyPro's own wording for the cryptic ids, else the id in words. The 60 page actions without an input are not in
+  `general.actions` and need a game update of JoyPro's own wording to come in.
+  Since 2026-10-25 every Korea action has JoyPro's own name, Key mapping tab and explanation
+  (`DB\Functions\ActionTexts\IL2Korea.tsv`, 435 ids incl. the page's hidden and tank commands; written for JoyPro,
+  shipped). It always wins for Korea: the catalog only ever had borrowed IL-2 GB titles, and some shared ids mean
+  something else there (`bc_signal_*` are flight orders in GB, pilot gestures in Korea). What the prefixes are, checked
+  against the games' files: `rpc_` plane controls (GB text "Plane control: pitch"), `mc_` the game's Mouse control mode
+  (Korea's own `Doc\Input Maps\_Mouse.png`: "Flight direction / FREE LOOK / ZOOM (Mouse control)" on the defaults of
+  `mc_pitch/yaw`, `mc_*_free` + right button, `mc_zoom` Shift+wheel), `rb_` turret aiming with the mouse (defaults on the
+  mouse axes, `rb_zoom` "Change veh turret zoom", the mouse sheet's "Turret aim"; the game never spells the letters out),
+  `vc_` vehicle, `tc_` turret, `bc_` the pilot's body (head, pistol, gestures, walking), `gs_`/`bs_` gun/bomb sight,
+  `rc_` radar rangefinder and RWR, `ext_action0-9` keys of the mission panels (GB's `data\swf\extensions` recon /
+  photo recon / artillery correction panels read `ext_action<n>`: "press [key] to mark").
 - Axis settings per relation (`engine binds tuning set <relation> --scope game:IL2Korea`, model `il2korea`): sensitivity
   (exponent, -100..100), deadZone0/deadZone1, offset (pitch), harmonization (0-2) and normalized (0-1) for pitch, roll
   and yaw, relative (1 = Relative Control, the `*` token prefix), relativeDeadZone (0..80 %) and relativeSensitivity

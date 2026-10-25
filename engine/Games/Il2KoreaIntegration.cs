@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -1153,7 +1153,9 @@ namespace JoyPro.Engine.Games
         // ---- catalog -------------------------------------------------------------------------------------------
 
         // The action ids come from a key mapping file of the game (its defaults list every action that has an input);
-        // titles from IL-2 Great Battles' descriptions where the ids are the same, else from the id.
+        // names and menu sections from JoyPro's own table (DB\Functions\ActionTexts\IL2Korea.tsv: Korea's own text sits
+        // in encrypted archives, and IL-2 Great Battles names some shared ids differently, bc_signal_* are orders there
+        // and gestures here), else IL-2 Great Battles' descriptions where the ids are the same, else from the id.
         public GameCatalog RefreshCatalog(string sourcePath, GameCatalog current, GameIoResult result)
         {
             string path = sourcePath;
@@ -1175,12 +1177,13 @@ namespace JoyPro.Engine.Games
                 KeyValuePair<bool, string> gb;
                 bool known = greatBattles.TryGetValue(id, out gb);
                 bool axis = inputs.Any(i => i.IndexOf('/') >= 0 || i.IndexOf("axis", StringComparison.OrdinalIgnoreCase) >= 0) || (known && gb.Key);
+                ActionTexts.Entry own = EngineActionTexts.Find(GameId, id);
                 catalog.Add(new GameAction
                 {
                     Id = id,
-                    Title = existing != null ? existing.Title : known && gb.Value.Length > 0 ? gb.Value : OwnTitle(id),
+                    Title = own != null && own.Name.Length > 0 ? own.Name : existing != null ? existing.Title : known && gb.Value.Length > 0 ? gb.Value : OwnTitle(id),
                     IsAxis = existing != null ? existing.IsAxis : axis,
-                    Category = existing != null ? existing.Category : CategoryOf(id)
+                    Category = own != null && own.Category.Length > 0 ? own.Category : existing != null ? existing.Category : CategoryOf(id)
                 });
             }
             if (current != null)
@@ -1244,38 +1247,13 @@ namespace JoyPro.Engine.Games
             return text.Length > 0 && !string.Equals(text, "inp" + id, StringComparison.OrdinalIgnoreCase);
         }
 
-        // JoyPro's own wording for the Korea ids IL-2 Great Battles has no text for (the cryptic prefixes and the
-        // generic slots); others are the id in words.
-        private static readonly Dictionary<string, string> OwnTitles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "rc_distance", "Rangefinder: distance" }, { "rc_reset", "Rangefinder: reset" }, { "rc_power", "Rangefinder: power" },
-            { "gs_brightness", "Gunsight brightness" }, { "bombfuse_toggle", "Bomb fuse toggle" },
-            { "quickmenu", "Quick menu" }, { "statuspanel", "Status panel" }, { "lobby", "Lobby" },
-            { "gui_cursor_right", "Menu cursor right" }, { "gui_cursor_left", "Menu cursor left" }, { "gui_cursor_down", "Menu cursor down" },
-            { "gui_cursor_up", "Menu cursor up" }, { "gui_accept", "Menu accept" }, { "gui_cancel", "Menu cancel" },
-            { "gui_context1", "Menu context action 1" }, { "gui_context2", "Menu context action 2" }, { "gui_next", "Menu next tab" }, { "gui_prev", "Menu previous tab" },
-            { "switchmapback", "Map: back" }, { "skipallmedia", "Skip videos" },
-            { "ai_track_mode", "AI gunner: track mode" }, { "ai_turret_leave", "AI gunner: leave turret" },
-            { "autoclimbflight", "Autopilot: climb" }, { "autolevelflight_hard_to_right", "Autopilot: hard turn right" },
-            { "autolevelflight_hard_to_left", "Autopilot: hard turn left" }, { "autofuelsystem", "Automatic fuel system" },
-            { "bc_head_roll", "Pilot head: roll" }, { "bc_go_forward", "Walk forward" }, { "bc_go_backward", "Walk backward" },
-            { "bc_go_right", "Walk right" }, { "bc_go_left", "Walk left" }, { "bc_run", "Run" }, { "bc_lie", "Lie down" },
-            { "vc_brakeaxis", "Vehicle: brake axis" }, { "vc_clutch", "Vehicle: clutch" }, { "vc_brake", "Vehicle: brake" },
-            { "rb_pitch", "Turret: pitch" }, { "rb_yaw", "Turret: yaw" },
-            { "mc_pitch", "Mouse control: pitch" }, { "mc_yaw", "Mouse control: yaw" },
-            { "mc_pitch_free", "Mouse control: pitch (free)" }, { "mc_yaw_free", "Mouse control: yaw (free)" },
-            { "cam_switch_mc_far", "Camera: mouse control, far" }, { "cam_switch_mc_close", "Camera: mouse control, close" },
-            { "freelook", "Free look" }, { "dummyevent", "Unused" }, { "emergency_gear_dn", "Emergency gear down" }
-        };
-
+        // An id neither JoyPro's table nor IL-2 Great Battles names (a newer game version): the generic slots, else the
+        // id in words.
         private static string OwnTitle(string id)
         {
-            string title;
-            if (OwnTitles.TryGetValue(id, out title))
-                return title;
             Match slot = Regex.Match(id, @"^ext_action(\d)$");
             if (slot.Success)
-                return "Extra action " + slot.Groups[1].Value;
+                return "Mission panel key " + slot.Groups[1].Value;
             slot = Regex.Match(id, @"^cockpit_input_command_(\d+)$");
             if (slot.Success)
                 return "Cockpit command " + slot.Groups[1].Value;

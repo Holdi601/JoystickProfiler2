@@ -24,13 +24,14 @@ namespace JoyPro.Setup
                 { "ModifiersWanted", plan.ModifiersWanted },
                 { "PreferFewer", plan.PreferFewer },
                 { "Realism", plan.Realism },
+                { "PhaseLayers", plan.PhaseLayers },
                 { "Seed", plan.Seed },
                 { "CockpitSource", plan.CockpitSource },
                 { "Devices", plan.Devices.Select(DeviceObject).Cast<object>().ToList() },
                 { "Rules", plan.Rules.Cast<object>().ToList() },
                 { "Modifiers", plan.Modifiers.Select(m => (object)new Dictionary<string, object>
                     {
-                        { "Name", m.Name }, { "Device", m.Device }, { "Input", m.Input }, { "Control", m.Control }, { "Existing", m.Existing }, { "Forced", m.Forced }, { "Reason", m.Reason }
+                        { "Name", m.Name }, { "Device", m.Device }, { "Input", m.Input }, { "Control", m.Control }, { "Existing", m.Existing }, { "Forced", m.Forced }, { "Switch", m.Switch }, { "Phase", m.Phase }, { "Reason", m.Reason }
                     }).ToList() },
                 { "Relations", plan.Relations.Select(RelationObject).Cast<object>().ToList() },
                 { "NotPlaced", plan.NotPlaced.Select(n => (object)new Dictionary<string, object>
@@ -73,7 +74,7 @@ namespace JoyPro.Setup
                 { "Existing", r.Existing }, { "Kept", r.Kept }, { "Removed", r.Removed },
                 { "Nodes", r.Nodes.Select(n => (object)new Dictionary<string, object> { { "Game", n.Game }, { "Action", n.Action }, { "Aircraft", n.Aircraft } }).ToList() },
                 { "Aircraft", r.Aircraft.Cast<object>().ToList() }, { "Overlap", r.Overlap.Cast<object>().ToList() }, { "Importance", r.Importance },
-                { "Device", r.Device }, { "Input", r.Input }, { "Control", r.Control }, { "Label", r.Label }, { "Modifier", r.Modifier }, { "Score", r.Score },
+                { "Device", r.Device }, { "Input", r.Input }, { "Control", r.Control }, { "Label", r.Label }, { "Modifier", r.Modifier }, { "Phase", r.Phase }, { "Score", r.Score },
                 { "RealMatch", r.RealMatch }, { "Reason", r.Reason }
             };
         }
@@ -97,6 +98,7 @@ namespace JoyPro.Setup
                 ModifiersWanted = (int)Number(root, "ModifiersWanted", 0),
                 PreferFewer = Bool(root, "PreferFewer"),
                 Realism = Number(root, "Realism", 0.5),
+                PhaseLayers = Text(root, "PhaseLayers"),
                 Seed = (int)Number(root, "Seed", 1),
                 CockpitSource = Text(root, "CockpitSource"),
                 Rules = Strings(root, "Rules"),
@@ -121,7 +123,7 @@ namespace JoyPro.Setup
                 plan.Modifiers.Add(new SetupPlanModifier
                 {
                     Name = Text(m, "Name"), Device = Text(m, "Device"), Input = Text(m, "Input"), Control = Text(m, "Control"),
-                    Existing = Bool(m, "Existing"), Forced = Bool(m, "Forced"), Reason = Text(m, "Reason")
+                    Existing = Bool(m, "Existing"), Forced = Bool(m, "Forced"), Switch = Bool(m, "Switch"), Phase = Text(m, "Phase"), Reason = Text(m, "Reason")
                 });
             }
             foreach (IDictionary<string, object> r in Objects(root, "Relations"))
@@ -131,7 +133,7 @@ namespace JoyPro.Setup
                     Name = Text(r, "Name"), Function = Text(r, "Function"), FunctionName = Text(r, "FunctionName"), Category = Text(r, "Category"),
                     IsAxis = Bool(r, "IsAxis"), Existing = Bool(r, "Existing"), Kept = Bool(r, "Kept"), Removed = Bool(r, "Removed"),
                     Aircraft = Strings(r, "Aircraft"), Overlap = Strings(r, "Overlap"), Importance = Number(r, "Importance", 0),
-                    Device = Text(r, "Device"), Input = Text(r, "Input"), Control = Text(r, "Control"), Label = Text(r, "Label"), Modifier = Text(r, "Modifier"),
+                    Device = Text(r, "Device"), Input = Text(r, "Input"), Control = Text(r, "Control"), Label = Text(r, "Label"), Modifier = Text(r, "Modifier"), Phase = Text(r, "Phase"),
                     Score = Number(r, "Score", 0), RealMatch = Number(r, "RealMatch", 0), Reason = Text(r, "Reason")
                 };
                 foreach (IDictionary<string, object> n in Objects(r, "Nodes"))
@@ -230,9 +232,27 @@ namespace JoyPro.Setup
     {
         public static List<SetupPlanRelation> Conflicts(SetupPlan plan, SetupPlanRelation relation, string device, string input, string modifier, SetupPlanRelation except)
         {
+            HashSet<string> clash = ClashingLayers(plan, modifier ?? string.Empty);
             return plan.Relations.Where(r => r != relation && r != except && !r.Removed && r.Device == device &&
                                              string.Equals(r.Input, input, StringComparison.OrdinalIgnoreCase) &&
-                                             string.Equals(r.Modifier ?? string.Empty, modifier ?? string.Empty, StringComparison.Ordinal) && Overlap(r, relation)).ToList();
+                                             clash.Contains(r.Modifier ?? string.Empty) && Overlap(r, relation)).ToList();
+        }
+
+        // The layers that clash on one input: the same layer, and the normal layer with the mode switch's phase layers (a
+        // function on the normal layer would not work in a switch position that has its own function there).
+        private static HashSet<string> ClashingLayers(SetupPlan plan, string modifier)
+        {
+            HashSet<string> layers = new HashSet<string>(StringComparer.Ordinal) { modifier };
+            if (modifier.Length == 0)
+            {
+                foreach (SetupPlanModifier phase in plan.Modifiers.Where(m => m.Switch))
+                    layers.Add(phase.Name);
+            }
+            else if (plan.Modifiers.Any(m => m.Switch && m.Name == modifier))
+            {
+                layers.Add(string.Empty);
+            }
+            return layers;
         }
 
         public static bool Overlap(SetupPlanRelation a, SetupPlanRelation b)
@@ -328,12 +348,33 @@ namespace JoyPro.Setup
                     {
                         if ((list[i].Kept && list[j].Kept) || !Overlap(list[i], list[j]))
                             continue;
-                        problems.Add("\"" + list[i].Name + "\" and \"" + list[j].Name + "\" share " + list[i].Device + " " + list[i].Input +
-                                     (list[i].Modifier.Length > 0 ? " + " + list[i].Modifier : string.Empty) + " in the same aircraft.");
+                        problems.Add("\"" + list[i].Name + "\" and \"" + list[j].Name + "\" share " + Where(list[i]) + " in the same aircraft.");
                     }
                 }
             }
+            HashSet<string> phases = new HashSet<string>(plan.Modifiers.Where(m => m.Switch).Select(m => m.Name), StringComparer.Ordinal);
+            if (phases.Count == 0)
+                return problems;
+            foreach (IGrouping<string, SetupPlanRelation> group in plan.Relations.Where(r => !r.Removed && r.Device.Length > 0 && (r.Modifier.Length == 0 || phases.Contains(r.Modifier)))
+                         .GroupBy(r => r.Device + "|" + r.Input.ToUpperInvariant(), StringComparer.Ordinal))
+            {
+                List<SetupPlanRelation> normal = group.Where(r => r.Modifier.Length == 0).ToList();
+                foreach (SetupPlanRelation layered in group.Where(r => r.Modifier.Length > 0))
+                {
+                    string layerPhase = plan.Modifiers.Where(m => m.Name == layered.Modifier).Select(m => m.Phase).FirstOrDefault() ?? string.Empty;
+                    SetupPlanRelation other = normal.FirstOrDefault(r => !(r.Kept && layered.Kept) && Overlap(r, layered) && !(!r.Kept && r.Phase.Length > 0 && r.Phase != layerPhase));
+                    if (other != null)
+                        problems.Add("\"" + other.Name + "\" on " + Where(other, false) + " would not work while the mode switch is on \"" + layered.Modifier + "\" (\"" + layered.Name + "\").");
+                }
+            }
             return problems;
+        }
+
+        // A relation's input in plain words: "VKB Gladiator Hat 1 down + JoyPro Shift" (no instance id, no input token).
+        private static string Where(SetupPlanRelation relation, bool modifier = true)
+        {
+            string device = System.Text.RegularExpressions.Regex.Replace(relation.Device ?? string.Empty, @"\s*\{[0-9A-Fa-f-]+\}\s*$", string.Empty).Trim();
+            return device + " " + JoyPro.DeviceReference.DeviceVocabulary.InputName(relation.Input) + (modifier && relation.Modifier.Length > 0 ? " + " + relation.Modifier : string.Empty);
         }
     }
 }

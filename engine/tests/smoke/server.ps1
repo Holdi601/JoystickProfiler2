@@ -23,6 +23,11 @@ try {
     $selfTest = Run-Engine @("serve", "--self-test", $svProfile)
     Assert-True ($selfTest.ExitCode -eq 0) ("serve --self-test: the profile copy differs from the profile read from the file: " + $selfTest.Output)
     Assert-Match $selfTest.Output "same bytes: True, separate graph: True" "serve --self-test did not report its checks."
+    # The load correction the server keeps: the same state as one that runs; a changed file or DB list runs it again.
+    Assert-Match $selfTest.Output "corrected: True, kept: True, same state as a run: True, run again after a file change: True, after a DB change: True" ("serve --self-test: the kept load correction differs: " + $selfTest.Output)
+    $legacyFixture = Join-Path $PSScriptRoot "..\fixtures\legacy-ids\legacy-ids.pr0file"
+    $legacyTest = Run-Engine @("serve", "--self-test", $legacyFixture)
+    Assert-True ($legacyTest.ExitCode -eq 0) ("serve --self-test on an older profile failed: " + $legacyTest.Output)
 
     # The same commands in processes and in one server, each side on its own copy and data folder.
     $svCommands = @(
@@ -69,6 +74,47 @@ try {
     $processBytes = [IO.File]::ReadAllBytes($svSides["process"].Profile)
     $serverBytes = [IO.File]::ReadAllBytes($svSides["server"].Profile)
     Assert-True ([Linq.Enumerable]::SequenceEqual($processBytes, $serverBytes)) ("the profile saved by the server differs from the one saved by processes (" + $processBytes.Length + " / " + $serverBytes.Length + " bytes).")
+    # An older profile (its load correction runs): "profile load" corrects it, the change after it gets the kept
+    # correction in the server and a new one in each process; the saved profiles must be the same.
+    $kcCommands = @(
+        @("profile", "load"),
+        @("relations", "add", "Kept correction", "--button", "--node", "DCS:server_kept:A-10C_2"),
+        @("relations", "list")
+    )
+    $kcSides = @{}
+    foreach ($side in @("process", "server")) {
+        $folder = Join-Path $svDir ("kept-" + $side)
+        New-Item -Path $folder -ItemType Directory -Force | Out-Null
+        $copy = Join-Path $folder "older.pr0file"
+        Copy-Item -LiteralPath $legacyFixture -Destination $copy -Force
+        $kcSides[$side] = @{ Folder = $folder; Profile = $copy; Outputs = New-Object System.Collections.Generic.List[string] }
+    }
+    $env:JOYPRO_DATA_DIR = Join-Path $kcSides["process"].Folder "data"
+    foreach ($command in $kcCommands) {
+        $args1 = if ($command[0] -eq "profile" -and $command[1] -eq "load") { @("--status", "false", "profile", "load", $kcSides["process"].Profile) } else { @("--profile", $kcSides["process"].Profile, "--status", "false") + $command }
+        $run = Run-Engine $args1
+        $kcSides["process"].Outputs.Add("exit " + $run.ExitCode)
+    }
+    $env:JOYPRO_DATA_DIR = Join-Path $kcSides["server"].Folder "data"
+    $kcScript = Join-Path $svDir "script-kept.json"
+    $kcLines = foreach ($command in $kcCommands) {
+        $args1 = if ($command[0] -eq "profile" -and $command[1] -eq "load") { @("--status", "false", "profile", "load", $kcSides["server"].Profile) } else { @("--profile", $kcSides["server"].Profile, "--status", "false") + $command }
+        ConvertTo-Json -Compress -InputObject ([string[]]$args1)
+    }
+    [IO.File]::WriteAllLines($kcScript, [string[]]$kcLines)
+    $env:JOYPRO_SCRIPT_OUT = Join-Path $svDir "script-kept-out"
+    $kcScripted = Run-Engine @("serve", "--script", $kcScript)
+    $env:JOYPRO_SCRIPT_OUT = $svPreviousOut
+    for ($i = 0; $i -lt $kcCommands.Count; $i++) {
+        $file = Join-Path $svDir ("script-kept-out\" + ($i + 1).ToString("D4") + ".txt")
+        Assert-True (Test-Path $file) ("serve --script (older profile) wrote no result for command " + ($i + 1))
+        $first = (Get-Content -LiteralPath $file -TotalCount 1)
+        Assert-True ($first -eq $kcSides["process"].Outputs[$i]) ("older profile, command '" + ($kcCommands[$i] -join " ") + "': " + $kcSides["process"].Outputs[$i] + " in a process, " + $first + " in the server.")
+    }
+    $kcProcessBytes = [IO.File]::ReadAllBytes($kcSides["process"].Profile)
+    $kcServerBytes = [IO.File]::ReadAllBytes($kcSides["server"].Profile)
+    Assert-True ([Linq.Enumerable]::SequenceEqual($kcProcessBytes, $kcServerBytes)) ("older profile: the profile saved by the server (kept load correction) differs from the one saved by processes (" + $kcProcessBytes.Length + " / " + $kcServerBytes.Length + " bytes).")
+
     $listProcess = Run-Engine @("--profile", $svSides["process"].Profile, "relations", "list", "--text")
     $listServer = Get-Content -LiteralPath (Join-Path $svDir ("script-out\" + $svCommands.Count.ToString("D4") + ".txt")) -Raw
     Assert-Match $listServer "Renamed one" "the server's last relations list misses the renamed relation."

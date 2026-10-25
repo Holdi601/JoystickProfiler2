@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -390,6 +390,7 @@ public sealed partial class MainWindowViewModel
             choices.Add(new Dictionary<string, string> { ["Id"] = item.Id, ["Target"] = target, ["Name"] = name });
         }
         string choicesFile = Path.Combine(Path.GetTempPath(), "joypro-sync-" + Guid.NewGuid().ToString("N") + ".json");
+        HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         try
         {
             File.WriteAllText(choicesFile, JsonSerializer.Serialize(new Dictionary<string, object> { ["Choices"] = choices }));
@@ -407,6 +408,7 @@ public sealed partial class MainWindowViewModel
         }
         JoyPro.Logging.JoyProLog.Info("Watcher", GameOfWatchKey(gameSyncWatchKey).GameId + ": took over " + choices.Count(c => c["Target"] != "ignore") + " of " + choices.Count + " change(s)");
         CloseGameSyncPanel();
+        await ReportNewDuplicatesAsync(duplicatesBefore, T("Taking over the game's changes"));
         await RefreshRelationsAsync();
         await RefreshBindsAsync();
         StatusText = T("Took over the game's changes.");

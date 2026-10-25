@@ -28,6 +28,13 @@ namespace JoyPro
             }
         }
 
+        // The DB folders whose command lists the load correction reads (InternalDataManagement.BuildDbCorrectionIndexFromFiles).
+        internal static readonly string[] CorrectedGames = { "DCS", "IL2", "StarCitizen" };
+
+        // Bump when the load correction's rules change in a way old corrected profiles should get again.
+        // 2: 2.3.1, an added aircraft is switched on only when no other relation has the action and its meaning fits.
+        internal const int CorrectionRulesVersion = 2;
+
         public static FingerprintResult Compute(string programRoot)
         {
             FingerprintResult result = new FingerprintResult();
@@ -39,54 +46,29 @@ namespace JoyPro
                 return result;
             }
 
-            // The data JoyPro reads: DB, CleanProfile and KeyboardCleanProfile of the program folder, each game's folder
-            // taken from where GameDataPaths reads it (the game-data folder first). Paths are hashed relative to their
-            // root, so the same lists give the same fingerprint wherever they are.
-            string userRoot = GameDataPaths.UserRoot();
+            // What the load correction depends on, and nothing else: the command lists it corrects against (DCS, IL-2,
+            // Star Citizen, each from where GameDataPaths reads it, the game-data folder first) and the version of its
+            // rules. JoyPro's own data that comes with every release (device catalog and drawings, cockpits, function
+            // tables, AI files) and the clean profiles used to count too: every update then ran the full correction for
+            // every profile on its next save (2.2.17 added a device and its drawings; a tester's next DCS import switched
+            // 330 aircraft on, 77 of them on a second input). Paths are hashed relative to their root, so the same lists
+            // give the same fingerprint wherever they are.
             List<KeyValuePair<string, string>> allFiles = new List<KeyValuePair<string, string>>();
-            foreach (string top in new[] { "DB", "CleanProfile", "KeyboardCleanProfile" })
+            foreach (string game in CorrectedGames)
             {
-                string programTop = Path.Combine(root, top);
-                string userTop = Path.Combine(userRoot, top);
-                if (!Directory.Exists(programTop) && !Directory.Exists(userTop))
-                {
-                    result.Warnings.Add("Fingerprint source folder missing: " + programTop);
+                string folder = GameDataPaths.DbFolder(game);
+                if (!Directory.Exists(folder))
                     continue;
-                }
-
-                List<string> folders = new List<string>();
-                if (Directory.Exists(programTop))
+                result.IncludedRoots.Add(folder);
+                string baseRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetFullPath(folder).TrimEnd('\\')));
+                foreach (string file in Directory.GetFiles(folder, "*", SearchOption.AllDirectories))
                 {
-                    result.IncludedRoots.Add(programTop);
-                    foreach (string file in Directory.GetFiles(programTop))
-                        allFiles.Add(new KeyValuePair<string, string>(root, file));
-                    folders.AddRange(Directory.GetDirectories(programTop).Select(Path.GetFileName));
-                }
-                if (Directory.Exists(userTop))
-                {
-                    result.IncludedRoots.Add(userTop);
-                    folders.AddRange(Directory.GetDirectories(userTop).Select(Path.GetFileName));
-                }
-
-                foreach (string name in folders.Distinct(StringComparer.OrdinalIgnoreCase))
-                {
-                    string folder;
-                    if (top == "DB")
-                        folder = GameDataPaths.DbFolder(name);
-                    else
-                        folder = GameDataPaths.CleanProfileFolder(name, top == "KeyboardCleanProfile");
-                    if (!Directory.Exists(folder))
+                    // source-version.txt only stamps which game build a list belongs to; the update check writes
+                    // it (also as a first baseline) without changing a list. Counting it made the next save of a
+                    // profile run the full load correction and add every same-id aircraft to every relation.
+                    if (string.Equals(Path.GetFileName(file), GameDataPaths.StampFile, StringComparison.OrdinalIgnoreCase))
                         continue;
-                    string baseRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetFullPath(folder).TrimEnd('\\')));
-                    foreach (string file in Directory.GetFiles(folder, "*", SearchOption.AllDirectories))
-                    {
-                        // source-version.txt only stamps which game build a list belongs to; the update check writes
-                        // it (also as a first baseline) without changing a list. Counting it made the next save of a
-                        // profile run the full load correction and add every same-id aircraft to every relation.
-                        if (string.Equals(Path.GetFileName(file), GameDataPaths.StampFile, StringComparison.OrdinalIgnoreCase))
-                            continue;
-                        allFiles.Add(new KeyValuePair<string, string>(baseRoot, file));
-                    }
+                    allFiles.Add(new KeyValuePair<string, string>(baseRoot, file));
                 }
             }
 
@@ -121,7 +103,7 @@ namespace JoyPro
             FileHashes.End();
             using (SHA256 aggregate = SHA256.Create())
             {
-                AppendUtf8(aggregate, "joypro-db-fingerprint-v1");
+                AppendUtf8(aggregate, "joypro-db-fingerprint-v2|corrections-" + CorrectionRulesVersion.ToString(System.Globalization.CultureInfo.InvariantCulture));
                 for (int i = 0; i < ordered.Count; i++)
                 {
                     string relativePath = ordered[i].Key;

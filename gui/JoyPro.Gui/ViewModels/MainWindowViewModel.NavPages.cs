@@ -28,6 +28,8 @@ public sealed partial class MainWindowViewModel
         ("ffb", N("Force Feedback"), "Icon.Vibrate", UiStage.FfbTelemetry),
         ("vjoy", N("Virtual Joystick"), "Icon.Joystick", UiStage.VirtualJoystick),
         ("cockpits", N("Cockpits"), "Icon.Airplane", UiStage.Cockpits),
+        // Opt-in (Settings > Usage statistics > Show the Statistics page): not in the bar or this list until then.
+        ("statistics", N("Statistics"), "Icon.Chart", UiStage.Statistics),
         ("settings", N("Settings"), "Icon.Cog", UiStage.Settings),
         ("advanced", N("Advanced"), "Icon.Console", UiStage.Advanced),
         ("check", N("Check"), "Icon.Ok", null),
@@ -35,6 +37,7 @@ public sealed partial class MainWindowViewModel
     ];
 
     public const string SettingsNavPageId = "settings";
+    public const string StatisticsNavPageId = "statistics";
 
     public ObservableCollection<NavPageItem> NavPages { get; } = CreateNavPages();
 
@@ -47,7 +50,7 @@ public sealed partial class MainWindowViewModel
     {
         ObservableCollection<NavPageItem> pages = [];
         foreach ((string id, string title, string icon, UiStage? stage) in NavPageDefaults)
-            pages.Add(new NavPageItem(id, title, icon, stage, canHide: id != SettingsNavPageId));
+            pages.Add(new NavPageItem(id, title, icon, stage, canHide: id != SettingsNavPageId) { IsAvailable = id != StatisticsNavPageId });
         return pages;
     }
 
@@ -81,6 +84,10 @@ public sealed partial class MainWindowViewModel
         {
             NavBarChanged?.Invoke(this, EventArgs.Empty);
         }
+        else if (e.PropertyName == nameof(NavPageItem.IsAvailable))
+        {
+            OnPropertyChanged(nameof(NavPagesSummary));
+        }
     }
 
     private void OnNavPagesEdited()
@@ -108,7 +115,7 @@ public sealed partial class MainWindowViewModel
         foreach (NavPageItem page in NavPages)
         {
             bool open = page.Stage is UiStage stage ? CurrentStage == stage : page.Id == "output" && EngineOutputExpanded;
-            page.IsTemporarilyShown = !page.IsVisible && open;
+            page.IsTemporarilyShown = !page.IsVisible && open && page.IsAvailable;
         }
         OnPropertyChanged(nameof(HiddenOpenPageHint));
         OnPropertyChanged(nameof(HasHiddenOpenPageHint));
@@ -133,8 +140,8 @@ public sealed partial class MainWindowViewModel
     {
         get
         {
-            int hidden = NavPages.Count(p => !p.IsVisible);
-            return hidden == 0 ? T("All {0} pages shown", NavPages.Count) : Plural("{0} page hidden", "{0} pages hidden", hidden);
+            int hidden = NavPages.Count(p => p.IsAvailable && !p.IsVisible);
+            return hidden == 0 ? T("All {0} pages shown", NavPages.Count(p => p.IsAvailable)) : Plural("{0} page hidden", "{0} pages hidden", hidden);
         }
     }
 
@@ -240,10 +247,15 @@ public sealed partial class NavPageItem : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsShownInBar))]
     private bool isTemporarilyShown;
 
+    // An opt-in page (Statistics) is in the bar and in Settings > Pages only while its setting is on.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsShownInBar))]
+    private bool isAvailable = true;
+
     [ObservableProperty] private bool isFirst;
     [ObservableProperty] private bool isLast;
 
-    public bool IsShownInBar => IsVisible || IsTemporarilyShown;
+    public bool IsShownInBar => IsAvailable && (IsVisible || IsTemporarilyShown);
 
     public string VisibilityTip => CanHide ? T("Show this page in the bottom bar") : T("Settings always stays in the bar (this list is there)");
 }

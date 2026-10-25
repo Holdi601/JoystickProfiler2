@@ -86,6 +86,10 @@ public sealed class TrayWatcherHost : IDisposable
     private readonly Action<Action> post;
     private readonly Action trimMemory;
     private readonly Func<string, bool> fileExists;
+    // The usage recording's live tail (docs/usage-statistics.md#live-tail): null = no recording (the tests of the watcher).
+    private readonly Func<string, IUsageTailer>? usageTailerFactory;
+    private IUsageTailer? usageTailer;
+    private int usageGeneration;
     private readonly List<string> queue = [];
     private readonly List<PendingReview> pending = [];
     private readonly HashSet<string> watched = new(StringComparer.OrdinalIgnoreCase);
@@ -105,8 +109,10 @@ public sealed class TrayWatcherHost : IDisposable
         Func<IGameWatcher> watcherFactory,
         Action<Action> post,
         Action? trimMemory = null,
-        Func<string, bool>? fileExists = null)
+        Func<string, bool>? fileExists = null,
+        Func<string, IUsageTailer>? usageTailerFactory = null)
     {
+        this.usageTailerFactory = usageTailerFactory;
         this.engine = engine;
         this.settingsStore = settingsStore;
         this.gui = gui;
@@ -141,7 +147,56 @@ public sealed class TrayWatcherHost : IDisposable
         UpdateView();
         if (!Paused && Watching)
             await RefreshAsync(checkNow: true);
+        if (!Paused)
+            await StartUsageAsync();
         trimMemory();
+    }
+
+    public bool HasUsageTailer => usageTailer != null;
+
+    // The usage recording runs whenever the tray host watches (not only with "Watching game configs"): catch up with
+    // the games' logs (engine usage harvest), then follow them live; a harvest after each game closed.
+    internal async Task StartUsageAsync()
+    {
+        if (usageTailerFactory == null || disposed || Paused)
+            return;
+        int generation = ++usageGeneration;
+        await engine.RunAsync([.. SyncOutput.CommonArguments, "usage", "harvest"]);
+        if (disposed || Paused || generation != usageGeneration)
+            return;
+        EngineRun sources = await engine.RunAsync([.. SyncOutput.CommonArguments, "usage", "sources"]);
+        if (disposed || Paused || generation != usageGeneration || sources.ExitCode != 0)
+            return;
+        (string LiveFolder, List<UsageTailTarget> Targets)? parsed = UsageLogTailer.ParseSources(sources.StandardOutput);
+        if (parsed == null)
+            return;
+        if (usageTailer == null)
+        {
+            usageTailer = usageTailerFactory(parsed.Value.LiveFolder);
+            usageTailer.GameSessionEnded += OnUsageSessionEndedEvent;
+        }
+        usageTailer.Update(parsed.Value.Targets);
+        JoyPro.Logging.JoyProLog.Info("Tray", "Usage recording follows " + parsed.Value.Targets.Count + " game log folder(s)");
+    }
+
+    private void OnUsageSessionEndedEvent(string game) => post(() => _ = HarvestAfterGameAsync(game));
+
+    private async Task HarvestAfterGameAsync(string game)
+    {
+        if (disposed || Paused)
+            return;
+        await engine.RunAsync([.. SyncOutput.CommonArguments, "usage", "harvest", "--game", game]);
+        trimMemory();
+    }
+
+    private void StopUsage()
+    {
+        usageGeneration++;
+        if (usageTailer == null)
+            return;
+        usageTailer.GameSessionEnded -= OnUsageSessionEndedEvent;
+        usageTailer.Dispose();
+        usageTailer = null;
     }
 
     // Menu "Open JoyPro2" and a click on the icon.
@@ -335,6 +390,7 @@ public sealed class TrayWatcherHost : IDisposable
         Paused = true;
         refreshGeneration++;
         StopWatcher();
+        StopUsage();
         queue.Clear();
         pending.Clear();
         UpdateView();
@@ -359,6 +415,7 @@ public sealed class TrayWatcherHost : IDisposable
         UpdateView();
         if (Watching)
             _ = RefreshAsync(checkNow: false);
+        _ = StartUsageAsync();
     }
 
     private void StopWatcher()
@@ -407,6 +464,7 @@ public sealed class TrayWatcherHost : IDisposable
         if (disposed)
             return;
         StopWatcher();
+        StopUsage();
         disposed = true;
         gui.Started -= OnGuiStartedEvent;
         gui.Exited -= OnGuiExitedEvent;

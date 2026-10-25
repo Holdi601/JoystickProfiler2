@@ -11,7 +11,8 @@ using Xunit;
 
 namespace JoyPro.Gui.Tests.QualityGate;
 
-// I7 of the quality gate (QualityGate.cs, budgets in Budgets.cs): profile load, a relation with 200 actions, 200 more
+// I7 of the quality gate (QualityGate.cs, budgets in Budgets.cs): profile load, the first Lay out with AI preview right
+// after it (rules only, the local AI off: German words, the load corrections of an older profile), a relation with 200 actions, 200 more
 // into it, save, suggestions of the profile's biggest relations, and an export per game: registry games as a dry run on
 // a copy of their config, DCS / IL-2 / Star Citizen into a copy of their config folder (they have no dry run). The real
 // config files are fingerprinted before and after: an export that touches them is a finding of its own.
@@ -38,6 +39,16 @@ public sealed class QualityGatePerformanceTests
             vm.CurrentStage = UiStage.Relations;
             await s.SettleAsync(() => true);
 
+            // The first Lay out with AI preview after opening the profile (Binds page; rules only, no local AI model).
+            vm.LlmEnabled = false;
+            vm.LayoutRequest = "Gas und linker Stick, Trimmung auf den Hat, weichere Kurven für Helis";
+            await s.MeasureAsync("lay out with AI preview", Path.GetFileName(Gate.SourceProfile!) + ": " + vm.LayoutRequest, () => vm.AskLayoutCommand.ExecuteAsync(null));
+            if (vm.LayoutPreferences.Count < 3 || vm.LayoutNotUnderstood.Count > 0)
+                Gate.Fail("I7", "Lay out with AI preview did not understand the request", "Lay out", vm.LayoutRequest,
+                    vm.LayoutPreferences.Count + " preferences, not understood: " + string.Join(" / ", vm.LayoutNotUnderstood) + "; " + Gate.Short(vm.LayoutStatus, 160));
+            vm.CurrentStage = UiStage.Relations;
+            await s.SettleAsync(() => true);
+
             // Suggestions of the five relations with the most games (the slow case: much to compare).
             foreach (RelationListItem relation in vm.Relations.OrderByDescending(r => (r.Games ?? string.Empty).Split(',').Length).ThenBy(r => r.Name).Take(5).ToList())
             {
@@ -52,9 +63,36 @@ public sealed class QualityGatePerformanceTests
 
             await s.MeasureAsync("save", Path.GetFileName(Gate.SourceProfile!) + " + 400 actions", () => vm.SaveProfileCommand.ExecuteAsync(null));
 
+            await UsageStatsAsync(s);
+
             await ExportAllAsync(s);
         });
         Gate.Finish("I7");
+    }
+
+    // The Statistics page's document (engine usage stats with the profile: binds per device, growth from its history,
+    // the oldest unused bind) on a store harvested from the usage fixtures. The first read builds the growth cache.
+    private static async Task UsageStatsAsync(GateSession s)
+    {
+        MainWindowViewModel vm = s.Vm;
+        string root = Path.Combine(Gate.OutDir, "usage-root");
+        if (Directory.Exists(root))
+            Directory.Delete(root, recursive: true);
+        UsageStoreTests.CopyFixtures(root);
+        string? previous = Environment.GetEnvironmentVariable("JOYPRO_USAGE_ROOT");
+        Environment.SetEnvironmentVariable("JOYPRO_USAGE_ROOT", root);
+        try
+        {
+            await vm.HarvestUsageAsync(null);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("JOYPRO_USAGE_ROOT", previous);
+        }
+        await s.MeasureAsync("usage stats first", "Statistics page, " + Path.GetFileName(Gate.SourceProfile!), () => vm.Statistics.ReloadAsync());
+        await s.MeasureAsync("usage stats", "Statistics page, " + Path.GetFileName(Gate.SourceProfile!), () => vm.Statistics.ReloadAsync());
+        if (!vm.Statistics.HasData)
+            Gate.Fail("I7", "the Statistics page has no data after a harvest", string.Empty, "usage stats", vm.Statistics.StatusText);
     }
 
     private static async Task AddTwoHundredAsync(GateSession s)

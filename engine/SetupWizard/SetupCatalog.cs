@@ -57,6 +57,7 @@ namespace JoyPro.Setup
                         Game = game.Length > 0 ? game : "DCS",
                         Type = Text(value, "type"),
                         Era = Text(value, "era"),
+                        Role = Text(value, "role"),
                         VariantOf = Text(value, "variant_of")
                     };
                 }
@@ -84,6 +85,8 @@ namespace JoyPro.Setup
                             function.Frequency = parts[5];
                         function.IsAxis = parts[6] == "axis";
                         function.Group = parts.Length > 7 ? parts[7].Trim() : string.Empty;
+                        function.Phases = parts.Length > 8 ? SetupPhases.Parse(parts[8]) : new List<string>();
+                        function.Crit = parts.Length > 9 ? SetupPhases.NormalizeCrit(parts[9]) : string.Empty;
                     }
                 }
                 else

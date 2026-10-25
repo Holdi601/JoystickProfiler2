@@ -1140,6 +1140,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsVirtualJoystickStage));
         OnVirtualJoystickStageChanged(value == UiStage.VirtualJoystick);
         OnCockpitsStageChanged(value == UiStage.Cockpits);
+        OnStatisticsStageChanged(value == UiStage.Statistics);
         OnComponentsStageChanged(value);
         UpdateAxisTuningMonitor();
         UpdateLiveInputMonitor();
@@ -2628,9 +2629,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (ImportSaturationY)
             args.Add("--import-saturation-y");
 
+        HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Importing from DCS..."));
         if (result?.ExitCode == 0)
         {
+            await ReportNewDuplicatesAsync(duplicatesBefore, T("The DCS import"));
             bool previousSuppress = suppressStageAutoRefresh;
             suppressStageAutoRefresh = true;
             try
@@ -2675,9 +2678,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (ImportDeadzone)
             args.Add("--import-deadzone");
 
+        HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Importing from IL-2..."));
         if (result?.ExitCode == 0)
         {
+            await ReportNewDuplicatesAsync(duplicatesBefore, T("The IL-2 import"));
             bool previousSuppress = suppressStageAutoRefresh;
             suppressStageAutoRefresh = true;
             try
@@ -2718,10 +2723,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--ignore-device", ignored]);
         args.AddRange(["--include-keyboard", ImportStarCitizenIncludeKeyboard ? "true" : "false"]);
 
+        HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Importing from Star Citizen..."));
         await AfterCommandListBuiltAsync(result, "StarCitizen");
         if (result?.ExitCode == 0)
         {
+            await ReportNewDuplicatesAsync(duplicatesBefore, T("The Star Citizen import"));
             bool previousSuppress = suppressStageAutoRefresh;
             suppressStageAutoRefresh = true;
             try
@@ -6864,6 +6871,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
 
         ParseValidation(result.StandardOutput);
+        // Actions on in several relations: cards with the action titles, aircraft and fixes instead of the plain lines.
+        if (allValidationIssues.Any(i => i.Kind == "Warning"))
+            await LoadDuplicateIssuesAsync();
+        else
+            ApplyDuplicates("{\"Duplicates\":[],\"Groups\":[]}");
         if (result.ExitCode != 0)
             StatusText = T("Validation found errors. See the issue list.");
     }
@@ -7005,20 +7017,25 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private void ParseValidation(string output)
     {
         List<ValidationIssueItem> all = [];
-        string summary = T("Validation completed.");
-        string currentType = T("Warning");
+        int errorCount = 0, warningCount = 0;
+        string currentKind = "Warning";
 
         foreach (string raw in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
         {
             string line = raw.TrimEnd();
-            if (line.StartsWith("Passed:", StringComparison.OrdinalIgnoreCase) ||
-                line.StartsWith("Warnings:", StringComparison.OrdinalIgnoreCase) ||
-                line.StartsWith("Errors:", StringComparison.OrdinalIgnoreCase) ||
-                line.StartsWith("Fail On Warnings:", StringComparison.OrdinalIgnoreCase))
+            // The engine's counts: one plain sentence instead of its "Passed: True / Fail On Warnings: False" lines.
+            if (line.StartsWith("Warnings:", StringComparison.OrdinalIgnoreCase))
             {
-                summary += Environment.NewLine + line.Trim();
+                int.TryParse(line["Warnings:".Length..].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out warningCount);
                 continue;
             }
+            if (line.StartsWith("Errors:", StringComparison.OrdinalIgnoreCase))
+            {
+                int.TryParse(line["Errors:".Length..].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out errorCount);
+                continue;
+            }
+            if (line.StartsWith("Passed:", StringComparison.OrdinalIgnoreCase) || line.StartsWith("Fail On Warnings:", StringComparison.OrdinalIgnoreCase))
+                continue;
 
             // Section headers printed by "engine profile validate --text".
             if (line.StartsWith("Relation Errors:", StringComparison.OrdinalIgnoreCase) ||
@@ -7026,12 +7043,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 line.StartsWith("Modifier Errors:", StringComparison.OrdinalIgnoreCase) ||
                 line.StartsWith("Duplicate Active Errors:", StringComparison.OrdinalIgnoreCase))
             {
-                currentType = T("Error");
+                currentKind = "Error";
                 continue;
             }
             if (line.StartsWith("Relation Warnings:", StringComparison.OrdinalIgnoreCase))
             {
-                currentType = T("Warning");
+                currentKind = "Warning";
                 continue;
             }
             if (line.TrimStart().StartsWith("- ", StringComparison.Ordinal))
@@ -7039,16 +7056,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 string message = line.TrimStart()[2..].Trim();
                 all.Add(new ValidationIssueItem
                 {
-                    Type = currentType,
+                    Type = currentKind == "Error" ? T("Error") : T("Warning"),
+                    Kind = currentKind,
                     Message = message,
-                    ActionHint = currentType == "Error"
-                        ? "Open context and fix blocking issue."
-                        : "Open context and decide if warning is acceptable."
+                    ActionHint = currentKind == "Error"
+                        ? T("Open context and fix blocking issue.")
+                        : T("Open context and decide if warning is acceptable.")
                 });
             }
         }
 
-        ValidationSummary = summary;
+        ValidationSummary = errorCount == 0 && warningCount == 0
+            ? T("Check done: no problems found.")
+            : T("Check done: {0} errors, {1} warnings.", errorCount, warningCount);
         allValidationIssues.Clear();
         allValidationIssues.AddRange(all);
         RebuildValidationFilter();
@@ -7944,6 +7964,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             }
         }
 
+        // The usage ranking is the style reference of Auto Assign / Auto Group / Setup wizard / Lay out with AI unless the
+        // user switched it off (Settings > Usage statistics).
+        if (!UseUsageStyle && UsesUsageStyle(commandList))
+        {
+            args.Add("--usage-style");
+            args.Add("off");
+        }
+
         // Parsers need text output; the "Use Text Output" toggle only applies to hand-typed commands.
         if (isCustomCommand ? UseTextOutput : forceText)
             args.Add("--text");
@@ -8393,7 +8421,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(engineDir))
             return [];
 
-        string dbDcs = GameDataLocations.DbFolder(engineDir, "DCS");
+        string dbDcs = GameDataLocations.DbFolder(engineDir, "DCS", GameDataRootOverride);
         if (!Directory.Exists(dbDcs))
             return [];
 
@@ -10061,11 +10089,29 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             // of showing the raw id.
             return T("Command not in this aircraft's current list");
         }
-        else if (game.StartsWith("IL2", StringComparison.OrdinalIgnoreCase))
+        else if (game.Equals("IL2Game", StringComparison.OrdinalIgnoreCase) || game.Equals("IL2", StringComparison.OrdinalIgnoreCase) || game.Equals("IL2Korea", StringComparison.OrdinalIgnoreCase))
         {
-            string title = TryGetIl2NodeTitle(nodeId);
-            if (!string.IsNullOrWhiteSpace(title))
-                return title;
+            // IL-2 Great Battles: the command list's title, JoyPro's own name where that is only a string-table key
+            // ("inprb_pitch"). IL-2 Korea: JoyPro's own name (Korea's text is not readable; IL-2 Great Battles names some
+            // shared ids differently), else the stored title, else IL-2 Great Battles' title.
+            bool korea = game.Equals("IL2Korea", StringComparison.OrdinalIgnoreCase);
+            string id = nodeId.Trim();
+            string gbTitle = TryGetIl2NodeTitle(id);
+            JoyPro.Engine.ActionTexts.Entry? own = JoyPro.Engine.ActionTexts.Find(ActionTextsFolder(), korea ? "IL2Korea" : "IL2Game", id);
+            bool gbReadable = !string.IsNullOrWhiteSpace(gbTitle) && !JoyPro.Engine.ActionTexts.IsWeakTitle(id, gbTitle);
+            if (!korea && gbReadable)
+                return gbTitle;
+            if (own != null && own.Name.Length > 0)
+                return own.Name;
+            if (gbReadable || (!korea && !string.IsNullOrWhiteSpace(gbTitle)))
+                return gbTitle;
+        }
+        else
+        {
+            // Other games: JoyPro's own name where the stored title is only the id.
+            string own = JoyPro.Engine.ActionTexts.BestTitle(ActionTextsFolder(), game, nodeId.Trim(), storedTitle ?? string.Empty);
+            if (!string.IsNullOrWhiteSpace(own) && !string.Equals(own, storedTitle ?? string.Empty, StringComparison.Ordinal))
+                return own;
         }
 
         if (!string.IsNullOrWhiteSpace(storedTitle) && !string.Equals(storedTitle.Trim(), nodeId.Trim(), StringComparison.OrdinalIgnoreCase))
@@ -10331,6 +10377,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private string GetIl2DbDirectory() => GetGameDbDirectory("IL2");
 
+    // JoyPro's own action names and explanations (DB\Functions\ActionTexts, shipped with the engine).
+    private string ActionTextsFolder() => JoyPro.Engine.ActionTexts.FolderUnder(GetGameDbDirectory("Functions"));
+
     private string GetStarCitizenDbDirectory() => GetGameDbDirectory("StarCitizen");
 
     private string GetGameDbDirectory(string folder)
@@ -10341,7 +10390,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         string? engineDirectory = Path.GetDirectoryName(engineExe);
         if (string.IsNullOrWhiteSpace(engineDirectory))
             return string.Empty;
-        return GameDataLocations.DbFolder(engineDirectory, folder);
+        return GameDataLocations.DbFolder(engineDirectory, folder, GameDataRootOverride);
     }
 
     private static string NormalizeRelationGameToken(string value)
@@ -11792,9 +11841,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private void RebuildValidationFilter()
     {
+        // Kind, not the shown type: that one is translated.
         IEnumerable<ValidationIssueItem> filtered = allValidationIssues.Where(v =>
-            (ValidationShowErrors && v.Type.Equals("Error", StringComparison.OrdinalIgnoreCase)) ||
-            (ValidationShowWarnings && v.Type.Equals("Warning", StringComparison.OrdinalIgnoreCase)));
+            (ValidationShowErrors && v.Kind == "Error") ||
+            (ValidationShowWarnings && v.Kind == "Warning"));
 
         ValidationIssues.Clear();
         foreach (ValidationIssueItem issue in filtered)
@@ -11956,10 +12006,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             CheckUpdatesOnStartup = state.CheckUpdatesOnStartup ?? true;
             UpdateRepository = state.UpdateRepository ?? string.Empty;
             SkippedUpdateVersion = state.SkippedUpdateVersion ?? string.Empty;
+            if (state.DuplicateAutoFixThreshold is int fixThreshold && fixThreshold >= 50 && fixThreshold <= 100)
+                duplicateAutoFixThreshold = fixThreshold;
+            autoFixDuplicatesAfterImport = state.AutoFixDuplicatesAfterImport;
             if (state.LlmIdleMinutes is double idleMinutes && idleMinutes > 0)
                 LlmIdleMinutes = IsOldLlmIdleDefault(state) ? DefaultLlmIdleMinutes : Math.Clamp((decimal)idleMinutes, 0.5m, 120m);
+            ApplyAutoPlacement(state.AutoPlacement);
             ApplySettingsLayout(state.SettingsSectionOrder, state.SettingsSectionsOpen);
             ApplyNavPageLayout(state.NavPageOrder, state.HiddenNavPages);
+            ShowStatisticsPage = state.ShowStatisticsPage;
+            UseUsageStyle = state.UsageStyle ?? true;
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
             {
                 if (!OverlayPlaneOptions.Contains(state.OverlayPlaneChoice))
@@ -12021,10 +12077,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 SkippedUpdateVersion = SkippedUpdateVersion,
                 LlmIdleMinutes = (double)LlmIdleMinutes,
                 LlmIdleDefault = (double)DefaultLlmIdleMinutes,
+                DuplicateAutoFixThreshold = DuplicateAutoFixThreshold,
+                AutoFixDuplicatesAfterImport = AutoFixDuplicatesAfterImport,
                 SettingsSectionOrder = SettingsSectionOrderForSave(),
                 SettingsSectionsOpen = OpenSettingsSectionsForSave(),
+                AutoPlacement = AutoPlacementForSave(),
                 NavPageOrder = NavPageOrderForSave(),
-                HiddenNavPages = HiddenNavPagesForSave()
+                HiddenNavPages = HiddenNavPagesForSave(),
+                ShowStatisticsPage = ShowStatisticsPage,
+                UsageStyle = UseUsageStyle
             };
 
             string json = JsonSerializer.Serialize(state, UiSettingsJsonOptions);
@@ -12251,6 +12312,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // The local AI model stops after this many minutes without AI work (null: 30).
         public double? LlmIdleMinutes { get; set; }
 
+        // The check's "fix the sure ones" threshold (percent) and whether it runs right after imports and take-overs.
+        public int? DuplicateAutoFixThreshold { get; set; }
+
+        public bool AutoFixDuplicatesAfterImport { get; set; }
+
+        // Auto Assign, the Setup wizard and Lay out with AI (MainWindowViewModel.AutoPlacementSettings.cs).
+        public AutoPlacementSettings? AutoPlacement { get; set; }
+
         // The default when the file was written (null: written by JoyPro 2.2.17 or older, when the default was 2 minutes and every
         // save wrote it): a 2 there was JoyPro's default, not the user's choice, and becomes the new default.
         public double? LlmIdleDefault { get; set; }
@@ -12264,6 +12333,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public List<string>? NavPageOrder { get; set; }
 
         public List<string>? HiddenNavPages { get; set; }
+
+        // Settings > Usage statistics (docs/usage-statistics.md): the opt-in Statistics page, and the usage ranking as the
+        // style reference of Auto Assign / Auto Group / Setup wizard / Lay out with AI (null: on).
+        public bool ShowStatisticsPage { get; set; }
+
+        public bool? UsageStyle { get; set; }
     }
 
     private sealed class LayoutTemplateInspectDocument

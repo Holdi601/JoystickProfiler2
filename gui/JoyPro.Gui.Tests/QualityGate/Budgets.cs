@@ -13,6 +13,10 @@ internal static class Budgets
     {
         // Open a profile: profile load, relation list, binds, modifiers, device remap check, device names. (~2.4 s)
         ["profile load"] = 3000,
+        // The first Lay out with AI preview right after opening the profile (rules only, local AI off): the request read,
+        // the whole layout planned, curves, the changes listed. An older profile's load corrections are searched once per
+        // DB in the engine server (profile load), so the preview does not search them again. (~1.5 s; was ~100 s)
+        ["lay out with AI preview"] = 3000,
         // Open one relation in the editor (its actions with titles). (~0.4 s)
         ["relation open"] = 1000,
         // A new relation with one action from the search ("Create relation with 1 action"), and one more action into it.
@@ -41,8 +45,14 @@ internal static class Budgets
         ["export dry-run"] = 5000,
         // The Start page's games (games installs + integrations). (~0.7 s)
         ["games list"] = 1500,
-        // The engine server starting and reading the game lists (once, in the background while the app starts). (~4 s)
+        // The engine server starting and reading the game lists (once, in the background while the app starts). (~4 s;
+        // timed on a fresh server after the gate's first start, as a normal app start sees it)
         ["engine server start"] = 8000,
+        // The gate's first engine server start, right after the build: cold disk cache and first JIT (9-11 s measured; a
+        // normal app start is the budget above).
+        ["engine server cold start"] = 15000,
+        // The Statistics page's document (engine usage stats with the profile; the growth cache built by a first read).
+        ["usage stats"] = 1000,
     };
 
     public static double For(string operation) => Table.TryGetValue(operation, out double ms) ? ms : 0;

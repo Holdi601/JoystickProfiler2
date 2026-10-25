@@ -48,6 +48,11 @@ internal static class TestEnvironment
         // New profiles ("New profile", the first import) get their automatic name here, not in Documents\JoyPro2\profiles;
         // the profile history (<data>\ProfileHistory) is in the data folder above.
         System.Environment.SetEnvironmentVariable("JOYPRO_PROFILES_DIR", Path.Combine(data, "profiles"));
+        // The usage recording (docs/usage-statistics.md) of an engine a test starts reads an empty folder instead of this
+        // PC's games, Saved Games, Documents and Steam (tests that need sources point it at a fixture copy).
+        string usageRoot = Path.Combine(data, "usage-root");
+        Directory.CreateDirectory(usageRoot);
+        System.Environment.SetEnvironmentVariable("JOYPRO_USAGE_ROOT", usageRoot);
         // "Start with Windows": never the real HKCU\...\CurrentVersion\Run key, also not from a view model with
         // persisted settings.
         AutostartService.StoreFactory = () => SharedRunKey;

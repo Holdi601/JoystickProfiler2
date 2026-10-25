@@ -62,6 +62,7 @@ namespace JoyPro.Engine
             Console.SetError(TextWriter.Null);
             Console.SetIn(new StringReader(string.Empty));
             EngineProfileCache.Enabled = true;
+            EngineLoadCorrectionCache.Enabled = true;
             string startDirectory = Environment.CurrentDirectory;
             // What every command does first (EngineState.Initialize): the program folder, and the data folder's game
             // lists set up once. Done here, so the server's first look at the game data sees what its commands see.
@@ -131,7 +132,8 @@ namespace JoyPro.Engine
                 }
             }
             JoyPro.Logging.JoyProLog.Info("Server", "Engine server stops after " + served.ToString(CultureInfo.InvariantCulture) + " command(s) (profile reads kept: " +
-                                                    EngineProfileCache.Hits.ToString(CultureInfo.InvariantCulture) + ", read: " + EngineProfileCache.Misses.ToString(CultureInfo.InvariantCulture) + ")");
+                                                    EngineProfileCache.Hits.ToString(CultureInfo.InvariantCulture) + ", read: " + EngineProfileCache.Misses.ToString(CultureInfo.InvariantCulture) +
+                                                    "; load corrections kept: " + EngineLoadCorrectionCache.Hits.ToString(CultureInfo.InvariantCulture) + ", run: " + EngineLoadCorrectionCache.Misses.ToString(CultureInfo.InvariantCulture) + ")");
             return 0;
         }
 
@@ -186,6 +188,7 @@ namespace JoyPro.Engine
             Environment.CurrentDirectory = startDirectory;
             Environment.SetEnvironmentVariable("JOYPRO_PROFILE_HISTORY", previousHistory);
             EngineProfileCache.Forget();
+            EngineLoadCorrectionCache.Forget();
             try
             {
                 if (meta != null)
@@ -350,6 +353,7 @@ namespace JoyPro.Engine
         {
             TextWriter report = Console.Out;
             EngineProfileCache.Enabled = true;
+            EngineLoadCorrectionCache.Enabled = true;
             string startDirectory = Environment.CurrentDirectory;
             MainStructure.PROGPATH = EngineState.ResolveProgramPath();
             GameDataPaths.EnsureMigrated();
@@ -457,7 +461,104 @@ namespace JoyPro.Engine
             separate = separate && sameAfterSave;
             Console.WriteLine("profile " + profilePath + ": " + content.Length.ToString(CultureInfo.InvariantCulture) + " bytes, read " + readMs.ToString(CultureInfo.InvariantCulture) +
                               " ms, copy " + cloneMs.ToString(CultureInfo.InvariantCulture) + " ms, same bytes: " + same + ", separate graph: " + separate);
-            return same && separate ? 0 : 1;
+            bool corrections = CorrectionCacheSelfTest(read);
+            return same && separate && corrections ? 0 : 1;
+        }
+
+        // The load correction the server keeps (EngineLoadCorrectionCache) leaves exactly what a correction that runs
+        // leaves (profile, modifiers, devices, groups, report); a changed profile file or a changed DB list runs it again.
+        // In a data folder of its own (the DB change is made there), with the profile made older than the DB.
+        private static bool CorrectionCacheSelfTest(Pr0file read)
+        {
+            string startDirectory = Environment.CurrentDirectory;
+            string previousData = Environment.GetEnvironmentVariable(GameBackups.DataFolderVariable);
+            string previousProgram = MainStructure.PROGPATH;
+            bool profileCache = EngineProfileCache.Enabled;
+            bool correctionCache = EngineLoadCorrectionCache.Enabled;
+            string temp = Path.Combine(Path.GetTempPath(), "joypro-selftest-" + Guid.NewGuid().ToString("N"));
+            try
+            {
+                Directory.CreateDirectory(temp);
+                Environment.SetEnvironmentVariable(GameBackups.DataFolderVariable, Path.Combine(temp, "data"));
+                MainStructure.PROGPATH = EngineState.ResolveProgramPath();
+                Environment.CurrentDirectory = MainStructure.PROGPATH;
+                GameDataPaths.Migrate(GameDataPaths.ProgramRoot(), GameDataPaths.UserRoot());
+
+                read.DatabaseFingerprint = string.Empty;
+                string profile = Path.Combine(temp, "older.pr0file");
+                File.WriteAllBytes(profile, Serialize(read));
+
+                // As the app's server loads a profile for a change.
+                InternalDataManagement.EnableLegacyLoadCorrections = true;
+                InternalDataManagement.AutoAddDbItemsOnLoad = true;
+                InternalDataManagement.RemapMissingJoysticksOnLoad = true;
+                InternalDataManagement.ConfirmMissingJoystickRemapOnLoad = false;
+                InternalDataManagement.ConfirmItemCorrectionsOnLoad = false;
+                EngineProfileCache.Enabled = true;
+                EngineLoadCorrectionCache.Enabled = true;
+                EngineProfileCache.Forget();
+                EngineLoadCorrectionCache.Forget();
+                Func<string> load = () =>
+                {
+                    InternalDataManagement.LoadProfile(profile);
+                    return InternalDataManagement.LoadedStateDigest();
+                };
+
+                int misses = EngineLoadCorrectionCache.Misses;
+                int hits = EngineLoadCorrectionCache.Hits;
+                Stopwatch watch = Stopwatch.StartNew();
+                string ran = load();
+                long ranMs = watch.ElapsedMilliseconds;
+                watch.Restart();
+                string kept = load();
+                long keptMs = watch.ElapsedMilliseconds;
+                bool wasKept = EngineLoadCorrectionCache.Misses == misses + 1 && EngineLoadCorrectionCache.Hits == hits + 1;
+                bool sameState = string.Equals(ran, kept, StringComparison.Ordinal);
+                bool corrected = ran.Contains("entry=db-fingerprint-check|auto|");
+
+                // The file changed (time stamp): the correction runs again and gives the same.
+                File.SetLastWriteTimeUtc(profile, File.GetLastWriteTimeUtc(profile).AddSeconds(2));
+                misses = EngineLoadCorrectionCache.Misses;
+                string afterFile = load();
+                bool fileRunsAgain = EngineLoadCorrectionCache.Misses == misses + 1 && string.Equals(afterFile, ran, StringComparison.Ordinal);
+
+                // A command list of the DB changed (another DB fingerprint): the correction runs again against it.
+                string list = Path.Combine(GameDataPaths.UserRoot(), "DB", "IL2", "IL2.actions");
+                Directory.CreateDirectory(Path.GetDirectoryName(list));
+                File.AppendAllText(list, "\r\n");
+                misses = EngineLoadCorrectionCache.Misses;
+                string afterDb = load();
+                Func<string, string> fingerprints = digest => digest.Split('\n').FirstOrDefault(l => l.StartsWith("fingerprints=", StringComparison.Ordinal)) ?? string.Empty;
+                bool dbRunsAgain = EngineLoadCorrectionCache.Misses == misses + 1 && fingerprints(afterDb) != fingerprints(ran);
+
+                Console.WriteLine("load corrections: ran " + ranMs.ToString(CultureInfo.InvariantCulture) + " ms, kept " + keptMs.ToString(CultureInfo.InvariantCulture) +
+                                  " ms, corrected: " + corrected + ", kept: " + wasKept + ", same state as a run: " + sameState +
+                                  ", run again after a file change: " + fileRunsAgain + ", after a DB change: " + dbRunsAgain);
+                return corrected && wasKept && sameState && fileRunsAgain && dbRunsAgain;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("load corrections: self-test failed: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                EngineProfileCache.Forget();
+                EngineLoadCorrectionCache.Forget();
+                EngineProfileCache.Enabled = profileCache;
+                EngineLoadCorrectionCache.Enabled = correctionCache;
+                Environment.SetEnvironmentVariable(GameBackups.DataFolderVariable, previousData);
+                MainStructure.PROGPATH = previousProgram;
+                Environment.CurrentDirectory = startDirectory;
+                try
+                {
+                    Directory.Delete(temp, true);
+                }
+                catch (Exception)
+                {
+                    // A temp folder left behind is harmless.
+                }
+            }
         }
 
         private static byte[] Serialize(Pr0file profile)

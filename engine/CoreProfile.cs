@@ -31,6 +31,15 @@ namespace JoyPro
         [OptionalField]
         public Dictionary<string, string> AxisCalibrations;
 
+        // "Lay out with AI" (docs/layout-with-ai.md): the preferences the user described, as JSON (JoyPro.Setup.LayoutPreference).
+        [OptionalField]
+        public string LayoutPreferences;
+
+        // Actions the user keeps on in several relations on purpose ("Keep both", engine relations duplicates):
+        // "game|id|plane|relation<TAB>relation", the check does not warn about them while exactly these relations have it.
+        [OptionalField]
+        public List<string> KeptDuplicates;
+
         public Pr0file()
         {
             Relations = new Dictionary<string, Relation>(StringComparer.OrdinalIgnoreCase);

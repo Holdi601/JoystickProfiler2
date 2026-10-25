@@ -40,6 +40,7 @@ namespace JoyPro.Engine
             public string Type = string.Empty;
             public string Era = string.Empty;
             public string VariantOf = string.Empty;
+            public string Role = string.Empty;
         }
 
         internal sealed class Row
@@ -142,6 +143,14 @@ namespace JoyPro.Engine
             Dictionary<string, string> learnedNames;
             LearnStyle(relations, slots, aircraft, own, functionsOf, rejected, result, out learned, out learnedNames);
 
+            // Usage ranking (docs/usage-statistics.md#style-reference): an aircraft the user has not flown (yet) is grouped
+            // like the most used aircraft of its class, so its functions join that aircraft's relations (and binds) where
+            // the preset would split them (wing, era, purist). Nothing changes without recorded use.
+            Dictionary<string, string> usageReference = Program.UsageStyleReferences(aircraft.Where(a => IsDcs(a.Value.Game)).Select(a => a.Key), p =>
+            {
+                Aircraft a;
+                return aircraft.TryGetValue(p, out a) ? a.Type : string.Empty;
+            });
             Dictionary<string, Group> groups = new Dictionary<string, Group>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, Aircraft> plane in aircraft.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
             {
@@ -177,7 +186,13 @@ namespace JoyPro.Engine
                         continue;
 
                     string target;
-                    string suffix = Suffix(preset, slot, plane.Key, plane.Value);
+                    string referencePlane;
+                    Aircraft referenceAircraft;
+                    string suffix = preset != "all" && usageReference.TryGetValue(plane.Key, out referencePlane) && aircraft.TryGetValue(referencePlane, out referenceAircraft)
+                        ? Suffix(preset, slot, referencePlane, referenceAircraft)
+                        : Suffix(preset, slot, plane.Key, plane.Value);
+                    if (preset != "all" && usageReference.ContainsKey(plane.Key) && !result.UsageReferences.Contains(plane.Key + " -> " + usageReference[plane.Key]))
+                        result.UsageReferences.Add(plane.Key + " -> " + usageReference[plane.Key]);
                     // A new relation gets a readable name ("AntiSkidOff" -> "Anti Skid Off", "ai_menu_down" -> "AI menu
                     // down"); a relation of the catalog's own spelling (an earlier Auto Group) keeps being used.
                     string slotName = relations.ContainsKey(slot.Name + suffix) ? slot.Name : ReadableName(slot.Name);
@@ -831,7 +846,8 @@ namespace JoyPro.Engine
                         Game = game.Length > 0 ? game : "DCS",
                         Type = Text(item.Value, "type"),
                         Era = Text(item.Value, "era"),
-                        VariantOf = Text(item.Value, "variant_of")
+                        VariantOf = Text(item.Value, "variant_of"),
+                        Role = Text(item.Value, "role")
                     };
                 }
                 foreach (string mappingFile in Directory.GetFiles(folder, "*.tsv"))
@@ -990,6 +1006,8 @@ namespace JoyPro.Engine
         // aircraft of the node (EngineIdMeanings.Guard); one tick in the node's aircraft list re-includes one.
         public int MeaningExcluded { get; set; }
         public List<string> MeaningNotes { get; set; }
+        // Aircraft grouped like the user's most used aircraft of their class ("F-4E -> F-14B", usage ranking).
+        public List<string> UsageReferences { get; set; }
         public List<string> Warnings { get; set; }
         public List<string> Errors { get; set; }
 
@@ -997,6 +1015,7 @@ namespace JoyPro.Engine
         {
             Preset = "all";
             MeaningNotes = new List<string>();
+            UsageReferences = new List<string>();
             Relations = new List<EngineAutoGroupRelation>();
             MapAircraft = new List<string>();
             AircraftMissingInDatabase = new List<string>();

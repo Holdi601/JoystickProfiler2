@@ -113,6 +113,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   --confirm-corrections true|false   Ask for confirmation on medium-confidence item remaps (default: true)
   --correction-report <path>         Write load correction report (json, or text with .txt/.log)
   --history-note <text>  Name of this change in the profile history (default: the command's name)
+  --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)
 ```
 
 ### Commands
@@ -454,8 +455,11 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations aircraft <relation> [--node game:id]
   engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]
   engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]
+  engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]
+  engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]
+  engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]
   engine relations meanings [--game g] [--top N]
-  engine relations action-info --coverage [--game g]
+  engine relations action-info --coverage [--game g] [--all-examples]
   engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]
   engine relations from-text "<request>" [--games g1|g2] [--planes p1|p2] [--llm off|auto|on] [--substitutes] [--select <relation>]... [--skip-node game:id:plane1|plane2]... [--name <name>] [--min-confidence 0..1] [--dry-run]
   engine relations from-text --check   (tests the vocabulary in DB/Functions/language.json against the catalog)
@@ -473,9 +477,13 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine setup devices [--grip <device>=<grip id>]... [--role <device|VID:PID>=<role>]... [--add-device <catalog id>]...
   engine setup aircraft --games <g1,g2>   (the aircraft / games for the priority list)
   engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers]
+  engine arrange ask "<your preferences in words>" [--llm auto|on|off] [--games <g1,g2>] [--add-missing] [--forget-saved] [--proposal <file>] [--role ...] [--grip ...] [--add-device ...]
+  engine arrange apply --proposal <file> [--skip <change id>]... [--dry-run]   (applies the preview in one history version; keeps the preferences in the profile)
+  engine arrange prefs [show | clear | remove <key>]   (the layout preferences kept in the profile)
+  engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers)
   engine setup apply --plan <plan.json> [--dry-run] [--force]   (writes the plan's relations, binds and modifiers in one step)
   engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]   (a callout sheet per device)
-  engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
+  engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
   engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)
   engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)
   engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]
@@ -507,6 +515,12 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine telemetry delete <session>...
   engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)
   engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)
+  engine usage harvest [--game <game>]... [--full] [--dry-run] [--no-steam]   (usage statistics, docs/usage-statistics.md: read what the games logged since the last time into <data>\Usage)
+  engine usage sources [--game <game>]...   (where JoyPro reads usage per game, and the logs the watcher follows live)
+  engine usage ranking [--game <game>] [--top <n>]   (most used games and aircraft / ships / vehicles; with --profile: binds as the weak fallback)
+  engine usage stats [--top <n>]   (everything for the Statistics page; with --profile: binds per device, growth, oldest unused bind)
+  engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class)
+  engine usage backups | engine usage restore <day>   (the usage store's daily backups)
   engine binds tuning models
   engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]
   engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]
@@ -698,6 +712,14 @@ engine --correction-report 'C:\JoyPro\logs\load_corrections.json' profile load '
 ### `--history-note <text>`
 What it does: Command argument. See examples for typical values.
 Value format: Command argument. See examples for typical values.
+
+Example:
+```powershell
+engine --help
+```
+
+### `--usage-style`
+What it does: Command argument. See examples for typical values.
 
 Example:
 ```powershell
@@ -5739,6 +5761,51 @@ Examples:
 engine --help
 ```
 
+### `engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--keys`: Command argument. See examples for typical values.
+- `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
+- `--keep`: Command argument. See examples for typical values.
+- `<relation>`: Command argument. See examples for typical values.
+- `--off`: Command argument. See examples for typical values.
+- `--keep-both`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--rule`: Command argument. See examples for typical values.
+- `<kind>`: Command argument. See examples for typical values.
+- `<words>`: Command argument. See examples for typical values.
+- `--min-confidence`: Command argument. See examples for typical values.
+- `--apply`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--instruction`: Command argument. See examples for typical values.
+- `--llm`: Command argument. See examples for typical values.
+- `--apply`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
 ### `engine relations meanings [--game g] [--top N]`
 What it does: Runs this command operation.
 
@@ -5751,12 +5818,13 @@ Examples:
 engine --help
 ```
 
-### `engine relations action-info --coverage [--game g]`
+### `engine relations action-info --coverage [--game g] [--all-examples]`
 What it does: Runs this command operation.
 
 Arguments and example values:
 - `--coverage`: Command argument. See examples for typical values.
 - `--game`: Game filter value. Example: DCS or IL2Game.
+- `--all-examples`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
@@ -6010,6 +6078,66 @@ Examples:
 engine --help
 ```
 
+### `engine arrange ask "<your preferences in words>" [--llm auto|on|off] [--games <g1,g2>] [--add-missing] [--forget-saved] [--proposal <file>] [--role ...] [--grip ...] [--add-device ...]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<your preferences in words>`: Command argument. See examples for typical values.
+- `--llm`: Command argument. See examples for typical values.
+- `--games`: Game filter values as CSV. Example: DCS,IL2Game,StarCitizen.
+- `<g1,g2>`: Command argument. See examples for typical values.
+- `--add-missing`: Command argument. See examples for typical values.
+- `--forget-saved`: Command argument. See examples for typical values.
+- `--proposal`: Command argument. See examples for typical values.
+- `<file>`: Command argument. See examples for typical values.
+- `--role`: Command argument. See examples for typical values.
+- `--grip`: Command argument. See examples for typical values.
+- `--add-device`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine arrange apply --proposal <file> [--skip <change id>]... [--dry-run]   (applies the preview in one history version; keeps the preferences in the profile)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--proposal`: Command argument. See examples for typical values.
+- `<file>`: Command argument. See examples for typical values.
+- `--skip`: Command argument. See examples for typical values.
+- `<change id>`: Command argument. See examples for typical values.
+- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine arrange prefs [show | clear | remove <key>]   (the layout preferences kept in the profile)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<key>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--plan`: Command argument. See examples for typical values.
+- `<plan.json>`: Command argument. See examples for typical values.
+- `--modifiers`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
 ### `engine setup apply --plan <plan.json> [--dry-run] [--force]   (writes the plan's relations, binds and modifiers in one step)`
 What it does: Runs this command operation.
 
@@ -6043,7 +6171,7 @@ Examples:
 engine --help
 ```
 
-### `engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]`
+### `engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -6057,6 +6185,7 @@ Arguments and example values:
 - `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--max-modifiers`: Command argument. See examples for typical values.
+- `--phase-layers`: Command argument. See examples for typical values.
 - `--overwrite`: Command argument. See examples for typical values.
 - `--include-missing`: Command argument. See examples for typical values.
 - `--no-style`: Command argument. See examples for typical values.
@@ -6591,6 +6720,85 @@ Arguments and example values:
 - `--sample-hz`: Command argument. See examples for typical values.
 - `--no-raw`: Command argument. See examples for typical values.
 - `--no-game-check`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine usage harvest [--game <game>]... [--full] [--dry-run] [--no-steam]   (usage statistics, docs/usage-statistics.md: read what the games logged since the last time into <data>\Usage)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--full`: Command argument. See examples for typical values.
+- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--no-steam`: Command argument. See examples for typical values.
+- `<data>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine usage sources [--game <game>]...   (where JoyPro reads usage per game, and the logs the watcher follows live)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine usage ranking [--game <game>] [--top <n>]   (most used games and aircraft / ships / vehicles; with --profile: binds as the weak fallback)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--top`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--profile`: Global option: load this .pr0file before running the command.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine usage stats [--top <n>]   (everything for the Statistics page; with --profile: binds per device, growth, oldest unused bind)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--top`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--profile`: Global option: load this .pr0file before running the command.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<game>`: Command argument. See examples for typical values.
+- `<aircraft/ship>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine usage backups | engine usage restore <day>   (the usage store's daily backups)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<day>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

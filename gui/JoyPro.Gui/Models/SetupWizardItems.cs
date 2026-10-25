@@ -85,21 +85,29 @@ public sealed partial class SetupDeviceItem : ObservableObject
     {
         get
         {
-            List<string> parts = [Device.Kind];
+            List<string> parts = [KindName(Device.Kind)];
             if (Device.Hand.Length > 0 && Device.Hand != "none")
-                parts.Add(Device.Hand + " hand");
+                parts.Add(Device.Hand switch { "left" => T("left hand"), "right" => T("right hand"), "either" => T("either hand"), _ => Device.Hand });
             if (Device.ForceFeedback)
-                parts.Add("force feedback");
+                parts.Add(T("force feedback"));
             if (Device.Generic)
                 parts.Add(T("not in the catalog"));
-            parts.Add(Inputs + " inputs");
+            parts.Add(T("{0} inputs", Inputs));
             if (!Device.Connected)
                 parts.Add(T("not connected"));
             return string.Join(" | ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
         }
     }
 
-    public string Reason => Device.Reason;
+    public string Reason => JoyPro.Gui.Services.EngineText.Tr(Device.Reason);
+
+    // The device kind of the catalog in the app's language.
+    private static string KindName(string kind) => kind switch
+    {
+        "stick" => T("stick"), "throttle" => T("throttle"), "pedals" => T("pedals"), "collective" => T("collective"), "panel" => T("panel"),
+        "mfd" => T("MFD"), "yoke" => T("yoke"), "quadrant" => T("throttle quadrant"), "buttonbox" => T("button box"), "keyboard" => T("keyboard"),
+        _ => kind
+    };
 
     public int Inputs { get; }
 
@@ -171,15 +179,16 @@ public sealed class SetupReviewRow
 
     public SetupPlanRelation Relation { get; }
 
-    public string Input => Relation.Input + (Relation.Modifier.Length > 0 ? " + " + Relation.Modifier : string.Empty);
+    // In plain words: "Hat 1 down + JoyPro Shift", "TMS hat down" or the printed label (never an input or control id).
+    public string Input => JoyPro.Gui.Services.ReadableNames.Input(Relation.Input) + (Relation.Modifier.Length > 0 ? " + " + Relation.Modifier : string.Empty);
 
-    public string Control => Relation.Label.Length > 0 ? Relation.Label : Relation.Control;
+    public string Control => JoyPro.Gui.Services.ReadableNames.Control(Relation.Control, Relation.Label);
 
     public string Name => Relation.Name + (Relation.Removed ? " (removed)" : string.Empty);
 
-    public string Category => SetupImportance.CategoryTitle(Relation.Category.Length > 0 ? Relation.Category : SetupImportance.Systems);
+    public string Category => JoyPro.Gui.Services.EngineText.Tr(SetupImportance.CategoryTitle(Relation.Category.Length > 0 ? Relation.Category : SetupImportance.Systems));
 
-    public string Reason => Relation.Kept ? T("your bind, kept") : Relation.Reason;
+    public string Reason => Relation.Kept ? T("your bind, kept") : JoyPro.Gui.Services.EngineText.Tr(Relation.Reason);
 
     public string Aircraft => Relation.Aircraft.Count <= 3 ? string.Join(", ", Relation.Aircraft) : string.Join(", ", Relation.Aircraft.Take(3)) + " +" + (Relation.Aircraft.Count - 3);
 
@@ -223,9 +232,9 @@ public sealed class SetupNotPlacedRow
 
     public string Name => Item.Relation;
 
-    public string Category => SetupImportance.CategoryTitle(Item.Category.Length > 0 ? Item.Category : SetupImportance.Systems);
+    public string Category => JoyPro.Gui.Services.EngineText.Tr(SetupImportance.CategoryTitle(Item.Category.Length > 0 ? Item.Category : SetupImportance.Systems));
 
-    public string Reason => Item.Reason;
+    public string Reason => JoyPro.Gui.Services.EngineText.Tr(Item.Reason);
 
     public string Aircraft => Item.Aircraft.Count <= 3 ? string.Join(", ", Item.Aircraft) : string.Join(", ", Item.Aircraft.Take(3)) + " +" + (Item.Aircraft.Count - 3);
 }

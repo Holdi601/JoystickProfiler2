@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JoyPro.Gui.Models;
 using JoyPro.Gui.Services;
+using System.Text.RegularExpressions;
+using JoyPro.Gui.Localization;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -137,9 +139,9 @@ public sealed partial class MainWindowViewModel
         List<string>? args = AutoAssignArguments(dryRun: true);
         if (args == null)
             return;
-        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Previewing Auto Assign..."));
+        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Previewing Auto Assign..."), forceText: false);
         if (result != null)
-            AutoAssignPreview = result.ExitCode == 0 ? result.StandardOutput : result.StandardError + result.StandardOutput;
+            AutoAssignPreview = result.ExitCode == 0 ? FormatAutoAssignResult(result.StandardOutput) : result.StandardError + result.StandardOutput;
     }
 
     // Why the selected relations land where they do (--explain): their slot, previous control and the best candidates
@@ -158,9 +160,9 @@ public sealed partial class MainWindowViewModel
             return;
         foreach (string relation in relations)
             args.AddRange(["--explain", relation]);
-        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Explaining Auto Assign..."));
+        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Explaining Auto Assign..."), forceText: false);
         if (result != null)
-            AutoAssignPreview = result.ExitCode == 0 ? result.StandardOutput : result.StandardError + result.StandardOutput;
+            AutoAssignPreview = result.ExitCode == 0 ? FormatAutoAssignResult(result.StandardOutput) : result.StandardError + result.StandardOutput;
     }
 
     [RelayCommand]
@@ -169,14 +171,97 @@ public sealed partial class MainWindowViewModel
         List<string>? args = AutoAssignArguments(dryRun: false);
         if (args == null)
             return;
-        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Assigning controls..."));
+        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Assigning controls..."), forceText: false);
         if (result == null)
             return;
-        AutoAssignPreview = result.ExitCode == 0 ? result.StandardOutput : result.StandardError + result.StandardOutput;
+        AutoAssignPreview = result.ExitCode == 0 ? FormatAutoAssignResult(result.StandardOutput) : result.StandardError + result.StandardOutput;
         if (result.ExitCode == 0)
         {
             await RefreshRelationsAsync();
             await RefreshBindsAsync();
+        }
+    }
+
+    // The Auto Assign result (engine JSON) in plain words: the devices, the counts, where each relation goes ("Hat 1 down
+    // (TMS hat down)"), what stays unassigned and why; never an input or control id. Text that is no result stays as it is.
+    internal static string FormatAutoAssignResult(string output)
+    {
+        string text = (output ?? string.Empty).Trim();
+        if (!text.StartsWith('{'))
+            return output ?? string.Empty;
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(text);
+            JsonElement root = document.RootElement;
+            if (!root.TryGetProperty("Assignments", out JsonElement assignments) || assignments.ValueKind != JsonValueKind.Array)
+                return output ?? string.Empty;
+            System.Text.StringBuilder sb = new();
+            sb.AppendLine(T(ReadJsonBool(root, "DryRun") ? "Auto Assign preview (nothing changed yet)" : "Auto Assign"));
+            if (root.TryGetProperty("Devices", out JsonElement devices) && devices.ValueKind == JsonValueKind.Array && devices.GetArrayLength() > 0)
+            {
+                sb.AppendLine(T("Devices:"));
+                foreach (JsonElement device in devices.EnumerateArray())
+                {
+                    string model = ReadJsonString(device, "Model");
+                    string alternative = ReadJsonString(device, "AlternativeTo");
+                    string note = ReadJsonString(device, "Note");
+                    sb.AppendLine("  - " + ReadableNames.Device(ReadJsonString(device, "Device")) + (ReadJsonBool(device, "Connected") ? string.Empty : " " + T("(not connected)")) + " => " +
+                                  (model.Length > 0 ? model : T("grip needed")) + (ReadJsonBool(device, "Generic") ? " " + T("(generic)") : string.Empty) +
+                                  (alternative.Length > 0 ? " - " + T("left out, same role as {0}", ReadableNames.Device(alternative)) : string.Empty) +
+                                  (note.Length > 0 ? " - " + EngineText.Tr(note) : string.Empty));
+                }
+            }
+            int styleKept = root.TryGetProperty("StyleKept", out JsonElement style) && style.TryGetInt32(out int kept) ? kept : 0;
+            int keptExisting = root.TryGetProperty("KeptExisting", out JsonElement existing) && existing.TryGetInt32(out int count) ? count : 0;
+            sb.AppendLine(T("Kept existing binds: {0}", keptExisting));
+            sb.AppendLine(T("Assigned: {0}", assignments.GetArrayLength()) + (styleKept > 0 ? " " + T("({0} on the same control as before)", styleKept) : string.Empty));
+            List<string> modifiers = ReadJsonStrings(root, "ModifiersUsed");
+            sb.AppendLine(T("Modifiers: {0}", modifiers.Count == 0 ? T("none") : EngineText.Tr(string.Join("; ", modifiers))));
+            if (assignments.GetArrayLength() > 0)
+            {
+                sb.AppendLine(T("Assignments:"));
+                foreach (JsonElement a in assignments.EnumerateArray())
+                {
+                    // Composed in the app's language from its parts (the engine's "Where" is English).
+                    string where = string.Empty;
+                    {
+                        string control = ReadJsonString(a, "Control");
+                        Match labelled = Regex.Match(control, "^(?<c>[^ ]*) \"(?<l>.*)\"$");
+                        where = ReadableNames.Device(ReadJsonString(a, "Device")) + " " +
+                                (labelled.Success ? ReadableNames.Where(ReadJsonString(a, "Input"), labelled.Groups["c"].Value, labelled.Groups["l"].Value) : ReadableNames.Where(ReadJsonString(a, "Input"), control)) +
+                                (ReadJsonString(a, "Modifier").Length > 0 ? " + " + ReadJsonString(a, "Modifier") : string.Empty);
+                    }
+                    sb.AppendLine("  - " + ReadJsonString(a, "Relation") + " => " + where);
+                }
+            }
+            List<string> unassigned = ReadJsonStrings(root, "Unassigned");
+            if (unassigned.Count > 0)
+            {
+                sb.AppendLine(T("Not assigned (no fitting free input):"));
+                foreach (string name in unassigned)
+                    sb.AppendLine("  - " + name);
+            }
+            List<string> explanations = ReadJsonStrings(root, "Explanations");
+            if (explanations.Count > 0)
+            {
+                sb.AppendLine(T("Explain:"));
+                foreach (string line in explanations)
+                    sb.AppendLine("  " + EngineText.Tr(line));
+            }
+            foreach ((string key, string title) in new[] { ("Warnings", T("Warnings:")), ("Errors", T("Errors:")) })
+            {
+                List<string> lines = ReadJsonStrings(root, key);
+                if (lines.Count == 0)
+                    continue;
+                sb.AppendLine(title);
+                foreach (string line in lines.Distinct())
+                    sb.AppendLine("  - " + EngineText.Tr(line));
+            }
+            return sb.ToString().TrimEnd();
+        }
+        catch (JsonException)
+        {
+            return output ?? string.Empty;
         }
     }
 
@@ -213,6 +298,8 @@ public sealed partial class MainWindowViewModel
         }
         args.Add("--max-modifiers");
         args.Add(AutoAssignMaxModifiers.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        args.Add("--phase-layers");
+        args.Add(PhaseLayerChoice.ToArgument(AutoAssignPhaseLayers));
         if (AutoAssignOverwrite)
         {
             args.Add("--overwrite");

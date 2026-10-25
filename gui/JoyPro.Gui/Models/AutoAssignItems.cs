@@ -119,10 +119,11 @@ public sealed class AutoAssignCatalogItem
 // One input of a catalog device's layout (engine devices kb show).
 public sealed class AutoAssignLayoutRow
 {
+    // Input and control in plain words ("Button 4", "TMS hat up"), never the ids.
     public AutoAssignLayoutRow(string input, string control, string label, string type, string finger)
     {
-        Input = input.Length > 0 ? input : "?";
-        Control = control;
+        Input = input.Length > 0 ? JoyPro.Gui.Services.ReadableNames.Input(input) : "?";
+        Control = JoyPro.Gui.Services.ReadableNames.Control(control);
         Label = label;
         Type = type;
         Finger = finger;

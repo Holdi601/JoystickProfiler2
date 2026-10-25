@@ -137,9 +137,27 @@ use them); catalog, search, suggestions and the relation editor show:
 - titles: Star Citizen's own names from its `global.ini` (`engine starcitizen labels` builds `DB\StarCitizen\labels.tsv`
   from Data.p4k, read only, also after `db refresh-starcitizen`; without it `v_strafe_up` -> "Strafe up"); two controls
   with the same game name are told apart by their id ("Pitch" / "Pitch (mouse)"); MSFS 2020 lists with raw event names
-  take MSFS 2024's menu name of the event, else the name made from the event; IL-2 text keys without a text
-  (`inpcam_rotate_gopro_yaw` -> "Camera rotate GoPro yaw"); underscores, run-together words ("HeliBrakes" -> "Heli
-  Brakes") and titles in capitals ("TOGGLE PUSHBACK") as words; abbreviations stay in capitals.
+  take MSFS 2024's menu name of the event, else the name made from the event; underscores, run-together words
+  ("HeliBrakes" -> "Heli Brakes") and titles in capitals ("TOGGLE PUSHBACK") as words; abbreviations stay in capitals;
+- JoyPro's own action texts (`engine/ActionTexts.cs`, shared with the GUI): `DB\Functions\ActionTexts\<GameId>.tsv`
+  (`id<TAB>name<TAB>menu section<TAB>explanation`, written for JoyPro, shipped). The name stands in for a title that is
+  no words: empty, the id, the id in words ("Rb pitch") or a string-table key (IL-2 `inprb_pitch` -> "Mouse turret aim:
+  up/down"); for IL-2 Korea it always wins (its own text is not readable). The menu section is the category (IL-2 GB / Korea:
+  the Key Mapping tabs). The explanation is the "what it does" line (source `joypro`, after the cockpit guide and the
+  sim's own description, before the general text of the function). Tables: IL2Game, IL2Korea (every action), IL2CoD,
+  IL2CoDBlitz, FalconBMS (the titles no game text explains). Correction tables (MSFS2024, StarCitizen, XPlane11,
+  XPlane12; `ActionTexts.CorrectionGames`) only hold titles whose shorthand JoyPro writes out ("EFB Back" ->
+  "Electronic Flight Bag (EFB): Back", "Weapon preset qid" -> the game's QIDs, "Rotate X Axis" -> "Photo Mode Camera:
+  Pan Left/Right Axis"): their name always wins, the category stays the game's. Meanings come from the game's own
+  descriptions; MSFS names a few events opposite to their id (UI_DISPLAY_CFD_OFF = "CFD ON", ADF whole/fract,
+  ENGINE_BYPASS): its menu name and description agree there, so JoyPro follows the menu. The function map cache and
+  the DB refresh of IL-2 GB follow them;
+- shorthand of the games' own titles written out (not DCS: its titles are the module's): "Step Dn" -> "Step Down",
+  "Rotor Gov" -> "Rotor Governor", "Fms" -> "FMS" (`ActionTexts.ExpandAbbreviations`);
+- `engine relations action-info --coverage [--all-examples]` counts per game the titles with an unexplained
+  abbreviation (a 2-4 letter piece of the id or a word without vowels that is no known word or cockpit label:
+  `ActionTexts.UnexplainedAbbreviation`) and titles that are only a word and an axis letter ("Cursor X"); quality gate
+  I2/I4 fail on them outside DCS.
 
 Every button has a tooltip. No list on the page scrolls sideways: long titles end in "...", aircraft lists show the
 first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuilderRenderTests`).
@@ -562,6 +580,54 @@ Every suggestion of `relations suggest` also has `Missing` ("game", "aircraft" o
 `State`: `on`, `off` (in the action, switched off), `absent` (has the id, not in the action); `Match` against the
 action's meaning, `unknown` when the id is not in that aircraft's list. `relations aircraft set <relation> --node game:id
 [--on p1|p2] [--off p3]` changes one action's aircraft in one step (one undo step; `--on` also adds aircraft).
+
+**One action on in two relations.** The same action of the same aircraft switched on in two relations is the same game
+command on two inputs (DCS writes both binds). The load correction's "add the DB's other aircraft of an id" step
+(`--auto-add-db-items`, runs when the profile's DB fingerprint differs: since 2.3.1 the fingerprint covers only the
+command lists the correction reads, DCS, IL-2 and Star Citizen, plus the version of the correction rules; before, JoyPro's
+own release data (device catalog, drawings, cockpits) counted too, so every update corrected every profile again) puts a new aircraft into a
+node switched on only when no other relation has that action of that aircraft on and, in DCS, its title of the id means
+what the node's switched-on aircraft mean (same / near / same function); otherwise it goes in switched off ("left out").
+Before 2.3.1 it switched the aircraft on in every node of the id, so a profile could collect such duplicates without
+any user action (a tester's DCS import of 21 Oct added 330 aircraft, 77 of them duplicates such as the AH-64 force trim
+on a MFBB and a MOZA button).
+
+`relations duplicates` lists them as cards per relation pair (`Groups`: the relations with device and input, the actions
+with their aircraft as the cockpit catalog names them, `Suggested` or `SuggestOff`, `Confidence` 0-100, `Reasons`) and as
+single actions (`Duplicates`, key `game|id|aircraft`). Fixes, each one profile version (one undo step):
+`--keep <relation> --keys "k;k"` (or `--node game:id --plane p1|p2`), `--off`, `--keep-both` (saved in the profile,
+`Pr0file.KeptDuplicates`: no warning while exactly these relations have it; `--forget-kept` warns again), `--rule
+suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]`, `--instruction "<words>" [--llm
+off|auto|on] [--apply]` (phrase rules: "keep <words> in <relation words>", "everything else in ...", "switch off ...",
+"prefer the throttle"; the local AI model only rewrites what they do not understand into such phrases), `--changes
+"key=>relation;key=>-"` (a preview's ticked changes exactly as shown), `--keys-only` (only the keys, for the
+before/after comparison of imports). Without `--apply` a rule or instruction is a preview (`Changes`).
+
+**Confidence.** The profile history decides first: going back from the newest version, the first one where only one of
+the relations had the action of the aircraft on is where it belongs (96), none of them (94: switch it off in all) - unless
+the version that brought the second one was the user's own edit of that relation (its label names it, or a small
+summary does; then only the reason "you added it yourself"). Without the history: a relation where the aircraft is alone
+in its node (the load correction never makes such a node), the relation's function (chip: set, named, covered) or what
+its name says (function map) against the action's function, the aircraft's meaning of the id against the node's other
+aircraft; a button position ("Different functions per aircraft") is neutral; 92 only for "alone here, means something
+else there", 85 for alone against not alone, else at most 80 by the lead. A relation pair the user kept before lowers it
+by 25. `relations duplicates --evaluate <older.pr0file> [--no-history]` measures it against the version before the
+duplicates came: on the tester's profile (81 duplicates, truth = his version of 21 Oct before the import) every
+suggestion is right at every threshold with the history; without it 22 of 22 at 90% and more, 23 of 23 at 85%, 24 of 26
+at 80% (the other 2 are right binds too: none of the relations had them, they stay in the one of their function); on two
+more profiles corrupted by the old load correction (414 and 194 duplicates) every suggestion at 85% and more is right.
+
+**Export page, "Problems found by the check"** (Views/Controls/CheckProblemsPanel.axaml): sections by kind (actions in
+several relations, errors, notes) with a count and what they mean for the game, a search, a kind filter, sorting (by
+relation, aircraft, game, confidence), expand/collapse all; a card per relation pair in words ("AH-64D Block II (CPG and
+Pilot): 'Force Trim/Hold Mode Switch - AL/Right' is in 2 relations: 'Mode Button 07' (Total Controls MFBB · BTN 39) and
+'Trim Right' (MOZA AB9 FFB Base · BTN 4)"), "96% sure: keep in 'Trim Right'" with the reasons, and Keep in X only / Keep
+both (it is intended) / Open both relations / Switch off in all. Fixes for many: "Fix automatically when JoyPro is at
+least X% sure" (slider, default 90, saved) with "Fix the sure ones (n of m at X% or more)", "Fix all with a rule", "Fix
+with AI" - each shows a preview of every change with a tick and applies the ticked ones in one step. "Also right after
+imports and take-overs" (off at first, saved) fixes the sure ones of an import at once. Imports (DCS, IL-2, Star Citizen,
+the other games) and watcher take-overs compare the duplicates before and after and say on the Relations page when they
+put actions into a second relation ("Review them" opens the check).
 
 `relations check-aircraft [--relation <name>] [--apply] [--include-same-function]`: `{ Relations, Nodes, AffectedNodes,
 AffectedRelations, AircraftToDrop, AircraftSameFunction, Applied, Dropped, Found: [ { Relation, Game, Id, Title,

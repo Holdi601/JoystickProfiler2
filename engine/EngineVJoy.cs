@@ -2209,6 +2209,34 @@ namespace JoyPro.Engine
 
         // ---- mode / map / settings / exe
 
+        // A game's mode (native, virtual, xbox) with the mapping table made for it, as engine vjoy mode does; for Lay out with
+        // AI. Returns the problem or "".
+        internal static string SetMode(string game, string mode, List<string> warnings)
+        {
+            string gameId = ResolveGame(game);
+            if (gameId.Length == 0)
+                return "Unknown game: " + game;
+            mode = (mode ?? string.Empty).Trim().ToLowerInvariant();
+            if (mode == "vjoy")
+                mode = VJoySettings.ModeVJoy;
+            if (mode != "native" && mode != VJoySettings.ModeVJoy && mode != VJoySettings.ModeXbox)
+                return "The mode is native, virtual (vJoy) or xbox.";
+            VJoySettings settings = LoadSettings();
+            if (mode == "native")
+                settings.Games.Remove(gameId);
+            else
+                settings.Games[gameId] = mode;
+            VJoyPlan plan = BuildPlan(settings, ReadVJoyDevices(), false, false);
+            List<XboxPlan> xbox = BuildXboxPlans(settings, false, false, warnings);
+            warnings.AddRange(plan.Warnings);
+            if (plan.Errors.Count > 0)
+                return string.Join("; ", plan.Errors);
+            settings.Slots = plan.Slots;
+            ApplyXboxPlans(settings, xbox);
+            SaveSettings(settings);
+            return string.Empty;
+        }
+
         private static int Mode(List<string> args, bool textOutput, out string payload)
         {
             if (args.Count < 2)

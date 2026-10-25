@@ -31,7 +31,7 @@ namespace JoyPro.Gui.Tests.QualityGate;
 [SupportedOSPlatform("windows")]
 public sealed class QualityGateLayoutTests
 {
-    private sealed record Variant(string Name, UiStage Stage, string Relation = "", bool AddPanel = false);
+    private sealed record Variant(string Name, UiStage Stage, string Relation = "", bool AddPanel = false, bool Check = false);
 
     private static readonly (string Label, double Width, double Height, double Scale)[] Screens =
     [
@@ -63,6 +63,9 @@ public sealed class QualityGateLayoutTests
             await vm.RefreshGameInstallsCommand.ExecuteAsync(null);
             await vm.RefreshRegistryGamesCommand.ExecuteAsync(null);
             List<RelationListItem> relations = vm.Relations.ToList();
+            // The opt-in Statistics page with every section (the fixtures' document).
+            vm.ShowStatisticsPage = true;
+            vm.Statistics.Apply(UsageRecordingTests.SampleStats);
             string large = await LargestRelationAsync(s, relations);
             string normal = relations.FirstOrDefault(r => r.Name.StartsWith("Pitch", StringComparison.OrdinalIgnoreCase))?.Name
                             ?? relations.Where(r => !r.Name.StartsWith("QG ", StringComparison.Ordinal) && r.Name != "Relation 024").Select(r => r.Name).Skip(relations.Count / 2).FirstOrDefault() ?? string.Empty;
@@ -71,11 +74,13 @@ public sealed class QualityGateLayoutTests
                 new("Start", UiStage.Start), new("Relations (none open)", UiStage.Relations), new("Binds", UiStage.Binds), new("Modifiers", UiStage.Modifiers),
                 new("Layout", UiStage.Layout), new("Export", UiStage.Export), new("Settings", UiStage.Settings), new("Advanced", UiStage.Advanced),
                 new("HUD", UiStage.Hud), new("Force feedback", UiStage.FfbTelemetry), new("Virtual joystick", UiStage.VirtualJoystick), new("Cockpits", UiStage.Cockpits),
+                new("Statistics", UiStage.Statistics),
                 new("Relation editor: empty relation", UiStage.Relations, "QG empty relation"),
                 new("Relation editor: normal relation", UiStage.Relations, normal),
                 new("Relation editor: normal relation, Add actions", UiStage.Relations, normal, AddPanel: true),
                 new("Relation editor: large relation", UiStage.Relations, large),
                 new("Relation editor: placeholder name", UiStage.Relations, "Relation 024", AddPanel: true),
+                new("Export: problems found by the check", UiStage.Export, Check: true),
             ];
             try
             {
@@ -94,6 +99,13 @@ public sealed class QualityGateLayoutTests
                             string screens = string.Join(", ", logical.Select(l => l.Label));
                             HiddenWindow window = GateRender.NewWindow(vm, width, height);
                             windows++;
+                            if (variant.Check)
+                            {
+                                // The check's problems panel scrolled into view (cards, fixes, a preview when there are duplicates).
+                                Control? panel = Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(window.Page).OfType<Control>().FirstOrDefault(c => c.Name == "CheckProblemsBorder");
+                                panel?.BringIntoView();
+                                window.Settle();
+                            }
                             try
                             {
                                 Control root = GateRender.Root(window);
@@ -207,6 +219,13 @@ public sealed class QualityGateLayoutTests
         vm.CurrentStage = variant.Stage;
         await Task.Delay(100);
         await s.SettleAsync(() => true, 30000);
+        if (variant.Check)
+        {
+            await vm.ValidateProfileCommand.ExecuteAsync(null);
+            if (vm.HasSureDuplicates)
+                await vm.PreviewSureDuplicatesCommand.ExecuteAsync(null);
+            await s.SettleAsync(() => true, 30000);
+        }
         if (variant.Stage != UiStage.Relations)
             return;
         if (variant.Relation.Length == 0)

@@ -85,6 +85,8 @@ public sealed partial class MainWindowViewModel
         // The Start page's connected devices (with their pictures).
         await LoadDeviceCardsAsync();
         await StartGameConfigWatcherAsync();
+        // The usage recording (always on): catches up with the games' logs, then follows them live.
+        _ = StartUsageRecordingAsync();
         if (CheckUpdatesOnStartup)
             await CheckForUpdatesCoreAsync(manual: false);
     }

@@ -19,7 +19,8 @@ namespace JoyPro.Setup
             sb.AppendLine("Games: " + (plan.Games.Count == 0 ? "(none)" : string.Join(", ", plan.Games)));
             sb.AppendLine("Priorities: " + (plan.Priorities.Count == 0 ? "(all equal)" : string.Join(" > ", plan.Priorities.Select(t => string.Join(" = ", t)))));
             sb.AppendLine("Modifiers: wanted " + plan.ModifiersWanted.ToString(CultureInfo.InvariantCulture) + (plan.PreferFewer ? " (prefer fewer)" : string.Empty) +
-                          ", used " + plan.Modifiers.Count.ToString(CultureInfo.InvariantCulture));
+                          ", used " + plan.Modifiers.Count(m => !m.Switch).ToString(CultureInfo.InvariantCulture) +
+                          (plan.Modifiers.Any(m => m.Switch) ? " + " + plan.Modifiers.Count(m => m.Switch).ToString(CultureInfo.InvariantCulture) + " phase layer(s) on a mode switch" : string.Empty));
             sb.AppendLine("Realism: " + Math.Round(plan.Realism * 100).ToString(CultureInfo.InvariantCulture) + " %");
             sb.AppendLine("Cockpit positions: " + plan.CockpitSource);
             sb.AppendLine("Devices:");
@@ -36,7 +37,7 @@ namespace JoyPro.Setup
                 sb.AppendLine("Modifiers Created:");
                 foreach (SetupPlanModifier modifier in plan.Modifiers)
                     sb.AppendLine("  - " + modifier.Name + " = " + DeviceName(plan, modifier.Device) + " " + modifier.Input + (modifier.Control.Length > 0 ? " (" + modifier.Control + ")" : string.Empty) +
-                                  (modifier.Forced ? " [added because the inputs are too few]" : string.Empty) + " - " + modifier.Reason);
+                                  (modifier.Forced ? " [added because the inputs are too few]" : string.Empty) + (modifier.Switch ? " [phase layer: " + SetupPhases.Title(modifier.Phase) + "]" : string.Empty) + " - " + modifier.Reason);
             }
             sb.AppendLine("Quality:");
             foreach (SetupQuality quality in plan.Quality)

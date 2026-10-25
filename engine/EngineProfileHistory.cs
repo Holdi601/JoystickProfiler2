@@ -35,7 +35,9 @@ namespace JoyPro.Engine
 
         // After InternalDataManagement.SaveProfileTo wrote the file: the version, and before it the file's former content
         // when the history does not know it (no history yet, or changed outside JoyPro).
-        public static void AfterSave(string fullPath, byte[] previous, byte[] content, Pr0file snapshot)
+        // previousGraph: the file before the save as read (the engine server's kept graph), else null and it is read
+        // from previous when the history needs it.
+        public static void AfterSave(string fullPath, byte[] previous, byte[] content, Pr0file snapshot, Pr0file previousGraph = null)
         {
             try
             {
@@ -43,25 +45,35 @@ namespace JoyPro.Engine
                 string hash = ProfileHistory.HashOf(content);
                 ProfileHistoryLog log = ProfileHistory.Read(fullPath);
                 ProfileVersion cursor = log.CursorVersion;
-                if (previous != null && previousHash != hash && (cursor == null || cursor.Hash != previousHash))
-                {
-                    ProfileHistory.Record(fullPath, previous, new ProfileHistoryRecordOptions
-                    {
-                        Kind = cursor == null ? ProfileVersionKind.Open : ProfileVersionKind.External,
-                        Label = cursor == null ? "Before the history started" : "Changed outside JoyPro",
-                        Items = () => ItemsOfContent(previous),
-                        PreviousHash = previousHash,
-                        Coalesce = false
-                    });
-                }
-                ProfileHistory.Record(fullPath, content, new ProfileHistoryRecordOptions
+                ProfileHistoryRecordOptions change = new ProfileHistoryRecordOptions
                 {
                     Kind = ProfileVersionKind.Change,
                     Label = Label,
                     Items = () => Items(snapshot),
                     PreviousHash = previousHash,
                     Coalesce = !NoCoalesce
-                });
+                };
+                if (previous != null && previousHash != hash && (cursor == null || cursor.Hash != previousHash))
+                {
+                    // Two versions at once (the file before this save, then this save): both files are written side by
+                    // side first, then both versions in one write.
+                    Func<IList<string>> previousItems = () => previousGraph != null ? Items(previousGraph) : ItemsOfContent(previous);
+                    ProfileHistory.PrepareVersions(fullPath, previousHash,
+                        new KeyValuePair<byte[], Func<IList<string>>>(previous, previousItems),
+                        new KeyValuePair<byte[], Func<IList<string>>>(content, change.Items));
+                    ProfileHistory.RecordVersions(fullPath,
+                        new KeyValuePair<byte[], ProfileHistoryRecordOptions>(previous, new ProfileHistoryRecordOptions
+                        {
+                            Kind = cursor == null ? ProfileVersionKind.Open : ProfileVersionKind.External,
+                            Label = cursor == null ? "Before the history started" : "Changed outside JoyPro",
+                            Items = previousItems,
+                            PreviousHash = previousHash,
+                            Coalesce = false
+                        }),
+                        new KeyValuePair<byte[], ProfileHistoryRecordOptions>(content, change));
+                    return;
+                }
+                ProfileHistory.Record(fullPath, content, change);
             }
             catch (Exception ex)
             {
@@ -187,7 +199,9 @@ namespace JoyPro.Engine
                 JoystickFFB = InternalDataManagement.JoystickFFB,
                 FfbOverrides = InternalDataManagement.FfbOverrides,
                 AxisCalibrations = InternalDataManagement.AxisCalibrations,
-                VirtualJoystick = InternalDataManagement.VirtualJoystickConfig
+                VirtualJoystick = InternalDataManagement.VirtualJoystickConfig,
+                LayoutPreferences = InternalDataManagement.LayoutPreferences,
+                KeptDuplicates = InternalDataManagement.KeptDuplicates
             };
             return Items(profile);
         }
@@ -292,6 +306,9 @@ namespace JoyPro.Engine
                 AddSection(lines, hash, "Force feedback settings", Join(profile.FfbOverrides));
                 AddSection(lines, hash, "Virtual joystick", profile.VirtualJoystick);
                 AddSection(lines, hash, "Detent calibration", Join(profile.AxisCalibrations));
+                AddSection(lines, hash, "Layout preferences", profile.LayoutPreferences);
+                AddSection(lines, hash, "Actions kept in several relations", profile.KeptDuplicates == null ? string.Empty
+                    : string.Join("\n", profile.KeptDuplicates.OrderBy(k => k, StringComparer.OrdinalIgnoreCase)));
             }
             return lines;
         }

@@ -10,6 +10,11 @@ on 127.0.0.1, reads the games' local files or shared memory and asks the game's 
 only while the game runs. Nothing is uploaded. War Thunder's chat is never read; kill messages in a recording name
 other players, as the game's HUD does. Delete recordings in the same section.
 
+**Usage statistics** ([usage-statistics.md](usage-statistics.md)) always run: JoyPro reads which games, aircraft and
+ships you use from the games' own files on this PC (logs, journals, logbooks, replays, savegames) and from Steam's
+local playtime file, and keeps a summary in its data folder (`<data>\Usage`). Nothing is sent anywhere; the Statistics
+page that shows it is opt-in. Problem reports do not include the summary.
+
 JoyPro connects to the internet only for the things listed below. Each connection shows your **IP address** to the
 site it contacts (as any browser visit does). The site's own privacy policy applies to it.
 

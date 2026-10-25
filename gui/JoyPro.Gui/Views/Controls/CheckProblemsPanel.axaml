@@ -1,0 +1,201 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:models="using:JoyPro.Gui.Models"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.Controls.CheckProblemsPanel"
+             x:DataType="vm:MainWindowViewModel">
+    <!-- The check's problems (MainWindowViewModel.Duplicates.cs): sections by kind with a count and what they mean, a search,
+         a filter, sorting, collapse/expand; per card of "actions in several relations" the actions and aircraft in words,
+         the suggestion with its confidence and one-click fixes; fixes for many with a preview and ticks (one undo step). -->
+    <StackPanel Spacing="8">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+            <PathIcon Data="{StaticResource Icon.Ok}" Width="18" Height="18" />
+            <TextBlock Grid.Column="1" Text="{l:T 'Problems found by the check'}" FontWeight="SemiBold" VerticalAlignment="Center" />
+        </Grid>
+        <TextBlock Text="{Binding ValidationSummary}" TextWrapping="Wrap" />
+        <TextBlock Classes="hint" Text="{Binding CheckSummaryText}" TextWrapping="Wrap" IsVisible="{Binding CheckSummaryText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <!-- Search, filter, sort, collapse -->
+        <WrapPanel ItemSpacing="8" LineSpacing="6">
+            <TextBox x:Name="CheckSearchBox" Width="260" Text="{Binding CheckSearchText}" Watermark="{l:T 'Search relations, aircraft, actions'}" />
+            <ComboBox x:Name="CheckKindBox" MinWidth="200" ItemsSource="{Binding CheckKindChoices}" SelectedItem="{Binding SelectedCheckKind}" PlaceholderText="{l:T 'All problems'}"
+                      ToolTip.Tip="{l:T 'Show only one kind of problem'}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:DuplicateRuleChoice">
+                        <TextBlock Text="{Binding Label, Converter={x:Static l:TConverter.Instance}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <ComboBox x:Name="CheckSortBox" MinWidth="170" ItemsSource="{Binding CheckSortChoices}" SelectedItem="{Binding SelectedCheckSort}" PlaceholderText="{l:T 'By relation'}"
+                      ToolTip.Tip="{l:T 'Order of the cards'}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:DuplicateRuleChoice">
+                        <TextBlock Text="{Binding Label, Converter={x:Static l:TConverter.Instance}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button Classes="small ghost" Content="{l:T 'Expand all'}" Command="{Binding ExpandAllCheckCardsCommand}" />
+            <Button Classes="small ghost" Content="{l:T 'Collapse all'}" Command="{Binding CollapseAllCheckCardsCommand}" />
+        </WrapPanel>
+
+        <!-- Fixes for many -->
+        <Border Classes="sunken" Padding="10,8" CornerRadius="8" IsVisible="{Binding HasDuplicates}">
+            <StackPanel Spacing="6">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="{Binding AutoFixThresholdText}" TextWrapping="Wrap" />
+                        <Slider x:Name="AutoFixSlider" Minimum="50" Maximum="100" TickFrequency="5" IsSnapToTickEnabled="True" Value="{Binding DuplicateAutoFixThreshold}" MaxWidth="420" HorizontalAlignment="Left" MinWidth="200" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Classes="accent" VerticalAlignment="Center" Command="{Binding PreviewSureDuplicatesCommand}" IsEnabled="{Binding HasSureDuplicates}"
+                            ToolTip.Tip="{l:T 'Shows the fixes JoyPro is at least this sure about; you tick which ones to apply. One undo step.'}">
+                        <TextBlock Text="{Binding FixSureOnesText}" TextWrapping="Wrap" />
+                    </Button>
+                </Grid>
+                <CheckBox Content="{l:T 'Also right after imports and take-overs'}" IsChecked="{Binding AutoFixDuplicatesAfterImport}"
+                          ToolTip.Tip="{l:T 'When an import or a take-over puts an action into a second relation, JoyPro fixes it at once if it is at least this sure; the rest stays here for you.'}" />
+                <WrapPanel ItemSpacing="8" LineSpacing="6">
+                    <ToggleButton Classes="small" Content="{l:T 'Fix all with a rule'}" IsChecked="{Binding IsDuplicateRuleOpen, Mode=OneWay}" Command="{Binding ToggleDuplicateRuleCommand}" />
+                    <ToggleButton Classes="small" Content="{l:T 'Fix with AI'}" IsChecked="{Binding IsDuplicateAiOpen, Mode=OneWay}" Command="{Binding ToggleDuplicateAiCommand}" />
+                </WrapPanel>
+                <!-- A rule -->
+                <StackPanel Spacing="6" IsVisible="{Binding IsDuplicateRuleOpen}">
+                    <WrapPanel ItemSpacing="8" LineSpacing="6">
+                        <ComboBox x:Name="DuplicateRuleBox" MinWidth="320" MaxWidth="560" ItemsSource="{Binding DuplicateRuleChoices}" SelectedItem="{Binding SelectedDuplicateRule}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:DuplicateRuleChoice">
+                                    <TextBlock Text="{Binding Label, Converter={x:Static l:TConverter.Instance}}" TextWrapping="Wrap" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <ComboBox MinWidth="180" ItemsSource="{Binding DuplicateDeviceChoices}" SelectedItem="{Binding SelectedDuplicateDevice}" IsVisible="{Binding RuleNeedsDevice}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:DuplicateRuleChoice">
+                                    <TextBlock Text="{Binding Label, Converter={x:Static l:TConverter.Instance}}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBox Width="220" Text="{Binding DuplicateRuleWords}" Watermark="{l:T 'Words of the relation names, e.g. trim'}" IsVisible="{Binding RuleNeedsWords}" />
+                        <Button Classes="small accent" Content="{l:T 'Preview'}" Command="{Binding PreviewDuplicateRuleCommand}" />
+                    </WrapPanel>
+                </StackPanel>
+                <!-- In words -->
+                <StackPanel Spacing="6" IsVisible="{Binding IsDuplicateAiOpen}">
+                    <TextBox Text="{Binding DuplicateInstruction}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="54"
+                             Watermark="{l:T 'e.g. keep trim functions in the Trim relations, everything else in the Mode Button relations'}" />
+                    <WrapPanel ItemSpacing="8" LineSpacing="6">
+                        <Button Classes="small accent" Content="{l:T 'Preview'}" Command="{Binding PreviewDuplicateInstructionCommand}" />
+                        <TextBlock Classes="hint" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560"
+                                   Text="{l:T 'JoyPro reads simple sentences itself (keep ... in ..., everything else in ..., switch off ..., prefer the throttle); the local AI only helps with the rest.'}" />
+                    </WrapPanel>
+                    <controls:LocalAiStatusChip />
+                </StackPanel>
+                <!-- The preview -->
+                <Border Classes="callout" Padding="10,8" IsVisible="{Binding HasDuplicatePreview}">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="{Binding DuplicatePreviewTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Classes="hint" Text="{Binding DuplicatePreviewNotes}" TextWrapping="Wrap" IsVisible="{Binding DuplicatePreviewNotes, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding DuplicatePreview}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:DuplicateChangeItem">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8" Margin="0,1">
+                                            <CheckBox IsChecked="{Binding IsTicked}" VerticalAlignment="Top" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="2" Classes="caption" Text="{Binding ConfidenceText}" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <WrapPanel ItemSpacing="8" LineSpacing="6">
+                            <Button Classes="small accent" Content="{l:T 'Apply the ticked ones'}" Command="{Binding ApplyDuplicatePreviewCommand}"
+                                    ToolTip.Tip="{l:T 'One version of your profile; Ctrl+Z takes all of it back'}" />
+                            <Button Classes="small" Content="{l:T 'Tick all / none'}" Command="{Binding TickAllDuplicatePreviewCommand}" />
+                            <Button Classes="small ghost" Content="{l:T 'Cancel'}" Command="{Binding CancelDuplicatePreviewCommand}" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- The sections and their cards -->
+        <ItemsControl x:Name="CheckSectionList" ItemsSource="{Binding CheckSections}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="models:CheckIssueSection">
+                    <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0,0,6">
+                        <Expander.Header>
+                            <StackPanel Spacing="1">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Data="{StaticResource Icon.Warning}" Width="16" Height="16" Classes="warn" IsVisible="{Binding IsSerious}" />
+                                    <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" IsVisible="{Binding !IsSerious}" />
+                                    <TextBlock Text="{Binding CountText}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <TextBlock Classes="hint" Text="{Binding Severity}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Expander.Header>
+                        <ItemsControl ItemsSource="{Binding Cards}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:CheckIssueCard">
+                                    <Border Classes="card" Padding="10,8" Margin="0,0,0,6">
+                                        <StackPanel Spacing="4">
+                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding Headline}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                <Border Grid.Column="1" Classes="chip" IsVisible="{Binding IsNew}" VerticalAlignment="Top">
+                                                    <TextBlock Text="{l:T 'New'}" FontSize="11" />
+                                                </Border>
+                                                <ToggleButton Grid.Column="2" Classes="small ghost" Padding="4,0" VerticalAlignment="Top" IsChecked="{Binding IsExpanded}"
+                                                              IsVisible="{Binding HasChoices}" ToolTip.Tip="{l:T 'Show or hide the details and fixes'}">
+                                                    <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="12" Height="12" />
+                                                </ToggleButton>
+                                            </Grid>
+                                            <StackPanel Spacing="4" IsVisible="{Binding IsExpanded}">
+                                                <TextBlock Text="{Binding Details}" TextWrapping="Wrap" IsVisible="{Binding Details, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                <ItemsControl ItemsSource="{Binding ActionLines}" IsVisible="{Binding HasActionLines}" Margin="12,0,0,0">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="x:String">
+                                                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding HasSuggestion}">
+                                                    <PathIcon Data="{StaticResource Icon.Info}" Width="14" Height="14" Classes="info" VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding SuggestionText}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                                <TextBlock Classes="hint" Text="{Binding ReasonText}" TextWrapping="Wrap" IsVisible="{Binding HasReason}" />
+                                                <WrapPanel ItemSpacing="6" LineSpacing="4" IsVisible="{Binding HasChoices}">
+                                                    <ItemsControl ItemsSource="{Binding Choices}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel ItemSpacing="6" LineSpacing="4" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="models:DuplicateRelationChoice">
+                                                                <Button Classes="small" Classes.accent="{Binding IsSuggested}" Command="{Binding KeepCommand}" ToolTip.Tip="{Binding Tip}">
+                                                                    <TextBlock Text="{Binding KeepText}" TextWrapping="Wrap" MaxWidth="360" />
+                                                                </Button>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <Button Classes="small" Content="{l:T 'Keep both (it is intended)'}" Command="{Binding KeepBothCommand}"
+                                                            ToolTip.Tip="{l:T 'Both relations keep it; JoyPro remembers this in your profile and does not warn about it again. Ctrl+Z undoes it.'}" />
+                                                    <Button Classes="small ghost" Content="{l:T 'Open both relations'}" Command="{Binding OpenAllCommand}"
+                                                            ToolTip.Tip="{l:T 'Opens the first relation in the Relations page and names the other one'}" />
+                                                    <Button Classes="small ghost" Content="{l:T 'Switch off in all'}" Command="{Binding SwitchOffAllCommand}"
+                                                            ToolTip.Tip="{l:T 'None of these relations keeps it for these aircraft (a tick brings it back). Ctrl+Z undoes it.'}" />
+                                                </WrapPanel>
+                                                <Button Classes="small ghost" Content="{l:T 'Open Issue Context'}" Command="{Binding OpenContextCommand}" IsVisible="{Binding HasOpenContext}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Expander>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

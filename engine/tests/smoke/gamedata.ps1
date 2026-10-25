@@ -89,6 +89,16 @@ try {
     $gdFp3 = [regex]::Match((Run-Engine @("db", "fingerprint", "--text")).Output, $gdFpRegex).Groups[1].Value
     Assert-True ($gdFp3 -and $gdFp3 -ne $gdFp1) "a changed command list must change the DB fingerprint."
     [System.IO.File]::WriteAllBytes($gdIl2List, $gdIl2ListOld)
+    # JoyPro's own data of a new release (a device and its drawing, as in 2.2.17) is nothing the load correction reads:
+    # it must not make every profile's next save correct every relation again.
+    $gdDevices = Join-Path $gdRoot "DB\Devices"
+    $gdHadDevices = Test-Path $gdDevices
+    New-Item -ItemType Directory -Force -Path $gdDevices | Out-Null
+    [System.IO.File]::WriteAllText((Join-Path $gdDevices "smoke-new-device.json"), "{ ""devices"": [] }")
+    $gdFp4 = [regex]::Match((Run-Engine @("db", "fingerprint", "--text")).Output, $gdFpRegex).Groups[1].Value
+    Remove-Item -LiteralPath (Join-Path $gdDevices "smoke-new-device.json") -Force
+    if (-not $gdHadDevices) { Remove-Item -LiteralPath $gdDevices -Recurse -Force }
+    Assert-True ($gdFp4 -and $gdFp4 -eq $gdFp1) ("a new device catalog file must not change the DB fingerprint: " + $gdFp1 + " / " + $gdFp4)
 
     # ---- 3. a rebuild replaces the program folder with older lists: the refreshed ones stay in use
     [System.IO.File]::WriteAllText((Join-Path $gdGameData "DB\DCS\Charlie-3.html"), "<html><body><h1>DCS input layout</h1></body></html>")

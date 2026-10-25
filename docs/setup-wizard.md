@@ -28,7 +28,10 @@ give the same plan.
      row; `Up`, `Down`, `Equal with above`, `Own row`, `Remove` do the same with buttons. Aircraft in one row count the
      same; aircraft you do not list count least.
    - *Modifiers*: none, 1, 2, 3 or 4, and `As few as possible`.
+   - *Mode switch (phase layers)*: Automatic, Always or Off ([auto-assign.md](auto-assign.md#phase-layers)).
    - *Like the real aircraft?*: the realism slider, 0 to 100 %.
+
+   The choices of this step are kept in the settings, and the next wizard starts with them.
 4. **Plan.** JoyPro makes the plan (`engine setup plan`): how many functions it placed, what it could not place, the
    modifiers it made, the rules it followed and a quality score per aircraft (100 % = every function on its best
    place).
@@ -84,7 +87,8 @@ The hands per aircraft class:
    - **Realism from 50 %**: aircraft whose real HOTAS has the function elsewhere get their own relation (by the side
      the catalog gives for each aircraft and, with the cockpit database, the exact position). After placing, parts of
      one function that ended on the same input become one relation again; a function in one piece keeps its plain name.
-2. **Importance** of a relation = category weight x frequency weight x priority.
+2. **Importance** of a relation = category weight x frequency weight x priority x flight phase weight for the roles of
+   its aircraft x time criticality ([auto-assign.md](auto-assign.md#flight-phases)).
    - Category (from the function map's categories, `relations functions`): flight controls 8 (flight, engine axes),
      weapons / countermeasures / HOTAS switches / sensors 4, systems (nav, lights, aircraft systems, engine buttons) 2,
      views and comms 1, display keys 0.5.
@@ -160,12 +164,14 @@ All print JSON without `--text`. Device and role options are shared by `devices`
   devices with `Role`, `ProposedRole`, `Reason`, `Inputs`, grips, and the `Rules` in words.
 - `engine setup aircraft --games <g1,g2>`: the aircraft for the priority list (`Key`, `Game`, `Class`).
 - `engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8]
-  [--prefer-fewer|--use-all-modifiers] [--realism 0..1|0..100%] [--seed N] [--replace-existing] [--role ...] [--grip ...]
+  [--prefer-fewer|--use-all-modifiers] [--realism 0..1|0..100%] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role ...] [--grip ...]
   [--add-device ...] [--cockpit-file <json>]... [--out-plan <plan.json>]`: `>` separates rows, `|` (or `=`) aircraft
   of one row. Read-only. The plan file has `Devices`, `Rules`, `Inputs` (of the devices with a role that binds),
   `Modifiers` (name, input, `Forced`, reason), `Relations` (name, function, category, nodes to add, aircraft,
   `Overlap` = the aircraft it occupies, device, input, control, label, modifier, score, `RealMatch`, reason, `Kept`,
   `Existing`, `Removed`), `NotPlaced` (with the reason), `Quality`, `Notes`, `Warnings`.
+- `engine setup check --plan <plan.json> [--modifiers N]`: the rules every plan keeps (C1-C10 of the
+  [combination matrix](auto-assign.md#combination-matrix)) and its measures; prints JSON, or text with `--text`.
 - `engine setup apply --plan <plan.json> [--dry-run] [--force]`: creates or extends the relations (group `Setup`), sets
   the binds and modifiers. Refused when two relations with an aircraft in common share an input (the review's edits are
   checked the same way) unless `--force`. A command that another relation got in the meantime stays there. One

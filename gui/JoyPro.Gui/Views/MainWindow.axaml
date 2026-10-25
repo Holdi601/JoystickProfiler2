@@ -1622,6 +1622,19 @@
                                     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8" MinHeight="0">
                                         <!-- The profile check (relations check-aircraft): the open relation's question, and a link for all relations -->
                                         <StackPanel Grid.Row="1" Spacing="6">
+                                            <!-- An import or take-over put actions into a second relation (MainWindowViewModel.Duplicates.cs) -->
+                                            <Border x:Name="DuplicateImportBanner" Classes="callout warn" Padding="8,6" IsVisible="{Binding HasDuplicateImportNotice}">
+                                                <StackPanel Spacing="4">
+                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                        <PathIcon Data="{StaticResource Icon.Warning}" Width="16" Height="16" VerticalAlignment="Top" Margin="0,1,0,0" Classes="warn" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding DuplicateImportNotice}" TextWrapping="Wrap" />
+                                                    </Grid>
+                                                    <WrapPanel ItemSpacing="6" LineSpacing="4" Margin="24,0,0,0">
+                                                        <Button Classes="small accent" Content="{l:T 'Review them'}" Command="{Binding ReviewNewDuplicatesCommand}" />
+                                                        <Button Classes="small ghost" Content="{l:T 'Later'}" Command="{Binding DismissDuplicateImportNoticeCommand}" />
+                                                    </WrapPanel>
+                                                </StackPanel>
+                                            </Border>
                                             <Border x:Name="RelationCheckBanner" Classes="callout" Padding="8,6" IsVisible="{Binding HasAircraftCheckNotice}">
                                                 <StackPanel Spacing="4">
                                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
@@ -2551,6 +2564,10 @@
                                     <ToggleButton Classes="icon" Tag="{StaticResource Icon.Joystick}" Command="{Binding ToggleAutoAssignPanelCommand}" IsChecked="{Binding IsAutoAssignPanelOpen, Mode=OneWay}"
                                                   Content="{l:T 'Put relations on my buttons automatically...'}"
                                                   ToolTip.Tip="{l:T 'Auto Assign: JoyPro binds your relations to fitting controls of your devices (TMS on the TMS hat, gear on the gear lever). Preview first; nothing changes until Apply.'}" />
+                                    <!-- Lay out with AI (docs/layout-with-ai.md): preferences in plain words, a preview of every change, Apply / Undo. -->
+                                    <ToggleButton Classes="icon accent" Tag="{StaticResource Icon.Wand}" Command="{Binding ToggleLayoutPanelCommand}" IsChecked="{Binding IsLayoutPanelOpen, Mode=OneWay}"
+                                                  Content="{l:T 'Lay out with AI...'}"
+                                                  ToolTip.Tip="{l:T 'Say in your words how you like your controls (throttle and left-hand stick, trim on the hat, curves softer for helis); JoyPro lays out binds, curves, force feedback and vJoy and shows every change before anything is applied.'}" />
                                     <!-- Setup wizard (docs/setup-wizard.md): relations and binds for the watched games, device roles, priorities. -->
                                     <Button Classes="icon" Tag="{StaticResource Icon.Wand}" Command="{Binding OpenSetupWizardCommand}" Content="{l:T 'Set up my devices automatically...'}"
                                             ToolTip.Tip="{l:T 'Setup wizard: relations and binds for the games you watch in one go (device roles, aircraft priorities, modifiers, how real), then you review before anything changes'}" />
@@ -2575,6 +2592,136 @@
 
                             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                 <StackPanel Spacing="12" Margin="0,0,10,0">
+                                <!-- Lay out with AI (MainWindowViewModel.LayoutWithAi.cs) -->
+                                <Border x:Name="LayoutWithAiPanel" IsVisible="{Binding IsLayoutPanelOpen}" Classes="surface">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                            <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Classes="h2" Text="{l:T 'Lay out with AI'}" TextWrapping="Wrap" />
+                                                <TextBlock Classes="caption" TextWrapping="Wrap"
+                                                           Text="{l:T 'Say how you like your controls. JoyPro lays out your binds, axis curves, force feedback and vJoy accordingly; your own layout stays where you ask for nothing else. You see every change before anything is applied.'}" />
+                                            </StackPanel>
+                                            <Button Grid.Column="2" Classes="icon ghost small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Close'}" Command="{Binding ToggleLayoutPanelCommand}" ToolTip.Tip="{l:T 'Close Lay out with AI'}" />
+                                        </Grid>
+                                        <TextBox Text="{Binding LayoutRequest}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="64" MaxHeight="160"
+                                                 Watermark="{l:T 'e.g. throttle and left-hand stick, trim on the hat, curves softer for helis'}" />
+                                        <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                            <TextBlock Text="{l:T 'Examples:'}" VerticalAlignment="Center" Opacity="0.8" />
+                                            <ItemsControl ItemsSource="{Binding LayoutExamples}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel ItemSpacing="6" LineSpacing="6" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="x:String">
+                                                        <Button Classes="ghost small" Content="{Binding}" Command="{Binding #RootWindow.DataContext.UseLayoutExampleCommand}" CommandParameter="{Binding}"
+                                                                ToolTip.Tip="{l:T 'Adds this example to your text'}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </WrapPanel>
+                                        <controls:LocalAiStatusChip x:Name="LayoutAiChip" />
+                                        <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding IsAiKnownOff}"
+                                                   Text="{l:T 'The local AI is off: JoyPro reads your words with its own rules (English phrases like the examples). The AI only helps to understand other words and languages.'}" />
+                                        <WrapPanel ItemSpacing="12" LineSpacing="6">
+                                            <CheckBox IsChecked="{Binding LayoutAddMissing}" Content="{l:T 'Also make relations for functions I do not have yet'}"
+                                                      ToolTip.Tip="{l:T 'Like the Setup wizard: relations for the important functions of your games that your profile does not have, placed with the rest'}" />
+                                            <Button Classes="accent" Command="{Binding AskLayoutCommand}" Content="{l:T 'Preview'}"
+                                                    ToolTip.Tip="{l:T 'Shows what JoyPro understood and every change; nothing changes yet'}" />
+                                            <Button Command="{Binding ApplyLayoutCommand}" IsEnabled="{Binding CanApplyLayout}" Content="{l:T 'Apply'}"
+                                                    ToolTip.Tip="{l:T 'Applies the ticked changes as one step (Undo takes all of them back)'}" />
+                                            <Button Command="{Binding UndoLayoutCommand}" IsVisible="{Binding LayoutApplied}" Content="{l:T 'Undo'}" />
+                                            <Button Command="{Binding DiscardLayoutCommand}" IsVisible="{Binding HasLayoutPreview}" Content="{l:T 'Discard'}" ToolTip.Tip="{l:T 'Forget this preview; nothing changes'}" />
+                                        </WrapPanel>
+                                        <TextBlock Text="{Binding LayoutStatus}" TextWrapping="Wrap" IsVisible="{Binding LayoutStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <!-- What JoyPro understood (new ones and the ones kept in the profile) -->
+                                        <StackPanel Spacing="4" IsVisible="{Binding HasLayoutPreferences}">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock Classes="h3" Text="{l:T 'Your preferences'}" VerticalAlignment="Center" />
+                                                <Button Grid.Column="1" Classes="ghost small" Command="{Binding ClearLayoutPreferencesCommand}" Content="{l:T 'Forget all'}"
+                                                        ToolTip.Tip="{l:T 'Forget every preference kept in this profile'}" />
+                                            </Grid>
+                                            <ItemsControl ItemsSource="{Binding LayoutPreferences}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:LayoutPreferenceItem">
+                                                        <Border Classes="callout" Margin="0,2" Padding="8,6">
+                                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                                                <StackPanel Spacing="1">
+                                                                    <TextBlock Text="{Binding Text}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                                    <TextBlock Text="{Binding Words, StringFormat='&quot;{0}&quot;'}" Opacity="0.7" FontSize="12" TextWrapping="Wrap" />
+                                                                </StackPanel>
+                                                                <TextBlock Grid.Column="1" Text="{Binding Badge}" Opacity="0.75" FontSize="12" VerticalAlignment="Center" />
+                                                                <Button Grid.Column="2" Classes="icon ghost small" Tag="{StaticResource Icon.Close}" Content="{l:T 'Forget'}"
+                                                                        Command="{Binding #RootWindow.DataContext.RemoveLayoutPreferenceCommand}" CommandParameter="{Binding}"
+                                                                        ToolTip.Tip="{l:T 'Forget this preference'}" />
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                        <StackPanel Spacing="2" IsVisible="{Binding HasLayoutNotUnderstood}">
+                                            <TextBlock Text="{l:T 'Not understood:'}" Foreground="{DynamicResource JP.WarnTextBrush}" FontWeight="SemiBold" />
+                                            <ItemsControl ItemsSource="{Binding LayoutNotUnderstood}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="x:String">
+                                                        <TextBlock Text="{Binding StringFormat='&quot;{0}&quot;'}" TextWrapping="Wrap" Opacity="0.85" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                        <!-- The preview: every change, grouped, ticked to apply -->
+                                        <StackPanel Spacing="4" IsVisible="{Binding HasLayoutPreview}">
+                                            <TextBlock Classes="h3" Text="{l:T 'What changes'}" />
+                                            <TextBlock Text="{Binding LayoutSummary}" TextWrapping="Wrap" />
+                                            <ItemsControl ItemsSource="{Binding LayoutChangeGroups}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:LayoutChangeGroupItem">
+                                                        <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" Margin="0,2">
+                                                            <Expander.Header>
+                                                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                    <CheckBox IsChecked="{Binding AllSelected}" IsThreeState="True" ToolTip.Tip="{l:T 'Tick or untick all of them'}" />
+                                                                    <TextBlock Text="{Binding Header}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                            </Expander.Header>
+                                                            <ItemsControl ItemsSource="{Binding Changes}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate x:DataType="models:LayoutChangeItem">
+                                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,2">
+                                                                            <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Top" />
+                                                                            <StackPanel Grid.Column="1" Spacing="1">
+                                                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                                                <TextBlock Text="{Binding Scope}" IsVisible="{Binding HasScope}" Opacity="0.7" FontSize="11" TextWrapping="Wrap" />
+                                                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                                                                    <TextBlock Text="{l:T 'Before'}" Opacity="0.7" FontSize="12" />
+                                                                                    <TextBlock Grid.Column="1" Text="{Binding BeforeText}" TextWrapping="Wrap" FontSize="12" />
+                                                                                </Grid>
+                                                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                                                                    <TextBlock Text="{l:T 'After'}" Opacity="0.7" FontSize="12" />
+                                                                                    <TextBlock Grid.Column="1" Text="{Binding After}" TextWrapping="Wrap" FontSize="12" FontWeight="SemiBold" />
+                                                                                </Grid>
+                                                                                <TextBlock Text="{Binding Reason}" IsVisible="{Binding HasReason}" Opacity="0.7" FontSize="11" TextWrapping="Wrap" />
+                                                                            </StackPanel>
+                                                                        </Grid>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                        </Expander>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                        <ItemsControl ItemsSource="{Binding LayoutNotes}" IsVisible="{Binding HasLayoutNotes}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" Opacity="0.8" FontSize="12" />
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
                                 <Border IsVisible="{Binding IsAutoAssignPanelOpen}" Classes="surface">
                                     <StackPanel Spacing="6">
                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
@@ -2640,8 +2787,8 @@
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate x:DataType="models:AutoAssignLayoutRow">
                                                                     <Grid ColumnDefinitions="110,260,*" ColumnSpacing="8" Margin="0,1">
-                                                                        <TextBlock Text="{Binding Input}" FontFamily="Consolas,Menlo,monospace" />
-                                                                        <TextBlock Grid.Column="1" Text="{Binding Control}" FontFamily="Consolas,Menlo,monospace" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Control}" />
+                                                                        <TextBlock Text="{Binding Input}" />
+                                                                        <TextBlock Grid.Column="1" Text="{Binding Control}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Control}" />
                                                                         <TextBlock Grid.Column="2" Text="{Binding Details}" Opacity="0.8" TextWrapping="Wrap" />
                                                                     </Grid>
                                                                 </DataTemplate>
@@ -2664,6 +2811,15 @@
                                         <WrapPanel>
                                             <TextBlock Text="{l:T 'Modifiers at most'}" VerticalAlignment="Center" Margin="0,0,8,0" />
                                             <ComboBox ItemsSource="{Binding AutoAssignModifierChoices}" SelectedItem="{Binding AutoAssignMaxModifiers}" Margin="0,0,12,0" />
+                                            <TextBlock Text="{l:T 'Mode switch'}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <ComboBox ItemsSource="{Binding PhaseLayerChoices}" SelectedItem="{Binding AutoAssignPhaseLayers}" Margin="0,0,12,0"
+                                                      ToolTip.Tip="{l:T 'Phase layers: a latched switch on your throttle or collective changes what your buttons do per combat phase (up = air to air, down = air to ground). Automatic: only when your buttons are too few.'}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="x:String">
+                                                        <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
                                             <CheckBox IsChecked="{Binding AutoAssignKeepMyLayout}" Content="{l:T 'Keep my layout'}" Margin="0,0,12,0" ToolTip.Tip="{l:T 'Relations go back on the control they had before (also after a device got a new id)'}" />
                                             <CheckBox IsChecked="{Binding AutoAssignOverwrite}" Content="{l:T 'Re-assign bound relations'}" Margin="0,0,12,0" ToolTip.Tip="{l:T 'Lays out the binds on these devices again; keyboard, vJoy and disconnected devices stay'}" />
                                             <CheckBox IsChecked="{Binding AutoAssignIncludeMissing}" IsEnabled="{Binding AutoAssignOverwrite}" Content="{l:T 'Also move binds of devices that are not connected'}" Margin="0,0,12,0" />
@@ -5313,29 +5469,9 @@
                             </StackPanel>
                         </Expander>
 
-                        <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="8">
-                            <StackPanel Spacing="6">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <PathIcon Data="{StaticResource Icon.Ok}" Width="18" Height="18" />
-                                    <TextBlock Text="{l:T 'Problems found by the check'}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                </StackPanel>
-                                <TextBlock Text="{Binding ValidationSummary}" TextWrapping="Wrap" />
-                                <WrapPanel>
-                                    <CheckBox Content="{l:T 'Show Errors'}" IsChecked="{Binding ValidationShowErrors}" Margin="0,0,10,0" />
-                                    <CheckBox Content="{l:T 'Show Warnings'}" IsChecked="{Binding ValidationShowWarnings}" />
-                                </WrapPanel>
-                                <ListBox ItemsSource="{Binding ValidationIssues}" SelectedItem="{Binding SelectedValidationIssue}" MinHeight="180">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate x:DataType="models:ValidationIssueItem">
-                                            <Grid ColumnDefinitions="80,*,220" Margin="0,2,0,2">
-                                                <TextBlock Text="{Binding Type}" FontWeight="Bold" />
-                                                <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap" Margin="8,0" />
-                                                <TextBlock Grid.Column="2" Text="{Binding ActionHint}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
-                            </StackPanel>
+                        <!-- The check's problems: sections, cards, fixes (Views/Controls/CheckProblemsPanel.axaml) -->
+                        <Border x:Name="CheckProblemsBorder" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="8">
+                            <controls:CheckProblemsPanel x:Name="CheckProblems" />
                         </Border>
 
                         <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="8">
@@ -5873,6 +6009,10 @@
                     <views:CockpitsView DataContext="{Binding Cockpits}" />
                 </Panel>
 
+                <Panel IsVisible="{Binding IsStatisticsStage}">
+                    <views:StatisticsView x:Name="StatisticsPage" DataContext="{Binding Statistics}" />
+                </Panel>
+
                 <Border IsVisible="{Binding IsSettingsStage}" CornerRadius="12" Padding="10">
                     <!-- Settings (MainWindowViewModel.SettingsPage.cs): sections that open and close, in the user's order (drag a
                          section's handle or a tab), a search over every setting, open all / close all. -->
@@ -6057,7 +6197,7 @@
                                         </ItemsControl.Styles>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="vm:NavPageItem">
-                                                <Border Classes="navPageRow" Padding="6,3" Margin="0,1" CornerRadius="6" Background="{DynamicResource JP.SurfaceAltBrush}">
+                                                <Border Classes="navPageRow" Padding="6,3" Margin="0,1" CornerRadius="6" Background="{DynamicResource JP.SurfaceAltBrush}" IsVisible="{Binding IsAvailable}">
                                                     <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
                                                         <Border Classes="navPageGrip" Background="Transparent" Cursor="SizeNorthSouth" Padding="2" VerticalAlignment="Center"
                                                                 ToolTip.Tip="{l:T 'Drag to move this page'}">
@@ -6199,6 +6339,68 @@
                             </controls:SettingsSection>
 
                             <!-- Settings > Telemetry recording (docs/telemetry-recording.md): opt-in, Tacview-like recording of every game's telemetry -->
+                            <!-- Settings > Usage statistics (MainWindowViewModel.Usage.cs, docs/usage-statistics.md) -->
+                            <controls:SettingsSection SectionId="usage" Title="{l:T 'Usage statistics'}" Icon="{StaticResource Icon.Chart}">
+                                <controls:SettingsSection.HeaderContent>
+                                    <TextBlock Classes="caption" Text="{Binding UsageStatus}" VerticalAlignment="Center" />
+                                </controls:SettingsSection.HeaderContent>
+                                <StackPanel Spacing="6">
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.8"
+                                               Text="{l:T 'JoyPro notes which games, aircraft and ships you use, from the games\' own logs, journals, logbooks and replays and from Steam\'s playtime. It reads them at start and after a game closed, keeps a summary in its data folder and never sends anything anywhere.'}" />
+                                    <CheckBox Content="{l:T 'Show the Statistics page in the bottom bar'}" IsChecked="{Binding ShowStatisticsPage}"
+                                              ToolTip.Tip="{l:T 'Hours per game, aircraft and ship, top 10, streaks, kills, landings, jumps, your profile over time and fun facts'}" />
+                                    <CheckBox Content="{l:T 'Lay out new aircraft like my most used one'}" IsChecked="{Binding UseUsageStyle}"
+                                              ToolTip.Tip="{l:T 'Auto Assign, Auto Group, the Setup wizard and Lay out with AI give an aircraft you have not flown yet the layout of your most used aircraft of its class (jets, helicopters, spaceships). Pin an aircraft below to make it the model.'}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Classes="icon small" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Read the games\' logs now'}" Command="{Binding ReadUsageNowCommand}" IsEnabled="{Binding !UsageBusy}" />
+                                        <TextBlock Classes="caption" Text="{Binding UsageStatus}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Classes="caption" IsVisible="{Binding !HasUsageRanking}" Text="{l:T 'Nothing recorded yet. Play a game, then come back here.'}" />
+                                    <StackPanel Spacing="4" IsVisible="{Binding HasUsageRanking}">
+                                        <TextBlock Classes="h3" Text="{l:T 'Most used aircraft, ships and vehicles'}" />
+                                        <ItemsControl x:Name="UsageRankingList" ItemsSource="{Binding UsageRankingUnits}" MaxWidth="760" HorizontalAlignment="Left">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:UsageRankItem">
+                                                    <Border Padding="6,3" Margin="0,1" CornerRadius="6" Background="{DynamicResource JP.SurfaceAltBrush}">
+                                                        <Grid ColumnDefinitions="32,*,Auto,Auto" ColumnSpacing="8">
+                                                            <TextBlock Text="{Binding RankText}" VerticalAlignment="Center" />
+                                                            <StackPanel Grid.Column="1">
+                                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Classes="caption" Text="{Binding Detail}" />
+                                                            </StackPanel>
+                                                            <Button Grid.Column="2" Classes="small" Content="{Binding PinText}" Command="{Binding #RootWindow.DataContext.ToggleUsagePinCommand}" CommandParameter="{Binding}"
+                                                                    ToolTip.Tip="{Binding PinTip}" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="3" Classes="small ghost" Content="{Binding ExcludeText}" Command="{Binding #RootWindow.DataContext.ToggleUsageExcludeCommand}" CommandParameter="{Binding}"
+                                                                    ToolTip.Tip="{Binding ExcludeTip}" VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock Classes="h3" Text="{l:T 'Most used games'}" Margin="0,6,0,0" />
+                                        <ItemsControl ItemsSource="{Binding UsageRankingGames}" MaxWidth="760" HorizontalAlignment="Left">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:UsageRankItem">
+                                                    <Border Padding="6,3" Margin="0,1" CornerRadius="6" Background="{DynamicResource JP.SurfaceAltBrush}">
+                                                        <Grid ColumnDefinitions="32,*,Auto,Auto" ColumnSpacing="8">
+                                                            <TextBlock Text="{Binding RankText}" VerticalAlignment="Center" />
+                                                            <StackPanel Grid.Column="1">
+                                                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Classes="caption" Text="{Binding Detail}" />
+                                                            </StackPanel>
+                                                            <Button Grid.Column="2" Classes="small" Content="{Binding PinText}" Command="{Binding #RootWindow.DataContext.ToggleUsagePinCommand}" CommandParameter="{Binding}"
+                                                                    ToolTip.Tip="{Binding PinTip}" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="3" Classes="small ghost" Content="{Binding ExcludeText}" Command="{Binding #RootWindow.DataContext.ToggleUsageExcludeCommand}" CommandParameter="{Binding}"
+                                                                    ToolTip.Tip="{Binding ExcludeTip}" VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </StackPanel>
+                            </controls:SettingsSection>
+
                             <controls:SettingsSection SectionId="telemetry-recording" Title="{l:T 'Telemetry recording'}" Icon="{StaticResource Icon.Record}">
                                 <controls:TelemetryRecordingPanel />
                             </controls:SettingsSection>
@@ -7089,6 +7291,7 @@
                     <ToggleButton x:Name="Nav_hud" Command="{Binding GoHudCommand}" Classes="nav" Tag="{StaticResource Icon.Monitor}" Content="HUD" IsChecked="{Binding IsHudStage}" ToolTip.Tip="{l:T 'HUD designer: your sticks, throttles and pedals live on screen or for streaming'}" />
                     <ToggleButton x:Name="Nav_ffb" Command="{Binding GoFfbTelemetryCommand}" Classes="nav" Tag="{StaticResource Icon.Vibrate}" Content="{l:T 'Force Feedback'}" IsChecked="{Binding IsFfbTelemetryStage}" ToolTip.Tip="{l:T 'Force feedback from the game\'s telemetry: settings, graph editor, telemetry inspector'}" />
                     <ToggleButton x:Name="Nav_vjoy" Command="{Binding GoVirtualJoystickCommand}" Classes="nav" Tag="{StaticResource Icon.Joystick}" Content="{l:T 'Virtual Joystick'}" IsChecked="{Binding IsVirtualJoystickStage}" ToolTip.Tip="{l:T 'Virtual joystick (vJoy + HidHide): per game one virtual device instead of your real ones'}" />
+                    <ToggleButton x:Name="Nav_statistics" Command="{Binding GoStatisticsCommand}" Classes="nav" Tag="{StaticResource Icon.Chart}" Content="{l:T 'Statistics'}" IsChecked="{Binding IsStatisticsStage}" IsVisible="False" ToolTip.Tip="{l:T 'Your most played games, aircraft and ships, streaks and fun facts (from your games\' logs, on this PC only)'}" />
                     <ToggleButton x:Name="Nav_cockpits" Command="{Binding GoCockpitsCommand}" Classes="nav" Tag="{StaticResource Icon.Airplane}" Content="{l:T 'Cockpits'}" IsChecked="{Binding IsCockpitsStage}" ToolTip.Tip="{l:T 'Cockpit reference: stick and throttle of real and fictional aircraft per version, with JoyPro\'s drawings, the panels and sources'}" />
                     <ToggleButton x:Name="Nav_settings" Command="{Binding GoSettingsCommand}" Classes="nav" Tag="{StaticResource Icon.Cog}" Content="{l:T 'Settings'}" ToolTip.Tip="{l:T 'Games and their folders, devices, command lists, force feedback, updates, report a problem'}" IsChecked="{Binding IsSettingsStage}" />
                     <ToggleButton x:Name="Nav_advanced" Command="{Binding GoAdvancedCommand}" Classes="nav" Tag="{StaticResource Icon.Console}" Content="{l:T 'Advanced'}" ToolTip.Tip="{l:T 'For experts: type engine commands yourself'}" IsChecked="{Binding IsAdvancedStage}" />

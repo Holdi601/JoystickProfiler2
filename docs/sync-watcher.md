@@ -133,6 +133,9 @@ alone (tick the box again to switch to this copy). If Windows' own Settings > Ap
   The GUI starts it (through `ExternalProcess`, never in the tests) when Close to tray is ticked, at GUI start with Close
   to tray on and when the GUI closes with it on (not when an update closes the GUI; the update script stops the tray
   host, the restarted GUI starts it again).
+- **Usage recording**: while it watches, the tray host also catches up with the games' logs (`engine usage harvest`),
+  follows them live and harvests after a game closed ([usage statistics](usage-statistics.md#live-tail)); it hands this
+  over to the GUI like the watcher.
 - **Small**: workstation GC without the background GC thread, no tiered PGO; after startup and after each check one
   compacting GC and `SetProcessWorkingSetSize(-1, -1)` give the pages back. No timer, no polling.
 - **GUI**: one GUI per user (mutex `Local\JoyPro2.Gui.<hash>.Running`, event `...Activate`); a second start brings the

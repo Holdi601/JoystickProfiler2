@@ -104,9 +104,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreInternalDataManagement.cs" />
+    <Compile Include="CoreLoadCorrectionGuard.cs" />
+    <Compile Include="EngineRelationDuplicates.cs" />
+    <Compile Include="EngineRelationDuplicateRules.cs" />
+    <Compile Include="EngineRelationDuplicatesCli.cs" />
     <Compile Include="EngineSampler.cs" />
     <Compile Include="ObjectGraphCloner.cs" />
     <Compile Include="EngineProfileCache.cs" />
+    <Compile Include="EngineLoadCorrectionCache.cs" />
     <Compile Include="EngineServer.cs" />
     <Compile Include="RunFileCache.cs" />
     <Compile Include="CachedRegex.cs" />
@@ -121,6 +126,8 @@
     <Compile Include="EngineDatabase.cs" />
     <Compile Include="EngineDcsFfbCorrectionCatalog.cs" />
     <Compile Include="DcsCommandNames.cs" />
+    <Compile Include="ActionTexts.cs" />
+    <Compile Include="EngineActionTexts.cs" />
     <Compile Include="DcsDeviceNames.cs" />
     <Compile Include="EngineDcsExport.cs" />
     <Compile Include="EngineDcsImport.cs" />
@@ -139,6 +146,10 @@
     <Compile Include="SetupWizard\SetupCockpits.cs" />
     <Compile Include="SetupWizard\SetupCatalog.cs" />
     <Compile Include="SetupWizard\SetupImportance.cs" />
+    <Compile Include="SetupWizard\SetupPhases.cs" />
+    <Compile Include="SetupWizard\SetupPlanChecks.cs" />
+    <Compile Include="SetupWizard\LayoutPhrases.cs" />
+    <Compile Include="EngineLayout.cs" />
     <Compile Include="SetupWizard\SetupPlanner.cs" />
     <Compile Include="SetupWizard\SetupPlanJson.cs" />
     <Compile Include="SetupWizard\SetupPlanText.cs" />
@@ -326,6 +337,20 @@
     <Compile Include="EngineFfbTelemetry.cs" />
     <Compile Include="TelemetryRecording\*.cs" />
     <Compile Include="EngineTelemetryRecording.cs" />
+    <Compile Include="EngineUsage.cs" />
+    <Compile Include="Usage\UsageAggregate.cs" />
+    <Compile Include="Usage\UsageHarvester.cs" />
+    <Compile Include="Usage\UsageInput.cs" />
+    <Compile Include="Usage\UsageModel.cs" />
+    <Compile Include="Usage\UsageParsers.cs" />
+    <Compile Include="Usage\UsageParsers.Dcs.cs" />
+    <Compile Include="Usage\UsageParsers.Sims.cs" />
+    <Compile Include="Usage\UsageParsers.Space.cs" />
+    <Compile Include="Usage\UsageParsers.Tacview.cs" />
+    <Compile Include="Usage\UsageRanking.cs" />
+    <Compile Include="Usage\UsageSources.cs" />
+    <Compile Include="Usage\UsageStats.cs" />
+    <Compile Include="Usage\UsageStore.cs" />
     <Compile Include="EngineIl2DbRefresh.cs" />
     <Compile Include="Games\GameCommands.cs" />
     <Compile Include="Games\GameKeyCodes.cs" />

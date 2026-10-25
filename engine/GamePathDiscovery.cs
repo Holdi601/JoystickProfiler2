@@ -338,7 +338,7 @@ namespace JoyPro.Engine
                 .ToList();
         }
 
-        private static string TryGetSavedGamesKnownFolderPath(List<string> warnings)
+        internal static string TryGetSavedGamesKnownFolderPath(List<string> warnings)
         {
             IntPtr outPath = IntPtr.Zero;
             try

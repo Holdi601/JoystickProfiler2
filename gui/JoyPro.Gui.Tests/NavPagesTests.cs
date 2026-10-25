@@ -43,8 +43,11 @@ public sealed class NavPagesTests : IDisposable
     public void Defaults_EveryPageOfTheBar_InJoyProsOrder_AllShown()
     {
         MainWindowViewModel vm = Vm(persist: false);
-        Assert.Equal(["start", "relations", "binds", "modifiers", "layout", "export", "hud", "ffb", "vjoy", "cockpits", "settings", "advanced", "check", "output"], Order(vm));
+        Assert.Equal(["start", "relations", "binds", "modifiers", "layout", "export", "hud", "ffb", "vjoy", "cockpits", "statistics", "settings", "advanced", "check", "output"], Order(vm));
         Assert.All(vm.NavPages, p => Assert.True(p.IsVisible));
+        // The Statistics page is opt-in: not in the bar (nor counted) until Settings > Usage statistics shows it.
+        Assert.False(vm.FindNavPage("statistics")!.IsAvailable);
+        Assert.False(vm.FindNavPage("statistics")!.IsShownInBar);
         Assert.Equal("All 14 pages shown", vm.NavPagesSummary);
         Assert.Contains(vm.SettingsSections, s => s.Id == "pages");
         Assert.True(vm.NavPages.First().IsFirst);
@@ -163,7 +166,7 @@ public sealed class NavPagesTests : IDisposable
             MainWindowViewModel vm = Vm(persist: false);
             using HiddenWindow main = HiddenWindow.Create(new MainWindow { DataContext = vm }, new Size(1280, 800));
             MainWindow window = (MainWindow)main.Window;
-            Assert.Equal(MainWindowViewModel.NavPageDefaults.Select(d => d.Id), window.NavBarOrder());
+            Assert.Equal(MainWindowViewModel.NavPageDefaults.Select(d => d.Id).Where(id => id != "statistics"), window.NavBarOrder());
 
             vm.MoveNavPage(vm.FindNavPage("layout")!, 0);
             vm.FindNavPage("cockpits")!.IsVisible = false;
@@ -190,7 +193,7 @@ public sealed class NavPagesTests : IDisposable
             Assert.True(list.GetRealizedContainers().Count() >= 14);
             double thirdRow = list.ContainerFromIndex(2)!.Bounds.Center.Y;
             Assert.Equal(2, window.NavPageIndexAt(thirdRow));
-            Assert.Equal(13, window.NavPageIndexAt(100000));
+            Assert.Equal(14, window.NavPageIndexAt(100000));
         });
     }
 

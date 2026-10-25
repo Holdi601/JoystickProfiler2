@@ -210,6 +210,10 @@ namespace JoyPro.Engine
             string correctionReportPath = PopOptionValue(tokens, "--correction-report");
             // What the change is called in the profile history (the GUI passes its own words, docs/profile-history.md).
             EngineProfileHistory.Note = PopOptionValue(tokens, "--history-note") ?? string.Empty;
+            // The usage ranking as the style reference of Auto Assign, Auto Group, the Setup wizard and Lay out with AI
+            // (docs/usage-statistics.md#style-reference): on unless the GUI's setting is off.
+            string usageStyle = PopOptionValue(tokens, "--usage-style");
+            UsageStyleEnabled = !string.Equals((usageStyle ?? "on").Trim(), "off", StringComparison.OrdinalIgnoreCase);
 
             profilePath = NormalizePath(profilePath);
             EngineProfileHistory.ProfilePath = profilePath ?? string.Empty;
@@ -363,6 +367,9 @@ namespace JoyPro.Engine
                 case "telemetry":
                     exitCode = Measure("command.execute", () => RunTelemetry(command, outPath, textOutput));
                     break;
+                case "usage":
+                    exitCode = Measure("command.execute", () => RunUsage(command, outPath, textOutput));
+                    break;
                 case "profile":
                     exitCode = Measure("command.execute", () => RunProfile(command, outPath, textOutput));
                     break;
@@ -424,6 +431,9 @@ namespace JoyPro.Engine
                     break;
                 case "setup":
                     exitCode = Measure("command.execute", () => RunSetup(command, outPath, textOutput));
+                    break;
+                case "arrange":
+                    exitCode = Measure("command.execute", () => RunArrange(command, outPath, textOutput));
                     break;
                 // Also after global options: the GUI's start check runs "--status false --benchmark false version".
                 case "version":
@@ -564,6 +574,8 @@ namespace JoyPro.Engine
                     return RelationNodeAircraft(command, outPath, textOutput);
                 case "check-aircraft":
                     return CheckRelationAircraft(command, outPath, textOutput);
+                case "duplicates":
+                    return RelationDuplicatesCommand(command, outPath, textOutput);
                 case "meanings":
                     {
                         // relations meanings [--game g] [--top N]: ids with another meaning in some aircraft, per game.
@@ -581,14 +593,16 @@ namespace JoyPro.Engine
                     }
                 case "action-info":
                     {
-                        // relations action-info --coverage [--game g]: per game readable names, explanations and
-                        // recommended actions (EngineActionInfo, EngineActionChoice).
+                        // relations action-info --coverage [--game g] [--all-examples]: per game readable names,
+                        // unexplained abbreviations, explanations and recommended actions (EngineActionInfo,
+                        // EngineActionChoice); --all-examples lists every unreadable title, not only the first few.
                         List<string> args = command.Skip(1).ToList();
                         bool coverage = PopFlag(args, "--coverage");
+                        bool allExamples = PopFlag(args, "--all-examples");
                         string game = PopOptionValue(args, "--game");
                         if (!coverage || args.Count > 0)
-                            return Fail("relations action-info --coverage [--game g]");
-                        EngineActionCoverage result = EngineActionInfo.Coverage(game);
+                            return Fail("relations action-info --coverage [--game g] [--all-examples]");
+                        EngineActionCoverage result = EngineActionInfo.Coverage(game, allExamples ? int.MaxValue : 6);
                         EmitPayload(textOutput ? EngineActionInfo.ToText(result) : EngineSerialization.ToJson(result), outPath);
                         return 0;
                     }
@@ -4824,6 +4838,10 @@ namespace JoyPro.Engine
                     return Fail("--max-modifiers takes 0, 1 or 2.");
                 options.MaxModifiers = parsed;
             }
+            string phaseLayers = PopOptionValue(args, "--phase-layers");
+            if (phaseLayers != null && !System.Text.RegularExpressions.Regex.IsMatch(phaseLayers.Trim(), "^(on|off|auto)$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                return Fail("--phase-layers takes on, off or auto.");
+            options.PhaseLayers = (phaseLayers ?? "auto").Trim().ToLowerInvariant();
             options.Overwrite = PopFlag(args, "--overwrite");
             options.IgnoreStyle = PopFlag(args, "--no-style");
             options.IncludeMissing = PopFlag(args, "--include-missing");
@@ -10998,55 +11016,13 @@ namespace JoyPro.Engine
                     .Where(v => v != null)
                     .ToList();
 
-            Dictionary<string, List<string>> relationItemKeys = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            for (int i = 0; i < relations.Count; i++)
+            // Actions of aircraft on in several relations: the game gets them on each of their inputs. One line per
+            // relation pair, naming the aircraft, the actions' titles, the relations with their inputs and the suggestion
+            // (engine relations duplicates resolves them; kept ones are not listed).
+            foreach (EngineDuplicateGroup group in EngineRelationDuplicates.Group(EngineRelationDuplicates.Find()))
             {
-                Relation relation = relations[i];
-                string relationName = string.IsNullOrWhiteSpace(relation.NAME)
-                    ? "<unnamed relation>"
-                    : relation.NAME;
-
-                List<RelationItem> nodes = relation.NODES ?? new List<RelationItem>();
-                for (int j = 0; j < nodes.Count; j++)
-                {
-                    RelationItem node = nodes[j];
-                    if (node == null || string.IsNullOrWhiteSpace(node.ID) || node.AIRCRAFT == null)
-                        continue;
-
-                    foreach (KeyValuePair<string, bool> aircraftEntry in node.AIRCRAFT)
-                    {
-                        if (!aircraftEntry.Value || string.IsNullOrWhiteSpace(aircraftEntry.Key))
-                            continue;
-
-                        string key = node.ID + "__" + aircraftEntry.Key.Trim();
-                        if (!relationItemKeys.TryGetValue(key, out List<string> relationNames))
-                        {
-                            relationNames = new List<string>();
-                            relationItemKeys[key] = relationNames;
-                        }
-
-                        if (!relationNames.Any(v => string.Equals(v, relationName, StringComparison.OrdinalIgnoreCase)))
-                            relationNames.Add(relationName);
-                    }
-                }
-            }
-
-            foreach (KeyValuePair<string, List<string>> kvp in relationItemKeys)
-            {
-                List<string> relationNames = kvp.Value ?? new List<string>();
-                if (relationNames.Count < 2)
-                    continue;
-
-                StringBuilder warning = new StringBuilder();
-                warning.Append("Relation Item key found in multiple Relation: ");
-                warning.Append(kvp.Key);
-                warning.Append(" The Relations it was found in: ");
-                warning.Append(relationNames[0]);
-                for (int i = 1; i < relationNames.Count; i++)
-                    warning.Append(", ").Append(relationNames[i]);
-
-                AddUnique(result.RelationWarnings, warning.ToString());
-                AddUnique(result.Warnings, warning.ToString());
+                AddUnique(result.RelationWarnings, group.Message);
+                AddUnique(result.Warnings, group.Message);
             }
 
             Dictionary<string, List<string>> bindKeys = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
@@ -14134,6 +14110,9 @@ namespace JoyPro.Engine
             // The Setup wizard's plan must see the same corrected profile its apply changes.
             if (commandArea == "setup" && (action == "plan" || action == "apply"))
                 return true;
+            // Lay out with AI: the preview must see the same corrected profile its apply changes.
+            if (commandArea == "arrange" && (action == "ask" || action == "apply"))
+                return true;
             // sync diff must see the same corrected profile sync apply changes (the change ids depend on it).
             if (commandArea == "sync" && (action == "diff" || action == "apply"))
                 return true;
@@ -14156,6 +14135,10 @@ namespace JoyPro.Engine
             {
                 case "setup":
                     return action == "apply" && !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
+                case "arrange":
+                    if (action == "apply")
+                        return !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
+                    return action == "prefs" && command.Count > 1 && (string.Equals(command[1], "clear", StringComparison.OrdinalIgnoreCase) || string.Equals(command[1], "remove", StringComparison.OrdinalIgnoreCase));
                 case "sync":
                     return EngineSync.IsMutating(command);
                 case "vjoy":
@@ -14206,6 +14189,8 @@ namespace JoyPro.Engine
                         return command.Count > 1 && string.Equals(command[1], "set", StringComparison.OrdinalIgnoreCase);
                     if (action == "check-aircraft")
                         return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
+                    if (action == "duplicates")
+                        return command.Any(a => DuplicatesMutatingFlags.Contains(a));
                     if (action == "function")
                         return command.Any(a => string.Equals(a, "--set", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "--none", StringComparison.OrdinalIgnoreCase) ||
                                                 string.Equals(a, "--auto", StringComparison.OrdinalIgnoreCase));
@@ -14428,6 +14413,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  --confirm-corrections true|false   Ask for confirmation on medium-confidence item remaps (default: true)");
             Console.WriteLine("  --correction-report <path>         Write load correction report (json, or text with .txt/.log)");
             Console.WriteLine("  --history-note <text>  Name of this change in the profile history (default: the command's name)");
+            Console.WriteLine("  --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)");
             Console.WriteLine();
             Console.WriteLine("Commands:");
             Console.WriteLine("  engine summary");
@@ -14635,10 +14621,20 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]");
             Console.WriteLine("      actions with switched-on aircraft where the same id means something else than in the others (\"Pitch\" in jets,");
             Console.WriteLine("      \"Collective\" in a helicopter); --apply switches those aircraft off (they stay listed, one tick brings one back).");
+            Console.WriteLine("  engine relations duplicates [--keys \"game|id|aircraft;...\" | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]");
+            Console.WriteLine("      actions of an aircraft that more than one relation has switched on (the game gets them on each input), as cards per");
+            Console.WriteLine("      relation pair with a suggestion and its confidence (the profile history, else the meaning); --keep switches them off");
+            Console.WriteLine("      in the other relations, --off in all, --keep-both remembers them as intended (one undo step each).");
+            Console.WriteLine("  engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]");
+            Console.WriteLine("  engine relations duplicates --instruction \"keep trim in the Trim relations, everything else in ...\" [--llm off|auto|on] [--apply]");
+            Console.WriteLine("      a fix for many: a preview of every change, applied with --apply as one undo step; --changes \"key=>relation;key=>-\"");
+            Console.WriteLine("      applies a preview's ticked changes exactly; --apply-suggested = --rule suggested --apply; --forget-kept, --include-kept,");
+            Console.WriteLine("      --keys-only, --evaluate <older.pr0file> [--no-history] (the suggestions against the version before the duplicates).");
             Console.WriteLine("  engine relations meanings [--game g] [--top N]");
             Console.WriteLine("      per game: ids shared by several aircraft lists and how many of them mean something else in some aircraft.");
-            Console.WriteLine("  engine relations action-info --coverage [--game g]");
-            Console.WriteLine("      per game: actions with a readable name, with an explanation (cockpit guide / the game's own / general) and functions with a recommended action.");
+            Console.WriteLine("  engine relations action-info --coverage [--game g] [--all-examples]");
+            Console.WriteLine("      per game: actions with a readable name, titles with unexplained abbreviations or only a word and an axis,");
+            Console.WriteLine("      with an explanation (cockpit guide / the game's own / JoyPro's / general) and functions with a recommended action.");
             Console.WriteLine("  engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]");
             Console.WriteLine("      groups the same function of all DCS aircraft and the other games into relations from DB/Functions (manual-verified catalog);");
             Console.WriteLine("      all = one relation per function, wing = split fixed/rotary wing, era = split by wing type and era,");
@@ -14679,13 +14675,19 @@ namespace JoyPro.Engine
             Console.WriteLine("      throttle, collective, pedals, panel, keyboard-joystick, virtual, unused) and the rules the plan follows");
             Console.WriteLine("  engine setup aircraft --games <g1,g2>   (the aircraft / games for the priority list)");
             Console.WriteLine("  engine setup plan --games <g1,g2> [--priorities \"A>B|C>D\"] [--priority \"B|C\"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers]");
-            Console.WriteLine("      [--realism 0..1] [--seed N] [--replace-existing] [--role ...] [--grip ...] [--add-device ...] [--cockpit-file <json>]... [--out-plan <plan.json>]");
+            Console.WriteLine("      [--realism 0..1] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role ...] [--grip ...] [--add-device ...] [--cockpit-file <json>]... [--out-plan <plan.json>]");
             Console.WriteLine("      relations and binds for the important functions of the games' aircraft: priorities ('>' next, '|' equal), modifier budget");
             Console.WriteLine("      (more only when the inputs are too few), realism 0 = group by function, 1 = like the real HOTAS (cockpit database or");
             Console.WriteLine("      knowledge map); deterministic. Writes nothing to the profile");
+            Console.WriteLine("  engine arrange ask \"<your preferences in words>\" [--llm auto|on|off] [--games <g1,g2>] [--add-missing] [--forget-saved] [--proposal <file>] [--role ...] [--grip ...] [--add-device ...]");
+            Console.WriteLine("      Lay out with AI (docs/layout-with-ai.md): \"throttle and left-hand stick, trim on the hat, curves softer for helis\" -> the preferences JoyPro understood");
+            Console.WriteLine("      and every change of binds, axis curves, force feedback and the virtual joystick (a preview, nothing is saved)");
+            Console.WriteLine("  engine arrange apply --proposal <file> [--skip <change id>]... [--dry-run]   (applies the preview in one history version; keeps the preferences in the profile)");
+            Console.WriteLine("  engine arrange prefs [show | clear | remove <key>]   (the layout preferences kept in the profile)");
+            Console.WriteLine("  engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers)");
             Console.WriteLine("  engine setup apply --plan <plan.json> [--dry-run] [--force]   (writes the plan's relations, binds and modifiers in one step)");
             Console.WriteLine("  engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]   (a callout sheet per device)");
-            Console.WriteLine("  engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]");
+            Console.WriteLine("  engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]");
             Console.WriteLine("      binds the relations to the best physical controls of your devices (device catalog DB/Devices, function positions");
             Console.WriteLine("      DB/Functions/slot_controls.tsv); existing binds stay unless --overwrite (binds on the keyboard, vJoy and devices");
             Console.WriteLine("      not connected stay even then; --include-missing moves the latter); at most 2 modifier layers. One device");
@@ -14725,6 +14727,12 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine telemetry delete <session>...");
             Console.WriteLine("  engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)");
             Console.WriteLine("  engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)");
+            Console.WriteLine("  engine usage harvest [--game <game>]... [--full] [--dry-run] [--no-steam]   (usage statistics, docs/usage-statistics.md: read what the games logged since the last time into <data>\\Usage)");
+            Console.WriteLine("  engine usage sources [--game <game>]...   (where JoyPro reads usage per game, and the logs the watcher follows live)");
+            Console.WriteLine("  engine usage ranking [--game <game>] [--top <n>]   (most used games and aircraft / ships / vehicles; with --profile: binds as the weak fallback)");
+            Console.WriteLine("  engine usage stats [--top <n>]   (everything for the Statistics page; with --profile: binds per device, growth, oldest unused bind)");
+            Console.WriteLine("  engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class)");
+            Console.WriteLine("  engine usage backups | engine usage restore <day>   (the usage store's daily backups)");
             Console.WriteLine("  engine binds tuning models");
             Console.WriteLine("  engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]");
             Console.WriteLine("  engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]");

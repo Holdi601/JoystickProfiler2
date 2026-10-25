@@ -11,7 +11,9 @@ namespace JoyPro.Engine
     // engine db refresh-il2 [<install, data\input folder or .actions file>] [--path <same>] [--db-path <folder>] [--dry-run]
     // (also engine il2 refresh-db): adds the actions of IL-2 Great Battles' key mapping files (data\input\*.actions,
     // which the game writes with every action and its English description) that DB\IL2\IL2.actions lacks. Known lines
-    // stay byte for byte (relation names come from the titles); the file is written only when an action is new.
+    // stay byte for byte (relation names come from the titles), except a title the game left as its string-table key
+    // ("inprb_pitch") or empty: that one gets JoyPro's own name (DB\Functions\ActionTexts\IL2Game.tsv), new actions too.
+    // The file is written only when an action is new or such a title was renamed.
     internal static partial class Program
     {
         private const int Il2ActionsColumn = 50;
@@ -148,6 +150,10 @@ namespace JoyPro.Engine
             }
             result.GameActions = order.Count;
 
+            // Titles that are no words (string-table keys, empty, the id): JoyPro's own name instead.
+            string newline = dbText.Contains("\r\n") ? "\r\n" : "\n";
+            string renamedText = RenameWeakIl2Titles(dbText, result.Renamed);
+
             foreach (Il2DbRefreshAction action in order)
             {
                 if (known.Contains(action.Id))
@@ -156,15 +162,24 @@ namespace JoyPro.Engine
                 // current.map, or a plane control (rpc_*: all of them are axes).
                 if (axisHints.Contains(action.Id) || action.Id.StartsWith("rpc_", StringComparison.OrdinalIgnoreCase))
                     action.IsAxis = true;
+                ActionTexts.Entry own = ActionTexts.IsWeakTitle(action.Id, action.Title) ? EngineActionTexts.Find("IL2Game", action.Id) : null;
+                if (own != null && own.Name.Length > 0)
+                    action.Title = own.Name;
                 if (action.Title.Length == 0)
                     action.Title = action.Id;
                 result.Added.Add(action);
             }
 
+            if (result.Renamed.Count > 0 && !dryRun && !newCatalog)
+            {
+                // Only the renamed titles change; every other byte stays.
+                File.WriteAllBytes(result.DbFile, new UTF8Encoding(false).GetBytes(renamedText));
+                dbText = renamedText;
+                result.Written = true;
+            }
             if (result.Added.Count > 0 && !dryRun)
             {
                 EngineProgress.Report(1, 1, "IL-2 Great Battles, writing the command list", result.Added.Count.ToString(CultureInfo.InvariantCulture) + " new actions");
-                string newline = dbText.Contains("\r\n") ? "\r\n" : "\n";
                 StringBuilder sb = new StringBuilder();
                 if (dbText.Length > 0 && !dbText.EndsWith("\n", StringComparison.Ordinal))
                     sb.Append(newline);
@@ -183,6 +198,32 @@ namespace JoyPro.Engine
             }
             result.Success = true;
             return result;
+        }
+
+        // Lines of the catalog whose title is no words ("//a inprb_pitch", "//b ", the id) and that JoyPro's table names: the
+        // title replaced by that name, the rest of the line as it is. renamed gets "id: old -> new".
+        private static string RenameWeakIl2Titles(string text, List<string> renamed)
+        {
+            Regex title = new Regex(@"^(?<head>\s*(?<id>[A-Za-z0-9_]+)\s*,[^|]*\|\s*//(?<kind>[ab]))(?<gap>[ \t]*)(?<title>[^\r]*?)(?<tail>\s*(?://JP:[^\r]*)?)(?<cr>\r?)$", RegexOptions.CultureInvariant);
+            string[] lines = text.Split('\n');
+            bool changed = false;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                Match m = title.Match(lines[i]);
+                if (!m.Success)
+                    continue;
+                string id = m.Groups["id"].Value;
+                string old = m.Groups["title"].Value.Trim();
+                if (!ActionTexts.IsWeakTitle(id, old))
+                    continue;
+                ActionTexts.Entry own = EngineActionTexts.Find("IL2Game", id);
+                if (own == null || own.Name.Length == 0 || string.Equals(own.Name, old, StringComparison.Ordinal))
+                    continue;
+                lines[i] = m.Groups["head"].Value + " " + own.Name + m.Groups["tail"].Value + m.Groups["cr"].Value;
+                renamed.Add(id + ": " + (old.Length == 0 ? "(no title)" : old) + " -> " + own.Name);
+                changed = true;
+            }
+            return changed ? string.Join("\n", lines) : text;
         }
 
         // "id," padded to the catalog's 50-character columns (at least one space).
@@ -275,6 +316,9 @@ namespace JoyPro.Engine
             sb.AppendLine("New Actions: " + result.Added.Count.ToString(CultureInfo.InvariantCulture));
             foreach (Il2DbRefreshAction action in result.Added)
                 sb.AppendLine("  + " + action.Id + " (" + (action.IsAxis ? "axis" : "button") + "): " + action.Title);
+            sb.AppendLine("Renamed Titles: " + result.Renamed.Count.ToString(CultureInfo.InvariantCulture));
+            foreach (string renamed in result.Renamed)
+                sb.AppendLine("  ~ " + renamed);
             sb.AppendLine("Written: " + result.Written.ToString().ToLowerInvariant() +
                           (result.Written ? string.Empty : result.DryRun ? " (dry run)" : result.Success ? " (the catalog is up to date)" : string.Empty));
             if (result.Warnings.Count > 0)
@@ -311,6 +355,8 @@ namespace JoyPro.Engine
             public int GameActions { get; set; }
             public int CatalogActions { get; set; }
             public List<Il2DbRefreshAction> Added { get; set; }
+            // "id: old -> new" for titles that were no words and got JoyPro's own name.
+            public List<string> Renamed { get; set; }
             public List<string> Warnings { get; set; }
             public string Error { get; set; }
 
@@ -319,6 +365,7 @@ namespace JoyPro.Engine
                 DbFile = string.Empty;
                 SourceFiles = new List<string>();
                 Added = new List<Il2DbRefreshAction>();
+                Renamed = new List<string>();
                 Warnings = new List<string>();
                 Error = string.Empty;
             }

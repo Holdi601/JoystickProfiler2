@@ -47,7 +47,9 @@ replaces them and an install under Program Files needs no admin rights to refres
 
 **Reading:** per game folder, the game-data folder's copy whenever it exists; else the program folder's. A release
 ships no game lists, so there the program folder has none; a development build carries `EngineOnly_Runtime`'s lists
-there, and the smoke tests use them.
+there, and the smoke tests use them. In a GUI test run, the first test that starts the real engine copies those lists
+into the run's shared `<JOYPRO_DATA_DIR>\GameData`, where they win; GUI tests that build their own engine folder with
+game lists therefore give their view model an empty data folder of its own (`GameDataRootOverride`).
 
 **Writing:** every refresh (`dcs refresh id|clean`, `db refresh-il2`, `db refresh-starcitizen`, `<game> refresh-db`,
 the GUI's Build List and Update) and every recorded build (`db check-updates`, `source-version.txt`) writes only into

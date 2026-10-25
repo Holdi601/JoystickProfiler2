@@ -28,6 +28,9 @@ internal sealed class GateSession
 
     private static bool windowWatch;
 
+    // The first engine server start of this gate run was timed (cold start, its own budget).
+    private static bool coldStartTimed;
+
     // Runs body with a fresh view model; profile: a copy to work on, or empty for none.
     public static void Run(string? profile, Func<GateSession, Task> body)
     {
@@ -61,7 +64,16 @@ internal sealed class GateSession
                 try
                 {
                     // As the app does at its start (MainWindowViewModel): the engine server reads the game lists. Timed
-                    // on its own; the checks start once it is ready.
+                    // on its own; the checks start once it is ready. The first start of a gate run comes right after the
+                    // build (cold disk cache, first JIT): it has its own budget, and the normal start is timed on a fresh
+                    // server after it, as a normal app start sees it.
+                    if (!coldStartTimed)
+                    {
+                        coldStartTimed = true;
+                        AvaloniaRenderThread.Wait(session.MeasureAsync("engine server cold start", "first start after the build",
+                            () => JoyPro.Gui.Services.EngineServerPool.PrewarmAsync(Gate.EnginePath), settle: false));
+                        JoyPro.Gui.Services.EngineServerPool.Recycle("quality gate: the normal start is timed on a fresh server");
+                    }
                     AvaloniaRenderThread.Wait(session.MeasureAsync("engine server start", "warm-up (once per session)",
                         () => JoyPro.Gui.Services.EngineServerPool.PrewarmAsync(Gate.EnginePath), settle: false));
                     AvaloniaRenderThread.Wait(body(session));

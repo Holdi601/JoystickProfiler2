@@ -25,6 +25,10 @@ namespace JoyPro.Engine
             { "BASIC_CONTROL", "Basic controls" },
             { "BASIC_CONTROL_HELICOPTER", "Basic controls: helicopter" },
             { "BASIC_CONTROL_LIGHTER_THAN_AIR", "Basic controls: airship and balloon" },
+            { "EFB", "Electronic flight bag (EFB)" },
+            { "EFB_CORE", "Electronic flight bag (EFB): text fields and back" },
+            { "PLAYER_CHARACTER_FPV", "On foot: first person view" },
+            { "RTC", "Flight intro cinematic (RTC)" },
             { "GLIDER", "Glider" },
             { "HELICOPTER", "Helicopter" },
             { "HELICOPTER_ACTIVE_INTERACTION", "Helicopter: cockpit interaction" },
@@ -177,10 +181,14 @@ namespace JoyPro.Engine
             return Regex.IsMatch(t, "^[A-Z][A-Za-z0-9]*(_[A-Za-z0-9]+)+$") ? t.Replace('_', ' ') : t;
         }
 
-        // IL-2 Great Battles: an action the game's file gives no text for keeps its text key ("inpcam_rotate_gopro_yaw").
+        // IL-2 Great Battles: an action the game's file gives no text for keeps its text key ("inprb_pitch"): JoyPro's own
+        // name of it (DB\Functions\ActionTexts\IL2Game.tsv, "Mouse turret aim: up/down"); without one the key in words.
         public static string Il2Title(string id, string title)
         {
             string t = (title ?? string.Empty).Trim();
+            string own = EngineActionTexts.Title("IL2Game", id, t);
+            if (!string.Equals(own, t, StringComparison.Ordinal))
+                return own;
             if (t.Length > 0 && t.IndexOf('_') < 0 && !t.StartsWith("inp", StringComparison.Ordinal))
                 return Title("IL2Game", t);
             string key = t.StartsWith("inp", StringComparison.Ordinal) && t.Length > 3 ? t.Substring(3) : (t.Length > 0 ? t : id ?? string.Empty);
@@ -247,6 +255,21 @@ namespace JoyPro.Engine
                 }
             }
             return Readable(Regex.Replace(text, "(?<=[a-z])(?=[A-Z])", "_"), sentence: true);
+        }
+
+        // A Star Citizen text key in CamelCase without the game's text: "@ui_CIEmoteForward" -> "Emote forward",
+        // "@ui_COGroundVehicleViewY" -> "Ground vehicle view y" (the two-letter context prefix CI/CO dropped). Null for
+        // keys that are ids ("@ui_v_weapon_preset_qid").
+        public static string FromStarCitizenKey(string key)
+        {
+            string k = (key ?? string.Empty).Trim().TrimStart('@');
+            if (!k.StartsWith("ui_", StringComparison.Ordinal))
+                return null;
+            k = k.Substring(3);
+            if (!Regex.IsMatch(k, "^(?:C[A-Z])?[A-Z][a-z]+(?:[A-Z][a-z0-9]*)+$"))
+                return null;
+            k = Regex.Replace(k, "^C[A-Z](?=[A-Z][a-z])", string.Empty);
+            return Readable(Regex.Replace(k, "(?<=[a-z0-9])(?=[A-Z])", "_"), sentence: true);
         }
 
         private static bool IsLowerToken(string text)

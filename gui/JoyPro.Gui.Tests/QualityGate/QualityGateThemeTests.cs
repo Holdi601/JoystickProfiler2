@@ -31,7 +31,7 @@ public sealed class QualityGateThemeTests
     private const int Width = 1600;
     private const int Height = 1000;
 
-    private static readonly UiStage[] Pages = [UiStage.Start, UiStage.Relations, UiStage.Binds, UiStage.Modifiers, UiStage.Layout, UiStage.Export, UiStage.Settings, UiStage.Cockpits];
+    private static readonly UiStage[] Pages = [UiStage.Start, UiStage.Relations, UiStage.Binds, UiStage.Modifiers, UiStage.Layout, UiStage.Export, UiStage.Settings, UiStage.Cockpits, UiStage.Statistics];
 
     [Fact]
     public void I8_TextContrastInLightAndDark()
@@ -50,6 +50,9 @@ public sealed class QualityGateThemeTests
             // The Start page as the user sees it: the game cards of the installed games.
             await vm.RefreshGameInstallsCommand.ExecuteAsync(null);
             await vm.RefreshRegistryGamesCommand.ExecuteAsync(null);
+            // The opt-in Statistics page with every section (the fixtures' document).
+            vm.ShowStatisticsPage = true;
+            vm.Statistics.Apply(UsageRecordingTests.SampleStats);
             try
             {
                 foreach ((string theme, ThemeVariant variant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })

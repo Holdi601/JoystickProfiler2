@@ -6,11 +6,23 @@ All scripted, none needs a person once started:
 |---|---|---|---|
 | Engine smoke tests | `powershell -File engine\tests\engine_smoke_test.ps1` | every CLI command and game integration on fixtures | ~10 min |
 
+Auto Assign and Lay out with AI: `AutoAssignMatrixTests` (three device sets and the same plan twice always; the full
+combination matrix with a report via `JOYPRO_AUTOASSIGN_MATRIX=<folder>`, docs/auto-assign.md#combination-matrix),
+`LayoutWithAiTests` (phrases on four device sets, the same phrases through the real engine, the Binds page panel; the
+author's pit on a copy of a real profile via `JOYPRO_LAYOUT_BIG_PROFILE`, pictures via `JOYPRO_LAYOUT_AI_OUT`) and the
+smoke part `engine\tests\smoke\autoassignmatrix.ps1`.
+
 Telemetry force feedback (docs/ffb-telemetry.md) is tested without moving a stick: `dotnet test
 gui\JoyPro.Ffb.Core.Tests` (graph, runtime safety rules, the synthetic flight through the DCS, IL-2 and War Thunder
 sources, loopback UDP host, War Thunder HTTP stub) and the smoke part `engine\tests\smoke\ffbtelemetry.ps1` (CLI
 settings and game setup on temp copies, `JoyPro.Ffb run --sink dry` against `JoyPro.Ffb simulate` per game, telemetry
 timeout, game exit, and a 60 s CPU/memory/handle resource run, ~2 min).
+
+Usage statistics (docs/usage-statistics.md): `UsageStoreTests` (parsers on the synthetic fixtures of
+`engine\tests\fixtures\usage\root`, dedupe, retention, ranking), `UsageRecordingTests` (live tail incl. a long resource
+run, tray host, the engine's usage commands in a process and the server, the Statistics page rendered at 1280 / 2267 in
+Light and Dark with `JOYPRO_USAGE_RENDER_OUT`), `UsageSettingsTests` and the smoke part `engine\tests\smoke\usage.ps1`.
+The GUI tests point `JOYPRO_USAGE_ROOT` at an empty folder, so no test reads this PC's games.
 
 ## Speed
 
@@ -22,7 +34,11 @@ Nothing a person waits for should take more than a few seconds (interactive acti
   `Services\EngineServerPool.cs`). Every command runs as in a process of its own: own arguments, environment variables,
   output and exit code, and a fresh copy of the profile as the file has it (`EngineProfileCache`: the profile is read
   once and copied per command by `ObjectGraphCloner`, 15 ms instead of 0.4-1.3 s; after the server's own save the copy is
-  made "as serialized", as a read of the file would give it). Kept between commands: the game lists, function map, search
+  made "as serialized", as a read of the file would give it). A profile older than the DB is corrected on load; the
+  state the DB part of that correction made is kept too (`EngineLoadCorrectionCache`, per file, DB fingerprint, options
+  and rules version), so the first change after "profile load" does not correct again; the device remap against the
+  connected devices runs every time (`serve --self-test` compares a kept correction with one that runs and checks that a
+  changed file or DB list runs it again). Kept between commands: the game lists, function map, search
   and suggestion indexes and the load corrections' lists; before every command the server checks the files they come
   from (`DataStamp`: name, size and time of the DB, function and layout catalog files) and answers "stale" when they
   changed, then the app starts a new one. The app also starts a new server after a refresh or another command that can
@@ -44,7 +60,15 @@ Nothing a person waits for should take more than a few seconds (interactive acti
   import is one lookup. The output is byte for byte the old engine's (checked on a copy of a real Saved Games folder in
   merge, merge-overwrite and clean + nuke, and loaded with DCS's own `luae.exe`).
 - **Load corrections.** The DB fingerprint hashes only files new or changed since the last fingerprint
-  (`<data>\Cache\db-file-hashes.tsv`, size and time stamp).
+  (`<data>\Cache\db-file-hashes.tsv`, size and time stamp). A profile saved with an older DB searches a replacement
+  for every action the DB no longer has (`CoreInternalDataManagement.cs`, `FindBestReplacement`): each distinct title of
+  the DB is scored once, titles that cannot reach the best so far are dropped by their length and letter histogram,
+  containment only where the letters allow it, and the edit distance is bit-parallel (Myers / Hyyroe). The engine server
+  keeps the prepared lists and every result per DB, so a profile's corrections are searched once (profile load) and not
+  again by the commands after it (Lay out with AI's preview, the Setup wizard's plan, sync diff). The result is exactly
+  the old full search: `JOYPRO_CORRECTION_REFERENCE=1` scores every candidate the old way, and the correction reports
+  (`--correction-report`) of both are compared on copies of real profiles (2298 + 228 replacement searches identical;
+  the user's March 2025 profile 80 s -> 2 s, the first Lay out with AI preview ~100 s -> under 3 s).
 
 ## Quality gate
 
@@ -58,12 +82,12 @@ into copies of the game's config or as dry runs, and the real config files are f
 | Check | What must hold |
 |---|---|
 | I1 | the catalog shows actions for every game and every DCS aircraft (as many as its overview counts); every game chip and DCS aircraft filter of the search shows rows |
-| I2 | no catalog title is empty, the id, a lua key, an encoded/hex id or a snake_case identifier; every action has a category, categories are words |
+| I2 | no catalog title is empty, the id, a lua key, an encoded/hex id, a snake_case identifier, has an unexplained abbreviation ("Rb pitch", `ActionTexts.UnexplainedAbbreviation`) or is only a word and an axis letter; every action has a category, categories are words (DCS abbreviations are the module's own: a note) |
 | I3 | every game of the Start page and Settings > Games has catalog actions, and a title of its own catalog finds it in the search |
-| I4 | pitch, roll, throttle, flaps, gear, engine rpm, fire, view, zoom find readable rows in every game whose catalog has the word |
+| I4 | pitch, roll, throttle, flaps, gear, engine rpm, fire, view, zoom find readable rows (no unexplained abbreviation outside DCS) in every game whose catalog has the word |
 | I5 | suggestions of typical relations (pitch, roll, throttle, gear, flaps over two games) are there after the second game's action and after the profile is opened again |
-| I6 | every relation of the profile shows readable titles in the editor, the binds peek and the layout table |
-| I7 | profile load, relation open, 200 actions at once, save, suggestions, catalog, search, export per game stay within the budgets of `QualityGate\Budgets.cs` |
+| I6 | every relation of the profile shows readable titles in the editor, the binds peek and the layout table; the check's problems show no raw id (the profile's own relation and device names, whole or quoted, are the user's data; a raw id injected next to one is still caught) |
+| I7 | engine server start (a fresh server after the gate's first start; the first start right after the build has its own cold-start budget), profile load, the first Lay out with AI preview after it (rules only), relation open, 200 actions at once, save, suggestions, catalog, search, export per game, the Statistics page's `usage stats` (1 s) stay within the budgets of `QualityGate\Budgets.cs` |
 | I8 | texts of the main pages have at least 3:1 contrast to their background in Light and Dark |
 | I9 | every game the UI names (games list, supported games page, badges, trailer) has an integration, catalog actions and a function map; labels are names, not abbreviations |
 | I10 | every page and the relation editor (empty, normal, large relation) at MinWidth, 1280x720 and 1920x1080, 100 % and 150 %, Light and Dark: no overlapping controls, no cut-off text, no pre-filled search that finds nothing |

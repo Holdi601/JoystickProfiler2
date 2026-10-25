@@ -34,6 +34,10 @@ namespace JoyPro.Engine
             string functions = EngineNlGroup.FunctionsFolder();
             if (Directory.Exists(functions))
                 files.AddRange(Directory.GetFiles(functions).OrderBy(f => f, StringComparer.OrdinalIgnoreCase));
+            // JoyPro's own action names and menu sections (the cached titles and categories come from them).
+            string texts = ActionTexts.FolderUnder(functions);
+            if (Directory.Exists(texts))
+                files.AddRange(Directory.GetFiles(texts).OrderBy(f => f, StringComparer.OrdinalIgnoreCase));
             files.AddRange(EngineRelationSuggest.SourceFiles());
             sb.Append(EngineRelationSuggest.IndexOverrideFolder()).Append('\n');
             foreach (string file in files)

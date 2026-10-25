@@ -70,6 +70,8 @@ namespace JoyPro.Setup
         public string Group = string.Empty;       // functions on one hat / 2D stick (tms:up, tdc_axes:x)
         public string MapFunction = string.Empty; // the function of the knowledge map (function-map.json) this slot belongs to
         public string MapCategory = string.Empty; // its category there (flight, engine, weapons, countermeasures, sensors ...)
+        public List<string> Phases = new List<string>();  // flight phases (SetupPhases: pilot, tol, nav, a2a, a2g ...)
+        public string Crit = string.Empty;        // time criticality: instant, seconds, minutes, idle
     }
 
     // One game command of one aircraft that does a function (DB\Functions\<Game>.tsv row).
@@ -91,6 +93,7 @@ namespace JoyPro.Setup
         public string Type = string.Empty;        // fixed_wing, rotary_wing, spaceship, layer, ground
         public string VariantOf = string.Empty;
         public string Era = string.Empty;
+        public string Role = string.Empty;        // fighter, attack, multirole, transport, helicopter_attack ... (aircraft.json)
 
         // DCS input layers (Default, NS430, voice) serve every aircraft of the game at once.
         public bool SharedLayer { get { return Type == "layer" || Type == "ground"; } }
@@ -166,6 +169,30 @@ namespace JoyPro.Setup
         public int Seed = 1;
         public bool ReplaceExisting;              // lay out the profile's own binds on this setup again
         public int ForcedModifierLimit = 2;       // modifiers JoyPro may add although the user asked for fewer
+        // Phase layers on a latched mode switch (docs/auto-assign.md#phase-layers): off, on, auto (when the grips are too
+        // few for the functions of one combat phase and the setup has a mode switch).
+        public string PhaseLayers = "auto";
+        // Preferences in the user's words, read by the phrase engine (docs/layout-with-ai.md): extra rules for the score.
+        public List<SetupRule> Rules = new List<SetupRule>();
+        // Only the profile's relations, no new relations from the knowledge map (Lay out with AI without "add missing").
+        public bool ExistingOnly;
+        // With ReplaceExisting: lay out only these bound relations again (null = all); the others keep their binds.
+        public HashSet<string> ReplaceOnly;
+    }
+
+    // A preference rule: functions (by id pattern, category or phase, of aircraft classes) get a bonus on controls that
+    // match a pattern, or are kept off them. Made by the phrase engine (LayoutPhrases).
+    public sealed class SetupRule
+    {
+        public string Id = string.Empty;          // the phrase rule that made it (trim-hat, space-yaw-twist ...)
+        public string Functions = string.Empty;   // regex over function ids ("^trim"), empty = all
+        public string Category = string.Empty;    // flight, weapons, systems, views, displays; empty = any
+        public string Class = string.Empty;       // fixed, rotary, space; empty = any
+        public string Controls = string.Empty;    // regex over the control vocabulary (stick.hat., \.axis\.twist$)
+        public string Role = string.Empty;        // device role the control must belong to (left-stick ...); empty = any
+        public double Bonus;                      // added to the comfort (0..1 scale; the user's previous control is +4)
+        public bool Forbid;                       // the matching functions never go on these controls
+        public bool Only;                         // the matching functions go only on these controls
     }
 
     public sealed class SetupRequest
@@ -177,6 +204,8 @@ namespace JoyPro.Setup
         public List<SetupCommand> Commands = new List<SetupCommand>();
         public List<SetupExistingRelation> Existing = new List<SetupExistingRelation>();
         public List<SetupModifierChoice> ExistingModifiers = new List<SetupModifierChoice>();
+        // Modifier support per game (engine games support): yes, partial, no. Games not listed: yes.
+        public Dictionary<string, string> ModifierSupport = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         // Commands the user switched off in a relation ("Game|Action|Aircraft"): never added again.
         public HashSet<string> Disabled = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public ICockpitPositions Cockpits;
@@ -196,6 +225,7 @@ namespace JoyPro.Setup
         public bool PreferFewer;
         public double Realism;
         public int Seed;
+        public string PhaseLayers = string.Empty;
         public string CockpitSource = string.Empty;
         public List<SetupDevice> Devices = new List<SetupDevice>();
         public List<string> Rules = new List<string>();
@@ -231,6 +261,7 @@ namespace JoyPro.Setup
         public string Modifier = string.Empty;
         public double Score;
         public double RealMatch;                  // 0..1: how much the position is the real aircraft's
+        public string Phase = string.Empty;       // a2a / a2g: its function is used only in that combat phase
         public string Reason = string.Empty;
     }
 
@@ -242,6 +273,8 @@ namespace JoyPro.Setup
         public string Control = string.Empty;
         public bool Existing;
         public bool Forced;                       // added although the user asked for fewer
+        public bool Switch;                       // a latched mode switch position (a DCS switch modifier): a phase layer
+        public string Phase = string.Empty;       // the phase of that layer (a2a, a2g)
         public string Reason = string.Empty;
     }
 

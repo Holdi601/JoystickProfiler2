@@ -1,0 +1,24 @@
+{
+ "_comment": "German test set of Lay out with AI (docs/layout-with-ai.md 'German'): each German text must give exactly the preferences of its English text (same ids, keys, values, scopes, functions, controls, roles), with nothing left not understood. expect: ids (and values) it must give. Checked by gui/JoyPro.Gui.Tests/LayoutWithAiTests.cs (Phrases_German_*).",
+ "cases": [
+  { "de": "Gas und linker Stick", "en": "throttle and left-hand stick", "expect": [ "devices=throttle+left-stick" ] },
+  { "de": "bei Weltraumspielen linker Stick mit Twist statt Pedalen", "en": "for space games use the left stick and its twist axis instead of pedals", "expect": [ "function-on", "devices=left-stick-space" ] },
+  { "de": "Trimmung auf den Hat", "en": "trim on the hat", "expect": [ "function-on" ] },
+  { "de": "weichere Kurven für Helis", "en": "softer curves for helis", "expect": [ "curve=0.15" ] },
+  { "de": "keine Modifier, nimm einen Moduswahlschalter", "en": "no modifiers, use a mode switch", "expect": [ "modifiers=0", "phase-layers=on" ] },
+  { "de": "zwei Modifier", "en": "two modifiers", "expect": [ "modifiers=2" ] },
+  { "de": "keine Pedale, Seitenruder auf die Drehachse", "en": "no pedals, rudder on the twist", "expect": [ "devices=no-pedals", "function-on" ] },
+  { "de": "Gegenmaßnahmen auf den Coolie des Schubhebels", "en": "countermeasures on the hat of the throttle", "expect": [ "function-on" ] },
+  { "de": "kein Fahrwerk auf dem Abzug", "en": "no landing gear on the trigger", "expect": [ "function-on" ] },
+  { "de": "Totzone etwas größer", "en": "dead zone a bit bigger", "expect": [ "curve=0.01" ] },
+  { "de": "härtere Kurven für Flugzeuge", "en": "harder curves for planes", "expect": [ "curve=-0.1" ] },
+  { "de": "weniger Rütteln bei Helis", "en": "less shake for helis", "expect": [ "ffb=0.5" ] },
+  { "de": "kein Force Feedback in DCS", "en": "no force feedback in DCS", "expect": [ "ffb=off" ] },
+  { "de": "vJoy für Star Citizen", "en": "vJoy for Star Citizen", "expect": [ "vjoy=virtual" ] },
+  { "de": "wie im echten Flugzeug", "en": "like the real aircraft", "expect": [ "realism=1" ] },
+  { "de": "alles neu von vorne", "en": "everything new from scratch", "expect": [ "fresh=1" ] },
+  { "de": "Bremsklappen auf den Schieberegler", "en": "airbrake on the slider", "expect": [ "function-on" ] },
+  { "de": "die F-16 zuerst", "en": "the F-16 first", "expect": [ "priority=F-16C_50" ] },
+  { "de": "hauptsächlich die Hornet", "en": "mostly the Hornet", "expect": [ "priority=FA-18C_hornet" ] }
+ ]
+}

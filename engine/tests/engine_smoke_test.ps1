@@ -1225,6 +1225,36 @@ Assert-Match $newProfileSummary.Output "(?m)^Relations:\s+0\s*$" "engine profile
     $stUfc = Run-Engine @("--profile", $stProfile, "relations", "show", "UFC__3", "--text")
     Assert-Match $stUfc.Output "id=d1297pnilu1297cdnilvdnilvpnilvunil, aircraft=A-10C, A-10C II" "the stray button did not land in its button relation."
 
+    # One action of one aircraft is never switched on in two relations by the load correction (a tester's AH-64 force
+    # trim on a MFBB and a MOZA button), and relations duplicates names and resolves one that is there. A JSON profile
+    # has no DB fingerprint, so the correction runs.
+    $dupDir = Join-Path $tempDir "duplicates"
+    New-Item -ItemType Directory -Force -Path $dupDir | Out-Null
+    $dupProfile = Join-Path $dupDir "dup.pr0file"
+    $dupTrim = "d3007pnilu3007cd25vd1vpnilvu0"
+    $dupJson = @'
+{ "Relations": {
+    "Trim Right": { "NAME": "Trim Right", "ISAXIS": false, "Groups": [], "NODES": [ { "ID": "d3007pnilu3007cd25vd1vpnilvu0", "Game": "DCS", "AIRCRAFT": { "AH-64D_BLK_II_CPG": true, "AH-64D_BLK_II_PLT": true } } ] },
+    "Mode Button 07": { "NAME": "Mode Button 07", "ISAXIS": false, "Groups": [], "NODES": [ { "ID": "d3001pnilu3001cd28vd1vpnilvu0", "Game": "DCS", "AIRCRAFT": { "F-16C_50": true } }, { "ID": "d3007pnilu3007cd25vd1vpnilvu0", "Game": "DCS", "AIRCRAFT": { "FA-18C_hornet": true } } ] } },
+  "Binds": {
+    "Trim Right": { "Joystick": "MOZA AB9 FFB Base {021126F0-9255-11f1-8001-444553540000}", "JButton": "JOY_BTN4", "JAxis": "" },
+    "Mode Button 07": { "Joystick": "Total Controls MFBB {037D9BD0-D2C1-11f0-8011-444553540000}", "JButton": "JOY_BTN39", "JAxis": "" } } }
+'@
+    [System.IO.File]::WriteAllText($dupProfile, $dupJson)
+    $dupFixed = Run-Engine @("--profile", $dupProfile, "--load-corrections", "true", "--auto-add-db-items", "true", "--correction-mode", "balanced", "--confirm-corrections", "false", "relations", "aircraft", "set", "Mode Button 07", "--node", "DCS:$dupTrim", "--on", "FA-18C_hornet", "--text")
+    Assert-True ($dupFixed.ExitCode -eq 0) "relations aircraft set with load corrections failed. Output: $($dupFixed.Output)"
+    $dupNone = Run-Engine @("--profile", $dupProfile, "--load-corrections", "false", "relations", "duplicates", "--text")
+    Assert-Match $dupNone.Output "(?m)^Actions on in more than one relation: 0 " "the load correction switched an action on that another relation has. Output: $($dupNone.Output)"
+    Run-Engine @("--profile", $dupProfile, "--load-corrections", "false", "relations", "aircraft", "set", "Mode Button 07", "--node", "DCS:$dupTrim", "--on", "AH-64D_BLK_II_PLT", "--text") | Out-Null
+    $dupCheck = Run-Engine @("--profile", $dupProfile, "--load-corrections", "false", "--text", "profile", "validate", "--fail-on-warnings", "false")
+    Assert-Match $dupCheck.Output "AH-64D Block II \(Pilot\): 'Force Trim/Hold Mode Switch - AL/Right' is in 2 relations: 'Mode Button 07' \(Total Controls MFBB . BTN 39\) and 'Trim Right' \(MOZA AB9 FFB Base . BTN 4\)\. DCS gets two binds for it\." "validate does not name the duplicate in words. Output: $($dupCheck.Output)"
+    Assert-NotMatch $dupCheck.Output "${dupTrim}__" "validate shows a raw id."
+    $dupKeep = Run-Engine @("--profile", $dupProfile, "--load-corrections", "false", "relations", "duplicates", "--keep", "Trim Right", "--node", "DCS:$dupTrim", "--plane", "AH-64D_BLK_II_PLT", "--text")
+    Assert-True ($dupKeep.ExitCode -eq 0) "relations duplicates --keep failed. Output: $($dupKeep.Output)"
+    Assert-Match $dupKeep.Output "(?m)^Actions on in more than one relation: 0 " "relations duplicates --keep left the duplicate."
+    $dupShow = Run-Engine @("--profile", $dupProfile, "--load-corrections", "false", "relations", "show", "Trim Right", "--text")
+    Assert-Match $dupShow.Output "aircraft=AH-64D_BLK_II_CPG, AH-64D_BLK_II_PLT" "relations duplicates --keep took the action out of the kept relation."
+
     # Export tiles: the games (DCS: aircraft) of the profile, and a DCS export of the ticked aircraft only.
     $tileProfile = Join-Path $tempDir "export_tiles\\tiles.pr0file"
     $tileStick = "Tile Stick {00000000-0000-0000-0000-0000000000C1}"
@@ -3456,7 +3486,7 @@ return diff
     # The parts that read real game catalogs (DB\<game>, CleanProfile) run only with the development game lists. A new
     # part that needs them goes into this list (check: it must pass in a checkout without EngineOnly_Runtime\DB\<game>).
     $smokeNeedingGameData = @("aiallgames.ps1", "arma.ps1", "bms.ps1", "elite.ps1", "grebels.ps1", "il2.ps1", "legacyids.ps1", "msfs.ps1",
-        "nlgroup.ps1", "nuclearoption.ps1", "progress.ps1", "reforger.ps1", "relationassistant.ps1", "relationbuilder.ps1", "searchranking.ps1", "autogroupown.ps1", "setupwizard.ps1", "sync.ps1",
+        "nlgroup.ps1", "nuclearoption.ps1", "progress.ps1", "reforger.ps1", "relationassistant.ps1", "relationbuilder.ps1", "searchranking.ps1", "autogroupown.ps1", "setupwizard.ps1", "autoassignmatrix.ps1", "sync.ps1",
         "tinycombatarena.ps1", "vtolvr.ps1", "wardogs.ps1", "warthunder.ps1", "x4.ps1", "xplane.ps1")
     foreach ($gameSmoke in @(Get-ChildItem -Path (Join-Path $engineDir "tests\smoke") -Filter "*.ps1" -ErrorAction SilentlyContinue | Sort-Object Name)) {
         if ($smokeNeedingGameData -contains $gameSmoke.Name -and (Skip-WithoutGameData ("smoke\" + $gameSmoke.Name))) {

@@ -383,6 +383,60 @@ namespace JoyPro.History
 
         // ---- recording --------------------------------------------------------------------------------------------
 
+        // Before several Record calls of one save (the file before it and the save itself): their content and item
+        // files are written side by side (each ~0.1-0.2 s for a 4 MB profile), the records then find them. The files are
+        // named by the content's hash, so writing them early changes nothing else; a history folder of a moved profile
+        // is adopted first, as Record does.
+        public static void PrepareVersions(string profilePath, string previousHash, params KeyValuePair<byte[], Func<IList<string>>>[] versions)
+        {
+            if (!Enabled || string.IsNullOrWhiteSpace(profilePath) || versions == null || versions.Length == 0)
+                return;
+            string folder = FolderFor(profilePath);
+            if (!File.Exists(Path.Combine(folder, IndexFile)))
+                TryAdopt(profilePath, folder, previousHash);
+            System.Threading.Tasks.Parallel.ForEach(versions.Where(v => v.Key != null), version =>
+            {
+                try
+                {
+                    string hash = HashOf(version.Key);
+                    EnsureBlob(folder, hash, version.Key);
+                    EnsureItems(folder, hash, version.Value);
+                }
+                catch (Exception)
+                {
+                    // Record writes what is missing.
+                }
+            });
+        }
+
+        // Several versions of one save in one write (the file before it, then the save): one lock, one index write, and
+        // the automatic clean-up only after all of them (before, it ran after the first one and deleted the second one's
+        // file that PrepareVersions had just written). Returns the version the profile is at afterwards.
+        public static ProfileVersion RecordVersions(string profilePath, params KeyValuePair<byte[], ProfileHistoryRecordOptions>[] versions)
+        {
+            if (!Enabled || string.IsNullOrWhiteSpace(profilePath) || versions == null || versions.Length == 0)
+                return null;
+            ProfileHistoryPolicy policy = ProfileHistoryPolicy.Default;
+            string folder = FolderFor(profilePath);
+            if (!File.Exists(Path.Combine(folder, IndexFile)))
+                TryAdopt(profilePath, folder, (versions[0].Value ?? new ProfileHistoryRecordOptions()).PreviousHash);
+            using (FolderLock.Take(folder))
+            {
+                ProfileHistoryLog log = LoadLog(folder);
+                log.ProfilePath = NormalizePath(profilePath);
+                ProfileVersion version = null;
+                foreach (KeyValuePair<byte[], ProfileHistoryRecordOptions> next in versions)
+                {
+                    if (next.Key != null)
+                        version = RecordLocked(log, next.Key, next.Value ?? new ProfileHistoryRecordOptions(), policy);
+                }
+                if ((UtcNow() - log.LastPruneUtc).TotalHours >= policy.AutoPruneHours)
+                    PruneLocked(log, policy, false);
+                SaveLog(log);
+                return version;
+            }
+        }
+
         // A save of the profile: a new version unless the content is the one the profile is at already. Returns the
         // version the profile is at afterwards (null when the history is off).
         public static ProfileVersion Record(string profilePath, byte[] content, ProfileHistoryRecordOptions options, ProfileHistoryPolicy policy = null)
@@ -1211,7 +1265,7 @@ namespace JoyPro.History
             return content;
         }
 
-        private static IList<string> ReadItemsOf(string folder, string hash)
+        public static IList<string> ReadItemsOf(string folder, string hash)
         {
             string path = ItemsPath(folder, hash);
             if (!File.Exists(path))

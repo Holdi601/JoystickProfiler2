@@ -159,9 +159,9 @@ internal static class Gate
     private static readonly Dictionary<string, string> invariantNames = new(StringComparer.Ordinal)
     {
         ["I1"] = "Catalog and editor show actions for every game (and every DCS aircraft)",
-        ["I2"] = "Action titles are readable and every action has a category",
+        ["I2"] = "Action titles are readable (no unexplained abbreviation) and every action has a category",
         ["I3"] = "Every game on the Start page / games list has catalog actions findable in search",
-        ["I4"] = "Common searches return readable results per game that has them",
+        ["I4"] = "Common searches return readable results (no unexplained abbreviation) per game that has them",
         ["I5"] = "Suggestions for typical relations stay non-empty after a second game and after a reload",
         ["I6"] = "Every relation of the profile shows readable titles (editor, binds peek, layout table)",
         ["I7"] = "Performance budgets",
@@ -349,6 +349,16 @@ internal static class Gate
         if (Identifier.IsMatch(text))
             return "title is a program identifier (snake_case)";
         return null;
+    }
+
+    // A word of the title nobody can read ("Rb pitch", "Mc yaw", "Trt mount d") or a title that is only a word and an
+    // axis letter ("Cursor X"): JoyPro's check (ActionTexts). DCS titles are the module's own words and only noted.
+    public static string? UnexplainedTitle(string? game, string? title, string? id)
+    {
+        string? word = JoyPro.Engine.ActionTexts.UnexplainedAbbreviation(game ?? string.Empty, id ?? string.Empty, title ?? string.Empty);
+        if (word != null)
+            return "title has an unexplained abbreviation ('" + word + "')";
+        return JoyPro.Engine.ActionTexts.IsWordPlusAxis(title ?? string.Empty) ? "title is only a word and an axis letter" : null;
     }
 
     public static string? UnreadableCategory(string? category)

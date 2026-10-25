@@ -63,8 +63,9 @@ public sealed class QualityGateCatalogTests
         Gate.Finish("I1");
     }
 
-    // I2: no title a person sees in the catalog is empty, the id, a lua key, an encoded/hex id or a program identifier;
-    // every action has a category, and categories are words.
+    // I2: no title a person sees in the catalog is empty, the id, a lua key, an encoded/hex id, a program identifier, has
+    // an unexplained abbreviation ("Rb pitch") or is only a word and an axis letter; every action has a category, and
+    // categories are words. (DCS titles are the module's own words: their abbreviations are counted in a note.)
     [Fact]
     public void I2_CatalogTitlesAreReadableAndCategorized()
     {
@@ -73,16 +74,27 @@ public sealed class QualityGateCatalogTests
         CatalogWalk.Result walk = CatalogWalk.Get();
         // One finding per game, plane and id (DCS lists the same id in many aircraft).
         HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
+        int dcsAbbreviated = 0;
         foreach (CatalogWalk.Row row in walk.Entries.SelectMany(e => e.Rows))
         {
             string where = row.Plane.Length > 0 ? row.Plane + ": " : string.Empty;
             string? why = Gate.UnreadableTitle(row.Display, row.Id);
             if (why != null && seen.Add("t|" + row.Game + "|" + row.Plane + "|" + row.Id))
                 Gate.Fail("I2", why, row.Game, where + "'" + Gate.Short(row.Display, 60) + "'", "id " + Gate.Short(row.Id, 60));
+            string? unexplained = why == null ? Gate.UnexplainedTitle(row.Game, row.Display, row.Id) : null;
+            if (unexplained != null && seen.Add("a|" + row.Game + "|" + row.Id + "|" + row.Display))
+            {
+                if (row.Game == "DCS")
+                    dcsAbbreviated++;
+                else
+                    Gate.Fail("I2", unexplained, row.Game, where + "'" + Gate.Short(row.Display, 60) + "'", "id " + Gate.Short(row.Id, 60));
+            }
             string? category = Gate.UnreadableCategory(row.Category);
             if (category != null && seen.Add("c|" + row.Game + "|" + row.Plane + "|" + row.Id))
                 Gate.Fail("I2", category, row.Game, where + "'" + Gate.Short(row.Display, 50) + "'", category == "no category" ? "id " + Gate.Short(row.Id, 50) : "'" + Gate.Short(row.Category, 50) + "'");
         }
+        if (dcsAbbreviated > 0)
+            Gate.Note("I2: " + dcsAbbreviated + " DCS titles use an abbreviation of the module's own (left as the module names them)");
         Gate.Finish("I2");
     }
 
@@ -236,7 +248,7 @@ public sealed class QualityGateCatalogTests
     {
         foreach (BuilderSearchResultItem row in rows)
         {
-            string? why = Gate.UnreadableTitle(row.DisplayTitle, row.Id);
+            string? why = Gate.UnreadableTitle(row.DisplayTitle, row.Id) ?? (row.Game == "DCS" ? null : Gate.UnexplainedTitle(row.Game, row.DisplayTitle, row.Id));
             if (why != null && seen.Add(row.Game + "|" + row.Id + "|" + row.DisplayTitle))
                 Gate.Fail("I4", "search result " + why, row.Game, "'" + query + "' (" + where + "): '" + Gate.Short(row.DisplayTitle, 60) + "'", "id " + Gate.Short(row.Id, 60));
         }

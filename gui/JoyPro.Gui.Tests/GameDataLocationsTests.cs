@@ -67,4 +67,20 @@ public sealed class GameDataLocationsTests : IDisposable
         Assert.Equal(Path.Combine(gameData, "DB", "DCS"), folders[0]);
         Assert.Equal(Path.Combine(engineDir, "DB", "IL2"), folders[1]);
     }
+
+    // A data folder named by the caller (a view model's GameDataRootOverride) is used instead of JOYPRO_DATA_DIR.
+    [Fact]
+    public void ExplicitDataRoot_WinsOverJoyproDataDir()
+    {
+        Directory.CreateDirectory(Path.Combine(gameData, "DB", "DCS"));
+        string own = Path.Combine(temp, "own-data");
+
+        Assert.Equal(Path.Combine(engineDir, "DB", "DCS"), GameDataLocations.DbFolder(engineDir, "DCS", own));
+        Assert.Equal(["DCS", "IL2"], GameDataLocations.GameDbFolders(engineDir, own).Select(Path.GetFileName).ToArray());
+        Assert.Equal(Path.Combine(engineDir, "DB", "DCS"), GameDataLocations.GameDbFolders(engineDir, own)[0]);
+
+        Directory.CreateDirectory(Path.Combine(own, "GameData", "DB", "DCS"));
+        Assert.Equal(Path.Combine(own, "GameData", "DB", "DCS"), GameDataLocations.DbFolder(engineDir, "DCS", own));
+        Assert.Equal(Path.Combine(gameData, "DB", "DCS"), GameDataLocations.DbFolder(engineDir, "DCS", string.Empty));
+    }
 }

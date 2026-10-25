@@ -216,6 +216,20 @@
                         </Border>
                         <Border Classes="surface">
                             <StackPanel Spacing="8">
+                                <TextBlock Classes="h2" Text="{l:T 'Mode switch (phase layers)'}" />
+                                <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'A latched switch can change what your buttons do per combat phase, like the master mode of a real fighter.'}" />
+                                <ComboBox ItemsSource="{Binding PhaseLayerChoices}" SelectedItem="{Binding PhaseLayers}" MinWidth="160">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBlock Text="{Binding PhaseLayersText}" TextWrapping="Wrap" Opacity="0.8" />
+                            </StackPanel>
+                        </Border>
+                        <Border Classes="surface">
+                            <StackPanel Spacing="8">
                                 <TextBlock Classes="h2" Text="{l:T 'Like the real aircraft?'}" />
                                 <TextBlock TextWrapping="Wrap" Opacity="0.85" Text="{l:T 'How much should your stick work like the real aircraft\'s stick?'}" />
                                 <Slider Minimum="0" Maximum="100" Value="{Binding Realism}" TickFrequency="10" IsSnapToTickEnabled="True" />
@@ -313,7 +327,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="models:SetupReviewRow">
                                 <Grid ColumnDefinitions="110,*" ColumnSpacing="8">
-                                    <TextBlock Text="{Binding Input}" Classes="mono" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding Input}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding Control}" Classes="muted" TextWrapping="Wrap" />

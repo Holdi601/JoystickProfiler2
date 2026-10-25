@@ -1740,7 +1740,7 @@ namespace JoyPro.Engine
                         {
                             Match match = Il2Action.Match(line);
                             if (match.Success && !map.ContainsKey(match.Groups[1].Value))
-                                map[match.Groups[1].Value] = new CommandInfo { Title = match.Groups[3].Value.Trim(), IsAxis = match.Groups[2].Value == "a" };
+                                map[match.Groups[1].Value] = new CommandInfo { Title = EngineReadableNames.Il2Title(match.Groups[1].Value, match.Groups[3].Value), IsAxis = match.Groups[2].Value == "a" };
                         }
                     }
                 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -86,10 +86,15 @@ public sealed partial class MainWindowViewModel
         RegistryGameAircraftOptions.Clear();
         if (SelectedRegistryGame?.SupportsAircraft != true)
             return;
-        string catalogPath = Path.Combine(GameDataLocations.DbFolder(GetEngineDirectoryOrNull(), SelectedRegistryGame.GameId), "aircraft.tsv");
+        string catalogPath = Path.Combine(GameDataLocations.DbFolder(GetEngineDirectoryOrNull(), SelectedRegistryGame.GameId, GameDataRootOverride), "aircraft.tsv");
         foreach (RegistryAircraft aircraft in ReadRegistryAircraft(catalogPath))
             RegistryGameAircraftOptions.Add(aircraft.Key);
     }
+
+    // The data folder whose GameData the game lists are read from; empty = JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro
+    // (GameDataLocations.DataRoot). The GUI tests that build their own engine folder with game lists point it at an
+    // empty folder: the lists a real engine copies into the test run's shared data folder would hide theirs.
+    internal string GameDataRootOverride { get; set; } = string.Empty;
 
     private string? GetEngineDirectoryOrNull()
     {
@@ -357,10 +362,13 @@ public sealed partial class MainWindowViewModel
             args.Add("--include-keyboard");
         AddDisconnectedDevicesOption(args);
 
-        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: "Importing from " + SelectedRegistryGame!.DisplayName + "...");
+        HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
+        string importedGame = SelectedRegistryGame!.DisplayName;
+        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: "Importing from " + importedGame + "...");
         await AfterCommandListBuiltAsync(result);
         if (result?.ExitCode != 0)
             return;
+        await ReportNewDuplicatesAsync(duplicatesBefore, T("The import from {0}", importedGame));
         // MSFS 2024: binds found only in some aircraft's profiles came in for all aircraft; the Relations page offers to limit them.
         ShowMsfsAircraftOnlyBinds(SelectedRegistryGameIsMsfs2024 ? result.StandardOutput : null);
 
@@ -473,7 +481,7 @@ public sealed partial class MainWindowViewModel
         if (engineDirectory == null)
             return;
 
-        foreach (string folder in GameDataLocations.GameDbFolders(engineDirectory))
+        foreach (string folder in GameDataLocations.GameDbFolders(engineDirectory, GameDataRootOverride))
         {
             string catalogPath = Path.Combine(folder, "actions.tsv");
             if (!File.Exists(catalogPath))

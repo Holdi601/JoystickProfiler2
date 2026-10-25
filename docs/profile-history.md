@@ -75,7 +75,7 @@ outside JoyPro: another program, an older JoyPro, a copy put back), `checkpoint`
   it; the labels are joined ("Adding relation + Setting bind").
 - **Nothing is lost when the file changed outside JoyPro**: before a save, an undo or a restore the file on disk is
   compared with the version the history is at; a different file is kept as an `external` version first (the engine
-  also reads its items, so it is described). A profile moved or renamed in Explorer finds its history by its content
+  also reads its items, so it is described; in the engine server from the graph it already keeps of that file). A profile moved or renamed in Explorer finds its history by its content
   (the newest version's hash, profile file gone).
 - **Unchanged saves** (same content as the version the profile is at) make no version.
 

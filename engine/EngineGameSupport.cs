@@ -317,6 +317,19 @@ namespace JoyPro.Engine
             return game == null ? Yes : Mark(game.ModifierBinds);
         }
 
+        // Modifier binds of a game for the planners (Auto Assign, Setup wizard): "yes", "partial" or "no". DCS, IL-2
+        // Great Battles and Star Citizen read and write them (and DCS's held switch modifiers); unknown names count as yes.
+        internal static string ModifierSupport(string gameId)
+        {
+            if (string.IsNullOrWhiteSpace(gameId) || EngineAutoGroup.IsDcs(gameId) || string.Equals(gameId, "IL2Game", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(gameId, "StarCitizen", StringComparison.OrdinalIgnoreCase))
+                return "yes";
+            IGameIntegration game;
+            if (!GameRegistry.TryResolve(gameId, out game) || game == null)
+                return "yes";
+            return game.ModifierBinds == GameFeature.Yes ? "yes" : game.ModifierBinds == GameFeature.Partial ? "partial" : "no";
+        }
+
         private static string Mark(GameFeature feature)
         {
             return feature == GameFeature.Yes ? Yes : feature == GameFeature.Partial ? Partial : No;

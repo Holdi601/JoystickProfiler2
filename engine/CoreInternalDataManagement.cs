@@ -11,7 +11,7 @@ using JoyPro.Engine;
 
 namespace JoyPro
 {
-    public static class InternalDataManagement
+    public static partial class InternalDataManagement
     {
         public static string[] RelationWordFilter = new string[0];
         public static bool showUnassignedRelations = true;
@@ -35,6 +35,10 @@ namespace JoyPro
         public static Dictionary<string, string> AxisCalibrations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         // Virtual joystick mode settings and mapping table as JSON (Engine.VJoy.VJoySettings); empty = never used.
         public static string VirtualJoystickConfig = string.Empty;
+        // Lay out with AI: the user's layout preferences as JSON (EngineLayout); empty = none.
+        public static string LayoutPreferences = string.Empty;
+        // Actions on in several relations on purpose (Pr0file.KeptDuplicates).
+        public static List<string> KeptDuplicates = new List<string>();
         public static bool OverwriteExistingRelationOnInsertInEngine = false;
         public static bool EnableLegacyLoadCorrections = true;
         public static bool AutoAddDbItemsOnLoad = true;
@@ -224,6 +228,8 @@ namespace JoyPro
             FfbOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             AxisCalibrations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             VirtualJoystickConfig = string.Empty;
+            LayoutPreferences = string.Empty;
+            KeptDuplicates = new List<string>();
             CurrentDatabaseFingerprint = string.Empty;
             LoadedProfileDatabaseFingerprint = string.Empty;
 
@@ -239,10 +245,12 @@ namespace JoyPro
                 throw new FileNotFoundException("profile does not exist.", filePath);
 
             bool json = LooksLikeJsonProfile(filePath);
+            // The file as it is read: the key of the corrected state the server keeps (EngineLoadCorrectionCache).
+            string fileStamp = EngineLoadCorrectionCache.Enabled ? EngineLoadCorrectionCache.FileStamp(filePath) : string.Empty;
             // In the engine server: a copy of the profile it read before, while the file is unchanged (EngineProfileCache).
             Pr0file profile = EngineProfileCache.Load(filePath, path => json ? LoadJsonProfile(path) : LoadBinaryProfile(path));
 
-            ApplyProfile(profile, EnableLegacyLoadCorrections, AutoAddDbItemsOnLoad);
+            ApplyProfile(profile, EnableLegacyLoadCorrections, AutoAddDbItemsOnLoad, fileStamp);
             MainStructure.msave.lastOpenedLocation = filePath;
             MainStructure.SaveMetaOnly();
             JoyPro.Logging.JoyProLog.Info("Profile", "Loaded " + (json ? "JSON" : "binary") + " profile " + filePath + " (" + new FileInfo(filePath).Length + " bytes): " +
@@ -283,11 +291,15 @@ namespace JoyPro
             // last.pr0file (updateMeta false) has no history.
             bool recordHistory = updateMeta && JoyPro.History.ProfileHistory.Enabled;
             byte[] previous = null;
+            Pr0file previousGraph = null;
             if (recordHistory && File.Exists(fullPath))
             {
                 try
                 {
                     previous = File.ReadAllBytes(fullPath);
+                    // The engine server keeps that file's graph as read: the history's first version of a profile is
+                    // described from it (reading the 4 MB again took ~0.6 s on the first change of a profile).
+                    previousGraph = EngineProfileCache.Peek(fullPath, previous.Length);
                 }
                 catch (IOException)
                 {
@@ -301,7 +313,7 @@ namespace JoyPro
             JoyPro.Logging.JoyProLog.Info("Profile", "Saved profile " + fullPath + " (" + content.Length + " bytes): " +
                                                      (AllRelations == null ? 0 : AllRelations.Count) + " relation(s), " + (AllBinds == null ? 0 : AllBinds.Count) + " bind(s)");
             if (recordHistory)
-                EngineProfileHistory.AfterSave(fullPath, previous, content, profile);
+                EngineProfileHistory.AfterSave(fullPath, previous, content, profile, previousGraph);
 
             if (updateMeta)
             {
@@ -514,7 +526,8 @@ namespace JoyPro
             return new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase);
         }
 
-        private static void ApplyProfile(Pr0file profile, bool applyLegacyCorrections, bool autoAddDbItems)
+        // fileStamp: the profile file as read (EngineLoadCorrectionCache.FileStamp); empty = the corrected state is not kept.
+        private static void ApplyProfile(Pr0file profile, bool applyLegacyCorrections, bool autoAddDbItems, string fileStamp = null)
         {
             NewFile(true);
 
@@ -580,6 +593,19 @@ namespace JoyPro
 
             if (profile == null)
                 return;
+
+            // Engine server: the state the DB part of this correction made of the same file before (same DB, options and
+            // rules); the device part below runs as always.
+            string correctionKey = runCorrections ? LoadCorrectionCacheKey(fileStamp, currentFingerprint, autoAddDbItems) : null;
+            CorrectedLoadState corrected = EngineLoadCorrectionCache.TryGet<CorrectedLoadState>(correctionKey);
+            if (corrected != null)
+            {
+                RestoreCorrectedLoadState(corrected);
+                ApplyDeviceLoadCorrections();
+                ResyncRelations();
+                RecalcFigures();
+                return;
+            }
 
             Dictionary<string, Relation> relations = CreateRelationMap();
             foreach (KeyValuePair<string, Relation> entry in profile.Relations ?? new Dictionary<string, Relation>())
@@ -648,6 +674,8 @@ namespace JoyPro
                 ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>(profile.AxisCalibrations, StringComparer.OrdinalIgnoreCase);
             VirtualJoystickConfig = profile.VirtualJoystick ?? string.Empty;
+            LayoutPreferences = profile.LayoutPreferences ?? string.Empty;
+            KeptDuplicates = profile.KeptDuplicates == null ? new List<string>() : profile.KeptDuplicates.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
             LocalJoysticks = AllBinds.Values
                 .Where(b => b != null && !string.IsNullOrWhiteSpace(b.Joystick))
@@ -658,9 +686,163 @@ namespace JoyPro
 
             ResyncBindsToMods();
             if (runCorrections)
-                ApplyLegacyLoadCorrections(autoAddDbItems);
+            {
+                int entriesBefore = LastLoadCorrectionEntries == null ? 0 : LastLoadCorrectionEntries.Count;
+                List<string> messages = new List<string>();
+                Action<string> sink = LoadCorrectionMessageSink;
+                LoadCorrectionMessageSink = message =>
+                {
+                    messages.Add(message);
+                    if (sink != null)
+                        sink(message);
+                };
+                try
+                {
+                    ApplyDbLoadCorrections(autoAddDbItems);
+                }
+                finally
+                {
+                    LoadCorrectionMessageSink = sink;
+                }
+                if (correctionKey != null)
+                    EngineLoadCorrectionCache.Keep(correctionKey, CaptureCorrectedLoadState(entriesBefore, messages));
+                ApplyDeviceLoadCorrections();
+            }
             ResyncRelations();
             RecalcFigures();
+        }
+
+        // ---- The corrected state the engine server keeps (EngineLoadCorrectionCache) ----
+
+        // Everything ApplyProfile and the DB part of the correction set, as one graph (shared objects stay shared), and
+        // what the correction reported meanwhile.
+        private sealed class CorrectedLoadState
+        {
+            public Dictionary<string, Relation> Relations;
+            public Dictionary<string, Bind> Binds;
+            public List<string> Groups;
+            public Dictionary<string, bool> GroupActivity;
+            public Dictionary<string, bool> JoystickActivity;
+            public Dictionary<string, string> JoystickAliases;
+            public string[] LocalJoysticks;
+            public Dictionary<string, string> LocalJoystickPGUID;
+            public Dictionary<string, Modifier> Modifiers;
+            public Dictionary<string, string> JoystickFileImages;
+            public string JoystickLayoutExport;
+            public Dictionary<string, Dictionary<string, string>> PlaneAliases;
+            public List<KeyValuePair<string, string>> ModifierNameChanges;
+            public Dictionary<string, ForceFeedbackS> JoystickFFB;
+            public Dictionary<string, string> FfbOverrides;
+            public Dictionary<string, string> AxisCalibrations;
+            public string VirtualJoystickConfig;
+            public string LayoutPreferences;
+            public List<string> KeptDuplicates;
+            public List<LoadCorrectionReportEntry> Entries;
+            public List<string> Messages;
+        }
+
+        // Null when nothing may be kept: an interactive confirmation could answer differently next time.
+        private static string LoadCorrectionCacheKey(string fileStamp, string dbFingerprint, bool autoAddDbItems)
+        {
+            if (!EngineLoadCorrectionCache.Enabled)
+                return null;
+            if (ConfirmItemCorrectionsOnLoad && Environment.UserInteractive && !Console.IsInputRedirected)
+                return null;
+            string options = "auto-add=" + autoAddDbItems +
+                             "|mode=" + ItemCorrectionModeOnLoad +
+                             "|threshold=" + (ItemCorrectionAutoApplyScoreThresholdOnLoad.HasValue ? ItemCorrectionAutoApplyScoreThresholdOnLoad.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "-") +
+                             "|confirm=" + ConfirmItemCorrectionsOnLoad +
+                             "|program=" + (MainStructure.PROGPATH ?? string.Empty) +
+                             "|data=" + GameDataPaths.UserRoot();
+            return EngineLoadCorrectionCache.Key(fileStamp, dbFingerprint, options);
+        }
+
+        private static CorrectedLoadState CaptureCorrectedLoadState(int entriesBefore, List<string> messages)
+        {
+            List<LoadCorrectionReportEntry> entries = LastLoadCorrectionEntries ?? new List<LoadCorrectionReportEntry>();
+            return new CorrectedLoadState
+            {
+                Relations = AllRelations,
+                Binds = AllBinds,
+                Groups = AllGroups,
+                GroupActivity = GroupActivity,
+                JoystickActivity = JoystickActivity,
+                JoystickAliases = JoystickAliases,
+                LocalJoysticks = LocalJoysticks,
+                LocalJoystickPGUID = LocalJoystickPGUID,
+                Modifiers = AllModifiers,
+                JoystickFileImages = JoystickFileImages,
+                JoystickLayoutExport = JoystickLayoutExport,
+                PlaneAliases = PlaneAliases,
+                ModifierNameChanges = ModifierNameChanges,
+                JoystickFFB = JoystickFFB,
+                FfbOverrides = FfbOverrides,
+                AxisCalibrations = AxisCalibrations,
+                VirtualJoystickConfig = VirtualJoystickConfig,
+                LayoutPreferences = LayoutPreferences,
+                KeptDuplicates = KeptDuplicates,
+                Entries = entries.Skip(Math.Min(entriesBefore, entries.Count)).ToList(),
+                Messages = messages ?? new List<string>()
+            };
+        }
+
+        // engine serve --self-test: everything a load leaves behind (the profile as it would be saved, modifiers, devices,
+        // groups, the correction's report without its times), to compare a kept correction with one that ran.
+        internal static string LoadedStateDigest()
+        {
+            StringBuilder sb = new StringBuilder();
+            using (MemoryStream buffer = new MemoryStream())
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Binder = new LegacyJoyProSerializationBinder();
+                formatter.Serialize(buffer, BuildProfileSnapshot());
+                using (System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create())
+                    sb.Append("profile=").Append(Convert.ToBase64String(sha.ComputeHash(buffer.ToArray()))).Append('\n');
+            }
+            sb.Append("modifiers=").Append(string.Join(";", (AllModifiers ?? new Dictionary<string, Modifier>()).Select(m => m.Key + "=" + (m.Value == null ? string.Empty : m.Value.toReformerString())))).Append('\n');
+            sb.Append("devices=").Append(string.Join(";", LocalJoysticks ?? new string[0])).Append('\n');
+            sb.Append("groups=").Append(string.Join(";", AllGroups ?? new List<string>())).Append('\n');
+            sb.Append("group-activity=").Append(string.Join(";", (GroupActivity ?? new Dictionary<string, bool>()).Select(g => g.Key + "=" + g.Value))).Append('\n');
+            sb.Append("device-activity=").Append(string.Join(";", (JoystickActivity ?? new Dictionary<string, bool>()).Select(g => g.Key + "=" + g.Value))).Append('\n');
+            sb.Append("fingerprints=").Append(LoadedProfileDatabaseFingerprint).Append('|').Append(CurrentDatabaseFingerprint).Append('\n');
+            foreach (LoadCorrectionReportEntry e in LastLoadCorrectionEntries ?? new List<LoadCorrectionReportEntry>())
+            {
+                sb.Append("entry=").Append(e.Kind).Append('|').Append(e.Action).Append('|').Append(e.RelationName).Append('|').Append(e.Game).Append('|')
+                  .Append(e.OldId).Append('|').Append(e.NewId).Append('|').Append(e.OldPlane).Append('|').Append(e.NewPlane).Append('|')
+                  .Append(e.Confidence).Append('|').Append(e.Score).Append('|').Append(e.Reason).Append('|').Append(e.Details).Append('\n');
+            }
+            return sb.ToString();
+        }
+
+        // The kept state (a copy of its own) becomes the profile's, and the correction's report says what it said then.
+        private static void RestoreCorrectedLoadState(CorrectedLoadState state)
+        {
+            AllRelations = state.Relations;
+            AllBinds = state.Binds;
+            AllGroups = state.Groups;
+            GroupActivity = state.GroupActivity;
+            JoystickActivity = state.JoystickActivity;
+            JoystickAliases = state.JoystickAliases;
+            LocalJoysticks = state.LocalJoysticks;
+            LocalJoystickPGUID = state.LocalJoystickPGUID;
+            AllModifiers = state.Modifiers;
+            JoystickFileImages = state.JoystickFileImages;
+            JoystickLayoutExport = state.JoystickLayoutExport;
+            PlaneAliases = state.PlaneAliases;
+            ModifierNameChanges = state.ModifierNameChanges;
+            JoystickFFB = state.JoystickFFB;
+            FfbOverrides = state.FfbOverrides;
+            AxisCalibrations = state.AxisCalibrations;
+            VirtualJoystickConfig = state.VirtualJoystickConfig;
+            LayoutPreferences = state.LayoutPreferences;
+            KeptDuplicates = state.KeptDuplicates;
+            foreach (LoadCorrectionReportEntry entry in state.Entries ?? new List<LoadCorrectionReportEntry>())
+            {
+                entry.TimestampUtc = DateTime.MinValue;
+                RecordLoadCorrectionEntry(entry);
+            }
+            foreach (string message in state.Messages ?? new List<string>())
+                ReportLoadCorrectionMessage(message);
         }
 
         private static string MakeUniqueKey(Dictionary<string, Relation> map, string baseKey)
@@ -792,7 +974,477 @@ namespace JoyPro
                 DcsById = new Dictionary<string, List<DCSInput>>(StringComparer.OrdinalIgnoreCase);
                 AllOtherInputsByGame = new Dictionary<string, List<OtherGameInput>>(StringComparer.OrdinalIgnoreCase);
                 OtherByGameAndId = new Dictionary<string, Dictionary<string, List<OtherGameInput>>>(StringComparer.OrdinalIgnoreCase);
+                Generation = string.Empty;
             }
+
+            // Which DB lists these are (a copy of the engine server's kept index has the same): the replacement search's
+            // prepared pools and results (CorrectionScoring) belong to it.
+            public string Generation { get; set; }
+        }
+
+        // A title prepared for ComputeTitleSimilarityScore: its normalized form, a letter histogram (a lower bound of the
+        // edit distance) and its direction words.
+        private sealed class SimilarityTitle
+        {
+            public string Raw;
+            public string Norm;
+            public byte[] Histogram;       // null when a letter occurs more than 254 times
+            private HashSet<string> directions;
+
+            public HashSet<string> Directions
+            {
+                get
+                {
+                    HashSet<string> words = directions;
+                    if (words == null)
+                    {
+                        words = DirectionWords(Raw);
+                        directions = words;
+                    }
+                    return words;
+                }
+            }
+
+            public static SimilarityTitle Of(string raw)
+            {
+                SimilarityTitle title = new SimilarityTitle { Raw = raw ?? string.Empty };
+                title.Norm = NormalizeTextTokenForSimilarity(title.Raw);
+                byte[] histogram = new byte[64];
+                foreach (char ch in title.Norm)
+                {
+                    int bucket = ch & 63;
+                    if (histogram[bucket] == 254)
+                    {
+                        histogram = null;
+                        break;
+                    }
+                    histogram[bucket]++;
+                }
+                title.Histogram = histogram;
+                return title;
+            }
+        }
+
+        // The candidates of one kind (DCS axis / button, another game's axis / button) in the DB's order: their category,
+        // plane and title by position in the DB list, and the positions per distinct title.
+        private sealed class CandidatePool
+        {
+            public int[] Positions;          // per entry: its position in the DB list (AllDcsInputs, AllOtherInputsByGame)
+            public string[] Categories;      // trimmed, null when empty
+            public string[] Planes;
+            public SimilarityTitle[] Titles; // the distinct titles
+            public int[][] EntriesOf;        // per distinct title: its entries, ascending
+            public int Count { get { return Positions.Length; } }
+        }
+
+        // What the replacement search keeps for one set of DB lists: the pools, the planes and the result per missing
+        // input. In the engine server it outlives the command, so a profile's corrections are searched once per DB.
+        private sealed class CorrectionScoring
+        {
+            public string Generation;
+            public readonly object Gate = new object();
+            public readonly Dictionary<string, CandidatePool> Pools = new Dictionary<string, CandidatePool>(StringComparer.Ordinal);
+            public readonly Dictionary<string, SimilarityTitle> Titles = new Dictionary<string, SimilarityTitle>(StringComparer.Ordinal);
+            public readonly Dictionary<string, int[]> Results = new Dictionary<string, int[]>(StringComparer.Ordinal);
+            public HashSet<string> DcsPlanes;
+            public readonly Dictionary<string, HashSet<string>> OtherPlanes = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static CorrectionScoring keptScoring;
+        private static readonly object KeptScoringSync = new object();
+
+        private static CorrectionScoring ScoringFor(DbCorrectionIndex index)
+        {
+            lock (KeptScoringSync)
+            {
+                string generation = index.Generation ?? string.Empty;
+                if (keptScoring == null || generation.Length == 0 || !string.Equals(keptScoring.Generation, generation, StringComparison.Ordinal))
+                    keptScoring = new CorrectionScoring { Generation = generation };
+                return keptScoring;
+            }
+        }
+
+        private static CandidatePool BuildCandidatePool(CorrectionScoring scoring, int[] positions, string[] categories, string[] planes, string[] titles)
+        {
+            CandidatePool pool = new CandidatePool { Positions = positions, Categories = categories, Planes = planes };
+            Dictionary<string, List<int>> byTitle = new Dictionary<string, List<int>>(StringComparer.Ordinal);
+            List<string> order = new List<string>();
+            for (int i = 0; i < titles.Length; i++)
+            {
+                string key = titles[i] ?? string.Empty;
+                List<int> entries;
+                if (!byTitle.TryGetValue(key, out entries))
+                {
+                    entries = new List<int>();
+                    byTitle[key] = entries;
+                    order.Add(key);
+                }
+                entries.Add(i);
+            }
+            pool.Titles = new SimilarityTitle[order.Count];
+            pool.EntriesOf = new int[order.Count][];
+            for (int t = 0; t < order.Count; t++)
+            {
+                SimilarityTitle title;
+                if (!scoring.Titles.TryGetValue(order[t], out title))
+                {
+                    title = SimilarityTitle.Of(order[t]);
+                    scoring.Titles[order[t]] = title;
+                }
+                pool.Titles[t] = title;
+                pool.EntriesOf[t] = byTitle[order[t]].ToArray();
+            }
+            return pool;
+        }
+
+        private static string TrimmedCategory(string category)
+        {
+            return string.IsNullOrWhiteSpace(category) ? null : category.Trim();
+        }
+
+        // The DCS inputs of one kind (axis or not), in the DB's order.
+        private static CandidatePool DcsCandidatePool(DbCorrectionIndex index, CorrectionScoring scoring, bool isAxis)
+        {
+            string key = "dcs|" + isAxis;
+            lock (scoring.Gate)
+            {
+                CandidatePool pool;
+                if (scoring.Pools.TryGetValue(key, out pool))
+                    return pool;
+                List<DCSInput> all = index.AllDcsInputs ?? new List<DCSInput>();
+                List<int> positions = new List<int>();
+                for (int i = 0; i < all.Count; i++)
+                {
+                    if (all[i] != null && all[i].IsAxis == isAxis)
+                        positions.Add(i);
+                }
+                pool = BuildCandidatePool(scoring, positions.ToArray(),
+                    positions.Select(i => TrimmedCategory(all[i].Cat)).ToArray(),
+                    positions.Select(i => all[i].Plane ?? string.Empty).ToArray(),
+                    positions.Select(i => all[i].Title).ToArray());
+                scoring.Pools[key] = pool;
+                return pool;
+            }
+        }
+
+        // The inputs of another game of one kind, in the DB's order (no plane: the game's name).
+        private static CandidatePool OtherCandidatePool(DbCorrectionIndex index, CorrectionScoring scoring, string normalizedGame, bool isAxis)
+        {
+            string key = "other|" + normalizedGame.ToUpperInvariant() + "|" + isAxis;
+            lock (scoring.Gate)
+            {
+                CandidatePool pool;
+                if (scoring.Pools.TryGetValue(key, out pool))
+                    return pool;
+                List<OtherGameInput> all;
+                if (!index.AllOtherInputsByGame.TryGetValue(normalizedGame, out all))
+                    all = new List<OtherGameInput>();
+                List<int> positions = new List<int>();
+                for (int i = 0; i < all.Count; i++)
+                {
+                    if (all[i] != null && all[i].IsAxis == isAxis)
+                        positions.Add(i);
+                }
+                pool = BuildCandidatePool(scoring, positions.ToArray(),
+                    positions.Select(i => TrimmedCategory(all[i].Category)).ToArray(),
+                    positions.Select(i => string.IsNullOrWhiteSpace(all[i].Plane) ? normalizedGame : all[i].Plane).ToArray(),
+                    positions.Select(i => all[i].Title).ToArray());
+                scoring.Pools[key] = pool;
+                return pool;
+            }
+        }
+
+        // The best replacement of a missing input, as the pool entry (-1: none): exactly what scoring every candidate
+        // (of the same plane when the plane is in the DB) with ComputeRelationItemScore and keeping the first of the
+        // highest score gives. Each distinct title is scored once; titles that cannot reach the best so far are dropped
+        // by cheap bounds (length, letter histogram) before the edit distance, which stops once it is too far.
+        private static int FindBestReplacement(
+            CorrectionScoring scoring,
+            string poolKey,
+            CandidatePool pool,
+            string oldTitle,
+            string oldCategory,
+            string oldPlane,
+            bool planeExistsInDb,
+            out int bestScore,
+            out bool bestUsedAlias)
+        {
+            string resultKey = poolKey + "\n" + (oldTitle ?? string.Empty) + "\n" + (oldCategory ?? string.Empty) + "\n" + (oldPlane ?? string.Empty) + "\n" + planeExistsInDb;
+            int[] kept;
+            lock (scoring.Gate)
+                scoring.Results.TryGetValue(resultKey, out kept);
+            if (kept != null)
+            {
+                bestScore = kept[1];
+                bestUsedAlias = kept[2] != 0;
+                return kept[0];
+            }
+
+            int best = ReferenceReplacementSearch
+                ? ReferenceBestReplacement(pool, oldTitle, oldCategory, oldPlane, planeExistsInDb, out bestScore, out bestUsedAlias)
+                : SearchBestReplacement(pool, oldTitle, oldCategory, oldPlane, planeExistsInDb, out bestScore, out bestUsedAlias);
+            lock (scoring.Gate)
+                scoring.Results[resultKey] = new[] { best, bestScore, bestUsedAlias ? 1 : 0 };
+            return best;
+        }
+
+        // JOYPRO_CORRECTION_REFERENCE=1: every candidate scored with ComputeRelationItemScore, in the DB's order (the
+        // check that SearchBestReplacement finds the same; docs/testing.md).
+        private static readonly bool ReferenceReplacementSearch =
+            string.Equals(Environment.GetEnvironmentVariable("JOYPRO_CORRECTION_REFERENCE"), "1", StringComparison.Ordinal);
+
+        private static int ReferenceBestReplacement(
+            CandidatePool pool,
+            string oldTitle,
+            string oldCategory,
+            string oldPlane,
+            bool planeExistsInDb,
+            out int bestScore,
+            out bool bestUsedAlias)
+        {
+            string[] titles = new string[pool.Count];
+            for (int t = 0; t < pool.Titles.Length; t++)
+            {
+                foreach (int entry in pool.EntriesOf[t])
+                    titles[entry] = pool.Titles[t].Raw;
+            }
+            bestScore = int.MinValue;
+            bestUsedAlias = false;
+            int best = -1;
+            for (int entry = 0; entry < pool.Count; entry++)
+            {
+                if (planeExistsInDb && !string.Equals(pool.Planes[entry], oldPlane ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                bool usedAlias;
+                int score = ComputeRelationItemScore(oldTitle, oldCategory, oldPlane, titles[entry], pool.Categories[entry], pool.Planes[entry], planeExistsInDb, out usedAlias);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best = entry;
+                    bestUsedAlias = usedAlias;
+                }
+            }
+            return best;
+        }
+
+        private static int SearchBestReplacement(
+            CandidatePool pool,
+            string oldTitle,
+            string oldCategory,
+            string oldPlane,
+            bool planeExistsInDb,
+            out int bestScore,
+            out bool bestUsedAlias)
+        {
+            bestScore = int.MinValue;
+            bestUsedAlias = false;
+            int best = -1;
+            SimilarityTitle old = SimilarityTitle.Of(oldTitle);
+            if (old.Norm.Length == 0)
+                return -1;
+            string oldPlaneNorm = oldPlane ?? string.Empty;
+            string oldCategoryTrim = TrimmedCategory(oldCategory);
+            // The plane bonus per candidate plane (int.MinValue: not a candidate), and the highest bonus at all.
+            Dictionary<string, int> planeBonus = new Dictionary<string, int>(StringComparer.Ordinal);
+            int maxBonus = (planeExistsInDb ? 30 : 20) + (oldCategoryTrim != null ? 8 : 0);
+            int[] row1 = new int[1];
+            int[] row2 = new int[1];
+            BitPattern pattern = BitPattern.Of(old.Norm);
+            for (int t = 0; t < pool.Titles.Length; t++)
+            {
+                // Ties go to the first entry: a title may still tie with the best so far.
+                int need = 35;
+                if (bestScore != int.MinValue)
+                    need = Math.Max(need, bestScore - maxBonus);
+                if (need > 70)
+                    break;
+                int title = BoundedTitleSimilarity(old, pool.Titles[t], need, pattern, ref row1, ref row2);
+                if (title < need)
+                    continue;
+                foreach (int entry in pool.EntriesOf[t])
+                {
+                    string candidatePlane = pool.Planes[entry];
+                    int bonus;
+                    if (!planeBonus.TryGetValue(candidatePlane, out bonus))
+                    {
+                        if (planeExistsInDb)
+                            bonus = string.Equals(oldPlaneNorm, candidatePlane, StringComparison.OrdinalIgnoreCase) ? 30 : int.MinValue;
+                        else if (string.Equals(oldPlaneNorm, candidatePlane, StringComparison.OrdinalIgnoreCase))
+                            bonus = 20;
+                        else
+                            bonus = ArePlaneFamilyEquivalent(oldPlaneNorm, candidatePlane) ? 12 : 0;
+                        planeBonus[candidatePlane] = bonus;
+                    }
+                    if (bonus == int.MinValue)
+                        continue;
+                    bool usedAlias = !planeExistsInDb && bonus == 12;
+                    string category = pool.Categories[entry];
+                    if (oldCategoryTrim != null && category != null && string.Equals(oldCategoryTrim, category, StringComparison.OrdinalIgnoreCase))
+                        bonus += 8;
+                    int score = title + bonus;
+                    if (score > bestScore || (score == bestScore && entry < best))
+                    {
+                        bestScore = score;
+                        best = entry;
+                        bestUsedAlias = usedAlias;
+                    }
+                }
+            }
+            return best;
+        }
+
+        // ComputeTitleSimilarityScore when it is at least need (need >= 35); any value below need otherwise.
+        private static int BoundedTitleSimilarity(SimilarityTitle left, SimilarityTitle right, int need, BitPattern pattern, ref int[] row1, ref int[] row2)
+        {
+            string a = left.Norm;
+            string b = right.Norm;
+            if (b.Length == 0)
+                return 0;
+            // Equal titles score 70 before the direction check (as ComputeTitleSimilarityScore does).
+            if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
+                return 70;
+            int maxLen = Math.Max(a.Length, b.Length);
+            int lengthGap = Math.Abs(a.Length - b.Length);
+            // Equal lengths and not equal: neither contains the other.
+            int containBound = lengthGap > 0 ? 58 - lengthGap : 0;
+            int lower = lengthGap;
+            if (Math.Max(containBound, DistanceScore(lower, maxLen)) < need)
+                return 0;
+            if (left.Histogram != null && right.Histogram != null)
+            {
+                int l1 = 0;
+                byte[] x = left.Histogram;
+                byte[] y = right.Histogram;
+                for (int k = 0; k < 64; k++)
+                    l1 += Math.Abs(x[k] - y[k]);
+                lower = Math.Max(lower, (l1 + 1) / 2);
+                // The shorter title inside the longer one: its letters are all in the longer one, l1 is the length gap.
+                if (l1 != lengthGap)
+                    containBound = 0;
+                if (Math.Max(containBound, DistanceScore(lower, maxLen)) < need)
+                    return 0;
+            }
+            int score = 0;
+            if (containBound > 0 && (a.Contains(b) || b.Contains(a)))
+                score = Math.Max(score, 58 - lengthGap);
+            int target = Math.Max(need, score + 1);
+            if (DistanceScore(lower, maxLen) >= target)
+            {
+                // The largest distance that still reaches target: 70 - (d * 70) / maxLen >= target.
+                int limit = ((71 - target) * maxLen - 1) / 70;
+                int dist = pattern != null ? pattern.Distance(b) : BoundedLevenshtein(a, b, limit, ref row1, ref row2);
+                if (dist <= limit)
+                    score = Math.Max(score, DistanceScore(dist, maxLen));
+            }
+            if (score < need)
+                return score;
+            // "Lights +" must never become "Lights -": opposite commands are no candidates (at most 30).
+            if (HaveOppositeDirections(left.Directions, right.Directions))
+                score = Math.Min(score, 30);
+            return score;
+        }
+
+        private static int DistanceScore(int distance, int maxLen)
+        {
+            return Math.Max(0, 70 - ((distance * 70) / Math.Max(1, maxLen)));
+        }
+
+        // A title of at most 64 letters for the bit-parallel edit distance (Myers 1999, in Hyyroe's form for the whole
+        // strings): the same as LoadLevenshteinDistance, a word operation per letter of the other title.
+        private sealed class BitPattern
+        {
+            private int length;
+            private readonly ulong[] ascii = new ulong[128];
+            private Dictionary<char, ulong> other;
+
+            public static BitPattern Of(string text)
+            {
+                if (string.IsNullOrEmpty(text) || text.Length > 64)
+                    return null;
+                BitPattern pattern = new BitPattern { length = text.Length };
+                for (int i = 0; i < text.Length; i++)
+                {
+                    char ch = text[i];
+                    if (ch < 128)
+                    {
+                        pattern.ascii[ch] |= 1UL << i;
+                        continue;
+                    }
+                    if (pattern.other == null)
+                        pattern.other = new Dictionary<char, ulong>();
+                    ulong bits;
+                    pattern.other.TryGetValue(ch, out bits);
+                    pattern.other[ch] = bits | (1UL << i);
+                }
+                return pattern;
+            }
+
+            public int Distance(string text)
+            {
+                if (text.Length == 0)
+                    return length;
+                ulong pv = ulong.MaxValue;
+                ulong mv = 0;
+                ulong last = 1UL << (length - 1);
+                int score = length;
+                for (int k = 0; k < text.Length; k++)
+                {
+                    char ch = text[k];
+                    ulong eq = 0;
+                    if (ch < 128)
+                        eq = ascii[ch];
+                    else if (other != null)
+                        other.TryGetValue(ch, out eq);
+                    ulong xv = eq | mv;
+                    ulong xh = (((eq & pv) + pv) ^ pv) | eq;
+                    ulong ph = mv | ~(xh | pv);
+                    ulong mh = pv & xh;
+                    if ((ph & last) != 0)
+                        score++;
+                    else if ((mh & last) != 0)
+                        score--;
+                    ph = (ph << 1) | 1;
+                    mh <<= 1;
+                    pv = mh | ~(xv | ph);
+                    mv = ph & xv;
+                }
+                return score;
+            }
+        }
+
+        // LoadLevenshteinDistance, or limit + 1 as soon as the distance is surely above limit.
+        private static int BoundedLevenshtein(string a, string b, int limit, ref int[] previous, ref int[] current)
+        {
+            if (a.Length == 0)
+                return b.Length;
+            if (b.Length == 0)
+                return a.Length;
+            if (previous.Length < b.Length + 1)
+            {
+                previous = new int[b.Length + 1];
+                current = new int[b.Length + 1];
+            }
+            for (int j = 0; j <= b.Length; j++)
+                previous[j] = j;
+            for (int i = 1; i <= a.Length; i++)
+            {
+                current[0] = i;
+                int rowMin = i;
+                for (int j = 1; j <= b.Length; j++)
+                {
+                    int cost = a[i - 1] == b[j - 1] ? 0 : 1;
+                    int value = Math.Min(Math.Min(previous[j] + 1, current[j - 1] + 1), previous[j - 1] + cost);
+                    current[j] = value;
+                    if (value < rowMin)
+                        rowMin = value;
+                }
+                if (rowMin > limit)
+                    return limit + 1;
+                int[] swap = previous;
+                previous = current;
+                current = swap;
+            }
+            return previous[b.Length];
         }
 
         private sealed class CurrentBindInfo
@@ -848,20 +1500,35 @@ namespace JoyPro
             }
         }
 
-        private static void ApplyLegacyLoadCorrections(bool autoAddDbItems)
+        // The load correction in two parts: what the profile and the DB decide (kept by the engine server per file, DB and
+        // options, EngineLoadCorrectionCache), then what the PC decides at the moment (connected devices), every time.
+        private static void ApplyDbLoadCorrections(bool autoAddDbItems)
         {
             DbCorrectionIndex index = BuildDbCorrectionIndex();
             CorrectModifiersInBindsForLoad();
 
-            foreach (KeyValuePair<string, Relation> entry in AllRelations)
+            // Which actions are switched on where: an added aircraft never gets an action another relation has on.
+            BeginCorrectionActiveIndex();
+            try
             {
-                Relation relation = entry.Value;
-                if (relation == null)
-                    continue;
-                CorrectRelationNamesAgainstDb(relation, index, autoAddDbItems);
+                foreach (KeyValuePair<string, Relation> entry in AllRelations)
+                {
+                    Relation relation = entry.Value;
+                    if (relation == null)
+                        continue;
+                    CorrectRelationNamesAgainstDb(relation, index, autoAddDbItems);
+                }
+            }
+            finally
+            {
+                EndCorrectionActiveIndex();
             }
 
             AddLoadedJoysticks();
+        }
+
+        private static void ApplyDeviceLoadCorrections()
+        {
             if (RemapMissingJoysticksOnLoad)
                 CorrectMissingJoystickDevicesForLoad(ConfirmMissingJoystickRemapOnLoad);
             CleanJoystickNodes();
@@ -946,9 +1613,11 @@ namespace JoyPro
 
                 if (autoAddDbItems &&
                     GetPlaneRelationState(relation, input.Plane, "DCS", null) < 1 &&
-                    nothingElseBound)
+                    nothingElseBound &&
+                    CorrectionActiveElsewhere("DCS", input.ID, input.Plane, relation) == null)
                 {
                     relation.AddNode(input.ID, "DCS", input.IsAxis, input.Plane);
+                    NoteCorrectionActivated("DCS", input.ID, input.Plane, relation);
                 }
             }
 
@@ -968,9 +1637,11 @@ namespace JoyPro
 
                 if (autoAddDbItems &&
                     GetPlaneRelationState(relation, plane, game, null) < 1 &&
-                    nothingElseBound)
+                    nothingElseBound &&
+                    CorrectionActiveElsewhere(game, input.ID, plane, relation) == null)
                 {
                     relation.AddNode(input.ID, game, input.IsAxis, plane);
+                    NoteCorrectionActivated(game, input.ID, plane, relation);
                 }
             }
         }
@@ -1105,7 +1776,15 @@ namespace JoyPro
                             autoAddDbItems &&
                             GetPlaneRelationState(relation, db.Plane, "DCS", item) < 1 &&
                             nothingElseBound;
+                        string leftOut;
+                        if (canActivate && !CorrectionMayActivate(relation, item, "DCS", db.Plane, out leftOut))
+                        {
+                            canActivate = false;
+                            RecordAutoAddLeftOut(relation, item, "DCS", db.Plane, leftOut);
+                        }
                         item.AIRCRAFT[db.Plane] = canActivate;
+                        if (canActivate)
+                            NoteCorrectionActivated("DCS", item.ID, db.Plane, relation);
                     }
                 }
 
@@ -1216,7 +1895,15 @@ namespace JoyPro
                             autoAddDbItems &&
                             GetPlaneRelationState(relation, dbPlane, game, item) < 1 &&
                             nothingElseBound;
+                        string leftOut;
+                        if (canActivate && !CorrectionMayActivate(relation, item, game, dbPlane, out leftOut))
+                        {
+                            canActivate = false;
+                            RecordAutoAddLeftOut(relation, item, game, dbPlane, leftOut);
+                        }
                         item.AIRCRAFT[dbPlane] = canActivate;
+                        if (canActivate)
+                            NoteCorrectionActivated(game, item.ID, dbPlane, relation);
                     }
                 }
 
@@ -1240,9 +1927,8 @@ namespace JoyPro
                 return decision;
             }
 
-            List<DCSInput> pool = (index.AllDcsInputs ?? new List<DCSInput>())
-                .Where(input => input != null && input.IsAxis == current.IsAxis)
-                .ToList();
+            CorrectionScoring scoring = ScoringFor(index);
+            CandidatePool pool = DcsCandidatePool(index, scoring, current.IsAxis);
             if (pool.Count == 0)
             {
                 decision.Reason = "no DCS candidates with matching input type";
@@ -1253,35 +1939,11 @@ namespace JoyPro
             bool planeExistsInDb = IsDcsPlanePresentInDb(index, oldPlane);
             decision.PlaneMissingInDb = !planeExistsInDb && !string.IsNullOrWhiteSpace(oldPlane);
 
-            IEnumerable<DCSInput> filtered = pool;
-            if (planeExistsInDb)
-            {
-                filtered = filtered.Where(input =>
-                    string.Equals(input.Plane ?? string.Empty, oldPlane, StringComparison.OrdinalIgnoreCase));
-            }
-
-            DCSInput best = null;
-            int bestScore = int.MinValue;
-            bool bestUsedAlias = false;
-            foreach (DCSInput candidate in filtered)
-            {
-                bool usedAlias;
-                int score = ComputeRelationItemScore(
-                    current.Title,
-                    current.Cat,
-                    oldPlane,
-                    candidate.Title,
-                    candidate.Cat,
-                    candidate.Plane,
-                    planeExistsInDb,
-                    out usedAlias);
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    best = candidate;
-                    bestUsedAlias = usedAlias;
-                }
-            }
+            // The same as scoring every candidate (of the same plane when the plane is in the DB) with ComputeRelationItemScore.
+            int bestScore;
+            bool bestUsedAlias;
+            int bestEntry = FindBestReplacement(scoring, "dcs|" + current.IsAxis, pool, current.Title, current.Cat, oldPlane, planeExistsInDb, out bestScore, out bestUsedAlias);
+            DCSInput best = bestEntry < 0 ? null : index.AllDcsInputs[pool.Positions[bestEntry]];
 
             if (best == null)
             {
@@ -1366,13 +2028,8 @@ namespace JoyPro
             }
 
             string normalizedGame = NormalizeGameNameForCorrection(game);
-            List<OtherGameInput> gamePool;
-            if (!index.AllOtherInputsByGame.TryGetValue(normalizedGame, out gamePool))
-                gamePool = new List<OtherGameInput>();
-
-            List<OtherGameInput> pool = gamePool
-                .Where(input => input != null && input.IsAxis == current.IsAxis)
-                .ToList();
+            CorrectionScoring scoring = ScoringFor(index);
+            CandidatePool pool = OtherCandidatePool(index, scoring, normalizedGame, current.IsAxis);
             if (pool.Count == 0)
             {
                 decision.Reason = "no " + normalizedGame + " candidates with matching input type";
@@ -1383,39 +2040,11 @@ namespace JoyPro
             bool planeExistsInDb = IsOtherPlanePresentInDb(index, normalizedGame, oldPlane);
             decision.PlaneMissingInDb = !planeExistsInDb && !string.IsNullOrWhiteSpace(oldPlane);
 
-            IEnumerable<OtherGameInput> filtered = pool;
-            if (planeExistsInDb)
-            {
-                filtered = filtered.Where(input =>
-                {
-                    string candidatePlane = string.IsNullOrWhiteSpace(input.Plane) ? normalizedGame : input.Plane;
-                    return string.Equals(candidatePlane, oldPlane, StringComparison.OrdinalIgnoreCase);
-                });
-            }
-
-            OtherGameInput best = null;
-            int bestScore = int.MinValue;
-            bool bestUsedAlias = false;
-            foreach (OtherGameInput candidate in filtered)
-            {
-                string candidatePlane = string.IsNullOrWhiteSpace(candidate.Plane) ? normalizedGame : candidate.Plane;
-                bool usedAlias;
-                int score = ComputeRelationItemScore(
-                    current.Title,
-                    current.Category,
-                    oldPlane,
-                    candidate.Title,
-                    candidate.Category,
-                    candidatePlane,
-                    planeExistsInDb,
-                    out usedAlias);
-                if (score > bestScore)
-                {
-                    bestScore = score;
-                    best = candidate;
-                    bestUsedAlias = usedAlias;
-                }
-            }
+            // The same as scoring every candidate (of the same plane when the plane is in the DB) with ComputeRelationItemScore.
+            int bestScore;
+            bool bestUsedAlias;
+            int bestEntry = FindBestReplacement(scoring, "other|" + normalizedGame.ToUpperInvariant() + "|" + current.IsAxis, pool, current.Title, current.Category, oldPlane, planeExistsInDb, out bestScore, out bestUsedAlias);
+            OtherGameInput best = bestEntry < 0 ? null : index.AllOtherInputsByGame[normalizedGame][pool.Positions[bestEntry]];
 
             if (best == null)
             {
@@ -1733,15 +2362,13 @@ namespace JoyPro
             if (index == null || string.IsNullOrWhiteSpace(plane))
                 return false;
 
-            for (int i = 0; i < index.AllDcsInputs.Count; i++)
+            CorrectionScoring scoring = ScoringFor(index);
+            lock (scoring.Gate)
             {
-                DCSInput input = index.AllDcsInputs[i];
-                if (input == null)
-                    continue;
-                if (string.Equals(input.Plane ?? string.Empty, plane, StringComparison.OrdinalIgnoreCase))
-                    return true;
+                if (scoring.DcsPlanes == null)
+                    scoring.DcsPlanes = new HashSet<string>(index.AllDcsInputs.Where(input => input != null).Select(input => input.Plane ?? string.Empty), StringComparer.OrdinalIgnoreCase);
+                return scoring.DcsPlanes.Contains(plane);
             }
-            return false;
         }
 
         private static bool IsOtherPlanePresentInDb(DbCorrectionIndex index, string game, string plane)
@@ -1754,16 +2381,17 @@ namespace JoyPro
             if (!index.AllOtherInputsByGame.TryGetValue(normalizedGame, out pool))
                 return false;
 
-            for (int i = 0; i < pool.Count; i++)
+            CorrectionScoring scoring = ScoringFor(index);
+            lock (scoring.Gate)
             {
-                OtherGameInput input = pool[i];
-                if (input == null)
-                    continue;
-                string inputPlane = string.IsNullOrWhiteSpace(input.Plane) ? normalizedGame : input.Plane;
-                if (string.Equals(inputPlane, plane, StringComparison.OrdinalIgnoreCase))
-                    return true;
+                HashSet<string> planes;
+                if (!scoring.OtherPlanes.TryGetValue(normalizedGame, out planes))
+                {
+                    planes = new HashSet<string>(pool.Where(input => input != null).Select(input => string.IsNullOrWhiteSpace(input.Plane) ? normalizedGame : input.Plane), StringComparer.OrdinalIgnoreCase);
+                    scoring.OtherPlanes[normalizedGame] = planes;
+                }
+                return planes.Contains(plane);
             }
-            return false;
         }
 
         private static bool ArePlaneFamilyEquivalent(string left, string right)
@@ -2683,6 +3311,7 @@ namespace JoyPro
         private static DbCorrectionIndex BuildDbCorrectionIndexFromFiles()
         {
             DbCorrectionIndex index = new DbCorrectionIndex();
+            index.Generation = Guid.NewGuid().ToString("N");
 
             try
             {
@@ -3446,6 +4075,8 @@ namespace JoyPro
             profile.FfbOverrides = FfbOverrides == null || FfbOverrides.Count == 0 ? null : FfbOverrides;
             profile.VirtualJoystick = string.IsNullOrWhiteSpace(VirtualJoystickConfig) ? null : VirtualJoystickConfig;
             profile.AxisCalibrations = AxisCalibrations == null || AxisCalibrations.Count == 0 ? null : AxisCalibrations;
+            profile.LayoutPreferences = string.IsNullOrWhiteSpace(LayoutPreferences) ? null : LayoutPreferences;
+            profile.KeptDuplicates = KeptDuplicates == null || KeptDuplicates.Count == 0 ? null : KeptDuplicates.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
             profile.DatabaseFingerprint = fingerprint ?? string.Empty;
             return profile;
         }

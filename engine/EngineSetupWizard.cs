@@ -218,6 +218,8 @@ namespace JoyPro.Engine
         {
             SetupRequest request = new SetupRequest { Devices = devices, Inputs = inputs, Options = options };
             request.Warnings.AddRange(warnings);
+            foreach (string game in options.Games ?? new List<string>())
+                request.ModifierSupport[game] = EngineGameSupport.ModifierSupport(game);
             Dictionary<string, SetupFunction> functions;
             Dictionary<string, SetupAircraft> aircraft;
             List<SetupCommand> commands;
@@ -236,7 +238,8 @@ namespace JoyPro.Engine
             Dictionary<string, HashSet<string>> dbIds = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, bool?> axisCache = new Dictionary<string, bool?>(StringComparer.OrdinalIgnoreCase);
             HashSet<string> missing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (SetupCommand command in commands)
+            // (Lay out with AI with the profile's relations only needs none of them: no new relations are made.)
+            foreach (SetupCommand command in options.ExistingOnly ? new List<SetupCommand>() : commands)
             {
                 SetupFunction function;
                 if (!games.Contains(command.Game) || !functions.TryGetValue(command.Function, out function) || !aircraft.ContainsKey(command.Aircraft))
@@ -262,7 +265,8 @@ namespace JoyPro.Engine
                     continue;
                 request.Commands.Add(command);
             }
-            AddMapCommands(request, games);
+            if (!options.ExistingOnly)
+                AddMapCommands(request, games);
 
             // The profile: its relations, binds (mapped onto this setup by product) and modifiers.
             HashSet<string> binding = new HashSet<string>(devices.Where(d => SetupRoles.Binds(d.Role)).Select(d => d.Device), StringComparer.Ordinal);
@@ -368,6 +372,8 @@ namespace JoyPro.Engine
             request.Cockpits = cockpits;
             if (missing.Count > 0)
                 request.Warnings.Add("Not in the local DCS database (refresh it to include them): " + string.Join(", ", missing.OrderBy(m => m, StringComparer.OrdinalIgnoreCase).Take(12)) + (missing.Count > 12 ? " ..." : string.Empty));
+            // New or unused aircraft follow the layout of the user's most used aircraft of their class (usage ranking).
+            Program.AddUsageStyleRules(request);
             return request;
         }
 
@@ -489,7 +495,7 @@ namespace JoyPro.Engine
                 Modifier modifier;
                 if (!InternalDataManagement.AllModifiers.TryGetValue(planned.Name, out modifier) || modifier == null)
                 {
-                    modifier = new Modifier { name = planned.Name, device = planned.Device, key = planned.Input, sw = false };
+                    modifier = new Modifier { name = planned.Name, device = planned.Device, key = planned.Input, sw = planned.Switch };
                     if (!dryRun)
                         InternalDataManagement.AllModifiers[planned.Name] = modifier;
                     result.ModifiersAdded++;
@@ -575,9 +581,14 @@ namespace JoyPro.Engine
                 result.Bound++;
                 if (dryRun)
                     continue;
-                Bind bind = new Bind(relation);
+                // A relation that had a bind keeps its axis tuning (base curve, per game / aircraft tuning) on the new input.
+                Bind old;
+                InternalDataManagement.AllBinds.TryGetValue(relation.NAME, out old);
+                Bind bind = old != null && old.Joystick != null ? old.Copy(relation) : new Bind(relation);
                 bind.Joystick = planned.Device;
                 bind.JoyBackup = planned.Device;
+                if (old != null && !string.Equals(old.Joystick, planned.Device, StringComparison.Ordinal))
+                    bind.AliasJoystick = string.Empty;
                 if (planned.IsAxis)
                 {
                     bind.JAxis = planned.Input;
@@ -823,6 +834,10 @@ namespace JoyPro.Engine
                     }
                     options.Seed = PopOptionInt(args, "--seed", 1);
                     options.ReplaceExisting = PopFlag(args, "--replace-existing");
+                    string phaseLayers = PopOptionValue(args, "--phase-layers");
+                    if (phaseLayers != null && !Regex.IsMatch(phaseLayers.Trim(), "^(on|off|auto)$", RegexOptions.IgnoreCase))
+                        return Fail("--phase-layers takes on, off or auto.");
+                    options.PhaseLayers = phaseLayers ?? "auto";
                     List<string> cockpitFiles = PopOptionValues(args, "--cockpit-file").Select(NormalizePath).ToList();
                     string save = PopOptionValue(args, "--out-plan") ?? PopOptionValue(args, "--plan-file");
                     if (args.Count > 0)
@@ -846,6 +861,37 @@ namespace JoyPro.Engine
                         File.WriteAllText(target, SetupPlanJson.Write(plan, true), new UTF8Encoding(false));
                     }
                     EmitPayload(textOutput ? SetupPlanText.Write(plan, 40) : json, outPath);
+                    return 0;
+                }
+                case "check":
+                {
+                    // The rules every plan must keep (SetupPlanChecks): conflicts, modifiers, dedicated controls, MFDs,
+                    // printed labels, slew vs TMS, CMS, one device per hand, phase layers, games without modifier binds.
+                    string file = PopOptionValue(args, "--plan");
+                    int allowed = PopOptionInt(args, "--modifiers", 2);
+                    if (args.Count > 0)
+                        return Fail("Unknown setup check argument(s): " + string.Join(" ", args));
+                    if (string.IsNullOrWhiteSpace(file) || !File.Exists(NormalizePath(file)))
+                        return Fail("setup check needs --plan <plan.json> (from engine setup plan --out-plan).");
+                    SetupPlan plan;
+                    try
+                    {
+                        plan = SetupPlanJson.Read(File.ReadAllText(NormalizePath(file), Encoding.UTF8));
+                    }
+                    catch (Exception ex)
+                    {
+                        return Fail("The plan could not be read: " + ex.Message);
+                    }
+                    Dictionary<string, SetupFunction> functions;
+                    Dictionary<string, SetupAircraft> catalogAircraft;
+                    List<SetupCommand> commands;
+                    List<string> errors = new List<string>();
+                    SetupCatalog.Load(EngineSetupWizard.FunctionsFolder(), errors, out functions, out catalogAircraft, out commands);
+                    Dictionary<string, string> support = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (string game in plan.Games.Concat(plan.Relations.SelectMany(r => r.Nodes).Select(n => n.Game)).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.OrdinalIgnoreCase))
+                        support[game] = EngineGameSupport.ModifierSupport(game);
+                    SetupCheckReport report = SetupPlanChecks.Check(plan, functions, support, Math.Max(allowed, plan.ModifiersWanted));
+                    EmitPayload(textOutput ? SetupPlanChecks.ToText(report) : EngineSerialization.ToJson(report), outPath);
                     return 0;
                 }
                 case "apply":

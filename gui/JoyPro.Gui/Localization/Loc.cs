@@ -149,7 +149,11 @@ public static class Loc
 
     // An English text from elsewhere (an engine status line, an error the GUI shows): its translation, or the
     // translation of a pattern it matches ("Exported 12 binds." <- "Exported {0} binds."), or the text itself.
-    public static string Translate(string? english)
+    public static string Translate(string? english) => Translate(english, null);
+
+    // The same; a pattern whose filled-in values fail accept is skipped (Services/EngineText.cs: a value must not hold
+    // a whole clause of the sentence).
+    public static string Translate(string? english, Func<string, bool>? accept, int minLiteral = 0)
     {
         if (string.IsNullOrEmpty(english) || current == Languages.English)
             return english ?? string.Empty;
@@ -158,12 +162,22 @@ public static class Loc
             return direct;
         foreach (PatternEntry pattern in Patterns())
         {
+            if (pattern.LiteralLength < minLiteral)
+                continue;
             Match match = pattern.Regex.Match(english);
             if (!match.Success)
                 continue;
             object?[] args = new object?[pattern.Count];
+            bool ok = true;
             for (int i = 0; i < pattern.Count; i++)
-                args[i] = match.Groups["a" + i].Value;
+            {
+                string value = match.Groups["a" + i].Value;
+                args[i] = value;
+                if (accept != null && !accept(value))
+                    ok = false;
+            }
+            if (!ok)
+                continue;
             return SafeFormat(pattern.Translation, english, args);
         }
         return english;

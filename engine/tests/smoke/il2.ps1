@@ -55,6 +55,23 @@ try {
     Assert-True ([Convert]::ToBase64String([System.IO.File]::ReadAllBytes($irCatalogPath)) -eq [Convert]::ToBase64String($irAfter)) "an unchanged IL-2 catalog must not be rewritten."
     Assert-True ([System.IO.File]::ReadAllText((Join-Path $engineBin "DB\IL2\IL2.actions")) -notmatch "smoke_new_button") "the shipped IL-2 catalog must stay untouched."
     Assert-True ([Convert]::ToBase64String([System.IO.File]::ReadAllBytes((Join-Path $irRoot "DB\IL2\IL2.actions"))) -eq [Convert]::ToBase64String($irBefore)) "db refresh-il2 must not write into the program folder."
+
+    # With JoyPro's own names (DB\Functions\ActionTexts\IL2Game.tsv) a title the game left as its string-table key
+    # ("//a inprb_pitch") gets the name; the game's own titles and every other byte of the line stay; a second run
+    # writes nothing.
+    New-Item -Path (Join-Path $irRoot "DB\Functions\ActionTexts") -ItemType Directory -Force | Out-Null
+    Copy-Item -Path (Join-Path $engineBin "DB\Functions\ActionTexts\IL2Game.tsv") -Destination (Join-Path $irRoot "DB\Functions\ActionTexts") -Force
+    $irKeyed = [System.IO.File]::ReadAllText($irCatalogPath) + "rb_pitch,                                         mouse_axis_y,                                     0| //a inprb_pitch`r`n"
+    [System.IO.File]::WriteAllText($irCatalogPath, $irKeyed, $irAscii)
+    $irRename = Run-Engine @("db", "refresh-il2", "--text")
+    Assert-True ($irRename.ExitCode -eq 0) ("db refresh-il2 with JoyPro's names failed: " + $irRename.Output)
+    Assert-Match $irRename.Output "(?m)^\s+~ rb_pitch: inprb_pitch -> Mouse turret aim: up/down" ("db refresh-il2 did not name the string-table key: " + $irRename.Output)
+    $irNamed = [System.IO.File]::ReadAllText($irCatalogPath)
+    Assert-Match $irNamed "(?m)^rb_pitch,\s+mouse_axis_y,\s+0\| //a Mouse turret aim: up/down\r$" "the renamed line should keep its id, input and kind."
+    Assert-NotMatch $irNamed "inprb_pitch" "the string-table key should be gone."
+    Assert-Match $irNamed "(?m)^smoke_new_button,\s+,\s+0\| //b Smoke new button\r$" "the game's own titles must stay."
+    $irOnce = Run-Engine @("db", "refresh-il2", "--text")
+    Assert-Match $irOnce.Output "(?m)^Written: false" ("a refresh after the renaming must not write: " + $irOnce.Output)
 }
 finally {
     Pop-Location

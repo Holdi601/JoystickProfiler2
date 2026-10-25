@@ -27,28 +27,31 @@ public static class GameDataLocations
             : root;
     }
 
-    public static string GameDataRoot() => Path.Combine(DataRoot(), FolderName);
+    // The game-data folder of a data folder (dataRoot empty: DataRoot()).
+    public static string GameDataRoot(string? dataRoot = null) =>
+        Path.Combine(string.IsNullOrWhiteSpace(dataRoot) ? DataRoot() : dataRoot, FolderName);
 
     public static bool IsShippedDbFolder(string folder) => ShippedDbFolders.Contains((folder ?? string.Empty).Trim());
 
     // DB\<folder> to read: the game-data folder's when it exists, else the engine folder's (JoyPro's own DB folders
-    // always come from the engine folder). Empty when neither is known.
-    public static string DbFolder(string? engineDirectory, string folder)
+    // always come from the engine folder). Empty when neither is known. dataRoot: the data folder to look in (empty:
+    // DataRoot()).
+    public static string DbFolder(string? engineDirectory, string folder, string? dataRoot = null)
     {
         string program = string.IsNullOrWhiteSpace(engineDirectory) ? string.Empty : Path.Combine(engineDirectory, "DB", folder);
         if (IsShippedDbFolder(folder))
             return program;
-        string user = Path.Combine(GameDataRoot(), "DB", folder);
+        string user = Path.Combine(GameDataRoot(dataRoot), "DB", folder);
         if (Directory.Exists(user) || program.Length == 0)
             return user;
         return Directory.Exists(program) ? program : user;
     }
 
     // Every game DB folder of both places (one path per folder name, the game-data folder's first).
-    public static IReadOnlyList<string> GameDbFolders(string? engineDirectory)
+    public static IReadOnlyList<string> GameDbFolders(string? engineDirectory, string? dataRoot = null)
     {
         Dictionary<string, string> folders = new(StringComparer.OrdinalIgnoreCase);
-        List<string> roots = [Path.Combine(GameDataRoot(), "DB")];
+        List<string> roots = [Path.Combine(GameDataRoot(dataRoot), "DB")];
         if (!string.IsNullOrWhiteSpace(engineDirectory))
             roots.Add(Path.Combine(engineDirectory, "DB"));
         foreach (string root in roots)

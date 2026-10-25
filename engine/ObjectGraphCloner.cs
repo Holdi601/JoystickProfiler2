@@ -93,6 +93,11 @@ namespace JoyPro.Engine
             }
             if (IsShareable(type, mode))
                 return source;
+            // An empty array cannot change: the plain copy keeps the instance. A JSON profile's empty lists all hold
+            // List<T>'s one static empty array, as every list the command makes later does; a copy of it would be
+            // written as an array of its own and the saved profile would differ from its own process's.
+            if (!mode.AsSerialized && type.IsArray && ((Array)source).Length == 0)
+                return source;
             if (copies.TryGetValue(source, out copy))
                 return copy;
             if (mode.AsSerialized && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))

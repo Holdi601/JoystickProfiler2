@@ -1637,7 +1637,8 @@ namespace JoyPro.Engine
                 {
                     Match match = Regex.Match(line, @"^\s*([A-Za-z0-9_]+)\s*,.*//\s*([ab])\s*(.*)$");
                     if (match.Success)
-                        commands.Add(new Command { Game = "IL2Game", Plane = "IL2Game", Id = match.Groups[1].Value, Title = EngineReadableNames.Il2Title(match.Groups[1].Value, match.Groups[3].Value), IsAxis = match.Groups[2].Value == "a" });
+                        commands.Add(new Command { Game = "IL2Game", Plane = "IL2Game", Id = match.Groups[1].Value, Title = EngineReadableNames.Il2Title(match.Groups[1].Value, match.Groups[3].Value),
+                                                   Category = EngineActionTexts.Category("IL2Game", match.Groups[1].Value, string.Empty), IsAxis = match.Groups[2].Value == "a" });
                 }
             }
 
@@ -1657,7 +1658,12 @@ namespace JoyPro.Engine
                     {
                         string id = action.Groups[1].Value;
                         string label;
-                        string title = labels.TryGetValue(action.Groups[2].Value.Trim(), out label) && label.Length > 0 ? label : EngineReadableNames.FromStarCitizenId(id);
+                        bool labeled = labels.TryGetValue(action.Groups[2].Value.Trim(), out label) && label.Length > 0;
+                        string title = labeled ? label : EngineReadableNames.FromStarCitizenId(id);
+                        // No game text and the id has shorthand ("emote_cs_forward"): the words of the game's text key
+                        // ("@ui_CIEmoteForward" -> "Emote forward").
+                        if (!labeled && ActionTexts.UnexplainedAbbreviation("StarCitizen", id, title) != null)
+                            title = EngineReadableNames.FromStarCitizenKey(action.Groups[2].Value) ?? title;
                         commands.Add(new Command { Game = "StarCitizen", Plane = "StarCitizen", Id = category.Length > 0 ? category + "|" + id : id, Title = title,
                                                    Category = EngineReadableNames.Category("StarCitizen", category), IsAxis = action.Groups[3].Value == "true" });
                     }
@@ -1684,9 +1690,11 @@ namespace JoyPro.Engine
             {
                 if (over.Length == 0)
                 {
-                    // The game's raw category ids stay in its list (the integrations use them); these show readable ones.
+                    // The game's raw category ids stay in its list (the integrations use them); these show readable ones,
+                    // and JoyPro's own name and menu section where the list has only the id (DB\Functions\ActionTexts).
                     foreach (GameAction action in GameCatalogStore.Load(game, warnings).Actions)
-                        commands.Add(new Command { Game = game.GameId, Plane = game.GameId, Id = action.Id, Title = action.Title, Category = EngineReadableNames.Category(game.GameId, action.Category), IsAxis = action.IsAxis });
+                        commands.Add(new Command { Game = game.GameId, Plane = game.GameId, Id = action.Id, Title = EngineActionTexts.Title(game.GameId, action.Id, action.Title),
+                                                   Category = EngineActionTexts.Category(game.GameId, action.Id, EngineReadableNames.Category(game.GameId, action.Category)), IsAxis = action.IsAxis });
                     continue;
                 }
                 string file = Path.Combine(ListFolder(game.DbFolder), GameCatalogStore.FileName);
@@ -1698,7 +1706,8 @@ namespace JoyPro.Engine
                         continue;
                     string[] parts = raw.Split('\t');
                     if (parts.Length >= 3 && parts[0].Trim().Length > 0)
-                        commands.Add(new Command { Game = game.GameId, Plane = game.GameId, Id = parts[0].Trim(), Title = parts[1].Trim(), IsAxis = string.Equals(parts[2].Trim(), "axis", StringComparison.OrdinalIgnoreCase), Category = parts.Length > 3 ? parts[3].Trim() : string.Empty });
+                        commands.Add(new Command { Game = game.GameId, Plane = game.GameId, Id = parts[0].Trim(), Title = EngineActionTexts.Title(game.GameId, parts[0].Trim(), parts[1].Trim()), IsAxis = string.Equals(parts[2].Trim(), "axis", StringComparison.OrdinalIgnoreCase),
+                                                   Category = EngineActionTexts.Category(game.GameId, parts[0].Trim(), parts.Length > 3 ? parts[3].Trim() : string.Empty) });
                 }
             }
             return commands;

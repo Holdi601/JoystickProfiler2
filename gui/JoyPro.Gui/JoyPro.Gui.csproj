@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <Version>2.3.0</Version>
+    <Version>2.3.1</Version>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -43,6 +43,8 @@
     <Compile Include="..\..\engine\ProfileHistory.cs" Link="History\ProfileHistory.cs" />
     <!-- Readable DCS command names (localization keys -> DCS's English text), shared with the engine. -->
     <Compile Include="..\..\engine\DcsCommandNames.cs" Link="Engine\DcsCommandNames.cs" />
+    <!-- JoyPro's own action names and explanations (DB\Functions\ActionTexts) and the unexplained-abbreviation check. -->
+    <Compile Include="..\..\engine\ActionTexts.cs" Link="Engine\ActionTexts.cs" />
     <!-- Setup wizard (docs/setup-wizard.md): the engine's planner, plan file and edit rules (plain C# 7.3, "#nullable
          disable" for NET), so the review step reads and changes the plan the engine made and the tests run the planner. -->
     <Compile Include="..\..\engine\SetupWizard\*.cs" Link="SetupWizard\%(Filename)%(Extension)" />

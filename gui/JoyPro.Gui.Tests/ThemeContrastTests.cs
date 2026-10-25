@@ -46,6 +46,9 @@ public sealed class ThemeContrastTests
         AvaloniaRenderThread.Run(() =>
         {
             MainWindowViewModel vm = AvaloniaRenderThread.Wait(UiDesignRenderTests.CreateLoadedVmAsync());
+            // The opt-in Statistics page with a full document (every chart and section).
+            vm.ShowStatisticsPage = true;
+            vm.Statistics.Apply(UsageRecordingTests.SampleStats);
             try
             {
                 foreach ((string theme, ThemeVariant variant) in new[] { ("dark", ThemeVariant.Dark), ("light", ThemeVariant.Light) })

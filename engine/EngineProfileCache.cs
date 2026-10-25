@@ -96,6 +96,31 @@ namespace JoyPro.Engine
             }
         }
 
+        // The kept graph of filePath as it is on disk now (size and time stamp unchanged, length = the bytes the caller
+        // read), not copied: for readers only (the profile history describes the version before a save with it instead
+        // of reading the 4 MB again). Null when nothing matching is kept or outside the server.
+        public static Pr0file Peek(string filePath, long length)
+        {
+            if (!Enabled || string.IsNullOrWhiteSpace(filePath))
+                return null;
+            try
+            {
+                string key = Key(filePath);
+                FileInfo info = new FileInfo(key);
+                Kept current;
+                lock (Gate)
+                    current = kept;
+                if (current == null || !string.Equals(current.Path, key, StringComparison.OrdinalIgnoreCase) || !info.Exists ||
+                    current.Length != info.Length || current.Length != length || current.WriteUtc != info.LastWriteTimeUtc)
+                    return null;
+                return current.Graph.IsCompleted && !current.Graph.IsFaulted ? current.Graph.Result : null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         public static void Forget()
         {
             lock (Gate)

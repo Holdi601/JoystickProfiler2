@@ -17,7 +17,8 @@ namespace JoyPro.Engine
     //     words;
     //   - what it does: the cockpit guide's "What does it do?" text of the cockpit control the action is (the guide ties
     //     ~28k controls to the games' bindable commands through the cockpit pictures), else the sim's own description
-    //     (MSFS en-US.locPak "INPUT.KEY_..._DESC"), else the guide's general explanation of its function
+    //     (MSFS en-US.locPak "INPUT.KEY_..._DESC"), else JoyPro's own explanation of the action (DB\Functions\ActionTexts),
+    //     else the guide's general explanation of its function
     //     (_templates.json, by the action's own name or its function's name), else nothing. Never invented.
     // The index (command -> text) is built from the guides and picture sets once and kept in <data>\Cache.
     internal static class EngineActionInfo
@@ -65,8 +66,18 @@ namespace JoyPro.Engine
             return Path.Combine(GameInstalls.DataRoot(), "Cache", "action-info.tsv");
         }
 
-        // The title to show. The game's own words stay; only an event name or an id shown as its title is made readable.
+        // The title to show. The game's own words stay; JoyPro's own name (DB\Functions\ActionTexts) stands in for a title
+        // that is only the id or a string-table key; an event name or an id shown as its title is made readable; shorthand
+        // of the game's words is written out (ActionTexts.ExpandAbbreviations, not for DCS).
         public static string Readable(string game, string id, string title)
+        {
+            string own = EngineActionTexts.Title(game, id, title);
+            if (!string.Equals(own, title ?? string.Empty, StringComparison.Ordinal))
+                return own;
+            return ActionTexts.ExpandAbbreviations(game, ReadableCore(game, id, title));
+        }
+
+        private static string ReadableCore(string game, string id, string title)
         {
             string t = (title ?? string.Empty).Trim();
             string i = (id ?? string.Empty).Trim();
@@ -97,7 +108,8 @@ namespace JoyPro.Engine
             // An id shown as its title, also behind a key prefix of the game's string table (IL-2 "inpmc_pitch" for
             // "mc_pitch").
             bool idTitle = i.Length > 0 && Regex.IsMatch(t, @"^[A-Za-z0-9]+([_.][A-Za-z0-9]+)+$") && t.EndsWith(i, StringComparison.OrdinalIgnoreCase);
-            if (t.Length == 0 || idTitle || (string.Equals(t, i, StringComparison.Ordinal) && Regex.IsMatch(i, "[_./]|[a-z][A-Z]")))
+            // (An id that is already words, "A/P Spd Hold" in VTOL VR, is no program name.)
+            if (t.Length == 0 || idTitle || (string.Equals(t, i, StringComparison.Ordinal) && i.IndexOf(' ') < 0 && Regex.IsMatch(i, "[_./]|[a-z][A-Z]")))
             {
                 string[] words = Regex.Split(Regex.Replace(i, "([a-z])([A-Z])", "$1 $2"), @"[_./\s]+").Where(w => w.Length > 0).ToArray();
                 if (words.Length == 0)
@@ -156,6 +168,15 @@ namespace JoyPro.Engine
                 info.Explanation = hit.Value;
                 return info;
             }
+            // JoyPro's own explanation of this very action (DB\Functions\ActionTexts: every IL-2 action, and the ones
+            // written for other games).
+            ActionTexts.Entry own = EngineActionTexts.Find(game, id);
+            if (own != null && own.Explanation.Length > 0)
+            {
+                info.Source = "joypro";
+                info.Explanation = own.Explanation;
+                return info;
+            }
             CockpitGuideTemplates t = general ? Templates() : null;
             if (t != null)
             {
@@ -175,7 +196,7 @@ namespace JoyPro.Engine
         // relations action-info --coverage: per game how many actions have a readable name (the game's own, or made
         // readable from an id / event name), an explanation (cockpit guide, the game's own description, the general one
         // of its function, none) and how many of the game's functions have a recommended action that is no variant.
-        internal static EngineActionCoverage Coverage(string onlyGame)
+        internal static EngineActionCoverage Coverage(string onlyGame, int examples = 6)
         {
             EngineActionCoverage result = new EngineActionCoverage();
             EngineFunctionMap.Map map = EngineFunctionMap.Load(result.Warnings);
@@ -195,6 +216,19 @@ namespace JoyPro.Engine
                     string readable = Readable(c.Game, c.Id, c.Title);
                     if (IsReadable(c.Game, c.Id, readable))
                         row.Readable++;
+                    string abbreviation = ActionTexts.UnexplainedAbbreviation(c.Game, c.Id, readable);
+                    if (abbreviation != null)
+                    {
+                        row.Abbreviated++;
+                        if (row.AbbreviatedExamples.Count < examples)
+                            row.AbbreviatedExamples.Add(c.Id + " \"" + readable + "\" (" + abbreviation + ")");
+                    }
+                    if (ActionTexts.IsWordPlusAxis(readable))
+                    {
+                        row.WordAxis++;
+                        if (row.WordAxisExamples.Count < Math.Min(examples, 4) || examples == int.MaxValue)
+                            row.WordAxisExamples.Add(c.Id + " \"" + readable + "\"");
+                    }
                     EngineFunctionMap.Entry entry = null;
                     EngineFunctionMap.Assignment top = map != null && map.ByKey.TryGetValue(c.Game + "|" + c.Id + "|" + c.Plane, out entry)
                         ? entry.Functions.Where(a => a.Weight >= 0.9).OrderByDescending(a => a.Weight).FirstOrDefault() : null;
@@ -205,6 +239,8 @@ namespace JoyPro.Engine
                         row.GameText++;
                     else if (info.Source == "template")
                         row.Template++;
+                    else if (info.Source == "joypro")
+                        row.JoyProText++;
                     if (top == null)
                         continue;
                     HashSet<string> known;
@@ -236,10 +272,15 @@ namespace JoyPro.Engine
             sb.AppendLine("Action names and explanations per game (readable = the game's own name or one made from its id; explained by the cockpit guide / the game's own description / the general text of its function; functions with a recommended action that is no variant)");
             foreach (EngineActionCoverageRow r in result.Games)
             {
-                int explained = r.Guide + r.GameText + r.Template;
+                int explained = r.Guide + r.GameText + r.JoyProText + r.Template;
                 sb.AppendLine("  " + r.Game + " | actions " + r.Actions.ToString(CultureInfo.InvariantCulture) + " | named by the game " + pct(r.NamedByGame, r.Actions) + ", readable " + pct(r.Readable, r.Actions) +
-                              " | explained " + pct(explained, r.Actions) + " (guide " + pct(r.Guide, r.Actions) + ", game " + pct(r.GameText, r.Actions) + ", general " + pct(r.Template, r.Actions) + ", none " + pct(r.Actions - explained, r.Actions) + ")" +
+                              " | unexplained abbreviations " + r.Abbreviated.ToString(CultureInfo.InvariantCulture) + ", word+axis " + r.WordAxis.ToString(CultureInfo.InvariantCulture) +
+                              " | explained " + pct(explained, r.Actions) + " (guide " + pct(r.Guide, r.Actions) + ", game " + pct(r.GameText, r.Actions) + ", JoyPro " + pct(r.JoyProText, r.Actions) + ", general " + pct(r.Template, r.Actions) + ", none " + pct(r.Actions - explained, r.Actions) + ")" +
                               " | functions " + r.Functions.ToString(CultureInfo.InvariantCulture) + ", recommended " + pct(r.FunctionsRecommended, r.Functions));
+                foreach (string example in r.AbbreviatedExamples)
+                    sb.AppendLine("      abbreviation: " + example);
+                foreach (string example in r.WordAxisExamples)
+                    sb.AppendLine("      word+axis: " + example);
             }
             foreach (string warning in result.Warnings.Distinct().Take(10))
                 sb.AppendLine("Warning: " + warning);
@@ -448,12 +489,21 @@ namespace JoyPro.Engine
         public int Guide { get; set; }
         public int GameText { get; set; }
         public int Template { get; set; }
+        // JoyPro's own explanation of the action (DB\Functions\ActionTexts).
+        public int JoyProText { get; set; }
+        // Titles with a word nobody can read (ActionTexts.UnexplainedAbbreviation) / only a word and an axis letter.
+        public int Abbreviated { get; set; }
+        public int WordAxis { get; set; }
+        public List<string> AbbreviatedExamples { get; set; }
+        public List<string> WordAxisExamples { get; set; }
         public int Functions { get; set; }
         public int FunctionsRecommended { get; set; }
 
         public EngineActionCoverageRow()
         {
             Game = string.Empty;
+            AbbreviatedExamples = new List<string>();
+            WordAxisExamples = new List<string>();
         }
     }
 }

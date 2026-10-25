@@ -118,6 +118,16 @@ what the command list is built from, how many devices and buttons the game reads
 open. The same page is in the repository: [docs/games/support.md](../../docs/games/support.md). Nothing is downloaded;
 JoyPro writes the page into your temp folder (`JoyPro2\supported-games.html`).
 
+### Lay out with AI
+
+Binds > `Lay out with AI...`: say how you like your controls, e.g. "throttle and left-hand stick, trim on the hat,
+curves softer for helis" (the example buttons add phrases JoyPro understands). `Preview` shows what JoyPro understood
+(each preference in your language; new or saved; `Forget` removes one) and every change, grouped: binds that move,
+unbound relations that get a place, relations split by aircraft class, axis curves, force feedback, virtual joystick.
+Untick what you do not want, then `Apply`: one step, `Undo` takes it back. Your own layout stays wherever you ask for
+nothing else; the preferences are kept in the profile and used again. It works without the local AI; with it on,
+JoyPro also understands other wordings and languages. Details: [docs/layout-with-ai.md](../../docs/layout-with-ai.md).
+
 ### Setup wizard
 
 `Set up my devices automatically...` (Start page, next to `Your games`; also on the Binds page) binds the most important

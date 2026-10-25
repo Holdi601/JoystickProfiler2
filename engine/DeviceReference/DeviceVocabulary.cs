@@ -128,12 +128,24 @@ namespace JoyPro.DeviceReference
             return "button";
         }
 
-        // A control in plain words: "TMS hat up", "Trigger, second stage", "Base toggle 3 down".
+        // A control in plain words: "TMS hat up", "Trigger, second stage", "Base toggle 3 down". The generic names of an
+        // unknown device read as their input: "stick.base.button.in25" -> "Base button 25", "panel.button.pov1up" -> "Hat 1 up".
         public static string Describe(string control, string label)
         {
+            Match panelPov = Regex.Match((control ?? string.Empty).Trim().ToLowerInvariant(), @"^\w+\.button\.pov(\d+)(up|down|left|right|upright|upleft|downright|downleft)$");
+            if (panelPov.Success && (label ?? string.Empty).Trim().Length == 0)
+                return "Hat " + panelPov.Groups[1].Value + " " + DirectionName(panelPov.Groups[2].Value);
             string direction;
             string element = ElementOf(control, out direction);
             string name = (label ?? string.Empty).Trim();
+            // An axis is a part of its own ("throttle.axis.left" is the left throttle, not a direction).
+            string lowered = (control ?? string.Empty).Trim().ToLowerInvariant();
+            if (name.Length == 0 && lowered.Contains(".axis.") && !Regex.IsMatch(lowered, @"\.axis\.ministick2?\.(x|y)$"))
+            {
+                if (element.EndsWith(".gimbal", StringComparison.Ordinal) || element == "yoke.column")
+                    return (element == "yoke.column" ? "Yoke " : "Stick ") + direction;
+                return ElementName(lowered);
+            }
             string part = name.Length > 0 ? name : ElementName(element);
             string dir = DirectionName(direction);
             if (dir.Length == 0 || part.IndexOf(dir, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -248,6 +260,15 @@ namespace JoyPro.DeviceReference
                     case "detent": words.Add("detent"); continue;
                     case "key": words.Add("key"); continue;
                     default:
+                        // Generic names: "in25" (input 25), "pov1" (hat 1).
+                        Match generic = Regex.Match(p, @"^(in|pov)(\d+)$");
+                        if (generic.Success)
+                        {
+                            if (generic.Groups[1].Value == "pov" && (words.Count == 0 || words[words.Count - 1] != "hat"))
+                                words.Add("hat");
+                            words.Add(generic.Groups[2].Value);
+                            continue;
+                        }
                         words.Add(p.Replace('_', ' '));
                         continue;
                 }
@@ -259,6 +280,7 @@ namespace JoyPro.DeviceReference
                 device0 = "throttle";
             string text = (device0.Length > 0 ? device0 + " " : string.Empty) + string.Join(" ", words);
             text = Regex.Replace(text, @"\s+", " ").Trim();
+            text = Regex.Replace(text, @"\bbutton (thumb|index)\b", "$1 button");
             // "hat 2" reads better than "hat 2" with a leading device word on stick hats.
             return text.Length == 0 ? element : char.ToUpperInvariant(text[0]) + text.Substring(1);
         }
@@ -274,6 +296,38 @@ namespace JoyPro.DeviceReference
             if (hat.Success)
                 return hat.Groups[1].Value.ToUpperInvariant();
             return string.Empty;
+        }
+
+        // A game input in plain words: "JOY_BTN25" -> "Button 25", "JOY_BTN_POV1_D" -> "Hat 1 down", "JOY_X" -> "X axis",
+        // "JOY_RZ" -> "Z rotation", "JOY_SLIDER1" -> "Slider 1"; anything else (a keyboard key) stays as it is.
+        public static string InputName(string input)
+        {
+            string raw = (input ?? string.Empty).Trim();
+            string i = raw.ToUpperInvariant();
+            if (i.Length == 0)
+                return string.Empty;
+            string hat = HatDirection(i);
+            if (hat.Length > 0)
+                return "Hat " + HatNumber(i).ToString(CultureInfo.InvariantCulture) + " " + DirectionName(hat);
+            Match pov = Regex.Match(i, @"^(JOY_)?POV(\d+)$");
+            if (pov.Success)
+                return "Hat " + pov.Groups[2].Value;
+            Match button = Regex.Match(i, @"^JOY_BTN(\d+)$");
+            if (button.Success)
+                return "Button " + button.Groups[1].Value;
+            Match slider = Regex.Match(i, @"^JOY_SLIDER(\d+)$");
+            if (slider.Success)
+                return "Slider " + slider.Groups[1].Value;
+            switch (i)
+            {
+                case "JOY_X": return "X axis";
+                case "JOY_Y": return "Y axis";
+                case "JOY_Z": return "Z axis";
+                case "JOY_RX": return "X rotation";
+                case "JOY_RY": return "Y rotation";
+                case "JOY_RZ": return "Z rotation";
+            }
+            return raw;
         }
 
         // The control type of a captured DirectInput input for a new user definition (the marker assistant).

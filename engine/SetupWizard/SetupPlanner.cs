@@ -68,6 +68,15 @@ namespace JoyPro.Setup
             public double RealWeight;
             public bool Fixed;           // kept, the user's own control, group or pair member: the local search leaves it
             public string Reason = string.Empty;
+            public List<string> Phases = new List<string>();   // flight phases (SetupPhases)
+            public string Crit = string.Empty;                 // time criticality
+            public string Exclusive = string.Empty;            // a2a / a2g: only used in that combat phase (phase layers)
+            public double RoleFactor = 1;                      // how much its phases matter for its aircraft's roles
+            public bool ShiftOk = true;                        // every game of it handles modifier binds
+            public bool PhaseOk = true;                        // every game of it handles held (latched) modifiers
+            public List<SetupRule> Rules = new List<SetupRule>();   // the user's preference rules that concern it
+            public string DirKey = string.Empty;               // a directional set (tms, dms, cms, trim ...): its key
+            public string DirRole = string.Empty;              // and its direction (up, down, left, right, press)
         }
 
         internal sealed class RealGroup
@@ -91,6 +100,10 @@ namespace JoyPro.Setup
             public List<string> Names = new List<string>();  // control and its aliases for the position preferences
             public string Family = string.Empty;
             public bool Grip;
+            public string Phase = string.Empty;          // a position of the mode switch (a2a, a2g): a phase layer
+            public string BaseKey = string.Empty;        // device|input: the normal and the phase layers of one input
+            public bool Replica;                         // a cockpit-replica panel: only the functions its labels name
+            public bool MfdDevice;                       // an MFD: only MFD functions
         }
 
         internal sealed class Run
@@ -108,6 +121,9 @@ namespace JoyPro.Setup
             public Dictionary<string, bool> PatternCache = new Dictionary<string, bool>(StringComparer.Ordinal);
             public Dictionary<string, int> AircraftIndex;
             public int Words;
+            public Dictionary<string, List<Slot>> Siblings = new Dictionary<string, List<Slot>>(StringComparer.OrdinalIgnoreCase);
+            public HashSet<string> Directional = new HashSet<string>(StringComparer.Ordinal);
+            public Dictionary<string, System.Text.RegularExpressions.Regex> RuleRegex = new Dictionary<string, System.Text.RegularExpressions.Regex>(StringComparer.Ordinal);
         }
 
         // ---- entry point ----
@@ -128,7 +144,7 @@ namespace JoyPro.Setup
             string fewAircraft = string.Empty;
             for (int layers = start; layers <= forcedLimit; layers++)
             {
-                Run run = Execute(request, options, layers);
+                Run run = Execute(request, options, layers, 0, null);
                 int missing = EssentialMissing(run);
                 if (best == null || missing < bestMissing)
                 {
@@ -148,15 +164,45 @@ namespace JoyPro.Setup
                 }
             }
 
+            // Phase layers (a latched mode switch: up = one combat phase, down = the other) when the grips are too few
+            // for the functions of one phase, or when the user asks for them.
+            string phaseMode = NormalizePhaseMode(options.PhaseLayers);
+            string phaseNote = string.Empty;
+            if (phaseMode != "off")
+            {
+                ModeSwitch modeSwitch = FindModeSwitch(request);
+                int need = PhaseNeed(best);
+                if (modeSwitch == null)
+                {
+                    if (phaseMode == "on")
+                        phaseNote = "Phase layers: no latched mode switch on your devices (a 2- or 3-position toggle switch on a base or collective).";
+                }
+                else if (phaseMode == "on" || need > 0)
+                {
+                    // The mode switch's layers come on top of the shift buttons (no hand holds them); at most two.
+                    int phases = Math.Min(modeSwitch.Positions.Count, 2);
+                    int shifts = best.Modifiers.Count(m => !m.Switch);
+                    List<string> order = PhaseOrder(best, phases);
+                    Run phased = Execute(request, options, shifts, phases, new PhasePlan { Switch = modeSwitch, Phases = order });
+                    if (phaseMode == "on" || Better(phased, best))
+                        best = phased;
+                    else
+                        phaseNote = "Phase layers: not needed, the functions fit without the mode switch.";
+                }
+            }
+
             SetupPlan plan = Build(best, request, options);
-            int used = plan.Modifiers.Count;
+            plan.PhaseLayers = phaseMode;
+            if (phaseNote.Length > 0)
+                plan.Notes.Add(phaseNote);
+            int used = plan.Modifiers.Count(m => !m.Switch);
             if (used > preferred)
             {
-                foreach (SetupPlanModifier modifier in plan.Modifiers.Skip(preferred))
+                foreach (SetupPlanModifier modifier in plan.Modifiers.Where(m => !m.Switch).Skip(preferred))
                     modifier.Forced = true;
                 plan.Notes.Insert(0, "Only " + fewHave.ToString(CultureInfo.InvariantCulture) + " free buttons on the sticks for the " + fewNeed.ToString(CultureInfo.InvariantCulture) +
                                      " most important functions" + (fewAircraft.Length > 0 ? " of " + fewAircraft : string.Empty) + ": JoyPro added " + (used - preferred).ToString(CultureInfo.InvariantCulture) +
-                                     " modifier" + (used - preferred == 1 ? string.Empty : "s") + " although you asked for " + (preferred == 0 ? "none" : preferred.ToString(CultureInfo.InvariantCulture)) + ".");
+                                     " modifier(s) although you asked for " + (preferred == 0 ? "none" : "at most " + preferred.ToString(CultureInfo.InvariantCulture)) + ".");
             }
             else if (preferred > 0 && used < preferred)
             {
@@ -164,6 +210,127 @@ namespace JoyPro.Setup
             }
             plan.Notes.AddRange(notes);
             return plan;
+        }
+
+        internal static string NormalizePhaseMode(string mode)
+        {
+            switch ((mode ?? string.Empty).Trim().ToLowerInvariant())
+            {
+                case "on":
+                case "true":
+                case "yes":
+                    return "on";
+                case "off":
+                case "false":
+                case "no":
+                    return "off";
+                default:
+                    return "auto";
+            }
+        }
+
+        // ---- phase layers ----
+
+        internal sealed class ModeSwitch
+        {
+            public string Device = string.Empty;
+            public string Key = string.Empty;
+            public List<SetupInput> Positions = new List<SetupInput>();   // up first, then down
+            public List<SetupInput> All = new List<SetupInput>();         // every position (centre too): none is bound
+        }
+
+        internal sealed class PhasePlan
+        {
+            public ModeSwitch Switch;
+            public List<string> Phases = new List<string>();   // phase per position (up, down)
+        }
+
+        // The best latched mode switch of the hands' devices (or a panel's unlabelled toggle): a switch labelled MODE
+        // first, then base switches with two positions, the throttle before the main stick.
+        internal static ModeSwitch FindModeSwitch(SetupRequest request)
+        {
+            Dictionary<string, SetupDevice> devices = request.Devices.Where(d => SetupRoles.Binds(d.Role) && d.Role != SetupRoles.Pedals).ToDictionary(d => d.Device, StringComparer.Ordinal);
+            Dictionary<string, ModeSwitch> found = new Dictionary<string, ModeSwitch>(StringComparer.Ordinal);
+            Dictionary<string, int> rankOf = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (SetupInput input in request.Inputs.Where(i => !i.IsAxis && devices.ContainsKey(i.Device)).OrderBy(i => i.Device, StringComparer.Ordinal).ThenBy(i => i.Control, StringComparer.Ordinal))
+            {
+                string key, position;
+                int rank;
+                if (!SetupPhases.ModeSwitchPosition(input.Control, input.Type, input.Label, out key, out position, out rank))
+                    continue;
+                string id = input.Device + "|" + key;
+                ModeSwitch entry;
+                if (!found.TryGetValue(id, out entry))
+                {
+                    found[id] = entry = new ModeSwitch { Device = input.Device, Key = key };
+                    SetupDevice device = devices[input.Device];
+                    rankOf[id] = rank + (device.Role == SetupRoles.Throttle || device.Role == SetupRoles.Collective ? 0 : device.Role == SetupRoles.Panel ? 2 : 1);
+                }
+                if (entry.Positions.Count >= 2)
+                    continue;
+                if (position == "up")
+                    entry.Positions.Insert(0, input);
+                else
+                    entry.Positions.Add(input);
+            }
+            foreach (ModeSwitch entry in found.Values)
+            {
+                foreach (SetupInput input in request.Inputs.Where(i => i.Device == entry.Device && !i.IsAxis && i.Control.StartsWith(entry.Key + ".", StringComparison.Ordinal)))
+                    entry.All.Add(input);
+            }
+            return found.Where(f => f.Value.Positions.Count > 0)
+                .OrderBy(f => rankOf[f.Key]).ThenByDescending(f => f.Value.Positions.Count).ThenBy(f => f.Key, StringComparer.Ordinal)
+                .Select(f => f.Value).FirstOrDefault();
+        }
+
+        // Functions of one combat phase only (exclusive a2a / a2g) that did not get a grip input on the normal layer
+        // (not placed or behind a shift button): what a mode switch would help.
+        internal static int PhaseNeed(Run run)
+        {
+            int need = 0;
+            foreach (Demand demand in run.Demands.Where(d => !d.Kept && !d.IsAxis && d.Exclusive.Length > 0 && d.PhaseOk && IsTop(run, d) && SetupImportance.FrequencyRank(d.Frequency) >= 2))
+            {
+                Slot slot;
+                if (!run.Placed.TryGetValue(demand, out slot))
+                {
+                    if (CouldUseGrip(run, demand))
+                        need++;
+                }
+                else if (slot.Layer > 0 && slot.Phase.Length == 0)
+                {
+                    need++;
+                }
+            }
+            return need;
+        }
+
+        // With one position the layer goes to the phase whose functions matter less (the other stays always at hand);
+        // with two positions up = air to air, down = air to ground.
+        private static List<string> PhaseOrder(Run run, int positions)
+        {
+            if (positions >= 2)
+                return new List<string> { SetupPhases.A2A, SetupPhases.A2G };
+            double a2a = run.Demands.Where(d => d.Exclusive == SetupPhases.A2A).Sum(d => d.Importance);
+            double a2g = run.Demands.Where(d => d.Exclusive == SetupPhases.A2G).Sum(d => d.Importance);
+            return new List<string> { a2a < a2g ? SetupPhases.A2A : SetupPhases.A2G };
+        }
+
+        // A phased run is better with fewer essential functions missing, or as many and fewer combat functions left
+        // without a grip input, or a clearly better total score.
+        private static bool Better(Run phased, Run plain)
+        {
+            int a = EssentialMissing(phased), b = EssentialMissing(plain);
+            if (a != b)
+                return a < b;
+            int pa = PhaseNeed(phased), pb = PhaseNeed(plain);
+            if (pa != pb)
+                return pa < pb;
+            return Total(phased) > Total(plain) * 1.02;
+        }
+
+        private static double Total(Run run)
+        {
+            return run.Placed.Sum(p => S(run, p.Key, p.Value));
         }
 
         // Essential functions of the top aircraft (tier 0, or all without a priority list) that are not placed.
@@ -219,11 +386,11 @@ namespace JoyPro.Setup
 
         // ---- one planning run with a given number of modifier layers ----
 
-        private static Run Execute(SetupRequest request, SetupOptions options, int layers)
+        private static Run Execute(SetupRequest request, SetupOptions options, int layers, int phaseLayers, PhasePlan phasePlan)
         {
             Run run = new Run { Request = request, Options = options, Realism = Math.Max(0, Math.Min(1, options.Realism)) };
             BuildDemands(run);
-            BuildSlots(run, layers);
+            BuildSlots(run, layers, phaseLayers > 0 ? phasePlan : null);
             run.Occupants = new List<Demand>[run.Slots.Count];
             for (int i = 0; i < run.Slots.Count; i++)
                 run.Occupants[i] = new List<Demand>();
@@ -282,6 +449,7 @@ namespace JoyPro.Setup
             }
             run.AircraftIndex = index;
             run.Words = Math.Max(1, (index.Count + 63) / 64);
+            run.Directional = SetupPhases.DirectionalGroups(request.Functions.Values.Select(f => f.Group));
 
             Dictionary<string, int> tierOf;
             Dictionary<string, double> weights = SetupImportance.Weights(options.Priorities, request.Aircraft.Values, out tierOf);
@@ -314,7 +482,8 @@ namespace JoyPro.Setup
                 bool bound = relation.Device.Length > 0 && relation.Input.Length > 0;
                 if (bound && !relation.OnSetup)
                     continue;   // on the keyboard, vJoy or a device that is not part of this setup: stays as it is
-                bool inScope = relation.Nodes.Any(node => scopeAircraft.Contains(NodeKey(node)) || IsLayerOfScope(request, node, games));
+                bool inScope = relation.Nodes.Any(node => scopeAircraft.Contains(NodeKey(node)) || IsLayerOfScope(request, node, games) ||
+                                                          (options.ExistingOnly && games.Contains(string.IsNullOrWhiteSpace(node.Game) ? "DCS" : node.Game)));
                 if (!bound && !inScope)
                     continue;
                 Demand demand = new Demand
@@ -326,7 +495,8 @@ namespace JoyPro.Setup
                     FunctionId = relation.Function ?? string.Empty
                 };
                 demand.Aircraft = relation.Nodes.Select(NodeKey).Where(k => k.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
-                if (bound && (!options.ReplaceExisting || !inScope))
+                bool replace = options.ReplaceExisting && (options.ReplaceOnly == null || options.ReplaceOnly.Contains(relation.Name));
+                if (bound && (!replace || !inScope))
                 {
                     demand.Kept = true;
                     demand.KeptKey = relation.Device + "|" + relation.Input + "|" + relation.Modifier;
@@ -346,7 +516,8 @@ namespace JoyPro.Setup
             int skippedDisplays = 0;
             HashSet<string> displayChecked = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             HashSet<string> displayUsable = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (SetupCommand command in request.Commands.Where(c => games.Contains(c.Game)).OrderBy(c => c.Function, StringComparer.Ordinal).ThenBy(c => c.Aircraft, StringComparer.OrdinalIgnoreCase).ThenBy(c => c.Action, StringComparer.Ordinal))
+            // (Lay out with AI without "add missing": only the profile's own relations.)
+            foreach (SetupCommand command in request.Commands.Where(c => games.Contains(c.Game) && !options.ExistingOnly).OrderBy(c => c.Function, StringComparer.Ordinal).ThenBy(c => c.Aircraft, StringComparer.OrdinalIgnoreCase).ThenBy(c => c.Action, StringComparer.Ordinal))
             {
                 SetupFunction function;
                 SetupAircraft plane;
@@ -360,7 +531,8 @@ namespace JoyPro.Setup
                 if (function.Kind == "mfd-osb" || function.Kind == "ufc-key")
                 {
                     // its own position (an MFD key, a keypad key) must exist; a plain panel button does not make a keypad
-                    if (displayChecked.Add(function.Id) && function.Prefs.Count > 0 && request.Inputs.Any(i => PatternMatch(run, function.Prefs[0], i.Control)))
+                    if (displayChecked.Add(function.Id) && function.Prefs.Count > 0 &&
+                        request.Inputs.Any(i => PatternMatch(run, function.Prefs[0], i.Control) || (!IsGrip(i.Control) && SetupPhases.LabelNames(function, i.Label))))
                         displayUsable.Add(function.Id);
                     if (!displayUsable.Contains(function.Id))
                     {
@@ -520,7 +692,46 @@ namespace JoyPro.Setup
                 demand.RealWeight = demand.Real.Sum(g => g.Weight);
                 demand.WeightMax = maxWeight;
                 double breadth = Math.Min(Math.Max(0, sum - maxWeight), 5);
-                demand.Importance = SetupImportance.CategoryWeight(demand.Category) * SetupImportance.FrequencyWeight(demand.Frequency) * (maxWeight + 0.15 * breadth);
+
+                // How an experienced pilot ranks it: its flight phases for the roles of its aircraft (priority weighted)
+                // and how fast it must be reached.
+                demand.Phases = demand.Function.Phases ?? new List<string>();
+                demand.Crit = demand.Function.Crit ?? string.Empty;
+                demand.Exclusive = SetupPhases.ExclusivePhase(demand.Phases);
+                double roleSum = 0, roleWeight = 0;
+                foreach (string plane in demand.Aircraft)
+                {
+                    SetupAircraft known;
+                    if (!request.Aircraft.TryGetValue(plane, out known) || known.SharedLayer)
+                        continue;
+                    double w = Math.Max(0.01, weightOf(plane));
+                    roleSum += w * SetupPhases.RoleFactor(SetupPhases.RoleKey(known.Role, ClassOf(request, known) == SetupClasses.Space ? "spaceship" : known.Type), demand.Phases);
+                    roleWeight += w;
+                }
+                demand.RoleFactor = roleWeight > 0 ? roleSum / roleWeight : SetupPhases.RoleFactor(string.Empty, demand.Phases);
+                demand.Importance = SetupImportance.CategoryWeight(demand.Category) * SetupImportance.FrequencyWeight(demand.Frequency) * (maxWeight + 0.15 * breadth) *
+                                    demand.RoleFactor * SetupPhases.CritWeight(demand.Crit);
+
+                // Modifier layers only for games that handle modifier binds (a mode switch: held modifiers).
+                foreach (string game in demand.Nodes.Concat(demand.Source != null ? demand.Source.Nodes : new List<SetupNode>()).Select(node => string.IsNullOrWhiteSpace(node.Game) ? "DCS" : node.Game).Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    string support;
+                    if (!request.ModifierSupport.TryGetValue(game, out support))
+                        continue;
+                    demand.ShiftOk &= SetupPhases.AllowsLayer(support, false);
+                    demand.PhaseOk &= SetupPhases.AllowsLayer(support, true);
+                }
+                foreach (SetupRule rule in options.Rules ?? new List<SetupRule>())
+                {
+                    if (RuleConcerns(run, rule, demand))
+                        demand.Rules.Add(rule);
+                }
+                string dirKey, dirRole;
+                if (SetupPhases.DirectionalMember(demand.Function.Group, run.Directional, out dirKey, out dirRole))
+                {
+                    demand.DirKey = dirKey;
+                    demand.DirRole = dirRole;
+                }
             }
             run.Demands = demands;
         }
@@ -661,7 +872,7 @@ namespace JoyPro.Setup
 
         // ---- inputs ----
 
-        private static void BuildSlots(Run run, int layers)
+        private static void BuildSlots(Run run, int layers, PhasePlan phasePlan)
         {
             SetupRequest request = run.Request;
             List<Slot> slots = new List<Slot>();
@@ -674,14 +885,49 @@ namespace JoyPro.Setup
                 slots.Add(MakeSlot(input, device, 0, null));
             }
 
+            // Cockpit replicas (printed labels) and MFDs take only their own functions.
+            foreach (IGrouping<string, Slot> device in slots.GroupBy(s => s.Device.Device))
+            {
+                string kind = (device.First().Device.Kind ?? string.Empty).ToLowerInvariant();
+                bool mfd = kind == "mfd";
+                bool replica = mfd || ((kind == "panel" || kind == "buttonbox") && SetupPhases.IsReplicaPanel(kind, device.Where(s => !s.Input.IsAxis).Select(s => s.Input.Label)));
+                foreach (Slot slot in device)
+                {
+                    slot.MfdDevice = mfd;
+                    slot.Replica = replica;
+                }
+            }
+
+            // Phase layers first (the positions of the mode switch); the whole switch stays unbound (its centre is the
+            // normal layer).
+            List<SetupPlanModifier> modifiers = new List<SetupPlanModifier>();
+            if (phasePlan != null && phasePlan.Switch != null)
+            {
+                for (int i = 0; i < phasePlan.Phases.Count && i < phasePlan.Switch.Positions.Count; i++)
+                {
+                    SetupInput position = phasePlan.Switch.Positions[i];
+                    string phase = phasePlan.Phases[i];
+                    modifiers.Add(new SetupPlanModifier
+                    {
+                        Name = "JoyPro Mode " + phase.ToUpperInvariant(),
+                        Device = position.Device,
+                        Input = position.Input,
+                        Control = position.Control,
+                        Switch = true,
+                        Phase = phase,
+                        Reason = "mode switch " + (i == 0 ? "up" : "down") + ": the " + SetupPhases.Title(phase).ToLowerInvariant() + " layer"
+                    });
+                }
+                slots.RemoveAll(s => s.Device.Device == phasePlan.Switch.Device && phasePlan.Switch.All.Any(i => string.Equals(i.Input, s.Input.Input, StringComparison.OrdinalIgnoreCase)));
+            }
+
             // Modifier buttons: the profile's own first, then the pinky (the classic shift), then other grip buttons;
             // on the main stick before the throttle (every aircraft class reaches the main stick).
-            List<SetupPlanModifier> modifiers = new List<SetupPlanModifier>();
             SetupDevice main = SetupRoles.RoleDevice(request.Devices, SetupRoles.MainStick);
             Func<Slot, bool> candidate = s => s.Layer == 0 && !s.Input.IsAxis && s.Input.Type != "latched" && !modifiers.Any(m => m.Device == s.Device.Device && m.Input == s.Input.Input);
             foreach (SetupModifierChoice existing in request.ExistingModifiers.OrderByDescending(m => m.Uses).ThenBy(m => m.Name, StringComparer.Ordinal))
             {
-                if (modifiers.Count >= layers)
+                if (modifiers.Count(m => !m.Switch) >= layers)
                     break;
                 Slot position = slots.FirstOrDefault(s => candidate(s) && s.Device.Device == existing.Device && string.Equals(s.Input.Input, existing.Input, StringComparison.OrdinalIgnoreCase) && s.Grip);
                 if (position != null)
@@ -693,13 +939,13 @@ namespace JoyPro.Setup
                 foreach (Slot slot in slots.Where(s => candidate(s) && (s.Role == SetupRoles.MainStick || s.Role == SetupRoles.Throttle || s.Role == SetupRoles.HeliStick))
                              .OrderBy(s => main != null && s.Device.Device == main.Device ? 0 : 1).ThenByDescending(s => InputOrder(s.Input.Input)).ToList())
                 {
-                    if (modifiers.Count >= layers)
+                    if (modifiers.Count(m => !m.Switch) >= layers)
                         break;
                     if (!candidate(slot) || !PatternMatch(run, pattern, slot.RuleControl))
                         continue;
                     modifiers.Add(new SetupPlanModifier
                     {
-                        Name = "JoyPro Shift " + (modifiers.Count + 1).ToString(CultureInfo.InvariantCulture),
+                        Name = "JoyPro Shift " + (modifiers.Count(m => !m.Switch) + 1).ToString(CultureInfo.InvariantCulture),
                         Device = slot.Device.Device,
                         Input = slot.Input.Input,
                         Control = slot.Control,
@@ -709,15 +955,35 @@ namespace JoyPro.Setup
             }
             slots.RemoveAll(s => modifiers.Any(m => m.Device == s.Device.Device && string.Equals(m.Input, s.Input.Input, StringComparison.OrdinalIgnoreCase)));
             int layer = 0;
+            int phaseLayer = 50;
             List<Slot> baseSlots = slots.ToList();
             foreach (SetupPlanModifier modifier in modifiers)
             {
-                layer++;
+                // Shift layers 1, 2 ...; phase layers 51, 52 (a mode switch position, no hand needed).
+                int index = modifier.Switch ? ++phaseLayer : ++layer;
                 foreach (Slot slot in baseSlots.Where(s => !s.Input.IsAxis && s.Input.Type != "latched" && s.Grip))
-                    slots.Add(MakeSlot(slot.Input, slot.Device, layer, modifier));
+                {
+                    Slot copy = MakeSlot(slot.Input, slot.Device, index, modifier);
+                    copy.Phase = modifier.Switch ? modifier.Phase : string.Empty;
+                    copy.Replica = slot.Replica;
+                    copy.MfdDevice = slot.MfdDevice;
+                    slots.Add(copy);
+                }
             }
             for (int i = 0; i < slots.Count; i++)
+            {
                 slots[i].Index = i;
+                // The normal layer and the phase layers of one input: a function on the normal layer would not work in
+                // a switch position that has its own function there, so per aircraft an input is one or the other.
+                if (slots[i].Layer == 0 || slots[i].Phase.Length > 0)
+                {
+                    slots[i].BaseKey = slots[i].Device.Device + "|" + slots[i].Input.Input.ToUpperInvariant();
+                    List<Slot> siblings;
+                    if (!run.Siblings.TryGetValue(slots[i].BaseKey, out siblings))
+                        run.Siblings[slots[i].BaseKey] = siblings = new List<Slot>();
+                    siblings.Add(slots[i]);
+                }
+            }
             run.Slots = slots;
             run.Modifiers = modifiers;
         }
@@ -937,6 +1203,11 @@ namespace JoyPro.Setup
                 return Forbidden;
             if (slot.Modifier != null && !demand.Reachable.Contains(slot.Modifier.Device))
                 return Forbidden;
+            // A phase layer only for functions of that combat phase; modifier layers only for games that handle them.
+            if (slot.Phase.Length > 0 && (demand.Exclusive != slot.Phase || !demand.PhaseOk))
+                return Forbidden;
+            if (slot.Layer > 0 && slot.Phase.Length == 0 && !demand.ShiftOk)
+                return Forbidden;
             SetupFunction function = demand.Function;
             bool style = demand.StyleDevice.Length > 0 && demand.StyleDevice == slot.Device.Device && string.Equals(demand.StyleInput, slot.Input.Input, StringComparison.OrdinalIgnoreCase);
             int pref = PrefIndex(run, function, slot);
@@ -947,8 +1218,57 @@ namespace JoyPro.Setup
             string family = slot.Family;
             bool grip = slot.Grip;
             string side = demand.Side ?? "any";
-            if (!style && pref < 0 && space <= 0 && !realExact)
+
+            // A directional set's member only on the matching direction of a hat or thumb stick (never on another hat's press
+            // or a plain button as a last resort).
+            if (demand.DirRole.Length > 0 && !style && !SetupPhases.MatchesDirection(demand.DirRole, slot.RuleControl) && !SetupPhases.MatchesDirection(demand.DirRole, slot.Control))
+                return Forbidden;
+
+            // The user's preference rules (Lay out with AI): a bonus where the user wants a function, never where not.
+            double ruleBonus = 0;
+            bool wanted = false;
+            foreach (SetupRule rule in demand.Rules)
             {
+                bool hit = RuleHits(run, rule, slot);
+                if ((hit && rule.Forbid) || (!hit && rule.Only))
+                    return Forbidden;
+                if (hit && rule.Bonus > 0)
+                {
+                    ruleBonus += rule.Bonus;
+                    wanted |= rule.Controls.Length > 0;
+                }
+            }
+
+            // Special devices: an MFD takes only MFD functions (in OSB order, by their position preferences); a printed
+            // panel label takes only the functions it names; a cockpit replica's unlabelled controls only their own.
+            bool exactPref = pref == 0 && function.Prefs.Count > 0 && function.Prefs[0].IndexOf('*') < 0;
+            if (!style && !realExact && !wanted)
+            {
+                bool mfdFunction = SetupPhases.IsMfdFunction(function.Prefs);
+                if ((slot.MfdDevice || SetupPhases.IsMfdControl(control)) && !mfdFunction)
+                    return Forbidden;
+                // A cockpit label on a base (the Warthog throttle's "APU START", "LDG GEAR WARN SILENCE") that does not name the
+                // function: never for a function it contradicts or a time-critical / weapon function; else only once the
+                // unlabelled inputs are used up (a strong penalty below).
+                if (OtherBaseLabel(function, slot, control, exactPref, mfdFunction) &&
+                    (SetupPhases.LabelContradicts(function.Labels, function.Id + " " + function.Name, slot.Input.Label) || SetupPhases.IsCriticalFunction(function.Id, demand.Crit, demand.Category)))
+                    return Forbidden;
+                if (!grip && (family == "panel" || family == "mfd") && !mfdFunction)
+                {
+                    bool printed = SetupPhases.IsFunctionLabel(slot.Input.Label);
+                    if (printed && !exactPref && !LabelMatches(function, slot))
+                        return Forbidden;
+                    if (printed && !exactPref && SetupPhases.DirectionClash(SetupPhases.FunctionDirection(function.Id, function.PairRole), SetupPhases.LabelDirection(slot.Input.Label)))
+                        return Forbidden;
+                    if (!printed && slot.Replica && !exactPref)
+                        return Forbidden;
+                }
+            }
+
+            if (!style && !wanted && pref < 0 && space <= 0 && !realExact)
+            {
+                if (SetupPhases.SlewTmsClash(demand.FunctionId, function.Group, control))
+                    return Forbidden;
                 // Dedicated controls only for their functions, MFD keys only on MFD keys, cockpit panel functions off the grips.
                 if (Dedicated.IsMatch(control) || (demand.IsAxis && DedicatedAxis.IsMatch(control)))
                     return Forbidden;
@@ -988,16 +1308,22 @@ namespace JoyPro.Setup
 
             double label = 0;
             if (LabelMatches(function, slot))
-                label = 1.5;
+                label = 1.0 + 0.6 * SetupPhases.LabelFit(function.Labels, slot.Input.Label);
             else if (slot.Input.Label.Length > 0 && family == "panel")
                 label = -0.6;
+            else if (OtherBaseLabel(function, slot, control, exactPref, false))
+                label = -4.0;
             double comfort = fit * (0.5 + f) + exact + label + RoleLabel(function, slot);
+            // Reach: grips for the frequent and the time-critical functions, bases and panels for what can wait.
             if (grip)
-                comfort += 0.25 * f;
+                comfort += 0.25 * f + SetupPhases.GripBonus(demand.Crit);
             else if (control.IndexOf(".base.", StringComparison.Ordinal) >= 0)
                 comfort += 0.1 * f;
-            if (slot.Layer > 0)
-                comfort -= ((0.25 + 0.3 * f) * slot.Layer + (grip ? 0 : 0.2)) * (run.Options.PreferFewer ? 1.6 : 1.0);
+            if (slot.Phase.Length > 0)
+                comfort -= 0.15;
+            else if (slot.Layer > 0)
+                comfort -= ((0.25 + 0.3 * f) * slot.Layer + (grip ? 0 : 0.2)) * (run.Options.PreferFewer ? 1.6 : 1.0) * SetupPhases.LayerPenaltyFactor(demand.Crit);
+            comfort += ruleBonus;
             if (slot.Input.Type == "latched" && function.PairGroup.Length == 0)
                 comfort -= 0.35 * (0.5 + f);
             if (grip && f <= 0.2 && fit < 0.5)
@@ -1007,37 +1333,75 @@ namespace JoyPro.Setup
             return demand.Importance * (comfort + run.Realism * 2.0 * real);
         }
 
-        private static readonly Dictionary<string, string[]> RoleWords = new Dictionary<string, string[]>(StringComparer.Ordinal)
-        {
-            { "on", new[] { "ON" } }, { "off", new[] { "OFF" } }, { "open", new[] { "OPEN" } }, { "close", new[] { "CLOSE", "CLOSED" } },
-            { "extend", new[] { "EXTEND", "EXT" } }, { "retract", new[] { "RETRACT", "RET" } }, { "up", new[] { "UP" } }, { "down", new[] { "DOWN", "DN" } },
-            { "in", new[] { "IN", "RETRACT", "UP" } }, { "out", new[] { "OUT", "EXTEND", "DOWN" } }, { "arm", new[] { "ARM" } }, { "safe", new[] { "SAFE" } },
-            { "start", new[] { "START" } }, { "stop", new[] { "STOP", "OFF" } }
-        };
 
-        private static readonly Dictionary<string, string> CounterRole = new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            { "on", "off" }, { "off", "on" }, { "open", "close" }, { "close", "open" }, { "extend", "retract" }, { "retract", "extend" }, { "up", "down" },
-            { "down", "up" }, { "in", "out" }, { "out", "in" }, { "arm", "safe" }, { "safe", "arm" }, { "start", "stop" }, { "stop", "start" }
-        };
-
+        // The position word of a printed label against the position the function asks for (LAUNCH BAR EXTEND, HOOK UP).
         private static double RoleLabel(SetupFunction function, Slot slot)
         {
-            string[] words;
-            string counter;
-            if (function.PairRole.Length == 0 || slot.Input.Label.Length == 0 || slot.Grip || !RoleWords.TryGetValue(function.PairRole, out words))
+            if (slot.Input.Label.Length == 0 || slot.Grip)
                 return 0;
-            Func<string[], bool> has = list => list.Any(w => Regex.IsMatch(slot.Input.Label, @"(^|[^A-Za-z0-9])" + w + @"($|[^A-Za-z0-9])", RegexOptions.IgnoreCase));
-            if (has(words))
-                return 0.8;
-            return CounterRole.TryGetValue(function.PairRole, out counter) && has(RoleWords[counter]) ? -0.8 : 0;
+            string wanted = SetupPhases.FunctionDirection(function.Id, function.PairRole);
+            string printed = SetupPhases.LabelDirection(slot.Input.Label);
+            if (wanted.Length == 0 || printed.Length == 0)
+                return 0;
+            return wanted == printed ? 0.8 : -0.8;
+        }
+
+        // A cockpit label on a base that does not name the function (not its exact position, not an MFD function).
+        private static bool OtherBaseLabel(SetupFunction function, Slot slot, string control, bool exactPref, bool mfdFunction)
+        {
+            return !slot.Grip && control.IndexOf(".base.", StringComparison.Ordinal) >= 0 && !mfdFunction && !exactPref &&
+                   SetupPhases.IsCockpitLabel(slot.Input.Label) && !LabelMatches(function, slot);
         }
 
         private static bool LabelMatches(SetupFunction function, Slot slot)
         {
             if (slot.Input.Label.Length == 0 || slot.Grip)
                 return false;
-            return function.Labels.Any(k => Regex.IsMatch(slot.Input.Label, @"(^|[^A-Za-z0-9])" + Regex.Escape(k) + @"($|[^A-Za-z0-9])", RegexOptions.IgnoreCase));
+            return SetupPhases.LabelNames(function, slot.Input.Label);
+        }
+
+        // ---- the user's preference rules ----
+
+        private static Regex RuleRegex(Run run, string pattern)
+        {
+            Regex regex;
+            if (!run.RuleRegex.TryGetValue(pattern, out regex))
+            {
+                try
+                {
+                    regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                }
+                catch (ArgumentException)
+                {
+                    regex = new Regex("(?!)");
+                }
+                run.RuleRegex[pattern] = regex;
+            }
+            return regex;
+        }
+
+        // A rule concerns a function by its id (or, for the profile's own relations without one, the relation's name),
+        // its category and the aircraft classes of its relation.
+        private static bool RuleConcerns(Run run, SetupRule rule, Demand demand)
+        {
+            if (rule.Category.Length > 0 && !string.Equals(rule.Category, demand.Category, StringComparison.OrdinalIgnoreCase))
+                return false;
+            if (rule.Class.Length > 0 && !(demand.Classes.Count == 1 && demand.Classes.Contains(rule.Class)))
+                return false;
+            if (rule.Functions.Length == 0)
+                return true;
+            Regex regex = RuleRegex(run, rule.Functions);
+            return regex.IsMatch(demand.FunctionId) || (demand.FunctionId.Length == 0 && regex.IsMatch(demand.Name.Replace(' ', '_').ToLowerInvariant()));
+        }
+
+        private static bool RuleHits(Run run, SetupRule rule, Slot slot)
+        {
+            if (rule.Role.Length > 0 && !string.Equals(rule.Role, slot.Role, StringComparison.Ordinal))
+                return false;
+            if (rule.Controls.Length == 0)
+                return true;
+            Regex regex = RuleRegex(run, rule.Controls);
+            return regex.IsMatch(slot.Control) || regex.IsMatch(slot.RuleControl);
         }
 
         // ---- occupancy ----
@@ -1058,7 +1422,34 @@ namespace JoyPro.Setup
                         return false;
                 }
             }
+            List<Slot> siblings;
+            if (slot.BaseKey.Length > 0 && run.Siblings.TryGetValue(slot.BaseKey, out siblings) && siblings.Count > 1)
+            {
+                bool phase = slot.Phase.Length > 0;
+                foreach (Slot sibling in siblings)
+                {
+                    if (sibling == slot || (sibling.Phase.Length > 0) == phase)
+                        continue;
+                    // The normal-layer function and the phase layer's function of one input: while the switch is on that
+                    // phase the input does the phase layer's function, so the normal one must not be needed in that
+                    // phase (it is a function of the other combat phase only).
+                    string layerPhase = phase ? slot.Phase : sibling.Phase;
+                    foreach (Demand other in run.Occupants[sibling.Index])
+                    {
+                        Demand normal = phase ? other : demand;
+                        if (other != except && other != demand && Overlaps(other.Bits, demand.Bits) && !OtherPhaseOnly(normal, layerPhase))
+                            return false;
+                    }
+                    if (run.KeptAt.TryGetValue(sibling.Key, out kept) && kept.Any(other => other != except && Overlaps(other.Bits, demand.Bits)))
+                        return false;
+                }
+            }
             return true;
+        }
+
+        private static bool OtherPhaseOnly(Demand normal, string layerPhase)
+        {
+            return normal != null && !normal.Kept && normal.Exclusive.Length > 0 && normal.Exclusive != layerPhase;
         }
 
         private static void Place(Run run, Demand demand, Slot slot, string reason)
@@ -1091,6 +1482,9 @@ namespace JoyPro.Setup
                     .OrderByDescending(s => S(run, demand, s)).FirstOrDefault();
                 if (slot == null)
                     continue;
+                // A preference that wants the function elsewhere (Lay out with AI) beats the previous control.
+                if (demand.Rules.Any(r => r.Bonus > 0 && r.Controls.Length > 0) && !demand.Rules.Any(r => r.Bonus > 0 && r.Controls.Length > 0 && RuleHits(run, r, slot)))
+                    continue;
                 Place(run, demand, slot, "your own control from before");
                 demand.Fixed = true;
             }
@@ -1105,12 +1499,23 @@ namespace JoyPro.Setup
                 return false;
             if (strength >= 2)
                 return run.Realism >= 0.5 && demand.Real.Count > 0 && demand.Real.All(g => g.Controls != null) && RealMatch(run, demand, slot) >= 0.99;
-            if (LabelMatches(demand.Function, slot) || SpaceRule(demand, slot) > 0)
+            if (LabelMatches(demand.Function, slot) || SpaceRule(demand, slot) > 0 || Wanted(run, demand, slot))
                 return true;
             int pref = PrefIndex(run, demand.Function, slot);
             if (pref == 0 && demand.Function.Prefs[0].IndexOf('*') < 0)
                 return true;
             return run.Realism >= 0.5 && demand.Real.All(g => g.Controls != null) && RealMatch(run, demand, slot) >= 0.99;
+        }
+
+        // The user asked for this function on this control (Lay out with AI).
+        private static bool Wanted(Run run, Demand demand, Slot slot)
+        {
+            return demand.Rules.Count > 0 && demand.Rules.Any(r => r.Bonus > 0 && r.Controls.Length > 0 && RuleHits(run, r, slot));
+        }
+
+        private static bool HasWish(Demand demand)
+        {
+            return demand.Rules.Any(r => r.Bonus > 0 && r.Controls.Length > 0);
         }
 
         private static void AssignPairs(Run run, List<Demand> open, int strength)
@@ -1135,7 +1540,7 @@ namespace JoyPro.Setup
                 .Where(t => t.Item2 != null).ToList();
             if (pairs.Count == 0 || toggles.Count == 0)
                 return;
-            foreach (List<Demand> pair in pairs.OrderByDescending(p => p.Sum(d => d.Importance)).ThenBy(p => p[0].Name, StringComparer.Ordinal))
+            foreach (List<Demand> pair in pairs.OrderByDescending(p => p.Any(HasWish)).ThenByDescending(p => p.Sum(d => d.Importance)).ThenBy(p => p[0].Name, StringComparer.Ordinal))
             {
                 double top = Forbidden;
                 Tuple<Slot, Slot> best = null;
@@ -1178,25 +1583,32 @@ namespace JoyPro.Setup
         private static void AssignGroups(Run run, List<Demand> open, int strength)
         {
             // The left stick's translation axes are single functions (X, Y, twist), not a thumb stick group.
-            List<List<Demand>> groups = open.Where(d => d.Function.Group.Length > 0 && !run.Placed.ContainsKey(d) && !(d.SpaceLeftStick && d.FunctionId.StartsWith("space_strafe", StringComparison.Ordinal)))
+            // Placed members (an earlier round, the user's own control) anchor their group: the others join that hat.
+            List<List<Demand>> groups = open.Where(d => d.Function.Group.Length > 0 && !(d.SpaceLeftStick && d.FunctionId.StartsWith("space_strafe", StringComparison.Ordinal)))
                 .GroupBy(d => d.Function.Group.Split(':')[0] + "|" + d.HandKey + "|" + Prefix(d.RealKey.Split('+')[0]), StringComparer.Ordinal)
-                .Where(g => g.Count() >= 2).Select(g => g.OrderBy(d => d.Name, StringComparer.Ordinal).ToList()).ToList();
+                .Where(g => (g.Count() >= 2 || g.First().DirRole.Length > 0) && g.Any(d => !run.Placed.ContainsKey(d))).Select(g => g.OrderBy(d => d.Name, StringComparer.Ordinal).ToList()).ToList();
+            Func<Slot, string> setKey = s => s.Device.Device + "|" + s.Layer.ToString(CultureInfo.InvariantCulture) + "|" + s.Input.IsAxis + "|" + Prefix(s.RuleControl);
             List<List<Slot>> sets = run.Slots.Where(s => GroupRoles.Contains(LastSegment(s.RuleControl)))
-                .GroupBy(s => s.Device.Device + "|" + s.Layer.ToString(CultureInfo.InvariantCulture) + "|" + s.Input.IsAxis + "|" + Prefix(s.RuleControl), StringComparer.Ordinal)
+                .GroupBy(setKey, StringComparer.Ordinal)
                 .Where(g => g.Count() >= 2).Select(g => g.ToList()).ToList();
             if (groups.Count == 0 || sets.Count == 0)
                 return;
-            foreach (List<Demand> group in groups.OrderByDescending(g => g.Sum(d => d.Importance)).ThenBy(g => g[0].Name, StringComparer.Ordinal))
+            // The user's wishes first, then the most important group.
+            foreach (List<Demand> group in groups.OrderByDescending(g => g.Any(HasWish)).ThenByDescending(g => g.Sum(d => d.Importance)).ThenBy(g => g[0].Name, StringComparer.Ordinal))
             {
                 double top = Forbidden;
                 List<Tuple<Demand, Slot>> best = null;
                 List<Demand> members = group.Where(d => !run.Placed.ContainsKey(d)).ToList();
-                if (members.Count < 2)
+                HashSet<string> anchors = new HashSet<string>(group.Where(d => run.Placed.ContainsKey(d)).Select(d => setKey(run.Placed[d])), StringComparer.Ordinal);
+                // A directional set with one member (TMS up alone) still goes on its direction of a fitting hat.
+                if (members.Count == 0 || (members.Count < 2 && anchors.Count == 0 && members[0].DirRole.Length == 0))
                     continue;
                 foreach (List<Slot> set in sets)
                 {
+                    if (anchors.Count > 0 && !anchors.Contains(setKey(set[0])))
+                        continue;
                     List<Tuple<Demand, Slot>> placement;
-                    double value = EvaluateGroup(run, members, set, strength, out placement);
+                    double value = EvaluateGroup(run, members, set, strength, out placement, anchors.Count > 0 || members.Count == 1 ? 1 : 2);
                     if (value > top + Eps)
                     {
                         top = value;
@@ -1205,16 +1617,15 @@ namespace JoyPro.Setup
                 }
                 if (best == null)
                     continue;
-                string hat = Prefix(best[0].Item2.Control);
                 foreach (Tuple<Demand, Slot> item in best)
                 {
-                    Place(run, item.Item1, item.Item2, "together with its group on " + hat);
+                    Place(run, item.Item1, item.Item2, "together with its group on one hat");
                     item.Item1.Fixed = true;
                 }
             }
         }
 
-        private static double EvaluateGroup(Run run, List<Demand> members, List<Slot> set, int strength, out List<Tuple<Demand, Slot>> placement)
+        private static double EvaluateGroup(Run run, List<Demand> members, List<Slot> set, int strength, out List<Tuple<Demand, Slot>> placement, int minimum = 2)
         {
             placement = new List<Tuple<Demand, Slot>>();
             List<Tuple<Demand, Slot, double>> options = new List<Tuple<Demand, Slot, double>>();
@@ -1222,7 +1633,7 @@ namespace JoyPro.Setup
             {
                 foreach (Slot slot in set)
                 {
-                    if ((PrefIndex(run, member.Function, slot) >= 0 || SpaceRule(member, slot) > 0) && (strength == 0 || IsStrong(run, member, slot, strength)) && Free(run, slot, member, null))
+                    if ((PrefIndex(run, member.Function, slot) >= 0 || SpaceRule(member, slot) > 0 || Wanted(run, member, slot)) && (strength == 0 || IsStrong(run, member, slot, strength)) && Free(run, slot, member, null))
                     {
                         double value = S(run, member, slot);
                         if (value > Forbidden)
@@ -1241,13 +1652,14 @@ namespace JoyPro.Setup
                 total += option.Item3;
             }
             double average = members.Average(m => m.Importance);
-            return placement.Count >= 2 ? total + 0.2 * average * placement.Count - 0.6 * average * (members.Count - placement.Count) : Forbidden;
+            return placement.Count >= minimum ? total + 0.2 * average * placement.Count - 0.6 * average * (members.Count - placement.Count) : Forbidden;
         }
 
         // Single functions by importance: each on its best free input.
         private static void AssignSingles(Run run, List<Demand> open, int strength)
         {
-            foreach (Demand demand in open.Where(d => !run.Placed.ContainsKey(d)).OrderByDescending(d => d.Importance).ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ToList())
+            // A member of a directional set (TMS, DMS, CMS, trim ...) is placed only with its set on one hat (AssignGroups).
+            foreach (Demand demand in open.Where(d => !run.Placed.ContainsKey(d) && d.DirRole.Length == 0).OrderByDescending(HasWish).ThenByDescending(d => d.Importance).ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ToList())
             {
                 Slot best = BestFree(run, demand, null, strength);
                 if (best != null)
@@ -1278,7 +1690,7 @@ namespace JoyPro.Setup
 
         private static void LocalSearch(Run run, List<Demand> open)
         {
-            List<Demand> singles = open.Where(d => !d.Fixed).OrderByDescending(d => d.Importance).ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ToList();
+            List<Demand> singles = open.Where(d => !d.Fixed && d.DirRole.Length == 0).OrderByDescending(d => d.Importance).ThenBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ToList();
             Random random = new Random(run.Options.Seed);
             for (int pass = 0; pass < 4; pass++)
             {
@@ -1522,7 +1934,12 @@ namespace JoyPro.Setup
                     relation.Modifier = slot.Modifier == null ? string.Empty : slot.Modifier.Name;
                     relation.Score = Math.Round(members.Sum(m => S(run, m, slot)), 3);
                     relation.RealMatch = Math.Round(members.Average(m => RealMatch(run, m, slot)), 3);
+                    relation.Phase = demand.Exclusive;
                     relation.Reason = demand.Reason.Length > 0 ? demand.Reason : Why(run, demand, slot);
+                    if (slot.Phase.Length > 0)
+                        relation.Reason += "; " + SetupPhases.Title(slot.Phase).ToLowerInvariant() + " layer of the mode switch";
+                    else if (demand.Rules.Any(r => r.Bonus > 0 && RuleHits(run, r, slot)))
+                        relation.Reason += "; your preference";
                 }
                 plan.Relations.Add(relation);
                 if (!demand.Kept && slot == null)
@@ -1617,13 +2034,28 @@ namespace JoyPro.Setup
                 ? "Realism " + Math.Round(run.Realism * 100).ToString(CultureInfo.InvariantCulture) + " %: grouped by function, one button per function in every aircraft."
                 : "Realism " + Math.Round(run.Realism * 100).ToString(CultureInfo.InvariantCulture) + " %: aircraft whose real HOTAS has a function elsewhere got their own relation (" +
                   plan.Relations.Count(r => !r.Kept && !r.Existing && r.Name.EndsWith("]", StringComparison.Ordinal)).ToString(CultureInfo.InvariantCulture) + " split relations). Positions from the " + request.Cockpits.Source + ".");
+            if (plan.Modifiers.Any(m => m.Switch))
+            {
+                SetupPlanModifier first = plan.Modifiers.First(m => m.Switch);
+                plan.Notes.Add("Phase layers on the mode switch " + SetupRoles.Short(request.Devices.First(d => d.Device == first.Device)) + " (" + JoyPro.DeviceReference.DeviceVocabulary.ElementName(Prefix(first.Control)) + "): " +
+                               string.Join(", ", plan.Modifiers.Where(m => m.Switch).Select(m => (m.Control.EndsWith(".down", StringComparison.Ordinal) || m.Control.EndsWith(".right", StringComparison.Ordinal) || m.Control.EndsWith(".pos.2", StringComparison.Ordinal) ? "down" : "up") + " = " + SetupPhases.Title(m.Phase).ToLowerInvariant())) +
+                               "; the centre / the other position is the normal layer. Flight, take-off and landing functions stay on the normal layer.");
+            }
             foreach (SetupPlanModifier modifier in plan.Modifiers)
             {
                 int uses = run.Placed.Values.Count(s => s.Modifier == modifier);
-                plan.Notes.Add("Modifier \"" + modifier.Name + "\" = " + SetupRoles.Short(request.Devices.First(d => d.Device == modifier.Device)) + " " + modifier.Input +
-                               (modifier.Control.Length > 0 ? " (" + modifier.Control + ")" : string.Empty) + ": " + modifier.Reason + "; " + uses.ToString(CultureInfo.InvariantCulture) + " functions on its layer.");
+                plan.Notes.Add("Modifier \"" + modifier.Name + "\" = " + SetupRoles.Short(request.Devices.First(d => d.Device == modifier.Device)) + " " + Readable(modifier.Input, modifier.Control, string.Empty) +
+                               ": " + modifier.Reason + "; " + uses.ToString(CultureInfo.InvariantCulture) + " functions on its layer.");
             }
             return plan;
+        }
+
+        // An input in plain words for the notes and reasons: "Button 5 (Pinky lever)", "Hat 1 down".
+        internal static string Readable(string input, string control, string label)
+        {
+            string name = JoyPro.DeviceReference.DeviceVocabulary.InputName(input);
+            string part = (control ?? string.Empty).Length > 0 || (label ?? string.Empty).Trim().Length > 0 ? JoyPro.DeviceReference.DeviceVocabulary.Describe(control, label) : string.Empty;
+            return part.Length > 0 && !string.Equals(part, name, StringComparison.OrdinalIgnoreCase) ? name + " (" + part + ")" : name;
         }
 
         private static string Why(Run run, Demand demand, Slot slot)
@@ -1632,12 +2064,14 @@ namespace JoyPro.Setup
                 return "translation on the left stick (space sims)";
             if (LabelMatches(demand.Function, slot))
                 return "the panel label \"" + slot.Input.Label + "\"";
+            if (!slot.Grip && slot.Control.IndexOf(".base.", StringComparison.Ordinal) >= 0 && SetupPhases.IsCockpitLabel(slot.Input.Label))
+                return "on a labelled switch (" + slot.Input.Label + "): no free unlabelled input left";
             double real = RealMatch(run, demand, slot);
             if (run.Realism >= 0.5 && real >= 0.99)
                 return "where the real aircraft has it";
             int pref = PrefIndex(run, demand.Function, slot);
             if (pref == 0 && demand.Function.Prefs.Count > 0 && demand.Function.Prefs[0].IndexOf('*') < 0)
-                return "its own position (" + demand.Function.Prefs[0] + ")";
+                return "its own position";
             if (pref >= 0)
                 return "a fitting position (preference " + (pref + 1).ToString(CultureInfo.InvariantCulture) + ")";
             return slot.Layer > 0 ? "a free grip button behind " + slot.Modifier.Name : "the best free input left";
@@ -1645,6 +2079,8 @@ namespace JoyPro.Setup
 
         private static string WhyNot(Run run, Demand demand)
         {
+            if (demand.DirRole.Length > 0)
+                return "no hat with the free " + demand.DirRole + " direction for its set (" + demand.DirKey.ToUpperInvariant() + "): a set goes together on one hat or not at all";
             List<Slot> possible = run.Slots.Where(s => S(run, demand, s) > Forbidden).ToList();
             if (possible.Count == 0)
             {
@@ -1662,8 +2098,8 @@ namespace JoyPro.Setup
                 blocker = kept.FirstOrDefault(o => Overlaps(o.Bits, demand.Bits));
             if (blocker != null)
             {
-                string shared = demand.Aircraft.Intersect(blocker.Aircraft, StringComparer.OrdinalIgnoreCase).FirstOrDefault() ?? "the same aircraft";
-                return "every fitting input is taken by more important functions of " + shared + " (best: " + best.Device.Model + " " + best.Input.Input +
+                string shared = demand.Aircraft.Intersect(blocker.Aircraft, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+                return "every fitting input is taken by more important functions of " + (shared ?? "the same aircraft") + " (best: " + best.Device.Model + " " + JoyPro.DeviceReference.DeviceVocabulary.InputName(best.Input.Input) +
                        (best.Modifier != null ? " + " + best.Modifier.Name : string.Empty) + " = " + blocker.Name + ")";
             }
             return "every fitting input is taken";

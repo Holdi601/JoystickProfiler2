@@ -1,0 +1,215 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.StatisticsView"
+             x:DataType="vm:StatisticsViewModel">
+    <UserControl.Resources>
+        <!-- A bar row: label and its line on the left, the bar, the value at its end. -->
+        <DataTemplate x:Key="StatBarRow" x:DataType="vm:StatBar">
+            <Grid ColumnDefinitions="2*,3*,Auto" ColumnSpacing="10" Margin="0,3" Background="Transparent" ToolTip.Tip="{Binding Tip}">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Classes="caption" Text="{Binding Sub}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <controls:UsageBar Grid.Column="1" Fraction="{Binding Fraction}" Height="12" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding ValueText}" MinWidth="56" TextAlignment="Right" VerticalAlignment="Center" FontWeight="SemiBold" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="StatTileTemplate" x:DataType="vm:StatTile">
+            <Border Classes="surface" Padding="12,8" Margin="0,0,10,10" MinWidth="170">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Value}" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                    <TextBlock Classes="caption" Text="{Binding Caption}" MaxWidth="220" HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+    <!-- The Statistics page (StatisticsViewModel, docs/usage-statistics.md): opt-in in Settings > Usage statistics. -->
+    <Border CornerRadius="12" Padding="10">
+        <ScrollViewer x:Name="StatisticsScroll" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Spacing="12" Margin="0,0,8,8">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <PathIcon Data="{StaticResource Icon.Chart}" Width="24" Height="24" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Spacing="2">
+                        <TextBlock Text="{l:T 'Statistics'}" FontSize="22" FontWeight="Bold" />
+                        <TextBlock Classes="caption" Text="{l:T 'From your games\' own logs, journals, logbooks and replays, and Steam\'s playtime. JoyPro reads them at start and after a game closed. Everything stays on this PC.'}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Classes="caption" Text="{Binding StatusText}" VerticalAlignment="Center" />
+                        <Button Classes="icon small" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Read the games\' logs now'}" Command="{Binding ReadNowCommand}"
+                                IsEnabled="{Binding !IsLoading}" ToolTip.Tip="{l:T 'Reads what your games logged since the last time and updates the page'}" />
+                    </StackPanel>
+                </Grid>
+
+                <Border Classes="emptyState" IsVisible="{Binding ShowEmpty}">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="h2" Text="{l:T 'Nothing recorded yet'}" />
+                        <TextBlock TextWrapping="Wrap" Text="{l:T 'Play a game JoyPro supports: JoyPro reads its log when the game closes (and at the next start of JoyPro). Steam\'s playtime counts as soon as Steam has some.'}" />
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Tiles}" ItemTemplate="{StaticResource StatTileTemplate}" IsVisible="{Binding HasData}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding HasData}">
+                    <Border Classes="surface">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="h2" Text="{l:T 'Hours per game'}" />
+                            <TextBlock Classes="caption" Text="{l:T 'Logged in the game or Steam\'s playtime, whichever is higher'}" />
+                            <ItemsControl ItemsSource="{Binding GameBars}" ItemTemplate="{StaticResource StatBarRow}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Classes="surface">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="h2" Text="{l:T 'Top 10 aircraft, ships and vehicles'}" />
+                            <TextBlock Classes="caption" Text="{l:T 'Only games that log what you fly (DCS, IL-2, X-Plane, Falcon BMS, Elite Dangerous, Star Citizen, Tacview)'}" />
+                            <ItemsControl ItemsSource="{Binding UnitBars}" ItemTemplate="{StaticResource StatBarRow}" />
+                            <TextBlock Classes="caption" IsVisible="{Binding !HasUnits}" Text="{l:T 'No aircraft or ship logged yet.'}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding HasData}">
+                    <Border Classes="surface">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="h2" Text="{l:T 'When you play'}" />
+                            <TextBlock Classes="caption" Text="{l:T 'Hours per day of the week'}" />
+                            <controls:UsageColumns Values="{Binding WeekdayValues}" Height="90" ToolTip.Tip="{Binding WeekdayTip}" />
+                            <ItemsControl ItemsSource="{Binding WeekdayLabels}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <TextBlock Classes="caption" Text="{Binding}" TextAlignment="Center" TextWrapping="NoWrap" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Classes="caption" Text="{l:T 'Sessions started per hour of the day'}" Margin="0,8,0,0" />
+                            <controls:UsageColumns Values="{Binding HourValues}" Height="70" ToolTip.Tip="{Binding HourTip}" />
+                            <Grid ColumnDefinitions="*,*,*,*,Auto">
+                                <TextBlock Classes="caption" Text="0:00" />
+                                <TextBlock Grid.Column="1" Classes="caption" Text="6:00" />
+                                <TextBlock Grid.Column="2" Classes="caption" Text="12:00" />
+                                <TextBlock Grid.Column="3" Classes="caption" Text="18:00" />
+                                <TextBlock Grid.Column="4" Classes="caption" Text="23:00" />
+                            </Grid>
+                            <TextBlock Classes="caption" Text="{Binding HourTip}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Classes="surface">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="h2" Text="{l:T 'Fun facts'}" />
+                            <ItemsControl ItemsSource="{Binding Facts}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" Margin="0,3">
+                                            <PathIcon Data="{StaticResource Icon.Lightbulb}" Width="14" Height="14" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Classes="caption" IsVisible="{Binding !HasFacts}" Text="{l:T 'Fun facts come with more recorded sessions.'}" />
+                            <StackPanel Spacing="6" IsVisible="{Binding HasMonths}" Margin="0,8,0,0">
+                                <TextBlock Classes="h3" Text="{l:T 'Hours per month'}" />
+                                <controls:UsageColumns Values="{Binding MonthValues}" Height="70" ToolTip.Tip="{Binding MonthTip}" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="caption" Text="{Binding MonthStart}" />
+                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding MonthEnd}" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Classes="surface" IsVisible="{Binding HasCounters}">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="h2" Text="{l:T 'Counted in your games'}" />
+                        <TextBlock Classes="caption" Text="{l:T 'Where the game logs them: landings, kills, deaths, jumps and distance'}" />
+                        <ItemsControl ItemsSource="{Binding CounterTiles}" ItemTemplate="{StaticResource StatTileTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12" IsVisible="{Binding IsLoaded}">
+                    <Border Classes="surface">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="h2" Text="{l:T 'Your profile: binds per device'}" />
+                            <ItemsControl ItemsSource="{Binding DeviceBars}" ItemTemplate="{StaticResource StatBarRow}" />
+                            <TextBlock Classes="caption" IsVisible="{Binding !HasDevices}" Text="{l:T 'Open a profile to see its binds per device.'}" />
+                            <StackPanel Spacing="2" IsVisible="{Binding HasOldestBind}" Margin="0,6,0,0">
+                                <TextBlock Classes="h3" Text="{l:T 'Oldest bind you have not used'}" />
+                                <TextBlock Text="{Binding OldestBindText}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Classes="surface">
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="h2" Text="{l:T 'Your profile over time'}" />
+                            <StackPanel Spacing="4" IsVisible="{Binding HasGrowth}">
+                                <TextBlock Classes="caption" Text="{Binding GrowthText}" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <TextBlock Classes="h3" Text="{l:T 'Binds'}" />
+                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding GrowthBindsMax}" />
+                                </Grid>
+                                <controls:UsageLine Values="{Binding GrowthBinds}" Height="70" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <TextBlock Classes="h3" Text="{l:T 'Relations'}" />
+                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding GrowthRelationsMax}" />
+                                </Grid>
+                                <controls:UsageLine Values="{Binding GrowthRelations}" Height="70" />
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="caption" Text="{Binding GrowthStart}" />
+                                    <TextBlock Grid.Column="1" Classes="caption" Text="{Binding GrowthEnd}" />
+                                </Grid>
+                            </StackPanel>
+                            <TextBlock Classes="caption" IsVisible="{Binding !HasGrowth}" Text="{l:T 'The profile\'s history shows its growth once it has a few versions.'}" />
+                            <TextBlock Classes="h3" Text="{l:T 'Exports per game'}" Margin="0,8,0,0" />
+                            <ItemsControl ItemsSource="{Binding ExportBars}" ItemTemplate="{StaticResource StatBarRow}" />
+                            <TextBlock Classes="caption" IsVisible="{Binding !HasExports}" Text="{l:T 'JoyPro counts every export from now on.'}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Classes="surface" IsVisible="{Binding HasSources}">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="h2" Text="{l:T 'Where the numbers come from'}" />
+                        <ItemsControl ItemsSource="{Binding Sources}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:StatSource">
+                                    <Grid ColumnDefinitions="2*,3*,3*" ColumnSpacing="10" Margin="0,2">
+                                        <TextBlock Text="{Binding Game}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Classes="caption" Text="{Binding LiveText}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="{Binding Yielded}" TextWrapping="Wrap" />
+                                            <TextBlock Classes="caption" Text="{Binding Notes}" IsVisible="{Binding HasNotes}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Border>
+</UserControl>

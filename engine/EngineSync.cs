@@ -621,6 +621,8 @@ namespace JoyPro.Engine
         // Never fails the export; problems become warnings.
         public static void RecordAfterExport(string gameId, string configPath, List<string> warnings)
         {
+            // The statistics count every export (docs/usage-statistics.md).
+            Program.RecordUsageExport(gameId);
             try
             {
                 SyncGame game;
@@ -1777,7 +1779,7 @@ namespace JoyPro.Engine
                     string id = raw.Substring(0, comma).Trim();
                     if (id.Length == 0 || marker.Length <= 3 || !(marker.StartsWith("//a", StringComparison.OrdinalIgnoreCase) || marker.StartsWith("//b", StringComparison.OrdinalIgnoreCase)))
                         continue;
-                    titles[id] = marker.Substring(3).Trim();
+                    titles[id] = EngineReadableNames.Il2Title(id, marker.Substring(3));
                 }
             }
             catch (IOException)

@@ -35,10 +35,12 @@ public sealed partial class MainWindowViewModel
         SetupGameChoice[] games = GameCards.Where(c => c.Installed)
             .Select(c => new SetupGameChoice(c.GameId, c.Name, gameWatchChoices.IsWatched(c.GameId, c.Installed), GameWasStarted(c.GameId)))
             .ToArray();
-        return new SetupWizardViewModel(RunSetupWizardEngineAsync, games, SetupWizardAppliedAsync, () =>
+        SetupWizardViewModel wizard = new(RunSetupWizardEngineAsync, games, SetupWizardAppliedAsync, () =>
         {
             CurrentStage = UiStage.Export;
         });
+        wizard.UseSettings(wizardSettings, WizardSettingsChanged);
+        return wizard;
     }
 
     private Task<EngineCommandResult?> RunSetupWizardEngineAsync(System.Collections.Generic.IReadOnlyList<string> args, bool includeProfile, bool mutatesProfile, string busyLabel, bool quiet)

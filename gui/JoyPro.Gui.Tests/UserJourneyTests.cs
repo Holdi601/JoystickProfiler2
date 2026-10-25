@@ -57,7 +57,7 @@ public sealed partial class UserJourneyTests
             return;
         string engine = Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_ENGINE") is { Length: > 0 } e ? e : FindEngine();
         Assert.True(File.Exists(engine), "Build the engine first (engine.exe not found at " + engine + ").");
-        string[] scenarios = (Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_SCENARIOS") is { Length: > 0 } s ? s : "empty,new-user,unbound,visual-assign,settings-updates,device-replace,telemetry-recording")
+        string[] scenarios = (Environment.GetEnvironmentVariable("JOYPRO_JOURNEY_SCENARIOS") is { Length: > 0 } s ? s : "empty,new-user,unbound,visual-assign,settings-updates,device-replace,telemetry-recording,usage-statistics")
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         Directory.CreateDirectory(outDir);
 
@@ -179,6 +179,12 @@ public sealed partial class UserJourneyTests
                             case "telemetry-recording":
                                 RunTelemetryRecording();
                                 break;
+                            case "usage-statistics":
+                                RunUsageStatistics();
+                                break;
+                            case "il2-names":
+                                RunIl2Names();
+                                break;
                             case "trailer":
                                 RunTrailer();
                                 break;
@@ -231,6 +237,7 @@ public sealed partial class UserJourneyTests
                 report.AppendLine("Shutdown: " + ex.Message);
             }
             vm.StopGameConfigWatcher();
+            vm.StopUsageRecording();
         }
 
         // ---- scenarios ----
@@ -505,6 +512,30 @@ public sealed partial class UserJourneyTests
             Note("bind rows: " + vm!.Binds.Count + ", unbound " + vm.Binds.Count(b => b.IsUnbound) + ", HasNoBinds=" + vm.HasNoBinds);
             BindByHand("Pitch", axis: true);
             BindByHand("Gear", axis: false);
+            // Lay out with AI (docs/layout-with-ai.md) on the real devices: preview, then Apply and Undo.
+            Step("binds: Lay out with AI preview", async () =>
+            {
+                vm!.CurrentStage = UiStage.Binds;
+                if (!vm.IsLayoutPanelOpen)
+                    await vm.ToggleLayoutPanelCommand.ExecuteAsync(null);
+                vm.LayoutRequest = "trim on the hat, curves softer for helis";
+                await vm.AskLayoutCommand.ExecuteAsync(null);
+                Note("layout preferences: " + string.Join(" | ", vm.LayoutPreferences.Select(p => p.Text)) + "; not understood: " + vm.LayoutNotUnderstood.Count +
+                     "; changes: " + string.Join(", ", vm.LayoutChangeGroups.Select(g => g.Header)) + "; status: " + vm.LayoutStatus);
+            });
+            Step("binds: Lay out with AI applied", async () =>
+            {
+                if (vm!.CanApplyLayout)
+                    await vm.ApplyLayoutCommand.ExecuteAsync(null);
+                Note("layout applied: " + vm.LayoutApplied + "; status: " + vm.LayoutStatus);
+            });
+            Step("binds: Lay out with AI undone", async () =>
+            {
+                if (vm!.LayoutApplied)
+                    await vm.UndoLayoutCommand.ExecuteAsync(null);
+                vm.IsLayoutPanelOpen = false;
+                Note("after undo: " + vm.LayoutStatus);
+            });
             Step("modifiers page", () => { vm!.CurrentStage = UiStage.Modifiers; return Task.CompletedTask; });
 
             // Layout with the real devices.

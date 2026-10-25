@@ -13,5 +13,6 @@ public enum UiStage
     Hud = 8,
     FfbTelemetry = 9,
     VirtualJoystick = 10,
-    Cockpits = 11
+    Cockpits = 11,
+    Statistics = 12
 }

@@ -12,6 +12,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JoyPro.Gui.Models;
 using JoyPro.Setup;
+using JoyPro.Gui.Localization;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -47,7 +49,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             Steps.Add(new SetupStepItem(i, T(StepTitles[i])));
         foreach (SetupGameChoice game in games)
             Games.Add(game);
-        RoleOptions = SetupRoles.All.Select(r => new SetupRoleOption(r, SetupRoles.Title(r))).ToList();
+        RoleOptions = SetupRoles.All.Select(r => new SetupRoleOption(r, EngineText.Tr(SetupRoles.Title(r)))).ToList();
         UpdateSteps();
     }
 
@@ -75,10 +77,10 @@ public sealed partial class SetupWizardViewModel : ObservableObject
 
     public string StepHeading => CurrentStep switch
     {
-        0 => "1. Which games should JoyPro set up?",
-        1 => "2. Your devices and what each one is for",
-        2 => "3. What matters most to you",
-        3 => "4. The plan",
+        0 => T("1. Which games should JoyPro set up?"),
+        1 => T("2. Your devices and what each one is for"),
+        2 => T("3. What matters most to you"),
+        3 => T("4. The plan"),
         _ => T("5. Review: what goes where")
     };
 
@@ -251,11 +253,46 @@ public sealed partial class SetupWizardViewModel : ObservableObject
 
     partial void OnAircraftFilterChanged(string value) => FilterAircraft();
 
-    partial void OnModifiersChanged(int value) => InvalidatePlan();
+    partial void OnModifiersChanged(int value) => ChoiceChanged();
 
-    partial void OnPreferFewerChanged(bool value) => InvalidatePlan();
+    partial void OnPreferFewerChanged(bool value) => ChoiceChanged();
 
-    partial void OnRealismChanged(double value) => InvalidatePlan();
+    partial void OnRealismChanged(double value) => ChoiceChanged();
+
+    // Phase layers on a latched mode switch (engine setup plan --phase-layers): up = air to air, down = air to ground.
+    public IReadOnlyList<string> PhaseLayerChoices => PhaseLayerChoice.All;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PhaseLayersText))]
+    private string phaseLayers = PhaseLayerChoice.Automatic;
+
+    public string PhaseLayersText => PhaseLayers switch
+    {
+        PhaseLayerChoice.Always => T("Always: a latched switch on your throttle or collective becomes a mode switch. Up = air to air, down = air to ground; your buttons do the functions of that phase. Flying, take-off and landing stay the same in every position."),
+        PhaseLayerChoice.Off => T("Off: no mode switch; only modifier buttons you hold."),
+        _ => T("Automatic: JoyPro uses a latched switch as a mode switch only when your buttons are too few for the functions of one combat phase (air to air, air to ground).")
+    };
+
+    partial void OnPhaseLayersChanged(string value) => ChoiceChanged();
+
+    private Action<SetupWizardViewModel>? settingsChanged;
+
+    // The choices of the last wizard (kept in the settings); later changes are reported back.
+    public void UseSettings(AutoPlacementSettings settings, Action<SetupWizardViewModel>? changed)
+    {
+        settingsChanged = null;
+        Modifiers = ModifierChoices.Contains(settings.WizardModifiers) ? settings.WizardModifiers : 0;
+        PreferFewer = settings.WizardPreferFewer;
+        Realism = Math.Clamp(settings.WizardRealism, 0, 100);
+        PhaseLayers = PhaseLayerChoice.FromArgument(settings.WizardPhaseLayers);
+        settingsChanged = changed;
+    }
+
+    private void ChoiceChanged()
+    {
+        InvalidatePlan();
+        settingsChanged?.Invoke(this);
+    }
 
     private async Task LoadAircraftAsync()
     {
@@ -505,7 +542,8 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     {
         Directory.CreateDirectory(workFolder);
         List<string> args = ["setup", "plan", "--games", string.Join(",", ChosenGames), "--modifiers", Modifiers.ToString(CultureInfo.InvariantCulture),
-            PreferFewer ? "--prefer-fewer" : "--use-all-modifiers", "--realism", (Realism / 100.0).ToString("0.###", CultureInfo.InvariantCulture)];
+            PreferFewer ? "--prefer-fewer" : "--use-all-modifiers", "--realism", (Realism / 100.0).ToString("0.###", CultureInfo.InvariantCulture),
+            "--phase-layers", PhaseLayerChoice.ToArgument(PhaseLayers)];
         string priorities = PriorityArgument();
         if (priorities.Length > 0)
             args.AddRange(["--priorities", priorities]);
@@ -563,18 +601,17 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         sheets.Clear();
         PlanNotes.Clear();
         foreach (string note in made.Notes.Concat(made.Warnings))
-            PlanNotes.Add(note);
+            PlanNotes.Add(EngineText.Tr(note));
         Quality.Clear();
         foreach (SetupQuality quality in made.Quality)
             Quality.Add(new SetupQualityRow(quality));
         PlanModifiers.Clear();
         foreach (SetupPlanModifier modifier in made.Modifiers)
-            PlanModifiers.Add(modifier.Name + " = " + SetupPlanText.DeviceName(made, modifier.Device) + " " + modifier.Input +
-                              (modifier.Control.Length > 0 ? " (" + modifier.Control + ")" : string.Empty) + (modifier.Forced ? " - added because the inputs are too few" : string.Empty) +
-                              " - " + modifier.Reason);
+            PlanModifiers.Add(modifier.Name + " = " + SetupPlanText.DeviceName(made, modifier.Device) + " " + ReadableNames.Where(modifier.Input, modifier.Control) +
+                              (modifier.Forced ? " - " + T("added because the inputs are too few") : string.Empty) + " - " + EngineText.Tr(modifier.Reason));
         PlanRules.Clear();
         foreach (string rule in made.Rules)
-            PlanRules.Add(rule);
+            PlanRules.Add(EngineText.Tr(rule));
         OnPropertyChanged(nameof(HasNoPlanModifiers));
         RefreshNotPlaced();
         OnPropertyChanged(nameof(PlanHeadline));
@@ -668,7 +705,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         string? aircraft = SelectedReviewAircraft?.Id;
         ReviewDevices.Clear();
         foreach (SetupDevice d in Plan.Devices.Where(d => SetupRoles.Binds(d.Role)))
-            ReviewDevices.Add(new SetupRoleOption(d.Device, SetupRoles.Short(d) + " (" + SetupRoles.Title(d.Role) + ")"));
+            ReviewDevices.Add(new SetupRoleOption(d.Device, SetupRoles.Short(d) + " (" + EngineText.Tr(SetupRoles.Title(d.Role)) + ")"));
         ReviewAircraft.Clear();
         ReviewAircraft.Add(new SetupRoleOption(AllAircraft, T("All aircraft (relation names)")));
         foreach (SetupQuality quality in Plan.Quality.OrderBy(q => q.Tier < 0 ? int.MaxValue : q.Tier).ThenBy(q => q.Aircraft, StringComparer.OrdinalIgnoreCase))
@@ -731,8 +768,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
                     continue;
                 SetupDevice? device = Plan.Devices.FirstOrDefault(d => d.Device == input.Device);
                 MoveTargets.Add(new SetupTargetItem(input.Device, input.Input, layer,
-                    (device != null ? SetupRoles.Short(device) : input.Device) + " " + input.Input + (layer.Length > 0 ? " + " + layer : string.Empty) +
-                    " (" + (input.Label.Length > 0 ? input.Label : input.Control) + ")"));
+                    (device != null ? SetupRoles.Short(device) : ReadableNames.Device(input.Device)) + " " + ReadableNames.Where(input.Input, input.Control, input.Label) + (layer.Length > 0 ? " + " + layer : string.Empty)));
             }
         }
         foreach (SetupReviewRow row in ReviewRows.Where(r => r.Relation != relation && !r.IsKept && r.Relation.IsAxis == relation.IsAxis))
@@ -782,7 +818,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     {
         if (error.Length > 0)
         {
-            Status = error;
+            Status = EngineText.Tr(error);
             return;
         }
         Status = done;
@@ -882,7 +918,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         List<string> problems = SetupPlanEdit.Validate(Plan);
         if (problems.Count > 0)
         {
-            Status = problems[0];
+            Status = EngineText.Tr(problems[0]);
             return;
         }
         Directory.CreateDirectory(workFolder);

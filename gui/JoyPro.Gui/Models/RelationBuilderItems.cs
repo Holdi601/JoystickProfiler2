@@ -159,6 +159,7 @@ public sealed partial class BuilderSuggestionItem : ObservableObject
         "guide" => T("From the cockpit guide (What does it do?)"),
         "game" => T("The game's own description"),
         "template" => T("A general explanation of this function"),
+        "joypro" => T("JoyPro's explanation of this action"),
         _ => string.Empty
     };
 
@@ -343,6 +344,7 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
         "guide" => T("From the cockpit guide (What does it do?)"),
         "game" => T("The game's own description"),
         "template" => T("A general explanation of this function"),
+        "joypro" => T("JoyPro's explanation of this action"),
         _ => string.Empty
     };
 

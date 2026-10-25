@@ -59,7 +59,8 @@ internal sealed class TrayApplication : ApplicationContext, ITrayView
             this,
             () => new GameConfigWatcher(),
             action => context.Post(_ => action(), null),
-            TrimMemory);
+            TrimMemory,
+            usageTailerFactory: folder => new UsageLogTailer(folder));
         // Started inside the message loop, so the engine calls continue on this thread.
         context.Post(_ => _ = host.StartAsync(), null);
     }

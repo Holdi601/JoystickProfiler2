@@ -237,9 +237,11 @@ public sealed class MainWindowViewModelSmokeTests
         Assert.Contains("VID:PID 1234:5678", vm.AutoAssignLayoutDetails, StringComparison.Ordinal);
         Assert.Equal(3, vm.AutoAssignLayoutRows.Count);
         AutoAssignLayoutRow axis = vm.AutoAssignLayoutRows[0];
-        Assert.Equal("JOY_X", axis.Input);
+        // Inputs and controls in plain words, never the ids.
+        Assert.Equal("X axis", axis.Input);
         Assert.Equal("axis", axis.Type);
-        AutoAssignLayoutRow trigger = vm.AutoAssignLayoutRows.Single(r => r.Input == "JOY_BTN1");
+        AutoAssignLayoutRow trigger = vm.AutoAssignLayoutRows.Single(r => r.Input == "Button 1");
+        Assert.Equal("Trigger first stage", trigger.Control);
         Assert.Equal("\"Trigger\", momentary, index finger", trigger.Details);
 
         // A base without its grip: the grip's layout once one is picked.
@@ -2052,6 +2054,56 @@ public sealed class MainWindowViewModelSmokeTests
         }
     }
 
+    // The game lists of the view model's data folder (<data>\GameData, where a real engine copies them) win over the
+    // engine folder's; CreateVm gives every view model of these tests an empty data folder of its own, so the lists a
+    // real engine copied into the run's shared JOYPRO_DATA_DIR never reach them.
+    [Fact]
+    public async Task SearchRelationNodes_ReadsTheViewModelsDataFolder_BeforeTheEngineFolder()
+    {
+        FakeEngineCliClient fake = new();
+        MainWindowViewModel vm = CreateVm(fake);
+
+        string root = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", Guid.NewGuid().ToString("N"));
+        string engineDir = Path.Combine(root, "engine");
+        Directory.CreateDirectory(Path.Combine(engineDir, "DB", "DCS"));
+        string engineExe = Path.Combine(engineDir, "engine.exe");
+        File.WriteAllBytes(engineExe, [0x4D, 0x5A]);
+        File.WriteAllText(Path.Combine(engineDir, "DB", "DCS", "A-10C_2.html"),
+            "<table><tr><td>Flight Control</td><td>Wheel Brake</td><td>Toggle wheel brake</td><td>engine_hash</td></tr></table>");
+        string data = Path.Combine(root, "data");
+        Directory.CreateDirectory(Path.Combine(data, "GameData", "DB", "DCS"));
+        File.WriteAllText(Path.Combine(data, "GameData", "DB", "DCS", "F-16C_50.html"),
+            "<table><tr><td>Flight Control</td><td>Wheel Brake</td><td>Toggle wheel brake</td><td>data_hash</td></tr></table>");
+
+        try
+        {
+            Assert.False(string.IsNullOrWhiteSpace(vm.GameDataRootOverride));
+            Assert.False(Directory.Exists(Path.Combine(vm.GameDataRootOverride, "GameData")));
+            vm.EnginePath = engineExe;
+            vm.GameDataRootOverride = data;
+            vm.RelationNodeGameInput = "DCS";
+            vm.RelationNodeSearchText = "wheel";
+
+            await vm.SearchRelationNodesCommand.ExecuteAsync(null);
+
+            DbNodeSearchResultItem hit = Assert.Single(vm.RelationNodeSearchResults);
+            Assert.Equal("data_hash", hit.NodeId);
+            Assert.Equal("F-16C_50", hit.Plane);
+        }
+        finally
+        {
+            try
+            {
+                if (Directory.Exists(root))
+                    Directory.Delete(root, true);
+            }
+            catch
+            {
+                // Ignore test cleanup race conditions on locked temp files.
+            }
+        }
+    }
+
     [Fact]
     public async Task RelationNodePlanes_ListMsfsAircraft_FromDbAircraftList()
     {
@@ -2741,6 +2793,10 @@ public sealed class MainWindowViewModelSmokeTests
 
         string tempRoot = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests");
         Directory.CreateDirectory(tempRoot);
+        // Game lists only from the engine folder a test builds: the run's shared JOYPRO_DATA_DIR gets every game list
+        // as soon as any test starts the real engine (it copies them into <data>\GameData, and those win), and other
+        // test classes point JOYPRO_DATA_DIR at their own folders while these run.
+        vm.GameDataRootOverride = Path.Combine(tempRoot, "smoke-data-" + Guid.NewGuid().ToString("N"));
         vm.ProfilePath = Path.Combine(tempRoot, "test-profile.pr0file");
         vm.MergeRightProfilePath = Path.Combine(tempRoot, "right.pr0file");
         vm.ImportDcsPath = tempRoot;

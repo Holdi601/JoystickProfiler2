@@ -40,6 +40,10 @@ public sealed class EngineServerTests
     [InlineData("--status|false|relations|plan|x", false)]
     [InlineData("--editor|notepad|relations|show|x", false)]
     [InlineData("--status|false|--benchmark|false|version", false)]
+    [InlineData("--status|false|arrange|prefs", true)]
+    [InlineData("--status|false|arrange|ask|trim on the hat|--llm|off", true)]
+    [InlineData("--status|false|arrange|ask|trim on the hat|--llm|auto", false)]
+    [InlineData("--status|false|arrange|apply|--proposal|x", false)]
     public void ServedCommands_AreTheQuickInteractiveOnes(string commandLine, bool served)
     {
         Assert.Equal(served, EngineServerCommands.IsServed(commandLine.Split('|')));
@@ -105,6 +109,8 @@ public sealed class EngineServerTests
             ["relations", "item", "remove", "Pitch", "--node", "DCS:a2001cdnil:F-16C_50"],
             ["relations", "check-aircraft"],
             ["layout", "titles"],
+            ["arrange", "prefs"],
+            ["arrange", "ask", "trim on the hat, curves softer for helis", "--llm", "off", "--games", "DCS", "--text"],
             ["profile", "save"],
             ["relations", "list"]
         ];

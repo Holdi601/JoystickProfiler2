@@ -243,8 +243,81 @@ public sealed class QualityGateRelationTests
                 }
             }
             Gate.Note("I6: layout titles checked for " + devices.Count + " bound devices");
+
+            // The check's problems on the Export page (actions in several relations): every text in words, no raw id. The
+            // user's own relation and device names ("keep in 'MFD__RIGHT__T2'") are his data, not ids JoyPro shows.
+            await vm.ValidateProfileCommand.ExecuteAsync(null);
+            List<string> userNames = vm.AllRelationsForTests().Select(r => r.Name)
+                .Concat(vm.AllRelationsForTests().Select(r => r.BindDeviceFull).Concat(vm.Binds.Select(b => b.Device))
+                    .Where(d => d.Length > 0).SelectMany(d => new[] { d, DisplayDevice(d) }))
+                .ToList();
+            int cards = 0;
+            string? canaryText = null;
+            foreach (CheckIssueCard card in vm.CheckSections.SelectMany(section => section.Cards))
+            {
+                cards++;
+                foreach (string text in new[] { card.Headline, card.Details, card.SuggestionText, card.ReasonText }.Concat(card.ActionLines).Concat(card.Choices.Select(c => c.KeepText)))
+                {
+                    string? raw = RawIdInShownText(text, userNames);
+                    if (raw != null)
+                        Gate.Fail("I6", "the check's problems show a raw id", string.Empty, Gate.Short(card.Headline, 80), raw + " in: " + Gate.Short(text, 140));
+                    else if (canaryText == null && RawIdIn(text) != null)
+                        canaryText = text;
+                }
+            }
+            Gate.Note("I6: " + cards + " cards of the check's problems read");
+            // The exemption keeps the scan sharp: a raw DCS id put into a card text that names a relation is still caught.
+            if (canaryText != null)
+            {
+                const string Synthetic = "d3009pnilunilcd1vd1vpnilvunil";
+                if (RawIdInShownText(canaryText + " " + Synthetic, userNames) is not { } caught || !caught.Contains(Synthetic, StringComparison.Ordinal))
+                    Gate.Fail("I6", "the raw-id scan misses an id next to a relation name", string.Empty, Synthetic, Gate.Short(canaryText, 140));
+                else
+                    Gate.Note("I6: a raw id injected into a card text with a relation name is caught");
+            }
         });
         Gate.Finish("I6");
+    }
+
+    private static readonly System.Text.RegularExpressions.Regex RawIdPattern = new(
+        @"\bd-?\d+p(nil|-?[\d.]+)u\S*|\b[ad]\d{3,4}cd\S*|\{[0-9A-Fa-f]{8}-[0-9A-Fa-f-]+\}|\bJOY_[A-Z0-9_]+|\S+__[A-Za-z]\S*", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
+    // The first raw id in a shown text (an encoded DCS id, a GUID, an input token, "id__aircraft"), or null.
+    internal static string? RawIdIn(string? text)
+    {
+        System.Text.RegularExpressions.Match m = RawIdPattern.Match(text ?? string.Empty);
+        return m.Success ? m.Value : null;
+    }
+
+    // I6's scan of the check's problems: the user's own relation names (texts of the Holdi profile's cards) pass, a raw
+    // id next to them, a GUID outside a device name and an unquoted "id__aircraft" are still caught. Runs without the gate.
+    [Fact]
+    public void RawIdScan_SkipsTheUsersOwnNames_ButCatchesIdsBesideThem()
+    {
+        string[] names = ["MFD__RIGHT__T2", "Airbrake toggle", "F16 MFD 1 {4F0B1A20-0000-0000-0000-504944564944}", "F16 MFD 1"];
+        Assert.Null(RawIdInShownText("is in 2 relations: 'Airbrake toggle' (not bound) and 'MFD__RIGHT__T2' (F16 MFD 1 · BTN 2). DCS gets a bind on each of these inputs.", names));
+        Assert.Null(RawIdInShownText("92% sure: keep in 'MFD__RIGHT__T2'", names));
+        Assert.Null(RawIdInShownText("MFD__RIGHT__T2", names));
+        Assert.Null(RawIdInShownText("on 'F16 MFD 1 {4F0B1A20-0000-0000-0000-504944564944}'", names));
+
+        Assert.Equal("d3009pnilunilcd1vd1vpnilvunil", RawIdInShownText("Keep in 'MFD__RIGHT__T2' only d3009pnilunilcd1vd1vpnilvunil", names));
+        Assert.Equal("'MFD__RIGHT__T3'", RawIdInShownText("Keep in 'MFD__RIGHT__T3'", names));
+        Assert.Equal("iCommandPlaneAirBrake__F-16C_50", RawIdInShownText("'Airbrake toggle' has iCommandPlaneAirBrake__F-16C_50", names));
+        Assert.Equal("{AAAAAAAA-0000-0000-0000-504944564944}", RawIdInShownText("on {AAAAAAAA-0000-0000-0000-504944564944}", names));
+        Assert.Equal("MFD__RIGHT__T2", RawIdInShownText("Keep in MFD__RIGHT__T2 only", names));
+    }
+
+    // The first raw id in a shown text that is not one of the user's own names (relation and device names from his
+    // profile): the whole text or a quoted name ('MFD__RIGHT__T2') is his data, the rest is still scanned.
+    internal static string? RawIdInShownText(string? text, IEnumerable<string> userNames)
+    {
+        string shown = text ?? string.Empty;
+        List<string> names = userNames.Where(n => !string.IsNullOrWhiteSpace(n)).Distinct(StringComparer.Ordinal).OrderByDescending(n => n.Length).ToList();
+        if (names.Contains(shown.Trim(), StringComparer.Ordinal))
+            return null;
+        foreach (string name in names)
+            shown = shown.Replace("'" + name + "'", "'…'", StringComparison.Ordinal);
+        return RawIdIn(shown);
     }
 
     private static string DisplayDevice(string device)
