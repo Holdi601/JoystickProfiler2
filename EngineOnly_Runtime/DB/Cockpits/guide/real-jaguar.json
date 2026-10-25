@@ -1,0 +1,1137 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-jaguar",
+  "title": "SEPECAT Jaguar GR1 / GR3 (RAF)",
+  "variants": [
+    "jaguar-gr"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "a1",
+      "title": "AzurPoly SEPECAT Jaguar manual, rev. 9 (MSFS add-on, licensed by Dassault Aviation)",
+      "kind": "game-manual",
+      "url": "https://azurpolygroup.com/wp-content/uploads/package/azurpoly-jaguar-manual.pdf"
+    },
+    {
+      "id": "w1",
+      "title": "SEPECAT Jaguar (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SEPECAT_Jaguar"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The SEPECAT Jaguar is an Anglo-French attack jet with two engines, built to fly very low and fast to its targets; India still flies it. The pilot sits alone with a centre stick and two throttles on the left. The RAF GR1 / GR3 has a head-up display and a projected moving map in the middle of the main panel. The stick and throttles follow the AzurPoly add-on manual, written from real Jaguar documents; the consoles follow the French Jaguar A of that manual, so RAF details may differ. A few controls are known only by their names.",
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "glareshield",
+      "name": "Overhead instruments and HUD",
+      "text": "The HUD and the instruments along the canopy arch.",
+      "panels": [
+        {
+          "id": "overhead-instruments",
+          "name": "Overhead instruments",
+          "src": "a1",
+          "text": "The instruments along the canopy arch above the main panel, around the head-up display.",
+          "context": "They sit high so the pilot can read them with a short glance while looking outside; the layout follows the French Jaguar A of the add-on manual, the RAF cockpit differs in detail.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:overhead-instruments:1"
+              ],
+              "text": "The glass screen on top of the panel in front of the pilot's eyes. It shows flight numbers and aiming marks over the view outside (head-up display).",
+              "context": "The Jaguar flies its attacks very low, so the pilot needs his eyes outside; the HUD gives him the numbers and the aiming mark without looking down.",
+              "src": "a1"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack indicator",
+              "type": "indicator",
+              "match": [
+                "item:overhead-instruments:2"
+              ],
+              "text": "This instrument shows the angle of attack: how steeply the wing meets the air. A too high angle means the wing is close to losing its lift.",
+              "context": "It sits high near the HUD so the pilot can check it in the landing approach and in tight turns."
+            },
+            {
+              "id": "accelerometer",
+              "name": "Accelerometer",
+              "type": "gauge",
+              "match": [
+                "item:overhead-instruments:3"
+              ],
+              "text": "This gauge shows the G, how strong the push into the seat is during turns and pull-ups (G-meter).",
+              "context": "The pilot watches it so as not to overstress the aircraft, especially with heavy bombs on board."
+            },
+            {
+              "id": "frontal-lights-knob",
+              "name": "Frontal instruments lights knob",
+              "type": "knob",
+              "match": [
+                "item:overhead-instruments:4"
+              ],
+              "text": "Turning this knob sets the brightness of the lights for the front instruments.",
+              "context": "The pilot dims them at night so they are readable without dazzling him."
+            },
+            {
+              "id": "clock",
+              "name": "Clock / chronometer",
+              "type": "gauge",
+              "match": [
+                "item:overhead-instruments:5"
+              ],
+              "text": "A clock with a stopwatch. It shows the time and can measure how long a leg of the flight takes.",
+              "context": "On low-level missions the pilot flies by time and heading between points, so the stopwatch matters."
+            },
+            {
+              "id": "standby-compass",
+              "name": "Standby compass",
+              "type": "gauge",
+              "match": [
+                "item:overhead-instruments:6"
+              ],
+              "text": "A simple magnetic compass that shows the heading without electricity.",
+              "context": "It is the last way to know the direction if all electric instruments fail."
+            },
+            {
+              "id": "frontal-light",
+              "name": "Frontal instrument light",
+              "type": "light",
+              "match": [
+                "item:overhead-instruments:7"
+              ],
+              "text": "A lamp that lights the front instruments.",
+              "context": "Its brightness is set with the frontal instruments lights knob next to it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "The panel straight in front of the pilot.",
+      "panels": [
+        {
+          "id": "main-panel-gr",
+          "name": "Main instrument panel (GR1 / GR3)",
+          "src": "w1",
+          "text": "The RAF Jaguar's main panel: the head-up display, a projected moving map in the middle, the navigation control unit and round instruments for flying and for the two engines.",
+          "context": "The NAVWASS (navigation and weapon aiming sub-system) ties the HUD and the map together, so the pilot can find the target at low level without a navigator.",
+          "controls": [
+            {
+              "id": "hud-navwass",
+              "name": "Head-up display (NAVWASS)",
+              "type": "display",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "In the RAF Jaguar the head-up display is driven by the NAVWASS computer. It shows the steering to the next point and the aiming mark for the weapons.",
+              "context": "It is the same glass screen as described under the overhead instruments; the catalog lists it again with the RAF main panel.",
+              "src": "w1"
+            },
+            {
+              "id": "projected-map",
+              "name": "Projected map display",
+              "type": "display",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "A round screen in the middle of the panel that shows a real paper map on film. The film moves with the aircraft, so the aircraft's position is always in the centre.",
+              "context": "The pilot compares it with the ground outside to check where he is on a low-level route.",
+              "src": "w1"
+            },
+            {
+              "id": "ncu",
+              "name": "Navigation control unit",
+              "type": "keypad",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "A keypad and selectors where the pilot enters the points of the route and chooses the NAVWASS modes.",
+              "context": "The navigation computer uses these points to steer the pilot through the HUD and to move the map.",
+              "src": "w1"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:7"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "engine-gauges",
+              "name": "Engine RPM and EGT gauges",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:8"
+              ],
+              "text": "Gauges that show how fast each of the two Adour engines turns and how hot its exhaust gas is (EGT). They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel gauges",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:9"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:main-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            },
+            {
+              "id": "warning",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:main-panel:11"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When a warning comes on, the pilot looks here first to see which system needs attention."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lower-panel",
+      "where": "center-pedestal",
+      "name": "Lower panel",
+      "text": "Fuel, hydraulics, APU and engine start.",
+      "panels": [
+        {
+          "id": "lower-panel",
+          "name": "Lower panel",
+          "src": "a1",
+          "text": "The panel low in front of the pilot's knees with the fuel valves and pumps, the hydraulic transfer, the auxiliary power unit and the engine start.",
+          "context": "Most of these switches are used in the start-up: fuel first, then the auxiliary power unit, then the engines. Layout of the French Jaguar A; the RAF cockpit differs in detail.",
+          "controls": [
+            {
+              "id": "lp-valves",
+              "name": "Fuel low pressure valves switches",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:1"
+              ],
+              "text": "Switches for the low pressure fuel valves, the valves that let fuel flow from the tanks towards each engine or shut it off.",
+              "context": "They are opened before the engine start and closed to stop an engine or in case of an engine fire.",
+              "src": "a1"
+            },
+            {
+              "id": "hyd-transfer",
+              "name": "Hydraulic power transfer switches",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:2"
+              ],
+              "text": "Switches for the transfer of hydraulic power between the aircraft's hydraulic systems (oil under high pressure that moves heavy parts such as the gear and the control surfaces).",
+              "context": "JoyPro's sources give only the name 'hydraulic power transfer switches', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "fuel-pumps",
+              "name": "Fuel feed and transfer pumps switch",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:3"
+              ],
+              "text": "This switch runs the fuel pumps: the feed pumps that push fuel to the engines and the transfer pumps that move fuel between the tanks.",
+              "context": "The pumps are switched on before the engine start and stay on for the flight.",
+              "src": "a1"
+            },
+            {
+              "id": "egt-amplifiers",
+              "name": "EGT measure amplifier switches",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:4"
+              ],
+              "text": "Switches that power the amplifiers for the exhaust gas temperature (EGT) measurement, so the EGT gauges can show how hot the engines run.",
+              "context": "JoyPro's sources give only the name 'EGT measure amplifier switches', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "apu-mode",
+              "name": "APU mode switch",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:5"
+              ],
+              "text": "This switch sets the mode of the APU, a small extra engine that makes electricity and air before the main engines run.",
+              "context": "The APU is used to start the two main engines.",
+              "src": "a1"
+            },
+            {
+              "id": "apu-start",
+              "name": "APU starter button and light",
+              "type": "light",
+              "match": [
+                "item:lower-panel:6"
+              ],
+              "text": "A button that starts the APU, with a light that shows it is starting or running.",
+              "context": "It is one of the first steps of the engine start sequence.",
+              "src": "a1"
+            },
+            {
+              "id": "apu-bleed",
+              "name": "APU bleed air switch",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:7"
+              ],
+              "text": "This switch takes air from the running APU (bleed air) for the engine start.",
+              "context": "The air from the APU spins the main engines until they can run on their own.",
+              "src": "a1"
+            },
+            {
+              "id": "apu-bleed-light",
+              "name": "APU bleed air light",
+              "type": "light",
+              "match": [
+                "item:lower-panel:8"
+              ],
+              "text": "A light that shows when the APU is delivering bleed air.",
+              "context": "The pilot checks it before starting the engines with the APU's air.",
+              "src": "a1"
+            },
+            {
+              "id": "engine-start",
+              "name": "Engines starter switch",
+              "type": "switch",
+              "match": [
+                "item:lower-panel:9"
+              ],
+              "text": "This switch starts the main engines, using the APU.",
+              "context": "The pilot starts one engine after the other and watches the RPM and temperature gauges.",
+              "src": "a1"
+            },
+            {
+              "id": "rotation-lights",
+              "name": "Engines correct rotation lights",
+              "type": "light",
+              "match": [
+                "item:lower-panel:10"
+              ],
+              "text": "Lights that show that the engines are turning correctly during the start.",
+              "context": "JoyPro's sources give only the name 'engines correct rotation lights', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "cabin-altitude",
+              "name": "Cabin altitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:lower-panel:11"
+              ],
+              "text": "This gauge shows the air pressure inside the cockpit, given as a height (cabin altitude).",
+              "context": "It shows whether the pressurization (which keeps the cockpit air pressure comfortable at high altitude) works.",
+              "src": "a1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Lights, radio navigation, throttles, flaps and trims.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console",
+          "src": "a1",
+          "text": "The left side: outside lights, TACAN and VOR/ILS radio navigation, the stabilisation switches, the throttles, flaps and spoilers, trims, alarms, the second UHF radio and the IFF.",
+          "context": "The left hand works the throttles and reaches the other switches around them. Layout of the French Jaguar A; the RAF cockpit differs in detail.",
+          "controls": [
+            {
+              "id": "anti-flash-switch",
+              "name": "Anti-flash lights switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:1"
+              ],
+              "text": "A switch for the lights the add-on manual calls anti-flash lights.",
+              "context": "JoyPro's sources give only the name 'anti-flash lights switch', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "nav-lights",
+              "name": "Navigation lights switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "This switch turns on the navigation lights, the coloured lights on the wing tips and tail that show other pilots where the aircraft is and which way it flies.",
+              "context": "They are switched on for night flying and in poor visibility.",
+              "src": "a1"
+            },
+            {
+              "id": "formation-lights",
+              "name": "Formation / refuelling lights switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "This switch turns on the lights used for formation flying and air-to-air refuelling at night.",
+              "context": "They help other aircraft of the formation, or the pilot himself at the tanker, to see the shape of the aircraft.",
+              "src": "a1"
+            },
+            {
+              "id": "anti-collision",
+              "name": "Anti-collision lights switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "This switch turns on the flashing anti-collision lights.",
+              "context": "They make the aircraft easy to see for other traffic, on the ground and in the air.",
+              "src": "a1"
+            },
+            {
+              "id": "tacan",
+              "name": "TACAN panel",
+              "type": "other",
+              "match": [
+                "item:left-console:5"
+              ],
+              "text": "The controls of the TACAN, a radio beacon receiver that tells the plane its direction and distance to a beacon on the ground or on a ship.",
+              "context": "The pilot picks the beacon's channel here and follows the needle home. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "roll-stab",
+              "name": "Roll stabilisation switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:6"
+              ],
+              "text": "This switch turns on the automatic stabilisation in roll, a helper that keeps the wings steady.",
+              "context": "It is part of the stability augmentation that makes the Jaguar smoother to fly.",
+              "src": "a1"
+            },
+            {
+              "id": "pitch-yaw-stab",
+              "name": "Pitch and yaw stabilisation switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:7"
+              ],
+              "text": "This switch turns on the automatic stabilisation in pitch (nose up and down) and yaw (nose left and right).",
+              "context": "Together with the roll switch it switches on the helpers that keep the aircraft steady.",
+              "src": "a1"
+            },
+            {
+              "id": "vor-ils",
+              "name": "VOR / ILS panel",
+              "type": "other",
+              "match": [
+                "item:left-console:8"
+              ],
+              "text": "The controls of the VOR and ILS receivers: radio beacons that show the direction to a station, and radio beams at a runway that guide the plane down to land in bad weather.",
+              "context": "The pilot tunes the frequency here before an instrument approach. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "intercom",
+              "name": "Intercom panel",
+              "type": "other",
+              "match": [
+                "item:left-console:9"
+              ],
+              "text": "The panel that sets which radios and warning sounds the pilot hears in his helmet and how loud.",
+              "context": "The single switches of the intercom panel are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "spoilers-selector",
+              "name": "Spoilers selector",
+              "type": "selector",
+              "match": [
+                "item:left-console:11"
+              ],
+              "text": "This selector sets how the spoilers work, panels on top of the wing that pop up to help roll the aircraft and to spoil lift.",
+              "context": "The Jaguar rolls with spoilers and with its tail halves moving in opposite directions. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "flaps-selector",
+              "name": "Flaps selector",
+              "type": "selector",
+              "match": [
+                "item:left-console:12"
+              ],
+              "text": "This selector moves the flaps to their positions, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once fast enough.",
+              "src": "a1"
+            },
+            {
+              "id": "emergency-flaps",
+              "name": "Emergency flaps switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:13"
+              ],
+              "text": "This switch moves the flaps by the emergency system when the normal one has failed.",
+              "context": "It is used only in a failure, so it is kept apart from the normal flaps selector.",
+              "src": "a1"
+            },
+            {
+              "id": "emergency-pitch-trim",
+              "name": "Emergency pitch trim switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:14"
+              ],
+              "text": "This switch trims the nose up or down by a back-up circuit when the normal trim on the stick fails.",
+              "context": "Trim lets the aircraft fly straight without the pilot holding the stick.",
+              "src": "a1"
+            },
+            {
+              "id": "slats-manual",
+              "name": "Slats manual mode switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:15"
+              ],
+              "text": "This switch lets the pilot move the slats by hand instead of automatically. Slats are parts of the wing's front edge that slide out to give more lift at low speed.",
+              "context": "Normally the slats work by themselves; manual mode is for failures or special cases.",
+              "src": "a1"
+            },
+            {
+              "id": "rudder-trim-indicator",
+              "name": "Rudder trim indicator",
+              "type": "indicator",
+              "match": [
+                "item:left-console:16"
+              ],
+              "text": "This indicator shows the position of the rudder trim.",
+              "context": "The pilot checks it before take-off, where the trim should be centred."
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:17"
+              ],
+              "text": "This switch trims the rudder, so the nose points straight without the pilot pressing a pedal.",
+              "context": "It is useful when the aircraft carries uneven loads or flies on one engine.",
+              "src": "a1"
+            },
+            {
+              "id": "refuel-aoa-lights",
+              "name": "Refuelling / AoA lights intensity knob",
+              "type": "knob",
+              "match": [
+                "item:left-console:18"
+              ],
+              "text": "Turning this knob sets the brightness of the refuelling lights and the angle of attack lights.",
+              "context": "The pilot turns them down at night so they do not dazzle."
+            },
+            {
+              "id": "taxi-landing-lights",
+              "name": "Taxi and landing lights switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:19"
+              ],
+              "text": "This switch turns on the bright lights for taxiing on the ground and for landing.",
+              "context": "The pilot uses them at night on the airfield and in the final approach.",
+              "src": "a1"
+            },
+            {
+              "id": "aoa-alarm",
+              "name": "AoA alarm switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:20"
+              ],
+              "text": "This switch turns on the alarm that warns when the angle of attack gets too high, that is, when the wing is close to losing its lift.",
+              "context": "The warning helps the pilot avoid a stall in tight turns and at low speed.",
+              "src": "a1"
+            },
+            {
+              "id": "uhf2-preset",
+              "name": "UHF2 channel preset knob",
+              "type": "knob",
+              "match": [
+                "item:left-console:21"
+              ],
+              "text": "This knob picks a stored channel of the second UHF radio, like a station button on a car radio.",
+              "context": "The pilot changes channel when he moves from one controller to the next.",
+              "src": "a1"
+            },
+            {
+              "id": "uhf2-panel",
+              "name": "UHF2 panel",
+              "type": "other",
+              "match": [
+                "item:left-console:22"
+              ],
+              "text": "The control panel of the second UHF radio, a radio for talking to other aircraft and the tower.",
+              "context": "The single switches of the UHF2 panel are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "iff",
+              "name": "IFF (transponder) panel",
+              "type": "other",
+              "match": [
+                "item:left-console:23"
+              ],
+              "text": "The IFF box answers 'who are you?' questions from radars with a code number, so friendly radars and fighters know this aircraft is a friend.",
+              "context": "The pilot sets the codes before the flight. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "integrated-lights",
+              "name": "Integrated lights knob",
+              "type": "knob",
+              "match": [
+                "item:left-console:24"
+              ],
+              "text": "Turning this knob sets the integrated lights, the small lamps built into the panels that light their labels.",
+              "context": "With it the pilot can read the switch labels at night."
+            },
+            {
+              "id": "trim-breakers",
+              "name": "Yaw / roll trim electrical breakers",
+              "type": "other",
+              "match": [
+                "item:left-console:25"
+              ],
+              "text": "Circuit breakers for the yaw and roll trim motors. They cut the power if a trim motor runs away or draws too much.",
+              "context": "If a trim keeps running by itself, cutting its power stops it.",
+              "src": "a1"
+            },
+            {
+              "id": "altitude-alarm",
+              "name": "Altitude alarm switch",
+              "type": "switch",
+              "match": [
+                "item:left-console:26"
+              ],
+              "text": "This switch turns on the alarm that warns the pilot when he flies below a set height.",
+              "context": "At very low level a moment of distraction is dangerous, so the alarm is a safety net.",
+              "src": "a1"
+            },
+            {
+              "id": "probe-lights",
+              "name": "Retracted probe refuelling lights setting",
+              "type": "light",
+              "match": [
+                "item:left-console:27"
+              ],
+              "text": "A setting for the refuelling lights while the refuelling probe is retracted.",
+              "context": "JoyPro's sources give only the name 'retracted probe refuelling lights setting', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "crash-bar",
+              "name": "Crash bar",
+              "type": "other",
+              "match": [
+                "item:left-console:28"
+              ],
+              "text": "A metal bar around the throttle area that protects the levers and switches.",
+              "context": "It stops the pilot's arm or a loose object from moving the throttles by accident.",
+              "src": "a1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "upper-left",
+      "where": "left-side",
+      "name": "Upper left console",
+      "text": "Afterburner switches and the rarely used handles.",
+      "panels": [
+        {
+          "id": "upper-left-console",
+          "name": "Upper left console",
+          "src": "a1",
+          "text": "The upper part of the left wall with the afterburner switches, the tailhook, canopy jettison and drag chute handles.",
+          "context": "These handles are used rarely, in special situations such as a short runway or an emergency. Layout of the French Jaguar A; the RAF cockpit differs in detail.",
+          "controls": [
+            {
+              "id": "modulated-ab",
+              "name": "Modulated afterburner switches",
+              "type": "switch",
+              "match": [
+                "item:upper-left-console:1"
+              ],
+              "text": "Switches for the modulated (part-power) afterburner of the Adour engines, so the afterburner can be used at less than full strength.",
+              "context": "The afterburner burns extra fuel at the back of the engine for more push; part power saves fuel. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "tablet",
+              "name": "Tablet switch (simulator addition)",
+              "type": "switch",
+              "match": [
+                "item:upper-left-console:2"
+              ],
+              "text": "This switch is not part of the real aircraft. The MSFS add-on uses it to show or hide its tablet (an in-game menu).",
+              "context": "Real Jaguar pilots had no such switch; it only exists in the simulator.",
+              "src": "a1"
+            },
+            {
+              "id": "tailhook",
+              "name": "Tailhook handle",
+              "type": "handle",
+              "match": [
+                "item:upper-left-console:3"
+              ],
+              "text": "This handle lowers the tail hook, the hook that can catch an arresting wire across the runway.",
+              "context": "It is used to stop quickly when the brakes fail or the runway is short.",
+              "src": "a1"
+            },
+            {
+              "id": "canopy-jettison",
+              "name": "Canopy jettison handle",
+              "type": "handle",
+              "match": [
+                "item:upper-left-console:4"
+              ],
+              "text": "Pulling this handle throws the canopy, the clear glass roof, off the aircraft.",
+              "context": "It is an emergency handle, for example to get out quickly after a landing accident.",
+              "src": "a1"
+            },
+            {
+              "id": "drag-chute",
+              "name": "Drag chute handle",
+              "type": "handle",
+              "match": [
+                "item:upper-left-console:5"
+              ],
+              "text": "Pulling this handle opens a parachute at the tail after touchdown to slow the aircraft down.",
+              "context": "It shortens the landing run; the chute is dropped once the aircraft has slowed down.",
+              "src": "a1"
+            },
+            {
+              "id": "anti-flash-light-ul",
+              "name": "Anti-flash light",
+              "type": "light",
+              "match": [
+                "item:upper-left-console:6"
+              ],
+              "text": "A light on the upper left console that the add-on manual calls an anti-flash light.",
+              "context": "JoyPro's sources give only the name 'anti-flash light', not how the pilot uses it.",
+              "src": "a1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, weapons computer, lights and air.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "src": "a1",
+          "text": "The right side: electrical power, the ballistic computer and weapon selection, the intervalometer, lighting knobs, defrost, canopy seal and air conditioning.",
+          "context": "Electricity is switched on here first; the weapon panels are set before the attack. Layout of the French Jaguar A; the RAF cockpit differs in detail.",
+          "controls": [
+            {
+              "id": "battery",
+              "name": "Master battery switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "This switch connects the battery, which stores electricity for when the engines are off.",
+              "context": "It is the first switch of the start-up and the last one when leaving the aircraft.",
+              "src": "a1"
+            },
+            {
+              "id": "rectifiers",
+              "name": "Rectifiers switches",
+              "type": "switch",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Switches for the rectifiers, which turn the alternating current of the alternators into the direct current that many systems need.",
+              "context": "They are switched on after the engines and alternators run.",
+              "src": "a1"
+            },
+            {
+              "id": "alternators",
+              "name": "Alternators switches",
+              "type": "switch",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "Switches for the alternators, the generators driven by the engines that make electricity in flight.",
+              "context": "Once the engines run, the alternators take over from the battery.",
+              "src": "a1"
+            },
+            {
+              "id": "pitot-heat",
+              "name": "Pitot heat switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "This switch heats the small tubes outside that measure speed, so they do not freeze (pitot heat).",
+              "context": "Without it, ice could block the tubes and the speed reading would be wrong.",
+              "src": "a1"
+            },
+            {
+              "id": "standby-adi-power",
+              "name": "Secondary attitude indicator power switch",
+              "type": "switch",
+              "match": [
+                "item:right-console:5"
+              ],
+              "text": "This switch powers the secondary (backup) attitude indicator.",
+              "context": "The backup instrument keeps showing the attitude if the main one fails.",
+              "src": "a1"
+            },
+            {
+              "id": "ballistic-computer",
+              "name": "Ballistic computer panel",
+              "type": "other",
+              "match": [
+                "item:right-console:6"
+              ],
+              "text": "The panel where the pilot sets the ballistic data of the weapons, the numbers the aiming computer needs to know where a bomb or rocket will fall.",
+              "context": "With the right data the HUD's aiming mark shows the correct impact point. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "payload",
+              "name": "Payload selection panel",
+              "type": "other",
+              "match": [
+                "item:right-console:7"
+              ],
+              "text": "The panel for choosing the weapon stations (the pylons under wings and fuselage) and the stores on them.",
+              "context": "The pilot chooses here what will be released before pressing the release button. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "intervalometer",
+              "name": "Intervalometer panel",
+              "type": "other",
+              "match": [
+                "item:right-console:8"
+              ],
+              "text": "The intervalometer sets the time between bombs when several are dropped one after the other.",
+              "context": "The spacing decides how far apart the bombs land along the target. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "defrost",
+              "name": "Windshield / cockpit defrost handle",
+              "type": "handle",
+              "match": [
+                "item:right-console:9"
+              ],
+              "text": "This handle blows warm air onto the windshield and into the cockpit to clear mist and frost.",
+              "context": "The pilot uses it when the glass mists up, for example in a fast descent into humid air.",
+              "src": "a1"
+            },
+            {
+              "id": "canopy-seal",
+              "name": "Canopy seal and pressurisation lever",
+              "type": "lever",
+              "match": [
+                "item:right-console:10"
+              ],
+              "text": "This lever inflates the seal around the canopy and switches on the cockpit pressurisation.",
+              "context": "The canopy must be sealed before the cockpit can hold its pressure at height.",
+              "src": "a1"
+            },
+            {
+              "id": "red-lights-front",
+              "name": "Front panel red lights knob",
+              "type": "knob",
+              "match": [
+                "item:right-console:11"
+              ],
+              "text": "Turning this knob sets the brightness of the red lights on the front panel.",
+              "context": "Red light keeps the pilot's eyes used to the dark at night."
+            },
+            {
+              "id": "uv-lights-front",
+              "name": "Front panel UV lights knob",
+              "type": "knob",
+              "match": [
+                "item:right-console:12"
+              ],
+              "text": "Turning this knob sets the ultraviolet lights that make the glowing paint of the front instruments shine in the dark.",
+              "context": "It is one of the ways to light the instruments for night flying."
+            },
+            {
+              "id": "red-lights-consoles",
+              "name": "Consoles red lights knob",
+              "type": "knob",
+              "match": [
+                "item:right-console:13"
+              ],
+              "text": "Turning this knob sets the red lights of the side consoles.",
+              "context": "The pilot balances it with the front panel lights so all panels are readable at night."
+            },
+            {
+              "id": "air-conditioning",
+              "name": "Air conditioning panel",
+              "type": "other",
+              "match": [
+                "item:right-console:14"
+              ],
+              "text": "The panel for the cockpit's heating and cooling (environmental control).",
+              "context": "The pilot sets a comfortable temperature; on hot days at low level the cooling matters a lot. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "breakers",
+              "name": "Main electrical breakers panel",
+              "type": "other",
+              "match": [
+                "item:right-console:15"
+              ],
+              "text": "A panel of circuit breakers, safety switches that cut power when something draws too much; they pop out and can be pushed back in.",
+              "context": "If a system stops working, the pilot can check here whether its breaker has popped.",
+              "src": "a1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "a1",
+          "text": "The centre stick with the trim mushroom, the gun trigger and the weapon release button.",
+          "context": "The grip functions come from the add-on manual, which was written from real Jaguar A and GR1 documents.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. The Jaguar rolls with spoilers on the wings and with its tail halves moving in opposite directions (differential tailerons).",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Trim mushroom knob",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll. It is shaped like a small mushroom on top of the grip.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "a1"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the two cannons. The weapons safety knob must be at FIRE.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go.",
+              "src": "a1"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches the bombs, rockets or missile.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way.",
+              "src": "a1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "src": "a1",
+          "text": "The two throttle levers for the two Adour engines, with the airbrake toggle, the spoiler switch, the flare buttons, the relight buttons and the radio button.",
+          "context": "The left hand works both levers together; the buttons on them let the pilot react without letting go.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:10"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left Adour engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push. From the shut-off position it goes through idle and maximum dry power to the afterburner.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right Adour engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft)",
+                  "text": "The airbrakes open and stay hydraulically locked."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "A toggle switch at the end of the right throttle lever. It opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The airbrakes are held open by the hydraulics until the switch is moved back.",
+              "src": "a1"
+            },
+            {
+              "id": "spoilers-switch",
+              "name": "Spoilers switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.spoilers"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Spoiler function selected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Spoiler function not selected."
+                }
+              ],
+              "text": "A switch on the throttles that controls the spoilers, the panels on top of the wings.",
+              "context": "The catalog lists it as spoiler control; how it works with the spoilers selector on the console is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "flares",
+              "name": "Flare fire buttons",
+              "type": "button",
+              "match": [
+                "control:throttle.button.cms"
+              ],
+              "text": "Two buttons on the throttles that fire flares, hot burning decoys that pull heat-seeking missiles away from the aircraft.",
+              "context": "The pilot presses them when a missile is fired at him or before flying over a dangerous area.",
+              "src": "a1"
+            },
+            {
+              "id": "relight",
+              "name": "Engine restart buttons",
+              "type": "button",
+              "match": [
+                "control:throttle.button.relight"
+              ],
+              "text": "One button per engine on the throttles. Pressing it relights (restarts) that engine in flight if it has stopped.",
+              "context": "An engine can flame out, for example after swallowing a bird; the relight button gives it a new spark.",
+              "src": "a1"
+            },
+            {
+              "id": "transmit",
+              "name": "Radio transmit button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

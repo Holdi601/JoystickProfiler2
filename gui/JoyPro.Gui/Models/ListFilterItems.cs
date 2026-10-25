@@ -10,8 +10,12 @@ namespace JoyPro.Gui.Models;
 // built once per relation list so a filter change is only set lookups.
 public sealed class FilterSubject
 {
-    public FilterSubject(string name, IEnumerable<string> groups, IEnumerable<string> gamePlanes, string device, bool isBound, bool isAxis, string searchText)
+    public FilterSubject(string name, IEnumerable<string> groups, IEnumerable<string> gamePlanes, string device, bool isBound, bool isAxis, string searchText,
+        IEnumerable<string>? actionTitles = null)
     {
+        string titles = string.Join("\u0001", (actionTitles ?? []).Where(t => !string.IsNullOrWhiteSpace(t)));
+        NameText = (name ?? string.Empty).Trim().ToLowerInvariant();
+        ActionsText = titles.Length == 0 ? NameText : NameText + "\u0001" + titles.ToLowerInvariant();
         Name = name ?? string.Empty;
         Groups = new HashSet<string>((groups ?? []).Where(g => g.Length > 0), StringComparer.OrdinalIgnoreCase);
         if (Groups.Count == 0)
@@ -21,8 +25,14 @@ public sealed class FilterSubject
         Device = isBound ? (device ?? string.Empty).Trim() : string.Empty;
         IsBound = isBound;
         IsAxis = isAxis;
-        SearchText = (searchText ?? string.Empty).ToLowerInvariant();
+        SearchText = (titles.Length == 0 ? searchText ?? string.Empty : (searchText ?? string.Empty) + "\u0001" + titles).ToLowerInvariant();
     }
+
+    // Lower case: the relation's name (search scope "Name").
+    public string NameText { get; }
+
+    // Lower case: the name and the titles of its actions (search scope "Name + actions", the default).
+    public string ActionsText { get; }
 
     // The engine's name for relations without a group.
     public const string NoGroup = "<none>";
@@ -44,7 +54,7 @@ public sealed class FilterSubject
 
     public bool IsAxis { get; }
 
-    // Lower case: name, games, aircraft, groups, device, input, modifiers.
+    // Lower case: name, action titles, games, aircraft, groups, device, input, modifiers (search scope "Everything").
     public string SearchText { get; }
 
     public static string Key(string game, string plane) => game + "|" + plane;
@@ -229,4 +239,19 @@ public sealed class ListFilterState
 
     // "all", "axis", "button"
     public string Kind { get; set; } = "all";
+
+    // What the typed search looks at: "name", "actions" (name + action titles) or "all".
+    public string SearchScope { get; set; } = ListSearchScope.NameAndActions;
+}
+
+// The search scopes of the Relations and Binds pages' search box (the box next to it).
+public static class ListSearchScope
+{
+    public const string Name = "name";
+    public const string NameAndActions = "actions";
+    public const string Everything = "all";
+
+    public static readonly string[] All = [Name, NameAndActions, Everything];
+
+    public static string Normalize(string? value) => value is Name or Everything ? value : NameAndActions;
 }

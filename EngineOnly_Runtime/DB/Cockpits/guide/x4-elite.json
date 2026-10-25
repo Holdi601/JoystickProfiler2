@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-elite",
+  "title": "Elite (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-elite"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "S - Small Ships (Military) (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/Objects%20in%20the%20Game%20Universe/Ships/S%20-%20Small%20Ships%20%28Military%29/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Elite is a small Argon interceptor with one forward gun. It is flown from a single-pilot cockpit and uses the shared X4 flight controls.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Elite: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Elite that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Elite are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Elite is flown from a cockpit seat, as small and medium ships are. The pilot sits here and has all the controls of this guide.",
+              "context": "From this seat the pilot sees the HUD, the radar and the monitors of the Elite.",
+              "src": "c1"
+            },
+            {
+              "id": "guns",
+              "name": "Forward gun",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Elite has one forward gun that point where the nose points. The pilot fires them with the trigger and aims by turning the whole ship.",
+              "context": "The aiming mark in front of the target on the HUD shows where to point the nose.",
+              "src": "w1"
+            },
+            {
+              "id": "class",
+              "name": "Ship class",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "X4 sorts ships by size: S (small), M (medium), L (large) and XL (extra large). The Elite is: S-class interceptor.",
+              "context": "The size decides whether the ship is flown from a cockpit or a bridge and where it can dock.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

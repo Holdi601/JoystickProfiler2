@@ -28,7 +28,7 @@ nodes with min/max normalisation, group nodes, Bezier curve nodes, output nodes 
 | Graph files | `<data>\Ffb\Telemetry\Graphs\*.jpffb.json` |
 | Last status of the process | `<data>\Ffb\Telemetry\status.json` |
 
-`<data>` is `JOYPRO_DATA_DIR`, else `%LOCALAPPDATA%\JoyPro` (the engine's data folder).
+`<data>` is `JOYPRO_DATA_DIR`, else `%LOCALAPPDATA%\JoyPro2` (the engine's data folder).
 
 ## How it runs
 

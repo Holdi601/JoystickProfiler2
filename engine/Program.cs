@@ -131,9 +131,7 @@ namespace JoyPro.Engine
         {
             try
             {
-                string root = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-                if (string.IsNullOrWhiteSpace(root))
-                    root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro2");
+                string root = global::JoyPro.Logging.JoyProDataFolder.Root();
                 // Only engines the app started (JOYPRO_CALLER=gui) land where the app reports them; command-line and tool
                 // runs keep theirs in CrashReports\cli, so the app does not show the crashes of someone else's scripts.
                 string folder = Path.Combine(root, "CrashReports");
@@ -514,7 +512,11 @@ namespace JoyPro.Engine
             switch (action)
             {
                 case "list":
-                    return EmitRelations(outPath, textOutput, command.Skip(1));
+                    {
+                        // --titles: every relation with the titles of its actions (the GUI's relation search).
+                        bool titles = command.Skip(1).Any(t => string.Equals(t, "--titles", StringComparison.OrdinalIgnoreCase));
+                        return EmitRelations(outPath, textOutput, command.Skip(1).Where(t => !string.Equals(t, "--titles", StringComparison.OrdinalIgnoreCase)).ToList(), titles);
+                    }
                 case "show":
                     return ShowRelation(command, outPath, textOutput);
                 case "add":
@@ -576,6 +578,8 @@ namespace JoyPro.Engine
                     return CheckRelationAircraft(command, outPath, textOutput);
                 case "duplicates":
                     return RelationDuplicatesCommand(command, outPath, textOutput);
+                case "merge-copies":
+                    return RelationMergeCopiesCommand(command, outPath, textOutput);
                 case "meanings":
                     {
                         // relations meanings [--game g] [--top N]: ids with another meaning in some aircraft, per game.
@@ -3717,16 +3721,14 @@ namespace JoyPro.Engine
             int legendTableWidth = PopOptionInt(args, "--legend-width", 460);
             int legendMaxRows = PopOptionInt(args, "--legend-max-rows", 20);
             float legendFontSize = PopOptionFloat(args, "--legend-font-size", 11f);
-            string modifierColors = PopOptionValue(args, "--modifier-colors");
+            // The sheet style: --sheet-style and the single options (font, colours, markers, modifier colours).
+            JoyPro.DeviceReference.SheetStyle sheetStyleOptions = PopSheetStyleOptions(args, out string sheetStyleError);
+            if (sheetStyleError.Length > 0)
+                return Fail(sheetStyleError);
             string buttonSymbol = PopOptionValue(args, "--button-symbol");
             string axisSymbol = PopOptionValue(args, "--axis-symbol");
             string povSymbol = PopOptionValue(args, "--pov-symbol");
             string sliderSymbol = PopOptionValue(args, "--slider-symbol");
-            string labelFont = PopOptionValue(args, "--font");
-            float labelFontSize = PopOptionFloat(args, "--font-size", 0f);
-            string labelTextColor = PopOptionValue(args, "--text-color");
-            string labelOutlineColor = PopOptionValue(args, "--outline-color");
-            string labelBackground = PopOptionValue(args, "--label-background");
             string sheetStyle = PopOptionValue(args, "--style");
             int printWidth = PopOptionInt(args, "--print-width", 3508);
             bool combinePages = PopOptionBoolean(args, "--combine", false, out _);
@@ -3735,6 +3737,8 @@ namespace JoyPro.Engine
                 JoyPro.DeviceReference.DrawingStyle.FromSettings(JoyPro.DeviceReference.DeviceCatalog.DataRoot(), true));
             if (drawingStyle != null)
                 EngineCalloutRenderer.ExportStyle = drawingStyle;
+            else if (sheetStyleOptions != null && sheetStyleOptions.Drawing.Length > 0)
+                EngineCalloutRenderer.ExportStyle = JoyPro.DeviceReference.DrawingStyle.Parse(sheetStyleOptions.Drawing);
 
             if (args.Count > 0)
                 return Fail("Unknown layout render argument(s): " + string.Join(" ", args));
@@ -3770,17 +3774,21 @@ namespace JoyPro.Engine
                     LegendTableWidth = legendTableWidth,
                     LegendMaxRows = legendMaxRows,
                     LegendFontSize = legendFontSize,
-                    ModifierColorCsv = modifierColors ?? string.Empty,
+                    ModifierColorCsv = sheetStyleOptions == null ? string.Empty : sheetStyleOptions.ModifierCsv,
                     ButtonSymbol = string.IsNullOrWhiteSpace(buttonSymbol) ? "circle" : buttonSymbol.Trim(),
                     AxisSymbol = string.IsNullOrWhiteSpace(axisSymbol) ? "diamond" : axisSymbol.Trim(),
                     PovSymbol = string.IsNullOrWhiteSpace(povSymbol) ? "triangle" : povSymbol.Trim(),
-                    FontFamily = labelFont ?? string.Empty,
-                    FontSize = labelFontSize,
-                    TextColor = labelTextColor ?? string.Empty,
-                    OutlineColor = labelOutlineColor ?? string.Empty,
-                    LabelBackground = labelBackground ?? string.Empty,
+                    FontFamily = sheetStyleOptions == null ? string.Empty : sheetStyleOptions.FontFamily,
+                    FontSize = sheetStyleOptions == null ? 0f : (float)sheetStyleOptions.FontSize,
+                    TextColor = sheetStyleOptions == null ? string.Empty : sheetStyleOptions.TextColor,
+                    OutlineColor = sheetStyleOptions == null ? string.Empty : sheetStyleOptions.OutlineColor,
+                    LabelBackground = sheetStyleOptions == null ? string.Empty : sheetStyleOptions.LabelBackground,
+                    Style = sheetStyleOptions,
                     SliderSymbol = string.IsNullOrWhiteSpace(sliderSymbol) ? "bar" : sliderSymbol.Trim(),
-                    LightStyle = string.Equals(sheetStyle, "light", StringComparison.OrdinalIgnoreCase),
+                    // Without --style the page colour of the sheet style says whether the page is dark.
+                    LightStyle = string.IsNullOrWhiteSpace(sheetStyle) && sheetStyleOptions != null
+                        ? !sheetStyleOptions.IsDarkPage(true)
+                        : string.Equals(sheetStyle, "light", StringComparison.OrdinalIgnoreCase),
                     PrintWidth = Math.Max(0, Math.Min(12000, printWidth)),
                     Combine = combinePages
                 });
@@ -3841,6 +3849,8 @@ namespace JoyPro.Engine
             bool importSaturationX = PopFlag(args, "--import-saturation-x") || PopFlag(args, "--import-satx");
             bool importSaturationY = PopFlag(args, "--import-saturation-y") || PopFlag(args, "--import-saty");
             bool confirmSuggestions = PopOptionBoolean(args, "--confirm", true, out bool confirmProvided);
+            bool onlyConnected = PopOptionBoolean(args, "--only-connected", false, out bool onlyConnectedProvided);
+            bool mergeSameName = PopOptionBoolean(args, "--merge-same-name", true, out bool mergeSameNameProvided);
 
             string path = null;
             if (args.Count > 0 && !args[0].StartsWith("--", StringComparison.Ordinal))
@@ -3866,7 +3876,9 @@ namespace JoyPro.Engine
                 importSaturationY ||
                 includeKeyboardProvided ||
                 importKeyboardProvided ||
-                ignoreEasyPlanesProvided;
+                ignoreEasyPlanesProvided ||
+                onlyConnectedProvided ||
+                mergeSameNameProvided;
             bool hasExportOnlyOptions =
                 !string.IsNullOrWhiteSpace(mode) ||
                 keepKeyboardDefaultsProvided ||
@@ -3936,6 +3948,8 @@ namespace JoyPro.Engine
             importOptions.ImportDeadzone = importDeadzone;
             importOptions.ImportSaturationX = importSaturationX;
             importOptions.ImportSaturationY = importSaturationY;
+            importOptions.OnlyConnected = onlyConnected;
+            importOptions.MergeSameNameDevices = mergeSameName;
             importOptions.StatusSink = BuildStatusSink("dcs " + action);
 
             EngineDcsImportResult result;
@@ -4395,10 +4409,12 @@ namespace JoyPro.Engine
             }
         }
 
-        private static int EmitRelations(string outPath, bool textOutput, IEnumerable<string> queryTokens)
+        private static int EmitRelations(string outPath, bool textOutput, IEnumerable<string> queryTokens, bool titles = false)
         {
             string query = JoinQuery(queryTokens);
             EngineRelationsDocument doc = BuildFilteredRelationsDocument(query);
+            if (titles)
+                EngineSerialization.AddTitleLists(doc);
             string payload = textOutput ? EngineSerialization.ToText(doc) : EngineSerialization.ToJson(doc);
             EmitPayload(payload, outPath);
             return 0;
@@ -14191,6 +14207,8 @@ namespace JoyPro.Engine
                         return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
                     if (action == "duplicates")
                         return command.Any(a => DuplicatesMutatingFlags.Contains(a));
+                    if (action == "merge-copies")
+                        return !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
                     if (action == "function")
                         return command.Any(a => string.Equals(a, "--set", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "--none", StringComparison.OrdinalIgnoreCase) ||
                                                 string.Equals(a, "--auto", StringComparison.OrdinalIgnoreCase));
@@ -14430,8 +14448,8 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine profile history restore <id> | undo | redo   (writes a version back into the profile; that is a version too, so it can be undone)");
             Console.WriteLine("  engine profile history keep <id> [on|off] | checkpoint [--label <text>]   (a kept version is never cleaned up; a checkpoint keeps the profile as it is now)");
             Console.WriteLine("  engine profile history prune [--all] [--dry-run] | usage [--all]   (clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total)");
-            Console.WriteLine("  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]");
-            Console.WriteLine("  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]");
+            Console.WriteLine("  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]");
+            Console.WriteLine("  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]");
             Console.WriteLine("  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included)");
             Console.WriteLine("  engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)");
             Console.WriteLine("  engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)");
@@ -14534,11 +14552,11 @@ namespace JoyPro.Engine
                     Console.WriteLine("      refresh-db also lists the installed aircraft in DB\\" + registryGame.DbFolder + "\\aircraft.tsv (engine db planes --game " + registryGame.GameId + "; --node " + registryGame.GameId + ":<action>:<aircraft key> limits a relation to one);" +
                                       " the game's presets apply to every aircraft, so export writes the relations for all aircraft plus, with --aircraft <aircraft-key>, those limited to that aircraft");
             }
-            Console.WriteLine("  engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--modifier-colors <modifier=#RRGGBB,...>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--font <family>] [--font-size <n>] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)");
-            Console.WriteLine("  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)");
+            Console.WriteLine("  engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] " + SheetStyleUsage + " [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the sheet style options colour the page, tables, lines, markers and labels, a device's own style in its layout wins; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)");
+            Console.WriteLine("  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] " + SheetStyleUsage + "   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)");
             Console.WriteLine("  engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)");
             Console.WriteLine("  engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)");
-            Console.WriteLine("  engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)");
+            Console.WriteLine("  engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] " + SheetStyleUsage + "   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)");
             Console.WriteLine("  engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]");
             Console.WriteLine("  engine layout identify [--device <name>] [--devices <csv>] [--connected]   (vendor/model from VID:PID and HID name, picture search link)");
             Console.WriteLine("  engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]");
@@ -14550,7 +14568,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)");
             Console.WriteLine("  engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)");
             Console.WriteLine("  engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)");
-            Console.WriteLine("  engine relations list [filter]");
+            Console.WriteLine("  engine relations list [filter] [--titles]   (--titles: each relation with the titles of its actions)");
             Console.WriteLine("  engine relations show <relation-name>");
             Console.WriteLine("  engine relations add <name> [--axis|--button|--type axis|button] [--node game:id[:plane1|plane2]] [--from relation] [--group g] [--device d --input i --modifier m]");
             Console.WriteLine("  engine relations group list [relation-name]");
@@ -14630,6 +14648,9 @@ namespace JoyPro.Engine
             Console.WriteLine("      a fix for many: a preview of every change, applied with --apply as one undo step; --changes \"key=>relation;key=>-\"");
             Console.WriteLine("      applies a preview's ticked changes exactly; --apply-suggested = --rule suggested --apply; --forget-kept, --include-kept,");
             Console.WriteLine("      --keys-only, --evaluate <older.pr0file> [--no-history] (the suggestions against the version before the duplicates).");
+            Console.WriteLine("  engine relations merge-copies [--dry-run] [--name <relation>]");
+            Console.WriteLine("      relations an import copied (\"<name>__N\") with the same device, input and modifiers as \"<name>\" are merged back");
+            Console.WriteLine("      into one: their aircraft, groups and per-aircraft tuning; one undo step. --dry-run lists them only.");
             Console.WriteLine("  engine relations meanings [--game g] [--top N]");
             Console.WriteLine("      per game: ids shared by several aircraft lists and how many of them mean something else in some aircraft.");
             Console.WriteLine("  engine relations action-info --coverage [--game g] [--all-examples]");
@@ -14694,7 +14715,7 @@ namespace JoyPro.Engine
             Console.WriteLine("      per hand role (a second right-hand stick is left out); with --overwrite the controls used before win unless --no-style;");
             Console.WriteLine("      --explain lists the best candidates of a relation and what occupies them.");
             Console.WriteLine("  engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)");
-            Console.WriteLine("  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)");
+            Console.WriteLine("  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)");
             Console.WriteLine("  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]");
             Console.WriteLine("      the cockpit database (DB/Cockpits, docs/cockpits.md): stick and throttle of real and fictional aircraft per variant with");
             Console.WriteLine("      their functions and JoyPro function ids, JoyPro's drawings, panels, sources and photo links; get = the layout the setup");

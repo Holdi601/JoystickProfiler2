@@ -1,0 +1,202 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-a-wing",
+  "title": "RZ-1 A-wing (Star Wars, Return of the Jedi)",
+  "variants": [
+    "a-wing-rz-1"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "A-wing (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/A-wing"
+    },
+    {
+      "id": "s2",
+      "title": "A-wing Fighter (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/a-wing-fighter"
+    },
+    {
+      "id": "s3",
+      "title": "Return of the Jedi (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Return_of_the_Jedi"
+    }
+  ],
+  "intro": "The A-wing is a fictional Rebel interceptor from the Star Wars films, first seen in Return of the Jedi: small, very fast, with two laser cannons that can swivel. The pilot sits in a tight cockpit at the nose of a wedge-shaped hull, with a wide canopy and no droid socket.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The wide canopy over the pilot.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s2",
+          "text": "The clear roof over the pilot, with a wide view forward.",
+          "context": "A fast interceptor needs a good view to find and chase enemy fighters.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "The canopy gives the pilot a wide view, which a fast interceptor needs. Unlike the X-wing there is no droid socket behind.",
+              "context": "Without a droid the pilot handles navigation and problems alone.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "A compact panel under the wide canopy.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s3",
+          "text": "A compact panel with small screens and lights in front of the pilot.",
+          "context": "The pilot looks at it briefly between looks outside.",
+          "controls": [
+            {
+              "id": "screens",
+              "name": "Forward screens",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Small displays in front of the pilot show targeting and sensor pictures.",
+              "context": "They help the pilot find enemy fighters and aim at them.",
+              "src": "s3"
+            },
+            {
+              "id": "lights",
+              "name": "Status lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "Small warning and system lights on the A-wing's panel.",
+              "context": "The film does not explain each light; they show whether something is wrong.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consoles",
+      "where": "left-console",
+      "name": "Side consoles",
+      "text": "Switches beside the seat.",
+      "panels": [
+        {
+          "id": "side-consoles",
+          "name": "Side consoles",
+          "db": "side-consoles",
+          "src": "s2",
+          "text": "Switches beside the seat and the mounts of the cannons.",
+          "context": "The film shows the switches but not what each one does.",
+          "controls": [
+            {
+              "id": "switches",
+              "name": "Switch banks",
+              "type": "switch",
+              "match": [
+                "item:side-consoles:1"
+              ],
+              "text": "Toggle switches on both sides of the A-wing pilot's seat.",
+              "context": "They belong to the fighter's systems; the film does not name them.",
+              "src": "s3"
+            },
+            {
+              "id": "cannon-mounts",
+              "name": "Cannon mounts",
+              "type": "other",
+              "match": [
+                "item:side-consoles:2"
+              ],
+              "text": "The two laser cannons at the wingtips can pivot to aim, as the Databank says. The control for this is not shown.",
+              "context": "Swivelling cannons let the A-wing hit targets that are not straight ahead.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Flight controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight controls",
+          "src": "s3",
+          "text": "The hand controls in front of the pilot.",
+          "context": "The screen shows them only briefly.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Flight controls",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The flight controls tip the nose up and down and roll the fighter left and right.",
+              "context": "The A-wing is very agile, so small movements change direction fast.",
+              "src": "s3"
+            },
+            {
+              "id": "fire",
+              "name": "Fire control",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A control on the flight grips fires the two laser cannons.",
+              "context": "The cannons sit at the wingtips and can swivel.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s3",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "Return of the Jedi does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

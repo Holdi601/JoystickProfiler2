@@ -1,0 +1,102 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "ed-imperial-cutter",
+  "title": "Imperial Cutter (Elite Dangerous)",
+  "inherits": "game-elite-dangerous",
+  "variants": [
+    "ed-imperial-cutter"
+  ],
+  "games": [
+    "EliteDangerous"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Imperial Cutter (Coriolis ship data)",
+      "kind": "reference",
+      "url": "https://github.com/EDCD/coriolis-data/blob/master/ships/imperial_cutter.json"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Imperial Cutter by Gutamaya is the large flagship of the Empire's line, flown from a bridge with multicrew seats and a fighter pilot seat. It needs a large landing pad and uses the shared HOTAS layout.",
+  "areas": [
+    {
+      "id": "right-panel",
+      "where": "right-side",
+      "name": "Right panel (internal)",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Imperial Cutter: seats and hardpoints",
+          "db": "ship",
+          "src": "c1",
+          "text": "Facts about the Imperial Cutter that set it apart from the other ships: its seats, its weapon mounts and the landing pad size it needs.",
+          "context": "Everything else in the Imperial Cutter's cockpit works like in every other Elite Dangerous ship.",
+          "controls": [
+            {
+              "id": "pilot-seat",
+              "name": "Pilot seat (helm)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The pilot's seat of the Imperial Cutter, the helm. Whoever sits here flies the ship and has the whole HOTAS layout of this guide.",
+              "context": "The Imperial Cutter takes up to four people in all; the other seats are for crew who join in multicrew.",
+              "src": "c1"
+            },
+            {
+              "id": "crew-seats",
+              "name": "Multicrew seats",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The extra seats of the Imperial Cutter, for up to four crew in all. A friend who joins can sit here as gunner, or as fighter controller when the ship carries a fighter.",
+              "context": "A gunner works the turreted weapons while the pilot flies; the roles are chosen on the role panel.",
+              "src": "c1"
+            },
+            {
+              "id": "fighter-seat",
+              "name": "Fighter pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The seat from which a crew member or a hired pilot flies the small fighter that the Imperial Cutter can carry in a hangar.",
+              "context": "The fighter is launched and given orders on the role panel; the preset has no HOTAS button for that.",
+              "src": "c1"
+            },
+            {
+              "id": "hardpoints",
+              "name": "Hardpoints (weapon mounts)",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The weapon mounts of the Imperial Cutter: one huge, two large and four medium hardpoints. Bigger mounts take bigger, stronger weapons.",
+              "context": "The pilot puts the Imperial Cutter's weapons into fire groups on the right panel and fires them with the trigger and the weapon release button.",
+              "src": "w1"
+            },
+            {
+              "id": "pad",
+              "name": "Landing pad size",
+              "type": "indicator",
+              "match": [
+                "item:ship:5"
+              ],
+              "text": "The Imperial Cutter needs a large landing pad or a bigger one. Stations have small, medium and large pads, and small outposts may not have the bigger ones.",
+              "context": "When the pilot asks a station for docking, the station gives a pad that fits the ship's size.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

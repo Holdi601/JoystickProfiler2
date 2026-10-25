@@ -1,0 +1,740 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-ah-64a",
+  "title": "AH-64A Apache (pilot)",
+  "variants": [
+    "ah-64a"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Boeing AH-64 Apache (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Boeing_AH-64_Apache"
+    },
+    {
+      "id": "m1",
+      "title": "DCS AH-64D Flight Manual EN (power quadrant, fire, armament and jettison panels)",
+      "kind": "manual",
+      "file": "Mods/aircraft/AH-64D/Doc/DCS AH-64D Flight Manual EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The AH-64A is the first production Apache (from 1984), a twin-engine attack helicopter with two crew members in tandem: the pilot in the raised rear seat and the copilot/gunner in front, who aims the TADS sight in the nose. The pilot's cockpit is analogue: round dials and tape gauges instead of screens, with the helmet display for flying and aiming. The later AH-64D added the radar on the mast and two screens. The power quadrant, fire, armament and jettison panels are taken as those of the DCS AH-64D; the grips are the D's without the radar and cursor switches.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The analogue flight and engine instruments with the fire and armament panels.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Pilot instrument panel (analogue)",
+          "text": "The round dials and tape gauges in front of the pilot in the rear seat. They show how the helicopter flies and how its two engines and the rotor are doing.",
+          "context": "The first Apache had no screens in the pilot's seat; everything was read from these instruments and from the helmet display. Later versions replaced most of them with two screens.",
+          "controls": [
+            {
+              "id": "mwc",
+              "name": "Master warning / caution panel",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Labelled warning lights for the whole helicopter. Each one comes on to say what is wrong. The master warning light means \"danger now\", the master caution light means \"something needs your attention\"; smaller segments name the system.",
+              "context": "When one of the big lights comes on, the pilot reads the segments to see which system has the problem and presses the light to acknowledge it."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in knots.",
+              "context": "Below a certain speed a helicopter can hover and fly sideways, so the needle near zero is normal; the pilot watches it in the climb-out and when slowing down to land."
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the helicopter leans to one side, like a picture of the horizon (artificial horizon). A small ball below it shows whether the helicopter slips sideways.",
+              "context": "It is the main instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A compass picture that shows the heading (where the nose points) and the course to a navigation point or radio beacon. Its needles can also point to the course from the Doppler navigation (which measures the helicopter's speed over the ground with radio waves) or to an ADF beacon.",
+              "context": "The pilot follows it to fly a planned route and to find the way to the landing site."
+            },
+            {
+              "id": "baro-alt",
+              "name": "Barometric altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "The height gauge. It shows the height above sea level; the pilot sets the local air pressure on it so it reads right. The pressure is set in a small window on the dial.",
+              "context": "The pilot uses it to hold a cruising height and to follow the heights given by the tower."
+            },
+            {
+              "id": "radar-alt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This instrument measures the height above the ground right below the helicopter with a radio beam, not the height above sea level. A movable marker (bug) can be set to a low height; a warning comes on below it.",
+              "context": "The Apache flies very low to hide behind trees and hills, so the pilot relies on this instrument and its warning marker."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "This dial shows whether the helicopter climbs or sinks, and how fast.",
+              "context": "The pilot uses it to keep a steady, gentle descent when coming in to land and to hold level flight."
+            },
+            {
+              "id": "tapes",
+              "name": "Engine and rotor tape instruments",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "Columns of lights that rise and fall like thermometers. They show, for both engines, the torque (how hard each engine twists the rotor), the turbine gas temperature, the compressor and turbine speeds, and the main rotor speed.",
+              "context": "Tapes side by side make it easy to compare the two engines at a glance; a column that differs from its partner shows which engine has a problem.",
+              "src": "w1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks, in pounds. A small switch picks which of the two fuel cells, forward or aft, the gauge shows.",
+              "context": "The pilot checks it before take-off and often in flight, to know when it is time to turn home."
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "The cockpit clock shows the time; most can also time a flight or a leg, like a stopwatch. It shows the mission time and can count elapsed time.",
+              "context": "The pilot uses it to time the legs of a route and to keep track of fuel and flying time."
+            },
+            {
+              "id": "compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "A simple magnetic compass, like a hiking compass, that shows the heading without any electricity.",
+              "context": "It is the heading reference left when the electrical power or the heading system fails."
+            }
+          ]
+        },
+        {
+          "id": "armament-panel",
+          "name": "Armament panel",
+          "db": "armament-panel",
+          "src": "m1",
+          "text": "Two buttons that decide whether the weapons may fire at all. The same panel sits in both seats.",
+          "context": "It is the last safety step before an attack; the pilot sets it back to SAFE when the shooting is over.",
+          "controls": [
+            {
+              "id": "a-s",
+              "name": "A/S button (ARM / SAFE)",
+              "type": "button",
+              "match": [
+                "item:armament-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons can fire."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Nothing can fire."
+                }
+              ],
+              "text": "This button switches the weapons between ARM and SAFE, like the master arm switch of other aircraft (the main safety switch for the weapons: nothing fires while it is off). Lights on the button show the state.",
+              "context": "It works in the air. On the ground it only works when the GND ORIDE button next to it is on.",
+              "src": "m1"
+            },
+            {
+              "id": "gnd-oride",
+              "name": "GND ORIDE button (ground override)",
+              "type": "button",
+              "match": [
+                "item:armament-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Arming on the ground is allowed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Arming is blocked while on the ground."
+                }
+              ],
+              "text": "This button lets the crew arm and test the weapons and the chaff while the helicopter stands on the ground, which is normally blocked for safety.",
+              "context": "It is used for tests and training on the ground; in flight it has no effect.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "fire",
+          "name": "Fire detection / extinguishing panel",
+          "db": "fire-detection-extinguishing",
+          "src": "m1",
+          "text": "Lights that warn of a fire in one of the two engines or in the APU (a small extra engine that makes electricity and air before the main engines run), and the buttons that put the fire out.",
+          "context": "In a fire the pilot first presses the FIRE button of the burning engine, which cuts its fuel and arms the bottles, then fires a bottle.",
+          "controls": [
+            {
+              "id": "eng1-fire",
+              "name": "ENG 1 FIRE button (covered)",
+              "type": "button",
+              "match": [
+                "item:fire-detection-extinguishing:1"
+              ],
+              "text": "This covered button belongs to the left engine. Its FIRE light comes on when a fire is detected there. Pressing it, after lifting the cover, shuts off the engine's fuel and hot air and arms the fire bottles.",
+              "context": "After pressing it the pilot empties a fire bottle with the PRI or RES button.",
+              "src": "m1"
+            },
+            {
+              "id": "apu-fire",
+              "name": "APU FIRE button (covered)",
+              "type": "button",
+              "match": [
+                "item:fire-detection-extinguishing:2"
+              ],
+              "text": "This covered button belongs to the APU. Its light shows an APU fire; pressing it shuts off the APU's fuel and arms the fire bottles.",
+              "context": "The cover keeps it from being pressed by accident. The bottles are then fired with PRI or RES.",
+              "src": "m1"
+            },
+            {
+              "id": "eng2-fire",
+              "name": "ENG 2 FIRE button (covered)",
+              "type": "button",
+              "match": [
+                "item:fire-detection-extinguishing:3"
+              ],
+              "text": "This covered button belongs to the right engine. When its FIRE light comes on, pressing it shuts off that engine's fuel and hot air and arms the fire bottles.",
+              "context": "It works the same way as the button of the left engine; only the engine is different.",
+              "src": "m1"
+            },
+            {
+              "id": "pri",
+              "name": "PRI button (primary fire bottle)",
+              "type": "button",
+              "match": [
+                "item:fire-detection-extinguishing:4"
+              ],
+              "text": "This button empties the first fire extinguisher bottle into the engine or APU whose FIRE button was pressed.",
+              "context": "It is the first bottle the pilot uses in a fire.",
+              "src": "m1"
+            },
+            {
+              "id": "test",
+              "name": "TEST switch (fire detection test)",
+              "type": "switch3",
+              "match": [
+                "item:fire-detection-extinguishing:5"
+              ],
+              "positions": [
+                {
+                  "name": "TEST 1",
+                  "text": "Tests the first fire detection circuit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position; no test."
+                },
+                {
+                  "name": "TEST 2",
+                  "text": "Tests the second fire detection circuit."
+                }
+              ],
+              "text": "This switch tests the fire warning system: in either test position the FIRE lights come on, which shows the detectors and lights work.",
+              "context": "The test is part of the checks before flight. The switch springs back to the centre.",
+              "src": "m1"
+            },
+            {
+              "id": "res",
+              "name": "RES button (reserve fire bottle)",
+              "type": "button",
+              "match": [
+                "item:fire-detection-extinguishing:6"
+              ],
+              "text": "This button empties the second, reserve fire bottle into the engine or APU whose FIRE button was pressed.",
+              "context": "It is used when the first bottle did not put the fire out.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The power quadrant with the engine levers and the stores jettison panel.",
+      "panels": [
+        {
+          "id": "power-quadrant",
+          "name": "Power quadrant panel",
+          "db": "power-quadrant-panel",
+          "src": "m1",
+          "text": "The panel at the pilot's left with the main electrical knob, the APU, the engine start switches, the rotor brake and the two engine power levers.",
+          "context": "Every start-up begins here: power on, APU on, then the engines one after the other, then the power levers forward to fly.",
+          "controls": [
+            {
+              "id": "rtr-brk",
+              "name": "RTR BRK switch (rotor brake)",
+              "type": "switch3",
+              "match": [
+                "item:power-quadrant-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The rotor brake is released."
+                },
+                {
+                  "name": "BRK",
+                  "text": "The brake slows and stops the rotor."
+                },
+                {
+                  "name": "LOCK",
+                  "text": "The brake holds the rotor locked."
+                }
+              ],
+              "text": "This switch controls the rotor brake, a brake that stops the main rotor from turning when parked. It can only be used with the power levers at IDLE or below.",
+              "context": "The brake keeps the blades still in wind on the ground and is released before the engines drive the rotor.",
+              "src": "m1"
+            },
+            {
+              "id": "mstr-ign",
+              "name": "MSTR IGN knob (master ignition)",
+              "type": "selector",
+              "match": [
+                "item:power-quadrant-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No electrical power."
+                },
+                {
+                  "name": "BATT",
+                  "text": "Power from the battery."
+                },
+                {
+                  "name": "EXT PWR",
+                  "text": "Power from an external ground source."
+                }
+              ],
+              "text": "This knob connects the helicopter's electricity: to the battery (stores electricity for when the engines are off) or to a power cart on the ground.",
+              "context": "It is the first thing the pilot turns when climbing in; almost everything else needs it.",
+              "src": "m1"
+            },
+            {
+              "id": "frict",
+              "name": "FRICT lever (power lever friction)",
+              "type": "lever",
+              "match": [
+                "item:power-quadrant-panel:3"
+              ],
+              "text": "This lever makes the power levers stiffer or easier to move, so they stay where they are put.",
+              "context": "JoyPro's catalog notes that it is not modelled in the DCS AH-64D on which this panel is based.",
+              "src": "m1"
+            },
+            {
+              "id": "apu",
+              "name": "APU button",
+              "type": "button",
+              "match": [
+                "item:power-quadrant-panel:4"
+              ],
+              "text": "This button starts or stops the APU. An ON light shows that it runs.",
+              "context": "The APU is started before the main engines; it gives the air that spins them for the start.",
+              "src": "m1"
+            },
+            {
+              "id": "eng-start",
+              "name": "ENG START switches (engine 1 and 2)",
+              "type": "switch3",
+              "match": [
+                "item:power-quadrant-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Starts the engine automatically."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "IGN ORIDE",
+                  "text": "Spins the engine without ignition, for example to blow out fuel."
+                }
+              ],
+              "text": "One switch per engine. Moved to START it begins an automatic start of that engine; IGN ORIDE spins the engine without lighting it.",
+              "context": "The engines are started one after the other, each with its power lever at IDLE.",
+              "src": "m1"
+            },
+            {
+              "id": "power-levers",
+              "name": "ENG POWER levers",
+              "type": "lever",
+              "match": [
+                "item:power-quadrant-panel:6",
+                "control:panel.lever.power"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Fuel to the engine is shut off."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The position for starting and for idling on the ground."
+                },
+                {
+                  "name": "FLY",
+                  "text": "The engine control keeps the rotor at its flying speed."
+                },
+                {
+                  "name": "LOCK OUT",
+                  "text": "The automatic engine control is bypassed; the pilot controls the engine by hand."
+                }
+              ],
+              "text": "Two levers, one for each of the two engines. They give each engine fuel and decide its power setting, from off through idle to the flying position. The levers stop in notches (detents) at each position.",
+              "context": "The pilot moves them one at a time during the engine start and both together to the flying position before take-off; in flight a computer then governs the engines.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "stores-jettison",
+          "name": "Stores jettison panel",
+          "db": "stores-jettison-panel",
+          "src": "m1",
+          "text": "Buttons to drop single weapon stations under the stub wings in an emergency (jettison), to make the helicopter lighter.",
+          "context": "It drops only the chosen stations; the guarded button on the collective drops everything at once.",
+          "controls": [
+            {
+              "id": "stations",
+              "name": "L OUTBD, L INBD, R INBD, R OUTBD buttons",
+              "type": "button",
+              "match": [
+                "item:stores-jettison-panel:1",
+                "item:stores-jettison-panel:2",
+                "item:stores-jettison-panel:3",
+                "item:stores-jettison-panel:4"
+              ],
+              "text": "These four buttons stand for the four weapon stations: left outboard, left inboard, right inboard and right outboard. Pressing one arms that station for dropping.",
+              "context": "Outboard means farther out along the wing. Nothing falls until the JETT button is pressed.",
+              "src": "m1",
+              "count": 4
+            },
+            {
+              "id": "tips",
+              "name": "L TIP and R TIP buttons",
+              "type": "button",
+              "match": [
+                "item:stores-jettison-panel:5",
+                "item:stores-jettison-panel:7"
+              ],
+              "text": "These two buttons for the wing tips are on the panel but have no function.",
+              "context": "JoyPro's catalog lists them without a function, as the DCS AH-64D manual does.",
+              "src": "m1",
+              "count": 2
+            },
+            {
+              "id": "jett",
+              "name": "JETT button (jettison)",
+              "type": "button",
+              "match": [
+                "item:stores-jettison-panel:6"
+              ],
+              "text": "Pressing this button drops the weapons from all stations that were armed with the station buttons.",
+              "context": "It is used to get rid of single launchers, for example a damaged one, while keeping the others.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The two flight controls the pilot holds, full of switches for flying, sights and weapons.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The cyclic is the stick between the pilot's knees. Its grip carries the trim, weapon, sight and radio switches.",
+          "context": "The pilot holds it with the right hand nearly all the time, so everything needed in a fight is under the fingers.",
+          "controls": [
+            {
+              "id": "ftr",
+              "name": "Force Trim / Hold Mode switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.ftr"
+              ],
+              "text": "A four-way switch under the thumb. Held forward (R) it releases the force trim, the springs that hold the stick where it was put; left (AT) and right (AL) switch attitude hold and altitude hold on or off; aft (D) switches the hold modes off.",
+              "context": "Attitude and altitude hold are simple autopilot helpers that keep the helicopter steady while the pilot is busy with the weapons.",
+              "src": "m1"
+            },
+            {
+              "id": "was",
+              "name": "Weapon Action Switch (WAS)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.was"
+              ],
+              "text": "This four-way switch picks the weapon: forward (G) the gun, left (R) the rockets, right (M) the Hellfire missiles. Pressing the same direction again puts the weapon away.",
+              "context": "Picking a weapon is called actioning it; the trigger then fires the actioned weapon.",
+              "src": "m1"
+            },
+            {
+              "id": "symbology",
+              "name": "Symbology Select switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.symbology"
+              ],
+              "text": "This switch chooses which flight symbols the helmet display shows: forward for transition (pressed again: cruise), aft for hover (pressed again: bob-up).",
+              "context": "The helmet display is a small screen in front of one eye; each mode shows the numbers needed for that phase of flight.",
+              "src": "m1"
+            },
+            {
+              "id": "comm",
+              "name": "Radio / ICS switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.comm"
+              ],
+              "text": "A push-to-talk switch at the back of the grip: one side transmits on the radio, the other talks on the intercom (the phone line between the crew members).",
+              "context": "The voice goes out only while the switch is held, like a walkie-talkie.",
+              "src": "m1"
+            },
+            {
+              "id": "chaff",
+              "name": "Chaff dispense button",
+              "type": "button",
+              "match": [
+                "control:stick.button.chaff"
+              ],
+              "text": "Pressing this button throws out chaff, clouds of metal strips that fool radar-guided missiles, from the M130 dispenser.",
+              "context": "The dispenser has to be armed first; the pilot uses it when a radar warning sounds.",
+              "src": "m1"
+            },
+            {
+              "id": "trigger",
+              "name": "Weapon trigger (guarded)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pulling this trigger fires the actioned weapon: the gun, the rockets or a missile. A guard covers it so it cannot be pulled by accident.",
+              "context": "It fires only when the A/S button is on ARM; the pilot aims with the helmet sight or the fixed forward sight first.",
+              "src": "m1"
+            },
+            {
+              "id": "guard",
+              "name": "Trigger guard",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.trigger"
+              ],
+              "text": "The flip guard over the weapon trigger. The pilot opens it before firing and closes it afterwards.",
+              "context": "It stops the trigger from being pulled by accident.",
+              "src": "m1"
+            },
+            {
+              "id": "dase",
+              "name": "DASE release button",
+              "type": "button",
+              "match": [
+                "control:stick.pinky.button"
+              ],
+              "text": "This button under the little finger switches off the DASE (digital automatic stabilization equipment), the helpers that keep the helicopter steady and smooth.",
+              "context": "The pilot uses it when the stabilization misbehaves; the AH-64D has a newer computer (FMC) in the same place.",
+              "src": "w1"
+            },
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick between the pilot's knees. It tilts the rotor: forward makes the helicopter fly forward, back slows it down, left and right move it sideways.",
+              "context": "It is the main flight control together with the collective and the pedals; on most bindings it is the joystick's X and Y axes."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective grips (flight grip and mission grip)",
+          "text": "The collective is the lever at the left of the seat. Its grips carry the jettison button, the night sensor and light switches, the stabilator switch and the sight select switch.",
+          "context": "The pilot holds it with the left hand in flight; the switches are reached with the thumb.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the pilot's seat. Raising it makes the main rotor blades bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "More collective needs more engine power; the pilot raises it gently and watches the torque and rotor speed."
+            },
+            {
+              "id": "jett",
+              "name": "Emergency jettison (JETT) button (guarded)",
+              "type": "button",
+              "match": [
+                "control:collective.button.jettison"
+              ],
+              "text": "This guarded button drops all weapons from the wing stations at once. The guard has to be flipped up first.",
+              "context": "It is for an emergency when the helicopter must be lighter at once; the stores jettison panel can drop single stations instead.",
+              "src": "m1"
+            },
+            {
+              "id": "boresight",
+              "name": "Boresight / Polarity switch",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.boresight"
+              ],
+              "text": "Left (B/S) starts the boresight of the helmet sight, a check that lines the helmet's marks up with the real world. Right (PLRT) switches the night camera picture between white-hot and black-hot.",
+              "context": "White-hot or black-hot means whether warm things are shown white or black; the pilot picks what shows the scene best.",
+              "src": "m1"
+            },
+            {
+              "id": "searchlight",
+              "name": "Searchlight switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The searchlight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The searchlight is off."
+                },
+                {
+                  "name": "STOW",
+                  "text": "The light goes back into its stowed position."
+                }
+              ],
+              "text": "This switch turns the movable searchlight under the helicopter on and off. The STOW position pulls it back into the fuselage.",
+              "context": "It works together with the searchlight control switch, which aims the light."
+            },
+            {
+              "id": "searchlight-hat",
+              "name": "Searchlight control switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "A four-way switch that aims the searchlight: forward and back swing it out and in, left and right turn it to the side. Forward is EXT (forward and up), back is RET (down and back).",
+              "context": "The pilot points the light at a landing spot or at something on the ground without taking a hand off the controls."
+            },
+            {
+              "id": "nvs",
+              "name": "NVS Select switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.nvs"
+              ],
+              "positions": [
+                {
+                  "name": "TADS",
+                  "text": "The TADS infrared camera is the night sensor."
+                },
+                {
+                  "name": "PNVS",
+                  "text": "The pilot's night vision camera is the night sensor."
+                }
+              ],
+              "text": "This switch chooses which camera gives the pilot's night picture: the infrared camera of the TADS (the targeting sight in the nose) or the PNVS (the pilot's own night camera above it).",
+              "context": "The night picture is shown in the helmet display and moves with the pilot's head.",
+              "src": "m1"
+            },
+            {
+              "id": "stabilator",
+              "name": "Stabilator control switch",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.stabilator"
+              ],
+              "text": "This switch moves the stabilator, the small wing at the tail, by hand: forward nose-down (ND), back nose-up (NU). Pressing it in (RESET) gives the stabilator back to the automatic control.",
+              "context": "Normally the stabilator moves by itself with the speed; the pilot only moves it by hand when the automatic control fails.",
+              "src": "m1"
+            },
+            {
+              "id": "chop",
+              "name": "Engine CHOP button (guarded)",
+              "type": "button",
+              "match": [
+                "control:collective.button.chop"
+              ],
+              "text": "This guarded button brings both engines back to idle power at once (chop).",
+              "context": "It is an emergency control, for example when an engine control fails and runs away; the guard prevents accidental use.",
+              "src": "m1"
+            },
+            {
+              "id": "sight-select",
+              "name": "Sight Select switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.sight_select"
+              ],
+              "text": "This switch chooses the pilot's sight: forward the helmet sight (HMD, the weapons look where the pilot looks), aft the fixed sight straight ahead (FXD).",
+              "context": "The sight decides where the gun and rockets point; the AH-64D adds a radar sight that the A does not have.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

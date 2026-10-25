@@ -1,0 +1,109 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-cutlass-black",
+  "title": "Cutlass Black (Drake Interplanetary, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-cutlass-black"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Cutlass Black (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Cutlass_Black"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Cutlass Black is a multi-role ship from Drake Interplanetary, a maker of cheap and rugged ships in Star Citizen. Pilot and co-pilot sit side by side in the nose; behind them are a cargo hold and a tractor beam. The pilot uses the common controls.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Cutlass Black: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Cutlass Black's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (four)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Cutlass Black has four guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (16 missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Cutlass Black carries 16 missiles. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo and tractor beam (46 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The hold takes 46 SCU, and a tractor beam (a beam that pulls and moves objects) helps load it.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Cutlass Black: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Cutlass Black besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "turrets",
+              "name": "Turrets (one manned, one remote)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "One manned turret and one remote turret for the crew. Each gunner sits in a turret of their own.",
+              "context": "A turret seat has its own controls: there the right stick aims the turret instead of steering the ship.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

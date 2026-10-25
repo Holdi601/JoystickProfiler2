@@ -1,0 +1,189 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-halo-pelican-banshee",
+  "title": "Type-26 Banshee (Halo)",
+  "variants": [
+    "banshee-type-26"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Type-26 Banshee (Halopedia)",
+      "kind": "reference",
+      "url": "https://www.halopedia.org/Type-26_Banshee"
+    },
+    {
+      "id": "s2",
+      "title": "Halo 3 (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Halo_3"
+    }
+  ],
+  "intro": "The Banshee is the fictional ground-support flyer of the Covenant in the Halo games. The pilot lies face down inside a closed, mirror-like cover and does not look through a windscreen. The games give it gamepad or mouse controls, not a modelled cockpit, so this guide explains the game controls.",
+  "areas": [
+    {
+      "id": "cockpit",
+      "where": "floor",
+      "name": "Prone cockpit",
+      "text": "The pilot lies face down inside a closed cover.",
+      "panels": [
+        {
+          "id": "prone-cockpit",
+          "name": "Prone cockpit",
+          "db": "prone-cockpit",
+          "src": "s1",
+          "text": "Instead of sitting, the Banshee pilot lies face down in a cradle.",
+          "context": "The cover is closed, so the pilot sees the world in another way than through a window.",
+          "controls": [
+            {
+              "id": "cradle",
+              "name": "Prone cradle",
+              "type": "other",
+              "match": [
+                "item:prone-cockpit:1"
+              ],
+              "text": "A cradle in which the pilot lies face down on the stomach.",
+              "context": "It is a design of the alien Covenant, very different from human cockpits.",
+              "src": "s1"
+            },
+            {
+              "id": "cowling",
+              "name": "Closed cowling",
+              "type": "other",
+              "match": [
+                "item:prone-cockpit:2"
+              ],
+              "text": "A closed, reflective cover over the pilot with no visible windscreen.",
+              "context": "In the games the player sees the view from outside the Banshee.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pods",
+      "where": "front-center",
+      "name": "Weapon pods",
+      "text": "Two pods under the fuselage.",
+      "panels": [
+        {
+          "id": "weapon-pods",
+          "name": "Weapon pods",
+          "db": "weapon-pods",
+          "src": "s1",
+          "text": "Two pods with the Banshee's weapons, under the body.",
+          "context": "The Banshee attacks targets on the ground and in the air.",
+          "controls": [
+            {
+              "id": "plasma",
+              "name": "Plasma cannons",
+              "type": "other",
+              "match": [
+                "item:weapon-pods:1"
+              ],
+              "text": "The plasma cannons are the main weapon, fired with the primary fire button.",
+              "context": "They fire fast bolts of hot plasma at the target.",
+              "src": "s1"
+            },
+            {
+              "id": "fuel-rod",
+              "name": "Fuel rod cannon",
+              "type": "other",
+              "match": [
+                "item:weapon-pods:2"
+              ],
+              "text": "The fuel rod cannon is the heavy weapon, fired with the secondary fire button.",
+              "context": "It fires slower, explosive shots for bigger targets.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Game controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Aim and fire",
+          "src": "s2",
+          "text": "In the games: the aim stick or mouse and the fire buttons.",
+          "context": "On a joystick set these become the stick and its buttons.",
+          "controls": [
+            {
+              "id": "aim",
+              "name": "Aim / flight direction",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving the aim up and down tips the Banshee's nose; moving it left and right turns it. The Banshee flies where the player aims.",
+              "context": "In the games this is the aim stick of the gamepad or the mouse.",
+              "src": "s2"
+            },
+            {
+              "id": "primary",
+              "name": "Primary fire",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This button fires the Banshee's plasma cannons.",
+              "context": "It is the game's normal fire button.",
+              "src": "s2"
+            },
+            {
+              "id": "secondary",
+              "name": "Secondary fire",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "This button fires the Banshee's fuel rod cannon.",
+              "context": "It is the game's second weapon button.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Speed and boost",
+          "src": "s2",
+          "text": "In the games: the move stick (forward / back) and the boost button.",
+          "context": "They set how fast the Banshee flies.",
+          "controls": [
+            {
+              "id": "speed",
+              "name": "Forward / back",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Forward makes the Banshee fly faster, back slows it down.",
+              "context": "In the games this is the move stick pushed forward or back.",
+              "src": "s2"
+            },
+            {
+              "id": "boost",
+              "name": "Boost",
+              "type": "button",
+              "match": [
+                "control:throttle.button.boost"
+              ],
+              "text": "This button gives a burst of extra speed.",
+              "context": "Boost helps the Banshee to escape or to rush at a target.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

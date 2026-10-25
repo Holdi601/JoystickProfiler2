@@ -36,7 +36,7 @@ public static class DeviceImageCache
         string? overrideFolder = Environment.GetEnvironmentVariable("JOYPRO_DEVICE_IMAGE_CACHE");
         return !string.IsNullOrWhiteSpace(overrideFolder)
             ? overrideFolder
-            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro2", "DeviceImages");
+            : Path.Combine(JoyPro.Logging.JoyProDataFolder.Root(), "DeviceImages");
     }
 
     // Whether an internet picture may be loaded: a maker's device photo only with the user's consent for that device
@@ -90,9 +90,30 @@ public static class DeviceImageCache
             return File.Exists(source) ? source : null;
         if (!InternetPicturesEnabled || InternetPicturesBlocked || !MayLoad(source))
             return null;
+        // A device reference photo downloaded and checked into the user's data folder (ReferencePhotoStore).
+        string? stored = ReferencePhotoStore.Default.FileOf(source);
+        if (stored != null)
+            return stored;
         string file = Path.Combine(CacheFolder(), Hash(source) + ".img");
         return File.Exists(file) ? file : null;
     }
+
+    // A catalog device photo goes through the reference photo store: original address, SHA-256 check, Wayback
+    // fallback, kept in the user's data folder.
+    private static async Task<(string? File, string Error)> StoredReferencePhotoAsync(string source, IProgress<double>? progress)
+    {
+        string? stored = ReferencePhotoStore.Default.FileOf(source);
+        if (stored != null)
+            return (stored, string.Empty);
+        (JoyPro.DeviceReference.RefDevice Model, JoyPro.DeviceReference.DevicePhoto Photo)? known = ReferencePhotoStore.Known(source);
+        if (known == null)
+            return (null, string.Empty);
+        ReferencePhotoStore.PhotoResult result = await ReferencePhotoStore.Default.EnsureAsync(known.Value.Model.Id, known.Value.Photo, progress).ConfigureAwait(false);
+        return (result.File, result.Error);
+    }
+
+    // A download for the reference photo store (site gate, retries, progress, plain-words errors).
+    public static Task<(byte[]? Data, string Error)> FetchBytesAsync(Uri uri, IProgress<double>? progress) => FetchAsync(uri, progress);
 
     // A local picture as it is; an https picture from the download cache (downloaded when missing).
     public static async Task<string?> LocalFileAsync(string source)
@@ -102,6 +123,8 @@ public static class DeviceImageCache
         if (!Uri.TryCreate(source, UriKind.Absolute, out Uri? uri) || uri.Scheme != Uri.UriSchemeHttps || !InternetPicturesEnabled || InternetPicturesBlocked || !MayLoad(source))
             return null;
         Downloads?.Invoke(source);
+        if (ReferencePhotoStore.Known(source) != null)
+            return (await StoredReferencePhotoAsync(source, null).ConfigureAwait(false)).File;
         string folder = CacheFolder();
         Directory.CreateDirectory(folder);
         string file = Path.Combine(folder, Hash(source) + ".img");
@@ -150,6 +173,14 @@ public static class DeviceImageCache
         if (!MayLoad(source!))
             return new DownloadResult(null, T("Not downloaded: you have not said yes to the maker's photos of this device."));
         Downloads?.Invoke(source!);
+        if (ReferencePhotoStore.Known(source!) != null)
+        {
+            (string? stored, string storeError) = await StoredReferencePhotoAsync(source!, progress).ConfigureAwait(false);
+            if (stored == null)
+                return new DownloadResult(null, storeError.Length > 0 ? storeError : T("The download failed."));
+            progress?.Report(1);
+            return new DownloadResult(stored, string.Empty);
+        }
         string file = Path.Combine(CacheFolder(), Hash(source!) + ".img");
         if (File.Exists(file))
         {

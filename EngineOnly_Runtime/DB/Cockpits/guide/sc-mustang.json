@@ -1,0 +1,58 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-mustang",
+  "title": "Mustang Alpha (Consolidated Outland, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-mustang"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mustang Alpha (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Mustang_Alpha"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Mustang Alpha is a light single-seat starter ship from Consolidated Outland in Star Citizen, built from very light metals. A cargo carrier can be added. It uses the common controls without changes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Mustang Alpha: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Mustang Alpha's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "cargo",
+              "name": "Cargo (4 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Mustang Alpha holds 4 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

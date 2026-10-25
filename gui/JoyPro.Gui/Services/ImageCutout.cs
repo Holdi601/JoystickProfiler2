@@ -23,7 +23,7 @@ public static class ImageCutout
     {
         try
         {
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro2", "HudImages");
+            string folder = Path.Combine(JoyPro.Logging.JoyProDataFolder.Root(), "HudImages");
             FileInfo info = new(sourceFile);
             string key = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(info.FullName + "|" + info.Length + "|" + info.LastWriteTimeUtc.Ticks)))[..32];
             string target = Path.Combine(folder, key + ".png");

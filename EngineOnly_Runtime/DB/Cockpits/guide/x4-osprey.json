@@ -1,0 +1,91 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-osprey",
+  "title": "Osprey (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-osprey"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "M - Medium Ships (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/Objects%20in%20the%20Game%20Universe/Ships/M%20-%20Medium%20Ships/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Osprey is a medium Teladi frigate. The pilot flies it from the cockpit and fires its forward guns; its turrets act on their own. It can carry one small ship.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Osprey: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Osprey that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Osprey are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Osprey is flown from a cockpit seat, as small and medium ships are. The pilot sits here and has all the controls of this guide.",
+              "context": "From this seat the pilot sees the HUD, the radar and the monitors of the Osprey.",
+              "src": "c1"
+            },
+            {
+              "id": "guns",
+              "name": "Forward guns",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Osprey has two forward guns that point where the nose points. The pilot fires them with the trigger and aims by turning the whole ship.",
+              "context": "The aiming mark in front of the target on the HUD shows where to point the nose.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turrets",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The Osprey carries four turrets, gun mounts that turn and fire on their own without the pilot.",
+              "context": "How the turrets behave (attack all enemies, defend, hold fire) is set in the menus, not on the sticks.",
+              "src": "w1"
+            },
+            {
+              "id": "docking",
+              "name": "Docking",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The Osprey has room for other ships: one S docking pad. Small ships can land on it and be carried along.",
+              "context": "A docked ship travels with the bigger ship and can launch again later.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

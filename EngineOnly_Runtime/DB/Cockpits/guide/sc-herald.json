@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-herald",
+  "title": "Herald (Drake Interplanetary, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-herald"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Herald (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Herald"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Herald is a small, fast data runner from Drake Interplanetary in Star Citizen for one or two people. Its two-seat cockpit sits around a large central engine and an encrypted computer core. It uses the common controls without changes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Herald: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Herald's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (three)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Herald has three guns that the pilot fires. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (18 missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Herald carries 18 missiles. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "data",
+              "name": "Data storage",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The Herald carries data in an encrypted computer, which makes it a courier for information.",
+              "context": "Its big engine is there to carry that information away fast.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

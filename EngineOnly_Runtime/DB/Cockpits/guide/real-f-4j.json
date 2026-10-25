@@ -1,0 +1,346 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-4j",
+  "title": "F-4J / F-4S Phantom II (US Navy, pilot)",
+  "inherits": "dcs-f-4e",
+  "variants": [
+    "f-4j"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "McDonnell Douglas F-4 Phantom II (Wikipedia), Navy variants",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/McDonnell_Douglas_F-4_Phantom_II"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS F-4E Phantom II Manual (Heatblur, EN)",
+      "file": "Mods/aircraft/F-4E/Doc/F-4E Manual.pdf"
+    }
+  ],
+  "intro": "The F-4J and F-4S are the US Navy versions of the Phantom II, a big two-seat fighter with two engines that flies from aircraft carriers. They have the AWG-10 radar, a refuelling probe instead of the Air Force receptacle, a tail hook and folding wings, and no gun in the nose. JoyPro assumes the pilot has the same stick and throttles as the F-4E, so this guide follows the DCS F-4E cockpit and adds the Navy's own items. The air refuelling release button and the forward hand control of the F-4E are left out; nothing here is checked against a Navy manual.",
+  "remove": [
+    "stick/arr-button",
+    "engine-controls-left/forward-hand-control"
+  ],
+  "areas": [
+    {
+      "id": "dscg-sight",
+      "where": "front-center",
+      "name": "Pilot cockpit: Radar screen and optical sight",
+      "panels": [
+        {
+          "id": "dscg-sight",
+          "name": "DSCG and optical sight controls",
+          "src": "m1",
+          "page": "41",
+          "text": "The DSCG is the round screen below the sight that shows what the radar sees (the pilot's copy of the back seat's radar). The knobs and tabs around it set how bright it is and how the gun sight behaves.",
+          "context": "The weapon officer in the back seat flies the radar; the pilot mostly looks at this screen and at the sight. The pilot can choose a different picture on it with the screen source switch on the pedestal.",
+          "controls": [
+            {
+              "id": "ret-int",
+              "name": "RET INT knob (gun reticle brightness)",
+              "type": "knob",
+              "match": [
+                "Pilot_Hud_RET_IN_help",
+                "item:dscg-sight:2",
+                "item:gunsight:2"
+              ],
+              "text": "Turning this knob makes the aiming mark (reticle) of the optical sight brighter or darker. The game's hint calls it 'Change HUD Brightness'.",
+              "context": "The pilot sets it so the mark is clear against the sky or the ground. It is the first half of the double knob with SCALE.",
+              "src": "m1",
+              "page": "42"
+            }
+          ]
+        },
+        {
+          "id": "navy-sight",
+          "name": "Optical gunsight (F-4J / F-4S)",
+          "text": "The aiming sight on top of the front panel of the Navy Phantom. It projects an aiming mark onto a small tilted glass.",
+          "context": "The Navy Phantoms have no gun in the nose; the sight serves the missiles, the bombs and a gun pod if one is carried.",
+          "controls": [
+            {
+              "id": "combining-glass",
+              "name": "Sight combining glass",
+              "type": "display",
+              "match": [
+                "item:gunsight:1"
+              ],
+              "text": "A small tilted glass plate above the panel. The sight shines its aiming mark (reticle) onto it, so the pilot sees the mark floating over the target.",
+              "context": "The reticle brightness knob sets how bright the mark is; the entry of the F-4E sight above explains it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flight-instruments",
+      "where": "front-center",
+      "name": "Pilot cockpit: Flight instruments",
+      "panels": [
+        {
+          "id": "flight-director-group",
+          "name": "Flight director group",
+          "db": "flight-director-group",
+          "src": "m1",
+          "page": "72",
+          "text": "These instruments let the pilot fly the plane when he cannot see out, for example in clouds. They show height, speed, nose direction, compass direction and climb or sink rate.",
+          "context": "The pilot scans them constantly in flight. Several knobs set markers and reference values; the navigation function selector chooses what the compass instrument shows.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "Attitude director indicator (ADI) and pitch knob",
+              "type": "gauge",
+              "match": [
+                "PNT_ADI_Knob",
+                "item:flight-director-group:4",
+                "item:flight-instruments:1"
+              ],
+              "text": "The ADI is a ball that shows if the nose points up or down and how the wings are tilted. Steering bars and a glide slope pointer help with landing. The knob adjusts the nose position of the little aircraft symbol.",
+              "context": "It is the most important instrument for flying in clouds. The game's hint for the knob is 'Adjust Pitch'.",
+              "src": "m1",
+              "page": "76"
+            },
+            {
+              "id": "hsi-heading-knob",
+              "name": "HSI heading set knob",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_HSI_HEADING_SET_KNOB",
+                "item:flight-director-group:8",
+                "item:flight-instruments:2"
+              ],
+              "text": "The HSI is a compass picture showing where the plane points and the way to the next navigation point. This knob at its lower left sets the wanted heading marker.",
+              "context": "The flight director steers the pilot towards the heading marker. The game offers fast and slow turns of this knob.",
+              "src": "m1",
+              "page": "77"
+            },
+            {
+              "id": "altimeter-knob",
+              "name": "Altimeter pressure setting knob",
+              "type": "knob",
+              "match": [
+                "PNT_PILOT_ALTIMETER_KNOB",
+                "item:flight-director-group:6",
+                "item:flight-instruments:3"
+              ],
+              "text": "Turning this knob enters the local air pressure into the altimeter, so that the height reads correctly. The game's hint is 'Change Reference Pressure'.",
+              "context": "The pilot sets the pressure given by the airfield before take-off and landing.",
+              "src": "m1",
+              "page": "79"
+            },
+            {
+              "id": "airspeed-mach",
+              "name": "Airspeed and Mach indicator",
+              "type": "gauge",
+              "match": [
+                "PNT_PILOT_MACHANDAIRSPEED_KNOB",
+                "item:flight-director-group:2",
+                "item:flight-instruments:4"
+              ],
+              "text": "A dial that shows speed in knots and also the Mach number (speed as a multiple of the speed of sound). The knob on its face moves two marker bugs.",
+              "context": "The pilot sets one marker to the landing speed so he can see at a glance whether he is too fast or slow.",
+              "src": "m1",
+              "page": "73"
+            },
+            {
+              "id": "aoa-gauge",
+              "name": "Angle of attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-director-group:7",
+                "item:flight-instruments:5"
+              ],
+              "text": "A gauge that shows how steeply the wing meets the air in units. It also feeds the indexer lights and the stall warning.",
+              "context": "The pilot flies the approach to the carrier by angle of attack rather than by speed; the indexer lights repeat it in front of his eyes.",
+              "src": "m1",
+              "page": "74"
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-director-group:9",
+                "item:flight-instruments:6"
+              ],
+              "text": "A dial that shows whether the plane climbs or sinks and how fast, in thousands of feet per minute.",
+              "context": "The pilot uses it to hold a level flight or a steady descent.",
+              "src": "m1",
+              "page": "80"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-sub-panel",
+      "where": "front-right",
+      "name": "Pilot cockpit: Right sub-panel",
+      "panels": [
+        {
+          "id": "right-sub-panel",
+          "name": "Right sub-panel (warnings, hook)",
+          "db": "right-sub-panel",
+          "src": "m1",
+          "page": "140",
+          "text": "The warning light block (telelight panel) with the generator lights, two circuit breakers for lights, the plain/cipher lights, the feed tank check and the arrestor hook handle.",
+          "context": "A caution light on the telelight panel lights up together with the master caution light. The pilot reads here what the problem is.",
+          "controls": [
+            {
+              "id": "hook-handle",
+              "name": "Arresting hook control handle",
+              "type": "handle",
+              "match": [
+                "PNT_HOOK_HANDLE",
+                "item:right-sub-panel:7",
+                "item:arresting-hook-and-wing-fold:1"
+              ],
+              "text": "Pulling this handle down lowers the tail hook, the hook under the tail that catches a wire when landing. Pushing it up raises the hook again.",
+              "context": "On the Navy Phantom the hook is used for every landing on an aircraft carrier; the pilot lowers it before the approach and checks the hook light.",
+              "src": "m1",
+              "page": "142"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Pilot cockpit: Stick and throttles",
+      "panels": [
+        {
+          "id": "throttle",
+          "name": "Throttles (pilot)",
+          "src": "m1",
+          "page": "108",
+          "text": "Two levers on the left console, one for each engine. Pushing a lever forward gives more engine power and pulling it back gives less. The grips have buttons for the radio, the speed brake and the weapons.",
+          "context": "The pilot's left hand rests on the throttles. The rear seat has linked throttles with fewer functions.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle and friction lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console-front:21",
+                "item:throttles-and-engine-controls:1"
+              ],
+              "text": "The left engine's power lever. Forward is more thrust, aft is less. Moving it outboard and forward lights the afterburner, extra fuel burned in the exhaust for much more push. A friction lever sets how stiff the throttles are.",
+              "context": "Moving a throttle from IDLE to OFF cuts the fuel for that engine. The finger lift must be raised first.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right",
+                "item:throttles-and-engine-controls:2"
+              ],
+              "text": "The right engine's power lever. It works like the left one.",
+              "context": "Both throttles are normally moved together.",
+              "src": "m1",
+              "page": "108"
+            },
+            {
+              "id": "speed-brake-switch",
+              "name": "Speed brake switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.speedbrake",
+                "throttle_R_mic_switch_help",
+                "item:throttles-and-engine-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "OUT",
+                  "text": "Opens the speed brakes while held."
+                },
+                {
+                  "name": "STOP",
+                  "text": "Holds the speed brakes where they are."
+                },
+                {
+                  "name": "IN",
+                  "text": "Retracts the speed brakes."
+                }
+              ],
+              "text": "A three-position switch on the inboard throttle grip. It opens the speed brakes, plates that stand in the wind to slow the plane, or closes them. Out is spring-loaded and returns to stop when released.",
+              "context": "Either seat can operate the speed brakes.",
+              "src": "m1",
+              "page": "111"
+            },
+            {
+              "id": "mic-switch",
+              "name": "Mic switch (radio / intercom)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.hat.mic",
+                "throttle_R_speed_brake_help",
+                "item:throttles-and-engine-controls:4"
+              ],
+              "positions": [
+                {
+                  "name": "UHF",
+                  "text": "Pushed forward and held: transmits on the radio."
+                },
+                {
+                  "name": "CENTER",
+                  "text": "Rest position."
+                },
+                {
+                  "name": "ICS",
+                  "text": "Pushed aft and held: talks on the intercom."
+                }
+              ],
+              "text": "A switch on the inboard throttle grip for talking. Forward transmits on the UHF radio, aft talks on the intercom (and lowers other sounds). Both are held.",
+              "context": "The game's hints list it as 'Microphone Switch - ICS / UHF (Hold)'.",
+              "src": "m1",
+              "page": "112"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "navy-carrier",
+      "where": "front-left",
+      "name": "Pilot cockpit: Carrier controls (F-4J / F-4S)",
+      "text": "Controls that only the carrier-based Navy Phantom needs.",
+      "panels": [
+        {
+          "id": "wing-fold",
+          "name": "Wing fold control",
+          "text": "The Navy Phantom can fold the outer parts of its wings upward, so it takes less room on the crowded deck and in the hangar of an aircraft carrier.",
+          "context": "The wings are folded only on the ground or deck, after landing, and spread again before take-off.",
+          "controls": [
+            {
+              "id": "wing-fold-handle",
+              "name": "Wing fold control handle",
+              "type": "handle",
+              "match": [
+                "item:arresting-hook-and-wing-fold:2"
+              ],
+              "text": "This handle folds the outer wing panels up or spreads them out flat again.",
+              "context": "The pilot spreads and locks the wings before a launch from the catapult; the exact handle movements are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

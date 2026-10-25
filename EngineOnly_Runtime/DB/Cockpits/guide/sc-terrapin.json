@@ -1,0 +1,126 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-terrapin",
+  "title": "Terrapin (Anvil Aerospace, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-terrapin"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Terrapin (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Terrapin"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Terrapin is an armoured scout from Anvil Aerospace in Star Citizen, for one or two people. The pilot and the second seat sit in the nose; long-range scanners and a strong shield make it a pathfinder. Scanning mode and the radar ping keys are its main tools.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Terrapin: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Terrapin's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "no-guns",
+              "name": "No pilot guns",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Terrapin's guns are in two remote turrets, not in the pilot's hands.",
+              "context": "Without own guns the pilot flies, uses the missiles where fitted and leaves the shooting to the crew in the turrets.",
+              "src": "w1"
+            },
+            {
+              "id": "scanner",
+              "name": "Scanner",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Strong scanners are the Terrapin's main tool. The pilot uses scanning mode and the radar ping to explore.",
+              "context": "Scanning mode sits on base button 15 of the right stick and the ping on button 9; the results show on the radar and scanning display.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Terrapin: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Terrapin besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "remote-turrets",
+              "name": "Remote turrets (two)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "Two remote turrets are worked from the second seat. It is aimed through a camera from inside the ship.",
+              "context": "A remote turret is aimed from a seat inside the ship through a camera, not from a glass bubble on the turret itself.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Two sticks (HOSAS)",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (flight stick)",
+          "src": "g1",
+          "text": "The right-hand stick steers the ship's nose and does the fighting: it fires the weapons, picks targets and holds the buttons for radar, quantum travel, scanning and mining.",
+          "context": "This is the game's own two-stick preset for the Thrustmaster T.16000M. Many buttons change their job with the operator mode shown on the HUD; the stick's base buttons 5 to 16 sit on the stick's foot.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "label:Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "This ship has no pilot guns, so the trigger works only in the operator modes. In quantum mode, holding it starts the jump of the quantum drive.",
+              "context": "The destination is chosen on the star map first; in scanning or mining mode the trigger does that mode's job instead.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

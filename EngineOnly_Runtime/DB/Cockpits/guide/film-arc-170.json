@@ -1,0 +1,193 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-arc-170",
+  "title": "ARC-170 starfighter (Star Wars, Revenge of the Sith)",
+  "variants": [
+    "arc-170-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "List of Star Wars starfighters: ARC-170 (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/List_of_Star_Wars_starfighters"
+    },
+    {
+      "id": "s2",
+      "title": "ARC-170 Starfighter (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/arc-170-starfighter"
+    },
+    {
+      "id": "s3",
+      "title": "Star Wars: Episode III - Revenge of the Sith (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Wars:_Episode_III_%E2%80%93_Revenge_of_the_Sith"
+    }
+  ],
+  "intro": "The ARC-170 is a fictional heavy fighter of the Republic in Revenge of the Sith, with a crew of three: pilot, co-pilot and front gunner, and a tail gunner. Its wings split open (S-foils) like an X-wing's. The pilot and co-pilot sit one behind the other, and the tail gunner has his own position at the back.",
+  "areas": [
+    {
+      "id": "pilot",
+      "where": "front-center",
+      "name": "Pilot's panel",
+      "text": "Displays and controls in front of the pilot.",
+      "panels": [
+        {
+          "id": "pilot-panel",
+          "name": "Pilot's panel",
+          "db": "pilot-panel",
+          "src": "s2",
+          "text": "Screens and the wing control in front of the pilot.",
+          "context": "The pilot flies and fires the forward guns while the others help.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Forward displays",
+              "type": "display",
+              "match": [
+                "item:pilot-panel:1"
+              ],
+              "text": "Screens in front of the pilot show the sensor and targeting pictures.",
+              "context": "They help the pilot find targets in the big space battle of the film.",
+              "src": "s3"
+            },
+            {
+              "id": "s-foils",
+              "name": "S-foil control",
+              "type": "switch2",
+              "match": [
+                "item:pilot-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ATTACK",
+                  "text": "The wings are open; the fighter is ready to fight."
+                },
+                {
+                  "name": "CRUISE",
+                  "text": "The wings are closed for normal travel."
+                }
+              ],
+              "text": "This control opens the wings to the attack position or closes them for cruising.",
+              "context": "Like on the X-wing, open wings show the fighter is ready to fight.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations behind the pilot",
+      "text": "The co-pilot's seat and the tail gunner's position.",
+      "panels": [
+        {
+          "id": "copilot",
+          "name": "Co-pilot / gunner seat",
+          "db": "copilot",
+          "src": "s2",
+          "text": "The second crew member's seat behind the pilot.",
+          "context": "The co-pilot helps with navigation and the weapons.",
+          "controls": [
+            {
+              "id": "station",
+              "name": "Co-pilot station",
+              "type": "other",
+              "match": [
+                "item:copilot:1"
+              ],
+              "text": "The co-pilot sits behind the pilot and helps with navigation and the weapons.",
+              "context": "Sharing the work lets the pilot concentrate on flying.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "tail-gunner",
+          "name": "Tail gunner position",
+          "db": "tail-gunner",
+          "src": "s2",
+          "text": "A rear-facing gun position at the back of the hull.",
+          "context": "The tail gunner protects the fighter from enemies behind.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Tail guns",
+              "type": "other",
+              "match": [
+                "item:tail-gunner:1"
+              ],
+              "text": "Laser cannons at the back that point backwards, worked by the tail gunner.",
+              "context": "They cover the area behind the fighter that the pilot cannot see.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Flight controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight controls",
+          "src": "s3",
+          "text": "The hand controls in front of the pilot.",
+          "context": "They fly the fighter and fire the forward cannons.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Flight controls",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The flight controls tip the nose up and down and roll the fighter left and right.",
+              "context": "The pilot flies while the co-pilot and the tail gunner look after the rest.",
+              "src": "s3"
+            },
+            {
+              "id": "fire",
+              "name": "Fire control",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A control on the flight grips fires the forward cannons.",
+              "context": "The tail guns are fired by the tail gunner, not the pilot.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s3",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "Revenge of the Sith does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

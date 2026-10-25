@@ -1,0 +1,893 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-ka-52",
+  "title": "Ka-52 Alligator (pilot)",
+  "variants": [
+    "ka-52"
+  ],
+  "games": [
+    "WarThunder",
+    "Arma2"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Kamov Ka-52 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Kamov_Ka-52"
+    },
+    {
+      "id": "m1",
+      "title": "DCS Black Shark 3 Flight Manual EN (Ka-50 grips, start, APU, fire and gear panels)",
+      "kind": "manual",
+      "file": "Mods/aircraft/Ka-50_3/Doc/DCS BS3 Flight Manual EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Ka-52 Alligator is the two-seat development of the Ka-50 Black Shark: an armoured attack helicopter with two rotors on one mast turning in opposite directions (coaxial rotors), so it needs no tail rotor. The two crew sit side by side in ejection seats; both have flight controls, and the operator in the right seat handles the sights and most of the weapons. This guide covers the pilot's left seat. JoyPro takes its grips, engine start, APU, fire and gear panels from the Ka-50 (same engines and APU); the displays and the weapon panel are described from public sources.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-left",
+      "name": "Pilot instrument panel",
+      "text": "Head-up display, screens, backup instruments and the gear panel.",
+      "panels": [
+        {
+          "id": "pilot-displays",
+          "name": "Pilot instrument panel",
+          "text": "The left seat's head-up display, colour screens and backup instruments.",
+          "context": "The Ka-52 replaced most of the Ka-50's round dials with screens; the backup instruments stay for when the screens fail. Its layout is described from public sources.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:pilot-displays:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display), so the pilot can read them while looking outside.",
+              "context": "The pilot flies and aims the fixed weapons with it, especially low over the ground.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd",
+              "name": "Multifunction displays",
+              "type": "display",
+              "match": [
+                "item:pilot-displays:2"
+              ],
+              "text": "The pilot's colour screens (multi-function screens with buttons around their edge). They show the flight instruments, the map, the engines and the sensor pictures.",
+              "context": "Instead of dozens of round dials, the crew picks the page each screen shows; one screen can replace another that fails.",
+              "src": "w1"
+            },
+            {
+              "id": "bezel",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:pilot-displays:3"
+              ],
+              "text": "Buttons around the edge of each screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The crew uses them to change pages and options; the page layout is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby",
+              "name": "Standby attitude, airspeed and altimeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-displays:4"
+              ],
+              "text": "Small round backup instruments for the attitude (nose up or down, leaning left or right), the speed and the height. They work without the screens.",
+              "context": "If the screens fail, the pilot flies home on these."
+            },
+            {
+              "id": "mwc",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:pilot-displays:5"
+              ],
+              "text": "Two big lights: master warning means \"danger now\", master caution means \"something needs your attention\". The message on the display says what is wrong.",
+              "context": "Pressing the light usually acknowledges it, so it is ready to show the next problem."
+            }
+          ]
+        },
+        {
+          "id": "gear",
+          "name": "Landing gear control panel",
+          "text": "The gear lever, the gear lamps and the emergency hydraulics switch.",
+          "context": "The Ka-52 has retractable wheels; the pilot raises them after take-off and lowers them before landing.",
+          "controls": [
+            {
+              "id": "lamps",
+              "name": "Gear position indicators",
+              "type": "light",
+              "match": [
+                "item:gear-control-panel:1"
+              ],
+              "text": "Lamps that show where the wheels are: red when they are up, green when they are down.",
+              "context": "Before landing the pilot checks that all green lamps are lit.",
+              "src": "m1"
+            },
+            {
+              "id": "emerg",
+              "name": "Emergency gear hydraulics switch",
+              "type": "switch2",
+              "match": [
+                "item:gear-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "The normal setting for moving the gear."
+                },
+                {
+                  "name": "EMERG",
+                  "text": "The gear is moved by the other hydraulic system, for when the normal one is damaged."
+                }
+              ],
+              "text": "This switch chooses which hydraulic system (oil under high pressure) moves the wheels.",
+              "context": "If the normal system is damaged, the other one can still lower the gear.",
+              "src": "m1"
+            },
+            {
+              "id": "lever",
+              "name": "Gear lever",
+              "type": "lever",
+              "match": [
+                "item:gear-control-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs.",
+              "context": "The pilot raises the gear after take-off and lowers it before landing.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "centre-panel",
+      "where": "front-center",
+      "name": "Centre panel",
+      "text": "The weapon control panel between the seats.",
+      "panels": [
+        {
+          "id": "weapon-control-panel",
+          "name": "Weapon control panel",
+          "text": "The panel between the seats for the weapons: master arm, station choice, cannon settings and jettison.",
+          "context": "In the Ka-52 the right-seat operator handles most of the weapons; both crew can reach this panel. Its layout is described from public sources.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch2",
+              "match": [
+                "item:weapon-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapons can fire."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Nothing can fire."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons (master arm): nothing fires while it is off.",
+              "context": "The pilot arms the weapons only when the helicopter is clear of friendly people and near the target, and makes them safe again before landing."
+            },
+            {
+              "id": "station-sel",
+              "name": "Station / weapon selector",
+              "type": "selector",
+              "match": [
+                "item:weapon-control-panel:2"
+              ],
+              "text": "This switch chooses which weapon on the wing stations is used: rockets, missiles, gun pods or bombs.",
+              "context": "The weapon trigger on the cyclic then fires the chosen weapon. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "cannon",
+              "name": "Cannon rate and ammunition selector",
+              "type": "switch",
+              "match": [
+                "item:weapon-control-panel:3"
+              ],
+              "text": "Switches for the 30 mm side cannon: a high or low rate of fire, and which of the two kinds of shells it fires, explosive (HE) or armour-piercing (AP).",
+              "context": "The ammunition is chosen for the target: explosive shells for soft targets, armour-piercing ones for vehicles."
+            },
+            {
+              "id": "station-lights",
+              "name": "Station status lights",
+              "type": "light",
+              "match": [
+                "item:weapon-control-panel:4"
+              ],
+              "text": "Lights that show which wing stations are loaded and which are selected.",
+              "context": "The crew checks them before firing to be sure the right weapon is chosen."
+            },
+            {
+              "id": "jett",
+              "name": "Emergency jettison switch",
+              "type": "switch",
+              "match": [
+                "item:weapon-control-panel:5"
+              ],
+              "text": "A guarded switch that drops all the weapons and tanks on the wings in an emergency (jettison), to make the helicopter lighter. A cover over it has to be lifted first.",
+              "context": "It is used when the helicopter has an engine problem and must lose weight at once."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Engine start and APU controls.",
+      "panels": [
+        {
+          "id": "engine-start",
+          "name": "Engine start-up controls",
+          "text": "The buttons and switches that start the APU (a small extra engine that makes air and electricity before the main engines run) and the two engines.",
+          "context": "The start order is APU first, then the engines one by one; the Ka-52 has the same engines and APU as the Ka-50, so these controls are taken from it.",
+          "controls": [
+            {
+              "id": "start",
+              "name": "START button",
+              "type": "button",
+              "match": [
+                "item:engine-start-panel:1"
+              ],
+              "text": "Pressing this button starts whatever the start select switch shows: the APU or one of the engines.",
+              "context": "Fuel valves must be open and the rotor brake off before an engine start.",
+              "src": "m1"
+            },
+            {
+              "id": "start-mode",
+              "name": "START - CRANK - FALSE START selector",
+              "type": "switch3",
+              "match": [
+                "item:engine-start-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "Normal start."
+                },
+                {
+                  "name": "CRANK",
+                  "text": "Spins the engine without fuel being lit."
+                },
+                {
+                  "name": "FALSE START",
+                  "text": "A test start for the ground crew."
+                }
+              ],
+              "text": "This selector chooses the kind of start. START is the normal start; CRANK spins the engine without lighting it; FALSE START is a check for the ground crew.",
+              "context": "CRANK is used to blow unburnt fuel out of the engine after a failed start.",
+              "src": "m1"
+            },
+            {
+              "id": "start-vlv",
+              "name": "START VLV lamp",
+              "type": "light",
+              "match": [
+                "item:engine-start-panel:3"
+              ],
+              "text": "This lamp is lit while the air valve of the starter is open, that is while the starter spins the engine.",
+              "context": "It goes out by itself when the engine runs or when the start is stopped.",
+              "src": "m1"
+            },
+            {
+              "id": "stop-start",
+              "name": "STOP START button",
+              "type": "button",
+              "match": [
+                "item:engine-start-panel:4"
+              ],
+              "text": "Pressing this button stops an engine start that is under way.",
+              "context": "The pilot uses it when something looks wrong during the start, for example a too high temperature.",
+              "src": "m1"
+            },
+            {
+              "id": "apu-shutoff",
+              "name": "APU SHUTOFF button",
+              "type": "button",
+              "match": [
+                "item:engine-start-panel:5"
+              ],
+              "text": "Pressing this button stops the APU, the small helper engine.",
+              "context": "Once both engines run and their generators make electricity, the APU is no longer needed.",
+              "src": "m1"
+            },
+            {
+              "id": "start-select",
+              "name": "Start select switch",
+              "type": "selector",
+              "match": [
+                "item:engine-start-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "TURBO GEAR",
+                  "text": "Ground tests only."
+                },
+                {
+                  "name": "APU",
+                  "text": "The START button starts the APU."
+                },
+                {
+                  "name": "ENG LH",
+                  "text": "The START button starts the left engine."
+                },
+                {
+                  "name": "ENG RH",
+                  "text": "The START button starts the right engine."
+                }
+              ],
+              "text": "This switch chooses what the START button starts: the APU, the left engine or the right engine. The TURBO GEAR position is for ground tests.",
+              "context": "TURBO GEAR lets the ground crew test generators and hydraulics without the engines running.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "apu",
+          "name": "APU panel",
+          "text": "The lamps and the temperature gauge of the APU.",
+          "context": "The pilot watches them during the APU start and before starting the main engines.",
+          "controls": [
+            {
+              "id": "vlv-open",
+              "name": "APU VLV OPEN light",
+              "type": "light",
+              "match": [
+                "item:apu-panel:1"
+              ],
+              "text": "This light shows that the fuel valve of the APU is open.",
+              "context": "It comes on at the beginning of the APU start.",
+              "src": "m1"
+            },
+            {
+              "id": "nmax",
+              "name": "APU Nmax SHUTOFF light",
+              "type": "light",
+              "match": [
+                "item:apu-panel:2"
+              ],
+              "text": "This light shows that the APU was stopped automatically because it turned too fast.",
+              "context": "The protection keeps the APU from damaging itself; the start then has to be repeated.",
+              "src": "m1"
+            },
+            {
+              "id": "oil",
+              "name": "APU OIL P. NORM light",
+              "type": "light",
+              "match": [
+                "item:apu-panel:3"
+              ],
+              "text": "This light shows that the oil pressure of the APU is normal.",
+              "context": "Without oil pressure the APU must not run; the light is checked during the start.",
+              "src": "m1"
+            },
+            {
+              "id": "on",
+              "name": "APU ON light",
+              "type": "light",
+              "match": [
+                "item:apu-panel:4"
+              ],
+              "text": "This light shows that the APU is running.",
+              "context": "After a good start it stays lit until the APU is stopped.",
+              "src": "m1"
+            },
+            {
+              "id": "egt",
+              "name": "APU EGT gauge",
+              "type": "gauge",
+              "match": [
+                "item:apu-panel:5"
+              ],
+              "text": "This gauge shows how hot the gas leaving the APU is (exhaust gas temperature).",
+              "context": "It rises during the APU start and then settles; a too high value means the start must be stopped.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-wall",
+      "where": "right-side",
+      "name": "Right wall panel",
+      "text": "The fire extinguisher panel.",
+      "panels": [
+        {
+          "id": "fire",
+          "name": "Fire extinguisher control panel",
+          "text": "The fire warning lamps and the buttons that empty the fire bottles into the engine, APU and gearbox compartments.",
+          "context": "The system can fire the first bottle by itself; the pilot uses the buttons to fire bottles by hand.",
+          "controls": [
+            {
+              "id": "fire-lh",
+              "name": "FIRE LH ENG lamp",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:1"
+              ],
+              "text": "This lamp lights when a fire is detected at the left engine.",
+              "context": "The left engine discharge button below then empties a bottle into it.",
+              "src": "m1"
+            },
+            {
+              "id": "fire-apu",
+              "name": "FIRE APU lamp",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:2"
+              ],
+              "text": "This lamp lights when a fire is detected at the APU.",
+              "context": "The APU discharge button then empties a bottle into the APU compartment.",
+              "src": "m1"
+            },
+            {
+              "id": "fire-rh",
+              "name": "FIRE RH ENG lamp",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:3"
+              ],
+              "text": "This lamp lights when a fire is detected at the right engine.",
+              "context": "It goes with the right engine discharge button.",
+              "src": "m1"
+            },
+            {
+              "id": "fire-grbx",
+              "name": "FIRE GRBX lamp",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:4"
+              ],
+              "text": "This lamp lights when a fire is detected in the area of the gearbox oil cooler.",
+              "context": "The ventilator discharge button fights a fire there.",
+              "src": "m1"
+            },
+            {
+              "id": "bottle1",
+              "name": "Bottle 1 lamp",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:5"
+              ],
+              "text": "This lamp shows that the first fire bottle is full and ready.",
+              "context": "The first bottle can be fired by the system itself or by hand.",
+              "src": "m1"
+            },
+            {
+              "id": "bottle2",
+              "name": "Bottle 2 lamp",
+              "type": "light",
+              "match": [
+                "item:fire-extinguisher-panel:6"
+              ],
+              "text": "This lamp shows that the second fire bottle is full and ready.",
+              "context": "The second bottle is fired only by hand; its lamp goes out once it is used.",
+              "src": "m1"
+            },
+            {
+              "id": "dis-lh",
+              "name": "Left engine discharge button",
+              "type": "button",
+              "match": [
+                "item:fire-extinguisher-panel:7"
+              ],
+              "text": "Pressing this button empties a fire bottle into the left engine compartment.",
+              "context": "The pilot presses it when the FIRE LH ENG lamp is lit.",
+              "src": "m1"
+            },
+            {
+              "id": "dis-apu",
+              "name": "APU discharge button",
+              "type": "button",
+              "match": [
+                "item:fire-extinguisher-panel:8"
+              ],
+              "text": "Pressing this button empties a fire bottle into the APU compartment.",
+              "context": "The pilot presses it when the FIRE APU lamp is lit.",
+              "src": "m1"
+            },
+            {
+              "id": "dis-rh",
+              "name": "Right engine discharge button",
+              "type": "button",
+              "match": [
+                "item:fire-extinguisher-panel:9"
+              ],
+              "text": "Pressing this button empties a fire bottle into the right engine compartment.",
+              "context": "The pilot presses it when the FIRE RH ENG lamp is lit.",
+              "src": "m1"
+            },
+            {
+              "id": "dis-vent",
+              "name": "Ventilator discharge button",
+              "type": "button",
+              "match": [
+                "item:fire-extinguisher-panel:10"
+              ],
+              "text": "Pressing this button empties a fire bottle into the oil cooler (ventilator) compartment.",
+              "context": "The pilot presses it when the FIRE GRBX lamp is lit.",
+              "src": "m1"
+            },
+            {
+              "id": "tanks",
+              "name": "TANKS AUT - MAN switch",
+              "type": "switch",
+              "match": [
+                "item:fire-extinguisher-panel:11"
+              ],
+              "text": "This switch is on the panel, but JoyPro's catalog lists it as having no function.",
+              "context": "In the Ka-50 it chooses between automatic and manual use of the bottles; for the Ka-52 the catalog gives no function.",
+              "src": "m1"
+            },
+            {
+              "id": "oper",
+              "name": "OPER - OFF - TEST switch (covered)",
+              "type": "switch3",
+              "match": [
+                "item:fire-extinguisher-panel:12"
+              ],
+              "positions": [
+                {
+                  "name": "OPER",
+                  "text": "The extinguisher system works."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "TEST",
+                  "text": "The system is in its test mode."
+                }
+              ],
+              "text": "This covered switch turns the fire extinguisher system on (OPER), off, or to its test position.",
+              "context": "OPER is the normal position in flight; TEST is used in the checks before flight.",
+              "src": "m1"
+            },
+            {
+              "id": "warn",
+              "name": "WARN - OFF switch",
+              "type": "switch2",
+              "match": [
+                "item:fire-extinguisher-panel:13"
+              ],
+              "positions": [
+                {
+                  "name": "WARN",
+                  "text": "Fire warnings are on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No fire warnings."
+                }
+              ],
+              "text": "This switch turns the fire detection and alarm system on or off.",
+              "context": "It stays on WARN in flight so a fire is reported at once.",
+              "src": "m1"
+            },
+            {
+              "id": "test-gr",
+              "name": "TEST I-II-III GR selector",
+              "type": "selector",
+              "match": [
+                "item:fire-extinguisher-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "I",
+                  "text": "Tests sensor group I."
+                },
+                {
+                  "name": "II",
+                  "text": "Tests sensor group II."
+                },
+                {
+                  "name": "III",
+                  "text": "Tests sensor group III."
+                }
+              ],
+              "text": "This control picks the first, second or third group of fire sensors for a test.",
+              "context": "Each group is tested on its own in the checks before flight.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The flight controls the pilot holds.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The stick between the pilot's knees with the weapon triggers, the wheel brake, the trimmer and the autopilot buttons.",
+          "context": "JoyPro takes it as the Ka-50's grip without the targeting camera switches, which belong to the operator's sight in the Ka-52.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick. It tilts both rotors: forward makes the helicopter fly forward, back slows it down, left and right lean it to the side.",
+              "context": "With two rotors turning in opposite directions on one mast (coaxial rotors), the Ka-52 needs no tail rotor.",
+              "src": "m1"
+            },
+            {
+              "id": "release",
+              "name": "RELEASE WEAPONS trigger (large)",
+              "type": "trigger",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "Pressing this large trigger fires or drops the chosen weapon on the wings: rockets, missiles, bombs or gun pods. Flipped up, it uncovers the small cannon trigger behind it.",
+              "context": "The master arm must be on; the weapon is chosen on the weapon control panel and the hardpoint hat.",
+              "src": "m1"
+            },
+            {
+              "id": "gun",
+              "name": "GUN FIRE trigger (small)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "This small trigger fires the 30 mm cannon on the side of the fuselage. It can only be pressed after the large trigger has been flipped up.",
+              "context": "The large trigger guards it, so the cannon does not fire by accident.",
+              "src": "m1"
+            },
+            {
+              "id": "brake",
+              "name": "Wheel brake paddle",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.wheel_brake"
+              ],
+              "text": "Squeezing this paddle on the front of the grip brakes the wheels. It can be latched as a parking brake.",
+              "context": "As in many Russian helicopters, the brakes are on the stick, not on the pedals.",
+              "src": "m1"
+            },
+            {
+              "id": "hover",
+              "name": "HOVER button",
+              "type": "button",
+              "match": [
+                "control:stick.button.hover"
+              ],
+              "text": "Pressing this button turns the hover mode of the autopilot on or off; it then keeps the helicopter over one spot.",
+              "context": "It helps the crew while they search and aim from a hover behind cover.",
+              "src": "m1"
+            },
+            {
+              "id": "radio",
+              "name": "RADIO button",
+              "type": "button",
+              "match": [
+                "control:stick.button.radio"
+              ],
+              "text": "While this button is held, the radio transmits the pilot's voice.",
+              "context": "It works like the button of a walkie-talkie; the operator in the right seat has his own."
+            },
+            {
+              "id": "trimmer",
+              "name": "TRIMMER button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trimmer"
+              ],
+              "text": "While this button is held, the stick moves without any spring force. When it is released, the autopilot holds the new pitch, bank and heading.",
+              "context": "This is how the pilot trims a Kamov: hold, move the stick to the new position, release.",
+              "src": "m1"
+            },
+            {
+              "id": "ap-off",
+              "name": "AUTOPILOT OFF button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_off"
+              ],
+              "text": "Pressing this button switches off the autopilot modes that hold height, heading or speed, so the pilot has the helicopter fully in hand. It is the emergency disengage of the whole autopilot.",
+              "context": "The pilot uses it to take over at once, for example when the autopilot does something unexpected.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "text": "The lever at the left of the seat with the autopilot mode, light, hardpoint and sling switches on its head.",
+          "context": "The left hand holds it in flight; the engine levers sit at its base.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the pilot's seat. Raising it makes the blades of both rotors bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "More collective needs more engine power; the pilot raises it gently and watches the torque and rotor speed.",
+              "src": "m1"
+            },
+            {
+              "id": "brake",
+              "name": "Collective brake / assign altitude lever",
+              "type": "lever",
+              "match": [
+                "control:collective.lever.brake"
+              ],
+              "text": "Squeezing this lever frees the collective from its brake so it can move. When it is let go with the altitude hold on, the autopilot takes the present height as the new height to hold.",
+              "context": "The brake keeps the collective from creeping by itself.",
+              "src": "m1"
+            },
+            {
+              "id": "rpm",
+              "name": "ADJ FREE-TUR selector",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.rotor_rpm"
+              ],
+              "positions": [
+                {
+                  "name": "NOMINAL",
+                  "text": "The governor holds the normal rotor speed."
+                },
+                {
+                  "name": "LOW",
+                  "text": "The governor holds a lower rotor speed."
+                }
+              ],
+              "text": "This selector sets the rotor speed governor (the device that keeps the rotor at the right speed by itself) to the nominal speed or to a low speed.",
+              "context": "The pilot normally keeps the nominal setting.",
+              "src": "m1"
+            },
+            {
+              "id": "sling",
+              "name": "SLING button",
+              "type": "button",
+              "match": [
+                "control:collective.button.sling"
+              ],
+              "text": "Pressing this button releases a load hanging under the helicopter on a sling.",
+              "context": "It is used when the helicopter carries cargo on its hook."
+            },
+            {
+              "id": "spot",
+              "name": "SPOT LIGHT hat",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.landing_light"
+              ],
+              "text": "This four-way hat moves the landing and search light up, down, left and right.",
+              "context": "The pilot aims the light at the landing spot at night.",
+              "src": "m1"
+            },
+            {
+              "id": "hardpoint",
+              "name": "Hardpoint selector",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.hardpoint"
+              ],
+              "text": "This hat chooses which weapon stations under the wings (hardpoints) are used: left the outer ones, right the inner ones, down all of them.",
+              "context": "A hardpoint is a place under the wing where weapons hang; the trigger then fires from the chosen ones.",
+              "src": "m1"
+            },
+            {
+              "id": "ap-mode",
+              "name": "DESCENT - ROUTE switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.ap_mode"
+              ],
+              "positions": [
+                {
+                  "name": "DESCENT",
+                  "text": "The autopilot flies a controlled descent."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Neither mode is on."
+                },
+                {
+                  "name": "ROUTE",
+                  "text": "The autopilot follows the planned route."
+                }
+              ],
+              "text": "This switch picks an autopilot mode: DESCENT makes a controlled descent, ROUTE makes the autopilot follow the planned route.",
+              "context": "The centre position switches both modes off.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Pedals",
+          "text": "The pedals at the pilot's feet that turn the nose left and right.",
+          "context": "A coaxial helicopter has no tail rotor; the pedals change the pitch of the two rotors against each other.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left pedal turns the nose to the left, the right pedal to the right. They work by making one rotor bite the air a little more than the other (differential rotor pitch).",
+              "context": "The pedals are used all the time, most of all in the hover and every time the collective changes the engine power.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "engine-levers",
+          "name": "Separate engine throttle levers",
+          "text": "Two levers at the base of the collective that set the power mode of the two engines.",
+          "context": "For all normal flying they sit at AUTO, where the engine governors do the work.",
+          "controls": [
+            {
+              "id": "levers",
+              "name": "Separate engine throttle levers",
+              "type": "lever",
+              "match": [
+                "control:panel.lever.engines"
+              ],
+              "positions": [
+                {
+                  "name": "IDLE",
+                  "text": "For the start and for tests."
+                },
+                {
+                  "name": "GOVERNOR FAIL",
+                  "text": "Keeps the engine from overspeeding if its governor fails."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The normal position for flight."
+                },
+                {
+                  "name": "MAX",
+                  "text": "Full power, for flying on one engine."
+                }
+              ],
+              "text": "These two levers set the power of each engine. They stop at IDLE, GOVERNOR FAIL, AUTO and MAX.",
+              "context": "IDLE is for the start and tests, AUTO for every normal flight; MAX gives full power to one engine when the other has failed.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

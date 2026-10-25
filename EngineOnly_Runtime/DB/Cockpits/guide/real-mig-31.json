@@ -1,0 +1,446 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mig-31",
+  "title": "MiG-31B / BM Foxhound (pilot)",
+  "variants": [
+    "mig-31b-bm"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mikoyan MiG-31 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mikoyan_MiG-31"
+    },
+    {
+      "id": "d1",
+      "title": "DCS MiG-21bis Flight Manual (EN) (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/MIG-21bis/Doc/DCS MiG-21bis EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The MiG-31 is a Soviet and Russian long-range interceptor developed from the MiG-25, with two seats one behind the other: the pilot in front, the weapons systems officer behind with the Zaslon radar. The BM upgrade replaced many gauges with multifunction screens. No public description of the grips exists, so this guide names the common controls and the general layout; the rear seat is listed as one panel.",
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "Pilot sight and displays",
+      "text": "The sight and the pilot's tactical display.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "Pilot sight and displays",
+          "src": "w1",
+          "text": "The sight / head-up display in front of the pilot and a display that shows the tactical situation.",
+          "context": "The radar is run by the officer in the back; the pilot sees the results here.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Sight / HUD",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows the aiming marks and the flight data, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "tactical",
+              "name": "Tactical situation display",
+              "type": "display",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A screen that shows the tactical situation: the targets found by the radar and data from other aircraft or the ground.",
+              "context": "With it the pilot knows where the targets are while the officer behind him works the radar.",
+              "src": "w1"
+            },
+            {
+              "id": "sight-control",
+              "name": "Sight control panel",
+              "type": "other",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "A small panel with the settings of the sight.",
+              "context": "The single switches of the sight control panel are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Flight and engine instruments; screens on the BM.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Flight instruments",
+          "src": "w1",
+          "text": "The pilot's flight and engine instruments. The BM upgrade replaced many of the gauges with multifunction screens.",
+          "context": "The MiG-31 flies long intercepts fast and high, far from its base.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "nav",
+              "name": "Navigation indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "engine",
+              "name": "Engine gauges",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "Gauges that show how fast the two D-30F6 engines turn and how hot they run. They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            },
+            {
+              "id": "mfd-bm",
+              "name": "Multifunction displays (BM)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "Colour screens of the BM upgrade, with buttons around their edges, that show pages for flying, navigation and systems.",
+              "context": "They take the place of many round gauges of the older MiG-31B.",
+              "src": "w1"
+            },
+            {
+              "id": "warning",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When a warning comes on, the pilot looks here first to see which system needs attention."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Throttles, engine, radio and flaps.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console: throttles",
+          "text": "The twin throttles with engine, fuel and radio controls.",
+          "context": "The left hand stays on the throttles.",
+          "controls": [
+            {
+              "id": "engine",
+              "name": "Engine panel",
+              "type": "other",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "Switches for starting and running the two engines, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps control",
+              "type": "switch",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "This control moves the flaps, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once the aircraft is fast enough."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Navigation, electricity and lights.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The right side with navigation, electrics and lights.",
+          "context": "These are set before the flight.",
+          "controls": [
+            {
+              "id": "navigation",
+              "name": "Navigation panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "Controls of the navigation system, the system that always knows where the aircraft is and which way to fly to the next point.",
+              "context": "The pilot uses it to choose where to fly and to get steering to the next point. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Rear cockpit (WSO)",
+      "text": "The weapons systems officer's seat behind the pilot.",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Rear cockpit (WSO)",
+          "src": "w1",
+          "text": "The back seat of the weapons systems officer, who runs the Zaslon radar with its displays and a hand controller.",
+          "context": "The Zaslon was the first fighter radar that steered its beam electronically; it can track many targets at once.",
+          "controls": [
+            {
+              "id": "zaslon",
+              "name": "Radar display (Zaslon)",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "The screen of the Zaslon radar, showing the aircraft it has found and is tracking.",
+              "context": "The officer picks targets on it for the long-range missiles.",
+              "src": "w1"
+            },
+            {
+              "id": "rear-tactical",
+              "name": "Tactical / datalink display",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "A screen with the tactical picture and the data shared by radio (datalink) with other MiG-31s and the ground.",
+              "context": "Several MiG-31s can share one picture and split the targets between them.",
+              "src": "w1"
+            },
+            {
+              "id": "hand-controller",
+              "name": "Radar hand controller",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:3"
+              ],
+              "text": "A hand grip that moves a cursor on the radar display.",
+              "context": "The officer uses it to select and lock targets."
+            },
+            {
+              "id": "weapon-control",
+              "name": "Weapon control panel",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:4"
+              ],
+              "text": "A panel for setting up and selecting the missiles.",
+              "context": "The single switches of the weapon control panel are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The pilot's grips.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The pilot's centre stick with the gun trigger, the missile button and trim.",
+          "context": "No public grip description exists; only common functions are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the GSh-6-23 six-barrel cannon.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "launch",
+              "name": "Missile launch button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches the selected missile.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            },
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up; it only trims the nose up and down.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "text": "The pair of throttles for the two D-30F6 engines, with the airbrake switch and the radio button.",
+          "context": "Airbrake and radio button are assumed as on other MiGs.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left D-30F6 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right D-30F6 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The airbrakes open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "radio-button",
+              "name": "Radio button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

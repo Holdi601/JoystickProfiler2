@@ -1,0 +1,682 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-b-25j",
+  "title": "B-25J Mitchell (pilot)",
+  "variants": [
+    "b-25j"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "IL-2 Sturmovik 1946 Aircraft Guide (instrument panel numbers, B-25J-1NA)",
+      "kind": "game-manual",
+      "file": "IL 2 Sturmovik 1946/Aircraft Guide.pdf"
+    },
+    {
+      "id": "w1",
+      "title": "North American B-25 Mitchell (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/North_American_B-25_Mitchell"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The B-25 Mitchell is an American twin-engine medium bomber of the Second World War. The pilot (left) and the co-pilot sit side by side with control wheels, and between them a pedestal carries the paired throttle, propeller and mixture levers. The bombardier sits in the glazed nose; gunship versions with a solid nose fired fixed guns from the pilot's wheel. The instrument panel numbers follow the IL-2 1946 Aircraft Guide; the pedestal and side panels follow the general B-25 layout, and the wheel button is inferred.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The shared panel in front of both pilots.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "src": "g1",
+          "text": "The panel shared by the two pilots: the flight instruments on the pilot's (left) side, the engine gauges in the middle, and the gear and flap indicators on the right.",
+          "context": "The numbers follow the IL-2 1946 Aircraft Guide for the B-25J; most engine gauges show both engines at once with two needles.",
+          "controls": [
+            {
+              "id": "magnetic-compass",
+              "name": "Magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "A simple magnetic compass on the windshield frame. It shows the heading without electricity.",
+              "context": "It is outside the guide's picture; the pilots use it to check the other compasses."
+            },
+            {
+              "id": "pdi",
+              "name": "Pilot's Direction Indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2",
+                "item:instrument-panel:24"
+              ],
+              "text": "An instrument that shows the pilot which way to steer during the bomb run; the bombardier in the nose sends the corrections to it.",
+              "context": "The guide lists it twice (numbers 2 and 24); this entry covers both.",
+              "src": "g1",
+              "count": 2
+            },
+            {
+              "id": "radio-compass",
+              "name": "Radio Compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This instrument points to a radio station the radio compass is tuned to (ADF, a radio beacon receiver).",
+              "context": "The pilots use it to fly towards or away from a station, for example to find home.",
+              "src": "g1"
+            },
+            {
+              "id": "compass",
+              "name": "Compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4",
+                "item:instrument-panel:13"
+              ],
+              "text": "A compass that shows the heading, the direction the nose points.",
+              "context": "The guide lists a compass at numbers 4 and 13; this entry covers both.",
+              "src": "g1",
+              "count": 2
+            },
+            {
+              "id": "manifold",
+              "name": "Manifold Pressure (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This gauge shows the manifold pressure, how hard air is pushed into each engine, which is a measure of the engine's power. It has two needles, one for each engine.",
+              "context": "The pilot sets the power with the throttles while watching this gauge.",
+              "src": "g1"
+            },
+            {
+              "id": "rpm",
+              "name": "RPM Indicator (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This gauge shows how fast each engine and its propeller turn (RPM). It has two needles, one for each engine.",
+              "context": "The propeller levers set the RPM; the pilot checks it here.",
+              "src": "g1"
+            },
+            {
+              "id": "suction",
+              "name": "Suction Gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "This gauge shows the suction (vacuum) that drives the gyro instruments, such as the artificial horizon and the direction indicator.",
+              "context": "Without enough suction those instruments slowly become wrong.",
+              "src": "g1"
+            },
+            {
+              "id": "fuel-pressure",
+              "name": "Fuel Pressure (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This gauge shows the pressure of the fuel going to each engine. It has two needles, one for each engine.",
+              "context": "Low fuel pressure can mean a pump problem or an empty tank.",
+              "src": "g1"
+            },
+            {
+              "id": "oil-pressure",
+              "name": "Oil Pressure (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows the oil pressure of each engine. It has two needles, one for each engine.",
+              "context": "Losing oil pressure means the engine is in danger and may have to be shut down.",
+              "src": "g1"
+            },
+            {
+              "id": "fuel-levels",
+              "name": "Fuel Level gauges (front, rear, auxiliary)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:18",
+                "item:instrument-panel:27",
+                "item:instrument-panel:10"
+              ],
+              "text": "Three gauges that show how much fuel is in the front tanks, the rear tanks and the auxiliary tanks.",
+              "context": "The crew watches them to plan the flight and to switch tanks.",
+              "src": "g1",
+              "count": 3
+            },
+            {
+              "id": "gear-indicator",
+              "name": "Landing Gear Position Indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "Lamps that show whether the wheels are up or down and locked.",
+              "context": "The pilot checks them before every landing.",
+              "src": "g1"
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed Indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it closely on take-off and landing, where the right speed matters most.",
+              "src": "g1"
+            },
+            {
+              "id": "horizon",
+              "name": "Artificial Horizon",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:14"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon). It is driven by a gyro.",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen.",
+              "src": "g1"
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:15"
+              ],
+              "text": "A clock on the panel that shows the time of day.",
+              "context": "The crew uses it to time the legs of the route.",
+              "src": "g1"
+            },
+            {
+              "id": "carb-temp",
+              "name": "Carburetor Air Temperature (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:16"
+              ],
+              "text": "This gauge shows the temperature of the air going into each engine's carburetor. It has two needles, one for each engine.",
+              "context": "If it gets too cold, ice can form in the carburetor; the carburetor air levers then add warm air.",
+              "src": "g1"
+            },
+            {
+              "id": "oil-temp",
+              "name": "Oil Temperature (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:17"
+              ],
+              "text": "This gauge shows how hot the oil of each engine is. It has two needles, one for each engine.",
+              "context": "The pilots wait for warm oil before take-off and watch for overheating in a long climb.",
+              "src": "g1"
+            },
+            {
+              "id": "flap-indicator",
+              "name": "Flap Position Indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:19"
+              ],
+              "text": "This gauge shows how far the flaps are down.",
+              "context": "The pilot checks it when setting the flaps for take-off and landing.",
+              "src": "g1"
+            },
+            {
+              "id": "hyd-pressure",
+              "name": "Hydraulic Pressure",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:20"
+              ],
+              "text": "This gauge shows the pressure of the hydraulics, oil under high pressure that moves the gear, flaps and bomb bay doors.",
+              "context": "Without hydraulic pressure those parts cannot move normally.",
+              "src": "g1"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:21"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing.",
+              "src": "g1"
+            },
+            {
+              "id": "turn-bank",
+              "name": "Turn & Bank Indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:22"
+              ],
+              "text": "This instrument shows how fast the aircraft turns (a needle) and whether it slips sideways (a ball).",
+              "context": "Keeping the ball in the middle with the rudder makes a clean turn.",
+              "src": "g1"
+            },
+            {
+              "id": "variometer",
+              "name": "Variometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:23"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing.",
+              "src": "g1"
+            },
+            {
+              "id": "cht",
+              "name": "Cylinder Head Temperature (Engine #1 & #2)",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:25"
+              ],
+              "text": "This gauge shows how hot the cylinders of each engine are. It has two needles, one for each engine.",
+              "context": "The pilots open the cowl flaps or reduce power if the engines run too hot.",
+              "src": "g1"
+            },
+            {
+              "id": "oat",
+              "name": "Free Air Temperature",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:26"
+              ],
+              "text": "This gauge shows the temperature of the air outside.",
+              "context": "It helps the crew judge the risk of ice on the wings and in the carburetors.",
+              "src": "g1"
+            },
+            {
+              "id": "lights",
+              "name": "Landing and navigation light switches",
+              "type": "switch",
+              "match": [
+                "item:instrument-panel:28"
+              ],
+              "text": "Switches for the landing lights and the navigation lights (the coloured lights on the wing tips and tail).",
+              "context": "They are used for night flying and landing.",
+              "src": "w1"
+            },
+            {
+              "id": "brake-pressure",
+              "name": "Brake Pressure",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:29"
+              ],
+              "text": "This gauge shows the pressure available for the wheel brakes.",
+              "context": "The pilot checks it before taxiing and landing.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pedestal",
+      "where": "center-pedestal",
+      "name": "Control pedestal",
+      "text": "The pedestal between the seats.",
+      "panels": [
+        {
+          "id": "control-pedestal",
+          "name": "Control pedestal",
+          "src": "w1",
+          "text": "The pedestal between the two pilots, with the engine levers and the trim controls. The engine levers and trims are explained under the throttle quadrant below; here are the other two.",
+          "context": "Either pilot can reach the pedestal, so the co-pilot can help with the engines.",
+          "controls": [
+            {
+              "id": "carb-air",
+              "name": "Carburetor air levers",
+              "type": "lever",
+              "match": [
+                "item:control-pedestal:5"
+              ],
+              "text": "Levers that choose cold or warm air for the carburetors.",
+              "context": "Warm air stops ice from forming in the carburetors in cold, damp weather.",
+              "src": "w1"
+            },
+            {
+              "id": "friction",
+              "name": "Friction locks",
+              "type": "knob",
+              "match": [
+                "item:control-pedestal:8"
+              ],
+              "text": "Knobs that make the engine levers stiffer, so they stay where they are set.",
+              "context": "Without friction the levers could creep back on a long flight.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "side-panel",
+      "where": "left-console",
+      "name": "Pilot's side panel",
+      "text": "Ignition, electrics, starters and radio.",
+      "panels": [
+        {
+          "id": "pilot-side-panel",
+          "name": "Pilot's side panel",
+          "src": "w1",
+          "text": "The panel at the pilot's left with the ignition, the electrics, the engine starters and the radio.",
+          "context": "These are the switches of the engine start.",
+          "controls": [
+            {
+              "id": "ignition",
+              "name": "Ignition switches",
+              "type": "selector",
+              "match": [
+                "item:pilot-side-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No sparks; the engine cannot run."
+                },
+                {
+                  "name": "L",
+                  "text": "Only the left magneto works."
+                },
+                {
+                  "name": "R",
+                  "text": "Only the right magneto works."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both magnetos work: normal running."
+                }
+              ],
+              "text": "Switches for the magnetos, the small generators that make the sparks for each engine; there are two per engine for safety.",
+              "context": "The pilot checks each magneto alone before take-off and flies on BOTH.",
+              "src": "w1"
+            },
+            {
+              "id": "battery-gen",
+              "name": "Battery and generator switches",
+              "type": "switch2",
+              "match": [
+                "item:pilot-side-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The source is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The source is disconnected."
+                }
+              ],
+              "text": "Switches for the battery (stores electricity) and the generators (make electricity while the engines run).",
+              "context": "The battery comes first for the engine start; the generators take over afterwards.",
+              "src": "w1"
+            },
+            {
+              "id": "starter-mesh",
+              "name": "Starter and mesh switches",
+              "type": "switch",
+              "match": [
+                "item:pilot-side-panel:3"
+              ],
+              "text": "Switches for starting the engines: first the starter is spun up, then the 'mesh' switch connects it to the engine to turn it over.",
+              "context": "The pilot starts one engine after the other.",
+              "src": "w1"
+            },
+            {
+              "id": "radio-box",
+              "name": "Radio control box",
+              "type": "other",
+              "match": [
+                "item:pilot-side-panel:4"
+              ],
+              "text": "The control box of the radio for talking to other aircraft and the tower.",
+              "context": "The single switches of the radio control box are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bomb-controls",
+      "where": "front-right",
+      "name": "Bomb controls",
+      "text": "Bomb bay doors, salvo release and fixed guns.",
+      "panels": [
+        {
+          "id": "bomb-controls",
+          "name": "Bomb controls",
+          "src": "w1",
+          "text": "Controls for the bomb bay doors, the emergency release of the bombs and the fixed forward guns.",
+          "context": "Normally the bombardier in the nose aims and drops the bombs; the pilot has these controls too.",
+          "controls": [
+            {
+              "id": "bay-doors",
+              "name": "Bomb bay door lever",
+              "type": "lever",
+              "match": [
+                "item:bomb-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The bomb bay doors are open."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "The bomb bay doors are closed."
+                }
+              ],
+              "text": "This lever opens and closes the doors of the bomb bay under the fuselage.",
+              "context": "The doors open before the bomb run and close again afterwards to cut the drag.",
+              "src": "w1"
+            },
+            {
+              "id": "salvo",
+              "name": "Bomb salvo release handle",
+              "type": "handle",
+              "match": [
+                "item:bomb-controls:2"
+              ],
+              "text": "Pulling this handle drops all the bombs at once (salvo).",
+              "context": "It is used in an emergency, to make the aircraft lighter quickly.",
+              "src": "w1"
+            },
+            {
+              "id": "fixed-guns",
+              "name": "Fixed gun switches",
+              "type": "switch2",
+              "match": [
+                "item:bomb-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The fixed guns are armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The fixed guns are safe."
+                }
+              ],
+              "text": "Switches that arm the fixed forward-firing guns in the nose and in the packages on the sides of the fuselage.",
+              "context": "Gunship versions of the B-25 fired these guns at ground targets from the pilot's wheel.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control wheel and engine levers",
+      "text": "The wheel and the levers the pilot works.",
+      "panels": [
+        {
+          "id": "yoke",
+          "name": "Control wheel",
+          "src": "w1",
+          "text": "The pilot's control column with its wheel, and the gun button on the wheel.",
+          "context": "The co-pilot has a second column and wheel.",
+          "controls": [
+            {
+              "id": "yoke",
+              "name": "Control wheel",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "The column and wheel in front of the pilot. Pushing the column forward lowers the nose, pulling it back raises it; turning the wheel rolls the aircraft to that side, like a car's steering wheel.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes.",
+              "src": "w1"
+            },
+            {
+              "id": "gun-button",
+              "name": "Gun firing button",
+              "type": "button",
+              "match": [
+                "control:yoke.button.gun"
+              ],
+              "text": "A button on the pilot's wheel that fires the fixed forward guns.",
+              "context": "Its exact position on the wheel is not confirmed.",
+              "src": "w1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle quadrant (engine levers and trims)",
+          "src": "w1",
+          "text": "The paired engine levers on the pedestal (throttles, propeller, mixture and supercharger) and the trim controls.",
+          "context": "Each pair has one lever per engine; the pilots usually move both together.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:control-pedestal:1"
+              ],
+              "text": "The lever that sets the power of the left engine, read on the manifold pressure gauge.",
+              "context": "The two throttles are normally moved together; on a HOTAS with one throttle axis both engines can share it.",
+              "src": "w1"
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The lever that sets the power of the right engine, read on its manifold pressure needle.",
+              "context": "Setting the two throttles differently helps steer on the ground and balance the engines.",
+              "src": "w1"
+            },
+            {
+              "id": "prop",
+              "name": "Propeller control levers",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.prop",
+                "item:control-pedestal:2"
+              ],
+              "text": "Levers that set how fast the propellers turn (RPM), by changing how sharply the blades bite the air.",
+              "context": "High RPM is used for take-off and climb, lower RPM for cruise.",
+              "src": "w1"
+            },
+            {
+              "id": "mixture",
+              "name": "Mixture control levers",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.mixture",
+                "item:control-pedestal:3"
+              ],
+              "text": "Levers that set how much fuel goes into the engines' air (mixture); leaner for high altitudes.",
+              "context": "Pulling them fully back stops the engines.",
+              "src": "w1"
+            },
+            {
+              "id": "supercharger",
+              "name": "Supercharger control levers",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.supercharger",
+                "item:control-pedestal:4"
+              ],
+              "positions": [
+                {
+                  "name": "LOW",
+                  "text": "Low blower: for low and medium altitude."
+                },
+                {
+                  "name": "HIGH",
+                  "text": "High blower: for high altitude."
+                }
+              ],
+              "text": "Levers that switch the superchargers, pumps that push more air into the engines, between low and high speed (blower).",
+              "context": "High blower is used at high altitude, where the air is thin.",
+              "src": "w1"
+            },
+            {
+              "id": "elevator-trim",
+              "name": "Elevator trim tab wheel",
+              "type": "wheel",
+              "match": [
+                "control:throttle.wheel.elevator_trim",
+                "item:control-pedestal:6"
+              ],
+              "text": "A wheel on the left of the pedestal that trims the nose up or down, so the aircraft flies level without the pilot holding the column.",
+              "context": "The pilot trims after each change of speed, power or load, for example after the bombs are dropped.",
+              "src": "w1"
+            },
+            {
+              "id": "aileron-trim",
+              "name": "Aileron and rudder trim knobs",
+              "type": "knob",
+              "match": [
+                "control:throttle.knob.aileron_trim",
+                "item:control-pedestal:7"
+              ],
+              "text": "Knobs on the pedestal for the aileron trim (keeps the wings level) and the rudder trim; this entry is the aileron trim knob.",
+              "context": "Aileron trim is needed when the load or the fuel is uneven between the wings.",
+              "src": "w1"
+            },
+            {
+              "id": "rudder-trim",
+              "name": "Rudder trim tab control",
+              "type": "knob",
+              "match": [
+                "control:throttle.knob.rudder_trim"
+              ],
+              "text": "A knob on the pedestal that trims the rudder, so the nose points straight without pressing a pedal.",
+              "context": "It matters most when one engine fails and the other pulls the nose to one side.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

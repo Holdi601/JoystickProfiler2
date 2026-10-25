@@ -171,7 +171,8 @@ public sealed class CalloutSheetCanvas : Control
             OnLiveInputChanged(this, EventArgs.Empty);
         }
         else if (change.Property == SourceProperty || change.Property == SchematicProperty || change.Property == ModeProperty ||
-                 change.Property == HeaderGameProperty || change.Property == HeaderPlaneProperty || change.Property == ShowGridProperty)
+                 change.Property == HeaderGameProperty || change.Property == HeaderPlaneProperty || change.Property == ShowGridProperty ||
+                 change.Property == SheetStyleProperty)
         {
             InvalidateVisual();
         }
@@ -197,6 +198,13 @@ public sealed class CalloutSheetCanvas : Control
     private double HeaderHeight => Sheet == null || !HasHeader ? 0 : Math.Round(Sheet.RowHeight * 1.6);
 
     private double SheetHeight => (Sheet?.Height ?? 0) + HeaderHeight;
+
+    // The cheat sheet style (docs/ui/layout-redesign.md "Sheet style"): the same palette, font, size and weight the
+    // engine prints the sheet with (SheetStyle.Resolve). null = the theme's base palette (dark or light).
+    public static readonly StyledProperty<SheetStyle?> SheetStyleProperty =
+        AvaloniaProperty.Register<CalloutSheetCanvas, SheetStyle?>(nameof(SheetStyle));
+
+    public SheetStyle? SheetStyle { get => GetValue(SheetStyleProperty); set => SetValue(SheetStyleProperty, value); }
 
     public static readonly StyledProperty<double> TopInsetProperty = AvaloniaProperty.Register<CalloutSheetCanvas, double>(nameof(TopInset));
 
@@ -230,7 +238,38 @@ public sealed class CalloutSheetCanvas : Control
     // ------------------------------------------------------------------ drawing (the engine's palette)
 
     private sealed record Palette(Color Page, Color Table, Color Title, Color Mod, Color Border, Color Grid, Color Text, Color Faint, Color Line,
-        Color Header, Color HeaderText, Color HeaderBox, Color Accent, Color DropFill);
+        Color Header, Color HeaderText, Color HeaderBox, Color Accent, Color DropFill)
+    {
+        // The header row's text, the text in the GAME / PLANE boxes, the "Other controls" heading on the page, the line glow.
+        public Color TitleText { get; init; } = Text;
+        public Color BoxText { get; init; } = Text;
+        public Color OtherText { get; init; } = Text;
+        public bool Glow { get; init; }
+    }
+
+    // The palette the sheet is drawn with: the sheet style's (the same the engine prints with), else the theme's base.
+    private Palette CurrentPalette()
+    {
+        Palette basePalette = IsDark ? DarkPalette : LightPalette;
+        SheetStyle? style = SheetStyle;
+        if (style == null)
+            return basePalette with { TitleText = basePalette.Text, BoxText = basePalette.Text, OtherText = IsDark ? basePalette.HeaderText : basePalette.Text, Glow = IsDark };
+        SheetPalette p = style.Resolve(style.IsDarkPage(IsDark));
+        static Color C(uint argb) => Color.FromUInt32(argb);
+        return new Palette(C(p.Page), C(p.Table), C(p.Title), C(p.Mod), C(p.Border), C(p.Grid), C(p.Text), C(p.Faint), C(p.Line), C(p.Band), C(p.BandText),
+            C(p.BandBox), basePalette.Accent, basePalette.DropFill)
+        {
+            TitleText = C(p.TitleText),
+            BoxText = C(p.BandBoxText),
+            OtherText = C(p.OtherText),
+            Glow = (p.LineGlow >> 24) > 0
+        };
+    }
+
+    // The text size of the style on the tables (1 = their own size; never higher than a row).
+    private double TextScale => SheetStyle?.TextScale ?? 1.0;
+
+    private double RowText(double fraction) => Math.Min(0.8, fraction * TextScale);
 
     private static readonly Palette DarkPalette = new(Color.Parse("#2B3038"), Color.Parse("#F7F7F7"), Color.Parse("#D5DAE1"), Color.Parse("#E9ECF0"),
         Color.Parse("#0E1116"), Color.Parse("#9AA1AB"), Color.Parse("#0E1116"), Color.Parse("#8A919B"), Color.Parse("#E6E8EB"),
@@ -242,9 +281,10 @@ public sealed class CalloutSheetCanvas : Control
 
     public override void Render(DrawingContext context)
     {
-        Palette pal = IsDark ? DarkPalette : LightPalette;
-        // On JoyPro's own drawing the leader lines take the drawing style's leader colour (the engine's sheets too).
-        if (Source is LineArtImage art)
+        Palette pal = CurrentPalette();
+        // On JoyPro's own drawing the leader lines take the drawing style's leader colour (the engine's sheets too),
+        // unless the sheet style names the line colour.
+        if (Source is LineArtImage art && SheetStyle == null)
             pal = pal with { Line = Color.Parse(art.Colors(IsDark).Accent) };
         context.FillRectangle(new SolidColorBrush(IsDark ? Color.Parse("#1B1F25") : Color.Parse("#E9EDF2")), new Rect(Bounds.Size));
         CalloutSheet? sheet = Sheet;
@@ -279,15 +319,17 @@ public sealed class CalloutSheetCanvas : Control
         }
 
         double rh = sheet.RowHeight;
-        Typeface regular = new(SheetFont), bold = new(SheetFont, FontStyle.Normal, FontWeight.Bold);
+        FontFamily font = SheetStyle == null ? SheetFont : SheetStyleLook.SheetFont(SheetStyle);
+        Typeface regular = new(font, FontStyle.Normal, SheetStyle?.IsBold == true ? FontWeight.Bold : FontWeight.Normal), bold = new(font, FontStyle.Normal, FontWeight.Bold);
+        Typeface plain = new(font);
         DrawLines(context, sheet, vm, pal);
         foreach (CalloutTable table in sheet.Tables)
             DrawTable(context, sheet, vm, table, pal, regular, bold);
         if (sheet.OtherY >= 0)
             DrawText(context, T("Other controls (no spot on this picture yet: drag a table's handle to its spot, or use the marker assistant)"), bold, rh * 0.42,
-                new SolidColorBrush(IsDark ? pal.HeaderText : pal.Text), new Rect(ToView(rh * 0.8, sheet.OtherY), new Size(sheet.Width * zoom, sheet.TitleHeight * zoom)));
+                new SolidColorBrush(pal.OtherText), new Rect(ToView(rh * 0.8, sheet.OtherY), new Size(sheet.Width * zoom, sheet.TitleHeight * zoom)));
         if (HasHeader)
-            DrawHeader(context, sheet, pal, regular);
+            DrawHeader(context, sheet, pal, plain);
 
         // A line being dragged from a table's handle.
         if (drag == Drag.Line && dragTable != null)
@@ -321,7 +363,7 @@ public sealed class CalloutSheetCanvas : Control
             bool isLive = liveTables.Contains(line.Table);
             for (int i = 0; i + 1 < points.Count; i++)
             {
-                if (IsDark)
+                if (pal.Glow)
                     context.DrawLine(glow, points[i], points[i + 1]);
                 context.DrawLine(isLive ? livePen : isSelected ? selected : pen, points[i], points[i + 1]);
             }
@@ -343,7 +385,7 @@ public sealed class CalloutSheetCanvas : Control
             r = [r[0], r[1], dragTableWidth, r[3]];
         Rect rect = ToView(r);
         double rh = sheet.RowHeight * zoom, th = sheet.TitleHeight * zoom;
-        IBrush text = new SolidColorBrush(pal.Text), faint = new SolidColorBrush(pal.Faint);
+        IBrush text = new SolidColorBrush(pal.Text), faint = new SolidColorBrush(pal.Faint), titleText = new SolidColorBrush(pal.TitleText);
         IPen gridPen = new Pen(new SolidColorBrush(pal.Grid), Math.Max(0.6, rh * 0.03));
         bool isSelected = ReferenceEquals(table, vm.SelectedTable);
         context.FillRectangle(new SolidColorBrush(pal.Table), rect);
@@ -356,7 +398,7 @@ public sealed class CalloutSheetCanvas : Control
         // Several modifier combinations: each column is headed with its combination ("Shift A + B"); the title keeps
         // the main column.
         bool headed = columns > 0 && sheet.Combos.Count > 0;
-        DrawText(context, title, bold, sheet.RowHeight * 0.42, text, new Rect(rect.X + rh * 0.25, rect.Y, (headed ? rect.Width - modWidth : rect.Width) - rh * 0.5, th));
+        DrawText(context, title, bold, Math.Min(sheet.TitleHeight * 0.8, sheet.RowHeight * 0.42 * TextScale), titleText, new Rect(rect.X + rh * 0.25, rect.Y, (headed ? rect.Width - modWidth : rect.Width) - rh * 0.5, th));
         if (headed)
         {
             for (int c = 1; c <= columns; c++)
@@ -364,8 +406,11 @@ public sealed class CalloutSheetCanvas : Control
                 Rect head = new(rect.Right - modWidth + (c - 1) * colWidth, rect.Y, colWidth, th);
                 bool picked = isSelected && vm.SelectedColumn == c;
                 context.FillRectangle(new SolidColorBrush(picked ? pal.DropFill : pal.Mod), head);
+                // The modifier's colour of the sheet style as a bar over its column (as printed).
+                if (SheetStyle != null && SheetStyle.ModifierColor(sheet.ComboOfColumn(c)) is { Length: > 0 } modColor)
+                    context.FillRectangle(SheetStyleLook.BrushOf(modColor, Colors.Transparent), new Rect(head.X, head.Y, head.Width, Math.Max(2, th * 0.14)));
                 context.DrawLine(gridPen, head.TopLeft, head.BottomLeft);
-                DrawText(context, CalloutCombos.Label(sheet.ComboOfColumn(c)), bold, sheet.RowHeight * 0.34, faint, new Rect(head.X + rh * 0.12, head.Y, head.Width - rh * 0.2, th));
+                DrawText(context, CalloutCombos.Label(sheet.ComboOfColumn(c)), bold, sheet.RowHeight * RowText(0.34), faint, new Rect(head.X + rh * 0.12, head.Y, head.Width - rh * 0.2, th));
             }
         }
         context.DrawLine(gridPen, new Point(rect.X, rect.Y + th), new Point(rect.Right, rect.Y + th));
@@ -400,8 +445,8 @@ public sealed class CalloutSheetCanvas : Control
                     context.DrawLine(new Pen(new SolidColorBrush(pal.Grid, 0.35), Math.Max(0.5, rh * 0.02)), new Point(cell.X + rh * 0.3, cell.Y), new Point(cell.Right - rh * 0.3, cell.Y));
                 }
                 string label = row.Label + ":";
-                double labelWidth = DrawText(context, label, bold, sheet.RowHeight * 0.36, faint, new Rect(cell.X + rh * 0.15, cell.Y, cell.Width * 0.4, rh));
-                DrawText(context, main, regular, sheet.RowHeight * 0.5, text, new Rect(cell.X + rh * 0.2 + labelWidth, cell.Y, cell.Width - labelWidth - rh * 0.3, rh));
+                double labelWidth = DrawText(context, label, bold, sheet.RowHeight * RowText(0.36), faint, new Rect(cell.X + rh * 0.15, cell.Y, cell.Width * 0.4, rh));
+                DrawText(context, main, regular, sheet.RowHeight * RowText(0.5), text, new Rect(cell.X + rh * 0.2 + labelWidth, cell.Y, cell.Width - labelWidth - rh * 0.3, rh));
                 continue;
             }
             if (i > 0)
@@ -409,7 +454,7 @@ public sealed class CalloutSheetCanvas : Control
             DrawIcon(context, row, new Rect(cell.X, cell.Y, rh, rh), pal, bold);
             Rect textRect = new(cell.X + rh * 1.08, cell.Y, cell.Width - rh * 1.2, rh);
             if (main.Length > 0)
-                DrawText(context, main, regular, sheet.RowHeight * 0.5, text, textRect);
+                DrawText(context, main, regular, sheet.RowHeight * RowText(0.5), text, textRect);
             else if (row.Input.Length == 0 && row.Icon != "zone")
                 DrawText(context, T("not mapped: click to map it"), regular, sheet.RowHeight * 0.38, faint, textRect);
             else if (row.Icon == "zone" || Mode != DeviceCanvasMode.View)
@@ -421,7 +466,7 @@ public sealed class CalloutSheetCanvas : Control
                 if (!(dropTarget is { } d && ReferenceEquals(d.Table, table) && d.Row == i && d.Column == col) && !(rowSelected && vm.SelectedColumn == col))
                     context.FillRectangle(new SolidColorBrush(pal.Mod), modCell);
                 context.DrawLine(gridPen, modCell.TopLeft, modCell.BottomLeft);
-                DrawText(context, vm.RowText(table, row, col), regular, sheet.RowHeight * (columns > 2 ? 0.44 : 0.5), text, new Rect(modCell.X + rh * 0.15, modCell.Y, modCell.Width - rh * 0.25, rh));
+                DrawText(context, vm.RowText(table, row, col), regular, sheet.RowHeight * RowText(columns > 2 ? 0.44 : 0.5), text, new Rect(modCell.X + rh * 0.15, modCell.Y, modCell.Width - rh * 0.25, rh));
             }
         }
         if (!table.IsGrid)
@@ -529,7 +574,7 @@ public sealed class CalloutSheetCanvas : Control
             double labelWidth = used / zoom;
             Rect box = ToView([x + labelWidth + pad * 0.5, top + pad, Math.Max(10, slot - labelWidth - pad * 2.5), h - pad * 2]);
             context.FillRectangle(new SolidColorBrush(pal.HeaderBox), box);
-            DrawText(context, value, regular, h * 0.42, new SolidColorBrush(pal.Text), box.Deflate(new Thickness(pad * 0.5 * zoom, 0)));
+            DrawText(context, value, regular, h * 0.42, new SolidColorBrush(pal.BoxText), box.Deflate(new Thickness(pad * 0.5 * zoom, 0)));
             x += slot;
         }
     }

@@ -1,0 +1,207 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-rocinante",
+  "title": "Rocinante (The Expanse)",
+  "variants": [
+    "rocinante-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "The Expanse (TV series) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/The_Expanse_(TV_series)"
+    },
+    {
+      "id": "s2",
+      "title": "Leviathan Wakes (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Leviathan_Wakes"
+    }
+  ],
+  "intro": "The Rocinante is a fictional Martian light frigate in The Expanse, taken over by Holden's crew and flown by the pilot Alex Kamal. Its strong drive pushes so hard that the crew lies in crash couches (padded seats that take the push) during burns. The pilot's controls are built into the couch armrests, with touch screens in front; weapons and sensors are run from other couches.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Couch displays",
+      "text": "Screens on arms in front of each couch.",
+      "panels": [
+        {
+          "id": "couch-displays",
+          "name": "Couch displays",
+          "db": "couch-displays",
+          "src": "s1",
+          "text": "Touch screens on movable arms that swing in front of each crash couch.",
+          "context": "The crew works the ship through these screens while lying in the couches.",
+          "controls": [
+            {
+              "id": "screens",
+              "name": "Articulated screens",
+              "type": "display",
+              "match": [
+                "item:couch-displays:1"
+              ],
+              "text": "Touch screens on movable arms swing in front of the couch, within reach of the pilot's hands.",
+              "context": "Because the crew is pressed into the couches during hard burns, the screens come to them.",
+              "src": "s1"
+            },
+            {
+              "id": "tactical",
+              "name": "Tactical display",
+              "type": "display",
+              "match": [
+                "item:couch-displays:2"
+              ],
+              "text": "This screen shows other ships around and the paths of torpedoes.",
+              "context": "The crew watches it in battles to see what is coming and to aim.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "couch",
+      "where": "floor",
+      "name": "Crash couch",
+      "text": "The gel couch that turns with the push of the drive.",
+      "panels": [
+        {
+          "id": "crash-couch",
+          "name": "Crash couch",
+          "db": "crash-couch",
+          "src": "s1",
+          "text": "A padded gel couch that holds the crew member during very hard pushes of the drive.",
+          "context": "Strong burns would hurt a person sitting normally; the couch spreads the push over the whole body.",
+          "controls": [
+            {
+              "id": "couch",
+              "name": "Gel couch",
+              "type": "other",
+              "match": [
+                "item:crash-couch:1"
+              ],
+              "text": "The couch turns so the crew member always faces the direction of the push.",
+              "context": "This way the push presses the body into the gel instead of throwing it around.",
+              "src": "s1"
+            },
+            {
+              "id": "juice",
+              "name": "Juice injection",
+              "type": "other",
+              "match": [
+                "item:crash-couch:2"
+              ],
+              "text": "The couch injects a mix of drugs, called juice in the series, that helps the body survive very hard burns.",
+              "context": "It keeps the crew awake and alive when the push of the drive is many times stronger than gravity.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ops",
+      "where": "rear",
+      "name": "Ops deck stations",
+      "text": "The other crew couches for weapons and sensors.",
+      "panels": [
+        {
+          "id": "ops-deck",
+          "name": "Ops deck stations",
+          "db": "ops-deck",
+          "src": "s1",
+          "text": "The couches of the other crew members, who run the weapons, sensors and radio.",
+          "context": "The pilot flies while the others fight and watch.",
+          "controls": [
+            {
+              "id": "pdc",
+              "name": "PDC control",
+              "type": "other",
+              "match": [
+                "item:ops-deck:1"
+              ],
+              "text": "Control of the PDCs, point defence cannons: fast-firing guns that shoot down incoming torpedoes.",
+              "context": "They protect the ship automatically or under a crew member's control.",
+              "src": "s1"
+            },
+            {
+              "id": "torpedo",
+              "name": "Torpedo launch",
+              "type": "button",
+              "match": [
+                "item:ops-deck:2"
+              ],
+              "text": "This control fires the Rocinante's torpedoes at other ships.",
+              "context": "A crew member on the ops deck aims and launches them in a battle.",
+              "src": "s1"
+            },
+            {
+              "id": "sensors",
+              "name": "Sensors and comms",
+              "type": "other",
+              "match": [
+                "item:ops-deck:3"
+              ],
+              "text": "A console for the sensors and the radio (comms).",
+              "context": "It finds other ships and talks to them.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Armrest controllers",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right armrest controller",
+          "src": "s1",
+          "text": "The grip on the right armrest of the pilot's couch.",
+          "context": "It steers the ship during the burns.",
+          "controls": [
+            {
+              "id": "controller",
+              "name": "Right armrest controller",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving this grip tips the ship's nose up and down and rolls the ship.",
+              "context": "It is built into the armrest so the pilot can steer while pressed into the couch.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Left armrest controller",
+          "src": "s1",
+          "text": "The grip on the left armrest of the pilot's couch.",
+          "context": "The catalog takes it as the drive control.",
+          "controls": [
+            {
+              "id": "controller",
+              "name": "Left armrest controller",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This grip is taken as the control for how hard the drive pushes.",
+              "context": "The series does not show its job exactly, so this is the catalog's guess.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

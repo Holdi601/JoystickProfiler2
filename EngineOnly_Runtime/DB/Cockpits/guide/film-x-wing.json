@@ -1,0 +1,297 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-x-wing",
+  "title": "T-65B X-wing (Star Wars, A New Hope)",
+  "variants": [
+    "x-wing-t-65b"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "X-wing fighter (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/X-wing_fighter"
+    },
+    {
+      "id": "s2",
+      "title": "Star Wars (1977 film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Wars_(film)"
+    },
+    {
+      "id": "s3",
+      "title": "X-wing Starfighter (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/x-wing-starfighter"
+    }
+  ],
+  "intro": "The X-wing is a fictional starfighter from the Star Wars films: the Rebel Alliance's single-seat fighter with wings that split into an X, four laser cannons and proton torpedoes. The pilot sits under a long canopy with a two-handed yoke in front and switch-covered consoles left and right; an astromech droid (a small repair robot) rides in a socket behind. This guide follows the cockpit as seen in A New Hope (1977).",
+  "areas": [
+    {
+      "id": "scope",
+      "where": "glareshield",
+      "name": "Targeting computer scope",
+      "text": "The fold-down targeting scope in front of the pilot's eyes.",
+      "panels": [
+        {
+          "id": "targeting-scope",
+          "name": "Targeting computer scope",
+          "db": "targeting-scope",
+          "src": "s2",
+          "text": "A small screen on an arm that swings down in front of the pilot's eyes to help aim at a tiny target.",
+          "context": "In the film it is used for the attack run down the trench of the Death Star.",
+          "controls": [
+            {
+              "id": "scope",
+              "name": "Targeting scope",
+              "type": "display",
+              "match": [
+                "item:targeting-scope:1"
+              ],
+              "text": "This hood-shaped display swings down to the pilot's eyes. It shows a wire-frame picture of the trench and the target.",
+              "context": "It replaces looking out of the canopy for the last part of the attack.",
+              "src": "s2"
+            },
+            {
+              "id": "countdown",
+              "name": "Range countdown",
+              "type": "display",
+              "match": [
+                "item:targeting-scope:2"
+              ],
+              "text": "Numbers on the scope count down the distance to the target, the small exhaust port.",
+              "context": "When the count reaches the right point the pilot fires the torpedoes.",
+              "src": "s2"
+            },
+            {
+              "id": "switch",
+              "name": "Targeting computer switch",
+              "type": "switch2",
+              "match": [
+                "item:targeting-scope:3",
+                "control:panel.switch.targeting_computer"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The scope swings down and shows the target picture."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The scope is stowed and the pilot looks out of the canopy."
+                }
+              ],
+              "text": "This switch turns the targeting computer on and swings the scope down in front of the pilot's eyes. Switching it off folds the scope away.",
+              "context": "In the film Luke switches it on for the trench run and later switches it off again to aim by himself.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Small screens and readouts under the canopy rim.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s2",
+          "text": "A few small screens and lights in front of the pilot: the sensors, the droid's messages and the state of the ship.",
+          "context": "The pilot glances at them between looks out of the canopy.",
+          "controls": [
+            {
+              "id": "sensor",
+              "name": "Sensor scope",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This round screen shows where targets and chasing enemy fighters are around the X-wing.",
+              "context": "It warns the pilot of fighters coming from behind, outside the view.",
+              "src": "s1"
+            },
+            {
+              "id": "droid-screen",
+              "name": "Astromech message screen",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This screen shows the droid's beeps translated into words, so the pilot can read what the droid says.",
+              "context": "The droid behind the pilot reports problems and repairs through it.",
+              "src": "s2"
+            },
+            {
+              "id": "lights",
+              "name": "Status lights and readouts",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Small lights show the state of systems, shields and damage.",
+              "context": "The film does not explain each light; together they tell the pilot whether the fighter is healthy.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consoles",
+      "where": "left-console",
+      "name": "Side consoles",
+      "text": "Rows of switches and lights on both sides of the seat.",
+      "panels": [
+        {
+          "id": "side-consoles",
+          "name": "Side consoles",
+          "db": "side-consoles",
+          "src": "s2",
+          "text": "Banks of switches and lights beside the seat, plus the switch that opens the wings.",
+          "context": "The pilots flip them during the start-up and in the fight; the film shows them busy but does not explain every switch.",
+          "controls": [
+            {
+              "id": "s-foils",
+              "name": "S-foil control",
+              "type": "switch2",
+              "match": [
+                "item:side-consoles:1",
+                "control:panel.switch.s_foils"
+              ],
+              "positions": [
+                {
+                  "name": "ATTACK",
+                  "text": "The wings are open in the X shape; the fighter is ready to fight."
+                },
+                {
+                  "name": "CRUISE",
+                  "text": "The wings are closed flat for normal travel."
+                }
+              ],
+              "text": "This control opens the X-wing's wings (S-foils) into the X shape for attack, or closes them flat for cruising.",
+              "context": "In the film the leader orders the pilots to lock the S-foils in attack position before the battle; open wings spread the four cannons apart.",
+              "src": "s2"
+            },
+            {
+              "id": "left-switches",
+              "name": "Left console switches",
+              "type": "switch",
+              "match": [
+                "item:side-consoles:2"
+              ],
+              "text": "A bank of toggle switches on the left side of the seat. The pilot flips them during start-up and in combat.",
+              "context": "The film does not show what each switch does; they belong to the fighter's systems.",
+              "src": "s2"
+            },
+            {
+              "id": "right-switches",
+              "name": "Right console switches",
+              "type": "switch",
+              "match": [
+                "item:side-consoles:3"
+              ],
+              "text": "A second bank of toggles and lights on the right side of the seat.",
+              "context": "Like the left bank, it is part of the busy cockpit the film shows without naming each switch.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "droid",
+      "where": "rear",
+      "name": "Astromech droid socket",
+      "text": "The droid socket behind the canopy.",
+      "panels": [
+        {
+          "id": "astromech",
+          "name": "Astromech droid socket",
+          "db": "astromech",
+          "src": "s2",
+          "text": "A round socket behind the canopy where a small droid rides along.",
+          "context": "The droid helps the pilot with navigation and repairs during the flight.",
+          "controls": [
+            {
+              "id": "droid",
+              "name": "Astromech droid (R2 unit)",
+              "type": "other",
+              "match": [
+                "item:astromech:1"
+              ],
+              "text": "An R2 unit, a small robot, sits in the socket. It carries navigation data and repairs the fighter in flight.",
+              "context": "In the film R2-D2 fixes a damaged part of Luke's fighter during the battle.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control yoke and throttle",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control yoke",
+          "src": "s2",
+          "text": "The two-handed yoke the pilot steers with.",
+          "context": "Both hands stay on it; the fire buttons are under the thumbs.",
+          "controls": [
+            {
+              "id": "yoke",
+              "name": "Control yoke",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the yoke forward or pulling it back tips the nose down or up; turning it rolls and banks the fighter.",
+              "context": "The yoke sits on a column in front of the pilot, held with both hands.",
+              "src": "s2"
+            },
+            {
+              "id": "fire",
+              "name": "Fire buttons",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Buttons on the yoke grips under the thumbs fire the four laser cannons.",
+              "context": "With the wings open the four cannons fire from the wingtips.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s2",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "A New Hope does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -216,7 +216,17 @@ public sealed partial class MainWindowViewModel
         {
             words.Add(T("not bound unbound"));
         }
-        return new FilterSubject(relation.Name, DisplayText.List(relation.Groups), gamePlanes, device, isBound, relation.IsAxis, string.Join("\u0001", words));
+        return new FilterSubject(relation.Name, DisplayText.List(relation.Groups), gamePlanes, device, isBound, relation.IsAxis, string.Join("\u0001", words),
+            relation.ActionTitles);
+    }
+
+    // With a typed search the best fits come first (the relation called so, then names starting with it, then names
+    // with every word, then the ones found by their actions), each part in the page's sort.
+    private static IEnumerable<T> RankBySearch<T>(ListFilterViewModel filter, IEnumerable<T> rows, Func<T, FilterSubject?> subject, Func<IEnumerable<T>, IEnumerable<T>> sort)
+    {
+        if (!filter.HasSearch)
+            return sort(rows);
+        return rows.GroupBy(r => filter.SearchRank(subject(r))).OrderBy(g => g.Key).SelectMany(g => sort(g));
     }
 
     // The relation list changed (parse, a bind, a card's counts): new subjects, then the filters.
@@ -233,9 +243,9 @@ public sealed partial class MainWindowViewModel
     private void ApplyRelationFilter()
     {
         Stopwatch watch = Stopwatch.StartNew();
-        List<RelationListItem> shown = RelationSort.Sort(allRelations
+        List<RelationListItem> shown = RankBySearch(RelationFilter, allRelations
             .Where(r => RelationFilter.Matches(relationSubjects.GetValueOrDefault(r.Name)))
-            .OrderBy(v => v.Name, StringComparer.OrdinalIgnoreCase), SortRowOf)
+            .OrderBy(v => v.Name, StringComparer.OrdinalIgnoreCase), r => relationSubjects.GetValueOrDefault(r.Name), rows => RelationSort.Sort(rows, SortRowOf))
             .ToList();
         FillRelationList(shown);
         watch.Stop();

@@ -1,0 +1,151 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-ah-1z",
+  "title": "AH-1Z Viper (pilot)",
+  "inherits": "real-ah-1w",
+  "variants": [
+    "ah-1z"
+  ],
+  "games": [
+    "WarThunder",
+    "Arma2"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w4",
+      "title": "Bell AH-1Z Viper (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Bell_AH-1Z_Viper"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The AH-1Z Viper is the newest Cobra of the US Marine Corps (from 2010): a four-bladed rotor, two T700 engines and a glass cockpit with screens in both seats, shared with the UH-1Y Venom. The gunner in front aims the targeting sight; both crew members have helmet displays. The switches of its modern grips are not described in public sources, so JoyPro keeps the basic Cobra controls of the AH-1W (force trim, radio, rocket button, gun trigger, power levers), and this guide builds on the AH-1W guide.",
+  "remove": [
+    "instrument-panel-w",
+    "reflex-sight",
+    "armament-w",
+    "radios"
+  ],
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The screens, the standby instrument and the data entry keyboard.",
+      "panels": [
+        {
+          "id": "instrument-panel-z",
+          "name": "Instrument panel (glass cockpit)",
+          "text": "Two colour screens and a smaller display in each seat, with a standby instrument and the master warning lights.",
+          "context": "The AH-1Z shares this glass cockpit with the UH-1Y Venom; the gauges of the older Cobras became pages on the screens.",
+          "controls": [
+            {
+              "id": "mfd",
+              "name": "Multifunction displays (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Two large colour screens (multi-function screens with buttons around their edge). They show the flight instruments, the map, the weapons, the targeting sensor picture and the engines.",
+              "context": "Instead of dozens of round dials, the crew picks the page each screen shows; one screen can replace another that fails.",
+              "src": "w4"
+            },
+            {
+              "id": "dfd",
+              "name": "Dual-function display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A smaller screen that shows the engine and fuel data, or a backup page when a big screen fails.",
+              "context": "It keeps the most important engine numbers in view while the big screens show the mission.",
+              "src": "w4"
+            },
+            {
+              "id": "bezel",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Buttons around the edge of each screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The crew uses them to change pages and options; the page layout is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby",
+              "name": "Standby flight display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A small separate instrument that shows the attitude (nose up or down, leaning left or right), the speed and the height. It keeps working when the big screens fail.",
+              "context": "It is the backup that lets the pilot fly safely to a landing if the main displays go dark."
+            },
+            {
+              "id": "mwc",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "Two big lights: master warning means \"danger now\", master caution means \"something needs your attention\". The message on the display says what is wrong.",
+              "context": "Pressing the light usually acknowledges it, so it is ready to show the next problem."
+            }
+          ]
+        },
+        {
+          "id": "data-entry-keyboard",
+          "name": "Data entry keyboard",
+          "text": "A keyboard with a small screen for typing navigation, radio and weapon data.",
+          "context": "It replaces the separate radio boxes of the older Cobras; radios and navigation are set through it. JoyPro's sources do not describe its single switches.",
+          "controls": [
+            {
+              "id": "keys",
+              "name": "Keyboard",
+              "type": "keypad",
+              "match": [
+                "item:data-entry-keyboard:1"
+              ],
+              "text": "Letter and number keys, like a small computer keyboard, for typing navigation points, frequencies and codes.",
+              "context": "The crew types what is needed, checks it on the scratchpad and sends it to the system.",
+              "src": "w4"
+            },
+            {
+              "id": "scratchpad",
+              "name": "Scratchpad display",
+              "type": "display",
+              "match": [
+                "item:data-entry-keyboard:2"
+              ],
+              "text": "A small text display that shows what has been typed before it is sent (the scratchpad).",
+              "context": "A typing mistake can be seen and corrected here before it changes anything."
+            },
+            {
+              "id": "fkeys",
+              "name": "Function keys",
+              "type": "button",
+              "match": [
+                "item:data-entry-keyboard:3"
+              ],
+              "text": "Keys that call up the pages for the radios, the navigation and the weapons.",
+              "context": "They choose what the typed data is for. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The power levers of the two T700 engines.",
+      "panels": []
+    }
+  ]
+}

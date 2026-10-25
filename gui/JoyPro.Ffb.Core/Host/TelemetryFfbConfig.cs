@@ -6,7 +6,7 @@ using JoyPro.Ffb.Core.Graph;
 namespace JoyPro.Ffb.Core.Host;
 
 /// <summary>Where telemetry force feedback keeps its files: &lt;data&gt;\Ffb\Telemetry.</summary>
-/// <remarks>&lt;data&gt; is JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro (the engine's data folder, see
+/// <remarks>&lt;data&gt; is JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro2 (the engine's data folder, see
 /// engine/GameBackups.cs). The engine CLI (engine ffb telemetry ...) edits the same config file.</remarks>
 public static class TelemetryFfbPaths
 {
@@ -17,10 +17,7 @@ public static class TelemetryFfbPaths
 
     public static string DataRoot()
     {
-        var root = Environment.GetEnvironmentVariable(DataFolderVariable);
-        return string.IsNullOrWhiteSpace(root)
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro")
-            : root;
+        return JoyPro.Logging.JoyProDataFolder.Root();
     }
 
     public static string Folder() => Path.Combine(DataRoot(), "Ffb", "Telemetry");

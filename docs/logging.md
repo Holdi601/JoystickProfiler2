@@ -22,7 +22,7 @@ The folder is `<data>\Logs`:
 3. else `%LOCALAPPDATA%\JoyPro2\Logs`.
 
 It sits next to `CrashReports` (`%LOCALAPPDATA%\JoyPro2\CrashReports`). The engine and JoyPro.Ffb keep their other data
-in `%LOCALAPPDATA%\JoyPro`; the logs go to the `JoyPro2` folder for all three so the GUI finds them for a report.
+in `%LOCALAPPDATA%\JoyPro2`; the logs go to the `JoyPro2` folder for all three so the GUI finds them for a report.
 Settings > Report a Problem > `Open Log Folder` opens it.
 
 The code is one file, `engine\JoyProLog.cs` (plain C# 7.3): the engine compiles it, `JoyPro.Ffb.Core` links it, and

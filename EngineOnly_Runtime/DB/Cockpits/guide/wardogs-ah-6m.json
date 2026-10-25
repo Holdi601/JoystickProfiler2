@@ -1,0 +1,188 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "wardogs-ah-6m",
+  "title": "AH-6M Little Bird (WARDOGS)",
+  "inherits": "game-wardogs",
+  "remove": [
+    "cyclic",
+    "collective"
+  ],
+  "variants": [
+    "wardogs-ah-6m"
+  ],
+  "games": [
+    "Wardogs"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "WARDOGS helicopters (allthings.how)",
+      "kind": "tutorial",
+      "url": "https://allthings.how/wardogs-helicopters-controls-flight-assist-and-unlock-costs/"
+    },
+    {
+      "id": "w1",
+      "title": "WARDOGS HOTAS controls guide",
+      "kind": "tutorial",
+      "url": "https://thewardogsguide.com/wardogs-controls-hotas"
+    },
+    {
+      "id": "w2",
+      "title": "WARDOGS helicopters: controls, flight assist and unlock costs",
+      "kind": "tutorial",
+      "url": "https://allthings.how/wardogs-helicopters-controls-flight-assist-and-unlock-costs/"
+    },
+    {
+      "id": "wg",
+      "title": "WARDOGS joystick settings (GameUserSettings.ini, [/Script/WDJoystick.WDJoystickSettings]; JoyPro DB/Wardogs/actions.tsv)",
+      "kind": "game-files",
+      "file": "%LOCALAPPDATA%/Wardogs/Saved/Config/WindowsClient/GameUserSettings.ini"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The AH-6M is the armed Little Bird with fixed miniguns that the pilot fires. It has the same small cabin as the MH-6 and is unlocked at pilot level 4.",
+  "areas": [
+    {
+      "id": "flight-controls",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The shared joystick layout with this helicopter's own trigger.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic (stick)",
+          "src": "wg",
+          "text": "The joystick is the cyclic: the stick that tilts the rotor to fly forward, back and sideways. Its buttons fire, drop flares, lock targets and reload.",
+          "context": "WARDOGS binds the stick's axes by default but leaves its buttons free; the player assigns them in the joystick settings.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic (stick axes)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Forward and back pitch the nose down and up, sideways rolls the helicopter. The stick sets how fast it turns, not a fixed angle. Twisting the stick turns the nose left and right (yaw).",
+              "context": "By default X is roll, Y is pitch and the twist axis is yaw.",
+              "src": "wg"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (miniguns)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Fires the AH-6M's fixed miniguns. They point where the helicopter's nose points, so the pilot aims by turning the whole helicopter.",
+              "context": "The HUD shows the rounds left; the reload button refills the guns.",
+              "src": "s1"
+            },
+            {
+              "id": "flares",
+              "name": "Thumb button (flares)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "Fires flares, hot burning decoys that pull heat-seeking missiles away from the helicopter.",
+              "context": "The pilot fires them as soon as a missile warning comes; the HUD shows how many are left.",
+              "src": "wg"
+            },
+            {
+              "id": "lock",
+              "name": "Second thumb button (cycle lock state)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "Steps through the target lock states, for example to lock a target for the weapons.",
+              "context": "The lock state shows on the HUD.",
+              "src": "wg"
+            },
+            {
+              "id": "reload",
+              "name": "Third thumb button (reload)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "Reloads the weapon with the ammunition the helicopter carries.",
+              "context": "The ammunition count on the HUD shows when a reload is needed.",
+              "src": "wg"
+            },
+            {
+              "id": "hat",
+              "name": "Hat switch (look around)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "Turns the pilot's view up, down, left and right.",
+              "context": "Looking around helps to find the landing zone and threats beside the helicopter.",
+              "src": "wg"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective (throttle)",
+          "src": "wg",
+          "text": "The throttle lever works as the collective, the lever that makes the helicopter climb or sink. Its buttons hold voice chat, the map and the camera.",
+          "context": "By default the collective is the joystick's Z axis, the throttle wheel or lever on most stick bases.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pushing the lever up makes the rotor lift harder so the helicopter climbs; pulling it down makes it sink.",
+              "context": "The pilot uses it with the cyclic: more lift to climb out of a landing zone, less to come down on it.",
+              "src": "wg"
+            },
+            {
+              "id": "ptt",
+              "name": "Throttle button (voice push-to-talk)",
+              "type": "button",
+              "match": [
+                "control:collective.button.1"
+              ],
+              "text": "While held, the player's microphone sends voice to the team.",
+              "context": "Talking to the squad in the back is how the pilot coordinates drop-offs.",
+              "src": "wg"
+            },
+            {
+              "id": "map",
+              "name": "Second throttle button (tactical map)",
+              "type": "button",
+              "match": [
+                "control:collective.button.2"
+              ],
+              "text": "Opens the tactical map with the battlefield and the objectives.",
+              "context": "The pilot plans the route to the next landing zone on it.",
+              "src": "wg"
+            },
+            {
+              "id": "camera",
+              "name": "Third throttle button (camera mode)",
+              "type": "button",
+              "match": [
+                "control:collective.button.3"
+              ],
+              "text": "Switches the camera mode, for example between the cockpit view and an outside view.",
+              "context": "An outside view helps to judge the space around the rotor when landing.",
+              "src": "wg"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,544 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-apollo-lm",
+  "title": "Apollo Lunar Module (commander)",
+  "variants": [
+    "apollo-lm"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Apollo Experience Report: Spacecraft Hand Controller Development (NASA TN D-7884)",
+      "kind": "manual",
+      "url": "https://ntrs.nasa.gov/citations/19750010202"
+    },
+    {
+      "id": "s2",
+      "title": "Apollo Lunar Module (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Apollo_Lunar_Module"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Apollo Lunar Module (1969-1972) landed two astronauts on the Moon. There were no seats: the commander stood on the left and the LM pilot on the right, held by straps, looking out of two triangular windows. The commander had the attitude controller (ACA) at his right hand and the thrust/translation controller (TTCA) at his left; the LM pilot had a second set. Panel numbers and contents follow the Apollo operations handbook as known, not checked page by page.",
+  "areas": [
+    {
+      "id": "windows",
+      "where": "glareshield",
+      "name": "Windows and LPD scribe",
+      "text": "The front windows and the docking window.",
+      "panels": [
+        {
+          "id": "windows",
+          "name": "Triangular windows and LPD scribe",
+          "text": "The two triangular front windows and the small docking window in the roof.",
+          "context": "The crew looked out of the front windows for the landing and out of the roof window for docking.",
+          "controls": [
+            {
+              "id": "lpd",
+              "name": "Forward windows with LPD scribe marks",
+              "type": "other",
+              "match": [
+                "item:windows:1"
+              ],
+              "text": "The commander's window has a scale of marks (landing point designator). The computer shows a number; looking past that mark, the commander sees where the computer is going to land.",
+              "context": "If the spot looked bad, the commander moved the target with the hand controller; on Apollo 11 he took over by hand to avoid a boulder field.",
+              "src": "s2"
+            },
+            {
+              "id": "dock-win",
+              "name": "Overhead docking window",
+              "type": "other",
+              "match": [
+                "item:windows:2"
+              ],
+              "text": "A small window in the roof with an alignment sight for docking with the Command Module.",
+              "context": "During docking the commander looked up through it and lined up the target.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cdr-panels",
+      "where": "front-left",
+      "name": "Commander's panels 1 and 5",
+      "text": "Flight displays and engine buttons.",
+      "panels": [
+        {
+          "id": "p1",
+          "name": "Panel 1 (commander's flight displays)",
+          "text": "The commander's flight instruments for the landing on the Moon.",
+          "context": "The commander flew the landing standing at the left window, watching these instruments and the ground.",
+          "controls": [
+            {
+              "id": "fdai",
+              "name": "FDAI",
+              "type": "gauge",
+              "match": [
+                "item:p1:1"
+              ],
+              "text": "The commander's attitude ball, which shows which way the Lunar Module points, with needles for the turning rate and for the error to the wanted attitude.",
+              "context": "It is the main instrument for pointing the Lunar Module during the descent and in orbit.",
+              "src": "s2"
+            },
+            {
+              "id": "xpointer",
+              "name": "X-pointer",
+              "type": "gauge",
+              "match": [
+                "item:p1:2"
+              ],
+              "text": "Two crossed needles that show how fast the Lunar Module moves forward or back and sideways over the ground.",
+              "context": "Before touchdown the commander tried to bring both needles to the centre, so the craft landed without sliding."
+            },
+            {
+              "id": "tapes",
+              "name": "Altitude and altitude-rate tapes",
+              "type": "gauge",
+              "match": [
+                "item:p1:3"
+              ],
+              "text": "Moving tapes that show the height above the Moon and how fast it changes, from the landing radar or the guidance computer.",
+              "context": "They told the crew how high they were and how fast they were coming down."
+            },
+            {
+              "id": "thrust",
+              "name": "Thrust and thrust/weight indicators",
+              "type": "gauge",
+              "match": [
+                "item:p1:4"
+              ],
+              "text": "Gauges that show how hard the descent engine pushes, also compared with the weight of the Lunar Module.",
+              "context": "The descent engine could be throttled, so the crew watched how much thrust it gave."
+            },
+            {
+              "id": "abort",
+              "name": "ABORT and ABORT STAGE pushbuttons",
+              "type": "button",
+              "match": [
+                "item:p1:5"
+              ],
+              "text": "Two emergency buttons. ABORT climbs back to orbit with the descent engine; ABORT STAGE drops the descent stage and climbs back with the ascent engine.",
+              "context": "They were the way out if the landing had to be given up.",
+              "src": "s2"
+            },
+            {
+              "id": "alarm",
+              "name": "Master alarm",
+              "type": "light",
+              "match": [
+                "item:p1:6"
+              ],
+              "text": "A light that comes on with a tone when a system has a problem. Pressing it switches the alarm off.",
+              "context": "The labelled caution and warning lights then show which system it is."
+            }
+          ]
+        },
+        {
+          "id": "p5",
+          "name": "Panel 5 (commander's lower panel)",
+          "text": "Engine start and stop buttons, the +X translation button and lighting controls at the commander's left.",
+          "context": "These buttons let the commander start or stop an engine by hand.",
+          "controls": [
+            {
+              "id": "start-stop",
+              "name": "ENGINE START / STOP pushbuttons",
+              "type": "button",
+              "match": [
+                "item:p5:1"
+              ],
+              "text": "Buttons that start or stop the armed engine by hand.",
+              "context": "Normally the computer starts and stops the engines; these buttons are the manual way."
+            },
+            {
+              "id": "plus-x",
+              "name": "+X translation button",
+              "type": "button",
+              "match": [
+                "item:p5:2"
+              ],
+              "text": "Pressing this button fires four steering jets that push the Lunar Module forward along its engine line (+X).",
+              "context": "This short push settles the fuel at the bottom of the tanks before the engine starts (ullage)."
+            },
+            {
+              "id": "lights",
+              "name": "Lighting controls",
+              "type": "knob",
+              "match": [
+                "item:p5:3"
+              ],
+              "text": "Knobs for the panel lights and the floodlights of the cabin.",
+              "context": "They are set for the light conditions; the sunlight on the Moon is very harsh."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "where": "front-center",
+      "name": "Panel 3",
+      "text": "Engine, guidance and radar controls.",
+      "panels": [
+        {
+          "id": "p3",
+          "name": "Panel 3 (centre: engine, guidance, radar)",
+          "text": "The shared controls between the two crewmen: engine arming, guidance choice, throttle mode, attitude modes and radars.",
+          "context": "Both crewmen could reach it; it decided which engine, which computer and which radar were used.",
+          "controls": [
+            {
+              "id": "eng-arm",
+              "name": "Engine arm switch",
+              "type": "switch3",
+              "match": [
+                "item:p3:1"
+              ],
+              "positions": [
+                {
+                  "name": "ASC",
+                  "text": "The ascent engine is armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No engine is armed."
+                },
+                {
+                  "name": "DES",
+                  "text": "The descent engine is armed."
+                }
+              ],
+              "text": "This switch arms the ascent engine or the descent engine, so it can be started.",
+              "context": "It is a safety step before every burn.",
+              "src": "s2"
+            },
+            {
+              "id": "guid",
+              "name": "Guidance control",
+              "type": "switch2",
+              "match": [
+                "item:p3:2"
+              ],
+              "positions": [
+                {
+                  "name": "PGNS",
+                  "text": "The primary guidance system flies."
+                },
+                {
+                  "name": "AGS",
+                  "text": "The abort guidance system flies."
+                }
+              ],
+              "text": "This switch chooses which computer flies the Lunar Module: the primary guidance system (PGNS) or the abort guidance system (AGS), a smaller backup computer.",
+              "context": "The backup could bring the crew back to orbit if the main computer failed.",
+              "src": "s2"
+            },
+            {
+              "id": "thr-ctl",
+              "name": "Engine thrust control",
+              "type": "switch",
+              "match": [
+                "item:p3:3"
+              ],
+              "text": "Switches that decide whether the computer or the crew sets the thrust of the descent engine.",
+              "context": "In manual, the commander sets the thrust with the thrust/translation controller. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "att-modes",
+              "name": "Attitude control mode switches",
+              "type": "switch",
+              "match": [
+                "item:p3:4"
+              ],
+              "text": "Switches that set, for each direction of turning, how the steering jets are controlled and how far the attitude may drift before they fire (deadband).",
+              "context": "JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "radar",
+              "name": "Radar mode selectors",
+              "type": "selector",
+              "match": [
+                "item:p3:5"
+              ],
+              "text": "Knobs for the two radars: the rendezvous radar, which finds the Command Module, and the landing radar, which measures height and speed above the Moon.",
+              "context": "The landing radar fed the computer during the last part of the descent. JoyPro's sources do not describe its single switches.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4",
+      "where": "center-pedestal",
+      "name": "Panel 4",
+      "text": "The guidance computer keyboard.",
+      "panels": [
+        {
+          "id": "p4",
+          "name": "Panel 4 (DSKY)",
+          "text": "The keyboard of the guidance computer between the crewmen.",
+          "context": "It works like the one in the Command Module.",
+          "controls": [
+            {
+              "id": "dsky",
+              "name": "DSKY",
+              "type": "keypad",
+              "match": [
+                "item:p4:1"
+              ],
+              "text": "The display and keyboard of the Lunar Module's guidance computer. The crew types two-digit VERB and NOUN commands and reads the numbers it shows.",
+              "context": "The computer flew the descent; during Apollo 11 it showed program alarms on this display before the landing.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lmp-panels",
+      "where": "front-right",
+      "name": "LM pilot's panels 2 and 6",
+      "text": "Flight displays and the backup computer.",
+      "panels": [
+        {
+          "id": "p2",
+          "name": "Panel 2 (LM pilot's flight displays)",
+          "text": "The LM pilot's own flight instruments, the thruster gauges and the caution lights.",
+          "context": "The LM pilot stood on the right and read out the numbers while the commander flew.",
+          "controls": [
+            {
+              "id": "fdai2",
+              "name": "FDAI",
+              "type": "gauge",
+              "match": [
+                "item:p2:1"
+              ],
+              "text": "The LM pilot's attitude ball, a second copy of the commander's.",
+              "context": "Either crewman could fly; the second set of instruments made that possible."
+            },
+            {
+              "id": "xpointer2",
+              "name": "X-pointer",
+              "type": "gauge",
+              "match": [
+                "item:p2:2"
+              ],
+              "text": "The LM pilot's display of the forward and sideways speed over the ground.",
+              "context": "It repeats the commander's display for the right-hand station."
+            },
+            {
+              "id": "rcs",
+              "name": "RCS indicators",
+              "type": "gauge",
+              "match": [
+                "item:p2:3"
+              ],
+              "text": "Gauges for the fuel and pressure of the small steering jets (RCS, reaction control system).",
+              "context": "Without the steering jets the Lunar Module cannot turn, so their fuel is watched."
+            },
+            {
+              "id": "cw",
+              "name": "Caution and warning lights",
+              "type": "light",
+              "match": [
+                "item:p2:4"
+              ],
+              "text": "A board of labelled lights, each saying which system has a problem.",
+              "context": "When the master alarm sounds, the crew looks here."
+            }
+          ]
+        },
+        {
+          "id": "p6",
+          "name": "Panel 6 (LM pilot's lower panel)",
+          "text": "The keyboard of the backup computer at the LM pilot's station.",
+          "context": "The LM pilot used it to set up the abort guidance system.",
+          "controls": [
+            {
+              "id": "deda",
+              "name": "DEDA",
+              "type": "keypad",
+              "match": [
+                "item:p6:1"
+              ],
+              "text": "The data entry and display assembly: a keypad and display for the abort guidance system, the backup computer.",
+              "context": "The LM pilot kept the backup computer up to date, so it could take over at any time.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "side",
+      "where": "left-side",
+      "name": "Side panels",
+      "text": "Circuit breakers and system panels.",
+      "panels": [
+        {
+          "id": "side",
+          "name": "Side panels 8, 11, 12, 14 and 16",
+          "text": "Circuit breakers and system panels on the side walls of the cabin.",
+          "context": "Most were set before the descent; the breakers protect the electrical lines.",
+          "controls": [
+            {
+              "id": "p8",
+              "name": "Panel 8 (left)",
+              "type": "switch",
+              "match": [
+                "item:side:1"
+              ],
+              "text": "Switches for the explosive devices (for example deploying the landing legs and separating the two stages) and the commander's audio.",
+              "context": "The explosive devices are armed only at fixed points of the flight. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "p11",
+              "name": "Panel 11 (upper left)",
+              "type": "switch",
+              "match": [
+                "item:side:2"
+              ],
+              "text": "The commander's circuit breakers (safety switches that cut power when something draws too much).",
+              "context": "A tripped breaker explains why a system has gone dead."
+            },
+            {
+              "id": "p12",
+              "name": "Panel 12 (right)",
+              "type": "switch",
+              "match": [
+                "item:side:3"
+              ],
+              "text": "The LM pilot's audio and communications switches.",
+              "context": "JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "p14",
+              "name": "Panel 14 (right)",
+              "type": "switch",
+              "match": [
+                "item:side:4"
+              ],
+              "text": "Switches for the electrical power: the batteries and the buses (groups of electric lines).",
+              "context": "The Lunar Module ran on batteries, so the LM pilot managed them carefully. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "p16",
+              "name": "Panel 16 (upper right)",
+              "type": "switch",
+              "match": [
+                "item:side:5"
+              ],
+              "text": "The LM pilot's circuit breakers (safety switches that cut power when something draws too much).",
+              "context": "In Apollo 11 a broken breaker switch on this side was pushed in with a felt-tip pen."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers",
+      "text": "The ACA and the TTCA.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Attitude controller assembly (ACA)",
+          "text": "The pistol grip at the right hand of the standing commander; the LM pilot has a second one.",
+          "context": "It turns the Lunar Module; the TTCA in the left hand moves it and sets the thrust.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Attitude controller assembly (ACA)",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the grip forward or back pitches the Lunar Module, sideways rolls it and twisting it yaws it, by firing the steering jets.",
+              "context": "During the landing the commander also used it to move the landing target; on a joystick it is the X, Y and twist axes.",
+              "src": "s1"
+            },
+            {
+              "id": "ptt",
+              "name": "Push-to-talk trigger",
+              "type": "trigger",
+              "match": [
+                "control:rhc.trigger"
+              ],
+              "text": "A trigger on the front of the grip. While it is held, the astronaut's voice goes out.",
+              "context": "It works like the button of a walkie-talkie, under the index finger."
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "Thrust/translation controller assembly (TTCA)",
+          "text": "The T-handle for the left hand of each crewman, with a mode lever and a friction knob.",
+          "context": "In one mode it moves the Lunar Module with the steering jets, in the other it sets the descent engine's thrust.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Thrust/translation controller (TTCA)",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This handle moves the Lunar Module without turning it (translation): up and down, left and right, forward and back. In throttle mode, up and down set more or less thrust of the descent engine instead.",
+              "context": "It was used for docking and for the final part of the landing.",
+              "src": "s1"
+            },
+            {
+              "id": "throttle",
+              "name": "TTCA in throttle mode",
+              "type": "axis",
+              "match": [
+                "control:thc.axis.throttle"
+              ],
+              "text": "When the mode lever is at THROTTLE, moving the handle up and down sets the thrust of the descent engine.",
+              "context": "In the last minutes of the landing the commander controlled the engine like this to touch down gently."
+            },
+            {
+              "id": "mode",
+              "name": "THROTTLE / JETS mode lever",
+              "type": "switch2",
+              "match": [
+                "control:thc.switch.mode"
+              ],
+              "positions": [
+                {
+                  "name": "THROTTLE",
+                  "text": "Up and down set the descent engine thrust."
+                },
+                {
+                  "name": "JETS",
+                  "text": "Up and down fire the steering jets."
+                }
+              ],
+              "text": "A sliding lever on the side of the handle that decides what the up and down movement does: the descent engine's thrust or the steering jets.",
+              "context": "It is set to THROTTLE for the landing."
+            },
+            {
+              "id": "friction",
+              "name": "Throttle friction knob",
+              "type": "knob",
+              "match": [
+                "control:thc.knob.friction"
+              ],
+              "text": "Turning this knob makes the handle stiffer or easier to move in throttle mode.",
+              "context": "With more friction the handle stays where it is set."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

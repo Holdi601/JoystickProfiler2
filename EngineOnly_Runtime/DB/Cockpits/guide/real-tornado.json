@@ -1,0 +1,554 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-tornado",
+  "title": "Tornado IDS / GR1 (pilot)",
+  "variants": [
+    "tornado-ids"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Panavia Tornado (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Panavia_Tornado"
+    },
+    {
+      "id": "f1",
+      "title": "PPRuNe: Tornado stick top info (forum thread of former crews)",
+      "kind": "reference",
+      "url": "https://www.pprune.org/military-aviation/608241-tornado-stick-top-info.html"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Panavia Tornado is a British-German-Italian two-seat jet with two engines and swing wings: the pilot can spread the wings wide for slow flight or sweep them back for speed. The pilot sits in front with a centre stick, two throttles and the wing sweep lever on the left; the navigator behind works the radar, the navigation and the weapons. The IDS (GR1 in the RAF) is the low-level strike version. No public manual of the grips was found: trim and the instinctive cut-out come from former crews, the panels are the commonly published layout.",
+  "areas": [
+    {
+      "id": "front-panel",
+      "where": "front-center",
+      "name": "Pilot's instrument panel",
+      "text": "The HUD, the radar screens and the round instruments in front of the pilot.",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Pilot's instrument panel",
+          "src": "w1",
+          "text": "The pilot's main panel: the head-up display on top, the terrain-following radar screen and the radar warning display, and round instruments for flying and for the two engines.",
+          "context": "The Tornado was built to attack at very low level at night and in bad weather, so the panel helps the pilot fly close to the ground while the navigator works the systems behind him.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the marks for navigation and weapon aiming, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "tfr-escope",
+              "name": "Terrain-following radar E-scope",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A small screen that shows the picture of the terrain-following radar: the shape of the ground ahead and the height the aircraft should fly over it.",
+              "context": "Terrain following means flying very low and following hills and valleys automatically or by hand; the pilot watches this screen to check that the system flies safely.",
+              "src": "w1"
+            },
+            {
+              "id": "rhwr",
+              "name": "Radar homing and warning display",
+              "type": "display",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "A small round screen that shows where enemy radars are looking at the aircraft from (radar warning receiver).",
+              "context": "It warns the crew of threats so they can turn away, fly lower or use countermeasures."
+            },
+            {
+              "id": "adi",
+              "name": "Attitude director indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon). Steering bars on it help the pilot follow the flight director.",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:8"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing."
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:9"
+              ],
+              "text": "This instrument shows the angle of attack: how steeply the wing meets the air. A too high angle means the wing is close to losing its lift.",
+              "context": "Jet pilots fly the landing approach by this angle, and watch it in tight turns."
+            },
+            {
+              "id": "sweep-indicator",
+              "name": "Wing sweep indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:10"
+              ],
+              "text": "This gauge shows how far the wings are swept back, from spread out wide to folded back against the body.",
+              "context": "The pilot checks it after moving the wing sweep lever; the wings are forward for take-off and landing and back for high speed."
+            },
+            {
+              "id": "engine-gauges",
+              "name": "Engine RPM, TOT and nozzle gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:11"
+              ],
+              "text": "Gauges that show how fast each RB199 engine turns, how hot its turbine gas is (TOT) and how far its nozzle is open. They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel contents gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:12"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            },
+            {
+              "id": "cwp",
+              "name": "Central warning panel",
+              "type": "display",
+              "match": [
+                "item:front-panel:13"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "Its captions tell both crew members which system has a problem."
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:front-panel:14"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console, throttles and wing sweep",
+      "text": "The pilot's left side: engines, wings, flaps, autopilot and radio.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Pilot's left console",
+          "src": "w1",
+          "text": "The left side with the two throttles, the wing sweep lever, the flap and slat lever, the autopilot and the terrain-following controls and a radio panel.",
+          "context": "The pilot's left hand lives here: on the throttles, and reaching back for the wing sweep and flap levers.",
+          "controls": [
+            {
+              "id": "flap-slat-lever",
+              "name": "Flap / slat lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "This lever moves the flaps and slats, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot uses them for take-off and landing, together with the wings swept fully forward."
+            },
+            {
+              "id": "afds",
+              "name": "Autopilot and flight director (AFDS) panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "The controls of the autopilot, the system that can hold the aircraft's height, heading or path, and of the flight director, which shows the pilot steering commands.",
+              "context": "On low-level missions the autopilot can also fly the terrain-following path. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "tf-controls",
+              "name": "Terrain-following controls",
+              "type": "other",
+              "match": [
+                "item:left-console:5"
+              ],
+              "text": "Controls for the terrain-following system: the ride (how hard the aircraft follows the ups and downs) and the clearance height above the ground.",
+              "context": "The crew sets a higher clearance in bad conditions and a lower one when hiding from radar matters most."
+            },
+            {
+              "id": "radio",
+              "name": "Radio control panel",
+              "type": "other",
+              "match": [
+                "item:left-console:6"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, lights, IFF and air.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Pilot's right console",
+          "text": "The right side with electricity, lights, IFF and cockpit air.",
+          "context": "These are set before the flight and touched again only for changes or failures.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "iff",
+              "name": "IFF panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "The IFF box answers 'who are you?' questions from radars with a code number, so friendly radars and fighters know this aircraft is a friend.",
+              "context": "The pilot sets the codes before the flight. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "ecs",
+              "name": "Environmental control panel",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "The controls for the cockpit's heating, cooling and fresh air (environmental control), and for the cabin pressure at height.",
+              "context": "The pilot sets a comfortable temperature and keeps the canopy free of mist. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Navigator's / WSO's cockpit",
+      "text": "The back seat with the radar, map and weapon controls.",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Navigator's / WSO's cockpit",
+          "src": "w1",
+          "text": "The back seat of the navigator, the weapon systems officer (WSO). He has no flight controls in the strike versions; his seat is full of screens and system controls.",
+          "context": "He finds the way, works the radar, picks the weapons and sets up the attack, so that the pilot can concentrate on flying low and fast.",
+          "controls": [
+            {
+              "id": "crpmd",
+              "name": "Combined radar and projected map display (CRPMD)",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "A round screen in the middle of the rear panel that shows the ground mapping radar picture laid over a moving paper map.",
+              "context": "The navigator compares the radar picture with the map to check the position and find the target."
+            },
+            {
+              "id": "tv-left",
+              "name": "Left TV-tab",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "A small screen on the left of the rear panel (TV tabular display) that shows navigation and weapon data as text and simple pictures.",
+              "context": "The navigator calls up the pages he needs for the route and the weapons."
+            },
+            {
+              "id": "tv-right",
+              "name": "Right TV-tab",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:3"
+              ],
+              "text": "The second small screen, on the right side of the rear panel, also for navigation and weapon data.",
+              "context": "With two screens the navigator can keep two different pages in view."
+            },
+            {
+              "id": "hand-controller",
+              "name": "Hand controller",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:4"
+              ],
+              "text": "A hand grip that moves a cursor over the radar and map picture.",
+              "context": "The navigator uses it to mark points and to update (fix) the navigation system's position."
+            },
+            {
+              "id": "weapon-package",
+              "name": "Weapon package selection panel",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:5"
+              ],
+              "text": "A panel where the navigator chooses the set of weapons (package) to be used in the attack.",
+              "context": "The single switches of the weapon package selection panel are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "nav-keyboard",
+              "name": "Navigation mode panel and keyboard",
+              "type": "keypad",
+              "match": [
+                "item:rear-cockpit:6"
+              ],
+              "text": "Buttons and a keyboard for the navigation modes and for typing data such as the points of the route.",
+              "context": "The navigation computer uses these points to guide the aircraft to the target and back."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "f1",
+          "text": "The centre stick. Its grip has the trim switch, the weapon release button, the gun trigger and the instinctive cut-out.",
+          "context": "Former crews describe trim on top and the cut-out as the big lower button; other buttons are disputed, so only these are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. The Tornado's command stability augmentation system (CSAS, helpers that keep the aircraft steady and smooth) moves the tailerons (all-moving tail halves) and the spoilers.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "f1"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches the weapons or a missile.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the 27 mm Mauser gun or guns.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "ico",
+              "name": "Instinctive cut-out (ICO)",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_disconnect"
+              ],
+              "text": "A large button low on the grip. Pressing it switches off at once all autopilot and terrain-following functions, and the pilot has full control by hand.",
+              "context": "It is placed where the hand finds it by instinct, so the pilot can take over immediately if the automatic system does something wrong close to the ground.",
+              "src": "f1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles and wing sweep",
+          "src": "w1",
+          "text": "The two throttles for the two RB199 engines, with the airbrake switch and the radio button, the thrust reverser selection and the separate wing sweep lever.",
+          "context": "The left hand moves between the throttles and the wing sweep lever inboard of them.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left RB199 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right RB199 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft)",
+                  "text": "The airbrakes open."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "transmit",
+              "name": "Radio transmit button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            },
+            {
+              "id": "reverse",
+              "name": "Thrust reverser selection",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.reverse"
+              ],
+              "text": "On the ground, after landing, the pilot moves the throttles past idle into reverse. Buckets behind the engines then close and turn the exhaust forward to brake the aircraft.",
+              "context": "The thrust reversers let the Tornado stop on short runways; they only work on the ground."
+            },
+            {
+              "id": "wing-sweep",
+              "name": "Wing sweep lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.wing_sweep",
+                "item:left-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "Forward (25 deg)",
+                  "text": "Wings spread out: slow flight, take-off and landing."
+                },
+                {
+                  "name": "Aft (45 / 58 / 67 deg)",
+                  "text": "Wings swept back: fast flight at low level or high up."
+                }
+              ],
+              "text": "This lever sweeps the wings. Forward spreads them wide (25 degrees) for slow flight, take-off and landing; back folds them towards the tail (45, 58 or 67 degrees) for fast flight.",
+              "context": "Wide wings give lift at low speed; swept wings cut the drag at high speed. The wing sweep indicator on the front panel shows the result."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

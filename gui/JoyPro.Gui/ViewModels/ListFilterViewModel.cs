@@ -63,6 +63,63 @@ public sealed partial class ListFilterViewModel : ObservableObject
         }
     }
 
+    // What the typed search looks at (ListSearchScope; remembered with the ticks): the relation's name, its name and
+    // the titles of its actions (the default), or everything (games, aircraft, groups, device, input, modifiers too).
+    // Devices, games and aircraft are otherwise picked with the Devices / Games filters: searching "throttle" must
+    // not list every relation bound on a device called "... Throttle".
+    private string searchScope = ListSearchScope.NameAndActions;
+
+    public string SearchScope
+    {
+        get => searchScope;
+        set
+        {
+            string scope = ListSearchScope.Normalize(value);
+            if (scope == searchScope)
+                return;
+            searchScope = scope;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(SearchScopeIndex));
+            OnPropertyChanged(nameof(SearchScopeTooltip));
+            RaiseChanged();
+        }
+    }
+
+    // The scope box next to the search box: 0 Name, 1 Name + actions, 2 Everything.
+    public int SearchScopeIndex
+    {
+        get => Array.IndexOf(ListSearchScope.All, searchScope);
+        set => SearchScope = value >= 0 && value < ListSearchScope.All.Length ? ListSearchScope.All[value] : ListSearchScope.NameAndActions;
+    }
+
+    public string SearchScopeTooltip => searchScope switch
+    {
+        ListSearchScope.Name => T("The search looks at the relation names only"),
+        ListSearchScope.Everything => T("The search looks at everything: names, action titles, games, aircraft, groups, devices, inputs and modifiers"),
+        _ => T("The search looks at the relation names and the titles of their actions; pick devices and games with the filters below")
+    };
+
+    // How well a shown relation fits the typed search (lower first): 0 its name is the search, 1 its name starts with
+    // it, 2 its name has every word, 3 it was found by its actions or other parts. 0 without a search.
+    public int SearchRank(FilterSubject? s)
+    {
+        if (s == null || searchWords.Length == 0)
+            return 0;
+        string whole = string.Join(' ', searchWords);
+        if (s.NameText == whole)
+            return 0;
+        if (s.NameText.StartsWith(whole, StringComparison.Ordinal))
+            return 1;
+        foreach (string word in searchWords)
+        {
+            if (!s.NameText.Contains(word, StringComparison.Ordinal))
+                return 3;
+        }
+        return 2;
+    }
+
+    public bool HasSearch => searchWords.Length > 0;
+
     // ---- bound / not bound, axis / button ----
 
     [ObservableProperty]
@@ -205,9 +262,15 @@ public sealed partial class ListFilterViewModel : ObservableObject
 
     private bool PassSearch(FilterSubject s)
     {
+        string text = searchScope switch
+        {
+            ListSearchScope.Name => s.NameText,
+            ListSearchScope.Everything => s.SearchText,
+            _ => s.ActionsText
+        };
         foreach (string word in searchWords)
         {
-            if (!s.SearchText.Contains(word, StringComparison.Ordinal))
+            if (!text.Contains(word, StringComparison.Ordinal))
                 return false;
         }
         return true;
@@ -573,7 +636,8 @@ public sealed partial class ListFilterViewModel : ObservableObject
         Planes = planes.OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList(),
         Devices = devices.OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList(),
         Bound = Bound,
-        Kind = Kind
+        Kind = Kind,
+        SearchScope = SearchScope
     };
 
     public void LoadState(ListFilterState? state)
@@ -593,6 +657,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
             devices.UnionWith(state.Devices ?? []);
             Bound = state.Bound is "bound" or "unbound" ? state.Bound : "all";
             Kind = state.Kind is "axis" or "button" ? state.Kind : "all";
+            SearchScope = state.SearchScope;
             if (subjects.Count > 0)
                 RebuildOptions();
             else

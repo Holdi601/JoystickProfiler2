@@ -112,12 +112,16 @@ public sealed partial class CockpitGuideRow : ObservableObject
     {
         get
         {
-            List<string> names = Node.Commands.Select(c => c.Name).Where(n => n.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            // Readable names (X-Plane's command paths as words); the ids in the tooltip.
+            List<string> names = Node.Commands.Select(c => CockpitManualPages.CommandName(c.Name)).Where(n => n.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             if (names.Count == 0)
                 return string.Empty;
             return Loc.T("Commands to bind: {0}", string.Join("; ", names.Take(8)) + (names.Count > 8 ? "; ..." : string.Empty));
         }
     }
+
+    // The game's own command ids (the tooltip of the commands).
+    public string CommandIds => string.Join(Environment.NewLine, Node.Commands.Select(c => c.Id.Length > 0 ? c.Id : c.Name).Where(n => n.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(12));
 
     public bool HasCommands => CommandsText.Length > 0;
 

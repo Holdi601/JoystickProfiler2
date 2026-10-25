@@ -1,0 +1,474 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mi-24v",
+  "title": "Mi-24V / Mi-35 Hind (pilot-commander)",
+  "inherits": "dcs-mi-24p",
+  "variants": [
+    "mi-24v"
+  ],
+  "games": [
+    "WarThunder",
+    "Arma2",
+    "Arma2OA"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mil Mi-24 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mil_Mi-24"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS Mi-24P Quick Start Manual EN",
+      "file": "Mods/aircraft/Mi-24P/Doc/Mi-24P Quick Start Manual EN.pdf"
+    }
+  ],
+  "intro": "The Mi-24V (exported as the Mi-35) is the most common version of the Hind, a heavily armed assault helicopter with a small troop cabin. The pilot-commander sits in the raised rear cockpit and flies; the operator in the front cockpit aims the guided missiles and the gun. The big difference to the Mi-24P that DCS models is the gun: the V has a turret under the nose with a 12.7 mm machine gun that the operator aims, and the pilot can fire it only when it is locked straight ahead. The rest of the pilot's cockpit is taken as that of the Mi-24P, so this guide follows it. The modernised Mi-35M cockpit is not covered.",
+  "areas": [
+    {
+      "id": "pilot-weapons-area",
+      "where": "front-right",
+      "name": "Pilot-commander weapons panel",
+      "panels": [
+        {
+          "id": "pilot-weapons",
+          "name": "Pilot-commander weapons control panel",
+          "db": "pilot-commander-weapons-control-panel",
+          "src": "m1",
+          "page": "36",
+          "text": "This panel chooses and prepares the weapons the pilot fires: the fixed gun, the gun pods, the rockets, the bombs and the cluster dispenser. It also has the emergency release switches and lights that show what is loaded.",
+          "context": "The panel belongs to the rear cockpit; the game shows it in its second picture set. The pilot sets the weapon here and then fires with the weapons release button on the cyclic. The manual describes it on pages 36 to 38.",
+          "controls": [
+            {
+              "id": "weapon-selector",
+              "name": "Weapons selector switch",
+              "type": "selector",
+              "match": [
+                "WEAP-SELECT-KNOB-PTR",
+                "item:pilot-commander-weapons-control-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF/MSL",
+                  "text": "No weapon is active. The pilot's sight is slaved to the operator's periscope sight, for watching and for guiding the anti-tank missiles."
+                },
+                {
+                  "name": "GM-30",
+                  "text": "The AP-30 automatic grenade launcher on the GUV-8700 pod."
+                },
+                {
+                  "name": "FXD MG 7.62+12.7",
+                  "text": "Both the 12.7 mm and the 7.62 mm guns of the GUV-8700 gun pod fire."
+                },
+                {
+                  "name": "FXD MG 12.7",
+                  "text": "Only the 12.7 mm gun of the GUV-8700 gun pod fires."
+                },
+                {
+                  "name": "FXD MG 7.62",
+                  "text": "Only the 7.62 mm gun of the GUV-8700 gun pod fires."
+                },
+                {
+                  "name": "FXD MG-30",
+                  "text": "The fixed 30 mm twin-barrel cannon fires."
+                },
+                {
+                  "name": "ROCKET",
+                  "text": "The unguided rockets fire."
+                },
+                {
+                  "name": "BOMB",
+                  "text": "The bombs are released."
+                },
+                {
+                  "name": "USLP",
+                  "text": "The KMGU-2 cluster munitions dispenser works."
+                }
+              ],
+              "text": "This rotary switch picks what the weapons release button on the cyclic fires. It has nine positions, from the gun pods to the cluster dispenser.",
+              "context": "After setting it the pilot checks that the matching weapon lamp on the sight is lit. In the OFF/MSL position the missile is guided by the operator.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "ranging",
+              "name": "Weapon ranging switch (AUTO / MANUAL)",
+              "type": "switch2",
+              "match": [
+                "WEAP-DIST-MAN-AUTO-PTR",
+                "item:pilot-commander-weapons-control-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The distance is worked out automatically."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot sets the distance by hand."
+                }
+              ],
+              "text": "This switch picks how the distance to the target is found for the weapons: by the sight's computer or by the pilot's hand.",
+              "context": "It works together with the sight mode switch. In MANUAL the pilot sets the range with the manual range knob.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "burst",
+              "name": "Burst length switch (SHORT / MEDIUM / LONG)",
+              "type": "switch3",
+              "match": [
+                "WEAP-BURST-LENGTH-PTR",
+                "item:pilot-commander-weapons-control-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "SHORT",
+                  "text": "A short burst."
+                },
+                {
+                  "name": "MEDIUM",
+                  "text": "A medium burst."
+                },
+                {
+                  "name": "LONG",
+                  "text": "A long burst."
+                }
+              ],
+              "text": "This switch sets how long the gun fires each time the button is pressed: a short, a medium or a long burst.",
+              "context": "The manual's weapon steps set the burst before firing the cannon.",
+              "src": "m1",
+              "page": "36"
+            },
+            {
+              "id": "reload-left",
+              "name": "Left GUV pod reload switch",
+              "type": "selector",
+              "match": [
+                "WEAP-127-LEFT-RELOAD-PTR",
+                "item:pilot-commander-weapons-control-panel:3"
+              ],
+              "text": "This four-position switch is used to fix an ammunition feed fault of the left gun pod. The game names it 'Reload Left Gondola'.",
+              "context": "The manual says the fault is not modelled, so the switch has no use in DCS.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "reload-right",
+              "name": "Right GUV pod reload switch",
+              "type": "selector",
+              "match": [
+                "WEAP-127-RIGHT-RELOAD-PTR",
+                "item:pilot-commander-weapons-control-panel:5"
+              ],
+              "text": "This four-position switch is used to fix an ammunition feed fault of the right gun pod. The game names it 'Reload Right Gondola'.",
+              "context": "The manual says the fault is not modelled, so this switch has no use in DCS.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "sight-zero",
+              "name": "Sight zero button",
+              "type": "button",
+              "match": [
+                "WEAP-SIGHT-RESET-PTR",
+                "item:pilot-commander-weapons-control-panel:6"
+              ],
+              "text": "Holding this button pulls the moving aiming mark back onto the fixed mark of the sight. The game names it 'Sight Reset Crosshair'.",
+              "context": "The manual says the moving reticle is caged to the fixed reticle while the button is held.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "asp-power",
+              "name": "ASP-17 power switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-SIGHT-ON-PFF-PTR",
+                "item:pilot-commander-weapons-control-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight is on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight is off."
+                }
+              ],
+              "text": "This switch turns the ASP-17V aiming sight on and off.",
+              "context": "The manual's weapon steps turn the sight on first.",
+              "src": "m1",
+              "page": "39"
+            },
+            {
+              "id": "asp-camera",
+              "name": "ASP-17 camera power switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-SIGHT-CONTROL-ON-OFF-PTR",
+                "item:pilot-commander-weapons-control-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The sight camera would be on."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The sight camera is off."
+                }
+              ],
+              "text": "This switch is for the camera of the aiming sight, which records what the sight sees.",
+              "context": "The manual marks this function as not implemented.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "rocket-sides",
+              "name": "Rocket sides switch (LEFT / BOTH / RIGHT)",
+              "type": "switch3",
+              "match": [
+                "WEAP-ROCKET-SELECT-PTR",
+                "item:pilot-commander-weapons-control-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "LEFT",
+                  "text": "Only the left rocket pod fires."
+                },
+                {
+                  "name": "BOTH",
+                  "text": "Both rocket pods fire."
+                },
+                {
+                  "name": "RIGHT",
+                  "text": "Only the right rocket pod fires."
+                }
+              ],
+              "text": "This switch picks which rocket pods fire: the left, the right or both.",
+              "context": "The rocket pods hang on the left and right of the helicopter.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "arm-button",
+              "name": "Launcher arm button",
+              "type": "button",
+              "match": [
+                "WEAP-PUS-ENGAGEMENT-PTR",
+                "item:pilot-commander-weapons-control-panel:14"
+              ],
+              "text": "Pressing this button arms the rocket pods, so they can fire. The game names it 'Arm Rockets'.",
+              "context": "After arming, the launcher armed lights come on.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "kmgu-lights",
+              "name": "KMGU empty and available lights",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:10",
+                "item:pilot-commander-weapons-control-panel:11"
+              ],
+              "count": 2,
+              "text": "The first light is on when the KMGU cluster dispenser has run empty. The second is on when the weapons selector is at USLP and the dispenser still has munitions.",
+              "context": "The pilot uses them to know whether the dispenser can still drop munitions.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "launcher-lights",
+              "name": "Left and right launcher armed lights",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:12",
+                "item:pilot-commander-weapons-control-panel:13"
+              ],
+              "count": 2,
+              "text": "These two lights show that the left and right rocket pod is armed.",
+              "context": "They come on after the launcher arm button is pressed.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "rack-lights",
+              "name": "Weapon rack status lights 1-4",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:16",
+                "item:pilot-commander-weapons-control-panel:17",
+                "item:pilot-commander-weapons-control-panel:19",
+                "item:pilot-commander-weapons-control-panel:20"
+              ],
+              "count": 4,
+              "text": "These four lights are on when the weapon rack of the station with the same number is loaded.",
+              "context": "The stations are numbered on the wing pylons. The manual shows the numbering on page 38.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "atgm-release",
+              "name": "ATGM emergency release button with cover",
+              "type": "button",
+              "match": [
+                "WEAP-JETTISON-LAUNCHER-PTR",
+                "WEAP-JETTISON-LAUNCHER-COVER-PTR",
+                "item:pilot-commander-weapons-control-panel:15"
+              ],
+              "text": "Pressing this button throws off the launchers of the anti-tank guided missiles in an emergency. A cover protects the button.",
+              "context": "The game names it 'Jettison Launcher'. The manual says the button jettisons the ATGM pods.",
+              "src": "m1",
+              "page": "37"
+            },
+            {
+              "id": "stores-release",
+              "name": "Emergency stores release switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-JETTISON-SPECIAL-PTR",
+                "WEAP-JETTISON-SPECIAL-COVER-PTR",
+                "item:pilot-commander-weapons-control-panel:18"
+              ],
+              "text": "This switch drops the loads on the racks 1 to 4 in an emergency. A cover protects it. The game names it 'Jettison Pylons'.",
+              "context": "The manual says the switch jettisons racks 1 through 4.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "jettison-arm",
+              "name": "Jettison arm switch with cover",
+              "type": "switch",
+              "match": [
+                "WEAP-JETTISON-EXPLOSION-PTR",
+                "WEAP-JETTISON-EXPLOSION-COVER-PTR",
+                "item:pilot-commander-weapons-control-panel:21"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Bombs are armed when jettisoned."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Bombs are not armed when jettisoned."
+                }
+              ],
+              "text": "This switch decides whether bombs are armed when they are dropped in an emergency. A cover protects it. The game names it 'Explosion on Jettison'.",
+              "context": "The manual says that when it is on, bombs are armed when jettisoned. A light shows this.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "jettison-light",
+              "name": "Emergency jettison armed light",
+              "type": "light",
+              "match": [
+                "item:pilot-commander-weapons-control-panel:23"
+              ],
+              "text": "This light is on when bombs will be jettisoned armed.",
+              "context": "It goes with the jettison arm switch.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "uslp-stop",
+              "name": "USLP discontinue button",
+              "type": "button",
+              "match": [
+                "WEAP-KMG-INTERRUPT-PTR",
+                "item:pilot-commander-weapons-control-panel:22"
+              ],
+              "text": "Pressing this button stops the cluster dispenser from dropping more munitions. The game names it 'Stop container'.",
+              "context": "The pilot uses it to end a drop.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "cannon-reload",
+              "name": "Main cannon reload button",
+              "type": "button",
+              "match": [
+                "WEAP-NPU-RELOAD-PTR",
+                "item:pilot-commander-weapons-control-panel:24"
+              ],
+              "text": "This button is meant for an ammunition feed failure of the gun. In the Mi-24P that DCS models it belongs to the fixed 30 mm cannon on the right side of the nose.",
+              "context": "The Mi-24V has a machine-gun turret under the nose instead of that cannon; how this button is used with the turret is not described in the sources JoyPro uses.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "fire-rate",
+              "name": "Cannon firing rate switch (FAST / SLOW)",
+              "type": "switch2",
+              "match": [
+                "WEAP-CANNON-PACE-PTR",
+                "item:pilot-commander-weapons-control-panel:25"
+              ],
+              "positions": [
+                {
+                  "name": "FAST",
+                  "text": "A fast rate of fire."
+                },
+                {
+                  "name": "SLOW",
+                  "text": "A slow rate of fire."
+                }
+              ],
+              "text": "This switch sets how fast the gun fires, FAST or SLOW. In the Mi-24P that DCS models it sets the rate of the fixed 30 mm cannon.",
+              "context": "The Mi-24V carries a nose turret with a 12.7 mm machine gun aimed by the operator instead; whether this switch acts on it is not described in the sources JoyPro uses.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "fire-control",
+              "name": "Fire control switch",
+              "type": "switch2",
+              "match": [
+                "WEAP-ON-OFF-PTR",
+                "item:pilot-commander-weapons-control-panel:26"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapon system is ready."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapon system is not ready."
+                }
+              ],
+              "text": "This switch completes the readiness checks of the weapons. The game names it 'Weapon Control ON/OFF'.",
+              "context": "The manual's weapon steps turn it on before the weapon indication lights are checked.",
+              "src": "m1",
+              "page": "38"
+            },
+            {
+              "id": "manual-range",
+              "name": "Manual range knob",
+              "type": "knob",
+              "match": [
+                "WEAP-SIGHT-DIST-PTR",
+                "item:pilot-commander-weapons-control-panel:27"
+              ],
+              "text": "This knob sets the distance to the target by hand. It is used when the sight is in manual mode.",
+              "context": "The values come from the weapons tables. The game names it 'Sight Range Adjustment'.",
+              "src": "m1",
+              "page": "38"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

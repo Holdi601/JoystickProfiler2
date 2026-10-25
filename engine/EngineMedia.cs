@@ -323,10 +323,7 @@ namespace JoyPro.Engine
         // The executable's icon at up to 256 px through the Windows shell, cached as PNG in the JoyPro data folder.
         private static string ExecutableIcon(string gameId, string exe, List<string> warnings)
         {
-            string root = Environment.GetEnvironmentVariable(GameBackups.DataFolderVariable);
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            string target = Path.Combine(root, "Media", gameId + ".png");
+            string target = Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), "Media", gameId + ".png");
             if (File.Exists(target) && File.GetLastWriteTimeUtc(target) >= File.GetLastWriteTimeUtc(exe))
                 return target;
             try

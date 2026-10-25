@@ -276,6 +276,34 @@ namespace JoyPro.Engine
                 AddStoredTitles(relation.NODES[i], relationDto.Nodes[i]);
         }
 
+        // "relations list --titles": per relation the distinct titles of its actions (the GUI's relation search).
+        public static void AddTitleLists(EngineRelationsDocument doc)
+        {
+            if (doc == null || doc.Relations == null)
+                return;
+            foreach (EngineRelationDto relationDto in doc.Relations)
+            {
+                if (relationDto == null)
+                    continue;
+                AddStoredTitles(relationDto);
+                HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                List<string> titles = new List<string>();
+                foreach (EngineRelationItemDto node in relationDto.Nodes ?? new List<EngineRelationItemDto>())
+                {
+                    foreach (string title in (node.StoredTitles ?? new Dictionary<string, string>()).Values)
+                    {
+                        string clean = OneLine(title);
+                        if (clean.Length > 0 && seen.Add(clean))
+                            titles.Add(clean);
+                    }
+                    // The titles are in Titles now; the per-aircraft copies would only make the list big.
+                    node.StoredTitles = new Dictionary<string, string>();
+                    node.StoredCategories = new Dictionary<string, string>();
+                }
+                relationDto.Titles = titles;
+            }
+        }
+
         // The stored title and category of every active aircraft of a node; DCS localization keys become DCS's English
         // text (or a readable form), raw ids are left out.
         private static void AddStoredTitles(RelationItem item, EngineRelationItemDto itemDto)

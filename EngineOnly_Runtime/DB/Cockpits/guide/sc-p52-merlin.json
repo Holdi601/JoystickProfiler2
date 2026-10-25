@@ -1,0 +1,58 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-p52-merlin",
+  "title": "P-52 Merlin (Kruger Intergalactic, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-p52-merlin"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "P-52 Merlin (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/P-52_Merlin"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The P-52 Merlin is a tiny single-seat snub fighter from Kruger Intergalactic in Star Citizen. It rides docked at the back of a Constellation and is built for scouting nearby and short, fast fights. It uses the common controls without changes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "P-52 Merlin: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the P-52 Merlin's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (three, around a gatling)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Merlin has three guns around a central gatling gun, all fired by the pilot.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

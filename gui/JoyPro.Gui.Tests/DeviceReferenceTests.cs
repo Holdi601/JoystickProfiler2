@@ -89,12 +89,14 @@ public sealed class DeviceReferenceTests : IDisposable
             foreach (string vidPid in device.VidPids)
                 Assert.Matches("^[0-9A-F]{4}:[0-9A-F]{4}$", vidPid);
         }
-        // Manufacturer photos are only offered from the vendor's own hosts.
+        // Manufacturer photos are only offered from the vendor's own hosts (a shared CDN only in the maker's own folder).
         foreach (RefDevice device in catalog.Devices.Where(d => DeviceCatalog.OfficialPhoto(d).Length > 0))
         {
-            string host = new Uri(device.Image).Host.ToLowerInvariant();
-            Assert.Contains(device.OfficialHosts, h => host == h || host.EndsWith("." + h, StringComparison.Ordinal));
+            Uri uri = new(device.Image);
+            Assert.Contains(device.OfficialHosts, h => DevicePhotoDb.HostMatches(uri, h));
         }
+        foreach (string host in catalog.Devices.SelectMany(d => d.OfficialHosts).Distinct())
+            Assert.True(DevicePhotoDb.HostEntryProblem(host).Length == 0, DevicePhotoDb.HostEntryProblem(host));
     }
 
     [Fact]
@@ -1029,8 +1031,10 @@ public sealed class DeviceReferenceTests : IDisposable
         {
             foreach (DevicePhoto photo in model.Photos.Where(p => p.View != "main"))
             {
-                if (!DevicePhotoDb.IsOfficial(model, photo.Url))
-                    problems.Add(model.Id + ": photo not on an official host: " + photo.Url);
+                // The maker's own hosts, a listed review site / Wikimedia Commons, or an old maker address through its
+                // Wayback snapshot.
+                if (!DevicePhotoDb.IsAllowed(model, photo))
+                    problems.Add(model.Id + ": photo not on an allowed host: " + photo.Url);
             }
         }
         List<DeviceLayoutSet> curated = DeviceLayoutSet.LoadFolder(DevicePhotoDb.LayoutFolderOf(ShippedCatalog), problems);

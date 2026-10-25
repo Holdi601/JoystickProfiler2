@@ -28,6 +28,8 @@ namespace JoyPro.CockpitPictures
             public string Source = string.Empty;
             public string GameVersion = string.Empty;
             public List<string> Notes = new List<string>();
+            // The score a panel picture needs to stay (Star Citizen's interaction points on bare walls: only clear ones).
+            public int PanelKeep = PictureQuality.Keep;
         }
 
         // Builds the set: every view is rendered, measured (PictureQuality) and, when poor, framed again (a grip zoomed to
@@ -80,7 +82,7 @@ namespace JoyPro.CockpitPictures
             System.Threading.Tasks.Parallel.For(0, views.Count, new System.Threading.Tasks.ParallelOptions { MaxDegreeOfParallelism = 2 }, k =>
             {
                 CockpitViewPlan v = views[k];
-                ViewResult r = RenderGated(scene, v, keepAll);
+                ViewResult r = RenderGated(scene, v, keepAll, info == null ? PictureQuality.Keep : info.PanelKeep);
                 results[k] = r;
                 if (r != null)
                 {
@@ -491,7 +493,7 @@ namespace JoyPro.CockpitPictures
         }
 
         // One view: rendered, measured, framed again while poor; null = left out.
-        private static ViewResult RenderGated(CockpitScene scene, CockpitViewPlan v, bool keepAll)
+        private static ViewResult RenderGated(CockpitScene scene, CockpitViewPlan v, bool keepAll, int panelKeep = PictureQuality.Keep)
         {
             RenderBuffers best;
             ViewResult r = RenderOnce(scene, v, v.Camera, out best);
@@ -561,7 +563,7 @@ namespace JoyPro.CockpitPictures
             }
             if (r == null)
                 return null;
-            if (!keepAll && v.Kind != "overview" && r.Metrics.Score < PictureQuality.Keep)
+            if (!keepAll && v.Kind != "overview" && r.Metrics.Score < (v.Kind == "panel" ? Math.Max(PictureQuality.Keep, panelKeep) : PictureQuality.Keep))
                 return null;
             // JoyPro's drawing of it.
             r.Art = LineArtTracer.Trace(best, r.Camera.Ortho, 2, new LineArtTracer.Settings { Labels = v.Kind != "overview" });
@@ -704,14 +706,35 @@ namespace JoyPro.CockpitPictures
                 }
             }
             double gain = Math.Max(1.0, Math.Min(1.5, 225.0 / p95));
-            if (gain < 1.03)
+            // A picture that stays dark in its middle tones (a dim WWII cockpit, black consoles) gets its middle tones
+            // lifted like a photo's shadows (a gamma curve that brings the median to about 100), the highlights stay.
+            acc = 0;
+            int median = 0;
+            for (int i = 0; i < 256; i++)
+            {
+                acc += hist[i];
+                if (acc >= n / 2)
+                {
+                    median = i;
+                    break;
+                }
+            }
+            double m = Math.Max(1, Math.Min(254, median * gain)) / 255.0;
+            double gamma = m < 100 / 255.0 ? Math.Max(0.6, Math.Log(100 / 255.0) / Math.Log(m)) : 1.0;
+            if (gain < 1.03 && gamma > 0.97)
                 return;
+            byte[] lut = new byte[256];
+            for (int i = 0; i < 256; i++)
+            {
+                double v = Math.Min(1.0, i * gain / 255.0);
+                lut[i] = (byte)Math.Min(255, (int)(Math.Pow(v, gamma) * 255 + 0.5));
+            }
             for (int o = 0; o + 3 < rgba.Length; o += 4)
             {
                 if (rgba[o + 3] == 0)
                     continue;
                 for (int c = 0; c < 3; c++)
-                    rgba[o + c] = (byte)Math.Min(255, (int)(rgba[o + c] * gain + 0.5));
+                    rgba[o + c] = lut[rgba[o + c]];
             }
         }
 

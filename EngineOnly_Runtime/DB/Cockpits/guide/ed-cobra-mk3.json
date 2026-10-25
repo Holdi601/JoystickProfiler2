@@ -1,0 +1,97 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "ed-cobra-mk3",
+  "title": "Cobra Mk III (Elite Dangerous)",
+  "inherits": "game-elite-dangerous",
+  "variants": [
+    "ed-cobra-mk3"
+  ],
+  "games": [
+    "EliteDangerous"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Cobra Mk III (Inara)",
+      "kind": "reference",
+      "url": "https://inara.cz/elite/ship/25/"
+    },
+    {
+      "id": "w2",
+      "title": "Cobra Mk III (Coriolis ship data)",
+      "kind": "reference",
+      "url": "https://github.com/EDCD/coriolis-data/blob/master/ships/cobra_mk_iii.json"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Cobra Mk III by Faulcon DeLacy is a small all-rounder for trade, exploration and fighting. Its cockpit has the pilot seat and one multicrew seat. It uses the shared cockpit system and HOTAS layout.",
+  "areas": [
+    {
+      "id": "right-panel",
+      "where": "right-side",
+      "name": "Right panel (internal)",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Cobra Mk III: seats and hardpoints",
+          "db": "ship",
+          "src": "c1",
+          "text": "Facts about the Cobra Mk III that set it apart from the other ships: its seats, its weapon mounts and the landing pad size it needs.",
+          "context": "Everything else in the Cobra Mk III's cockpit works like in every other Elite Dangerous ship.",
+          "controls": [
+            {
+              "id": "pilot-seat",
+              "name": "Pilot seat (helm)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The pilot's seat of the Cobra Mk III, the helm. Whoever sits here flies the ship and has the whole HOTAS layout of this guide.",
+              "context": "The Cobra Mk III takes up to two people in all; the other seats are for crew who join in multicrew.",
+              "src": "c1"
+            },
+            {
+              "id": "crew-seats",
+              "name": "Multicrew seats",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The extra seats of the Cobra Mk III, for up to two crew in all. A friend who joins can sit here as gunner, or as fighter controller when the ship carries a fighter.",
+              "context": "A gunner works the turreted weapons while the pilot flies; the roles are chosen on the role panel.",
+              "src": "c1"
+            },
+            {
+              "id": "hardpoints",
+              "name": "Hardpoints (weapon mounts)",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The weapon mounts of the Cobra Mk III: two medium and two small hardpoints. Bigger mounts take bigger, stronger weapons.",
+              "context": "The pilot puts the Cobra Mk III's weapons into fire groups on the right panel and fires them with the trigger and the weapon release button.",
+              "src": "w2"
+            },
+            {
+              "id": "pad",
+              "name": "Landing pad size",
+              "type": "indicator",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The Cobra Mk III needs a small landing pad or a bigger one. Stations have small, medium and large pads, and small outposts may not have the bigger ones.",
+              "context": "When the pilot asks a station for docking, the station gives a pad that fits the ship's size.",
+              "src": "w2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

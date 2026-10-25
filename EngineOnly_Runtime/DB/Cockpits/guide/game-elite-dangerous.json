@@ -1,0 +1,862 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-elite-dangerous",
+  "title": "Elite Dangerous: cockpit and default HOTAS",
+  "variants": [
+    "elite-dangerous-hotas"
+  ],
+  "games": [
+    "EliteDangerous"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "e1",
+      "title": "Elite Dangerous control preset ThrustMasterHOTASWarthog.binds (Odyssey client)",
+      "kind": "game-files",
+      "file": "Products/elite-dangerous-odyssey-64/ControlSchemes/ThrustMasterHOTASWarthog.binds"
+    },
+    {
+      "id": "e2",
+      "title": "EDCD: EliteCustomButtonNames (device and binding names in .binds files)",
+      "kind": "reference",
+      "url": "https://github.com/EDCD/EliteCustomButtonNames"
+    },
+    {
+      "id": "e3",
+      "title": "Thrustmaster HOTAS Warthog support page",
+      "kind": "manual",
+      "url": "https://support.thrustmaster.com/en/product/hotaswarthog-en/"
+    },
+    {
+      "id": "e4",
+      "title": "Elite Dangerous (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Elite_Dangerous"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Elite Dangerous is a space game in which the player flies a ship through a copy of our galaxy. Every ship has the same cockpit system: a HUD on the canopy, a radar console below it and four floating panels that open around the pilot. This guide explains them and the game's own preset for the Thrustmaster Warthog stick and throttle, which every ship uses.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "HUD",
+      "text": "The symbols the game draws on the canopy glass.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD (head-up display on the canopy)",
+          "db": "hud",
+          "src": "c1",
+          "text": "The HUD is the layer of glowing symbols the game draws on the canopy glass in front of the pilot. It shows where the target is, where to aim, how hot the ship is and how much fuel is left.",
+          "context": "The pilot looks through it the whole time while flying. Its colour and content change between the combat and the analysis mode.",
+          "controls": [
+            {
+              "id": "reticle",
+              "name": "Target reticle and lead marker",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "A box marks the selected target, and a small circle in front of it, the lead marker, shows where to aim. Shots need time to travel, so the pilot aims at the circle, not at the ship itself.",
+              "context": "It matters most for fixed weapons that only shoot straight ahead. The target is picked with the trim hat or the button below the trigger.",
+              "src": "c1"
+            },
+            {
+              "id": "compass",
+              "name": "Nav compass",
+              "type": "indicator",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "This small round compass points to the navigation target, the place the pilot picked to fly to. A filled dot means the target is in front, a hollow dot means it is behind.",
+              "context": "The pilot turns the ship until the dot sits in the middle, then the target is straight ahead. The target itself is set on the left panel.",
+              "src": "c1"
+            },
+            {
+              "id": "firegroup",
+              "name": "Fire group indicator",
+              "type": "indicator",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "This shows which fire group is active. A fire group is a set of weapons and tools that the two fire buttons use together.",
+              "context": "The pilot steps through the fire groups with the MIC switch up and down; the groups themselves are built on the right panel.",
+              "src": "c1"
+            },
+            {
+              "id": "flags",
+              "name": "Status flags",
+              "type": "indicator",
+              "match": [
+                "item:hud:4"
+              ],
+              "text": "Small words and symbols that tell the ship's state: mass lock (a big object nearby stops the jump drive), the jump drive charging, silent running, an open cargo scoop, the landing gear and the hardpoints out.",
+              "context": "The pilot checks them before a jump and before docking, because an open scoop or lowered gear blocks the jump drive.",
+              "src": "c1"
+            },
+            {
+              "id": "hudmode",
+              "name": "HUD mode (combat / analysis)",
+              "type": "indicator",
+              "match": [
+                "item:hud:5"
+              ],
+              "text": "The HUD has two modes. Combat mode is for fighting; analysis mode is for scanners, such as the system scanner and the surface scanner. The mode shows by the HUD's look and by a mode label.",
+              "context": "The pilot switches the mode with the left engine operate switch on the throttle base. The same fire buttons do different things in each mode.",
+              "src": "c1"
+            },
+            {
+              "id": "heat",
+              "name": "Heat gauge",
+              "type": "gauge",
+              "match": [
+                "item:hud:6"
+              ],
+              "text": "This bar shows how hot the ship is. Weapons, boosting and flying near a star heat the ship; at very high heat the modules start to take damage.",
+              "context": "A heat sink (a throwaway cooling block) cools the ship quickly, and silent running makes the ship hot because it stops venting heat.",
+              "src": "c1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel gauge",
+              "type": "gauge",
+              "match": [
+                "item:hud:7"
+              ],
+              "text": "This shows the fuel in the main tank and in the small reservoir. The reservoir feeds the ship's power plant; the main tank refills it and feeds the jump drive.",
+              "context": "Every jump uses fuel from the main tank. The pilot refuels at a station or by scooping fuel from a star with a fuel scoop.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comms",
+      "where": "front-left",
+      "name": "Comms panel",
+      "text": "The floating panel at the top left for messages and friends.",
+      "panels": [
+        {
+          "id": "comms-panel",
+          "name": "Comms panel (top left)",
+          "db": "comms-panel",
+          "src": "c1",
+          "text": "This floating screen at the top left holds the ship's messages: chat with other players, received messages and the list of friends and squadron members.",
+          "context": "The pilot opens it by holding the pinky button and pushing the TMS hat up, and moves around in it with the CMS hat.",
+          "controls": [
+            {
+              "id": "chat",
+              "name": "Chat tab",
+              "type": "display",
+              "match": [
+                "item:comms-panel:1"
+              ],
+              "text": "Shows text messages: local chat with ships nearby, the wing (a group of friends flying together) and direct messages to one player.",
+              "context": "Station staff and other pilots also write here, for example when docking is granted.",
+              "src": "c1"
+            },
+            {
+              "id": "inbox",
+              "name": "Inbox tab",
+              "type": "display",
+              "match": [
+                "item:comms-panel:2"
+              ],
+              "text": "A list of received messages, like an email inbox in the cockpit.",
+              "context": "Mission givers and the game send messages here; the pilot can read them later.",
+              "src": "c1"
+            },
+            {
+              "id": "social",
+              "name": "Social tab",
+              "type": "display",
+              "match": [
+                "item:comms-panel:3"
+              ],
+              "text": "Lists friends, the current wing and the squadron (a player club), with invites to fly together.",
+              "context": "From here the pilot invites friends into a wing or a multicrew session.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-panel",
+      "where": "left-side",
+      "name": "Left panel (navigation)",
+      "text": "The floating panel on the left for navigation, missions and contacts.",
+      "panels": [
+        {
+          "id": "left-panel",
+          "name": "Left panel (navigation)",
+          "db": "left-panel",
+          "src": "c1",
+          "text": "This floating screen on the left is the navigation and station panel. It lists the places in the star system, the missions, the contacts nearby and data about the selected target.",
+          "context": "The pilot opens it with the pinky button held and the TMS hat to the left, and switches its tabs with the MIC switch left and right.",
+          "controls": [
+            {
+              "id": "nav",
+              "name": "Navigation tab",
+              "type": "display",
+              "match": [
+                "item:left-panel:1"
+              ],
+              "text": "A list of everything in the star system: planets, stations and signal sources. Selecting one makes it the navigation target the compass points to.",
+              "context": "It is the usual way to pick where to fly before supercruise, the fast travel inside a star system.",
+              "src": "c1"
+            },
+            {
+              "id": "transactions",
+              "name": "Transactions tab",
+              "type": "display",
+              "match": [
+                "item:left-panel:2"
+              ],
+              "text": "Lists the pilot's missions and the bounties and fines the pilot has.",
+              "context": "The pilot checks it to see where a mission wants to go and how much time is left.",
+              "src": "c1"
+            },
+            {
+              "id": "contacts",
+              "name": "Contacts tab",
+              "type": "display",
+              "match": [
+                "item:left-panel:3"
+              ],
+              "text": "Lists the ships and stations in sensor range. Here the pilot asks a station for permission to dock.",
+              "context": "Docking starts here: select the station, choose request docking, and the station names a landing pad.",
+              "src": "c1"
+            },
+            {
+              "id": "target",
+              "name": "Target tab",
+              "type": "display",
+              "match": [
+                "item:left-panel:4"
+              ],
+              "text": "Shows data about the selected target, including its sub-systems such as engines, power plant and drives.",
+              "context": "In a fight the pilot can aim at one sub-system; the china hat on the throttle steps through them.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-panel",
+      "where": "right-side",
+      "name": "Right panel (internal)",
+      "text": "The floating panel on the right for the ship itself.",
+      "panels": [
+        {
+          "id": "right-panel",
+          "name": "Right panel (internal)",
+          "db": "right-panel",
+          "src": "c1",
+          "text": "This floating screen on the right is about the pilot's own ship: its state, its modules, its fire groups, its cargo and its switches.",
+          "context": "The pilot opens it with the pinky button held and the TMS hat to the right. Many ship switches that have no button on the HOTAS are found here.",
+          "controls": [
+            {
+              "id": "shiptab",
+              "name": "Ship tab",
+              "type": "display",
+              "match": [
+                "item:right-panel:1"
+              ],
+              "text": "Shows the ship's overall state, the crew and an overview of the installed modules.",
+              "context": "A quick place to check damage and what the ship is carrying in its slots.",
+              "src": "c1"
+            },
+            {
+              "id": "modules",
+              "name": "Modules tab",
+              "type": "display",
+              "match": [
+                "item:right-panel:2"
+              ],
+              "text": "Lists the modules with their power use. The pilot can switch a module off or change its power priority, which decides what turns off first when power runs short.",
+              "context": "Useful when the power plant is damaged or too weak: important modules stay on, others go off first.",
+              "src": "c1"
+            },
+            {
+              "id": "firegroups",
+              "name": "Fire groups tab",
+              "type": "display",
+              "match": [
+                "item:right-panel:3"
+              ],
+              "text": "Here the pilot decides which weapons and tools fire with the primary button and which with the secondary button, in each fire group.",
+              "context": "The fire groups set up here are then chosen in flight with the MIC switch up and down.",
+              "src": "c1"
+            },
+            {
+              "id": "inventory",
+              "name": "Inventory tab",
+              "type": "display",
+              "match": [
+                "item:right-panel:4"
+              ],
+              "text": "Lists the cargo in the hold. The pilot can also drop cargo into space from here (jettison).",
+              "context": "Traders and miners check it often; dropping cargo can also calm a pirate who demands it.",
+              "src": "c1"
+            },
+            {
+              "id": "functions",
+              "name": "Functions tab",
+              "type": "display",
+              "match": [
+                "item:right-panel:5"
+              ],
+              "text": "A list of ship switches such as lights, night vision and flight assist, with their current state.",
+              "context": "Everything the HOTAS has no button for can still be switched here with the CMS hat.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sensors",
+      "where": "center-pedestal",
+      "name": "Sensor display and role panel",
+      "text": "The console under the canopy view with the radar, the holograms and the power bars, and the role panel below it.",
+      "panels": [
+        {
+          "id": "sensors",
+          "name": "Sensor display and holograms",
+          "db": "sensors",
+          "src": "c1",
+          "text": "The console just below the canopy view: a round radar in the middle, a hologram of the target on the left, a hologram of the own ship on the right, and the power and speed bars.",
+          "context": "It is the most watched panel in a fight: where the enemies are, how damaged everyone is and where the power goes.",
+          "controls": [
+            {
+              "id": "radar",
+              "name": "Sensor display (3D radar)",
+              "type": "display",
+              "match": [
+                "item:sensors:1"
+              ],
+              "text": "A round radar that shows the contacts around the ship in 3D. Each contact has a line that shows whether it is above or below the ship.",
+              "context": "Hollow and solid symbols tell ships from other objects; the selected target is highlighted.",
+              "src": "c1"
+            },
+            {
+              "id": "range",
+              "name": "Sensor range",
+              "type": "indicator",
+              "match": [
+                "item:sensors:2"
+              ],
+              "text": "Shows how far the radar currently looks. A shorter range shows nearby ships more clearly.",
+              "context": "The pilot changes the range with the friction slider at the base of the throttle levers.",
+              "src": "c1"
+            },
+            {
+              "id": "targetholo",
+              "name": "Target hologram",
+              "type": "display",
+              "match": [
+                "item:sensors:3"
+              ],
+              "text": "A small 3D picture of the selected target with its shields and hull strength.",
+              "context": "It shows how close a fight is to its end and which sub-system is selected.",
+              "src": "c1"
+            },
+            {
+              "id": "shipholo",
+              "name": "Ship hologram",
+              "type": "display",
+              "match": [
+                "item:sensors:4"
+              ],
+              "text": "A small 3D picture of the pilot's own ship with its shield rings and hull strength.",
+              "context": "When the shields fail the rings disappear and the hull starts taking damage.",
+              "src": "c1"
+            },
+            {
+              "id": "pips",
+              "name": "Power distributor (SYS / ENG / WEP pips)",
+              "type": "gauge",
+              "match": [
+                "item:sensors:5"
+              ],
+              "text": "Three bars named SYS, ENG and WEP. The pips (small dots) under them show how the ship shares its power: SYS for shields, ENG for speed and boost, WEP for the weapons.",
+              "context": "The pilot moves pips all the time with the DMS hat: more to ENG to run away, more to WEP to fight, more to SYS to survive.",
+              "src": "c1"
+            },
+            {
+              "id": "speed",
+              "name": "Speed and throttle bar",
+              "type": "gauge",
+              "match": [
+                "item:sensors:6"
+              ],
+              "text": "Shows the set throttle and the real speed. A blue zone marks the speed at which the ship turns best.",
+              "context": "In a dogfight the pilot keeps the throttle in the blue zone to turn tightest.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "role-panel",
+          "name": "Role panel (bottom)",
+          "db": "role-panel",
+          "src": "c1",
+          "text": "This floating screen below the sensor display handles crew roles, the small fighter some ships carry, and the surface vehicle.",
+          "context": "The pilot opens it with the pinky button held and the TMS hat down. In this preset the fighter and vehicle orders have no HOTAS button.",
+          "controls": [
+            {
+              "id": "crew",
+              "name": "Crew roles",
+              "type": "display",
+              "match": [
+                "item:role-panel:1"
+              ],
+              "text": "Shows the multicrew seats of the ship: helm (the pilot), gunner and fighter controller, and who sits where.",
+              "context": "Friends who join the ship in multicrew take these roles; the helm keeps the HOTAS layout.",
+              "src": "c1"
+            },
+            {
+              "id": "fighter",
+              "name": "Fighter orders",
+              "type": "display",
+              "match": [
+                "item:role-panel:2"
+              ],
+              "text": "Launches the small ship-launched fighter from the hangar and gives it orders, such as defend or attack the target.",
+              "context": "Only ships with a fighter hangar fitted can use it. The fighter is flown by a hired pilot or a crew member.",
+              "src": "c1"
+            },
+            {
+              "id": "srv",
+              "name": "SRV",
+              "type": "display",
+              "match": [
+                "item:role-panel:3"
+              ],
+              "text": "Deploys the SRV, a small six-wheeled surface vehicle, after landing on a planet.",
+              "context": "The ship must be landed and have a vehicle hangar fitted.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The Warthog stick and throttle as the game's own preset sets them up.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick (Warthog stick grip)",
+          "src": "e1",
+          "text": "The right-hand stick turns the ship and fires the weapons. Its hats select targets, open the cockpit panels, share the power and move inside the panels.",
+          "context": "In Elite Dangerous the stick always steers; inside the system scanner (FSS) the same controls look around and zoom instead.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Stick (pitch and roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward points the nose down, pulling it points the nose up. Moving it sideways rolls the ship around its long axis.",
+              "context": "Space has no up or down, so the pilot usually rolls first and then pulls to turn. In the system scanner the stick looks around the sky instead.",
+              "src": "e1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger fires the primary group of the active fire group. With the hardpoints folded in, only utility tools fire, such as scanners.",
+              "context": "The pilot deploys the hardpoints with the button on the throttle base before a fight. Inside the system scanner the trigger zooms in.",
+              "src": "e1"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "The red button on top of the grip fires the secondary group of the active fire group, for example missiles or a second set of guns.",
+              "context": "Which weapons are primary and secondary is set on the right panel. Inside the system scanner this button zooms out.",
+              "src": "e1"
+            },
+            {
+              "id": "master-mode",
+              "name": "Master mode button (target ahead)",
+              "type": "button",
+              "match": [
+                "control:stick.button.index_lower"
+              ],
+              "text": "Pressing this button selects whatever ship or object is straight in front of the nose as the target.",
+              "context": "It is the quickest way to target a ship the pilot is already looking at. Inside the system scanner it targets the planet in view.",
+              "src": "e1"
+            },
+            {
+              "id": "pinky",
+              "name": "Pinky button (UI focus)",
+              "type": "button",
+              "match": [
+                "control:stick.pinky.button"
+              ],
+              "text": "While the pilot holds this button, the hats open and work the cockpit panels instead of their flight jobs.",
+              "context": "Hold it and push the TMS hat to open a panel. Inside the system scanner and the surface probe view it leaves that view.",
+              "src": "e1"
+            },
+            {
+              "id": "paddle",
+              "name": "Paddle (flight assist)",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "Pulling the paddle switches flight assist on or off. Flight assist is a helper that stops the ship from drifting and spinning when the pilot lets go.",
+              "context": "With flight assist off the ship keeps sliding like on ice, which experts use for sharp turns. In the system scanner the paddle sends the discovery scan, a loud pulse that reveals the planets of the system.",
+              "src": "e1"
+            },
+            {
+              "id": "trim-hat",
+              "name": "Trim hat (targets)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "This hat on top of the grip steps through targets: up and down through the hostile ships only, left and right through all contacts.",
+              "context": "In a fight the pilot uses up and down to jump between enemies without scrolling past friends.",
+              "src": "e1"
+            },
+            {
+              "id": "tms",
+              "name": "TMS hat (panels)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.tms"
+              ],
+              "text": "With the pinky button held, this hat opens the four cockpit panels: up the comms panel, left the navigation panel, right the ship panel, down the role panel.",
+              "context": "The panels float around the cockpit; once one is open, the CMS hat moves inside it. Inside the system scanner up and down zoom a little.",
+              "src": "e1"
+            },
+            {
+              "id": "dms",
+              "name": "DMS hat (power distributor)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.dms"
+              ],
+              "text": "This hat moves power pips: up to the engines, right to the weapons, left to the systems (shields), down puts them back to even.",
+              "context": "The power bars below the radar show the result. While a panel is open, left and right page through it.",
+              "src": "e1"
+            },
+            {
+              "id": "cms",
+              "name": "CMS hat (panel cursor)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.cms"
+              ],
+              "text": "This hat moves the cursor inside an open panel up, down, left and right; pressing it selects the item under the cursor.",
+              "context": "It is how the pilot picks a destination, requests docking or flips a switch on the functions tab.",
+              "src": "e1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle (Warthog throttle and its base)",
+          "src": "e1",
+          "text": "The left-hand throttle sets the speed and holds the side thrusters, boost, fire group and target sub-system controls. The switches on its base work the ship systems.",
+          "context": "The base switches are flipped rather than pressed: landing gear, cargo scoop, silent running, heat sinks and the jump drive all live there in this preset.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "Pushing the right throttle lever forward makes the ship go faster; pulling it back slows it down to a stop.",
+              "context": "In supercruise it sets the travel speed; the blue zone of the speed bar shows the best speed for turning.",
+              "src": "e1"
+            },
+            {
+              "id": "friction",
+              "name": "Friction slider (sensor range)",
+              "type": "slider",
+              "match": [
+                "control:throttle.axis.slider.1"
+              ],
+              "text": "The slider at the base of the levers sets how far the radar looks.",
+              "context": "Inside the system scanner it tunes the frequency to find signals and planets.",
+              "src": "e1"
+            },
+            {
+              "id": "boost",
+              "name": "Left throttle button (boost)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.1"
+              ],
+              "text": "Pressing this button fires the engines for a short burst of extra speed, the boost.",
+              "context": "Boosting needs enough power in the engines bar (ENG); it is used to escape or to get out of the way quickly.",
+              "src": "e1"
+            },
+            {
+              "id": "slew",
+              "name": "Slew control (head look)",
+              "type": "axis",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "Pressing the small thumb stick switches head look on or off, so the pilot can look around the cockpit.",
+              "context": "Head look helps to see the panels and the canopy view without turning the ship.",
+              "src": "e1"
+            },
+            {
+              "id": "mic",
+              "name": "MIC switch (fire groups and tabs)",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "Up and down step to the previous or next fire group. Left and right change the tab of an open panel. Holding the push makes the vertical thrusters push the ship up.",
+              "context": "The fire group shows on the HUD; the vertical thrusters help when landing on a pad.",
+              "src": "e1"
+            },
+            {
+              "id": "coolie",
+              "name": "Coolie hat (thrusters)",
+              "type": "hat",
+              "match": [
+                "control:throttle.coolie"
+              ],
+              "text": "This hat fires the side thrusters: the ship slides up, down, left or right without turning.",
+              "context": "Sliding sideways helps to line up with a landing pad and to dodge shots.",
+              "src": "e1"
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake switch (reverse thrust)",
+              "type": "switch",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "Turns reverse throttle on or off."
+                },
+                {
+                  "name": "AFT",
+                  "text": "While held, the ship thrusts backward."
+                }
+              ],
+              "text": "Forward turns reverse throttle on or off, so the throttle lever makes the ship fly backwards. Holding it back pushes the ship backward with the thrusters.",
+              "context": "Backing away from a landing pad or out of a tight spot uses this.",
+              "src": "e1"
+            },
+            {
+              "id": "china",
+              "name": "China hat (sub-systems)",
+              "type": "rocker",
+              "match": [
+                "control:throttle.china"
+              ],
+              "text": "This small rocker steps through the sub-systems of the target, such as its drives, power plant or weapons.",
+              "context": "The selected part shows on the target hologram; the pilot then aims at that part to disable it.",
+              "src": "e1"
+            },
+            {
+              "id": "pinky-switch",
+              "name": "Pinky switch (ship lights)",
+              "type": "switch",
+              "match": [
+                "control:throttle.pinky"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "Switches the ship lights on or off."
+                },
+                {
+                  "name": "AFT",
+                  "text": "No function in this preset."
+                }
+              ],
+              "text": "Pushing this switch forward switches the ship's lights on or off.",
+              "context": "The lights help on the dark side of a planet and inside stations.",
+              "src": "e1"
+            },
+            {
+              "id": "fuel-flow-r",
+              "name": "Fuel flow R switch (silent running)",
+              "type": "switch",
+              "match": [
+                "control:throttle.base.toggle.2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Silent running on or off."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function in this preset."
+                }
+              ],
+              "text": "Flipping this switch up switches silent running on or off. Silent running closes the heat vents so the ship is harder to see on enemy sensors.",
+              "context": "The shields drop and the ship heats up quickly while running silent, so it is used only for short moments.",
+              "src": "e1"
+            },
+            {
+              "id": "eng-oper-l",
+              "name": "Engine operate L switch (HUD mode)",
+              "type": "switch",
+              "match": [
+                "control:throttle.base.toggle.3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Switches between combat and analysis mode."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function in this preset."
+                }
+              ],
+              "text": "Flipping this switch up changes the HUD between combat mode and analysis mode.",
+              "context": "Analysis mode is needed for the scanners, combat mode for the weapons; the current mode shows on the HUD.",
+              "src": "e1"
+            },
+            {
+              "id": "eng-oper-r",
+              "name": "Engine operate R switch (heat sink)",
+              "type": "switch",
+              "match": [
+                "control:throttle.base.toggle.4"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Launches a heat sink."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Inside the system scanner: help."
+                }
+              ],
+              "text": "Flipping this switch up throws out a heat sink, a block that takes the ship's heat with it and cools the ship quickly.",
+              "context": "Heat sinks help near stars, while running silent and in fights. Inside the system scanner, down opens the scanner's help.",
+              "src": "e1"
+            },
+            {
+              "id": "ldg-h",
+              "name": "Gear warning silence button (hardpoints)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.1"
+              ],
+              "text": "Pressing this button folds the weapon hardpoints out or back in.",
+              "context": "Weapons fire only with the hardpoints out, and the jump drive does not engage while they are out.",
+              "src": "e1"
+            },
+            {
+              "id": "eac",
+              "name": "EAC switch (cargo scoop)",
+              "type": "switch",
+              "match": [
+                "control:throttle.base.toggle.7"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Opens or closes the cargo scoop."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function in this preset."
+                }
+              ],
+              "text": "Flipping this switch up opens or closes the cargo scoop, the hatch that collects cargo canisters floating in space.",
+              "context": "The open scoop shows on the HUD and keeps the jump drive from engaging.",
+              "src": "e1"
+            },
+            {
+              "id": "rdr-altm",
+              "name": "Radar altimeter switch (landing gear)",
+              "type": "switch",
+              "match": [
+                "control:throttle.base.toggle.8"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Lowers or raises the landing gear."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function in this preset."
+                }
+              ],
+              "text": "Flipping this switch up lowers or raises the landing gear.",
+              "context": "The gear goes down for landing on a pad or a planet and must be up before a jump.",
+              "src": "e1"
+            },
+            {
+              "id": "ap-engage",
+              "name": "Autopilot engage button (jump drive)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.2"
+              ],
+              "text": "Pressing this button charges the frame shift drive, the jump drive. With a star system selected as the target it jumps there; otherwise it enters or leaves supercruise.",
+              "context": "Supercruise is the fast way to travel inside a star system. Mass lock, hardpoints, gear or an open scoop stop the drive.",
+              "src": "e1"
+            },
+            {
+              "id": "ap-mode",
+              "name": "Autopilot mode switch (shield cell / chaff)",
+              "type": "switch3",
+              "match": [
+                "control:throttle.base.toggle.9"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Uses a shield cell."
+                },
+                {
+                  "name": "MIDDLE",
+                  "text": "No action."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Launches chaff."
+                }
+              ],
+              "text": "Up uses a shield cell, a charge that refills the shields. Down launches chaff, a cloud that confuses the aim of enemy turrets.",
+              "context": "Both are defensive tools for a fight and work only if the ship carries them.",
+              "src": "e1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

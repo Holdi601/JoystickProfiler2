@@ -81,10 +81,7 @@ public sealed class LlmServerMonitor
 
     public static string DefaultStateFile()
     {
-        string? root = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-        if (string.IsNullOrWhiteSpace(root))
-            root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-        return Path.Combine(root, "Llm", "server.json");
+        return Path.Combine(JoyPro.Logging.JoyProDataFolder.Root(), "Llm", "server.json");
     }
 
     // Engines this app starts may keep the model loaded for the next request (the app stops it when idle).

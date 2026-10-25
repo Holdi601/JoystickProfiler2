@@ -53,7 +53,24 @@ public sealed partial class LayoutEditorConnectorItem : ObservableObject
             ? "#F59E0B"
             : IsSelected
             ? "#7DD3FC"
+            : IsDefaultColor && SheetLineColor.Length > 0
+            ? SheetLineColor
             : (string.IsNullOrWhiteSpace(Color) ? "#E2E8F0" : Color);
+
+    // A line left at the default colour takes the cheat sheet style's line colour (as the engine prints it).
+    private string sheetLineColor = string.Empty;
+
+    public string SheetLineColor
+    {
+        get => sheetLineColor;
+        set
+        {
+            if (SetProperty(ref sheetLineColor, value ?? string.Empty))
+                OnPropertyChanged(nameof(DisplayStroke));
+        }
+    }
+
+    private bool IsDefaultColor => string.IsNullOrWhiteSpace(Color) || string.Equals(Color.Trim(), "#E2E8F0", StringComparison.OrdinalIgnoreCase);
 
     public double DisplayStrokeThickness => IsFlashing || IsLive ? Math.Max(4, StrokeWidth + 2) : (IsSelected ? Math.Max(3, StrokeWidth + 1) : StrokeWidth);
 

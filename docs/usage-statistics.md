@@ -41,7 +41,7 @@ Statistics page's "Where the numbers come from") says what each source gave.
 
 ## The store
 
-`<data>\Usage` (data = `JOYPRO_DATA_DIR` or `%LOCALAPPDATA%\JoyPro`, so a portable setup with its own data folder carries
+`<data>\Usage` (data = `JOYPRO_DATA_DIR` or `%LOCALAPPDATA%\JoyPro2`, so a portable setup with its own data folder carries
 it along):
 
 | File | What |

@@ -22,6 +22,9 @@ namespace JoyPro.Engine
         public string Device = string.Empty;
         // The leader lines' colour (#RRGGBB; empty = the palette's): the drawing style's accent on JoyPro's drawings.
         public string LineColor = string.Empty;
+        // The sheet style (colours, font, size, weight, modifier colours; null = the base palette of Dark): the
+        // global style of the run (--sheet-style and the single options) or the device's own (its sheet's "style").
+        public SheetStyle Style;
     }
 
     // Draws a callout sheet (docs/device-reference.md, "Tables and lines") like JoyPro 1's cheat sheets: the device
@@ -32,32 +35,34 @@ namespace JoyPro.Engine
     {
         private sealed class Palette
         {
-            public Color Page, Table, Title, Mod, Border, Grid, Text, Faint, Line, LineGlow, Header, HeaderText, HeaderBox, PictureBack;
+            public Color Page, Table, Title, TitleText, Mod, Border, Grid, Text, Faint, Line, LineGlow, Header, HeaderText, HeaderBox, HeaderBoxText, PictureBack, OtherText;
         }
 
-        private static Palette PaletteOf(bool dark)
+        // The colours of a sheet: the base palette (dark: JoyPro 1's grey page; light: the white page) with the sheet
+        // style over it (SheetStyle.Resolve, the same palette the Layout page's canvas draws with).
+        private static Palette PaletteOf(bool dark, SheetStyle style = null)
         {
-            if (dark)
-            {
-                return new Palette
-                {
-                    Page = Hex("#2B3038"), Table = Hex("#F7F7F7"), Title = Hex("#D5DAE1"), Mod = Hex("#E9ECF0"), Border = Hex("#0E1116"),
-                    Grid = Hex("#9AA1AB"), Text = Hex("#0E1116"), Faint = Hex("#8A919B"), Line = Hex("#E6E8EB"), LineGlow = Color.FromArgb(90, 0, 0, 0),
-                    Header = Hex("#15181D"), HeaderText = Hex("#F2F4F7"), HeaderBox = Hex("#F7F7F7"), PictureBack = Hex("#0B1220")
-                };
-            }
+            SheetPalette p = style == null ? SheetPalette.Base(dark) : style.Resolve(dark);
             return new Palette
             {
-                Page = Hex("#FFFFFF"), Table = Hex("#FFFFFF"), Title = Hex("#E3E7ED"), Mod = Hex("#F3F5F8"), Border = Hex("#2F3640"),
-                Grid = Hex("#B7BDC6"), Text = Hex("#111418"), Faint = Hex("#9AA1AB"), Line = Hex("#7C8794"), LineGlow = Color.FromArgb(0, 0, 0, 0),
-                Header = Hex("#2F3640"), HeaderText = Hex("#FFFFFF"), HeaderBox = Hex("#FFFFFF"), PictureBack = Hex("#EEF2F7")
+                Page = C(p.Page), Table = C(p.Table), Title = C(p.Title), TitleText = C(p.TitleText), Mod = C(p.Mod), Border = C(p.Border),
+                Grid = C(p.Grid), Text = C(p.Text), Faint = C(p.Faint), Line = C(p.Line), LineGlow = C(p.LineGlow), Header = C(p.Band),
+                HeaderText = C(p.BandText), HeaderBox = C(p.BandBox), HeaderBoxText = C(p.BandBoxText), PictureBack = C(p.PictureBack), OtherText = C(p.OtherText)
             };
         }
 
-        // The font of the tables: JoyPro 1's narrow look where Windows has it.
-        private static FontFamily TextFamily()
+        internal static Color C(uint argb)
         {
-            foreach (string name in new[] { "Bahnschrift SemiCondensed", "Bahnschrift", "Segoe UI" })
+            return Color.FromArgb(unchecked((int)argb));
+        }
+
+        // The font of the tables: JoyPro 1's narrow look where Windows has it.
+        private static FontFamily TextFamily(SheetStyle style = null)
+        {
+            List<string> names = new List<string> { "Bahnschrift SemiCondensed", "Bahnschrift", "Segoe UI" };
+            if (style != null && style.FontFamily.Trim().Length > 0)
+                names.Insert(0, style.FontFamily.Trim());
+            foreach (string name in names)
             {
                 try
                 {
@@ -71,9 +76,9 @@ namespace JoyPro.Engine
         }
 
         // The background of a sheet (a page with several views uses it between the views).
-        public static Color PageColor(bool dark)
+        public static Color PageColor(bool dark, SheetStyle style = null)
         {
-            return PaletteOf(dark).Page;
+            return PaletteOf(dark, style).Page;
         }
 
         public static double HeaderHeight(CalloutSheet sheet)
@@ -93,8 +98,9 @@ namespace JoyPro.Engine
         public static Bitmap Render(CalloutSheet sheet, Image picture, Func<string, int, string> text, CalloutRenderOptions options)
         {
             options = options ?? new CalloutRenderOptions();
-            Palette pal = PaletteOf(options.Dark);
-            if (DrawingStyle.NormalizeColor(options.LineColor).Length > 0)
+            Palette pal = PaletteOf(options.Dark, options.Style);
+            // The drawing's accent on JoyPro's drawings, unless the sheet style names the leader colour.
+            if (DrawingStyle.NormalizeColor(options.LineColor).Length > 0 && (options.Style == null || SheetStyle.NormalizeColor(options.Style.LineColor).Length == 0))
                 pal.Line = Hex(DrawingStyle.NormalizeColor(options.LineColor));
             bool header = options.Game.Length > 0 || options.Plane.Length > 0;
             double headerH = header ? HeaderHeight(sheet) : 0;
@@ -106,7 +112,7 @@ namespace JoyPro.Engine
             Bitmap output = new Bitmap(w, h, PixelFormat.Format32bppArgb);
             output.SetResolution(300, 300);
             using (Graphics g = Graphics.FromImage(output))
-            using (FontFamily family = TextFamily())
+            using (FontFamily family = TextFamily(options.Style))
             {
                 g.SmoothingMode = SmoothingMode.AntiAlias;
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -123,16 +129,19 @@ namespace JoyPro.Engine
                         g.FillRectangle(back, pic);
 
                 float rh = (float)sheet.RowHeight;
-                using (Font rowFont = new Font(family, rh * 0.5f, FontStyle.Regular, GraphicsUnit.Pixel))
-                using (Font titleFont = new Font(family, rh * 0.42f, FontStyle.Bold, GraphicsUnit.Pixel))
-                using (Font smallFont = new Font(family, rh * 0.36f, FontStyle.Bold, GraphicsUnit.Pixel))
+                // The style's text size scales the text in its cells (never higher than a row); its weight the rows.
+                float textScale = options.Style == null ? 1f : (float)options.Style.TextScale;
+                FontStyle rowStyle = options.Style != null && options.Style.IsBold ? FontStyle.Bold : FontStyle.Regular;
+                using (Font rowFont = new Font(family, Math.Min(rh * 0.8f, rh * 0.5f * textScale), rowStyle, GraphicsUnit.Pixel))
+                using (Font titleFont = new Font(family, Math.Min((float)sheet.TitleHeight * 0.8f, rh * 0.42f * textScale), FontStyle.Bold, GraphicsUnit.Pixel))
+                using (Font smallFont = new Font(family, Math.Min(rh * 0.6f, rh * 0.36f * textScale), FontStyle.Bold, GraphicsUnit.Pixel))
                 {
                     DrawLines(g, sheet, pal);
                     foreach (CalloutTable table in sheet.Tables)
-                        DrawTable(g, sheet, table, pal, rowFont, titleFont, smallFont, text);
+                        DrawTable(g, sheet, table, pal, rowFont, titleFont, smallFont, text, options.Style);
                     if (sheet.OtherY >= 0)
                     {
-                        using (SolidBrush brush = new SolidBrush(options.Dark ? pal.HeaderText : pal.Text))
+                        using (SolidBrush brush = new SolidBrush(pal.OtherText))
                             g.DrawString("Other controls (no spot on this picture yet)", titleFont, brush, (float)(sheet.RowHeight * 0.8), (float)sheet.OtherY);
                     }
                     if (header)
@@ -165,7 +174,7 @@ namespace JoyPro.Engine
             }
         }
 
-        private static void DrawTable(Graphics g, CalloutSheet sheet, CalloutTable table, Palette pal, Font rowFont, Font titleFont, Font smallFont, Func<string, int, string> text)
+        private static void DrawTable(Graphics g, CalloutSheet sheet, CalloutTable table, Palette pal, Font rowFont, Font titleFont, Font smallFont, Func<string, int, string> text, SheetStyle style)
         {
             double[] r = sheet.RectOf(table);
             RectangleF rect = new RectangleF((float)r[0], (float)r[1], (float)r[2], (float)r[3]);
@@ -175,6 +184,7 @@ namespace JoyPro.Engine
             using (SolidBrush titleFill = new SolidBrush(pal.Title))
             using (SolidBrush modFill = new SolidBrush(pal.Mod))
             using (SolidBrush textBrush = new SolidBrush(pal.Text))
+            using (SolidBrush titleBrush = new SolidBrush(pal.TitleText))
             using (SolidBrush faintBrush = new SolidBrush(pal.Faint))
             using (Pen gridPen = new Pen(pal.Grid, Math.Max(1f, rh * 0.03f)))
             using (Pen borderPen = new Pen(pal.Border, Math.Max(1.5f, rh * 0.07f)))
@@ -187,7 +197,7 @@ namespace JoyPro.Engine
                 int columns = sheet.ModColumnCount(table);
                 bool headed = columns > 0 && sheet.Combos.Count > 0;
                 float titleWidth = headed ? (float)(rect.Width - sheet.ModColumnWidth(table)) : rect.Width;
-                g.DrawString(table.Title, titleFont, textBrush, new RectangleF(rect.X + rh * 0.25f, rect.Y, titleWidth - rh * 0.5f, th), left);
+                g.DrawString(table.Title, titleFont, titleBrush, new RectangleF(rect.X + rh * 0.25f, rect.Y, titleWidth - rh * 0.5f, th), left);
                 if (headed)
                 {
                     for (int c = 1; c <= columns; c++)
@@ -195,6 +205,13 @@ namespace JoyPro.Engine
                         double[] head = sheet.CellOf(table, 0, c);
                         RectangleF headCell = new RectangleF((float)head[0], rect.Y, (float)head[2], th);
                         g.FillRectangle(modFill, headCell);
+                        // The modifier's colour (the sheet style's modifier colours) as a bar over its column.
+                        uint modArgb;
+                        if (style != null && SheetStyle.TryParse(style.ModifierColor(sheet.ComboOfColumn(c)), out modArgb) && (modArgb >> 24) > 0)
+                        {
+                            using (SolidBrush bar = new SolidBrush(C(modArgb)))
+                                g.FillRectangle(bar, headCell.X, headCell.Y, headCell.Width, Math.Max(2f, th * 0.14f));
+                        }
                         g.DrawLine(gridPen, headCell.X, headCell.Y, headCell.X, headCell.Bottom);
                         g.DrawString(CalloutCombos.Label(sheet.ComboOfColumn(c)), smallFont, faintBrush, new RectangleF(headCell.X + rh * 0.12f, headCell.Y, headCell.Width - rh * 0.2f, th), left);
                     }
@@ -327,7 +344,7 @@ namespace JoyPro.Engine
             using (SolidBrush band = new SolidBrush(pal.Header))
             using (SolidBrush box = new SolidBrush(pal.HeaderBox))
             using (SolidBrush label = new SolidBrush(pal.HeaderText))
-            using (SolidBrush value = new SolidBrush(pal.Text))
+            using (SolidBrush value = new SolidBrush(pal.HeaderBoxText))
             using (Font big = new Font(family, height * 0.56f, FontStyle.Regular, GraphicsUnit.Pixel))
             using (Font boxFont = new Font(family, height * 0.42f, FontStyle.Regular, GraphicsUnit.Pixel))
             using (StringFormat center = new StringFormat { LineAlignment = StringAlignment.Center, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap })
@@ -468,7 +485,7 @@ namespace JoyPro.Engine
         }
 
         // Several sheets on one page, one under the other (multi-device pages).
-        public static Bitmap Combine(IList<string> files, bool dark)
+        public static Bitmap Combine(IList<string> files, bool dark, SheetStyle style = null)
         {
             List<Image> images = new List<Image>();
             try
@@ -482,7 +499,7 @@ namespace JoyPro.Engine
                 page.SetResolution(300, 300);
                 using (Graphics g = Graphics.FromImage(page))
                 {
-                    g.Clear(PaletteOf(dark).Page);
+                    g.Clear(PaletteOf(dark, style).Page);
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     int y = 0;
                     foreach (Image image in images)

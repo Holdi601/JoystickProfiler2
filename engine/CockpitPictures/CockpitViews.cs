@@ -133,6 +133,7 @@ namespace JoyPro.CockpitPictures
     {
         public const int MaxPerPanel = 36;
         public const double MaxPanelExtent = 0.45;
+        public const double CompactExtent = 0.3;
 
         public static List<CockpitViewPlan> Plan(CockpitScene scene, Vec3 head, List<CockpitCallout> callouts, List<CockpitGrip> grips, int width)
         {
@@ -321,6 +322,9 @@ namespace JoyPro.CockpitPictures
                     break;
                 }
             }
+            // Neighbouring groups that fit one compact picture together (two halves of one keypad, a panel split by the
+            // count) become one: each half got the same frame, the same picture twice.
+            MergeCompact(result);
             // Name and area of each group.
             foreach (List<CockpitCallout> group in result)
             {
@@ -332,13 +336,69 @@ namespace JoyPro.CockpitPictures
             return result;
         }
 
+        public const int MaxMerged = 90;
+
+        private static double Extent(IEnumerable<CockpitCallout> group)
+        {
+            Vec3 mn = new Vec3(double.MaxValue, double.MaxValue, double.MaxValue), mx = new Vec3(double.MinValue, double.MinValue, double.MinValue);
+            foreach (CockpitCallout c in group)
+            {
+                mn = Vec3.Min(mn, c.Position);
+                mx = Vec3.Max(mx, c.Position);
+            }
+            Vec3 e = mx - mn;
+            return Math.Max(e.X, Math.Max(e.Y, e.Z));
+        }
+
+        // Joins the pair of groups with the smallest joint extent while that stays compact, until none is left.
+        internal static void MergeCompact(List<List<CockpitCallout>> groups)
+        {
+            while (true)
+            {
+                double best = double.MaxValue;
+                int bi = -1, bk = -1;
+                for (int i = 0; i < groups.Count; i++)
+                {
+                    for (int k = i + 1; k < groups.Count; k++)
+                    {
+                        // Only the parts of one panel: a named panel keeps its own page (the guide's panels are pages).
+                        if (groups[i].Count + groups[k].Count > MaxMerged || !string.Equals(groups[i][0].Panel, groups[k][0].Panel, StringComparison.OrdinalIgnoreCase))
+                            continue;
+                        double e = Extent(groups[i].Concat(groups[k]));
+                        if (e <= CompactExtent && e < best)
+                        {
+                            best = e;
+                            bi = i;
+                            bk = k;
+                        }
+                    }
+                }
+                if (bi < 0)
+                    return;
+                // The controls keep their own panels (the picture's title names the panels it shows); the bigger group first.
+                List<CockpitCallout> a = groups[bi], b = groups[bk];
+                if (b.Count > a.Count)
+                {
+                    b.AddRange(a);
+                    groups[bi] = b;
+                }
+                else
+                {
+                    a.AddRange(b);
+                }
+                groups.RemoveAt(bk);
+            }
+        }
+
         // Splits a group whose controls lie far apart or are too many for one picture (k-means in two).
         private static IEnumerable<List<CockpitCallout>> Split(List<CockpitCallout> group)
         {
             Vec3 mn = group.Select(c => c.Position).Aggregate(Vec3.Min), mx = group.Select(c => c.Position).Aggregate(Vec3.Max);
             Vec3 ext = mx - mn;
             double extent = Math.Max(ext.X, Math.Max(ext.Y, ext.Z));
-            if (group.Count <= 1 || (group.Count <= MaxPerPanel && extent <= MaxPanelExtent))
+            // A compact group (a keypad, a CDU with 60 keys) stays one picture whatever its count: split, its halves got
+            // the same minimum frame and the same picture several times.
+            if (group.Count <= 1 || (group.Count <= MaxPerPanel && extent <= MaxPanelExtent) || extent <= CompactExtent)
             {
                 yield return group;
                 yield break;
@@ -352,6 +412,16 @@ namespace JoyPro.CockpitPictures
             {
                 double gap = axis(sorted[i]) - axis(sorted[i - 1]);
                 if (gap > bestGap)
+                {
+                    bestGap = gap;
+                    cut = i;
+                }
+            }
+            // A clear gap anywhere (two switches 30 cm beside a keypad) wins over a cut through the middle of the keypad.
+            for (int i = 1; i < sorted.Count; i++)
+            {
+                double gap = axis(sorted[i]) - axis(sorted[i - 1]);
+                if (gap > 0.08 && gap > bestGap * 1.5)
                 {
                     bestGap = gap;
                     cut = i;
@@ -373,7 +443,11 @@ namespace JoyPro.CockpitPictures
             List<Vec3> pts = group.Select(c => c.Position).ToList();
             Vec3 c0 = Centre(pts);
             Vec3 toHead = (head - c0).Normalized;
-            Vec3 normal = PlaneNormal(pts);
+            // The panel's face from the model's surfaces around the controls; the plane through the controls only where
+            // the model says nothing clear (a row of knobs gives no plane: seen along its face the panel vanished).
+            Vec3 normal = SurfaceNormal(scene, pts, head);
+            if (normal.Length < 0.5)
+                normal = PlaneNormal(pts, true);
             if (normal.Length < 0.5)
                 normal = toHead;
             if (Vec3.Dot(normal, toHead) < 0)
@@ -382,10 +456,12 @@ namespace JoyPro.CockpitPictures
             Vec3 view = (normal * 0.8 + toHead * 0.2).Normalized;
             RenderCamera cam = new RenderCamera { Ortho = true };
             cam.Forward = view * -1;
-            // Up: the world's up on the panel, or forward (+x) for panels seen from above (consoles).
+            // Up: the world's up on the panel; a console seen from above has forward (+x) at the top, an overhead panel
+            // seen from below has aft at the top (as the pilot reads it, the head tilted back): with forward at the top its
+            // printed labels came out upside down.
             Vec3 up = new Vec3(0, 1, 0);
             if (Math.Abs(Vec3.Dot(up, cam.Forward)) > 0.75)
-                up = new Vec3(1, 0, 0);
+                up = cam.Forward.Y > 0 ? new Vec3(-1, 0, 0) : new Vec3(1, 0, 0);
             cam.Right = Vec3.Cross(cam.Forward, up).Normalized;
             cam.Up = Vec3.Cross(cam.Right, cam.Forward).Normalized;
             // Extent on the picture.
@@ -413,7 +489,10 @@ namespace JoyPro.CockpitPictures
             cam.Eye = centre - cam.Forward * distance;
             // Cut away what lies between the camera and the panel (the stick, a seat edge, the other pilot).
             cam.Near = distance - maxDepth - 0.07;
-            string title = group[0].PanelTitle.Length > 0 ? group[0].PanelTitle : group[0].Panel;
+            // The panels it shows, the one with the most controls first (two: both names; more: the first two and "...").
+            List<string> names = group.Select(x => x.PanelTitle.Length > 0 ? x.PanelTitle : x.Panel).Where(x => x.Length > 0)
+                .GroupBy(x => x, StringComparer.OrdinalIgnoreCase).OrderByDescending(g => g.Count()).Select(g => g.Key).ToList();
+            string title = names.Count == 0 ? string.Empty : names.Count == 1 ? names[0] : names.Count == 2 ? names[0] + ", " + names[1] : names[0] + ", " + names[1] + ", ...";
             CockpitViewPlan v = new CockpitViewPlan { Kind = "panel", Title = title, Area = group[0].Area, Camera = cam };
             // When the picture is poor: the same view with more room around the controls, then the pilot's own view of
             // them (from the head: nothing of the cockpit in between, the side the pilot sees).
@@ -471,8 +550,98 @@ namespace JoyPro.CockpitPictures
             return sb.ToString().Trim('-');
         }
 
-        // The normal of the plane through the points (smallest axis of their spread), or zero when they lie on a line.
+        // The face of the surface the points sit on: the area-weighted normal of the model's triangles in the box around
+        // them (turned towards the head; small parts such as the knobs themselves left out), or zero when the surfaces
+        // there do not agree on a direction.
+        public static Vec3 SurfaceNormal(CockpitScene scene, List<Vec3> pts, Vec3 head)
+        {
+            if (scene == null || pts.Count == 0)
+                return new Vec3(0, 0, 0);
+            Vec3 lo = pts.Aggregate(Vec3.Min), hi = pts.Aggregate(Vec3.Max);
+            Vec3 pad = new Vec3(0.03, 0.03, 0.03);
+            lo = lo - pad;
+            hi = hi + pad;
+            double sx = 0, sy = 0, sz = 0, total = 0;
+            Vec3 box = hi - lo;
+            double side = Math.Max(box.X, Math.Max(box.Y, box.Z));
+            double cap = 2 * side * side;
+            for (int m = 0; m < scene.Meshes.Count; m++)
+            {
+                SceneMesh mesh = scene.Meshes[m];
+                float[] p = mesh.Positions;
+                if (p == null || mesh.Indices == null || p.Length < 9)
+                    continue;
+                Vec3 mlo, mhi;
+                MeshBounds(scene, m, out mlo, out mhi);
+                if (mhi.X < lo.X || mlo.X > hi.X || mhi.Y < lo.Y || mlo.Y > hi.Y || mhi.Z < lo.Z || mlo.Z > hi.Z)
+                    continue;
+                if ((mhi - mlo).Length < 0.05)
+                    continue;
+                int[] ix = mesh.Indices;
+                for (int t = 0; t + 2 < ix.Length; t += 3)
+                {
+                    int a = ix[t] * 3, b = ix[t + 1] * 3, c = ix[t + 2] * 3;
+                    if (a < 0 || b < 0 || c < 0 || a + 2 >= p.Length || b + 2 >= p.Length || c + 2 >= p.Length)
+                        continue;
+                    // A triangle whose box meets the box (a big panel face has its corners far outside it).
+                    if (Math.Max(p[a], Math.Max(p[b], p[c])) < lo.X || Math.Min(p[a], Math.Min(p[b], p[c])) > hi.X ||
+                        Math.Max(p[a + 1], Math.Max(p[b + 1], p[c + 1])) < lo.Y || Math.Min(p[a + 1], Math.Min(p[b + 1], p[c + 1])) > hi.Y ||
+                        Math.Max(p[a + 2], Math.Max(p[b + 2], p[c + 2])) < lo.Z || Math.Min(p[a + 2], Math.Min(p[b + 2], p[c + 2])) > hi.Z)
+                        continue;
+                    double cx = (p[a] + p[b] + p[c]) / 3, cy = (p[a + 1] + p[b + 1] + p[c + 1]) / 3, cz = (p[a + 2] + p[b + 2] + p[c + 2]) / 3;
+                    double ux = p[b] - p[a], uy = p[b + 1] - p[a + 1], uz = p[b + 2] - p[a + 2];
+                    double vx = p[c] - p[a], vy = p[c + 1] - p[a + 1], vz = p[c + 2] - p[a + 2];
+                    double nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+                    double len = Math.Sqrt(nx * nx + ny * ny + nz * nz);
+                    if (len < 1e-12)
+                        continue;
+                    if (nx * (head.X - cx) + ny * (head.Y - cy) + nz * (head.Z - cz) < 0)
+                    {
+                        nx = -nx;
+                        ny = -ny;
+                        nz = -nz;
+                    }
+                    // A triangle counts with at most the box's own area (a cabin wall crossing the box is not the panel).
+                    double w = Math.Min(len, cap) / len;
+                    sx += nx * w;
+                    sy += ny * w;
+                    sz += nz * w;
+                    total += len * w;
+                }
+            }
+            Vec3 sum = new Vec3(sx, sy, sz);
+            if (total <= 0 || sum.Length / total < 0.55)
+                return new Vec3(0, 0, 0);
+            return sum.Normalized;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<CockpitScene, Dictionary<int, Vec3[]>> boundsCache =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<CockpitScene, Dictionary<int, Vec3[]>>();
+
+        private static void MeshBounds(CockpitScene scene, int mesh, out Vec3 lo, out Vec3 hi)
+        {
+            Dictionary<int, Vec3[]> cache = boundsCache.GetValue(scene, s => new Dictionary<int, Vec3[]>());
+            Vec3[] b;
+            lock (cache)
+            {
+                if (!cache.TryGetValue(mesh, out b))
+                {
+                    scene.Bounds(new[] { mesh }, out lo, out hi);
+                    cache[mesh] = b = new[] { lo, hi };
+                }
+            }
+            lo = b[0];
+            hi = b[1];
+        }
+
+        // The normal of the plane through the points (smallest axis of their spread), or zero when they lie on a line;
+        // strict: also when they nearly do (the second axis under 2 % of the first, a row of knobs).
         public static Vec3 PlaneNormal(List<Vec3> pts)
+        {
+            return PlaneNormal(pts, false);
+        }
+
+        public static Vec3 PlaneNormal(List<Vec3> pts, bool strict)
         {
             if (pts.Count < 3)
                 return new Vec3(0, 0, 0);
@@ -493,7 +662,7 @@ namespace JoyPro.CockpitPictures
             Vec3[] vectors;
             Eigen(m, out values, out vectors);
             // values sorted ascending
-            if (values[1] < 1e-6)
+            if (values[1] < 1e-6 || (strict && values[1] < 0.02 * values[2]))
                 return new Vec3(0, 0, 0); // a line
             return vectors[0].Normalized;
         }
@@ -555,9 +724,42 @@ namespace JoyPro.CockpitPictures
             List<Vec3> front = pts.Where(p => p.X >= head.X - 0.05).ToList();
             if (front.Count >= 3)
                 pts = front;
-            Vec3 aim = Centre(pts);
+            // A control far out (a gun's handle on a biplane's top wing) does not shrink the cockpit to a dot: the
+            // picture is fitted to the points within twice and a bit the typical distance.
+            if (pts.Count >= 4)
+            {
+                List<double> dist = pts.Select(p => (p - eye).Length).OrderBy(x => x).ToList();
+                double limit = Math.Max(1.2, 2.2 * dist[dist.Count / 2]);
+                List<Vec3> near = pts.Where(p => (p - eye).Length <= limit).ToList();
+                if (near.Count >= 3)
+                    pts = near;
+            }
+            // Aimed at the instrument panel and the consoles' height, not at the floor: the levers and pedals far below
+            // the eye pulled the camera down onto the seat cushion (IL-2's cockpits).
+            List<Vec3> panel = pts.Where(p => p.Y >= head.Y - 0.5).ToList();
+            Vec3 aim = Centre(panel.Count >= 3 ? panel : pts);
             int height = (int)Math.Round(width / 1.6);
             RenderCamera cam = RenderCamera.LookAt(eye, aim, 60, width, height);
+            // Then turned to the middle of what it has to show (the panel above, the levers below), so the frame is not
+            // half empty above the panel.
+            double loX = double.MaxValue, hiX = double.MinValue, loY = double.MaxValue, hiY = double.MinValue;
+            foreach (Vec3 p in pts)
+            {
+                Vec3 d = p - eye;
+                double z = Vec3.Dot(d, cam.Forward);
+                if (z < 0.05)
+                    continue;
+                double px = Vec3.Dot(d, cam.Right) / z, py = Vec3.Dot(d, cam.Up) / z;
+                loX = Math.Min(loX, px);
+                hiX = Math.Max(hiX, px);
+                loY = Math.Min(loY, py);
+                hiY = Math.Max(hiY, py);
+            }
+            if (hiX >= loX && hiY >= loY)
+            {
+                Vec3 dir = cam.Forward + cam.Right * ((loX + hiX) / 2) + cam.Up * ((loY + hiY) / 2);
+                cam = RenderCamera.LookAt(eye, eye + dir.Normalized, 60, width, height);
+            }
             // Fit the field of view to the points (with room for the panels around them).
             double maxX = 0, maxY = 0;
             foreach (Vec3 p in pts)

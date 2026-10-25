@@ -31,7 +31,17 @@ namespace JoyPro.Gui.Tests.QualityGate;
 [SupportedOSPlatform("windows")]
 public sealed class QualityGateLayoutTests
 {
-    private sealed record Variant(string Name, UiStage Stage, string Relation = "", bool AddPanel = false, bool Check = false);
+    private sealed record Variant(string Name, UiStage Stage, string Relation = "", bool AddPanel = false, bool Check = false, bool OwnLayouts = false);
+
+    // The text size and font runs: JoyPro's own, then Settings > Appearance's text size and two theme fonts.
+    private static readonly (string Label, double TextScale, string Font)[] Typography =
+    [
+        ("", 1.0, ""),
+        ("text 150%", 1.5, ""),
+        ("text 200%", 2.0, ""),
+        ("serif font, text 150%", 1.5, "Georgia"),
+        ("wide font, text 150%", 1.5, "Verdana"),
+    ];
 
     private static readonly (string Label, double Width, double Height, double Scale)[] Screens =
     [
@@ -53,6 +63,7 @@ public sealed class QualityGateLayoutTests
         string profile = Gate.CopyProfile("layout") ?? Gate.EmptyProfile("layout");
         Dictionary<string, (HashSet<string> Screens, HashSet<string> Themes, string Detail)> overlaps = new(StringComparer.Ordinal);
         Dictionary<string, (HashSet<string> Screens, HashSet<string> Themes, string Detail)> clipped = new(StringComparer.Ordinal);
+        Dictionary<string, (HashSet<string> Screens, HashSet<string> Themes, string Detail)> spilled = new(StringComparer.Ordinal);
         int windows = 0;
         GateSession.Run(profile, async s =>
         {
@@ -72,7 +83,11 @@ public sealed class QualityGateLayoutTests
             List<Variant> variants =
             [
                 new("Start", UiStage.Start), new("Relations (none open)", UiStage.Relations), new("Binds", UiStage.Binds), new("Modifiers", UiStage.Modifiers),
-                new("Layout", UiStage.Layout), new("Export", UiStage.Export), new("Settings", UiStage.Settings), new("Advanced", UiStage.Advanced),
+                new("Layout", UiStage.Layout),
+                // The device list as the user's profile shows it: his own layouts of many devices with long names
+                // ("Your layout · 135 markers" chips next to Model... and the swap button).
+                new("Layout: your layouts, long device names", UiStage.Layout, OwnLayouts: true),
+                new("Export", UiStage.Export), new("Settings", UiStage.Settings), new("Advanced", UiStage.Advanced),
                 new("HUD", UiStage.Hud), new("Force feedback", UiStage.FfbTelemetry), new("Virtual joystick", UiStage.VirtualJoystick), new("Cockpits", UiStage.Cockpits),
                 new("Statistics", UiStage.Statistics),
                 new("Relation editor: empty relation", UiStage.Relations, "QG empty relation"),
@@ -89,14 +104,20 @@ public sealed class QualityGateLayoutTests
                     if (variant.Relation.Length == 0 && variant.Name.StartsWith("Relation editor", StringComparison.Ordinal))
                         continue;
                     await ShowAsync(s, variant);
-                    foreach ((string theme, ThemeVariant themeVariant) in new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) })
+                    // JoyPro's text size in Light and Dark at every screen; then the text size of Settings > Appearance
+                    // (150 % and 200 %) and a serif and a wide font at 150 % text, with 150 % Windows scaling, in Dark.
+                    foreach ((string typo, double textScale, string font) in Typography)
+                    foreach ((string theme, ThemeVariant themeVariant) in typo.Length == 0 ? new[] { ("light", ThemeVariant.Light), ("dark", ThemeVariant.Dark) } : new[] { ("dark", ThemeVariant.Dark) })
                     {
+                        if (font.Length > 0 && !JoyPro.Gui.Services.ThemeService.IsInstalled(font))
+                            continue;
+                        JoyPro.Gui.Services.ThemeService.ApplyTypography(textScale, new JoyPro.Gui.Services.ThemeFonts { Ui = font });
                         Application.Current!.RequestedThemeVariant = themeVariant;
                         // One layout per logical size; every screen that maps to it is named in the findings.
-                        foreach (IGrouping<(double, double), (string Label, double Width, double Height, double Scale)> logical in Screens.GroupBy(sc => LogicalSize(sc)))
+                        foreach (IGrouping<(double, double), (string Label, double Width, double Height, double Scale)> logical in Screens.Where(sc => typo.Length == 0 || sc.Scale > 1.4).GroupBy(sc => LogicalSize(sc)))
                         {
                             (double width, double height) = logical.Key;
-                            string screens = string.Join(", ", logical.Select(l => l.Label));
+                            string screens = string.Join(", ", logical.Select(l => l.Label + (typo.Length > 0 ? " " + typo : string.Empty)));
                             HiddenWindow window = GateRender.NewWindow(vm, width, height);
                             windows++;
                             if (variant.Check)
@@ -110,14 +131,20 @@ public sealed class QualityGateLayoutTests
                             {
                                 Control root = GateRender.Root(window);
                                 List<Rect> boxes = [];
-                                foreach ((Control a, Rect ra, Control b, Rect rb) in Overlaps(root, width, height))
+                                foreach ((Control a, Rect ra, Control b, Rect rb) in LayoutChecks.Overlaps(root, width, height))
                                 {
-                                    string key = variant.Name + "|" + GateRender.Describe(a) + "|" + GateRender.Describe(b);
+                                    string key = variant.Name + "|" + LayoutChecks.Describe(a) + "|" + LayoutChecks.Describe(b);
                                     Add(overlaps, key, screens, theme, "at " + Round(ra) + " and " + Round(rb));
                                     boxes.Add(ra);
                                     boxes.Add(rb);
                                 }
-                                foreach ((TextBlock text, double need, double got) in ClippedTexts(root, width, height))
+                                foreach ((Control item, Rect ir, Border frame, Rect fr) in LayoutChecks.Spills(root, width, height))
+                                {
+                                    string key = variant.Name + "|" + LayoutChecks.Describe(item) + "|" + GateRender.Describe(frame);
+                                    Add(spilled, key, screens, theme, "at " + Round(ir) + ", frame " + Round(fr));
+                                    boxes.Add(ir);
+                                }
+                                foreach ((TextBlock text, double need, double got) in LayoutChecks.ClippedTexts(root, width, height))
                                 {
                                     string owner = Owner(text);
                                     string key = variant.Name + "|'" + Gate.Short(text.Text ?? string.Empty, 50) + "'" + (owner.Length > 0 ? " in " + owner : string.Empty);
@@ -127,7 +154,7 @@ public sealed class QualityGateLayoutTests
                                         boxes.Add(r.Value);
                                 }
                                 if (boxes.Count > 0)
-                                    GateRender.Save(window, width, height, logical.Max(l => l.Scale), Path.Combine(dir, "layout-" + FileName(variant.Name) + "-" + (int)width + "x" + (int)height + "-" + theme + ".png"), boxes);
+                                    GateRender.Save(window, width, height, logical.Max(l => l.Scale), Path.Combine(dir, "layout-" + FileName(variant.Name) + "-" + (int)width + "x" + (int)height + "-" + theme + (typo.Length > 0 ? "-" + FileName(typo) : string.Empty) + ".png"), boxes);
                             }
                             finally
                             {
@@ -140,6 +167,7 @@ public sealed class QualityGateLayoutTests
             }
             finally
             {
+                JoyPro.Gui.Services.ThemeService.ApplyTypography(1.0, null);
                 Application.Current!.RequestedThemeVariant = ThemeVariant.Default;
             }
         });
@@ -149,6 +177,12 @@ public sealed class QualityGateLayoutTests
             Gate.Fail("I10", "interactive controls overlap", string.Empty, parts[0] + ": " + parts[1] + " overlaps " + parts[2],
                 "screens: " + string.Join(", ", e.Screens) + "; themes: " + string.Join("/", e.Themes) + "; " + e.Detail);
         }
+        foreach ((string key, var e) in spilled)
+        {
+            string[] parts = key.Split('|');
+            Gate.Fail("I10", "content outside its frame", string.Empty, parts[0] + ": " + parts[1] + " sticks out of " + parts[2],
+                "screens: " + string.Join(", ", e.Screens) + "; themes: " + string.Join("/", e.Themes) + "; " + e.Detail);
+        }
         foreach ((string key, var e) in clipped)
         {
             string[] parts = key.Split('|');
@@ -156,6 +190,53 @@ public sealed class QualityGateLayoutTests
         }
         Gate.Note("I10: " + windows + " layouts checked (" + Screens.Length + " screens, Light and Dark); pictures with findings in " + dir);
         Gate.Finish("I10");
+    }
+
+    // Every device card of the Layout page as one of the user's own layouts with many markers, the device names as long
+    // as real ones get ("LEFT VPC MongoosT-50CM3 Throttle - alias ..."), at least 12 cards; the first one picked with a
+    // layout file's raw name and the engine's top score (190 of 200), whose header line must say a readable name and
+    // at most 100 %.
+    internal static void OwnLayoutCards(MainWindowViewModel vm)
+    {
+        string[] longNames =
+        [
+            "LEFT VPC MongoosT-50CM3 Throttle", "RIGHT VPC Constellation ALPHA Prime", "VKBsim Gladiator EVO OT Left Premium",
+            "Thrustmaster T.Flight Rudder Pedals", "WINWING Orion2 Throttle Base + F15EX Handle", "Virpil Control Panel #2 (CP2)",
+            "Logitech G Saitek PRO Flight Switch Panel", "VPC SharKa-50 Control Panel", "MFG Crosswind V3 Rudder Pedals",
+            "Thrustmaster HOTAS Warthog Joystick", "WINWING MFD C Left", "Razer Tartarus V2 Keypad"
+        ];
+        int index = 0;
+        foreach (LayoutSuggestionItem item in vm.LayoutSuggestions)
+            Own(item, index++);
+        for (; index < longNames.Length; index++)
+        {
+            LayoutSuggestionItem extra = new() { Device = longNames[index] + " {" + Guid.NewGuid().ToString().ToUpperInvariant() + "}" };
+            Own(extra, index);
+            vm.LayoutSuggestions.Add(extra);
+        }
+        LayoutSuggestionItem first = vm.LayoutSuggestions[0];
+        first.TemplateName = "VPC_MT50CM+mod2";
+        first.Score = 190;
+        vm.SelectedLayoutSuggestion = null;
+        vm.SelectedLayoutSuggestion = first;
+        string status = vm.LayoutSuggestStatus ?? string.Empty;
+        foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(status, @"(\d+)\s*%"))
+        {
+            if (int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture) > 100)
+                Gate.Fail("I10", "match above 100 %", string.Empty, "Layout: " + Gate.Short(status, 120), "the picture's match is a percentage (0..100)");
+        }
+        if (status.Contains('_') || status.Contains("+mod", StringComparison.Ordinal))
+            Gate.Fail("I10", "raw picture file name", string.Empty, "Layout: " + Gate.Short(status, 120), "the header names the picture in words");
+
+        static void Own(LayoutSuggestionItem item, int i)
+        {
+            item.Source = "legacy-layout-dir";
+            if (string.IsNullOrWhiteSpace(item.LayoutPath))
+                item.LayoutPath = "C:/Layouts/device" + i + ".layout";
+            item.MarkerCount = 100 + 35 * (i % 3);
+            if (string.IsNullOrWhiteSpace(item.Model))
+                item.Model = "Virpil Controls VPC MongoosT-50CM3 Throttle (VID 3344, PID 0194)";
+        }
     }
 
     private static (double, double) LogicalSize((string Label, double Width, double Height, double Scale) screen)
@@ -226,6 +307,13 @@ public sealed class QualityGateLayoutTests
                 await vm.PreviewSureDuplicatesCommand.ExecuteAsync(null);
             await s.SettleAsync(() => true, 30000);
         }
+        if (variant.OwnLayouts)
+        {
+            await s.SettleAsync(() => !vm.IsBusy, 60000);
+            OwnLayoutCards(vm);
+            await Task.Delay(200);
+            await s.SettleAsync(() => true, 30000);
+        }
         if (variant.Stage != UiStage.Relations)
             return;
         if (variant.Relation.Length == 0)
@@ -253,80 +341,6 @@ public sealed class QualityGateLayoutTests
         string query = (vm.BuilderSearchText ?? string.Empty).Trim();
         if (query.Length > 0 && vm.BuilderSearchResults.Count == 0 && !vm.IsBuilderSearching)
             Gate.Fail("I10", "search pre-filled with words that find nothing", string.Empty, variant.Name + ": '" + query + "'", Gate.Short(vm.BuilderSearchStatus, 120));
-    }
-
-    // Visible interactive controls that intersect without one holding the other.
-    private static IEnumerable<(Control A, Rect RA, Control B, Rect RB)> Overlaps(Control root, double width, double height)
-    {
-        List<(Control Control, Rect Rect)> items = [];
-        foreach (Control c in root.GetVisualDescendants().OfType<Control>())
-        {
-            if (c is not (Button or TextBox or ComboBox or AutoCompleteBox or NumericUpDown))
-                continue;
-            // A part of another control's template (scroll bar arrows, a spinner's buttons, a combo box's toggle) is
-            // that control's own business.
-            if (c.TemplatedParent != null)
-                continue;
-            Rect? r = GateRender.SeenRect(c, root, width, height);
-            if (r != null)
-                items.Add((c, r.Value));
-        }
-        items = items.OrderBy(i => i.Rect.X).ToList();
-        for (int i = 0; i < items.Count; i++)
-        {
-            for (int j = i + 1; j < items.Count && items[j].Rect.X < items[i].Rect.Right; j++)
-            {
-                Rect cut = items[i].Rect.Intersect(items[j].Rect);
-                if (cut.Width <= 2 || cut.Height <= 2)
-                    continue;
-                if (items[i].Control.IsVisualAncestorOf(items[j].Control) || items[j].Control.IsVisualAncestorOf(items[i].Control))
-                    continue;
-                // A modal question over a dimmed area (Classes="modalOverlay") covers what is under it on purpose.
-                if (InModalOverlay(items[i].Control) != InModalOverlay(items[j].Control))
-                    continue;
-                yield return (items[i].Control, items[i].Rect, items[j].Control, items[j].Rect);
-            }
-        }
-    }
-
-    private static bool InModalOverlay(Control c) => c.GetVisualAncestors().OfType<Control>().Any(a => a.Classes.Contains("modalOverlay"));
-
-    // One-line texts without trimming that need more width than they got.
-    private static IEnumerable<(TextBlock Text, double Need, double Got)> ClippedTexts(Control root, double width, double height)
-    {
-        foreach (TextBlock text in root.GetVisualDescendants().OfType<TextBlock>())
-        {
-            if (string.IsNullOrWhiteSpace(text.Text) || text.TextTrimming != TextTrimming.None || text.TextWrapping != TextWrapping.NoWrap)
-                continue;
-            // A text box's placeholder is its own business; a text placed freely on a canvas (gauge ticks, HUD
-            // previews) may run past its box on purpose.
-            if (text.TemplatedParent is TextBox || text.GetVisualParent() is Canvas)
-                continue;
-            // A scaled preview (the HUD designer's Viewbox, a widget's LayoutTransformControl): its texts are laid out in
-            // their own units, the window's clip in scaled ones; the preview shows them whole.
-            if (text.GetVisualAncestors().Any(a => a is Viewbox or LayoutTransformControl))
-                continue;
-            if (!GateRender.IsSeen(text, root, width, height))
-                continue;
-            FormattedText formatted = new(text.Text!, CultureInfo.CurrentUICulture, text.FlowDirection,
-                new Typeface(text.FontFamily, text.FontStyle, text.FontWeight, text.FontStretch), text.FontSize, null);
-            double need = formatted.WidthIncludingTrailingWhitespace + text.Padding.Left + text.Padding.Right;
-            double got = text.Bounds.Width;
-            // What the text is drawn in can also be narrower than the text block (a clipping parent).
-            for (Visual? v = text.GetVisualParent(); v != null && v != root; v = v.GetVisualParent())
-            {
-                if (v is Control parent && parent.ClipToBounds)
-                {
-                    Rect? pr = GateRender.BoundsInWindow(parent, root);
-                    Rect? tr = GateRender.BoundsInWindow(text, root);
-                    if (pr != null && tr != null)
-                        got = Math.Min(got, Math.Max(0, pr.Value.Right - tr.Value.X));
-                    break;
-                }
-            }
-            if (need > got + 1.5)
-                yield return (text, need, got);
-        }
     }
 
     private static string Owner(TextBlock text)

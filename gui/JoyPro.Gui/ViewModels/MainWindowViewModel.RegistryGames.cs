@@ -91,7 +91,7 @@ public sealed partial class MainWindowViewModel
             RegistryGameAircraftOptions.Add(aircraft.Key);
     }
 
-    // The data folder whose GameData the game lists are read from; empty = JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro
+    // The data folder whose GameData the game lists are read from; empty = JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro2
     // (GameDataLocations.DataRoot). The GUI tests that build their own engine folder with game lists point it at an
     // empty folder: the lists a real engine copies into the test run's shared data folder would hide theirs.
     internal string GameDataRootOverride { get; set; } = string.Empty;

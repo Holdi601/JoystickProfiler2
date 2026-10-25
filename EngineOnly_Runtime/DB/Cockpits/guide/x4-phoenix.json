@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-phoenix",
+  "title": "Phoenix (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-phoenix"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "L - Large Ships (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/Objects%20in%20the%20Game%20Universe/Ships/L%20-%20Large%20Ships/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Phoenix is a large Teladi destroyer flown from the captain's chair. The pilot fires its forward main guns; its eleven turrets fire on their own.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Phoenix: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Phoenix that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Phoenix are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Captain's chair (bridge)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Phoenix is a big ship, so the pilot flies it from the captain's chair on the bridge instead of a small cockpit. The stick controls are the same as in a fighter.",
+              "context": "A big ship like the Phoenix turns and speeds up slowly; the pilot plans moves earlier than in a fighter.",
+              "src": "c1"
+            },
+            {
+              "id": "guns",
+              "name": "Main guns",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Phoenix has two big forward main guns. They fire with the trigger and aim where the ship's nose points.",
+              "context": "Turning a ship as big as the Phoenix onto a target takes time, so the main guns suit big, slow targets.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turrets",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The Phoenix carries eleven turrets, gun mounts that turn and fire on their own without the pilot.",
+              "context": "How the turrets behave (attack all enemies, defend, hold fire) is set in the menus, not on the sticks.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

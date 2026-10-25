@@ -1,0 +1,109 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-vanguard-warden",
+  "title": "Vanguard Warden (Aegis Dynamics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-vanguard-warden"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Vanguard Warden (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Vanguard_Warden"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Vanguard Warden is a long-range heavy fighter from Aegis Dynamics in Star Citizen. The pilot sits in the nose, a second crew member works the rear turret, and there is living space behind for long patrols. The pilot uses the common controls.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Vanguard Warden: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Vanguard Warden's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (five)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Vanguard Warden has five guns that the pilot fires. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (twelve missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Twelve missiles hang in the Vanguard Warden's racks. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Vanguard Warden: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Vanguard Warden besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "turret",
+              "name": "Rear turret",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "One turret at the back for the second crew member. Each gunner sits in a turret of their own.",
+              "context": "A turret seat has its own controls: there the right stick aims the turret instead of steering the ship.",
+              "src": "w1"
+            },
+            {
+              "id": "living",
+              "name": "Living space",
+              "type": "other",
+              "match": [
+                "item:crew-stations:2"
+              ],
+              "text": "Beds behind the cockpit let the crew rest on long patrols.",
+              "context": "Long trips far from stations are possible because the crew can sleep and stay aboard.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

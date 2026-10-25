@@ -1,0 +1,316 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-x-15",
+  "title": "North American X-15 (three-stick cockpit)",
+  "variants": [
+    "x-15-three-stick"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "X-15 Pilot Report, Part 2: X-15 Cockpit Check (Paul Raveling)",
+      "kind": "reference",
+      "url": "https://www.sierrafoot.org/x-15/pirep2.html"
+    },
+    {
+      "id": "s2",
+      "title": "North American X-15 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/North_American_X-15"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The X-15 (1959-1968) was a rocket-powered research aircraft that was dropped from a B-52, flew faster than six times the speed of sound and reached heights above 100 km, at the edge of space. The pilot sat in an ejection seat among about 130 gauges and switches. He had three sticks: a normal centre stick, a side stick on the right for flying under high g, and a ballistic control stick on the left for the rocket jets that turn the aircraft where the air is too thin for the wings. The instruments are summarised from a pilot report of the cockpit check.",
+  "areas": [
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "Flight instruments.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Main instrument panel",
+          "text": "The flight instruments for the rocket flight and the glide back.",
+          "context": "The X-15 flew so high and fast that it needed special instruments, for example for the angle of attack where normal airspeed tubes no longer work.",
+          "controls": [
+            {
+              "id": "attitude",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "The attitude ball, which shows whether the nose points up or down and whether the wings are level.",
+              "context": "Above the atmosphere it was the only way to know the attitude for the return.",
+              "src": "s1"
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "The height gauge. It shows how high the aircraft flies.",
+              "context": "The X-15 reached heights above 100 km, at the edge of space.",
+              "src": "s2"
+            },
+            {
+              "id": "speed",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "This dial shows the speed through the air and the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The X-15 flew faster than six times the speed of sound.",
+              "src": "s2"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack and sideslip",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "This instrument shows how steeply the wing meets the air (angle of attack) and whether the aircraft slides sideways, measured by a movable ball in the nose.",
+              "context": "Coming back into the air at the right angle was vital; too steep or too flat could break the aircraft.",
+              "src": "s2"
+            },
+            {
+              "id": "g",
+              "name": "Accelerometer",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "A G-meter: it shows how strong the push into the seat is.",
+              "context": "The return into the atmosphere pressed the pilot into the seat with several times his weight."
+            },
+            {
+              "id": "inertial",
+              "name": "Inertial flight data",
+              "type": "display",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "Instruments that show speed, height and climb rate measured by the inertial system (gyros and accelerometers inside the aircraft), not by the outside air.",
+              "context": "High up, where the air is too thin to measure, these were the reliable numbers.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engine-panel",
+      "where": "front-left",
+      "name": "Engine and launch panel",
+      "text": "Engine prime and start.",
+      "panels": [
+        {
+          "id": "engine-panel",
+          "name": "Engine and launch panel",
+          "text": "The switches for priming and starting the rocket engine before the drop from the B-52.",
+          "context": "The X-15 was carried under the wing of a B-52 and dropped; the engine was started right after the drop.",
+          "controls": [
+            {
+              "id": "prime",
+              "name": "Engine prime and precool switches",
+              "type": "switch",
+              "match": [
+                "item:engine-panel:1"
+              ],
+              "text": "Switches that prepare the rocket engine before the drop: they cool the engine with its very cold fuel and fill the lines.",
+              "context": "They were used during the minutes before the drop. JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            },
+            {
+              "id": "start",
+              "name": "Engine start and reset",
+              "type": "switch",
+              "match": [
+                "item:engine-panel:2"
+              ],
+              "text": "Switches that start the rocket engine and reset it after a failed start.",
+              "context": "The pilot started the engine just after leaving the B-52; if it failed, he could try again or glide to an emergency lake bed. JoyPro's sources do not describe its single switches.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ventral",
+      "where": "front-right",
+      "name": "Ventral fin jettison",
+      "text": "The lower fin release.",
+      "panels": [
+        {
+          "id": "ventral",
+          "name": "Ventral fin jettison",
+          "text": "The release of the lower part of the lower tail fin.",
+          "context": "The X-15 landed on skids, and the lower fin would have hit the ground.",
+          "controls": [
+            {
+              "id": "jett",
+              "name": "Ventral jettison",
+              "type": "button",
+              "match": [
+                "item:ventral:1"
+              ],
+              "text": "Pressing this button drops the lower part of the lower tail fin before landing; it comes down on its own parachute.",
+              "context": "Without dropping it, the fin would have struck the lake bed at touchdown.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-panel",
+      "where": "left-console",
+      "name": "Left-side panel",
+      "text": "Throttle, speed brake and ballistic stick.",
+      "panels": [
+        {
+          "id": "left-panel",
+          "name": "Left-side panel",
+          "text": "The rocket engine throttle, the speed brake lever and the ballistic control stick.",
+          "context": "The left hand worked the engine during the climb and the thrusters above the atmosphere.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "XLR99 throttle",
+              "type": "lever",
+              "match": [
+                "item:left-panel:1",
+                "control:throttle.axis.main"
+              ],
+              "text": "This lever sets the thrust of the XLR99 rocket engine: off, or between half and full power.",
+              "context": "The engine burned only for about a minute and a half; the pilot shut it down at the planned speed and height.",
+              "src": "s2"
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake lever",
+              "type": "lever",
+              "match": [
+                "item:left-panel:2",
+                "control:throttle.speedbrake"
+              ],
+              "text": "This lever opens and closes the speed brakes, panels on the tail that open into the wind to slow the aircraft.",
+              "context": "They help control the speed in the glide back to the landing.",
+              "src": "s1"
+            },
+            {
+              "id": "ballistic",
+              "name": "Ballistic control stick",
+              "type": "axis",
+              "match": [
+                "item:left-panel:3",
+                "control:rhc.gimbal"
+              ],
+              "text": "A three-axis stick for the left hand that fires small rocket jets in the nose and the wings (reaction controls): moving it up and down pitches, left and right yaws, twisting rolls.",
+              "context": "Above the atmosphere the wings and tail have no air to push against, so only these jets can turn the aircraft; on a joystick it is a second three-axis controller.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Side stick and stabilizer indicator.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The side stick for high-g flight and the stabilizer position indicator.",
+          "context": "The side stick let the pilot fly precisely while pressed into the seat.",
+          "controls": [
+            {
+              "id": "sidestick",
+              "name": "Right console side stick",
+              "type": "axis",
+              "match": [
+                "item:right-console:1",
+                "control:sidestick.gimbal"
+              ],
+              "text": "A small stick on the right console for pitch and roll. It is coupled to the centre stick, so either can be used.",
+              "context": "Under high g the pilot's arm rested on the console, and small wrist movements on this stick were easier than moving the centre stick.",
+              "src": "s1"
+            },
+            {
+              "id": "stab",
+              "name": "Stabilizer position indicator",
+              "type": "gauge",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "A gauge on the wall next to the side stick that shows the position of the horizontal tail.",
+              "context": "The X-15 steered with all-moving tail surfaces; the pilot checked their position here.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Centre stick and pedals",
+      "text": "The normal flight controls.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Centre stick",
+          "text": "The normal stick between the pilot's knees.",
+          "context": "It worked the tail surfaces in the air, like in any fast jet.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Centre stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward lowers the nose, pulling it back raises it, moving it sideways rolls the aircraft.",
+              "context": "It is the normal flight control for take-off from the B-52 and for the glide to landing; on a joystick it is the X and Y axes.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Rudder pedals",
+          "text": "The rudder pedals at the X-15 pilot's feet.",
+          "context": "They move the rudder in the air.",
+          "controls": [
+            {
+              "id": "rudder",
+              "name": "Rudder pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left or right pedal moves the rudder and turns the nose to that side.",
+              "context": "In the thin air high up they do almost nothing; the ballistic control stick then takes over.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

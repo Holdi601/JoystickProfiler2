@@ -12,8 +12,8 @@
     <Border CornerRadius="12" Padding="10">
         <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                <TextBlock Text="{l:T 'Virtual joystick (vJoy + HidHide)'}" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" />
-                <Border Grid.Column="1" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,5" VerticalAlignment="Center">
+                <TextBlock Text="{l:T 'Virtual joystick (vJoy + HidHide)'}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" VerticalAlignment="Center" />
+                <Border Grid.Column="1" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,5" VerticalAlignment="Center">
                     <TextBlock Text="{Binding VirtualJoystickForwarderText}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding VirtualJoystickForwarderText}" />
                 </Border>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
@@ -31,11 +31,11 @@
                 <TabItem Header="{l:T 'Overview'}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Spacing="10" Margin="0,8,8,0">
-                            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
-                                    <TextBlock Text="{l:T 'What is this?'}" FontSize="16" FontWeight="SemiBold" />
+                                    <TextBlock Text="{l:T 'What is this?'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T 'Some games only take a few joysticks, pick up the wrong ones or mix up their order. In virtual mode JoyPro puts every axis, button and hat that a game\'s binds use onto one virtual joystick (vJoy; more than one only when one is not enough). The game then sees just that device, and the binds always stay where they are.'}" />
-                                    <TextBlock Text="{l:T 'How to use it'}" FontSize="16" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                    <TextBlock Text="{l:T 'How to use it'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '1. Switch the game to Virtual below.'}" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '2. Export the game again (Export page). JoyPro writes the binds to the virtual joystick; your profile keeps your real devices.'}" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '3. Press Start before you start the game. JoyPro hides your real devices from that game with HidHide (Windows asks once for administrator rights) and copies every input to the virtual joystick in real time.'}" />
@@ -44,19 +44,19 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                        <TextBlock Text="{l:T 'Status'}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        <TextBlock Text="{l:T 'Status'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                         <Button Grid.Column="1" Command="{Binding RefreshVirtualJoystickCommand}" Content="{l:T 'Refresh'}" MinWidth="110"
                                                 ToolTip.Tip="{l:T 'Checks vJoy, HidHide and your devices (read-only: nothing is changed)'}" />
                                     </Grid>
                                     <TextBlock Text="{Binding VJoyStatusText}" TextWrapping="Wrap" />
-                                    <TextBlock Text="{Binding VJoyDevicesText}" TextWrapping="Wrap" Opacity="0.8" FontSize="12" />
+                                    <TextBlock Text="{Binding VJoyDevicesText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
                                     <TextBlock Text="{Binding HidHideStatusText}" TextWrapping="Wrap" />
                                     <TextBlock Text="{Binding ViGEmStatusText}" TextWrapping="Wrap" />
                                     <TextBlock Text="{Binding VirtualJoystickSessionText}" TextWrapping="Wrap" />
-                                    <TextBlock Text="{Binding VirtualJoystickRateText}" TextWrapping="Wrap" Opacity="0.8" FontSize="12" />
+                                    <TextBlock Text="{Binding VirtualJoystickRateText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Button Command="{Binding ConfigureVJoyCommand}" Content="{l:T 'Set up vJoy for the table'}" IsVisible="{Binding VirtualJoystickNeedsConfig}"
                                                 ToolTip.Tip="{l:T 'Runs vJoyConfig once (Windows asks for administrator rights) so the vJoy devices have the axes, buttons and hats the table needs. It never takes anything away from a device.'}" />
@@ -65,17 +65,17 @@
                                         <Button Command="{Binding SetUpVJoyMaximumCommand}" Content="{l:T 'Set up vJoy for maximum'}" IsVisible="{Binding !VJoyAtMaximum}"
                                                 ToolTip.Tip="{l:T '8 axes, 128 buttons and 4 hats on each vJoy device JoyPro uses (one administrator prompt). Windows must restart before it takes effect; JoyPro never restarts Windows.'}" />
                                     </StackPanel>
-                                    <TextBlock Text="{Binding VJoyMaximumText}" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource JP.WarnTextBrush}"
+                                    <TextBlock Text="{Binding VJoyMaximumText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}"
                                                IsVisible="{Binding VJoyMaximumText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                    <TextBlock Text="{Binding VirtualJoystickNeedsText}" TextWrapping="Wrap" FontSize="12"
+                                    <TextBlock Text="{Binding VirtualJoystickNeedsText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}"
                                                IsVisible="{Binding VirtualJoystickNeedsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 </StackPanel>
                             </Border>
 
-                            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                                        <TextBlock Text="{l:T 'What this page needs'}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        <TextBlock Text="{l:T 'What this page needs'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
                                         <Button Grid.Column="1" Command="{Binding RefreshComponentsCommand}" Content="{l:T 'Check again'}" MinWidth="110"
                                                 ToolTip.Tip="{l:T 'Looks at what is installed and running (read-only)'}" />
                                     </Grid>
@@ -91,9 +91,9 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
-                                    <TextBlock Text="{l:T 'Games'}" FontSize="16" FontWeight="SemiBold" />
+                                    <TextBlock Text="{l:T 'Games'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                     <TextBlock TextWrapping="Wrap" Opacity="0.8" Text="{l:T 'Native: the game uses your real devices (as before). vJoy: the game uses one virtual joystick. Xbox pad: the game gets one virtual Xbox 360 controller - for games that only read Xbox controllers (XInput) or only one device; your sticks drive its two sticks, two triggers, D-pad and 14 buttons (what does not fit is listed on the Mapping tab). After switching, export the game again.'}" />
                                     <ItemsControl ItemsSource="{Binding VirtualJoystickGames}">
                                         <ItemsControl.ItemTemplate>
@@ -103,16 +103,16 @@
                                                     <ComboBox Grid.Column="1" ItemsSource="{Binding Modes}" SelectedIndex="{Binding ModeIndex}" MinWidth="190" VerticalAlignment="Center"
                                                               ToolTip.Tip="{l:T 'Native: your real devices. vJoy: one virtual DirectInput joystick. Xbox pad: one virtual Xbox 360 controller (for games that only take XInput or one device; needs ViGEmBus).'}" />
                                                     <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                        <TextBlock Text="{Binding RelationsText}" FontSize="12" Opacity="0.8" />
-                                                        <TextBlock Text="{Binding ExesText}" FontSize="12" Opacity="0.7" TextWrapping="Wrap" />
-                                                        <TextBlock Text="{Binding XboxNote}" FontSize="12" Opacity="0.7" TextWrapping="Wrap" IsVisible="{Binding IsXbox}" />
-                                                        <TextBlock Text="{Binding InputLimitText}" FontSize="12" Opacity="0.7" TextWrapping="Wrap"
+                                                        <TextBlock Text="{Binding RelationsText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" />
+                                                        <TextBlock Text="{Binding ExesText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding XboxNote}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextWrapping="Wrap" IsVisible="{Binding IsXbox}" />
+                                                        <TextBlock Text="{Binding InputLimitText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextWrapping="Wrap"
                                                                    IsVisible="{Binding InputLimitText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                        <TextBlock Text="{Binding FunctionsText}" FontSize="12" Opacity="0.7"
+                                                        <TextBlock Text="{Binding FunctionsText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7"
                                                                    IsVisible="{Binding FunctionsText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                        <TextBlock Text="{Binding LimitWarningsText}" FontSize="12" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasLimitWarnings}" />
+                                                        <TextBlock Text="{Binding LimitWarningsText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasLimitWarnings}" />
                                                         <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding ShowSuggestion}">
-                                                            <TextBlock Text="{Binding SuggestionText}" FontSize="12" TextWrapping="Wrap" MaxWidth="520" VerticalAlignment="Center" Foreground="{DynamicResource JP.WarnTextBrush}" />
+                                                            <TextBlock Text="{Binding SuggestionText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" MaxWidth="520" VerticalAlignment="Center" Foreground="{DynamicResource JP.WarnTextBrush}" />
                                                             <Button Content="{l:T 'Use it'}" Command="{Binding ApplySuggestionCommand}" Padding="8,2" VerticalAlignment="Center"
                                                                     ToolTip.Tip="{l:T 'Switches this game to the suggested virtual mode. Export the game again afterwards.'}" />
                                                         </StackPanel>
@@ -124,9 +124,9 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10">
+                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                 <StackPanel Spacing="6">
-                                    <TextBlock Text="{l:T 'Options'}" FontSize="16" FontWeight="SemiBold" />
+                                    <TextBlock Text="{l:T 'Options'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                     <CheckBox IsChecked="{Binding VirtualJoystickHideDevices}" Content="{l:T 'Hide the real devices from the games set to Virtual (HidHide)'}"
                                               ToolTip.Tip="{l:T 'Off: the games see your real devices and the virtual joystick, which can give double input. Recommended: on.'}" />
                                     <CheckBox IsChecked="{Binding VirtualJoystickAutoStart}" Content="{l:T 'Start and stop by itself when a game set to Virtual starts and ends'}"
@@ -140,13 +140,13 @@
                 <TabItem Header="{l:T 'Mapping'}">
                     <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8" Margin="0,8,8,0">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                            <TextBlock Text="{Binding VirtualJoystickSlotsHeader}" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding VirtualJoystickSlotsHeader}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
                             <Button Grid.Column="1" Command="{Binding UpdateVirtualJoystickMappingCommand}" Content="{l:T 'Update mapping'}"
                                     ToolTip.Tip="{l:T 'Gives new inputs a slot and saves the table in the profile. Inputs that already have a slot never move.'}" />
                         </Grid>
                         <TextBlock Grid.Row="1" TextWrapping="Wrap" Opacity="0.8"
                                    Text="{l:T 'Each physical input the virtual games use gets a fixed place on the virtual joystick. An axis keeps its own axis where it is free (X stays X). The table is saved in your profile, so the game\'s binds stay the same from run to run.'}" />
-                        <Border Grid.Row="2" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="6">
+                        <Border Grid.Row="2" BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="6">
                             <Grid RowDefinitions="Auto,*">
                                 <Grid ColumnDefinitions="2*,1.2*,2*,*" ColumnSpacing="8" Margin="4,2">
                                     <TextBlock Text="{l:T 'Physical input'}" FontWeight="SemiBold" />
@@ -179,9 +179,9 @@
                             <StackPanel Spacing="10">
                                 <TextBlock TextWrapping="Wrap" Opacity="0.8"
                                            Text="{l:T 'Virtual functions run inside the virtual joystick, between your devices and what the game gets: axis bands as buttons, button cycles, toggles, short/long/double press, shift layers, axis tools, turbo, macros and hat helpers. Each one gets free virtual buttons or axes; bind relations to them like to any vJoy button.'}" />
-                                <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10">
+                                <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                     <StackPanel Spacing="6">
-                                        <TextBlock Text="{l:T 'Add a function'}" FontSize="16" FontWeight="SemiBold" />
+                                        <TextBlock Text="{l:T 'Add a function'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                         <ComboBox ItemsSource="{Binding VirtualFunctionGames}" SelectedItem="{Binding VirtualFunctionGame}" PlaceholderText="{l:T 'game in virtual mode'}" HorizontalAlignment="Stretch">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate x:DataType="models:VirtualJoystickGameItem">
@@ -193,10 +193,10 @@
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate x:DataType="models:VfTypeOption">
                                                     <Grid ColumnDefinitions="30,*" ColumnSpacing="6" ToolTip.Tip="{Binding Example}">
-                                                        <TextBlock Text="{Binding Icon}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                        <TextBlock Text="{Binding Icon}" FontSize="{DynamicResource JP.FontSize.18}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                                         <StackPanel Grid.Column="1">
                                                             <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                                            <TextBlock Text="{Binding Summary}" FontSize="11" Opacity="0.75" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Summary}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" TextWrapping="Wrap" />
                                                         </StackPanel>
                                                     </Grid>
                                                 </DataTemplate>
@@ -206,19 +206,19 @@
                                                 ToolTip.Tip="{l:T 'Adds the function with free virtual outputs; then choose its inputs in the editor.'}" />
                                     </StackPanel>
                                 </Border>
-                                <TextBlock Text="{Binding VirtualFunctionsHeader}" FontSize="16" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding VirtualFunctionsHeader}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                 <ItemsControl ItemsSource="{Binding VirtualFunctions}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="models:VirtualFunctionListItem">
-                                            <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6" ToolTip.Tip="{Binding ProblemsText}">
+                                            <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,0,6" ToolTip.Tip="{Binding ProblemsText}">
                                                 <Grid ColumnDefinitions="30,*" ColumnSpacing="6">
-                                                    <TextBlock Text="{Binding Icon}" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Icon}" FontSize="{DynamicResource JP.FontSize.18}" VerticalAlignment="Top" HorizontalAlignment="Center" />
                                                     <StackPanel Grid.Column="1" Spacing="2">
                                                         <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                                        <TextBlock Text="{Binding GameName}" FontSize="11" Opacity="0.75" />
-                                                        <TextBlock Text="{Binding OutputsText}" FontSize="11" Opacity="0.75" TextWrapping="Wrap" />
-                                                        <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold" />
-                                                        <TextBlock Text="{Binding LiveText}" FontSize="11" Foreground="{DynamicResource JP.OkTextBrush}"
+                                                        <TextBlock Text="{Binding GameName}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" />
+                                                        <TextBlock Text="{Binding OutputsText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding StatusText}" FontSize="{DynamicResource JP.FontSize.11}" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding LiveText}" FontSize="{DynamicResource JP.FontSize.11}" Foreground="{DynamicResource JP.OkTextBrush}"
                                                                    IsVisible="{Binding LiveText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                         <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
                                                             <Button Content="{l:T 'Edit'}" Padding="8,2" Command="{Binding $parent[local:VirtualJoystickView].((vm:MainWindowViewModel)DataContext).EditVirtualFunctionCommand}" CommandParameter="{Binding}" />
@@ -262,9 +262,9 @@
                             <ItemsControl ItemsSource="{Binding VirtualJoystickLive}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:VirtualJoystickLiveDevice">
-                                        <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,8">
+                                        <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,8">
                                             <StackPanel Spacing="6">
-                                                <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding Title}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                                 <ItemsControl ItemsSource="{Binding Axes}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:VirtualJoystickAxisItem">
@@ -285,7 +285,7 @@
                             </ItemsControl>
                         </ScrollViewer>
                         <Expander Grid.Row="3" Header="{l:T 'Forwarder log'}">
-                            <ListBox ItemsSource="{Binding VirtualJoystickLog}" MaxHeight="180" FontFamily="Consolas" FontSize="12" />
+                            <ListBox ItemsSource="{Binding VirtualJoystickLog}" MaxHeight="180" FontFamily="{DynamicResource JP.MonoFont}" FontSize="{DynamicResource JP.FontSize.12}" />
                         </Expander>
                     </Grid>
                 </TabItem>

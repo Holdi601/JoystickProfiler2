@@ -116,8 +116,10 @@ Pictures are shown best first. The picture strip over the canvas has one button 
    colours under bold outlines), in JoyPro's colours or the user's own.
 4. **The maker's reference photos.**
    - There is one per view: main, front, side, back, top, base, three-quarter, and *button map* (the maker's sheet).
-   - They are fetched at run time on the user's PC from an address on the maker's own hosts, and cached in
-     `%LOCALAPPDATA%\JoyPro2\DeviceImages`.
+   - They are fetched at run time on the user's PC. Each comes from an address on the maker's own hosts, or from a
+     listed review site or Wikimedia Commons when the maker has none, with the Wayback snapshot as the fallback. Each is
+     checked against its SHA-256 and kept in `<data>\DeviceReference\ReferencePhotos` (see
+     [Reference photos on this PC](#reference-photos-on-this-pc)).
    - Only with the user's consent for that device (`DevicePhotoConsent`, docs/privacy.md "Device photos"): JoyPro asks
      once per device model ("JoyPro found the product photo of your ... Download it and show it here?" Yes / No / Always
      for all my devices / Never) on this page and on the Start page's device card. Without a yes nothing is downloaded
@@ -165,7 +167,8 @@ panels as vector paths, plus (optionally) flat colour regions for the cel-shaded
   object (part id → [x, y], 0..1) for the Cockpits page's tables.
 - **Download the reference photo** (Layout page, under the picture chips): shown while a line drawing is selected that
   was made from one of the maker's photos (found by the drawing's key = the photo's hash, else the same view). The click
-  downloads that photo into the device picture cache (`%LOCALAPPDATA%\JoyPro2\DeviceImages`) with a progress bar; the
+  downloads that photo into the reference photos on this PC (`<data>\DeviceReference\ReferencePhotos`, SHA-256
+  checked, web archive fallback) with a progress bar; the
   device's photo consent is asked first when it is not given yet (the download follows the yes). The photo is then a
   picture of its own (e.g. "Photo 2 · VKB"); JoyPro's positions come along when the file is the one JoyPro drew from
   (same hash), otherwise it is shown as a reference without markers. Errors are said in plain words (offline, removed
@@ -555,20 +558,131 @@ A `joypro-device-layout` file holds the marker positions of one picture of one m
 
 - `view`: `main`, `front`, `side`, `left`, `right`, `back`, `top`, `base`, `three-quarter` or `sheet`. Shop galleries
   whose views nobody tagged yet are `gallery-<n>`.
-- `sha256`: the content hash after the first fetch. It is needed for curated positions.
+- `sha256`: the content hash after the first fetch. It is needed for curated positions, and JoyPro checks every
+  download against it.
 - `shows`: the parts the view shows (optional).
 - `confidence`: `high`, `medium` or `low`.
-- Only addresses on the vendor's `officialHosts` are used. A grip on the Rhino may use its maker's hosts (listed in
-  `vpforce.json`).
+- `source`: `maker` (default, left out), `review` or `commons`. `site` names a review site or "Wikimedia Commons" in
+  the credit line.
+- `licence`: the licence note shown with the photo. For a maker's photo: "(c) VKB; maker's product photo, linked
+  only, not redistributed". For Commons: the file's licence and author.
+- `archive`: the Wayback Machine snapshot with the recorded content (`https://web.archive.org/web/<time>id_/<url>`).
+  Without one, JoyPro asks the archive for its newest capture.
+- `width`, `height`: the picture's size when recorded.
+- Allowed sources, best first:
+  - the vendor's `officialHosts`. A host may carry a path prefix for a shared CDN, e.g.
+    `cdn.shopify.com/s/files/1/0571/3192/5689/` is only VKB's shop. A grip on the Rhino may use its maker's hosts
+    (listed in `vpforce.json`);
+  - a review site or Wikimedia Commons listed in `DB/DevicePhotos/_sources.json` (editorial reviews of named
+    publications only; never shops, forums or image searches);
+  - an old maker address on plain http (a site that is gone), only through its `archive` snapshot. JoyPro never asks
+    the http address itself.
+- `DevicePhotoDb.UsablePhotos` gives the maker's photos first, then the review and Commons photos.
+  `OfficialPhotos` gives only the maker's own; the curated sets and drawings are made from these.
+
+### Reference photos on this PC
+
+`ReferencePhotoStore` (GUI) downloads a photo from its original address and checks the SHA-256. It keeps the photo in
+`<data>\DeviceReference\ReferencePhotos\<model>\<view>-<sha12>.<ext>`, with `index.json` recording each photo's address,
+hash, origin and date. When the address fails or sends other content, the photo comes from the Wayback snapshot,
+checked the same way. A photo the maker changed whose old content no archive has is kept as it is now (`changed`), and
+JoyPro's curated positions do not apply to it. Every catalog photo goes through this store, also for the Layout page,
+the device cards and "Download the reference photo"; other pictures still use the download cache.
+
+When the device cards find a connected device whose photos are not all on this PC, the Start page and the Layout page
+offer them: "JoyPro knows 5 reference photos of your VKB Gunfighter ... Download them?" The buttons:
+- **Download**: it counts as the yes for that device and downloads every photo in the background, with a progress bar.
+  Nothing waits for it.
+- **Not now**: asked again in the next session.
+- **Always download**: switches on Settings > Privacy *Download reference photos automatically*, which is kept in
+  `settings.json` as `AutoDownloadPhotos`. From then on every device that appears gets its photos without a question.
+  The photo mode *Never* switches it off.
+- **No**: the "no" for these devices.
+
+Code: `Services/ReferencePhotoStore.cs`, `MainWindowViewModel.ReferencePhotos.cs`. Tests: `ReferencePhotoStoreTests`
+(field parsing, allowed sources, download through a fake HTTP server, hash mismatch and dead link to the archive, the
+offer, the persisted setting).
+
+### Dead links and the private photo archive (maintainer)
+
+- `python tools/device_photo_links.py check [query] [--out report.json]` reports each photo as:
+  - *alive*: the same content;
+  - *changed*: other content;
+  - *dead*: no picture;
+  - *archive-only*: an old http address.
+
+  For every photo that is not alive, it also says whether the snapshot still has the recorded content
+  (`fallback ok / missing / other content`).
+- `python tools/device_photo_links.py snapshots [query] [--record] [--save-page-now]` covers photos without a recorded
+  snapshot:
+  - it looks for a capture with the recorded content in the archive's CDX index;
+  - `--record` writes it as `archive`;
+  - `--save-page-now` asks the public Save Page Now to capture photos the archive does not have yet, one request every
+    15 s. The archive decides what it keeps.
+- `tools\backup_device_photos.ps1 -Target <private folder>` keeps the private archive. It is incremental and is the
+  copy of last resort when a site and its snapshot are both gone:
+  - every referenced photo is stored by content as `sha256\<sha256>.<ext>`;
+  - `manifest.json` has one line per model and address: model, view, url, page, source, licence, archive, origin
+    (original or archive), changed, date, sha256, bytes, recordedSha256 and file;
+  - it falls back to the snapshot like JoyPro does;
+  - the folder must be outside the repository, and nothing in the build or release reads it.
+- `python tools/device_photo_links.py recover [query] [--backup <folder>] [--apply]` works on photos whose address
+  and snapshot both fail:
+  - it names the copy in the private archive (by SHA-256);
+  - it looks for the same photo (same SHA-256) at a new address on the photo's source page, and `--apply` writes that
+    address into the database;
+  - otherwise it prints the Save Page Now request to make for the page.
+
+  It never copies or publishes an archived file. JoyPro distributes only addresses.
+
+### The photo list in the releases
+
+Repaired or new photo addresses reach users without an app update.
+
+- **The release.** `joypro-device-photos` is never marked latest. It carries `manifest.json` and one zip:
+  - the manifest (`joypro-device-photos`) has `version`, `tag`, `asset`, `size`, `sha256`, `built` and `photos`;
+  - the zip has the files of `DB/DevicePhotos`, `_sources.json` with the list's `version`, and `_hosts.json` (the
+    makers' hosts of every catalog model, `{ "models": { "<id>": [hosts] } }`).
+- **When JoyPro looks.** At most once a day, in the background, when the device cards are read. It does not look when:
+  - the makers' photos are set to Never (Settings > Privacy);
+  - pictures from the internet are off.
+- **Checking the list.** JoyPro checks the size and SHA-256 against the manifest. The zip may hold only flat `.json`
+  files. Then `DevicePhotoDb.ValidateList` checks it by the rules of the shipped list:
+  - every photo names a catalog model;
+  - the photo comes from the model's maker hosts (the catalog's plus `_hosts.json`), a review site or Wikimedia Commons
+    of the list's `_sources.json`, or an old http address with its snapshot;
+  - a snapshot is a web archive address, and a hash is a SHA-256;
+  - a maker host is a real host name, and a shared CDN needs the maker's own folder;
+  - the list has at least half the shipped photos.
+- **Using the list.** A valid list goes to `<data>\DeviceReference\PhotoList\list`, with `state.json` recording the
+  version, SHA-256 and last check. The catalog uses it instead of the shipped `DB/DevicePhotos` only while its version
+  is higher (`DeviceCatalog.PhotoFolderResolver`). Whatever fails (offline, an older list, a broken list, a checksum
+  mismatch, a disallowed source), JoyPro silently keeps the list it has.
+- **Code and tests.** Code: `Services/DevicePhotoList.cs`. Tests: `DevicePhotoListTests`, with a local folder feed
+  (`JOYPRO_DEVICE_PHOTO_FEED` points JoyPro at another feed).
+
+Maintainer steps to publish repaired links:
+
+1. `python tools/device_photo_links.py check`, then `recover --apply` and `snapshots --record`. Fix the remaining
+   photos by hand (`photo-add`).
+2. Raise `"version"` in `DB/DevicePhotos/_sources.json`. The app ignores a list whose version is not higher than its
+   own shipped list.
+3. `powershell -File tools\build_device_photo_list.ps1`. It writes `device-photos-v<n>.zip` and `manifest.json` to
+   `<JOYPRO_RELEASE_DIR>\device-photos`, or the folder given with `-Out`, and uploads nothing.
+4. Upload both files to the release `joypro-device-photos`:
+   `gh release upload joypro-device-photos <zip> manifest.json --clobber`. The first time, create it with
+   `gh release create joypro-device-photos --latest=false`.
+5. Commit the raised version, so the next app build ships the same list.
 
 ### Tools
 
 - `tools\add_device_photos.ps1 -Model <id> -Url <photo> -View <view>`: adds one photo reference.
   - With `-ProductUrl <shop page>` instead, it adds every photo of a Shopify product gallery.
-  - It calls `engine devices reference photo-add`, which refuses addresses that are not on an official host.
-- `tools\backup_device_photos.ps1 -Target <private folder>`: the maintainer's private backup of every referenced photo.
-  - It writes a manifest with model, view, address, source page, date, SHA-256 and size.
-  - The folder must be outside the repository. Neither the build nor the release reads it.
+  - It calls `engine devices reference photo-add`, which refuses addresses that are not on an official host. A
+    review or Commons photo needs `--source review|commons` and a site of `_sources.json`. The command also takes
+    `--site`, `--licence`, `--archive`, `--width` and `--height`.
+- `tools\backup_device_photos.ps1` (the private archive) and `tools\device_photo_links.py` (link health, snapshots,
+  recover): see [Dead links and the private photo archive](#dead-links-and-the-private-photo-archive-maintainer).
 - `engine devices reference photos [query] [--coverage]`: the photo references and the coverage numbers.
 - `engine devices reference layout-check`: checks the curated sets. Each set must name a catalog model, one of its
   photos, the photo's hash, and only parts the model has.
@@ -658,14 +772,17 @@ research rules (sources, confidence, no guessed numbers, one entry per USB devic
 hosts) are in the batch brief, the same as for positions. After new photo references, `tools\backup_device_photos.ps1`
 fetches them into the private backup; then their positions can be curated.
 
-### Coverage (2026-10-12)
+### Coverage (2026-10-25)
+
+The photo rows were updated on 2026-10-25, after the photo research: 36 wrong photos removed (look-alikes, bundles,
+packaging), 882 untagged views tagged and 295 photos added. The other rows are from 2026-10-12.
 
 | | |
 |---|---|
-| Models in the catalog | 476 (95 grips; 232 with a USB id), from 26 vendor files incl. discontinued lines (Saitek, CH, Thrustmaster Top Gun, VKB Gladiator/Mamba, Virpil MongoosT-50, Logitech WingMan) |
-| Photo references | 1694 addresses on the makers' own hosts, with views |
-| Models with a reference photo | 383 (311 with several views) |
-| Models with a photo hash on record | 368 |
+| Models in the catalog | 478 (95 grips), from 26 vendor files incl. discontinued lines (Saitek, CH, Thrustmaster Top Gun, VKB Gladiator/Mamba, Virpil MongoosT-50, Logitech WingMan) |
+| Photo references | 1989 usable: 1974 from the makers (54 only through their Wayback snapshot), 8 from reviews, 7 from Wikimedia Commons; 295 with a licence note |
+| Models with a reference photo | 427, up from 383. 361 have several photos, 318 at least 3 photos, and 272 at least 3 tagged views (82 before) |
+| Models with a photo hash on record | 413 |
 | Models with curated positions | 290 (325 position sets, 3651 positions; 28 sets moved onto cleaner photos of the same model) |
 | Callout sheets shipped | 325: 320 good, 5 fair, 0 poor (with key grids and shared tables; before: 256 / 26 / 15). Fair: Thrustmaster Cougar MFD (7 crossings), VKB STECS STG Max (5), three grips with one shared track |
 | JoyPro drawing shown | 364 models show JoyPro's own drawing; of the rest, the recognizable schematic or the class outline when there is no photo |
@@ -710,7 +827,7 @@ otherwise):
 - **2D layout by maogowzeg (Discord)**: his community sheets of the WinWing Orion 2 devices (ViperAce EX grip with
   shaker, the throttle base with the StrikeAce F-15EX / F-15E handles, the take-off panel 2), positions mapped with his
   consent. Users who received the sheets put the picture files into **`<data>\Layouts\Community`**
-  (`%LOCALAPPDATA%\JoyPro\Layouts\Community`; the Layout page's "Use your own picture" names the folder and opens it).
+  (`%LOCALAPPDATA%\JoyPro2\Layouts\Community`; the Layout page's "Use your own picture" names the folder and opens it).
   His name is shown under the picture and printed on the cheat sheets.
 
 The same picture may come as other files (the sheet as it was sent, another format): `localPictureAlternatives` lists

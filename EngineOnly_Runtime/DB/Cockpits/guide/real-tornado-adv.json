@@ -1,0 +1,126 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-tornado-adv",
+  "title": "Tornado ADV / F3 (pilot)",
+  "inherits": "real-tornado",
+  "variants": [
+    "tornado-adv"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w3",
+      "title": "Panavia Tornado ADV (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Panavia_Tornado_ADV"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Tornado ADV (F3 in the RAF) is the long-range air defence fighter of the Tornado family. It has the Foxhunter radar, worked mainly by the navigator, Skyflash and Sidewinder missiles and no terrain-following radar. Thrust reversers and wing sweep are the same as on the IDS, so this guide follows the Tornado IDS guide, replaces the terrain-following screen and the strike displays and adds the pilot's air-to-air weapon selector.",
+  "remove": [
+    "front-panel/tfr-escope",
+    "rear-cockpit/crpmd",
+    "rear-cockpit/weapon-package"
+  ],
+  "areas": [
+    {
+      "id": "front-panel",
+      "where": "front-center",
+      "name": "Pilot's instrument panel",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Pilot's instrument panel (ADV)",
+          "src": "w3",
+          "text": "In the air defence version the terrain-following screen is gone; in its place the pilot has a repeater of the radar picture and air-to-air weapon displays.",
+          "context": "The ADV hunts aircraft at long range, so the pilot needs to see what the navigator's radar sees.",
+          "controls": [
+            {
+              "id": "radar-repeater",
+              "name": "Radar repeater display",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A screen for the pilot that repeats the picture of the Foxhunter radar, so he sees the same aircraft the navigator is tracking.",
+              "context": "The navigator runs the radar; the pilot uses the repeater to steer the intercept and to pick the moment for a missile.",
+              "src": "w3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Navigator's / WSO's cockpit",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Navigator's cockpit (ADV)",
+          "src": "w3",
+          "text": "The ADV navigator works the AI.24 Foxhunter air-to-air radar: its displays and controls fill the back seat.",
+          "context": "He does most of the radar work: searching, picking and tracking the targets for the pilot.",
+          "controls": [
+            {
+              "id": "foxhunter",
+              "name": "Foxhunter radar displays",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "The screens of the Foxhunter radar, showing the air picture and the tracks of the aircraft it has found.",
+              "context": "The navigator watches them during the whole intercept.",
+              "src": "w3"
+            },
+            {
+              "id": "radar-weapon-panel",
+              "name": "Radar / weapon control panel",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:5"
+              ],
+              "text": "A panel with the controls of the radar and the air-to-air weapons.",
+              "context": "The single switches of the radar / weapon control panel are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "w3",
+          "text": "The centre stick of the ADV: the IDS grip with one extra weapon switch.",
+          "context": "It adds an air-to-air weapon selector to the IDS grip.",
+          "controls": [
+            {
+              "id": "aa-weapon-select",
+              "name": "Air-to-air weapon selector",
+              "type": "switch",
+              "match": [
+                "control:stick.switch.weapon_select"
+              ],
+              "text": "A switch on the grip under the thumb that chooses the air-to-air weapon: the Sidewinder heat missile, the Skyflash radar missile or the gun.",
+              "context": "The pilot switches weapons during the fight without taking his hand off the stick; its exact position on the grip is not public.",
+              "src": "w3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

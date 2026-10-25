@@ -326,6 +326,19 @@ namespace JoyPro.Engine
                     continue;
                 }
                 int score = PictureQuality.Rate(m, kind);
+                // What only the renderer could measure (the camera inside the model, untextured surfaces, hidden
+                // controls) stays: a picture is not rated better again because the file cannot show it.
+                object oldQuality;
+                List<string> oldProblems = (v.ContainsKey("problems") ? v["problems"] as List<object> : null)?.Select(x => Convert.ToString(x, CultureInfo.InvariantCulture)).ToList() ?? new List<string>();
+                List<string> rendered = oldProblems.Where(p => p == "camera inside the model" || p == "untextured" || p == "controls hidden").ToList();
+                if (rendered.Count > 0 && v.TryGetValue("quality", out oldQuality) && oldQuality != null)
+                {
+                    int old = (int)Convert.ToDouble(oldQuality, CultureInfo.InvariantCulture);
+                    if (old >= 0 && old < score)
+                        score = old;
+                    foreach (string p in rendered.Where(p => !m.Problems.Contains(p)))
+                        m.Problems.Add(p);
+                }
                 if (drop && kind == "panel" && score < PictureQuality.Keep)
                 {
                     dropped++;
@@ -346,6 +359,20 @@ namespace JoyPro.Engine
                 if (screenshot || score < PictureQuality.Good || kind == "overview")
                     v["drawingReadable"] = false;
                 kept.Add(v);
+            }
+            // An overview callout that leads to a picture no longer in the set (left out now or earlier) goes too.
+            HashSet<string> keptIds = new HashSet<string>(kept.OfType<Dictionary<string, object>>().Select(x => DeviceCatalog.Text(x, "id")), StringComparer.Ordinal);
+            foreach (Dictionary<string, object> v in kept.OfType<Dictionary<string, object>>().Where(x => DeviceCatalog.Text(x, "kind") == "overview"))
+            {
+                List<object> callouts = v.ContainsKey("callouts") ? v["callouts"] as List<object> : null;
+                if (callouts == null)
+                    continue;
+                v["callouts"] = callouts.Where(c =>
+                {
+                    Dictionary<string, object> co = c as Dictionary<string, object>;
+                    string link = co == null ? string.Empty : DeviceCatalog.Text(co, "link");
+                    return link.Length == 0 || keptIds.Contains(link);
+                }).ToList();
             }
             bool low = PictureQuality.LowSet(overview < 0 ? 0 : overview, scores);
             if (write)

@@ -96,18 +96,11 @@ public sealed class RelationCardTests
 
             foreach ((int width, int height) in new[] { (1280, 800), (2267, 1250) })
             {
-                MainWindow main = new() { DataContext = vm, Width = width, Height = height };
-                Size size = new(width, height);
-                Control page = (Control)main.Content!;
-                for (int pass = 0; pass < 6; pass++)
-                {
-                    main.Measure(size);
-                    main.Arrange(new Rect(size));
-                    page.Measure(size);
-                    page.Arrange(new Rect(size));
-                    AvaloniaRenderThread.Pump();
-                }
-                ListBox list = Avalonia.LogicalTree.LogicalExtensions.GetLogicalDescendants(main).OfType<ListBox>().First(l => l.Name == "RelationsListBox");
+                // A root that is never shown, with Avalonia's own layout passes (the list realizes what is in view).
+                using HiddenWindow window = HiddenWindow.Create(new MainWindow { DataContext = vm }, new Size(width, height));
+                window.Settle();
+                Control page = window.Page;
+                ListBox list = page.GetVisualDescendants().OfType<ListBox>().First(l => l.Name == "RelationsListBox");
                 List<ListBoxItem> items = list.GetVisualDescendants().OfType<ListBoxItem>().Where(i => i.IsVisible && i.Bounds.Height > 0).ToList();
                 Assert.NotEmpty(items);
                 int checkedCards = 0;
@@ -143,8 +136,7 @@ public sealed class RelationCardTests
                 if (!string.IsNullOrWhiteSpace(outDir))
                 {
                     Directory.CreateDirectory(outDir);
-                    using RenderTargetBitmap bitmap = new(new PixelSize(width, height));
-                    bitmap.Render(page);
+                    using RenderTargetBitmap bitmap = window.Render();
                     bitmap.Save(Path.Combine(outDir, "relation-cards-" + width + ".png"));
                     // The aircraft tooltip text as the tooltip wraps it (the theme's tooltips are 320 wide).
                     Window host = new() { Width = 400, Height = 300, Content = new Border { Background = new SolidColorBrush(Color.Parse("#0F172A")), Padding = new Thickness(12), Child = new TextBlock { Text = many.PlanesTooltip, TextWrapping = TextWrapping.Wrap, MaxWidth = 320, Foreground = Brushes.White } } };

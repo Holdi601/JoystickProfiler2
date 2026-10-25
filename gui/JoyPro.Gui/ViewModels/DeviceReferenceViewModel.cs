@@ -80,7 +80,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     {
         PhotoConsentState state = Model == null || IsGeneric ? PhotoConsentState.Denied : DevicePhotoConsent.For(Model.Id);
         VendorPhotosEnabled = state == PhotoConsentState.Allowed;
-        DevicePhoto? first = Model == null || IsGeneric ? null : DevicePhotoDb.OfficialPhotos(Model).FirstOrDefault();
+        DevicePhoto? first = Model == null || IsGeneric ? null : DevicePhotoDb.UsablePhotos(Model).FirstOrDefault();
         AsksPhotoConsent = state == PhotoConsentState.Ask && first != null;
         PhotoConsentText = AsksPhotoConsent && Model != null ? DevicePhotoConsent.Question(Model.Name, first!.Url) : string.Empty;
     }
@@ -392,13 +392,15 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             Pictures.Add(option);
         if (VendorPhotosEnabled && !IsGeneric)
         {
-            List<DevicePhoto> photos = DevicePhotoDb.OfficialPhotos(Model);
+            List<DevicePhoto> photos = DevicePhotoDb.UsablePhotos(Model);
             foreach (DevicePhoto photo in photos)
             {
-                string title = photos.Count == 1 ? T("Photo from {0}", VendorName(Model)) : photo.ViewTitle + " · " + VendorName(Model);
+                // A review or Wikimedia Commons photo names its site; the maker's photos name the maker.
+                string site = photo.IsReview ? (photo.Site.Length > 0 ? photo.Site : "Wikimedia Commons") : VendorName(Model);
+                string title = photos.Count == 1 ? T("Photo from {0}", site) : photo.ViewTitle + " · " + site;
                 string? cached = CachedVendorPhoto(photo.Url);
                 string key = photo.Sha256.Length > 0 ? photo.Sha256 : cached != null ? DeviceLayoutSet.HashFile(cached) : string.Empty;
-                Pictures.Add(new ReferencePictureOption { Kind = "vendor", Title = title, Source = photo.Url, View = photo.View, Photo = photo, Key = key });
+                Pictures.Add(new ReferencePictureOption { Kind = "vendor", Title = title, Source = photo.Url, View = photo.View, Photo = photo, Key = key, Credit = DevicePhotoDb.Credit(Model, photo) });
             }
         }
         bool schematic = Schematic != null && DeviceClasses.DrawingIsRecognizable(Model, Schematic);
@@ -510,7 +512,9 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             Photo = bitmap;
             LineArtPicture = lineArt;
             PhotoFile = file;
-            PhotoCredit = option.Kind == "vendor" && Model != null ? T("Picture: {0}'s web site (loaded on this PC only)", VendorName(Model)) : string.Empty;
+            PhotoCredit = option.Kind != "vendor" || Model == null ? string.Empty
+                : option.Photo is { IsReview: true } || option.Photo?.Licence.Length > 0 ? T("Picture: {0} (loaded on this PC only)", option.Credit)
+                : T("Picture: {0}'s web site (loaded on this PC only)", VendorName(Model));
             loadedPicture = option;
             SelectedPicture = option;
         }

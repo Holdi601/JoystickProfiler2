@@ -36,6 +36,20 @@
         </Setter>
     </Style>
 
+    <!-- The page buttons in the colours of the theme's bottom bar (Settings > Appearance) -->
+    <Style Selector=":is(Button).nav">
+        <Setter Property="Background" Value="{DynamicResource JP.Nav.ButtonBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource JP.Nav.TextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.nav:checked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.Nav.SelectedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource JP.Nav.SelectedTextBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.nav:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.Nav.SelectedBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource JP.Nav.SelectedTextBrush}" />
+    </Style>
+
     <Style Selector="ToggleButton.nav">
         <Setter Property="Padding" Value="10,4" />
         <Setter Property="MinWidth" Value="64" />
@@ -43,7 +57,7 @@
             <DataTemplate x:DataType="x:String">
                 <StackPanel Spacing="2" HorizontalAlignment="Center">
                     <PathIcon Width="18" Height="18" HorizontalAlignment="Center" Data="{Binding $parent[ToggleButton].Tag}" />
-                    <TextBlock Text="{Binding}" FontSize="11" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding}" FontSize="{DynamicResource JP.FontSize.11}" HorizontalAlignment="Center" />
                 </StackPanel>
             </DataTemplate>
         </Setter>
@@ -56,7 +70,7 @@
             <DataTemplate x:DataType="x:String">
                 <StackPanel Spacing="2" HorizontalAlignment="Center">
                     <PathIcon Width="18" Height="18" HorizontalAlignment="Center" Data="{Binding $parent[Button].Tag}" />
-                    <TextBlock Text="{Binding}" FontSize="11" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding}" FontSize="{DynamicResource JP.FontSize.11}" HorizontalAlignment="Center" />
                 </StackPanel>
             </DataTemplate>
         </Setter>
@@ -93,11 +107,11 @@
     <Style Selector="TextBlock.hint">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Opacity" Value="0.8" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.12}" />
     </Style>
 
     <Style Selector="TextBlock.section">
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.16}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
@@ -110,7 +124,7 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Border.step > TextBlock">
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Foreground" Value="{DynamicResource JP.OnAccentTextBrush}" />
         <Setter Property="FontWeight" Value="Bold" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />

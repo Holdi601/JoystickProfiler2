@@ -19,7 +19,7 @@ namespace JoyPro.Engine
     //   engine ffb telemetry config clear [--game G] [--plane P] [--effect E] | [--device {guid}]
     //   engine ffb telemetry setup dcs|il2|il2korea|warthunder [--remove] [--dry-run] [--path P]
     //   engine ffb telemetry effects                                    the effect names of the built-in graph
-    // Settings: <data>\Ffb\Telemetry\telemetry-ffb.json (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro); the same
+    // Settings: <data>\Ffb\Telemetry\telemetry-ffb.json (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2); the same
     // format gui/JoyPro.Ffb.Core/Host/TelemetryFfbConfig.cs reads.
     internal static class EngineFfbTelemetry
     {

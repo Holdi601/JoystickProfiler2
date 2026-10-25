@@ -918,7 +918,10 @@ namespace JoyPro.CockpitPictures
                 Module = ship.Class,
                 Source = "Data.p4k: " + Path.GetFileName(hullPath) + (dash != null ? ", " + Path.GetFileName(dash.Path) : string.Empty) + (seat != null ? ", " + Path.GetFileName(seat.Path) : string.Empty),
                 GameVersion = version,
-                Notes = r.Notes
+                Notes = r.Notes,
+                // Interaction points on bare walls make poor panel pictures: only clear ones stay (the overview and the
+                // grips carry the ship).
+                PanelKeep = 70
             };
             PictureWriter.Write(scene, views, folder, info, (cur, total, title) =>
             {
@@ -1351,6 +1354,13 @@ namespace JoyPro.CockpitPictures
             if (mat.Texture.Length > 0)
             {
                 TextureImage img = Texture(cx, mat.Texture, 512);
+                // A texture that is nearly all white is a mask or a tint map the game colours at run time (drawn as it
+                // is, the cockpit was blown-out white): the layer's colour or a neutral grey instead.
+                if (img != null && 0.299 * img.Mean[0] + 0.587 * img.Mean[1] + 0.114 * img.Mean[2] >= 225)
+                {
+                    sm.Color = Tame(colour ?? new byte[] { 150, 152, 156 });
+                    return sm;
+                }
                 if (img != null)
                 {
                     sm.Albedo = img;
@@ -1361,9 +1371,25 @@ namespace JoyPro.CockpitPictures
                 missing = true;
             }
             if (colour == null)
+            {
                 colour = new[] { StarCitizenMaterial.Srgb(mat.Diffuse[0]), StarCitizenMaterial.Srgb(mat.Diffuse[1]), StarCitizenMaterial.Srgb(mat.Diffuse[2]) };
-            sm.Color = colour;
+                // A white diffuse is a multiplier for a texture the file does not give (or an encrypted one): a neutral
+                // grey, not the blown-out white surfaces of the first pictures.
+                if (colour.All(x => x >= 230))
+                    colour = new byte[] { 150, 152, 156 };
+            }
+            sm.Color = Tame(colour);
             return sm;
+        }
+
+        // An untextured colour at most as bright as a light grey panel (lit from the camera it was drawn pure white).
+        internal static byte[] Tame(byte[] c)
+        {
+            double y = 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2];
+            if (y <= 185)
+                return c;
+            double k = 185 / y;
+            return new[] { (byte)(c[0] * k), (byte)(c[1] * k), (byte)(c[2] * k) };
         }
 
         // A layered (HardSurface) material's colour: its first layer's texture colour times the layer tint.
@@ -1391,7 +1417,7 @@ namespace JoyPro.CockpitPictures
                 for (int k = 0; k < 3; k++)
                     lin[k] *= mat.LayerTint[k];
             }
-            c = new[] { StarCitizenMaterial.Srgb(lin[0]), StarCitizenMaterial.Srgb(lin[1]), StarCitizenMaterial.Srgb(lin[2]) };
+            c = Tame(new[] { StarCitizenMaterial.Srgb(lin[0]), StarCitizenMaterial.Srgb(lin[1]), StarCitizenMaterial.Srgb(lin[2]) });
             cx.LayerColors[key] = c;
             return c;
         }

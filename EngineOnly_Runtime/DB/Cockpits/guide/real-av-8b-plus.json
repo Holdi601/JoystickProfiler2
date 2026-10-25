@@ -1,0 +1,104 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-av-8b-plus",
+  "title": "AV-8B+ Harrier II Plus (radar)",
+  "inherits": "dcs-av-8b",
+  "variants": [
+    "av-8b-plus"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "McDonnell Douglas AV-8B Harrier II (Wikipedia), Harrier II Plus",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/McDonnell_Douglas_AV-8B_Harrier_II"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "m2",
+      "title": "DCS AV-8B Night Attack Harrier Manual CH 1-15",
+      "file": "Mods/aircraft/AV8BNA/Doc/Harrier Manual CH 1-15.pdf"
+    }
+  ],
+  "intro": "The Harrier II Plus is the AV-8B Night Attack with a radar: a jet that can take off and land straight up, with the APG-65 radar in a longer nose. The radar lets it carry the radar-guided AIM-120 and AIM-7 missiles. The cockpit is the Night Attack cockpit that DCS models, so this guide follows it. Two throttle switches that are dead in the Night Attack work here; their entries describe them, but their exact directions are not checked against a manual.",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "panels": [
+        {
+          "id": "throttle-grip",
+          "name": "Throttle grip",
+          "src": "m2",
+          "page": "124",
+          "text": "The throttle grip is the handle on the left lever. It carries many buttons and switches for the left thumb and fingers so the pilot can work them without letting go.",
+          "context": "The quadrant controls beside the throttle (nozzle lever, stops, friction, parking brake and so on) are described in the throttle quadrant panel on the left console.",
+          "controls": [
+            {
+              "id": "ant-elev",
+              "name": "Antenna elevation switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.ant_elev"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "No function."
+                },
+                {
+                  "name": "CENTRE",
+                  "text": "No function."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function."
+                }
+              ],
+              "text": "This switch tilts the radar antenna in the nose up or down, so the radar looks higher or lower in front of the plane. Forward tilts it up, aft tilts it down.",
+              "context": "In the Night Attack version this switch is dead because that jet has no radar. The Harrier II Plus carries the APG-65 radar, so here the pilot uses it while searching for aircraft.",
+              "src": "m2",
+              "page": "125"
+            },
+            {
+              "id": "aa-program",
+              "name": "A/A programming switch",
+              "type": "switch3",
+              "match": [
+                "control:throttle.switch.aa_program"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "No function."
+                },
+                {
+                  "name": "CENTRE",
+                  "text": "No function."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "No function."
+                }
+              ],
+              "text": "This switch picks the radar's air-to-air programs, the ways the radar searches the sky for other aircraft. Which direction picks which program is not documented in the sources JoyPro uses.",
+              "context": "It only works in the radar version (Harrier II Plus); in the Night Attack it is a leftover without a job. It belongs to the radar missiles AIM-120 and AIM-7 that the radar made possible.",
+              "src": "m2",
+              "page": "125"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

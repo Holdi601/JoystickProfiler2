@@ -67,11 +67,17 @@ public sealed partial class MainWindowViewModel
 
     public bool WorkspacePlainLabels => LayoutShowsLayoutFile && layoutHasTextStyle;
 
-    public FontFamily WorkspaceLabelFont => layoutTextFont.Length > 0 ? new FontFamily(layoutTextFont + ", Segoe UI, " + JoyPro.Gui.Localization.Languages.FallbackFonts(JoyPro.Gui.Localization.Loc.Current)) : FontFamily.Default;
+    // The labels as the cheat sheet prints them: the sheet style's font, size and text colour over the layout's own
+    // (MainWindowViewModel.SheetStyle.cs; the engine gets the same values).
+    public FontFamily WorkspaceLabelFont => (deviceSheetStyle ?? globalSheetStyle).FontFamily.Trim().Length > 0 || layoutTextFont.Length > 0
+        ? Views.Controls.SheetStyleLook.LabelFont(deviceSheetStyle ?? globalSheetStyle, layoutTextFont)
+        : FontFamily.Default;
 
-    public double WorkspaceLabelSize => layoutTextSize > 0 ? layoutTextSize : 14;
+    public double WorkspaceLabelSize => (deviceSheetStyle ?? globalSheetStyle).FontSize > 0 ? (deviceSheetStyle ?? globalSheetStyle).FontSize : layoutTextSize > 0 ? layoutTextSize : 14;
 
-    public IBrush WorkspaceLabelBrush => layoutTextBrush;
+    public IBrush WorkspaceLabelBrush => SheetStyle.NormalizeColor((deviceSheetStyle ?? globalSheetStyle).TextColor) is { Length: > 0 } color
+        ? Views.Controls.SheetStyleLook.BrushOf(color, Colors.White)
+        : layoutTextBrush;
 
     private void ApplyLayoutTextStyle(string fontName, int fontSize, string color)
     {
@@ -384,6 +390,7 @@ public sealed partial class MainWindowViewModel
         NotifyWorkspaceInput();
         SyncSelectedWorkspacePicture();
         RebuildLayoutBindCandidates();
+        RefreshSheetStyleScope();
         if (value)
             return;
         // The layout file's tools do nothing on the reference picture.
@@ -415,7 +422,7 @@ public sealed partial class MainWindowViewModel
             bool variantFile = LayoutVariantStore.IsVariantCopy(LayoutEditorSourcePath) ||
                                (VariantLayoutOf(ResolveLayoutEditorContextDevice()) is { } picked && string.Equals(NormalizeUiPath(picked), NormalizeUiPath(LayoutEditorSourcePath), StringComparison.OrdinalIgnoreCase));
             if (ownLayout && !variantFile && !string.IsNullOrWhiteSpace(LayoutEditorSourcePath) && (LayoutEditorPreviewImage != null || LayoutEditorMarkers.Count > 0))
-                WorkspacePictures.Insert(0, new WorkspacePictureChoice { Title = layoutHasTextStyle ? T("Your layout") : T("Layout file: {0}", LayoutWorkspaceTemplateName), IsLayoutFile = true });
+                WorkspacePictures.Insert(0, new WorkspacePictureChoice { Title = layoutHasTextStyle ? T("Your layout") : T("Layout file: {0}", LayoutSuggestionItem.ReadablePictureName(LayoutWorkspaceTemplateName)), IsLayoutFile = true });
             // The model's 2D layouts (cheat sheets with boxes the bound commands are written into).
             foreach (WorkspacePictureChoice variant in VariantPictureChoices())
                 WorkspacePictures.Add(variant);
@@ -737,6 +744,8 @@ public sealed partial class WorkspacePictureChoice : ObservableObject
         : Reference?.Kind switch
         {
             "user" => "Your photo of the device",
+            "vendor" when Reference.Photo is { IsReview: true } => T("A review photo, loaded on this PC only (never shipped)") + "\n" + Reference.Credit,
+            "vendor" when Reference.Credit.Length > 0 => T("The maker's photo, loaded on this PC only (never shipped)") + "\n" + Reference.Credit,
             "vendor" => "The maker's photo, loaded on this PC only (never shipped)",
             "lineart" => "JoyPro's own drawing of this model, with JoyPro's positions of its controls",
             "schematic" => "JoyPro's drawing of this model: every part where it is drawn",

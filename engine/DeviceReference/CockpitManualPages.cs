@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace JoyPro.DeviceReference
 {
@@ -472,7 +473,7 @@ namespace JoyPro.DeviceReference
             }
             foreach (CockpitPictureCallout c in view.Callouts.OrderBy(x => x.N))
             {
-                List<string> names = c.Commands.Select(x => x.Name).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                List<string> names = c.Commands.Select(x => CommandName(x.Name)).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
                 CockpitGuideNode node = GuideNode(o, view, c);
                 string explain = node == null || node.Generic ? string.Empty : node.Short;
                 int keep = explain.Length > 0 ? 3 : 5;
@@ -486,6 +487,49 @@ namespace JoyPro.DeviceReference
             page.SearchText = string.Join(" ", page.Items.SelectMany(i => i.Lines));
             page.Height = y + ManualLayout.Margin;
             return page;
+        }
+
+        // A command's readable name: a game's command path (X-Plane: "laminar/B738/switch/gen2_up",
+        // "sim/electrical/battery_1_on") as words with its system ("Gen 2 up", "Battery 1 on (electrical)"); a name that
+        // is already words (DCS: "JFS Switch - START 1 / OFF") as it is.
+        private static readonly HashSet<string> GenericFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "sim", "laminar", "cockpit", "cockpit2", "switch", "switches", "toggle_switch", "push_button", "one_way_switch", "knob", "knobs",
+            "button", "buttons", "actuators", "rheos", "slider", "commands", "custom", "guard_cover"
+        };
+
+        public static string CommandName(string command)
+        {
+            string s = (command ?? string.Empty).Trim();
+            if (s.IndexOf('/') < 0 || s.IndexOf(' ') >= 0)
+                return s;
+            string[] parts = s.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0)
+                return s;
+            string last = Regex.Replace(parts[parts.Length - 1], @"\[(\d+)\]$", " $1");
+            string words = Words(last);
+            if (words.Length == 0)
+                return s;
+            // The system: the nearest folder that says something (not the vendor, the aircraft or a kind of switch).
+            string system = string.Empty;
+            for (int i = parts.Length - 2; i >= 1 && system.Length == 0; i--)
+            {
+                string f = parts[i];
+                if (GenericFolders.Contains(f) || Regex.IsMatch(f, @"^[A-Z]{0,3}\d{2,4}[A-Z]?$") || f.Length <= 2)
+                    continue;
+                system = Words(f).ToLowerInvariant();
+            }
+            return char.ToUpperInvariant(words[0]) + words.Substring(1) + (system.Length > 0 && words.IndexOf(system, StringComparison.OrdinalIgnoreCase) < 0 ? " (" + system + ")" : string.Empty);
+        }
+
+        private static string Words(string s)
+        {
+            string t = Regex.Replace(s, "([a-z])([A-Z])", "$1 $2");
+            t = Regex.Replace(t, "([A-Za-z])([0-9])", "$1 $2");
+            t = Regex.Replace(t, "([0-9])([A-Za-z])", "$1 $2");
+            t = Regex.Replace(t, @"[_\-\.\s]+", " ").Trim();
+            // Lower case, except words that are all capitals (CDU, MCP, APU).
+            return string.Join(" ", t.Split(' ').Select(w => w.Length > 1 && w.All(ch => char.IsUpper(ch) || char.IsDigit(ch)) ? w : w.ToLowerInvariant()));
         }
 
         // The guide's node of a game callout, or null.
@@ -524,30 +568,14 @@ namespace JoyPro.DeviceReference
                 page.Items.Add(t);
                 y += t.H + 14;
             }
-            DeviceLineArt art = ov != null && !(v.Aircraft != null && v.Aircraft.Fiction) ? LineArt(o.Folder, ov.Drawing) : null;
-            List<Callout> callouts = new List<Callout>();
-            CockpitArt picture;
+            // No drawing without pictures from a game: the traced line drawings and the plan of area boxes are not shown
+            // (TracedDrawings); the numbered list of the areas below is the page.
+            DeviceLineArt art = TracedDrawings && ov != null && !(v.Aircraft != null && v.Aircraft.Fiction) ? LineArt(o.Folder, ov.Drawing) : null;
             if (art != null)
             {
-                picture = new CockpitArt { LineArt = art };
-                foreach (CockpitOverviewArea a in ov.Areas)
-                    callouts.Add(new Callout { N = a.N, Label = a.Name, X = a.X, Y = a.Y, Link = AreaLink(v, a) });
+                List<Callout> callouts = ov.Areas.Select(a => new Callout { N = a.N, Label = a.Name, X = a.X, Y = a.Y, Link = AreaLink(v, a) }).ToList();
+                y = PlaceDrawing(page, new CockpitArt { LineArt = art }, callouts, y, 520, false, pal, o);
             }
-            else
-            {
-                // JoyPro's plan of the cockpit: the areas where the plan has them.
-                DeviceSchematic plan = CockpitSchematic.Plan(v);
-                picture = new CockpitArt { Schematic = plan };
-                if (ov != null)
-                {
-                    foreach (CockpitOverviewArea a in ov.Areas)
-                    {
-                        double[] at = PlanPoint(plan, a);
-                        callouts.Add(new Callout { N = a.N, Label = a.Name, X = at == null ? -1 : at[0], Y = at == null ? -1 : at[1], Link = AreaLink(v, a) });
-                    }
-                }
-            }
-            y = PlaceDrawing(page, picture, callouts, y, 520, false, pal, o);
             // The numbered list of the areas and the panels in each.
             if (ov != null && ov.Areas.Count > 0)
             {
@@ -576,10 +604,15 @@ namespace JoyPro.DeviceReference
             return a.Panels.Count > 0 ? "panel:" + a.Panels[0] : string.Empty;
         }
 
-        private static double[] PlanPoint(DeviceSchematic plan, CockpitOverviewArea a)
+        // JoyPro's traced line drawings of real cockpits, panels and grips (DB\Cockpits\line-drawings) are not shown on the
+        // pages (the user's verdict: not clean enough); where a game's pictures are good, no drawing is shown at all, and
+        // without them only JoyPro's clean vector drawings of the grips. The files stay for the checks and later use.
+        public static bool TracedDrawings = false;
+
+        // The variant has good pictures from a game (a set that is not rated low): those are shown, no drawings.
+        public static bool GoodPictures(ManualPageOptions o)
         {
-            // Positions given for a drawing of the real cockpit do not fit the plan: the plan's own area centre.
-            return CockpitSchematic.AreaCenter(a.Area);
+            return o != null && o.Pictures != null && !o.Pictures.LowQuality;
         }
 
         // ------------------------------------------------------------------ a grip with its HOTAS table
@@ -596,7 +629,7 @@ namespace JoyPro.DeviceReference
             Dictionary<CockpitControl, int> numbers = Number(controls);
             List<Callout> callouts = new List<Callout>();
             CockpitArt picture = null;
-            DeviceLineArt art = DeviceArt(o.Folder, v, device);
+            DeviceLineArt art = TracedDrawings && !GoodPictures(o) ? DeviceArt(o.Folder, v, device) : null;
             CockpitPictureView grip = o.Pictures == null ? null : o.Pictures.Grip(o.Pictures.SeatOf(v), device);
             CockpitArt gripArt = grip == null ? null : GameArt(grip, o);
             if (gripArt != null)
@@ -622,8 +655,9 @@ namespace JoyPro.DeviceReference
                     callouts.Add(new Callout { N = numbers[c], Label = c.Name, X = at == null ? -1 : at[0], Y = at == null ? -1 : at[1], Tag = "control:" + c.Id });
                 }
             }
-            else
+            else if (!GoodPictures(o))
             {
+                // No game picture of this grip and no good set: JoyPro's clean vector drawing of the grip.
                 CockpitDrawing drawing = catalog.DrawingFor(v, device);
                 if (drawing != null)
                 {
@@ -879,7 +913,7 @@ namespace JoyPro.DeviceReference
                 page.Items.Add(t);
                 y += t.H + 12;
             }
-            DeviceLineArt art = v.Aircraft != null && v.Aircraft.Fiction ? null : LineArt(o.Folder, p.Drawing);
+            DeviceLineArt art = !TracedDrawings || GoodPictures(o) || (v.Aircraft != null && v.Aircraft.Fiction) ? null : LineArt(o.Folder, p.Drawing);
             if (art != null)
             {
                 List<Callout> callouts = p.Items.Select(i => new Callout { N = i.N, Label = string.Empty, X = i.X, Y = i.Y, Tag = "item:" + p.Key + ":" + i.N }).ToList();

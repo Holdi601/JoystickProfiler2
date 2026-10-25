@@ -19,6 +19,9 @@ namespace JoyPro.CockpitPictures
         public double Fill;
         // Share of covered 8x8 blocks with visible detail (local contrast above 7 % of their brightness, at least 3 levels).
         public double Structure;
+        // Share of covered 8x8 blocks that are one flat tone (deviation under 1.5 levels): big bare polygons, the shards of
+        // a part the reader placed wrongly; a textured cockpit has grain almost everywhere.
+        public double Flat;
         // Brightness histogram entropy (bits, 32 bins).
         public double Entropy;
         // Share of covered pixels that are (nearly) black.
@@ -120,7 +123,7 @@ namespace JoyPro.CockpitPictures
             for (int i = h - 1; i >= 0; i--) { acc += rowCount[i]; if (acc > lo) { maxY = i; break; } }
             m.Fill = maxX >= minX && maxY >= minY ? (maxX - minX + 1) * (double)(maxY - minY + 1) / (w * h) : 0;
             // Detail: 8x8 blocks with local contrast.
-            int blocks = 0, detailed = 0;
+            int blocks = 0, detailed = 0, flat = 0;
             for (int by = 0; by + 8 <= h; by += 8)
             {
                 for (int bx = 0; bx + 8 <= w; bx += 8)
@@ -147,9 +150,12 @@ namespace JoyPro.CockpitPictures
                     double mean = s / 64, sd = Math.Sqrt(Math.Max(0, s2 / 64 - mean * mean));
                     if (sd >= Math.Max(3.0, 0.07 * mean))
                         detailed++;
+                    if (sd < 1.5)
+                        flat++;
                 }
             }
             m.Structure = blocks == 0 ? 0 : detailed / (double)blocks;
+            m.Flat = blocks == 0 ? 0 : flat / (double)blocks;
             return m;
         }
 
@@ -209,6 +215,11 @@ namespace JoyPro.CockpitPictures
             if (size > 12)
                 m.Problems.Add(grip ? "too small in the frame" : "mostly empty");
             s -= size;
+            // Big bare polygons (a screenshot or a grip's smooth plastic is not judged by it).
+            double flatShapes = grip || kind == "screenshot" ? 0 : Math.Max(0, m.Flat - 0.45) * 150;
+            if (flatShapes > 12)
+                m.Problems.Add("flat shapes");
+            s -= flatShapes;
             double textured = Math.Max(0, 0.6 - m.Textured) * 80;
             if (textured > 12)
                 m.Problems.Add("untextured");

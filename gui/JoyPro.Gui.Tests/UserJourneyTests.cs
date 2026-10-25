@@ -663,6 +663,16 @@ public sealed partial class UserJourneyTests
                 Note("status: " + vm.StatusText + " | tiles: " + vm.ExportGamesStatus + " | backups listed: " + vm.GameBackups.Count +
                      " | undo enabled on: " + string.Join(", ", vm.ExportGames.Where(g => g.CanUndoExport).Select(g => g.Name)));
             }, extraRender: slug => RenderTall(slug, 5200));
+            // Back / Forward (docs/ui/navigation.md): the check's list, a card's "Open both relations", Back to the list.
+            Step("check: problems found by the check", async () => await vm!.ValidateProfileCommand.ExecuteAsync(null));
+            CheckIssueCard? twoRelations = vm.CheckSections.SelectMany(s => s.Cards).FirstOrDefault(c => c.OpenAllCommand != null);
+            Note("check cards: " + vm.CheckSections.Sum(s => s.Cards.Count) + (twoRelations == null ? " (none with two relations)" : ", opening '" + twoRelations.Headline + "'"));
+            if (twoRelations != null)
+            {
+                Step("check: Open both relations", () => { twoRelations.OpenAllCommand!.Execute(null); return Task.CompletedTask; });
+                Step("back: the check list again", () => { vm!.NavigateBackCommand.Execute(null); return Task.CompletedTask; });
+                Note("after Back: page " + vm.CurrentStage + ", forward: " + vm.NavigateForwardTip);
+            }
             Step("history panel", () => { vm!.CurrentStage = UiStage.Start; vm.IsHistoryPanelOpen = true; return Task.CompletedTask; });
             Note("history versions: " + vm.HistoryVersions.Count);
             Step("history closed, start page with a profile", () => { vm!.IsHistoryPanelOpen = false; return Task.CompletedTask; },

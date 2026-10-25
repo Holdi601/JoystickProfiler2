@@ -1,0 +1,98 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-mole",
+  "title": "MOLE (Argo Astronautics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-mole"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "MOLE (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/MOLE"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The MOLE is a medium mining ship from Argo Astronautics in Star Citizen. The pilot flies while three operators in mining turrets work the rocks; 24 ore pods line the hull. In a mining turret the mining controls work as in mining mode.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "MOLE: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the MOLE's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (two)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The MOLE has two guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "ore",
+              "name": "Ore pods (32 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Ore pods along the hull hold 32 SCU of mined rock.",
+              "context": "When they are full the crew flies the ore to a station or refinery.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "MOLE: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the MOLE besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "mining-turrets",
+              "name": "Mining turrets (three)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "Three manned mining turrets. In them the trigger fires the laser, the thumb button changes the type and the base slider sets the power, as in mining mode.",
+              "context": "The pilot holds the ship near the rock while the operators break it apart.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

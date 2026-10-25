@@ -10,26 +10,26 @@
          VirtualFunctionEditorViewModel.cs. The page around it has Save / Close. -->
     <StackPanel Spacing="10">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
-            <Border Width="54" Height="54" CornerRadius="10" Background="#F5BE4B" VerticalAlignment="Top">
-                <TextBlock Text="{Binding Icon}" FontSize="30" Foreground="#0F1115" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Border Width="54" Height="54" CornerRadius="10" Background="{DynamicResource JP.Chip.ModifierBrush}" VerticalAlignment="Top">
+                <TextBlock Text="{Binding Icon}" FontSize="{DynamicResource JP.FontSize.30}" Foreground="{DynamicResource JP.Chip.ModifierTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <StackPanel Grid.Column="1" Spacing="4">
                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
-                    <TextBox Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Watermark="{l:T 'Name of the function'}" ToolTip.Tip="{l:T 'A name you recognise, e.g. Throttle detents'}" />
+                    <TextBox Text="{Binding Name}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Watermark="{l:T 'Name of the function'}" ToolTip.Tip="{l:T 'A name you recognise, e.g. Throttle detents'}" />
                     <CheckBox Grid.Column="1" IsChecked="{Binding Enabled}" Content="{l:T 'On'}" ToolTip.Tip="{l:T 'Off: the forwarder skips this function (its outputs stay reserved).'}" />
                     <CheckBox Grid.Column="2" IsChecked="{Binding Keyboard}" Content="{l:T 'Keyboard output'}"
                               ToolTip.Tip="{l:T 'Only when you want keys: lets outputs and macro steps press keyboard keys (KEY_...). They are sent only while the virtual joystick runs for real (Start), never in Test.'}" />
                 </Grid>
                 <TextBlock Text="{Binding TypeName, StringFormat='{}{0}'}" FontWeight="SemiBold" Opacity="0.85" />
                 <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Example}" TextWrapping="Wrap" Opacity="0.7" FontSize="12" />
+                <TextBlock Text="{Binding Example}" TextWrapping="Wrap" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" />
             </StackPanel>
         </Grid>
 
-        <Border Background="#1AF43F5E" BorderBrush="#F43F5E" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasProblems}">
+        <Border Background="{DynamicResource JP.DangerFillBrush}" BorderBrush="{DynamicResource JP.DangerTextBrush}" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasProblems}">
             <TextBlock Text="{Binding ProblemsText}" TextWrapping="Wrap" />
         </Border>
-        <Border Background="#1AF59E0B" BorderBrush="#F59E0B" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasWarnings}">
+        <Border Background="{DynamicResource JP.Chip.WarnBrush}" BorderBrush="{DynamicResource JP.WarnBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasWarnings}">
             <TextBlock Text="{Binding WarningsText}" TextWrapping="Wrap" />
         </Border>
 
@@ -94,14 +94,14 @@
             <Button Content="+" Command="{Binding AddCountCommand}" MinWidth="32" />
         </StackPanel>
 
-        <TextBlock Text="{l:T 'Inputs (your devices)'}" FontSize="15" FontWeight="SemiBold" />
+        <TextBlock Text="{l:T 'Inputs (your devices)'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
         <ItemsControl ItemsSource="{Binding Inputs}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:VfInputRoleItem">
                     <Grid ColumnDefinitions="150,1.4*,1*,Auto,1.2*" ColumnSpacing="8" Margin="0,2">
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
-                            <TextBlock Text="{Binding KindText}" FontSize="11" Opacity="0.7" />
+                            <TextBlock Text="{Binding KindText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.7" />
                         </StackPanel>
                         <ComboBox Grid.Column="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}" PlaceholderText="{l:T 'device'}" HorizontalAlignment="Stretch">
                             <ComboBox.ItemTemplate>
@@ -123,14 +123,14 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TextBlock Text="{l:T 'Virtual outputs (what the game gets)'}" FontSize="15" FontWeight="SemiBold" />
+        <TextBlock Text="{l:T 'Virtual outputs (what the game gets)'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
         <ItemsControl ItemsSource="{Binding Outputs}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:VfOutputRoleItem">
                     <Grid ColumnDefinitions="Auto,150,1.2*,70,1.2*,1*,Auto" ColumnSpacing="8" Margin="0,2">
                         <Panel Width="14" Height="14" VerticalAlignment="Center">
-                            <Ellipse Fill="#22C55E" IsVisible="{Binding IsOn}" />
-                            <Ellipse Fill="#475569" IsVisible="{Binding !IsOn}" />
+                            <Ellipse Fill="{DynamicResource JP.Dot.OkBrush}" IsVisible="{Binding IsOn}" />
+                            <Ellipse Fill="{DynamicResource JP.Dot.OffBrush}" IsVisible="{Binding !IsOn}" />
                         </Panel>
                         <TextBlock Grid.Column="1" Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
                         <ComboBox Grid.Column="2" ItemsSource="{Binding Targets}" SelectedItem="{Binding Target}" HorizontalAlignment="Stretch" MaxDropDownHeight="320"
@@ -151,7 +151,7 @@
                      ToolTip.Tip="{l:T 'A function\'s output is a vJoy input like any other: bind a relation to it here or on the Relations page (device vJoy Device, input JOY_BTN...).'}" />
         </Grid>
 
-        <TextBlock Text="{l:T 'Settings'}" FontSize="15" FontWeight="SemiBold" IsVisible="{Binding HasParams}" />
+        <TextBlock Text="{l:T 'Settings'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" IsVisible="{Binding HasParams}" />
         <ItemsControl ItemsSource="{Binding Params}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:VfParamItem">
@@ -168,7 +168,7 @@
 
         <!-- Macro steps. -->
         <StackPanel Spacing="6" IsVisible="{Binding IsMacro}">
-            <TextBlock Text="{l:T 'Steps (played on each press)'}" FontSize="15" FontWeight="SemiBold" />
+            <TextBlock Text="{l:T 'Steps (played on each press)'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
             <ItemsControl ItemsSource="{Binding Steps}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:VfStepItem">
@@ -188,7 +188,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Button Content="{l:T 'Add a step'}" Command="{Binding AddStepCommand}" />
-            <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="12"
+            <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="{DynamicResource JP.FontSize.12}"
                        Text="{l:T 'A step taps (press, hold, release), presses or releases one of the outputs. Keys (KEY_...) only with Keyboard output on; they type only while the virtual joystick runs for real.'}" />
         </StackPanel>
     </StackPanel>

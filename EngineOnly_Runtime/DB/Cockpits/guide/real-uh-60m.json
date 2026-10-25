@@ -1,0 +1,345 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-uh-60m",
+  "title": "UH-60M Black Hawk",
+  "inherits": "real-uh-60a-l",
+  "variants": [
+    "uh-60m"
+  ],
+  "games": [
+    "Arma2OA"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w2",
+      "title": "Sikorsky UH-60 Black Hawk (Wikipedia), UH-60M",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Sikorsky_UH-60_Black_Hawk"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "w1",
+      "title": "Sikorsky UH-60 Black Hawk (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Sikorsky_UH-60_Black_Hawk"
+    },
+    {
+      "id": "t1",
+      "title": "TM 1-1520-237-10 Operator's Manual UH-60A/L (US Army, public domain)",
+      "kind": "reference",
+      "url": "https://everyspec.com/ARMY/TM-Tech-Manual/TM_1-1520-237-10_CHG-10_13437/"
+    }
+  ],
+  "intro": "The UH-60M is the modernised Black Hawk of the 2000s: stronger engines run by FADEC computers, new rotor blades and a glass cockpit with four screens, and a digital flight control system that can fly coupled approaches. The roof panel with the engine levers and fire handles stays much as in the UH-60A/L, and JoyPro takes the grips as unchanged, so this guide builds on the UH-60A/L guide. The extra switches of the M's flight director are not described in the sources JoyPro uses.",
+  "remove": [
+    "instrument-panel",
+    "lower-console"
+  ],
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead console",
+      "panels": [
+        {
+          "id": "overhead-console",
+          "name": "Overhead console",
+          "text": "The roof panel with the engine power and fuel levers, the engine fire handles, the starters, the APU and the electrical, anti-ice and lighting panels.",
+          "context": "The whole start-up happens here, from the battery to the engine levers; the fire handles are where both pilots can reach them.",
+          "controls": [
+            {
+              "id": "pcl",
+              "name": "ENG POWER CONT levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-console:1",
+                "control:panel.lever.power"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Fuel to the engine is shut off."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "Position for the start and for idling on the ground."
+                },
+                {
+                  "name": "FLY",
+                  "text": "The engine control keeps the power turbine at its normal speed."
+                },
+                {
+                  "name": "LOCKOUT",
+                  "text": "The automatic engine control is bypassed; the pilot sets the power by hand."
+                }
+              ],
+              "text": "Two levers, one for each of the two engines. They give each engine fuel and decide its power setting, from off through idle to the flying position.",
+              "context": "In the UH-60M a FADEC (a computer that runs each engine by itself) governs the engines when the levers are in FLY; the pilot moves them during the start and the shutdown.",
+              "src": "t1"
+            },
+            {
+              "id": "fuel-sel",
+              "name": "ENG FUEL SYS selector levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No fuel to the engine."
+                },
+                {
+                  "name": "DIR",
+                  "text": "The engine is fed from its own tank."
+                },
+                {
+                  "name": "XFD",
+                  "text": "The engine is fed from the other tank (crossfeed)."
+                }
+              ],
+              "text": "One lever per engine that chooses where its fuel comes from: off, direct from its own tank, or crossfeed (from the other side's tank).",
+              "context": "Crossfeed keeps an engine running when its own tank or fuel line has a problem.",
+              "src": "t1"
+            },
+            {
+              "id": "t-handles",
+              "name": "ENG EMER OFF T-handles",
+              "type": "handle",
+              "match": [
+                "item:overhead-console:3"
+              ],
+              "text": "One T-shaped handle per engine. Pulling it shuts off the fuel to that engine and arms the fire extinguisher; a FIRE light in the handle shows a fire.",
+              "context": "It is the first step when an engine burns; the bottle is then fired with the FIRE EXTGH switch.",
+              "src": "t1"
+            },
+            {
+              "id": "extgh",
+              "name": "FIRE EXTGH switch",
+              "type": "switch3",
+              "match": [
+                "item:overhead-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "MAIN",
+                  "text": "Fires the main bottle."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Normal position."
+                },
+                {
+                  "name": "RESERVE",
+                  "text": "Fires the reserve bottle."
+                }
+              ],
+              "text": "This switch fires a fire extinguisher bottle into the engine whose T-handle was pulled: the main bottle or the reserve bottle.",
+              "context": "The reserve bottle is for a fire that the main bottle did not put out.",
+              "src": "t1"
+            },
+            {
+              "id": "starters",
+              "name": "ENG 1 / ENG 2 starter buttons",
+              "type": "button",
+              "match": [
+                "item:overhead-console:5"
+              ],
+              "text": "One button per engine that starts its air starter, which spins the engine with air until it can run on its own.",
+              "context": "The air comes from the APU; the engines are started one after the other with the power lever at IDLE.",
+              "src": "t1",
+              "count": 2
+            },
+            {
+              "id": "apu",
+              "name": "APU control",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:6"
+              ],
+              "text": "The switches that start and run the APU (a small extra engine that makes electricity and air before the main engines run) and put its generator on line.",
+              "context": "The APU is started first; it powers the cockpit and gives the air for the engine starters. JoyPro's sources do not describe its single switches.",
+              "src": "t1"
+            },
+            {
+              "id": "elec",
+              "name": "Electrical power panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:7"
+              ],
+              "text": "Switches for the helicopter's electricity: BATT, GEN 1, GEN 2 and APU GEN. The battery stores electricity for when the engines are off; generators make electricity while the engines run.",
+              "context": "They are among the first switches the pilot uses when climbing in, because almost every other system needs electricity. JoyPro's sources do not describe its single switches.",
+              "src": "t1"
+            },
+            {
+              "id": "fuel-pump",
+              "name": "Fuel pump switch",
+              "type": "switch3",
+              "match": [
+                "item:overhead-console:8"
+              ],
+              "positions": [
+                {
+                  "name": "FUEL PRIME",
+                  "text": "Fills the fuel lines for the start."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The pump is off."
+                },
+                {
+                  "name": "APU BOOST",
+                  "text": "Pumps fuel to the APU."
+                }
+              ],
+              "text": "This switch runs a fuel pump: FUEL PRIME fills the fuel lines before the start, APU BOOST helps feed fuel to the APU.",
+              "context": "It is used in the start-up before the APU and the engines are started.",
+              "src": "t1"
+            },
+            {
+              "id": "anti-ice-lights",
+              "name": "Anti-ice and lighting panels",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:9"
+              ],
+              "text": "Switches for the engine anti-ice (keeps ice out of the engine air intakes), the pitot heat (heats the tubes that measure speed) and the outside and cockpit lights.",
+              "context": "Anti-ice is switched on in cold, wet air; the lights are set before a night flight. JoyPro's sources do not describe its single switches.",
+              "src": "t1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The four screens and the standby display.",
+      "panels": [
+        {
+          "id": "m-instrument-panel",
+          "name": "Instrument panel (glass cockpit)",
+          "text": "Four colour screens, two for each pilot, a standby instrument and the master warning lights.",
+          "context": "The UH-60M replaced the round dials and light columns of the A and L with these screens, which show the flight and the engine data on pages.",
+          "controls": [
+            {
+              "id": "plt-mfd",
+              "name": "Pilot MFDs (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The pilot's two colour screens (multi-function screens with buttons around their edge). They show the flight instruments, the navigation map and the engine pages.",
+              "context": "Instead of dozens of round dials, the crew picks the page each screen shows; one screen can replace another that fails.",
+              "src": "w1"
+            },
+            {
+              "id": "cplt-mfd",
+              "name": "Copilot MFDs (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The copilot's two colour screens (multi-function screens with buttons around their edge). They show the same pages for the other seat, so either pilot can fly.",
+              "context": "One pilot usually flies while the other works the map, the radios and the systems."
+            },
+            {
+              "id": "bezel",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Buttons around the edge of each screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The crew uses them to change pages and options; the page layout is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby",
+              "name": "Standby flight display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A small separate instrument that shows the attitude (nose up or down, leaning left or right), the speed and the height. It keeps working when the big screens fail.",
+              "context": "It is the backup that lets the pilot fly safely to a landing if the main displays go dark."
+            },
+            {
+              "id": "mwc",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "Two big lights: master warning means \"danger now\", master caution means \"something needs your attention\". The message on the display says what is wrong.",
+              "context": "Pressing the light usually acknowledges it, so it is ready to show the next problem."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lower-console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "Flight management keypads, flight control panel and backup radios.",
+      "panels": [
+        {
+          "id": "m-center-console",
+          "name": "Centre console",
+          "text": "The console between the seats with two keypads for the flight management system, the flight control panel, backup radio controls and the countermeasures.",
+          "context": "With the glass cockpit most settings are typed into the flight management system instead of turned on separate radio boxes.",
+          "controls": [
+            {
+              "id": "cdu",
+              "name": "Control display units (2)",
+              "type": "keypad",
+              "match": [
+                "item:center-console:1"
+              ],
+              "text": "A keypad with a small screen where the crew types the route, the radio frequencies and other flight data for the flight management system (the computer that plans and follows the route), like a small computer keyboard.",
+              "context": "The crew sets up the route and the radios with it before the flight and changes them in flight. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "afcs",
+              "name": "AFCS / flight director panel",
+              "type": "button",
+              "match": [
+                "item:center-console:2"
+              ],
+              "text": "Buttons that switch on and off the stability helpers, the trim, the coupled modes (where the autopilot flies a course by itself) and the flight director (steering marks for the pilot). Stability helpers keep the helicopter steady and smooth; the autopilot can hold height, heading or speed so the pilot does not have to.",
+              "context": "The helpers stay on for almost the whole flight; the pilot switches them off only for tests or when one fails. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "radios",
+              "name": "Radio control panels",
+              "type": "selector",
+              "match": [
+                "item:center-console:3"
+              ],
+              "text": "Backup controls for the radios, used when the radios cannot be set through the keypads.",
+              "context": "Normally the crew tunes the radios through the flight management system. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "cms",
+              "name": "Countermeasures control",
+              "type": "switch",
+              "match": [
+                "item:center-console:4"
+              ],
+              "text": "The switches that arm the dispensers of countermeasures, things the helicopter throws out to fool enemy missiles: chaff (clouds of metal strips for radar missiles) and flares (hot burning decoys for heat-seeking missiles). It also controls the CMWS, a system that sees approaching missiles and warns the crew.",
+              "context": "They are armed after take-off and made safe before landing, so nothing fires on the ground. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

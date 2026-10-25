@@ -1,0 +1,296 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-millennium-falcon",
+  "title": "Millennium Falcon (Star Wars)",
+  "variants": [
+    "millennium-falcon-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Millennium Falcon (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Millennium_Falcon"
+    },
+    {
+      "id": "s2",
+      "title": "Millennium Falcon (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/millennium-falcon"
+    },
+    {
+      "id": "s3",
+      "title": "The Empire Strikes Back (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/The_Empire_Strikes_Back"
+    }
+  ],
+  "intro": "The Millennium Falcon is Han Solo's fictional light freighter from the Star Wars films, a modified YT-1300 with quad laser turrets and a hyperdrive that does not always work. Its four-seat cockpit sits on the right side of the round hull: the pilot in front on the left, the co-pilot in front on the right, switch banks overhead and the hyperdrive levers between them.",
+  "areas": [
+    {
+      "id": "forward",
+      "where": "front-center",
+      "name": "Forward instrument panel",
+      "text": "Screens and gauges under the cockpit windows.",
+      "panels": [
+        {
+          "id": "forward-panel",
+          "name": "Forward instrument panel",
+          "db": "forward-panel",
+          "src": "s3",
+          "text": "Screens and controls under the windows: the jump calculations, the sensors and the shields.",
+          "context": "The crew watches them before a jump to hyperspace and during a chase.",
+          "controls": [
+            {
+              "id": "navicomputer",
+              "name": "Navicomputer readouts",
+              "type": "display",
+              "match": [
+                "item:forward-panel:1"
+              ],
+              "text": "These readouts show the jump coordinates that the ship's navigation computer works out before a jump to hyperspace (faster-than-light travel).",
+              "context": "The ship can only jump safely after the calculation is done; in the films this takes nervous seconds during escapes.",
+              "src": "s2"
+            },
+            {
+              "id": "sensor",
+              "name": "Sensor screen",
+              "type": "display",
+              "match": [
+                "item:forward-panel:2"
+              ],
+              "text": "This screen shows chasing ships and obstacles around the Falcon.",
+              "context": "It helps the pilot during chases, for example through an asteroid field.",
+              "src": "s3"
+            },
+            {
+              "id": "shields",
+              "name": "Deflector shield controls",
+              "type": "switch",
+              "match": [
+                "item:forward-panel:3"
+              ],
+              "text": "Controls for the deflector shields, the invisible protective field around the ship. They can angle the shield towards the danger.",
+              "context": "In the films the captain orders the shields angled when enemies attack from one side.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot",
+      "where": "front-right",
+      "name": "Co-pilot station",
+      "text": "Chewbacca's seat on the right.",
+      "panels": [
+        {
+          "id": "copilot",
+          "name": "Co-pilot station",
+          "db": "copilot",
+          "src": "s3",
+          "text": "The front right seat with its own flight controls and switches.",
+          "context": "The co-pilot helps fly and runs the system and hyperdrive checks.",
+          "controls": [
+            {
+              "id": "yoke",
+              "name": "Co-pilot yoke",
+              "type": "other",
+              "match": [
+                "item:copilot:1"
+              ],
+              "text": "A second set of flight controls, so the co-pilot can fly the ship too.",
+              "context": "In the films Chewbacca sits here and takes the controls when needed.",
+              "src": "s2"
+            },
+            {
+              "id": "switches",
+              "name": "Co-pilot switches",
+              "type": "switch",
+              "match": [
+                "item:copilot:2"
+              ],
+              "text": "Switches for the ship's systems and for the hyperdrive checks.",
+              "context": "The co-pilot works them while the pilot flies, for example before a jump.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "The console between pilot and co-pilot.",
+      "panels": [
+        {
+          "id": "centre-console",
+          "name": "Centre console",
+          "db": "centre-console",
+          "src": "s3",
+          "text": "The console between the two front seats with the hyperdrive levers, the engine levers and switches.",
+          "context": "Both front crew can reach it; the jump to lightspeed is started here.",
+          "controls": [
+            {
+              "id": "hyperdrive",
+              "name": "Hyperdrive levers",
+              "type": "lever",
+              "match": [
+                "item:centre-console:1",
+                "control:throttle.lever.hyperdrive"
+              ],
+              "text": "Pushing these levers forward together starts the jump to lightspeed, faster-than-light travel through hyperspace.",
+              "context": "The stars stretch into lines as the ship jumps. In The Empire Strikes Back the hyperdrive fails when the pilot pushes the levers, a famous scene.",
+              "src": "s3"
+            },
+            {
+              "id": "sublight",
+              "name": "Sublight controls",
+              "type": "lever",
+              "match": [
+                "item:centre-console:2"
+              ],
+              "text": "Thrust levers for the normal (sublight) engines, the engines used for flying below the speed of light.",
+              "context": "The crew sets them for normal flight; the hyperdrive levers are only for the jump.",
+              "src": "s2"
+            },
+            {
+              "id": "switches",
+              "name": "Switch rows",
+              "type": "switch",
+              "match": [
+                "item:centre-console:3"
+              ],
+              "text": "Rows of toggle switches on the centre console, used before take-off and before jumps.",
+              "context": "The films show the crew flipping them quickly; each switch is not named.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead switch panels",
+      "text": "Banks of switches above the seats.",
+      "panels": [
+        {
+          "id": "overhead",
+          "name": "Overhead switch panels",
+          "db": "overhead",
+          "src": "s3",
+          "text": "Banks of switches and lights above the front seats.",
+          "context": "The crew reaches up to them in the start-up and before a jump.",
+          "controls": [
+            {
+              "id": "switches",
+              "name": "Overhead switches",
+              "type": "switch",
+              "match": [
+                "item:overhead:1"
+              ],
+              "text": "Many switches above the seats, flipped during the start-up and the routine before a jump.",
+              "context": "The films show them as part of the busy, worn cockpit; what each switch does is not explained.",
+              "src": "s3"
+            },
+            {
+              "id": "lights",
+              "name": "Status lights",
+              "type": "light",
+              "match": [
+                "item:overhead:2"
+              ],
+              "text": "Lights above the seats that show the state of the systems.",
+              "context": "Together with the switches they make up the overhead panels.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "turrets",
+      "where": "rear",
+      "name": "Quad laser turrets",
+      "text": "The gunner positions above and below the hull, reached by a ladder.",
+      "panels": [
+        {
+          "id": "turrets",
+          "name": "Quad laser turrets",
+          "db": "turrets",
+          "src": "s2",
+          "text": "Two gun positions, one on top and one under the hull, each with a four-barrel laser gun.",
+          "context": "In A New Hope Luke and Han fight off TIE fighters from these turrets while escaping the Death Star.",
+          "controls": [
+            {
+              "id": "grips",
+              "name": "Gun grips",
+              "type": "other",
+              "match": [
+                "item:turrets:1"
+              ],
+              "text": "Two-handed grips that swing the whole turret around to aim.",
+              "context": "The gunner sits inside the turret and turns with it.",
+              "src": "s2"
+            },
+            {
+              "id": "triggers",
+              "name": "Fire triggers",
+              "type": "button",
+              "match": [
+                "item:turrets:2"
+              ],
+              "text": "Triggers on the grips fire the four laser barrels of the turret.",
+              "context": "The turrets defend the ship while the pilot flies.",
+              "src": "s2"
+            },
+            {
+              "id": "screen",
+              "name": "Targeting screen",
+              "type": "display",
+              "match": [
+                "item:turrets:3"
+              ],
+              "text": "A crosshair display that helps the gunner aim at fast fighters.",
+              "context": "It shows the target as it crosses the gunner's view.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control yoke",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control yoke",
+          "src": "s3",
+          "text": "The yoke in front of the pilot's seat, front left.",
+          "context": "The pilot steers the freighter with it.",
+          "controls": [
+            {
+              "id": "yoke",
+              "name": "Control yoke",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the yoke forward or pulling it back tips the nose down or up; turning it rolls and banks the ship.",
+              "context": "The pilot in the front left seat flies with it; the co-pilot has a second yoke.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

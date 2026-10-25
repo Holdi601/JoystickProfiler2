@@ -41,16 +41,17 @@ public sealed class AxisCurveView : Control
     private int dragIndex = -1;
     private Cursor? handCursor;
 
-    private static readonly IBrush PanelBrush = new SolidColorBrush(Color.Parse("#0F172A"));
-    private static readonly IPen FramePen = new Pen(new SolidColorBrush(Color.Parse("#334155")), 1);
-    private static readonly IPen GridPen = new Pen(new SolidColorBrush(Color.Parse("#1E293B")), 1);
-    private static readonly IPen AxisPen = new Pen(new SolidColorBrush(Color.Parse("#64748B")), 1);
+    // The chart colours of the theme (Settings > Appearance > Charts), read when the curve draws.
+    private IBrush PanelBrush => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.PanelBrush", "#0F172A");
+    private IPen FramePen => new Pen(JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.GridBrush", "#334155"), 1);
+    private IPen GridPen => new Pen(JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.GridBrush", "#1E293B"), 1);
+    private IPen AxisPen => new Pen(JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.AxisBrush", "#64748B"), 1);
     private static readonly IPen IdentityPen = new Pen(new SolidColorBrush(Color.Parse("#475569")), 1);
-    private static readonly IPen CurvePen = new Pen(new SolidColorBrush(Color.Parse("#38BDF8")), 2.2, lineJoin: PenLineJoin.Round);
-    private static readonly IPen ReferencePen = new Pen(new SolidColorBrush(Color.Parse("#F59E0B")), 1.5, new DashStyle([4, 3], 0));
+    private IPen CurvePen => new Pen(JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.CurveBrush", "#38BDF8"), 2.2, lineJoin: PenLineJoin.Round);
+    private IPen ReferencePen => new Pen(JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.ReferenceBrush", "#F59E0B"), 1.5, new DashStyle([4, 3], 0));
     private static readonly IPen GuidePen = new Pen(new SolidColorBrush(Color.Parse("#99F43F5E")), 1, new DashStyle([2, 2], 0));
-    private static readonly IBrush DotBrush = new SolidColorBrush(Color.Parse("#F43F5E"));
-    private static readonly IBrush LabelBrush = new SolidColorBrush(Color.Parse("#94A3B8"));
+    private IBrush DotBrush => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.PointBrush", "#F43F5E");
+    private IBrush LabelBrush => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Chart.LabelBrush", "#94A3B8");
     private static readonly IBrush TextBrush = new SolidColorBrush(Color.Parse("#E2E8F0"));
     private static readonly Typeface Font = new(FontFamily.Default);
     private static readonly IBrush HandleBrush = new SolidColorBrush(Color.Parse("#F8FAFC"));
@@ -258,7 +259,7 @@ public sealed class AxisCurveView : Control
     }
 
     // anchorX: 0 = left edge at the point, 0.5 = centred, 1 = right edge at the point.
-    private static void DrawLabel(DrawingContext context, string text, Point at, double anchorX)
+    private void DrawLabel(DrawingContext context, string text, Point at, double anchorX)
     {
         FormattedText formatted = new(text, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, Font, 10, LabelBrush);
         context.DrawText(formatted, new Point(at.X - formatted.Width * anchorX, at.Y));

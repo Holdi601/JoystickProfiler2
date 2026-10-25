@@ -1,0 +1,242 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-tie-fighter",
+  "title": "TIE/ln fighter (Star Wars)",
+  "variants": [
+    "tie-ln"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "TIE fighter (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/TIE_fighter"
+    },
+    {
+      "id": "s2",
+      "title": "TIE Fighter (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/tie-fighter"
+    },
+    {
+      "id": "s3",
+      "title": "Star Wars (1977 film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Wars_(film)"
+    }
+  ],
+  "intro": "The TIE fighter is a fictional starfighter of the Galactic Empire in the Star Wars films: a ball-shaped cockpit between two flat wing panels, with twin ion engines, no shields and no hyperdrive. The pilot wears a sealed pressure suit and helmet and holds a two-grip yoke, with the targeting screen in front and the big round window ahead.",
+  "areas": [
+    {
+      "id": "viewport",
+      "where": "glareshield",
+      "name": "Octagonal forward viewport",
+      "text": "The big framed window at the front of the ball.",
+      "panels": [
+        {
+          "id": "forward-viewport",
+          "name": "Octagonal forward viewport",
+          "db": "forward-viewport",
+          "src": "s3",
+          "text": "The large eight-sided window at the front of the ball cockpit.",
+          "context": "The pilot looks and aims through it; there is no canopy as in other fighters.",
+          "controls": [
+            {
+              "id": "window",
+              "name": "Octagonal window",
+              "type": "other",
+              "match": [
+                "item:forward-viewport:1"
+              ],
+              "text": "A big window with a segmented frame, like spokes of a wheel. The pilot sights the enemy through it.",
+              "context": "It is the TIE fighter's main view; the targeting screen below helps with aiming.",
+              "src": "s3"
+            },
+            {
+              "id": "hatch",
+              "name": "Top hatch",
+              "type": "other",
+              "match": [
+                "item:forward-viewport:2"
+              ],
+              "text": "A hatch above the seat. Pilots climb in from above.",
+              "context": "TIE fighters hang in racks in their hangars, so the pilot enters through the top.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "targeting",
+      "where": "front-center",
+      "name": "Targeting display",
+      "text": "The screen in front of the yoke.",
+      "panels": [
+        {
+          "id": "targeting-display",
+          "name": "Targeting display",
+          "db": "targeting-display",
+          "src": "s3",
+          "text": "A screen in front of the yoke that helps the pilot aim.",
+          "context": "It shows the target and when it is locked.",
+          "controls": [
+            {
+              "id": "screen",
+              "name": "Targeting screen",
+              "type": "display",
+              "match": [
+                "item:targeting-display:1"
+              ],
+              "text": "A screen with a green crosshair and pictures of the target.",
+              "context": "The pilot lines up the target in the crosshair before firing.",
+              "src": "s3"
+            },
+            {
+              "id": "readout",
+              "name": "Range and lock readout",
+              "type": "display",
+              "match": [
+                "item:targeting-display:2"
+              ],
+              "text": "Numbers and marks beside the target picture show the distance and whether the target is locked.",
+              "context": "A locked target is the moment to fire.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sides",
+      "where": "left-side",
+      "name": "Side panels",
+      "text": "Switch panels on the curved walls of the ball.",
+      "panels": [
+        {
+          "id": "side-panels",
+          "name": "Side panels",
+          "db": "side-panels",
+          "src": "s3",
+          "text": "Switches, lights and the radio on the curved walls beside the seat.",
+          "context": "The film shows them without naming each switch.",
+          "controls": [
+            {
+              "id": "switches",
+              "name": "Switch rows",
+              "type": "switch",
+              "match": [
+                "item:side-panels:1"
+              ],
+              "text": "Rows of toggles and lights on the left and right of the TIE pilot's seat.",
+              "context": "They belong to the fighter's systems; the film does not show what each does.",
+              "src": "s3"
+            },
+            {
+              "id": "comms",
+              "name": "Comms",
+              "type": "other",
+              "match": [
+                "item:side-panels:2"
+              ],
+              "text": "The radio link to the squadron and to the station.",
+              "context": "TIE pilots fly in groups and get their orders over the radio.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Rear viewport",
+      "text": "The small window behind the pilot.",
+      "panels": [
+        {
+          "id": "rear-viewport",
+          "name": "Rear viewport",
+          "db": "rear-viewport",
+          "src": "s3",
+          "text": "A small window in the back of the ball cockpit.",
+          "context": "It gives a little view behind the fighter.",
+          "controls": [
+            {
+              "id": "window",
+              "name": "Rear window",
+              "type": "other",
+              "match": [
+                "item:rear-viewport:1"
+              ],
+              "text": "A small round window in the back of the ball cockpit.",
+              "context": "It lets light in and gives a glimpse behind; enemies behind are hard to see in a TIE.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control yoke and throttle",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control yoke",
+          "src": "s3",
+          "text": "The yoke with two hand grips in front of the pilot.",
+          "context": "The fire buttons sit under the thumbs.",
+          "controls": [
+            {
+              "id": "yoke",
+              "name": "Control yoke",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the yoke forward or pulling it back tips the nose down or up; turning it rolls and turns the fighter.",
+              "context": "The pilot holds it with both hands, one on each grip.",
+              "src": "s3"
+            },
+            {
+              "id": "fire",
+              "name": "Fire buttons",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Buttons on the yoke grips under the thumbs fire the two laser cannons under the cockpit.",
+              "context": "The TIE has no shields, so it relies on speed and numbers; its guns fire straight ahead.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s3",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "The film does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

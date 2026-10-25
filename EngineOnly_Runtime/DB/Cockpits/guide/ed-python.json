@@ -1,0 +1,97 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "ed-python",
+  "title": "Python (Elite Dangerous)",
+  "inherits": "game-elite-dangerous",
+  "variants": [
+    "ed-python"
+  ],
+  "games": [
+    "EliteDangerous"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Python (Inara)",
+      "kind": "reference",
+      "url": "https://inara.cz/elite/ship/60/"
+    },
+    {
+      "id": "w2",
+      "title": "Python (Coriolis ship data)",
+      "kind": "reference",
+      "url": "https://github.com/EDCD/coriolis-data/blob/master/ships/python.json"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Python by Faulcon DeLacy is a medium multi-role ship, the largest that fits a medium landing pad. Its cockpit has the pilot seat and one multicrew seat. It uses the shared cockpit system and HOTAS layout.",
+  "areas": [
+    {
+      "id": "right-panel",
+      "where": "right-side",
+      "name": "Right panel (internal)",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Python: seats and hardpoints",
+          "db": "ship",
+          "src": "c1",
+          "text": "Facts about the Python that set it apart from the other ships: its seats, its weapon mounts and the landing pad size it needs.",
+          "context": "Everything else in the Python's cockpit works like in every other Elite Dangerous ship.",
+          "controls": [
+            {
+              "id": "pilot-seat",
+              "name": "Pilot seat (helm)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The pilot's seat of the Python, the helm. Whoever sits here flies the ship and has the whole HOTAS layout of this guide.",
+              "context": "The Python takes up to two people in all; the other seats are for crew who join in multicrew.",
+              "src": "c1"
+            },
+            {
+              "id": "crew-seats",
+              "name": "Multicrew seats",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The extra seats of the Python, for up to two crew in all. A friend who joins can sit here as gunner, or as fighter controller when the ship carries a fighter.",
+              "context": "A gunner works the turreted weapons while the pilot flies; the roles are chosen on the role panel.",
+              "src": "c1"
+            },
+            {
+              "id": "hardpoints",
+              "name": "Hardpoints (weapon mounts)",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The weapon mounts of the Python: three large and two medium hardpoints. Bigger mounts take bigger, stronger weapons.",
+              "context": "The pilot puts the Python's weapons into fire groups on the right panel and fires them with the trigger and the weapon release button.",
+              "src": "w2"
+            },
+            {
+              "id": "pad",
+              "name": "Landing pad size",
+              "type": "indicator",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The Python needs a medium landing pad or a bigger one. Stations have small, medium and large pads, and small outposts may not have the bigger ones.",
+              "context": "When the pilot asks a station for docking, the station gives a pad that fits the ship's size.",
+              "src": "w2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

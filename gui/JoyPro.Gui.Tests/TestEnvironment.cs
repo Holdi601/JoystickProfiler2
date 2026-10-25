@@ -45,6 +45,10 @@ internal static class TestEnvironment
         string data = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "data-" + System.Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(data);
         System.Environment.SetEnvironmentVariable("JOYPRO_DATA_DIR", data);
+        // The move of an old %LOCALAPPDATA%\JoyPro into JoyPro2 (JoyProDataFolder) never runs in a test, also not in an
+        // engine a test starts or while a test has JOYPRO_DATA_DIR unset: the migration tests call it on temp folders.
+        System.Environment.SetEnvironmentVariable(JoyPro.Logging.JoyProDataFolder.NoMigrationVariable, "1");
+        JoyPro.Logging.JoyProDataFolder.LocalAppDataOverride = Path.Combine(data, "localappdata");
         // New profiles ("New profile", the first import) get their automatic name here, not in Documents\JoyPro2\profiles;
         // the profile history (<data>\ProfileHistory) is in the data folder above.
         System.Environment.SetEnvironmentVariable("JOYPRO_PROFILES_DIR", Path.Combine(data, "profiles"));

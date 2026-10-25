@@ -202,7 +202,7 @@ Changing HidHide is one elevated step (one UAC prompt; never bypassed): `apply-h
 file), and that process does everything: reads HidHide completely, resolves the device instance paths (`--dev-gaming`),
 writes the journal, runs all changes in one `HidHideCLI` call, reads back, compares and writes its result file for the
 caller. Nothing that needs the rights runs outside it. Before the change JoyPro writes a journal (`<data>\VirtualJoystick\hidhide-session.txt`, `<data>` = `JOYPRO_DATA_DIR` or
-`%LOCALAPPDATA%\JoyPro`) with the state before, what it adds, what it parks and the owner process (the GUI's pid and
+`%LOCALAPPDATA%\JoyPro2`) with the state before, what it adds, what it parks and the owner process (the GUI's pid and
 start time). After the call it reads HidHide back and compares. Restore undoes exactly the journal's changes against
 the configuration found then (entries the user added meanwhile stay), cloaking off first, and moves the journal to
 `history\`. Order on apply: lists first, cloaking last; on restore: cloaking off first - so nothing is hidden while the

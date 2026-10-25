@@ -14,7 +14,7 @@ namespace JoyPro.Engine.Games
     // preset package in Community2024, or a folder of files exported via Controls > Export). Both file formats are
     // read by either game, so a path of the other sim still works. Only actions of the managed contexts are changed
     // (flight and general ones; menus, world map and developer tools stay the sim's, see IsManagedContext);
-    // JoyPro's ownership data and backups live under %LOCALAPPDATA%\JoyPro, never in the synced folder.
+    // JoyPro's ownership data and backups live under %LOCALAPPDATA%\JoyPro2, never in the synced folder.
     // See docs/games/msfs.md.
     internal sealed partial class MsfsIntegration : IGameIntegration, IGameImportReading, IGameDisconnectedDevices, IGameSimDefaults, IGameOwnershipTracking, IGameProfileSelection, IGameAircraftScope, IGameCatalogRefreshFiles, IGameCatalogTidy
     {
@@ -1669,13 +1669,10 @@ namespace JoyPro.Engine.Games
             return contexts;
         }
 
-        // JOYPRO_DATA_DIR replaces %LOCALAPPDATA%\JoyPro (used by the smoke test).
+        // <data>\<kind>\MSFS (JOYPRO_DATA_DIR, used by the smoke test, else %LOCALAPPDATA%\JoyPro2).
         private static string JoyProDataFolder(string kind)
         {
-            string root = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            string folder = Path.Combine(root, kind, "MSFS");
+            string folder = Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), kind, "MSFS");
             Directory.CreateDirectory(folder);
             return folder;
         }

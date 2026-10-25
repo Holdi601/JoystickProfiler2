@@ -1,0 +1,98 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-scorpius",
+  "title": "Scorpius (Roberts Space Industries, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-scorpius"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Scorpius (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Scorpius"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Scorpius is a two-seat heavy fighter from RSI in Star Citizen. The pilot sits in front; the second seat works a remote turret that runs on a rail. The pilot uses the common controls.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Scorpius: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Scorpius's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (four)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Scorpius has four guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (16 missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Scorpius carries 16 missiles. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Scorpius: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Scorpius besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "rail-turret",
+              "name": "Rail turret",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "One remote turret that slides along a rail, worked from the second seat.",
+              "context": "A remote turret is aimed from a seat inside the ship through a camera, not from a glass bubble on the turret itself.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

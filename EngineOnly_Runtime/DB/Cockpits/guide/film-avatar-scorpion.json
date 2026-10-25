@@ -1,0 +1,196 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-avatar-scorpion",
+  "title": "AT-99 Scorpion gunship (Avatar)",
+  "variants": [
+    "at-99-scorpion"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Avatar (2009 film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Avatar_(2009_film)"
+    },
+    {
+      "id": "s2",
+      "title": "AT-99 Scorpion Gunship from Avatar (Fantastic Plastic)",
+      "kind": "reference",
+      "url": "https://fantastic-plastic.com/AT-99Page.htm"
+    }
+  ],
+  "intro": "The AT-99 Scorpion is a fictional gunship of the RDA company in James Cameron's film Avatar (2009). It flies with two rotors in round ducts and can hover like a helicopter. One pilot sits in a sealed, pressurised cockpit at the front and flies with a cyclic and a collective, the two controls of a helicopter; it carries missiles and two forward machine guns.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Sealed canopy",
+      "text": "The pressurised cockpit glass.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Sealed canopy",
+          "db": "canopy",
+          "src": "s1",
+          "text": "The closed, pressurised canopy of the gunship.",
+          "context": "Pandora's air is not safe to breathe for humans, so the cockpit is sealed.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Sealed canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "The cockpit is sealed and pressurised, so the pilot needs no breathing mask in Pandora's air.",
+              "context": "Outside the cockpit humans need masks on Pandora.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Transparent and flat displays in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s1",
+          "text": "See-through and flat screens with flight data, targeting and the weapons.",
+          "context": "The film shows the screens as clear glass panels in front of the pilot.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Transparent displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "See-through screens show the flight data and the targeting picture.",
+              "context": "The pilot can look through them and still see outside.",
+              "src": "s1"
+            },
+            {
+              "id": "weapon-status",
+              "name": "Weapon status",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A screen shows the state of the guns and missiles.",
+              "context": "It tells the pilot what is armed and how much is left.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consoles",
+      "where": "left-console",
+      "name": "Side consoles",
+      "text": "Controls beside the seat.",
+      "panels": [
+        {
+          "id": "side-consoles",
+          "name": "Side consoles",
+          "db": "side-consoles",
+          "src": "s1",
+          "text": "Controls beside the Scorpion pilot's seat for the systems.",
+          "context": "The film does not show what each control does.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Side controls",
+              "type": "switch",
+              "match": [
+                "item:side-consoles:1"
+              ],
+              "text": "Switches for the gunship's systems on the consoles beside the seat.",
+              "context": "They are part of the cockpit as seen in the film; each one is not named.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "s1",
+          "text": "The cyclic stick in front of the pilot, in the right hand.",
+          "context": "It tilts the gunship to fly forward, back and sideways and holds the weapon buttons.",
+          "controls": [
+            {
+              "id": "cyclic",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the cyclic forward tips the gunship forward so it flies forward; moving it sideways makes it fly sideways.",
+              "context": "Like a helicopter's cyclic, it tilts the lift of the rotors in the direction the pilot wants to go.",
+              "src": "s1"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A trigger on the cyclic grip fires the two forward machine guns.",
+              "context": "The pilot aims them by pointing the gunship's nose.",
+              "src": "s1"
+            },
+            {
+              "id": "missile",
+              "name": "Missile release",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A thumb button on the cyclic grip launches the missiles.",
+              "context": "Missiles are the gunship's strongest weapons, for bigger targets.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "src": "s1",
+          "text": "The collective lever at the pilot's left hand.",
+          "context": "It makes the gunship climb or sink.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling the collective up gives the rotors more lift so the gunship climbs; pushing it down makes it sink.",
+              "context": "Together with the cyclic it is how every helicopter-like craft is flown.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

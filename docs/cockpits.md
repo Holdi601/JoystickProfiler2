@@ -159,8 +159,25 @@ collective, an airliner a yoke or side-stick and a quadrant.
 ### Panels
 
 `area`: `glareshield`, `front-left`, `front-center`, `front-right`, `left-console`, `right-console`, `center-pedestal`,
-`overhead`, `left-side`, `right-side`, `floor`, `rear`, `helmet`, `seat`. The page draws a plan of the cockpit from them
-(JoyPro's own boxes: glareshield, main panel, consoles, pedestal, overhead) with the panel names.
+`overhead`, `left-side`, `right-side`, `floor`, `rear`, `helmet`, `seat`. (The plan of area boxes the page drew from
+them is no longer shown, see "What the pages show".)
+
+## What the pages show (2026-10-25)
+
+- A variant with good pictures from a game (a set not rated low) shows those pictures and no drawing at all: no plan, no
+  traced drawing, no schematic grip (a grip the game has no picture of keeps its HOTAS table without a picture).
+- Without such pictures: no plan of area boxes and no traced line drawing (`line-drawings/`, `CockpitManualPages.TracedDrawings`
+  is off); a grip page shows JoyPro's clean vector drawing of the grip (`drawings/`) with its HOTAS table; the overview and
+  the panel pages are their numbered lists, next to the cockpit guide's tree.
+- Pictures of the same aircraft from another game: the set is found by the catalog variant's games (`CockpitPictureSet.For`,
+  rendered sets first: DCS, X-Plane 12, MSFS 2020, then MSFS 2024's screenshots ...), so the IL-2 Korea MiG-15bis and
+  F-86F show DCS's pictures and an MSFS 2024 aircraft that is also an MSFS 2020 or X-Plane aircraft shows those; the page
+  says where they come from ("Pictures from X-Plane 12 ..."). Only the variant itself counts (no loose name match).
+  2026-10-25: IL-2 Korea 3 of 3 variants; MSFS 2024 29 of 55 from rendered sets, 35 with the MSFS 2024 screenshot packs
+  as well; the 8 Rafale and Typhoon versions are War Thunder aircraft too (War Thunder's packs, not counted here); no
+  pictures: A350, A380, 777-300ER, ATR 72, E175, E195, CRJ-700, CRJ-900, Pitts S-2S, R44, CH-47D, MH-60R.
+- X-Plane's commands are listed by readable names ("Gen 2 up", "Battery 1 on (electrical)"); the guide's tree shows the
+  command ids as the tooltip.
 
 ## Drawings
 
@@ -324,7 +341,29 @@ style guide, glossary of plain explanations) is kept with the maintainer's worki
 facts only from the game's labels, the manual and the catalog; a game control is tied to a guide control only when its
 label, commands or id say which it is; when unsure, say less.
 
-### Coverage (2026-10-18, `engine cockpits guide --coverage [--game G]` with every picture pack installed)
+### Coverage (2026-10-25, `engine cockpits guide --coverage [--game G] --no-pictures`)
+
+Every catalog variant has its guide (462 / 462): the catalog's panel items and grip controls, 40,638 of 40,754 written out
+(81 with a general description). The game control schemes (Star Citizen, Elite Dangerous, X4, No Man's Sky, Star Wars:
+Squadrons, Nuclear Option, VTOL VR, WARDOGS) have a base guide for the game's hidden template variant plus a small guide
+per ship (its own intro and its own panel items, `inherits` the base); real versions of a type that has a guide in another
+game inherit it (War Thunder's F-16V from the DCS F-16C, the Mi-17 from the DCS Mi-8MTV2 ...) and add what differs.
+
+| Game | Variants with a guide | Catalog controls written out / in the tree |
+|---|---|---|
+| DCS | 81 / 81 | 17,464 / 17,568 |
+| Falcon BMS | 17 / 17 | 3,374 / 3,396 |
+| IL-2 Great Battles | 66 / 66 | 3,635 / 3,645 |
+| MSFS 2020 / 2024 | 51 / 51, 54 / 54 | 3,247 / 3,259; 3,532 / 3,532 |
+| X-Plane 12 | 18 / 18 | 1,046 / 1,046 |
+| War Thunder | 155 / 155 | 19,801 / 19,832 |
+| Star Citizen / Elite Dangerous / X4 | 42 / 42, 32 / 32, 21 / 21 | 2,821, 1,891, 696 (all) |
+| Nuclear Option / VTOL VR | 13 / 13, 9 / 9 | 351, 636 (all) |
+| **All** | **462 / 462** | **40,638 / 40,754** |
+
+The guide data: 1,591 areas, 3,487 panels, 19,694 guide controls, about 5.4 million characters of English.
+
+### Coverage with the picture packs (2026-10-18, `engine cockpits guide --coverage [--game G]` with every picture pack installed)
 
 | Game | Variants with a guide | Controls written out / with a general description / in the tree | Game controls explained |
 |---|---|---|---|
@@ -404,7 +443,7 @@ yoke and throttle datarefs (X-Plane).
 
 | Game | What is read | State (2026-10-17) |
 |---|---|---|
-| DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), `Entry\Views.lua` where a module keeps it there, mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives, also under `CoreMods\aircraft\<module>`) | 48 cockpits on the test PC (about 1,900 pictures, 15,000 callouts). Not complete: F-14BU (no clickable data yet) and SA342 (no cockpit model in the files); the textures of the C-130J, F-14 and OH-58D are in `CoreMods\aircraft\<module>` |
+| DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), `Entry\Views.lua` where a module keeps it there, mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives, also under `CoreMods\aircraft\<module>`) | 49 cockpit sets on the test PC (2026-10-25). The SA342 Gazelle's cockpit model is in `CoreMods\aircraft\SA342\Shapes` (found there since 2026-10-25); the F-14BU has no clickable data yet (overview only); the textures of the C-130J, F-14 and OH-58D are in `CoreMods\aircraft\<module>`. The F-100D's model has parts the reader places wrongly (big shards): its set is rated low and most of its panel pictures are left out |
 | X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures (DDS and PNG both top row first; the figures (pilot, crew and passenger objects, also in `crew\`/`pilot\` folders) left out, the pilot's panels kept) | 23 aircraft (every one in Aircraft; an AI-only `_AI` copy is left out). The displays are drawn by the sim at run time (black in the pictures) |
 | MSFS 2020 | the packages of `InstalledPackagesPath` (UserCfg.opt) without `.fsarchive` files: `model*\model.cfg` `interior=` -> the interior xml (its first LOD's glTF, its behaviours) -> the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by `ASOBO_primitive` StartIndex / BaseVertexIndex, `MSFT_texture_dds`), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset) | 57 interiors (every readable one of the test PC's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (`ELECTRICAL_Switch_Battery_Master`, older models `DEICESYSTEM_SWITCH_AIRFRAME`), with the behaviour template and its events where the xml names the node; the yoke (`HANDLING_Yoke_1`, `YOKE_LEFT`) and throttle are grips. Packages with `.fsarchive` files are not read; the sim itself is not installed on the test PC |
 | MSFS 2024 | the models are not read (the aircraft packages hold `.fsc` / `.fsarchive` files). Screenshots in the sim instead: `tools\e2e\games\Msfs2024CockpitShots.ps1` (unattended; SimConnect through the sim's own client library `SimConnect_internal.dll`: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents) | screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (`ELECTRICAL_Battery_1`), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page |
@@ -432,7 +471,32 @@ Every picture goes through an automatic quality gate (`engine/CockpitPictures/Pi
 around what is drawn), the share of 8x8 blocks with visible detail (local contrast), the brightness entropy, the share of
 black; from the renderer: the share of textured pixels and of the view's callouts that are in the frame and not covered.
 A score of 0 to 100 (60 and more: good) and the problems (`little detail`, `one flat colour`, `mostly black`,
-`mostly empty`, `too small in the frame`, `untextured`, `controls hidden`).
+`mostly empty`, `too small in the frame`, `untextured`, `controls hidden`, `camera inside the model`, `flat shapes`: more
+than 45 % of the picture's 8x8 blocks are one flat tone, big bare polygons such as the shards of a part the reader
+places wrongly; not judged on grips and screenshots).
+
+How the planner frames the pictures (`CockpitViews`):
+
+- A panel is seen face on: the direction comes from the model's own surfaces around its controls (area-weighted triangle
+  normals, the controls' small parts left out), the plane through the controls only where the surfaces disagree. A row of
+  knobs gives no plane: fitted to the knobs, the 737's overhead rows were seen along the panel's face, floating knobs
+  without the panel. The picture is the right way round as the pilot reads the panel: a console seen from above has
+  forward at the top, an overhead panel seen from below has aft at the top (with forward at the top, the 737's overhead
+  labels were upside down until 2026-10-25); the pilot's right is on the right (`PanelPictures_AreTheRightWayRound`).
+- A compact group (at most 30 cm, a keypad or a CDU with 60 keys) stays one picture whatever its count, and the parts of
+  one panel that fit 30 cm together join again: split by the count, each half got the same minimum frame and the same
+  picture several times. A clear gap (more than 8 cm) is where a big group is split first. Two named panels side by side
+  keep their own pictures.
+- Games that name no panels group their controls by the aircraft system their names say (`ControlSystems`): X-Plane's
+  command paths (`sim/autopilot/...`, `laminar/B738/fuel/...`), MSFS's node and event names (`ELECTRICAL_Switch_Battery`).
+  A picture is then "Autopilot", "Electrical", "CDU (flight management)", "Fuel" ... (split by place), and a system with
+  fewer than three controls stays with its place ("Overhead panel").
+- The overview is aimed at the panel and the consoles (the levers far below the eye pulled it onto the seat cushion),
+  turned to the middle of what it shows and fitted to the controls within about twice their typical distance.
+- A dark render gets its middle tones lifted (a gamma curve that brings the median to about 100) besides the exposure of
+  its highlights.
+- Star Citizen: a white diffuse without its texture is drawn neutral grey and untextured colours stay below a light grey
+  (lit from the camera they were pure white); panel pictures of interaction points need a score of 70 (bare walls).
 
 - A grip much smaller than its frame is zoomed to what is drawn; a poor picture is made again with the planner's other
   cameras (a panel: more room around it, then the pilot's own view from the head; the overview: closer to the head, at
@@ -447,7 +511,8 @@ A score of 0 to 100 (60 and more: good) and the problems (`little detail`, `one 
   shows another game's set of the aircraft first (`CockpitPictureSet.For`; the picture packs: `"low"` in the manifest).
 - `engine cockpits pictures check [--game G] [--aircraft a,b] [--write] [--drop]` rates sets that are already there
   (screenshots, picture packs, older builds); `--write` keeps the ratings in `pictures.json`, `--drop` also leaves out
-  the panel pictures below the gate.
+  the panel pictures below the gate. What only the renderer measured (camera inside, untextured, hidden controls) keeps
+  the lower of the old and the new score.
 - The build report names a set's verdict ("low quality (overview 31/100); 4 unusable pictures left out; 2 duplicate
   pictures merged"). `JOYPRO_PICTURE_KEEP_ALL=1` keeps every picture (to look at what the gate leaves out).
 
@@ -535,6 +600,12 @@ encyclopedia pages.
   says so instead of failing.
 - `CockpitPictureQualityTests.OptIn_EveryCockpitPhotoLinkOpens` (`JOYPRO_CHECK_COCKPIT_PHOTOS=1`, network) loads every
   photo link of the database as the page does (2026-10-18: 348 of 348).
+- `py -3 tools/cockpit_db.py check-links [--only id,id]` asks every photo, page and link address once (HEAD, a one-byte
+  ranged GET where a server refuses HEAD, a pause per site, retries after 429/503); offline it says so and passes. Sites
+  that refuse programs (403, the fan wikis' bot protection) are listed apart: they open in a browser. 2026-10-25: 927 of
+  958 answer, 31 refuse programs (fandom.com pages), none fail.
+- Star Citizen ships: besides the official RSI ship page, each ship links its Star Citizen Wiki page (starcitizen.tools,
+  community wiki under CC BY-SA 4.0: pictures of the ship and its cockpit, specifications); page links only.
 - The engine never downloads a photo.
 - The maintainer's private backup: `tools\backup_cockpit_photos.ps1 -Target <folder outside the repository>` (default
   `..\JoyPro2-private\cockpit-photos`) downloads every linked photo with a manifest (aircraft, view, address, page,

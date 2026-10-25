@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-dragon",
+  "title": "Dragon (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-dragon"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Full Ship List (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/Objects%20in%20the%20Game%20Universe/Ships/Full%20Ship%20List/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Dragon is a medium Split corvette with six forward guns and two turrets, from the Split Vendetta expansion. The pilot fires the forward guns; the turrets act on their own.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Dragon: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Dragon that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Dragon are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Dragon is flown from a cockpit seat, as small and medium ships are. The pilot sits here and has all the controls of this guide.",
+              "context": "From this seat the pilot sees the HUD, the radar and the monitors of the Dragon.",
+              "src": "c1"
+            },
+            {
+              "id": "guns",
+              "name": "Forward guns",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Dragon has six forward guns that point where the nose points. The pilot fires them with the trigger and aims by turning the whole ship.",
+              "context": "The aiming mark in front of the target on the HUD shows where to point the nose.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turrets",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The Dragon carries two turrets, gun mounts that turn and fire on their own without the pilot.",
+              "context": "How the turrets behave (attack all enemies, defend, hold fire) is set in the menus, not on the sticks.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

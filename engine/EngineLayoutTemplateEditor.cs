@@ -473,15 +473,10 @@ namespace JoyPro.Engine
             }
         }
 
-        // The preview pictures of layout files: <data>\LayoutPreview when JOYPRO_DATA_DIR is set (tests, portable setups),
-        // else %LOCALAPPDATA%\JoyPro2\LayoutPreview as before.
+        // The preview pictures of layout files: <data>\LayoutPreview (JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro2).
         internal static string PreviewFolder()
         {
-            string dataDir = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-            if (!string.IsNullOrWhiteSpace(dataDir))
-                return Path.Combine(dataDir.Trim(), "LayoutPreview");
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            return Path.Combine(localAppData, "JoyPro2", "LayoutPreview");
+            return Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), "LayoutPreview");
         }
 
         // Previews are a cache: the ones not written for 30 days go (a new one is made when the layout is opened again).

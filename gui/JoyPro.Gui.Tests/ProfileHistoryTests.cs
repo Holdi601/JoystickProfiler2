@@ -803,6 +803,99 @@ public sealed class ProfileHistoryTests : IDisposable
         Assert.Equal("My Hornet", vm.ProfileDisplayName);
     }
 
+    // Tester report (2.3.1): renaming onto an existing profile asked to replace it and then did nothing. Now the yes
+    // replaces it: the old file is kept as "<name>.pr0file.bak" with its history, the renamed profile is the open one
+    // and its history follows it.
+    private async Task<(MainWindowViewModel Vm, string Renamed, string Existing)> TwoProfilesAsync(Func<ConfirmRequest, Task<bool>> answer)
+    {
+        HistoryFakeEngine fake = new() { WriteProfiles = true };
+        MainWindowViewModel vm = CreateVm(fake);
+        await vm.NewProfileAutoCommand.ExecuteAsync(null);
+        string renamed = vm.ProfilePath;
+        Save(renamed, "RENAMED", Items(("One", 1)), "First");
+        Save(renamed, "RENAMED 2", Items(("One", 2)), "Second");
+        // The profiles folder is shared by the run: a name of its own per test.
+        string existing = Path.Combine(Path.GetDirectoryName(renamed)!, "Existing " + Guid.NewGuid().ToString("N")[..8] + ".pr0file");
+        Save(existing, "EXISTING", Items(("Old", 3)), "Old one");
+        vm.ConfirmHandler = answer;
+        return (vm, renamed, existing);
+    }
+
+    [Fact]
+    public async Task Rename_OntoAnExistingProfile_ReplacesItAfterYes_AndKeepsABackupWithItsHistory()
+    {
+        ConfirmRequest? asked = null;
+        (MainWindowViewModel vm, string renamed, string existing) = await TwoProfilesAsync(r => { asked = r; return Task.FromResult(true); });
+
+        Assert.True(await vm.RenameProfileAsync(existing));
+
+        Assert.NotNull(asked);
+        Assert.Contains("Existing", asked!.Title);
+        Assert.Contains(Path.GetFileName(existing) + ".bak", asked.Message);
+        Assert.Equal("RENAMED 2", File.ReadAllText(existing));
+        Assert.False(File.Exists(renamed));
+        Assert.Equal(existing, vm.ProfilePath);
+        Assert.Equal(existing, vm.LastProfilePath);
+        Assert.Equal(2, ProfileHistory.Read(existing).Versions.Count);
+        string backup = existing + ".bak";
+        Assert.Equal("EXISTING", File.ReadAllText(backup));
+        Assert.Single(ProfileHistory.Read(backup).Versions);
+        Assert.Contains(Path.GetFileName(existing) + ".bak", vm.StatusText);
+
+        // A second replace never overwrites the first backup.
+        Save(existing, "AGAIN", Items(("One", 3)), "Third");
+        string third = Path.Combine(root, "Third.pr0file");
+        File.WriteAllText(third, "THIRD");
+        vm.ProfilePath = third;
+        Assert.True(await vm.RenameProfileAsync(existing));
+        Assert.Equal("EXISTING", File.ReadAllText(backup));
+        Assert.Contains(Directory.GetFiles(Path.GetDirectoryName(existing)!, Path.GetFileName(existing) + ".*.bak"), f => File.ReadAllText(f) == "AGAIN");
+    }
+
+    [Fact]
+    public async Task Rename_OntoAnExistingProfile_Cancelled_ChangesNothing()
+    {
+        (MainWindowViewModel vm, string renamed, string existing) = await TwoProfilesAsync(_ => Task.FromResult(false));
+
+        Assert.False(await vm.RenameProfileAsync(existing));
+
+        Assert.Equal(renamed, vm.ProfilePath);
+        Assert.Equal("RENAMED 2", File.ReadAllText(renamed));
+        Assert.Equal("EXISTING", File.ReadAllText(existing));
+        Assert.False(File.Exists(existing + ".bak"));
+        Assert.Equal(2, ProfileHistory.Read(renamed).Versions.Count);
+        Assert.Single(ProfileHistory.Read(existing).Versions);
+        Assert.Contains("Cancelled", vm.StatusText);
+    }
+
+    [Fact]
+    public async Task Rename_OntoAProfileThatIsOpenElsewhere_SaysSo_AndChangesNothing()
+    {
+        (MainWindowViewModel vm, string renamed, string existing) = await TwoProfilesAsync(_ => Task.FromResult(true));
+
+        using (new FileStream(existing, FileMode.Open, FileAccess.Read, FileShare.Read))
+            Assert.False(await vm.RenameProfileAsync(existing));
+
+        Assert.Contains("open in another program or locked", vm.StatusText);
+        Assert.Equal(renamed, vm.ProfilePath);
+        Assert.Equal("RENAMED 2", File.ReadAllText(renamed));
+        Assert.Equal("EXISTING", File.ReadAllText(existing));
+        Assert.False(File.Exists(existing + ".bak"));
+
+        // Read-only counts as locked too.
+        File.SetAttributes(existing, FileAttributes.ReadOnly);
+        try
+        {
+            Assert.False(await vm.RenameProfileAsync(existing));
+            Assert.Contains("read-only", vm.StatusText);
+            Assert.Equal("RENAMED 2", File.ReadAllText(renamed));
+        }
+        finally
+        {
+            File.SetAttributes(existing, FileAttributes.Normal);
+        }
+    }
+
     // The top bar (Saved chip, Undo / Redo, History) and the open History panel with Details, rendered offscreen when
     // JOYPRO_UI_DESIGN_OUT names a folder (like UiDesignRenderTests): history-panel-<theme>.png.
     [Fact]

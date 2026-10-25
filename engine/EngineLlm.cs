@@ -36,10 +36,7 @@ namespace JoyPro.Engine
 
         public static string DataRoot()
         {
-            string root = Environment.GetEnvironmentVariable(GameBackups.DataFolderVariable);
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            return Path.Combine(root, "Llm");
+            return Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), "Llm");
         }
 
         public static string ModelsFolder() { return Path.Combine(DataRoot(), "models"); }

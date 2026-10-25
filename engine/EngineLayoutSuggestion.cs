@@ -1298,12 +1298,7 @@ namespace JoyPro.Engine
         private static string ResolveAutoLayoutDirectory(List<string> warnings)
         {
             List<string> candidates = new List<string>();
-            string dataDir = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-            if (!string.IsNullOrWhiteSpace(dataDir))
-                candidates.Add(Path.Combine(dataDir, "AutoLayouts"));
-            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            if (!string.IsNullOrWhiteSpace(localAppData))
-                candidates.Add(Path.Combine(localAppData, "JoyPro2", "AutoLayouts"));
+            candidates.Add(Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), "AutoLayouts"));
             candidates.Add(Path.Combine(Path.GetTempPath(), "JoyPro2", "AutoLayouts"));
 
             for (int i = 0; i < candidates.Count; i++)

@@ -83,7 +83,7 @@ public sealed partial class DeviceReferenceViewModel
 
     private static ChoiceCandidate Candidate(RefDevice model, int score, string why, bool best)
     {
-        DevicePhoto? photo = DevicePhotoDb.OfficialPhotos(model).FirstOrDefault();
+        DevicePhoto? photo = DevicePhotoDb.UsablePhotos(model).FirstOrDefault();
         DeviceSchematic? drawing = null;
         try
         {

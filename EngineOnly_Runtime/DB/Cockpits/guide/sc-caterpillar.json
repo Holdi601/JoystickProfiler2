@@ -1,0 +1,126 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-caterpillar",
+  "title": "Caterpillar (Drake Interplanetary, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-caterpillar"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Caterpillar (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Caterpillar"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Caterpillar is a medium freighter from Drake Interplanetary in Star Citizen, with a crew of four. It is flown from a command module at the front that can come off; the long cargo body follows behind. The pilot has no guns, so the trigger only works in the operator modes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Caterpillar: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Caterpillar's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "no-guns",
+              "name": "No pilot guns",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Caterpillar has no guns for the pilot; the trigger acts only in the operator modes.",
+              "context": "Without own guns the pilot flies, uses the missiles where fitted and leaves the shooting to the crew in the turrets.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo and tractor beams (576 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Cargo modules hold 576 SCU, and tractor beams (beams that pull and move objects) help load it.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Caterpillar: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Caterpillar besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "turrets",
+              "name": "Turrets (two manned, one remote)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "Two manned turrets and one remote turret defend the freighter.",
+              "context": "A turret seat has its own controls: there the right stick aims the turret instead of steering the ship.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Two sticks (HOSAS)",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (flight stick)",
+          "src": "g1",
+          "text": "The right-hand stick steers the ship's nose and does the fighting: it fires the weapons, picks targets and holds the buttons for radar, quantum travel, scanning and mining.",
+          "context": "This is the game's own two-stick preset for the Thrustmaster T.16000M. Many buttons change their job with the operator mode shown on the HUD; the stick's base buttons 5 to 16 sit on the stick's foot.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "label:Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "This ship has no pilot guns, so the trigger works only in the operator modes. In quantum mode, holding it starts the jump of the quantum drive.",
+              "context": "The destination is chosen on the star map first; in scanning or mining mode the trigger does that mode's job instead.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

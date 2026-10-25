@@ -1,0 +1,260 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-22",
+  "title": "F-22A Raptor",
+  "variants": [
+    "f-22a"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Lockheed Martin F-22 Raptor (Wikipedia), cockpit",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Lockheed_Martin_F-22_Raptor"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The F-22A Raptor is an American stealth air-superiority fighter with two engines. The pilot sits in a glass cockpit with six colour screens and a head-up display, a force-sensing side-stick on the right and two throttles on the left. The HOTAS switch layout is not public, so only the stick, trigger, release button and throttles are listed; the display layout comes from public sources.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "HUD and up-front displays",
+      "text": "The HUD, the keypad and the two small displays.",
+      "panels": [
+        {
+          "id": "hud-and-up-front-display",
+          "name": "HUD and up-front display",
+          "src": "w1",
+          "text": "A wide head-up display with the integrated control panel (a keypad) and two small displays below it.",
+          "context": "The keypad and small displays sit high, so the pilot can work them with his eyes close to the view outside.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:hud-and-up-front-display:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows the main flight data and the cues for aiming the weapons, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "icp",
+              "name": "Integrated control panel (ICP)",
+              "type": "keypad",
+              "match": [
+                "item:hud-and-up-front-display:2"
+              ],
+              "text": "A keypad below the HUD for the radios, the navigation, the autopilot and other data entry.",
+              "context": "It is the pilot's main way to type numbers and change settings.",
+              "src": "w1"
+            },
+            {
+              "id": "ufd-left",
+              "name": "Left up-front display",
+              "type": "display",
+              "match": [
+                "item:hud-and-up-front-display:3"
+              ],
+              "text": "A small screen (about 3 by 4 inches) that lists warnings, cautions and advisories.",
+              "context": "When something goes wrong, the message appears here.",
+              "src": "w1"
+            },
+            {
+              "id": "ufd-right",
+              "name": "Right up-front display",
+              "type": "display",
+              "match": [
+                "item:hud-and-up-front-display:4"
+              ],
+              "text": "A small screen (about 3 by 4 inches) for radio and navigation data.",
+              "context": "It shows what the pilot types on the integrated control panel.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pmfd",
+      "where": "front-center",
+      "name": "Primary multifunction display",
+      "text": "The big central screen.",
+      "panels": [
+        {
+          "id": "primary-multifunction-display",
+          "name": "Primary multifunction display",
+          "src": "w1",
+          "text": "The big square colour screen (8 by 8 inches) in the middle, which shows the combined picture of all sensors.",
+          "context": "It is the screen the pilot uses most to understand the situation around him.",
+          "controls": [
+            {
+              "id": "pmfd",
+              "name": "Primary multifunction display (PMFD)",
+              "type": "display",
+              "match": [
+                "item:primary-multifunction-display:1"
+              ],
+              "text": "The central screen with the tactical situation: the navigation map, friends, targets and threats, all in one picture.",
+              "context": "The F-22 combines what its sensors see into this one picture, so the pilot does not have to put it together himself.",
+              "src": "w1"
+            },
+            {
+              "id": "bezel",
+              "name": "Bezel option buttons",
+              "type": "button",
+              "match": [
+                "item:primary-multifunction-display:2"
+              ],
+              "text": "Buttons around the edges of the screens. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "With them the pilot picks the format and the scale of the picture."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "secondary",
+      "where": "front-left",
+      "name": "Secondary displays",
+      "text": "Three smaller screens around the central one.",
+      "panels": [
+        {
+          "id": "up-front-and-secondary-displays",
+          "name": "Up-front and secondary displays",
+          "src": "w1",
+          "text": "Three smaller square screens (6.25 inches) to the left, right and below the central screen, plus the standby instruments.",
+          "context": "The pilot puts on them the pages he needs next to the main picture.",
+          "controls": [
+            {
+              "id": "sec-left",
+              "name": "Left secondary display",
+              "type": "display",
+              "match": [
+                "item:up-front-and-secondary-displays:1"
+              ],
+              "text": "The left secondary colour screen (a multi-function screen with buttons around its edge). It shows the attack, defensive or weapons (stores) page.",
+              "context": "The pilot chooses which page it shows; the same screen can show the radar, the map or the aircraft's systems.",
+              "src": "w1"
+            },
+            {
+              "id": "sec-right",
+              "name": "Right secondary display",
+              "type": "display",
+              "match": [
+                "item:up-front-and-secondary-displays:2"
+              ],
+              "text": "The right secondary colour screen (a multi-function screen with buttons around its edge). It shows another attack, defensive or weapons page.",
+              "context": "With two side screens the pilot can watch both the attack and the threats.",
+              "src": "w1"
+            },
+            {
+              "id": "sec-lower",
+              "name": "Lower secondary display",
+              "type": "display",
+              "match": [
+                "item:up-front-and-secondary-displays:3"
+              ],
+              "text": "The lower colour screen (a multi-function screen with buttons around its edge). It shows the engines, the fuel and the aircraft's systems.",
+              "context": "It sits below the central screen and is used for checking the aircraft itself.",
+              "src": "w1"
+            },
+            {
+              "id": "standby",
+              "name": "Standby flight instruments",
+              "type": "gauge",
+              "match": [
+                "item:up-front-and-secondary-displays:4"
+              ],
+              "text": "Small backup instruments for attitude, airspeed and altitude. They keep working when the main screens or computers fail.",
+              "context": "The pilot uses them to fly safely home if the main displays are lost."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Side-stick and throttles",
+      "text": "The pilot's grips.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Side-stick",
+          "text": "A force-sensing side-stick on the right console.",
+          "context": "Its HOTAS switch layout is not public; only the stick, trigger and release are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Side-stick (force sensing)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands. It barely moves; it senses how hard the pilot pushes.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the internal M61 gun.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches a missile or bombs.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "text": "The pair of throttles on the left console for the two F119 engines.",
+          "context": "Their switches are not public; only the thrust function is listed.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left F119 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right F119 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

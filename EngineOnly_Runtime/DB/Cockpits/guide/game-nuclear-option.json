@@ -1,0 +1,438 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-nuclear-option",
+  "title": "Nuclear Option: cockpit and default joystick map",
+  "variants": [
+    "nuclear-option-hotas"
+  ],
+  "games": [
+    "NuclearOption"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "nw",
+      "title": "Nuclear Option Wiki: Controls",
+      "kind": "game-manual",
+      "url": "https://nuclearoption.wiki.gg/wiki/Nuclear_Option_Wiki:Controls"
+    },
+    {
+      "id": "ns",
+      "title": "Steam: Question Joystick/keyboard ? (Nuclear Option discussions)",
+      "kind": "tutorial",
+      "url": "https://steamcommunity.com/app/2168680/discussions/0/5715697457572661391/"
+    },
+    {
+      "id": "na",
+      "title": "Nuclear Option 0.34.2 Rewired action catalog (JoyPro DB/NuclearOption/actions.tsv)",
+      "kind": "game-files",
+      "file": "NuclearOption_Data/resources.assets"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Nuclear Option is a combat flight game with fictional aircraft and helicopters. Its cockpits are simple: a HUD, a main display for radar and camera, and smaller status displays. The game uses one joystick map for every aircraft, so this guide explains the shared displays and the default stick, throttle and brake binds.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "HUD",
+      "text": "The flight numbers and aiming marks in front of the pilot.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD (head-up display)",
+          "db": "hud",
+          "src": "nw",
+          "text": "The HUD is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). In Nuclear Option it shows speed, height, heading, the angle of the wing and the weapon cues.",
+          "context": "The pilot reads it all the time while flying and aiming; it lets the pilot fly without looking down at the displays.",
+          "controls": [
+            {
+              "id": "airspeed",
+              "name": "Airspeed",
+              "type": "gauge",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "A number on the HUD that shows how fast the aircraft moves through the air.",
+              "context": "Too slow and the wings stop carrying the aircraft; the pilot watches it in turns and on landing.",
+              "src": "nw"
+            },
+            {
+              "id": "altitude",
+              "name": "Altitude",
+              "type": "gauge",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A number on the HUD that shows how high the aircraft flies.",
+              "context": "Low flying hides the aircraft from radars behind hills, so the pilot keeps an eye on it when flying low.",
+              "src": "nw"
+            },
+            {
+              "id": "bearing",
+              "name": "Bearing (heading tape)",
+              "type": "gauge",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "A scale across the HUD that shows the compass direction the nose points to.",
+              "context": "The pilot uses it to fly towards a target or back home.",
+              "src": "nw"
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack",
+              "type": "gauge",
+              "match": [
+                "item:hud:4"
+              ],
+              "text": "Shows the angle of attack: how steeply the wing meets the air.",
+              "context": "A very high angle means the wing is close to losing its grip on the air, for example in a hard turn or a slow landing.",
+              "src": "nw"
+            },
+            {
+              "id": "cues",
+              "name": "Weapon and target cues",
+              "type": "display",
+              "match": [
+                "item:hud:5"
+              ],
+              "text": "Shows the selected weapon, boxes around the targets and the aiming marks that tell the pilot when and where to shoot.",
+              "context": "The target is picked with Target Select, the weapon with Next Weapon; the cues then guide the attack.",
+              "src": "nw"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-display",
+      "where": "front-center",
+      "name": "Main display",
+      "text": "The large screen in the middle of the panel.",
+      "panels": [
+        {
+          "id": "main-display",
+          "name": "Main display",
+          "db": "main-display",
+          "src": "c1",
+          "text": "The large screen in the middle of the panel. It normally shows the radar picture and the threat warnings; once a target is locked it shows a camera view of that target.",
+          "context": "It is the pilot's main tool to find targets and to see what is aiming at the aircraft.",
+          "controls": [
+            {
+              "id": "radar-rwr",
+              "name": "Radar / RWR picture",
+              "type": "display",
+              "match": [
+                "item:main-display:1"
+              ],
+              "text": "A map-like picture of the contacts around the aircraft and the threat warnings. The RWR (radar warning receiver) tells the pilot when an enemy radar is looking at the plane.",
+              "context": "Radar on / off is a stick button; with the radar off the aircraft is harder to find but sees less.",
+              "src": "c1"
+            },
+            {
+              "id": "tgt-camera",
+              "name": "Targeting camera",
+              "type": "display",
+              "match": [
+                "item:main-display:2"
+              ],
+              "text": "When a target is locked, the radar picture is replaced by a zoomed camera view of that target.",
+              "context": "The pilot checks the target in the camera before releasing a weapon on it.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "status-displays",
+      "where": "front-left",
+      "name": "Status displays",
+      "text": "The smaller screens beside the main display.",
+      "panels": [
+        {
+          "id": "status-displays",
+          "name": "Status displays",
+          "db": "status-displays",
+          "src": "c1",
+          "text": "Smaller screens beside the main display that show the engines, the fuel, the landing gear, the weapons on each mount and an artificial horizon.",
+          "context": "The pilot glances at them to check the aircraft's health, how much fuel is left and which weapons are still loaded.",
+          "controls": [
+            {
+              "id": "engine",
+              "name": "Engine status",
+              "type": "display",
+              "match": [
+                "item:status-displays:1"
+              ],
+              "text": "Shows whether the engines run and how much thrust they give.",
+              "context": "After take-off and in a fight it shows at a glance whether an engine has been damaged.",
+              "src": "c1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel",
+              "type": "gauge",
+              "match": [
+                "item:status-displays:2"
+              ],
+              "text": "Shows how much fuel is left in the tanks.",
+              "context": "The pilot keeps enough fuel to fly back to a base or carrier.",
+              "src": "c1"
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear",
+              "type": "indicator",
+              "match": [
+                "item:status-displays:3"
+              ],
+              "text": "Shows whether the landing gear, the wheels and their legs, is up or down.",
+              "context": "The gear is raised and lowered with the gear button on the stick base.",
+              "src": "c1"
+            },
+            {
+              "id": "hardpoints",
+              "name": "Hardpoints",
+              "type": "display",
+              "match": [
+                "item:status-displays:4"
+              ],
+              "text": "Shows the weapons and stores still hanging on each mount and in each bay.",
+              "context": "It tells the pilot what is left to use before going back to rearm.",
+              "src": "c1"
+            },
+            {
+              "id": "horizon",
+              "name": "Artificial horizon",
+              "type": "gauge",
+              "match": [
+                "item:status-displays:5"
+              ],
+              "text": "Shows whether the nose is up or down and the wings level, even when the pilot cannot see the ground.",
+              "context": "Useful in clouds, at night and in steep manoeuvres.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, throttle and pedals",
+      "text": "The default joystick map that every aircraft shares.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick",
+          "src": "nw",
+          "text": "The joystick flies the aircraft and holds most of its buttons. Nuclear Option uses one global key map for all aircraft, so every button does the same job in every aircraft.",
+          "context": "The buttons are named by number because Nuclear Option binds them by joystick button number; on most sticks button 1 is the trigger.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Stick axes (pitch, roll, yaw)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward points the nose down, pulling it points the nose up. Moving it sideways rolls the aircraft. Twisting it (or the rudder pedals) turns the nose left and right (yaw).",
+              "context": "These are the first axes of the joystick by default; the game's flight computer turns them into movements of the control surfaces.",
+              "src": "nw"
+            },
+            {
+              "id": "trigger",
+              "name": "Button 1 (trigger): fire",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Fires the selected weapon: the gun, a missile, a bomb or a rocket, whichever is selected.",
+              "context": "The weapon is chosen with button 4; for guided weapons the pilot selects a target first.",
+              "src": "nw"
+            },
+            {
+              "id": "select",
+              "name": "Button 2: Target Select",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "Selects the unit in the middle of the pilot's view as the target.",
+              "context": "The pilot looks or points the nose at a unit and presses it; guided weapons then go for that target.",
+              "src": "nw"
+            },
+            {
+              "id": "cancel",
+              "name": "Button 3: Target Cancel",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "A short press drops the last selected target. Holding the button clears all targets.",
+              "context": "Useful after a target is destroyed or when the pilot picked the wrong one.",
+              "src": "nw"
+            },
+            {
+              "id": "weapon",
+              "name": "Button 4: Next Weapon",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "A short press steps to the next weapon. Holding the button switches the automatic turret control on or off in aircraft that have a turret.",
+              "context": "The selected weapon shows on the HUD.",
+              "src": "nw"
+            },
+            {
+              "id": "cm-type",
+              "name": "Button 5: Next Countermeasure",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.1"
+              ],
+              "text": "Steps to the next kind of countermeasure, the things the aircraft throws out to fool enemy missiles.",
+              "context": "Flares fool heat-seeking missiles, chaff fools radar missiles; the pilot picks the right one for the threat.",
+              "src": "nw"
+            },
+            {
+              "id": "gear",
+              "name": "Button 6: Landing gear",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.2"
+              ],
+              "text": "Raises or lowers the landing gear, the wheels and their legs.",
+              "context": "Up after take-off for more speed, down before landing; the status display shows the gear position.",
+              "src": "nw"
+            },
+            {
+              "id": "cm-fire",
+              "name": "Button 7: Countermeasures",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.3"
+              ],
+              "text": "Releases the selected countermeasure, a flare or a bundle of chaff.",
+              "context": "The pilot presses it when a missile warning sounds, often while turning hard.",
+              "src": "nw"
+            },
+            {
+              "id": "nvg",
+              "name": "Button 8: Night vision",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.4"
+              ],
+              "text": "Switches night vision on or off, which makes the dark visible.",
+              "context": "It helps on night missions to see the ground and other aircraft.",
+              "src": "nw"
+            },
+            {
+              "id": "fa",
+              "name": "Button 9: Flight assist / auto-hover",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.5"
+              ],
+              "text": "A short press switches flight assist on or off. In the VTOL aircraft, holding it turns on auto-hover, which keeps the aircraft hovering in place.",
+              "context": "Flight assist is the flight computer's help that keeps the aircraft smooth and within safe limits.",
+              "src": "nw"
+            },
+            {
+              "id": "radar",
+              "name": "Button 10: Radar",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "Switches the radar on or off. The radar sends radio waves to find other aircraft and units.",
+              "context": "A radar that is on finds more but also tells the enemy where the aircraft is.",
+              "src": "nw"
+            },
+            {
+              "id": "eject",
+              "name": "Button 11: Eject",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.7"
+              ],
+              "text": "Ejects the crew: the seats shoot the crew out of the aircraft in an emergency.",
+              "context": "Used only when the aircraft cannot be saved.",
+              "src": "nw"
+            },
+            {
+              "id": "stick-grip",
+              "name": "Stick grip: the game's flight commands",
+              "type": "other",
+              "match": [
+                "label:Stick grip: the game's flight controls (bind them to any button)"
+              ],
+              "text": "In the game's control picture the stick stands for all of Nuclear Option's flight commands, which the player can bind to any button. Besides the defaults above there are commands without a default joystick button, such as Radial Menu, Axis Modifier, Nav Lights, Toggle Engine, Previous Weapon, Link Guns, Weapon Wheel, Turret Control and Custom Axis 1.",
+              "context": "The same command list applies to every aircraft; the player sets the binds once in the game's control settings.",
+              "src": "na"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "nw",
+          "text": "The throttle lever sets the power of all engines at once, like a car's gas pedal.",
+          "context": "Nuclear Option reads it from the fourth axis of the device by default; the player binds the real throttle lever there.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle axis",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Forward gives more power to all engines, back gives less.",
+              "context": "More power means more speed and climb, but also more fuel used and more heat for heat-seeking missiles to follow.",
+              "src": "nw"
+            },
+            {
+              "id": "throttle-grip",
+              "name": "Throttle grip: the game's flight commands",
+              "type": "other",
+              "match": [
+                "label:Throttle grip: the game's flight controls (bind them to any button)"
+              ],
+              "text": "In the game's control picture the throttle stands for the same list of flight commands as the stick. The player can put any of them, for example Custom Axis 1 or Nav Lights, on the throttle's own buttons and axes.",
+              "context": "Binds are global in Nuclear Option, so a throttle set up once works in every aircraft.",
+              "src": "na"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Pedals",
+          "src": "nw",
+          "text": "The brake axis slows the wheels on the ground.",
+          "context": "By default it is the fifth axis of the device; the player binds a toe brake of the rudder pedals there.",
+          "controls": [
+            {
+              "id": "brake",
+              "name": "Brake axis",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake"
+              ],
+              "text": "Pressing the brake slows and stops the aircraft on the ground, harder the further it is pressed.",
+              "context": "Used after landing and while taxiing; it has no effect in the air.",
+              "src": "nw"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

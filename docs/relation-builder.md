@@ -74,7 +74,12 @@ reads nothing.
 Both pages have the same filter bar (`ListFilterViewModel`, `Views/Controls/ListFilterBar.axaml`), each with its own
 ticks, remembered in `<settings>\list-preferences.json` (the typed search is not remembered):
 
-- **Search** (Ctrl+F): every word somewhere in the name, games, aircraft, groups, device, input or modifiers.
+- **Search** (Ctrl+F): every word somewhere in what the box next to it says (remembered per page with the ticks):
+  `Name + actions` (default: the relation's name and the titles of its actions, from `engine relations list
+  --titles`), `Name`, or `Everything` (also games, aircraft, groups, device, input and modifiers). Devices, games and
+  aircraft are otherwise picked with their filters, so "throttle" does not list every relation bound on a device called
+  "... Throttle". The best fits come first: the relation called as the search, then names starting with it, then names
+  with every word, then relations found by their actions (each part in the page's sort). The Binds page works the same.
 - **Groups**: tick groups (several: any of them), `No group` for relations without one.
 - **Games**: tick a game for every relation with a switched-on action of it; open it (`>`) to tick only some of its
   aircraft (`All` / `None` act on the aircraft shown, so typing `A-10` and `All` ticks every A-10 version). DCS ticked,

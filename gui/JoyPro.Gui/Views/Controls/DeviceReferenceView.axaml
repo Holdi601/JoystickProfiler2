@@ -23,7 +23,7 @@
         <Style Selector="TextBox.cell">
             <Setter Property="MinHeight" Value="26" />
             <Setter Property="Padding" Value="6,2" />
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.12}" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
         <Style Selector="Border.badge">
@@ -40,9 +40,9 @@
     <Grid x:Name="Root" RowDefinitions="Auto,*,Auto,Auto" ColumnDefinitions="*,Auto" ColumnSpacing="10" RowSpacing="8">
         <!-- Header: what it is, which picture, the actions -->
         <StackPanel x:Name="Header" Grid.Row="0" Grid.ColumnSpan="2" Spacing="4" IsVisible="{Binding #View.ShowToolbar}">
-            <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
-            <TextBlock Text="{Binding Subtitle}" Classes="muted" FontSize="12" TextWrapping="Wrap" />
-            <TextBlock Text="{l:T 'Found by: {0}', Arg0={Binding MatchReason}}" Classes="muted" FontSize="11"
+            <TextBlock Text="{Binding Title}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Subtitle}" Classes="muted" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" />
+            <TextBlock Text="{l:T 'Found by: {0}', Arg0={Binding MatchReason}}" Classes="muted" FontSize="{DynamicResource JP.FontSize.11}"
                        IsVisible="{Binding MatchReason, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <WrapPanel Orientation="Horizontal" ItemSpacing="6" LineSpacing="6" Margin="0,4,0,0">
                 <ComboBox ItemsSource="{Binding GripChoices}" SelectedItem="{Binding SelectedGrip}" MinWidth="200"
@@ -75,7 +75,7 @@
                 <Button Content="{l:T 'Export...'}" Click="ExportClicked" Classes="small" ToolTip.Tip="{l:T 'Save this device as a definition file (JSON) to share'}" />
                 <Button Content="{l:T 'Import...'}" Click="ImportClicked" Classes="small" ToolTip.Tip="{l:T 'Add a device definition file (JSON)'}" />
             </WrapPanel>
-            <TextBlock Text="{Binding Status}" Classes="warnText" FontSize="12" TextWrapping="Wrap"
+            <TextBlock Text="{Binding Status}" Classes="warnText" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap"
                        IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             <!-- Asked once per device before the maker's photo is downloaded (DevicePhotoConsent) -->
             <Border Classes="sunken" Padding="8" IsVisible="{Binding AsksPhotoConsent}">
@@ -100,7 +100,7 @@
                                                 ShowBadges="{Binding #View.ShowBadges}" ShowCommands="False" ShowChrome="{Binding #View.ShowCanvasChrome}" SnapEnabled="False"
                                                 MarkerMovedCommand="{Binding CanvasMarkerMovedCommand}" CanvasClickedCommand="{Binding CanvasClickedCommand}"
                                                 PictureFileDroppedCommand="{Binding DropPhotoCommand}" />
-                <TextBlock Grid.Row="1" Text="{Binding PhotoCredit}" FontSize="11" Classes="muted" HorizontalAlignment="Right"
+                <TextBlock Grid.Row="1" Text="{Binding PhotoCredit}" FontSize="{DynamicResource JP.FontSize.11}" Classes="muted" HorizontalAlignment="Right"
                            IsVisible="{Binding PhotoCredit, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </Grid>
         </Border>
@@ -144,10 +144,10 @@
                         <DataTemplate x:DataType="models:ReferenceLegendRow">
                             <Grid ColumnDefinitions="36,104,*,*">
                                 <Border Classes="badge">
-                                    <TextBlock Text="{Binding Badge}" Foreground="White" FontSize="11" FontWeight="SemiBold"
+                                    <TextBlock Text="{Binding Badge}" Foreground="{DynamicResource JP.OnAccentTextBrush}" FontSize="{DynamicResource JP.FontSize.11}" FontWeight="SemiBold"
                                                HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                                <TextBlock Grid.Column="1" Text="{Binding InputText}" Classes="mono" FontSize="11" VerticalAlignment="Center"
+                                <TextBlock Grid.Column="1" Text="{Binding InputText}" Classes="mono" FontSize="{DynamicResource JP.FontSize.11}" VerticalAlignment="Center"
                                            TextTrimming="CharacterEllipsis" />
                                 <TextBox Grid.Column="2" Classes="cell" Text="{Binding Name}" IsReadOnly="{Binding !#View.IsLegendEditable}" />
                                 <TextBox Grid.Column="3" Classes="cell" Text="{Binding Command}" Margin="6,0,0,0" Watermark="{l:T 'not bound'}"

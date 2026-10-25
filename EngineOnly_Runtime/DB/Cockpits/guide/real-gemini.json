@@ -1,0 +1,340 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-gemini",
+  "title": "Gemini (command pilot)",
+  "variants": [
+    "gemini-command-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Gemini Familiarization Manual, Vol. 2 Sec. 2 (McDonnell SEDR 300)",
+      "kind": "manual",
+      "url": "https://www.ibiblio.org/apollo/Documents/GeminiManualVol2Sec2.pdf"
+    },
+    {
+      "id": "s2",
+      "title": "Hand Controller, Maneuver, Gemini 10 (Smithsonian NASM)",
+      "kind": "reference",
+      "url": "https://airandspace.si.edu/collection-objects/hand-controller-maneuver-gemini-10/nasm_A19731051000"
+    },
+    {
+      "id": "w1",
+      "title": "Project Gemini (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Project_Gemini"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Gemini (1965-1966) was NASA's two-seat spacecraft between Mercury and Apollo. The command pilot sat on the left, the pilot on the right, both in ejection seats. Gemini added what flights to the Moon would need: changing orbit, meeting another spacecraft (rendezvous) and docking with it. One attitude hand controller between the seats turned the spacecraft; a maneuver hand controller moved it in a direction. Mode names follow JoyPro's catalog, which took them from the Gemini manual from memory.",
+  "areas": [
+    {
+      "id": "cp-panel",
+      "where": "front-left",
+      "name": "Command pilot's panel",
+      "text": "Flight instruments of the left seat.",
+      "panels": [
+        {
+          "id": "cp-panel",
+          "name": "Command pilot's panel",
+          "text": "The command pilot's flight instruments on the left half of the panel.",
+          "context": "The command pilot flew the spacecraft, so the instruments for turning and moving it are in front of him.",
+          "controls": [
+            {
+              "id": "fdai",
+              "name": "Flight director attitude indicator (FDAI)",
+              "type": "gauge",
+              "match": [
+                "item:cp-panel:1"
+              ],
+              "text": "A ball with a horizon painted on it that shows which way the spacecraft points, with needles that show how fast it turns.",
+              "context": "It is the main instrument for pointing the spacecraft, for example before an engine burn or the return.",
+              "src": "s1"
+            },
+            {
+              "id": "ivi",
+              "name": "Incremental velocity indicator (IVI)",
+              "type": "display",
+              "match": [
+                "item:cp-panel:2"
+              ],
+              "text": "Counters that show how much speed is still to be added or taken away forward or back, left or right, up or down.",
+              "context": "For a manoeuvre the counters are set to the wanted change; the pilot fires the thrusters until they count down to zero.",
+              "src": "s1"
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter and rate of climb",
+              "type": "gauge",
+              "match": [
+                "item:cp-panel:3"
+              ],
+              "text": "Gauges for the height and for how fast it changes.",
+              "context": "They are used during the launch and during the descent back to Earth."
+            },
+            {
+              "id": "timer",
+              "name": "Event timer",
+              "type": "display",
+              "match": [
+                "item:cp-panel:4"
+              ],
+              "text": "A timer that counts the time of engine burns and other events.",
+              "context": "Burns had to last exactly as long as planned; the timer showed when to stop."
+            },
+            {
+              "id": "d-ring",
+              "name": "Ejection seat D-ring",
+              "type": "handle",
+              "match": [
+                "item:cp-panel:5"
+              ],
+              "text": "A D-shaped ring on the seat between the knees. Pulling it fires the ejection seats, which shoot both astronauts out of the spacecraft.",
+              "context": "Gemini had ejection seats instead of an escape tower; they were the escape at low height, for example on the launch pad.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "centre",
+      "where": "center-pedestal",
+      "name": "Centre console and pedestal",
+      "text": "Shared controls and the computer.",
+      "panels": [
+        {
+          "id": "centre",
+          "name": "Centre console and pedestal",
+          "text": "The shared controls between the two seats: the attitude controller, the control modes, the computer and the manoeuvring thrusters.",
+          "context": "Either astronaut could reach the attitude controller; the computer here helped with rendezvous, the meeting of two spacecraft in orbit.",
+          "controls": [
+            {
+              "id": "ahc",
+              "name": "Attitude hand controller",
+              "type": "other",
+              "match": [
+                "item:centre:1"
+              ],
+              "text": "The pistol-grip handle between the seats that turns the spacecraft: pitch, roll and yaw.",
+              "context": "Both astronauts could use it; it is described with the stick and throttle controls below.",
+              "src": "s1"
+            },
+            {
+              "id": "mode",
+              "name": "Attitude control mode selector",
+              "type": "selector",
+              "match": [
+                "item:centre:2"
+              ],
+              "text": "This knob chooses how the attitude controller works the thrusters. JoyPro's catalog names modes such as DIRECT, PULSE, RATE CMD, RE-ENT and HOR SCAN.",
+              "context": "Some modes fire the thrusters directly, others hold a turning rate or the horizon for the astronaut; the exact behaviour of each mode is not described in the sources JoyPro uses.",
+              "src": "s1"
+            },
+            {
+              "id": "mdiu",
+              "name": "Manual data insertion unit (MDIU)",
+              "type": "keypad",
+              "match": [
+                "item:centre:3"
+              ],
+              "text": "A keyboard with a number readout to talk to the spacecraft's computer: the astronaut types an address and a value, or reads one out.",
+              "context": "Gemini was the first American spacecraft with an onboard computer; it calculated the rendezvous and the return.",
+              "src": "w1"
+            },
+            {
+              "id": "comp-mode",
+              "name": "Computer mode selector",
+              "type": "selector",
+              "match": [
+                "item:centre:4"
+              ],
+              "positions": [
+                {
+                  "name": "PRE-LAUNCH",
+                  "text": "Checks before launch."
+                },
+                {
+                  "name": "ASCENT",
+                  "text": "The flight up to orbit."
+                },
+                {
+                  "name": "CATCH-UP",
+                  "text": "Chasing the target spacecraft."
+                },
+                {
+                  "name": "RENDEZVOUS",
+                  "text": "The final approach to the target."
+                },
+                {
+                  "name": "RE-ENTRY",
+                  "text": "The return through the atmosphere."
+                }
+              ],
+              "text": "This knob tells the computer which part of the flight it should work on: before launch, the ascent, catching up with the target, the rendezvous or the return.",
+              "context": "Each mode runs a different computer program.",
+              "src": "s1"
+            },
+            {
+              "id": "oams-radar",
+              "name": "OAMS / radar switches",
+              "type": "switch",
+              "match": [
+                "item:centre:5"
+              ],
+              "text": "Switches for the manoeuvring thrusters (OAMS, orbit attitude and manoeuvre system) and for the power of the rendezvous radar, which measured the distance to the target.",
+              "context": "They are switched on before a rendezvous. JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-panel",
+      "where": "front-right",
+      "name": "Pilot's panel",
+      "text": "Second instruments and system gauges.",
+      "panels": [
+        {
+          "id": "pilot-panel",
+          "name": "Pilot's panel",
+          "text": "The second astronaut's instruments and the system gauges on the right half of the panel.",
+          "context": "The pilot in the right seat watched the systems and helped with navigation.",
+          "controls": [
+            {
+              "id": "fdai2",
+              "name": "Pilot's FDAI",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panel:1"
+              ],
+              "text": "The pilot's own attitude ball, which shows which way the spacecraft points.",
+              "context": "With his own ball the pilot could follow and check the command pilot's flying."
+            },
+            {
+              "id": "fc-ecs",
+              "name": "Fuel cell and ECS gauges",
+              "type": "gauge",
+              "match": [
+                "item:pilot-panel:2"
+              ],
+              "text": "Gauges for the fuel cells, which make electricity from hydrogen and oxygen, and for the environmental system (the cabin's air, pressure and temperature).",
+              "context": "Fuel cells made the long Gemini flights of up to two weeks possible.",
+              "src": "w1"
+            },
+            {
+              "id": "mhc2",
+              "name": "Second maneuver hand controller",
+              "type": "other",
+              "match": [
+                "item:pilot-panel:3"
+              ],
+              "text": "A second translation handle on the pilot's side, so the right-seat astronaut could also move the spacecraft forward, back, sideways, up and down.",
+              "context": "The command pilot's handle is described with the stick and throttle controls below."
+            },
+            {
+              "id": "clocks",
+              "name": "Clocks",
+              "type": "display",
+              "match": [
+                "item:pilot-panel:4"
+              ],
+              "text": "Clocks that show the time that has passed since launch.",
+              "context": "Every event of the flight was planned to the second from launch."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead and side panels",
+      "text": "Circuit breakers and switch panels.",
+      "panels": [
+        {
+          "id": "overhead",
+          "name": "Overhead and side circuit-breaker panels",
+          "text": "Circuit breakers and switch panels above and beside the seats.",
+          "context": "They power the systems; most were set before launch.",
+          "controls": [
+            {
+              "id": "cb",
+              "name": "Circuit breakers",
+              "type": "switch",
+              "match": [
+                "item:overhead:1"
+              ],
+              "text": "Rows of circuit breakers, safety switches that cut the power to a system when it draws too much. They can be switched back on.",
+              "context": "The crew checks them before launch; a tripped breaker explains why a system has gone dead."
+            },
+            {
+              "id": "switches",
+              "name": "Switch panels",
+              "type": "switch",
+              "match": [
+                "item:overhead:2"
+              ],
+              "text": "Further switches for the spacecraft's systems.",
+              "context": "JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers",
+      "text": "The two hand controllers for turning and moving.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Attitude hand controller",
+          "text": "The pistol-grip handle between the two seats, for either astronaut.",
+          "context": "It turns the spacecraft; moving it in a direction is the job of the maneuver hand controller.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Attitude hand controller",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the handle forward or back pitches the spacecraft, sideways rolls it, twisting yaws it. It fires the small rocket jets around the spacecraft (thrusters) that turn it.",
+              "context": "On a joystick it is the X, Y and twist axes. Either astronaut can use it.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "Maneuver hand controller",
+          "text": "The translation handle beneath the left instrument panel; a second one is on the right side.",
+          "context": "Gemini was the first spacecraft that could change its orbit and meet another one; this handle made that possible.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Maneuver hand controller",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This handle moves the whole spacecraft without turning it (translation): forward, back, left, right, up or down, by firing the manoeuvring thrusters.",
+              "context": "Gemini 6A and 7 met in orbit in 1965 and Gemini 8 made the first docking with it; on a joystick it is a second three-axis controller.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

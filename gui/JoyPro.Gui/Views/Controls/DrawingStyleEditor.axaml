@@ -9,24 +9,36 @@
     <StackPanel Spacing="6">
         <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="6">
             <TextBlock Text="{l:T 'Drawing style'}" VerticalAlignment="Center" />
-            <ComboBox Grid.Column="1" ItemsSource="{Binding ModeChoices}" SelectedItem="{Binding Mode}" MinWidth="200"
-                      ToolTip.Tip="{l:T 'Lines: the outline and the contours of the controls. Cel-shaded: flat colours under bold outlines.'}" />
+            <ComboBox Grid.Column="1" ItemsSource="{Binding ModeChoices}" SelectedItem="{Binding Mode}" MinWidth="0" MaxWidth="320" HorizontalAlignment="Stretch"
+                      ToolTip.Tip="{l:T 'Lines: the outline and the contours of the controls. Cel-shaded: flat colours under bold outlines.'}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
             <TextBlock Grid.Row="1" Text="{l:T 'Colours'}" VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PresetChoices}" SelectedItem="{Binding Preset}" MinWidth="200"
-                      ToolTip.Tip="{l:T 'JoyPro: the theme\'s colours (light lines on the dark surface, dark lines on the light one). Manual: white lines on near-black. Blueprint: light lines on blue. Print: black on white. Custom: your colours below.'}" />
+            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding PresetChoices}" SelectedItem="{Binding Preset}" MinWidth="0" MaxWidth="320" HorizontalAlignment="Stretch"
+                      ToolTip.Tip="{l:T 'JoyPro: the theme\'s colours (light lines on the dark surface, dark lines on the light one). Manual: white lines on near-black. Blueprint: light lines on blue. Print: black on white. Custom: your colours below.'}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </Grid>
         <WrapPanel ItemSpacing="10" LineSpacing="6">
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Border Width="18" Height="18" CornerRadius="3" BorderBrush="Gray" BorderThickness="1" Background="{Binding InkShown}" />
-                <TextBox Text="{Binding Ink}" Watermark="{l:T 'Lines #RRGGBB'}" Width="130" ToolTip.Tip="{l:T 'Line colour (empty = the preset\'s)'}" />
+                <Border Width="18" Height="18" CornerRadius="3" BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" Background="{Binding InkShown}" />
+                <TextBox Text="{Binding Ink}" Watermark="{l:T 'Lines #RRGGBB'}" MinWidth="170" ToolTip.Tip="{l:T 'Line colour (empty = the preset\'s)'}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Border Width="18" Height="18" CornerRadius="3" BorderBrush="Gray" BorderThickness="1" Background="{Binding PaperShown}" />
-                <TextBox Text="{Binding Paper}" Watermark="{l:T 'Page #RRGGBB'}" Width="130" ToolTip.Tip="{l:T 'Background colour (empty = the preset\'s)'}" />
+                <Border Width="18" Height="18" CornerRadius="3" BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" Background="{Binding PaperShown}" />
+                <TextBox Text="{Binding Paper}" Watermark="{l:T 'Page #RRGGBB'}" MinWidth="170" ToolTip.Tip="{l:T 'Background colour (empty = the preset\'s)'}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="4">
-                <Border Width="18" Height="18" CornerRadius="3" BorderBrush="Gray" BorderThickness="1" Background="{Binding AccentShown}" />
-                <TextBox Text="{Binding Accent}" Watermark="{l:T 'Leaders #RRGGBB'}" Width="130" ToolTip.Tip="{l:T 'Leader lines and labels (empty = the preset\'s)'}" />
+                <Border Width="18" Height="18" CornerRadius="3" BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" Background="{Binding AccentShown}" />
+                <TextBox Text="{Binding Accent}" Watermark="{l:T 'Leaders #RRGGBB'}" MinWidth="170" ToolTip.Tip="{l:T 'Leader lines and labels (empty = the preset\'s)'}" />
             </StackPanel>
         </WrapPanel>
     </StackPanel>

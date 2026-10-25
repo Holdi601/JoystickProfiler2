@@ -1,0 +1,245 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-tornado-gr4",
+  "title": "Tornado GR4 (pilot)",
+  "inherits": "real-tornado",
+  "variants": [
+    "tornado-gr4"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Panavia Tornado (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Panavia_Tornado"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Tornado GR4 is the RAF's mid-life update of the GR1 strike Tornado. The pilot gets a wide head-up display with a night camera picture (FLIR), his own multifunction display and night vision goggle-friendly lighting; the navigator gets multifunction displays and targeting pods. The grips are taken as those of the GR1, so this guide follows the Tornado IDS guide with the GR4's own front panel and rear screens.",
+  "areas": [
+    {
+      "id": "front-panel",
+      "where": "front-center",
+      "name": "Pilot's instrument panel",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Pilot's instrument panel (GR4)",
+          "src": "w1",
+          "text": "The GR4's main panel: a wide head-up display that can show a night camera picture, a pilot's multifunction display with a moving map, and the round instruments of the GR1.",
+          "context": "The mid-life update gave the pilot his own screen and night vision goggle-friendly lighting, so he can share more of the navigator's picture.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the marks for navigation and weapon aiming, and on the GR4 also a night camera picture (FLIR) over the real view, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "tfr-escope",
+              "name": "Terrain-following radar E-scope",
+              "type": "display",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "A small screen that shows the picture of the terrain-following radar: the shape of the ground ahead and the height the aircraft should fly over it.",
+              "context": "Terrain following means flying very low and following hills and valleys automatically or by hand; the pilot watches this screen to check that the system flies safely.",
+              "src": "w1"
+            },
+            {
+              "id": "rhwr",
+              "name": "Radar homing and warning display",
+              "type": "display",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "A small round screen that shows where enemy radars are looking at the aircraft from (radar warning receiver).",
+              "context": "It warns the crew of threats so they can turn away, fly lower or use countermeasures."
+            },
+            {
+              "id": "adi",
+              "name": "Attitude director indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon). Steering bars on it help the pilot follow the flight director.",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:8"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:9"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing."
+            },
+            {
+              "id": "aoa",
+              "name": "Angle of attack indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:10"
+              ],
+              "text": "This instrument shows the angle of attack: how steeply the wing meets the air. A too high angle means the wing is close to losing its lift.",
+              "context": "Jet pilots fly the landing approach by this angle, and watch it in tight turns."
+            },
+            {
+              "id": "sweep-indicator",
+              "name": "Wing sweep indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:11"
+              ],
+              "text": "This gauge shows how far the wings are swept back, from spread out wide to folded back against the body.",
+              "context": "The pilot checks it after moving the wing sweep lever; the wings are forward for take-off and landing and back for high speed."
+            },
+            {
+              "id": "engine-gauges",
+              "name": "Engine RPM, TOT and nozzle gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:12"
+              ],
+              "text": "Gauges that show how fast each RB199 engine turns, how hot its turbine gas is (TOT) and how far its nozzle is open. They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel contents gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:13"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            },
+            {
+              "id": "cwp",
+              "name": "Central warning panel",
+              "type": "display",
+              "match": [
+                "item:front-panel:14"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "Its captions tell both crew members which system has a problem."
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:front-panel:15"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            },
+            {
+              "id": "pmd",
+              "name": "Pilot's multifunction display",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A colour screen for the pilot that shows a moving map, the night camera (FLIR) picture and system pages.",
+              "context": "With it the pilot sees the route and the target area himself instead of only hearing it from the navigator.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Navigator's / WSO's cockpit",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Navigator's / WSO's cockpit (GR4)",
+          "src": "w1",
+          "text": "In the GR4 the navigator's small TV-tab screens are replaced by multifunction displays, and he controls targeting pods (TIALD, later Litening) and the newer weapons.",
+          "context": "He still finds the way and sets up the attack; the pod lets him mark targets with a laser.",
+          "controls": [
+            {
+              "id": "tv-left",
+              "name": "Left multifunction display",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "A colour screen on the left of the rear panel that shows navigation, targeting pod and weapon pages.",
+              "context": "It replaces the older left TV-tab of the GR1."
+            },
+            {
+              "id": "tv-right",
+              "name": "Right multifunction display",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:3"
+              ],
+              "text": "A colour screen on the right of the rear panel, also for navigation, pod and weapon pages.",
+              "context": "With the pod video on one screen and the map on the other, the navigator can find and mark the target."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

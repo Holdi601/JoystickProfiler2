@@ -1,0 +1,292 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mercury",
+  "title": "Mercury capsule",
+  "variants": [
+    "mercury-capsule"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Apollo Experience Report: Spacecraft Hand Controller Development (NASA TN D-7884)",
+      "kind": "manual",
+      "url": "https://ntrs.nasa.gov/citations/19750010202"
+    },
+    {
+      "id": "s2",
+      "title": "The Friendship 7 Hand Controller (Ohio State University Libraries)",
+      "kind": "reference",
+      "url": "https://library.osu.edu/site/friendship7/the-friendship-7-hand-controller/"
+    },
+    {
+      "id": "s3",
+      "title": "Project Mercury (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Project_Mercury"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Mercury was America's first spacecraft for people (1961-1963): a small cone-shaped capsule for one astronaut, lying on a couch shaped to his body. The flight ran mostly automatically; a three-axis hand controller at his right hand let him turn the capsule himself. In space there is nothing to push against, so the capsule turns with small rocket jets (thrusters). This guide describes the panels from public NASA material; it does not use a numbered NASA panel list.",
+  "areas": [
+    {
+      "id": "window",
+      "where": "glareshield",
+      "name": "Window and periscope",
+      "text": "The window above the panel and the periscope.",
+      "panels": [
+        {
+          "id": "window",
+          "name": "Window and periscope",
+          "text": "The two ways the astronaut could look outside the capsule.",
+          "context": "Astronauts asked for a real window; it came with John Glenn's flight (MA-6).",
+          "controls": [
+            {
+              "id": "window",
+              "name": "Window",
+              "type": "other",
+              "match": [
+                "item:window:1"
+              ],
+              "text": "A trapezoid-shaped window above the instrument panel through which the astronaut saw space and the Earth.",
+              "context": "Through it the astronaut could check the capsule's attitude against the horizon.",
+              "src": "s3"
+            },
+            {
+              "id": "periscope",
+              "name": "Periscope",
+              "type": "other",
+              "match": [
+                "item:window:2"
+              ],
+              "text": "An optical tube that looks out of the capsule; its picture appears on the screen in the middle of the main panel.",
+              "context": "It was the view outside before the window was added and stayed as a second view.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "text": "The instruments in front of the astronaut.",
+      "panels": [
+        {
+          "id": "main-panel",
+          "name": "Main instrument panel",
+          "text": "The instruments in front of the astronaut: which way the capsule points, how fast it turns, where it is over the Earth and when to start the return.",
+          "context": "Most of the flight ran automatically; the astronaut watched these instruments and took over by hand when needed.",
+          "controls": [
+            {
+              "id": "attitude",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "This instrument shows the capsule's attitude: which way it points, nose up or down, rolled or turned to the side.",
+              "context": "In space there is no up or down, so the astronaut needs it to point the capsule correctly, above all for the return to Earth.",
+              "src": "s3"
+            },
+            {
+              "id": "rates",
+              "name": "Rate indicators",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "Needles that show how fast the capsule is turning in each direction.",
+              "context": "When flying by hand, the astronaut uses them to stop an unwanted turn and to turn smoothly.",
+              "src": "s3"
+            },
+            {
+              "id": "globe",
+              "name": "Earth path indicator",
+              "type": "display",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "A small globe that turns mechanically to show where the capsule is flying over the Earth.",
+              "context": "It gave the astronaut his position without a computer screen."
+            },
+            {
+              "id": "clock",
+              "name": "Satellite clock and retro timer",
+              "type": "display",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "A clock that shows how long the flight has lasted and counts down to retrofire, the moment when small rockets on the heat shield fire to slow the capsule so it falls back to Earth.",
+              "context": "Retrofire has to happen at the right second, or the capsule lands far from the waiting ships.",
+              "src": "s3"
+            },
+            {
+              "id": "scope-screen",
+              "name": "Periscope screen",
+              "type": "display",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "A round screen in the middle of the panel that shows the view of the periscope, a tube that looks out of the capsule.",
+              "context": "It let the astronaut see the Earth below to check the capsule's attitude.",
+              "src": "s3"
+            },
+            {
+              "id": "altimeter",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "A height gauge used during the descent back to Earth.",
+              "context": "It shows when the parachutes should open during the fall through the air."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console (sequence panel)",
+      "text": "Sequence lights and the abort handle.",
+      "panels": [
+        {
+          "id": "sequence-panel",
+          "name": "Left console (sequence panel)",
+          "text": "Lights for each big step of the flight and switches to make a step happen by hand, plus the abort handle.",
+          "context": "The steps normally happened automatically; if one did not, the astronaut fired it himself with the switch beside its light.",
+          "controls": [
+            {
+              "id": "telelights",
+              "name": "Sequence telelights",
+              "type": "light",
+              "match": [
+                "item:sequence-panel:1"
+              ],
+              "text": "One light for each event of the flight: throwing off the escape tower, separating from the rocket, retrofire, the small and the main parachute, and the landing bag (an air cushion under the heat shield).",
+              "context": "Each light shows that its event has happened; a light that stays dark shows a step that needs help.",
+              "src": "s3"
+            },
+            {
+              "id": "overrides",
+              "name": "Manual override switches",
+              "type": "switch",
+              "match": [
+                "item:sequence-panel:2"
+              ],
+              "text": "A switch beside each sequence light. It makes that event happen by hand when the automatic sequence fails.",
+              "context": "This gave the astronaut a way to finish the flight even when the automatic system broke down.",
+              "src": "s3"
+            },
+            {
+              "id": "abort",
+              "name": "Abort handle",
+              "type": "handle",
+              "match": [
+                "item:sequence-panel:3",
+                "control:throttle.handle.abort"
+              ],
+              "text": "Pulling this handle fires the escape tower, a small rocket on top of the capsule that pulls it away from the launch rocket in an emergency (manual abort).",
+              "context": "It is only for an emergency during launch, for example when the rocket fails.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Hand controller, mode handles and environment gauges.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The hand controller, the handles that switch between automatic and manual control, and the environment gauges and switches.",
+          "context": "With the hand controller and the control mode handles, the astronaut could take over from the automatic system.",
+          "controls": [
+            {
+              "id": "hand-controller",
+              "name": "Three-axis hand controller",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "A pistol-grip handle at the right hand that turns the capsule: forward and back for pitch, left and right for roll, twisting for yaw.",
+              "context": "It is the same controller as in the stick and throttle area below; John Glenn flew much of his flight with it when the automatic control had problems.",
+              "src": "s2"
+            },
+            {
+              "id": "mode-handles",
+              "name": "Control mode handles",
+              "type": "handle",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Pull handles that switch the attitude control between the automatic system and the manual modes.",
+              "context": "In the manual modes the hand controller fires the thrusters directly or through the electronics.",
+              "src": "s3"
+            },
+            {
+              "id": "env",
+              "name": "Environment gauges",
+              "type": "gauge",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "Gauges that show the pressure and temperature of the astronaut's suit and of the cabin.",
+              "context": "The astronaut wore a pressure suit; these gauges showed that the air he breathed was safe."
+            },
+            {
+              "id": "fuses",
+              "name": "Fuse and switch panel",
+              "type": "switch",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "Fuses (safety parts that cut the power when something draws too much) and switches for the systems of the capsule.",
+              "context": "JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controller",
+      "text": "The flight control the astronaut holds.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Rotational hand controller",
+          "text": "The pistol-grip handle at the right armrest of the couch.",
+          "context": "It turned the capsule; Mercury had no controller for moving it in a direction.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Three-axis hand controller",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the handle forward or back pitches the capsule, left or right rolls it, and twisting it yaws it (turns it to the side). It works the small rocket jets around the spacecraft (thrusters).",
+              "context": "On a joystick it is the X, Y and twist axes; it is the only flight control the astronaut had.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

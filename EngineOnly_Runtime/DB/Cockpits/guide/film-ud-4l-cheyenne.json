@@ -1,0 +1,179 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-ud-4l-cheyenne",
+  "title": "UD-4L Cheyenne dropship (Aliens)",
+  "variants": [
+    "ud-4l-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Aliens (film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Aliens_(film)"
+    }
+  ],
+  "intro": "The UD-4L Cheyenne is the fictional armed dropship of the Colonial Marines in the film Aliens (1986). It carries an armoured vehicle (APC) and the troops from the ship Sulaco in orbit down to the planet. The pilot sits in front in a narrow two-seat cockpit, with the crew chief behind.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The narrow canopy over the crew.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s1",
+          "text": "The narrow canopy over the two seats of the dropship.",
+          "context": "It gives the pilot the view for the approach and landing.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "A narrow canopy over the tandem seats of the dropship.",
+              "context": "The pilot looks out through it on the approach to the landing site.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Screens and gauges in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s1",
+          "text": "Screens for flying and the weapons, and the automatic pilot.",
+          "context": "The pilot flies the descent and can fire the pod weapons from here.",
+          "controls": [
+            {
+              "id": "screens",
+              "name": "Flight screens",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Screens show the flight and navigation data.",
+              "context": "They guide the pilot through the descent from orbit.",
+              "src": "s1"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapons display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "A display for the weapons in the pods on the wings, which the pilot fires.",
+              "context": "In the film the pilot, Ferro, controls these weapons.",
+              "src": "s1"
+            },
+            {
+              "id": "autopilot",
+              "name": "Autopilot",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "The automatic pilot flies the dropship by itself during the approach.",
+              "context": "It lets the crew sit back during the long descent; the pilot takes over for the landing.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Second crew seat",
+      "text": "The crew chief's seat behind the pilot.",
+      "panels": [
+        {
+          "id": "second-seat",
+          "name": "Second crew seat",
+          "db": "second-seat",
+          "src": "s1",
+          "text": "The seat behind the pilot for the crew chief.",
+          "context": "The crew chief helps run the dropship.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Crew chief seat",
+              "type": "other",
+              "match": [
+                "item:second-seat:1"
+              ],
+              "text": "The seat behind the pilot. In the film the crew chief Spunkmeyer sits here.",
+              "context": "The crew chief looks after the dropship and its load while the pilot flies.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and thrust",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight stick",
+          "src": "s1",
+          "text": "The flight stick at the dropship pilot's seat.",
+          "context": "It steers the dropship down to the planet.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Flight stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up; moving it left or right rolls the dropship.",
+              "context": "The pilot flies the approach and the landing with it.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Thrust",
+          "src": "s1",
+          "text": "The thrust lever at the pilot's left (the catalog's guess).",
+          "context": "It sets how hard the engines push.",
+          "controls": [
+            {
+              "id": "thrust",
+              "name": "Thrust",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This lever is taken as the control for the engines' thrust.",
+              "context": "Its place is the catalog's guess; the film does not show it clearly.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

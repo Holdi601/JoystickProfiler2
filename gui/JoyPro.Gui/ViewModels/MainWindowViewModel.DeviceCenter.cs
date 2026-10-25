@@ -164,6 +164,8 @@ public sealed partial class MainWindowViewModel
         RebuildBindPickOptions();
         // The 3D views of the connected devices (downloaded packs, not shipped): in the background.
         _ = CheckDevice3DAsync(DeviceCards.Where(c => c.Connected).Select(c => c.ModelId).ToList());
+        // Their reference photos (offered once per session, or downloaded automatically): in the background.
+        _ = CheckReferencePhotosAsync(DeviceCards.Where(c => c.Connected).Select(c => c.ModelId).ToList());
         await LoadDeviceCardPicturesAsync(set.Pictures);
     }
 
@@ -377,7 +379,7 @@ public sealed partial class MainWindowViewModel
             {
                 LayoutPicture = info.LayoutOwn ? info.LayoutPicture : string.Empty,
                 ModelId = shown?.Id ?? string.Empty,
-                VendorPhoto = shown == null ? string.Empty : DevicePhotoDb.OfficialPhotos(shown).FirstOrDefault()?.Url ?? string.Empty,
+                VendorPhoto = shown == null ? string.Empty : DevicePhotoDb.UsablePhotos(shown).FirstOrDefault()?.Url ?? string.Empty,
                 LineArt = lineArt
             };
             int rank = isVirtual ? 20 : KindRank(kind);
@@ -466,6 +468,7 @@ public sealed partial class MainWindowViewModel
             DevicePhotoConsent.Mode = mode;
             OnPropertyChanged();
             OnPropertyChanged(nameof(PhotoConsentSummary));
+            OnPropertyChanged(nameof(AutoDownloadReferencePhotos));
             _ = LoadDeviceCardPicturesAsync(lastCardPictures);
         }
     }

@@ -51,8 +51,10 @@ public sealed class ThemeContrastTests
             vm.Statistics.Apply(UsageRecordingTests.SampleStats);
             try
             {
-                foreach ((string theme, ThemeVariant variant) in new[] { ("dark", ThemeVariant.Dark), ("light", ThemeVariant.Light) })
+                // Light, Dark and a theme of the user's own (ThemeTests.SampleTheme: warm colours, a serif font).
+                foreach ((string theme, ThemeVariant variant) in new[] { ("dark", ThemeVariant.Dark), ("light", ThemeVariant.Light), ("custom", ThemeVariant.Light) })
                 {
+                    JoyPro.Gui.Services.ThemeService.Apply(theme == "custom" ? "Custom" : "System", theme == "custom" ? ThemeTests.SampleTheme() : null);
                     Application.Current!.RequestedThemeVariant = variant;
                     List<(string Name, string File)> shots = [];
                     using (HiddenWindow main = HiddenWindow.Create(new MainWindow { DataContext = vm }, new Size(Width, Height)))
@@ -98,6 +100,7 @@ public sealed class ThemeContrastTests
             finally
             {
                 vm.StopGameConfigWatcher();
+                JoyPro.Gui.Services.ThemeService.Apply("System", null);
                 Application.Current!.RequestedThemeVariant = ThemeVariant.Default;
             }
         });

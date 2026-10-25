@@ -1,0 +1,57 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-tornado-ecr",
+  "title": "Tornado ECR (pilot)",
+  "inherits": "real-tornado",
+  "variants": [
+    "tornado-ecr"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w2",
+      "title": "Panavia Tornado ECR (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Panavia_Tornado_ECR"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Tornado ECR is the German and Italian version for hunting enemy air defence radars and for reconnaissance. It carries HARM anti-radar missiles and has an emitter locator system in the back seat. The pilot's controls are taken as those of the IDS, so this guide follows the Tornado IDS guide and adds the emitter locator display.",
+  "areas": [
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Navigator's / WSO's cockpit",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Navigator's / WSO's cockpit (ECR)",
+          "src": "w2",
+          "text": "The ECR's back seat adds the displays of the emitter locator system (ELS), which finds enemy radar stations, next to the navigation displays.",
+          "context": "The ECR hunts enemy air defence radars (SEAD) with HARM missiles that fly down a radar's own beam; the officer in the back finds and picks the radars.",
+          "controls": [
+            {
+              "id": "els",
+              "name": "Emitter locator system (ELS) display",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:7"
+              ],
+              "text": "A screen that shows the enemy radar stations the emitter locator has found and where they are.",
+              "context": "The officer picks a radar from it as the target for a HARM missile.",
+              "src": "w2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

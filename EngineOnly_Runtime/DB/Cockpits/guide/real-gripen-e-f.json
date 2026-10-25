@@ -1,0 +1,118 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-gripen-e-f",
+  "title": "JAS 39E / 39F Gripen",
+  "inherits": "real-gripen",
+  "variants": [
+    "gripen-e-f"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Saab JAS 39 Gripen (Wikipedia), cockpit and avionics",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Saab_JAS_39_Gripen"
+    },
+    {
+      "id": "r2",
+      "title": "Saab: Gripen E Wide Area Display",
+      "kind": "reference",
+      "url": "https://www.saab.com/markets/india/gripen-for-india/gripen-for-india/gripen-es-wad-takes-situational-awareness-to-a-different-level"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Gripen E (single seat) and F (two seats) are the newest Gripen, with a stronger engine (F414G), a new radar and a new cockpit: one wide touch screen replaces the three screens, under a small head-up display, and the pilot wears a helmet display. Buttons and knobs remain for the key functions. The grip functions are not public; they are taken here as those of the A/B, so the consoles and grips follow the A/B guide.",
+  "remove": [
+    "front-panel"
+  ],
+  "areas": [
+    {
+      "id": "front",
+      "where": "front-center",
+      "name": "Front panel and displays",
+      "panels": [
+        {
+          "id": "wad-panel",
+          "name": "Wide area display and HUD (E/F)",
+          "src": "r2",
+          "text": "The Gripen E/F replaces the three screens with one wide touch screen (Wide Area Display) under a smaller head-up display. A helmet display shows marks where the pilot looks.",
+          "context": "The pilot can split the big screen into pages as he likes and touch them; important functions can also be done with the stick and throttle buttons or with keys and knobs.",
+          "controls": [
+            {
+              "id": "hud-e",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the aiming marks, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "r2"
+            },
+            {
+              "id": "wad",
+              "name": "Wide area display (WAD)",
+              "type": "screen",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "One large touch screen across the whole front panel, about 19 by 8 inches. The pilot divides it into pages (formats) of his choice, such as the map, the sensors and the systems, and touches them to make choices.",
+              "context": "It shows the whole tactical picture in one place; Saab designed it so that the most important functions do not need touch.",
+              "src": "r2"
+            },
+            {
+              "id": "wad-keys",
+              "name": "Display keys and knobs",
+              "type": "button",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "Real keys and knobs around the big screen. They do the key functions without touching the screen.",
+              "context": "Touching a screen is hard in a bumpy, high-G flight, so these give the pilot a sure way to work the important functions.",
+              "src": "r2"
+            },
+            {
+              "id": "standby-display",
+              "name": "Standby display",
+              "type": "display",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "Small backup instruments for attitude, speed and height. They keep working when the main screens or computers fail.",
+              "context": "The pilot uses them to fly safely home if the main displays are lost."
+            },
+            {
+              "id": "gear-lever-e",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

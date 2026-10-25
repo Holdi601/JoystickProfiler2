@@ -1,0 +1,283 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-no-mans-sky",
+  "title": "No Man's Sky: starship controls on stick and throttle",
+  "variants": [
+    "no-mans-sky-hotas"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "n1",
+      "title": "No Man's Sky controls (Carl's Guides, PC / PlayStation / Xbox defaults)",
+      "kind": "reference",
+      "url": "https://carlsguides.com/nomanssky/controls.php"
+    },
+    {
+      "id": "n2",
+      "title": "No Man's Sky Wiki: Starship",
+      "kind": "reference",
+      "url": "https://nomanssky.fandom.com/wiki/Starship"
+    },
+    {
+      "id": "n3",
+      "title": "No Man's Sky (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/No_Man%27s_Sky"
+    }
+  ],
+  "intro": "No Man's Sky (Hello Games) is an exploration game where the player flies a starship between planets and stars. All ship types share the same controls: the cockpit has the flight data on the canopy glass, and most ship jobs are done in menus. The game has no ready-made stick and throttle layout; this guide explains the game's own ship actions in the places JoyPro suggests for them.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "Canopy HUD",
+      "text": "The flight data on the cockpit glass.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "Cockpit HUD (canopy and dashboard)",
+          "db": "hud",
+          "src": "n1",
+          "text": "The HUD shows the flight data on the cockpit glass and the dashboard: speed, shield and hull, the weapon, the fuel and markers for places and targets.",
+          "context": "It looks the same in every ship type; the pilot reads it while flying, fighting or looking for a place to land.",
+          "controls": [
+            {
+              "id": "speed",
+              "name": "Speed",
+              "type": "gauge",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "This shows how fast the ship is flying. While the pulse engine is on, it shows the much higher pulse speed.",
+              "context": "The throttle sets the normal speed; the pulse button on the throttle switches to pulse flight for long distances inside a star system.",
+              "src": "n1"
+            },
+            {
+              "id": "shield-hull",
+              "name": "Shield and hull",
+              "type": "gauge",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "This shows the starship's shield, a protective layer that takes hits first, and the hull, the ship's body.",
+              "context": "When the shield is empty, hits damage the hull; the shield is recharged from the quick menu.",
+              "src": "n1"
+            },
+            {
+              "id": "weapon-heat",
+              "name": "Weapon and heat",
+              "type": "indicator",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "This shows which ship weapon is selected and how hot it is. A weapon that gets too hot has to cool down before it fires again.",
+              "context": "The thumb button on the stick changes the weapon; firing in short bursts keeps the heat down.",
+              "src": "n1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel",
+              "type": "gauge",
+              "match": [
+                "item:hud:4"
+              ],
+              "text": "This shows the fuel for the launch thrusters (needed to take off from the ground) and for the pulse engine.",
+              "context": "Without launch fuel the ship cannot take off; the pilot refuels the technology from the quick menu.",
+              "src": "n1"
+            },
+            {
+              "id": "markers",
+              "name": "Markers",
+              "type": "display",
+              "match": [
+                "item:hud:5"
+              ],
+              "text": "Marks on the view show targets, bases, space stations and things found by the scanner.",
+              "context": "The scan button on the stick adds new markers for nearby places.",
+              "src": "n1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dashboard",
+      "where": "front-center",
+      "name": "Dashboard and menus",
+      "text": "The menus for recharging, inventory and the galactic map.",
+      "panels": [
+        {
+          "id": "quick-menu",
+          "name": "Quick menu and inventory",
+          "db": "quick-menu",
+          "src": "n1",
+          "text": "These are menus over the view for ship jobs that have no own button: recharging equipment, calling the big freighter, calling a ground vehicle, the ship's inventory and the galactic map.",
+          "context": "The hat on the stick opens the quick menu and the galactic map in this layout.",
+          "controls": [
+            {
+              "id": "quick",
+              "name": "Quick menu",
+              "type": "other",
+              "match": [
+                "item:quick-menu:1"
+              ],
+              "text": "The quick menu recharges the ship's technology (for example the shield or the fuel), calls the player's freighter and summons exocraft, the ground vehicles.",
+              "context": "It opens with the hat pushed up; the pilot uses it often during long trips.",
+              "src": "n1"
+            },
+            {
+              "id": "inventory",
+              "name": "Ship inventory",
+              "type": "other",
+              "match": [
+                "item:quick-menu:2"
+              ],
+              "text": "The inventory shows the ship's cargo and the technology slots where equipment is installed.",
+              "context": "Each ship type has a different number of slots; better classes have more.",
+              "src": "n1"
+            },
+            {
+              "id": "galactic-map",
+              "name": "Galactic map",
+              "type": "other",
+              "match": [
+                "item:quick-menu:3"
+              ],
+              "text": "The galactic map shows other star systems that the hyperdrive, the drive for jumps between stars, can reach.",
+              "context": "The pilot picks the next star here and then jumps from space; it opens with the hat pushed down.",
+              "src": "n1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The stick steers and fights; the throttle sets the speed, boost and the pulse engine.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick",
+          "src": "n1",
+          "text": "The stick steers the ship and holds the buttons for the weapon, the scanner, landing and the menus.",
+          "context": "No Man's Sky has no ready-made layout for a stick and throttle. The actions are the game's own; where they sit on the stick is JoyPro's suggestion, set up with Steam Input or the game's own key settings.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Stick (pitch, turn, roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up. Left and right turn the ship (yaw), and twisting the stick rolls it.",
+              "context": "In this suggestion left and right turn instead of rolling, which makes aiming at targets easier.",
+              "src": "n1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (fire)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pulling the trigger fires the selected ship weapon.",
+              "context": "It shoots at pirates, Sentinels and rocks; the HUD shows the weapon's heat.",
+              "src": "n1"
+            },
+            {
+              "id": "thumb",
+              "name": "Thumb button (weapon mode)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button changes to the next ship weapon that is installed.",
+              "context": "Different weapons suit shooting ships or breaking asteroids; the HUD shows which one is active.",
+              "src": "n1"
+            },
+            {
+              "id": "head-left",
+              "name": "Head button left (scan)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "This button uses the ship's scanner, which finds interesting places nearby and marks them.",
+              "context": "New markers then appear on the HUD; the scanner needs a moment before the next scan.",
+              "src": "n1"
+            },
+            {
+              "id": "head-right",
+              "name": "Head button right (land / exit)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "Near the ground this button lands the ship. Once landed, pressing it again lets the pilot climb out.",
+              "context": "The game lands the ship by itself when the pilot presses it close to a flat place or a landing pad.",
+              "src": "n1"
+            },
+            {
+              "id": "hat",
+              "name": "Hat (menus)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "Pushing the hat up opens the quick menu; pushing it down opens the galactic map.",
+              "context": "Both menus handle ship jobs that have no own button, such as recharging or picking the next star.",
+              "src": "n1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "n1",
+          "text": "The throttle sets the speed and holds the buttons for boost and the pulse engine.",
+          "context": "As with the stick, these places are JoyPro's suggestion for the game's own actions.",
+          "controls": [
+            {
+              "id": "axis",
+              "name": "Throttle lever (speed up / slow down)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "Pushing the lever forward makes the ship faster; pulling it back slows it down.",
+              "context": "Flying slower makes landing and aiming easier; the HUD shows the speed.",
+              "src": "n1"
+            },
+            {
+              "id": "boost",
+              "name": "Thumb button (boost)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.1"
+              ],
+              "text": "Holding this button gives a burst of extra speed.",
+              "context": "Boost helps to escape a fight or to cross a planet quickly; it is not the same as the pulse engine.",
+              "src": "n1"
+            },
+            {
+              "id": "pulse",
+              "name": "Pulse button (pulse engine)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.2"
+              ],
+              "text": "This button switches on the pulse engine, a very fast drive for travelling between planets inside one star system.",
+              "context": "The pulse engine works in space only and uses its own fuel; the speed readout shows the pulse speed.",
+              "src": "n1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

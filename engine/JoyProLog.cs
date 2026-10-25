@@ -116,22 +116,21 @@ namespace JoyPro.Logging
             get { return minLevel; }
         }
 
-        // <JOYPRO_LOG_DIR>, else <JOYPRO_DATA_DIR>\Logs, else %LOCALAPPDATA%\JoyPro2\Logs.
+        // <JOYPRO_LOG_DIR>, else <data>\Logs (JoyProDataFolder: JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro2).
         public static string DefaultFolder()
         {
             string overrideFolder = Environment.GetEnvironmentVariable(FolderVariable);
             if (!string.IsNullOrWhiteSpace(overrideFolder))
                 return overrideFolder.Trim();
-            string root = Environment.GetEnvironmentVariable(DataFolderVariable);
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro2");
-            return Path.Combine(root.Trim(), FolderName);
+            return Path.Combine(JoyProDataFolder.Root(), FolderName);
         }
 
         // Starts logging for this process: reads the settings, deletes old logs (at most once an hour) and writes the
         // header (version, OS, .NET, culture, command line). A second call does nothing until Stop.
         public static void Start(string componentName, string version, string[] args = null, string folderOverride = null)
         {
+            // Every JoyPro process starts here: an old %LOCALAPPDATA%\JoyPro is moved into JoyPro2 first (once).
+            JoyProDataFolder.EnsureMigrated();
             lock (Gate)
             {
                 if (started)
@@ -175,6 +174,9 @@ namespace JoyPro.Logging
             Info("Log", "=== " + component + " " + (version ?? "?") + " started (pid " + processId.ToString(CultureInfo.InvariantCulture) +
                         ", session " + sessionId + (parentId.Length > 0 ? ", started by " + parentId : string.Empty) + ") ===");
             Info("Log", "System: " + SystemDescription());
+            DataMigrationResult moved = JoyProDataFolder.LastResult;
+            if (moved != null && moved.Status != "none")
+                Info("Data", JoyProDataFolder.Describe(moved));
             TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.Now);
             Info("Log", "Culture: " + CultureName(CultureInfo.CurrentCulture) + " / UI " + CultureName(CultureInfo.CurrentUICulture) +
                         ", time zone " + TimeZoneInfo.Local.Id + " (UTC" + (offset < TimeSpan.Zero ? "-" : "+") + offset.ToString(@"hh\:mm", CultureInfo.InvariantCulture) + ")");

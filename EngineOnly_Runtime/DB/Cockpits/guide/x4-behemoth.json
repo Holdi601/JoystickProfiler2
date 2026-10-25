@@ -1,0 +1,91 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-behemoth",
+  "title": "Behemoth (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-behemoth"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "L - Large Ships (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/Objects%20in%20the%20Game%20Universe/Ships/L%20-%20Large%20Ships/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Behemoth is a large Argon destroyer flown from the captain's chair on the bridge. The pilot fires its forward main guns with the trigger; its many turrets fire on their own.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Behemoth: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Behemoth that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Behemoth are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Captain's chair (bridge)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Behemoth is a big ship, so the pilot flies it from the captain's chair on the bridge instead of a small cockpit. The stick controls are the same as in a fighter.",
+              "context": "A big ship like the Behemoth turns and speeds up slowly; the pilot plans moves earlier than in a fighter.",
+              "src": "c1"
+            },
+            {
+              "id": "guns",
+              "name": "Main guns",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Behemoth has two big forward main guns. They fire with the trigger and aim where the ship's nose points.",
+              "context": "Turning a ship as big as the Behemoth onto a target takes time, so the main guns suit big, slow targets.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turrets",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The Behemoth carries ten turrets, gun mounts that turn and fire on their own without the pilot.",
+              "context": "How the turrets behave (attack all enemies, defend, hold fire) is set in the menus, not on the sticks.",
+              "src": "w1"
+            },
+            {
+              "id": "docking",
+              "name": "Docking",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The Behemoth has room for other ships: docking for S ships. Small ships can land on it and be carried along.",
+              "context": "A docked ship travels with the bigger ship and can launch again later.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

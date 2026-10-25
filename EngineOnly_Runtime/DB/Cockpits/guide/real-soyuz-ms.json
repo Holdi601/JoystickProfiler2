@@ -1,0 +1,103 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-soyuz-ms",
+  "title": "Soyuz-MS",
+  "inherits": "real-soyuz-tm",
+  "variants": [
+    "soyuz-ms"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "v1",
+      "title": "Soyuz MS (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Soyuz_MS"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Soyuz-MS is the current version of the Soyuz, flying to the International Space Station since 2016. It has the digital Neptun-ME panel and the Kurs-NA automatic docking system. The hand controllers are taken as unchanged from the Soyuz-TM, so this guide builds on the Soyuz-TM guide.",
+  "remove": [
+    "neptun",
+    "seats"
+  ],
+  "areas": [
+    {
+      "id": "neptun",
+      "where": "front-center",
+      "name": "Neptun-ME panel",
+      "panels": [
+        {
+          "id": "neptun-me",
+          "name": "Neptun-ME digital panel",
+          "text": "The glass panel in front of the commander, introduced with the Soyuz TMA-M.",
+          "context": "It replaced the older panel with two screens and command keys.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Two displays",
+              "type": "display",
+              "match": [
+                "item:neptun-me:1"
+              ],
+              "text": "Two screens that show the systems and the approach to the space station.",
+              "context": "The commander watches the automatic docking on them and takes over if needed.",
+              "src": "v1"
+            },
+            {
+              "id": "keys",
+              "name": "Command keys",
+              "type": "keypad",
+              "match": [
+                "item:neptun-me:2"
+              ],
+              "text": "Keys next to the screens that send commands; the crew still reaches them with a pointer stick.",
+              "context": "Strapped into the seats, the crew cannot reach the panel with their hands. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seats",
+      "where": "floor",
+      "name": "Seats and sight",
+      "panels": [
+        {
+          "id": "seats-ms",
+          "name": "Crew seats",
+          "text": "The three body-shaped seats of the descent capsule.",
+          "context": "Each seat is shaped to its astronaut's body for launch and landing.",
+          "controls": [
+            {
+              "id": "cdr-seat",
+              "name": "Commander's seat",
+              "type": "other",
+              "match": [
+                "item:seats:1"
+              ],
+              "text": "The middle seat, in front of the panel and between the two hand controllers.",
+              "context": "The commander flies from here when a manual approach is needed."
+            },
+            {
+              "id": "side-seats",
+              "name": "Side seats",
+              "type": "other",
+              "match": [
+                "item:seats:2"
+              ],
+              "text": "The seats of the flight engineer and the third crew member, left and right of the commander.",
+              "context": "The flight engineer on the left helps the commander with the systems."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "nms-shuttle-type",
+  "title": "Shuttle (No Man's Sky)",
+  "inherits": "game-no-mans-sky",
+  "variants": [
+    "nms-shuttle-type"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "n2",
+      "title": "No Man's Sky Wiki: Starship",
+      "kind": "reference",
+      "url": "https://nomanssky.fandom.com/wiki/Starship"
+    }
+  ],
+  "intro": "The shuttle is a starship type in No Man's Sky (Hello Games): a cheap, all-round ship type built from modular parts. It is flown with the same controls as every ship of the game; the type changes the values and the cockpit, not the buttons.",
+  "areas": [
+    {
+      "id": "dashboard",
+      "where": "front-center",
+      "name": "Dashboard and menus",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Shuttle: type and slots",
+          "db": "ship",
+          "src": "n2",
+          "text": "This lists what makes the shuttle ship type special.",
+          "context": "All controls work as in every No Man's Sky ship; only the values and the cockpit look change.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The shuttle has a single-seat cockpit for the pilot alone.",
+              "context": "The pilot flies alone; passengers are not carried.",
+              "src": "n2"
+            },
+            {
+              "id": "trait",
+              "name": "Type trait",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The shuttle is a cheap, all-round ship type built from modular parts.",
+              "context": "The ship type changes the values and the look of the cockpit, but not the controls.",
+              "src": "n2"
+            },
+            {
+              "id": "classes",
+              "name": "Classes (C, B, A, S)",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "Each shuttle comes in one of four classes, C, B, A and S. Higher classes have more slots and better values.",
+              "context": "A better class gives more slots and stronger values; the pilot can trade or upgrade ships at stations.",
+              "src": "n2"
+            },
+            {
+              "id": "technology",
+              "name": "Technology slots",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The shuttle's technology slots hold the weapons, the shield, the pulse engine and the hyperdrive.",
+              "context": "Each slot holds one piece of technology; the ship inventory shows them, and the quick menu recharges them.",
+              "src": "n2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

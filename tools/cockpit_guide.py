@@ -5,8 +5,10 @@ The guide explains every panel and control of a cockpit in plain words: EngineOn
 same rules as the GUI's CockpitGuide.Check (gui/JoyPro.Gui.Tests CockpitGuideTests).
 
     py -3 tools/cockpit_guide.py check [guide.json ...]          the rules (all guides when no file is given)
-    py -3 tools/cockpit_guide.py coverage <guide id> --pictures <pictures.json or set folder> [--seat N] [--all]
-                                                                 which game controls of a picture set the guide explains
+    py -3 tools/cockpit_guide.py coverage <guide id> [--pictures <pictures.json or set folder>] [--seat N] [--all]
+                                                                 which game controls of a picture set the guide explains;
+                                                                 always: the catalog items and grip controls of its variants
+                                                                 that no guide control names
     py -3 tools/cockpit_guide.py stats [--lang de]               areas, panels, controls and characters per guide
     py -3 tools/cockpit_guide.py report --pictures <root> [--game DCS]   coverage of every set under a pictures root
                                                                  (<root>/<game>-<set>/pictures.json or <root>/<game>/<set>/pictures.json)
@@ -363,6 +365,8 @@ class Matcher:
 
 
 def picture_callouts(path, seat=None):
+    if not path:
+        return {}, []
     if os.path.isdir(path):
         path = os.path.join(path, "pictures.json")
     d = load(path)
@@ -400,10 +404,13 @@ def coverage(gid, pictures, seat=None, show_all=False, guides=None, quiet=False)
     unused = [(p["id"], c["id"]) for a, p, c in controls_of(r)
               if (r["id"], p["id"], c["id"]) not in used and not any(k.startswith(("item:", "control:")) for k in c.get("match", []))]
     if not quiet:
-        print(f"{gid} on {d.get('game')}/{d.get('plane')}: {hit} of {len(callouts)} game controls explained, {len(miss)} not")
+        if pictures:
+            print(f"{gid} on {d.get('game')}/{d.get('plane')}: {hit} of {len(callouts)} game controls explained, {len(miss)} not")
+        else:
+            print(f"{gid}: catalog keys only (no picture set given)")
         for v, c in miss if show_all else miss[:400]:
             print(f"  MISSING {c.get('id')} | {c.get('label')} | {v.get('id')}")
-        if unused:
+        if unused and pictures:
             print(f"  guide controls that match no game control here ({len(unused)}): " + ", ".join(p + "/" + c for p, c in unused[:80]))
         for v, keys in catalog_keys(r.get("variants", [])).items():
             seat_areas = [a for a in r.get("areas", []) if not a.get("seat") or a.get("seat") == keys["seat"]]
@@ -523,7 +530,7 @@ def main(argv):
         return 1 if problems else 0
     if cmd == "coverage":
         gid = rest[0]
-        pics = rest[rest.index("--pictures") + 1]
+        pics = rest[rest.index("--pictures") + 1] if "--pictures" in rest else None
         seat = int(rest[rest.index("--seat") + 1]) if "--seat" in rest else None
         coverage(gid, pics, seat, "--all" in rest)
         return 0

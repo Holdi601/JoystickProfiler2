@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-talon",
+  "title": "Talon (Esperia, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-talon"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Talon (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Talon"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Talon is a single-seat light fighter from Esperia in Star Citizen, a copy of a warship of the alien Tevarin. It has directional shields and weak armour, so the shield buttons on the left stick base matter more here than on ships with a round shield.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Talon: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Talon's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (two size-4 guns)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Talon has two medium-size guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (four missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Talon carries four missiles. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "phalanx",
+              "name": "Phalanx shields",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The Talon's shields cover separate directions instead of one bubble.",
+              "context": "The pilot strengthens the side facing the enemy with the shield buttons 12 to 16 on the left stick base.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

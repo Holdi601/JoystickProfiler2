@@ -572,12 +572,8 @@ namespace JoyPro.CockpitPictures
                     }
                     r.Notes.Add("no cockpit camera found; the eye is placed behind the controls");
                 }
-                foreach (CockpitCallout c in callouts)
-                {
-                    string area = CockpitViews.AreaOf(c.Position, head);
-                    c.Panel = area;
-                    c.PanelTitle = XPlaneCockpitPictures.AreaTitle(area);
-                }
+                // The system its node and event names say (ELECTRICAL_Switch_Battery, AUTOPILOT_Knob_Heading) and the place.
+                ControlSystems.Assign(callouts, head, XPlaneCockpitPictures.AreaTitle);
                 List<CockpitGrip> grips = new List<CockpitGrip>();
                 if (yoke != null)
                 {

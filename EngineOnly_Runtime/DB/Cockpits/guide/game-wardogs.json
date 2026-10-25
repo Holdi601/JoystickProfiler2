@@ -1,0 +1,301 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-wardogs",
+  "title": "WARDOGS: helicopter HUD and default HOTAS",
+  "variants": [
+    "wardogs-hotas"
+  ],
+  "games": [
+    "Wardogs"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "WARDOGS HOTAS controls guide",
+      "kind": "tutorial",
+      "url": "https://thewardogsguide.com/wardogs-controls-hotas"
+    },
+    {
+      "id": "w2",
+      "title": "WARDOGS helicopters: controls, flight assist and unlock costs",
+      "kind": "tutorial",
+      "url": "https://allthings.how/wardogs-helicopters-controls-flight-assist-and-unlock-costs/"
+    },
+    {
+      "id": "wg",
+      "title": "WARDOGS joystick settings (GameUserSettings.ini, [/Script/WDJoystick.WDJoystickSettings]; JoyPro DB/Wardogs/actions.tsv)",
+      "kind": "game-files",
+      "file": "%LOCALAPPDATA%/Wardogs/Saved/Config/WindowsClient/GameUserSettings.ini"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "WARDOGS is a multiplayer combat game in which players also fly helicopters. All its helicopters share one simple control layout: the stick is the cyclic, the throttle lever is the collective, and the flight information is drawn on a HUD over the view. This guide explains the HUD, the instrument panel and the joystick layout.",
+  "areas": [
+    {
+      "id": "game-hud",
+      "where": "glareshield",
+      "name": "Game HUD",
+      "text": "The flight information over the view.",
+      "panels": [
+        {
+          "id": "game-hud",
+          "name": "Game HUD",
+          "db": "game-hud",
+          "src": "c1",
+          "text": "WARDOGS draws its flight information over the view instead of on cockpit instruments: height, speed, the weapon and its ammunition, the flares left and the lock state.",
+          "context": "The pilot reads it all the time; it is the same in every WARDOGS helicopter.",
+          "controls": [
+            {
+              "id": "altitude",
+              "name": "Altitude",
+              "type": "gauge",
+              "match": [
+                "item:game-hud:1"
+              ],
+              "text": "Shows how high the helicopter is above the ground below it.",
+              "context": "Flying low keeps the helicopter hidden behind hills and buildings, but leaves little room for mistakes.",
+              "src": "c1"
+            },
+            {
+              "id": "speed",
+              "name": "Speed",
+              "type": "gauge",
+              "match": [
+                "item:game-hud:2"
+              ],
+              "text": "Shows how fast the helicopter moves through the air.",
+              "context": "The pilot slows down to land or drop off the squad, and speeds up to cross open ground.",
+              "src": "c1"
+            },
+            {
+              "id": "weapon",
+              "name": "Weapon and ammunition",
+              "type": "display",
+              "match": [
+                "item:game-hud:3"
+              ],
+              "text": "Shows the selected weapon and how many rounds or rockets are left.",
+              "context": "When it runs low the pilot reloads with the reload button or goes back to rearm.",
+              "src": "c1"
+            },
+            {
+              "id": "flares",
+              "name": "Flares",
+              "type": "indicator",
+              "match": [
+                "item:game-hud:4"
+              ],
+              "text": "Shows how many flares are left. Flares are hot burning decoys that fool heat-seeking missiles.",
+              "context": "The pilot fires them with the thumb button when a missile comes.",
+              "src": "c1"
+            },
+            {
+              "id": "lock",
+              "name": "Lock state",
+              "type": "indicator",
+              "match": [
+                "item:game-hud:5"
+              ],
+              "text": "Shows the state of the target lock, which the pilot steps through with the Cycle Lock State button.",
+              "context": "Weapons that need a lock fire at the locked target.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The instruments in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "c1",
+          "text": "The instruments in front of the pilot: the collective position, the rotor state and the basic flight instruments.",
+          "context": "The game's HUD shows most of the same facts; the panel is there to look at in the cockpit view.",
+          "controls": [
+            {
+              "id": "collective-gauge",
+              "name": "Collective gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Shows where the collective lever is set, which decides how hard the rotor lifts.",
+              "context": "Helpful with a joystick throttle that has no clear middle: the gauge shows where the lever really is.",
+              "src": "c1"
+            },
+            {
+              "id": "rotor",
+              "name": "Rotor state",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "Shows whether the rotor is running or still spinning up.",
+              "context": "The helicopter can only lift off once the rotor runs at full speed.",
+              "src": "c1"
+            },
+            {
+              "id": "flight",
+              "name": "Flight instruments",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Dials for speed, height and attitude (whether the nose is up or down and the rotor level).",
+              "context": "They help in the cockpit view when the pilot does not look at the HUD.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The joystick layout every WARDOGS helicopter shares.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic (stick)",
+          "src": "wg",
+          "text": "The joystick is the cyclic: the stick that tilts the rotor to fly forward, back and sideways. Its buttons fire, drop flares, lock targets and reload.",
+          "context": "WARDOGS binds the stick's axes by default but leaves its buttons free; the player assigns them in the joystick settings.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic (stick axes)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Forward and back pitch the nose down and up, sideways rolls the helicopter. The stick sets how fast it turns, not a fixed angle. Twisting the stick turns the nose left and right (yaw).",
+              "context": "By default X is roll, Y is pitch and the twist axis is yaw.",
+              "src": "wg"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (fire)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Fires the helicopter's weapon. It is not bound by default; the player sets it in the joystick settings.",
+              "context": "What it fires depends on the helicopter; the unarmed transports have nothing to fire.",
+              "src": "wg"
+            },
+            {
+              "id": "flares",
+              "name": "Thumb button (flares)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "Fires flares, hot burning decoys that pull heat-seeking missiles away from the helicopter.",
+              "context": "The pilot fires them as soon as a missile warning comes; the HUD shows how many are left.",
+              "src": "wg"
+            },
+            {
+              "id": "lock",
+              "name": "Second thumb button (cycle lock state)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "Steps through the target lock states, for example to lock a target for the weapons.",
+              "context": "The lock state shows on the HUD.",
+              "src": "wg"
+            },
+            {
+              "id": "reload",
+              "name": "Third thumb button (reload)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "Reloads the weapon with the ammunition the helicopter carries.",
+              "context": "The ammunition count on the HUD shows when a reload is needed.",
+              "src": "wg"
+            },
+            {
+              "id": "hat",
+              "name": "Hat switch (look around)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "Turns the pilot's view up, down, left and right.",
+              "context": "Looking around helps to find the landing zone and threats beside the helicopter.",
+              "src": "wg"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective (throttle)",
+          "src": "wg",
+          "text": "The throttle lever works as the collective, the lever that makes the helicopter climb or sink. Its buttons hold voice chat, the map and the camera.",
+          "context": "By default the collective is the joystick's Z axis, the throttle wheel or lever on most stick bases.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pushing the lever up makes the rotor lift harder so the helicopter climbs; pulling it down makes it sink.",
+              "context": "The pilot uses it with the cyclic: more lift to climb out of a landing zone, less to come down on it.",
+              "src": "wg"
+            },
+            {
+              "id": "ptt",
+              "name": "Throttle button (voice push-to-talk)",
+              "type": "button",
+              "match": [
+                "control:collective.button.1"
+              ],
+              "text": "While held, the player's microphone sends voice to the team.",
+              "context": "Talking to the squad in the back is how the pilot coordinates drop-offs.",
+              "src": "wg"
+            },
+            {
+              "id": "map",
+              "name": "Second throttle button (tactical map)",
+              "type": "button",
+              "match": [
+                "control:collective.button.2"
+              ],
+              "text": "Opens the tactical map with the battlefield and the objectives.",
+              "context": "The pilot plans the route to the next landing zone on it.",
+              "src": "wg"
+            },
+            {
+              "id": "camera",
+              "name": "Third throttle button (camera mode)",
+              "type": "button",
+              "match": [
+                "control:collective.button.3"
+              ],
+              "text": "Switches the camera mode, for example between the cockpit view and an outside view.",
+              "context": "An outside view helps to judge the space around the rotor when landing.",
+              "src": "wg"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

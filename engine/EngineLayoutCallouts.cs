@@ -19,7 +19,8 @@ namespace JoyPro.Engine
         // layout callouts (--model <id> | --layout <device layout .json>) [--picture <file>] [--schematic] [--arrange]
         //     [--device <JoyPro device name>] [--game <game> --plane <plane>] [--sample] [--png <file>] [--light]
         //     [--print-width <px>] [--save <file.json>] [--drawing-style lines|cel|<spec>] [--drawing-preset joypro|manual|
-        //     blueprint|print|custom] [--drawing-ink #rgb] [--drawing-paper #rgb] [--drawing-accent #rgb]
+        //     blueprint|print|custom] [--drawing-ink #rgb] [--drawing-paper #rgb] [--drawing-accent #rgb] [sheet style options,
+        //     EngineSheetStyleOptions.cs; the layout's own style wins]
         // A model with JoyPro's line drawing of a curated photo gets that drawing, its positions and its shipped sheet;
         // --schematic (or a model without one) uses JoyPro's schematic drawing.
 
@@ -67,9 +68,14 @@ namespace JoyPro.Engine
             bool arrange = PopFlag(args, "--arrange");
             bool sample = PopFlag(args, "--sample");
             bool schematicOnly = PopFlag(args, "--schematic");
+            SheetStyle sheetStyle = PopSheetStyleOptions(args, out string sheetStyleError);
+            if (sheetStyleError.Length > 0)
+                return Fail(sheetStyleError);
             DrawingStyle optionStyle = DrawingStyle.FromOptions(args, DrawingStyle.FromSettings(DeviceCatalog.DataRoot(), true));
             if (optionStyle != null)
                 EngineCalloutRenderer.ExportStyle = optionStyle;
+            else if (sheetStyle != null && sheetStyle.Drawing.Length > 0)
+                EngineCalloutRenderer.ExportStyle = DrawingStyle.Parse(sheetStyle.Drawing);
             if (PopFlag(args, "--check-all"))
                 return CheckAllCallouts(string.Join(" ", args), outPath);
             if (args.Count > 0 && modelId.Length == 0 && layoutFile.Length == 0 && !args[0].StartsWith("--", StringComparison.Ordinal))
@@ -172,6 +178,12 @@ namespace JoyPro.Engine
 
                 if (png.Length > 0)
                 {
+                    // The layout's own sheet style over the given one; its page colour says whether the page is dark.
+                    SheetStyle style = sheet.Style ?? sheetStyle;
+                    if (style != null && !light && !style.IsDarkPage(true))
+                        light = true;
+                    if (sheet.Style != null && sheet.Style.Drawing.Length > 0 && optionStyle == null)
+                        EngineCalloutRenderer.ExportStyle = DrawingStyle.Parse(sheet.Style.Drawing);
                     picture = EngineCalloutRenderer.LoadPicture(set, sheet, pictureFile.Length > 0 ? NormalizePath(pictureFile) : null, !light, warnings);
                     Func<string, int, string> text;
                     if (sample)
@@ -181,7 +193,7 @@ namespace JoyPro.Engine
                     else
                         text = (input, column) => string.Empty;
                     string alias = device.Length > 0 ? EngineLayoutRenderer.ResolveJoystickAlias(device) : model != null ? model.Name : set.Model;
-                    LayoutVisualOptions visual = new LayoutVisualOptions { LightStyle = light, PrintWidth = Math.Max(0, Math.Min(12000, printWidth)) };
+                    LayoutVisualOptions visual = new LayoutVisualOptions { LightStyle = light, PrintWidth = Math.Max(0, Math.Min(12000, printWidth)), Style = style };
                     CalloutRenderOptions options = game.Length > 0
                         ? EngineLayoutRenderer.CalloutOptions(visual, game, plane, alias)
                         : EngineLayoutRenderer.CalloutOptions(visual, "All games", "Relation names", alias);

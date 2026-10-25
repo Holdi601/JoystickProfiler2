@@ -209,7 +209,9 @@ namespace JoyPro.DeviceReference
 
         // The game folders the sets are kept in, per JoyPro game id (the order is the order of preference: the game with
         // the most cockpit detail first).
-        public static readonly string[] Games = { "DCS", "XPlane12", "MSFS2024", "MSFS2020", "IL2Game", "IL2Korea", "NuclearOption", "StarCitizen", "WarThunder" };
+        // Pictures rendered from a game's models (callouts on the controls) come before MSFS 2024's screenshots (its
+        // models cannot be read): an MSFS 2024 aircraft shows the same aircraft's pictures from MSFS 2020 or X-Plane.
+        public static readonly string[] Games = { "DCS", "XPlane12", "MSFS2020", "MSFS2024", "IL2Game", "IL2Korea", "NuclearOption", "StarCitizen", "WarThunder" };
 
         // Where a game's sets are: MSFS 2024 keeps its models encrypted, so its aircraft use the MSFS 2020 models.
         private static IEnumerable<string> FoldersOf(string game)

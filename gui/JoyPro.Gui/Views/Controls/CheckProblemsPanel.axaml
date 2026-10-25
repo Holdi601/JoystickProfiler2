@@ -143,7 +143,7 @@
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                                                 <TextBlock Text="{Binding Headline}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                                 <Border Grid.Column="1" Classes="chip" IsVisible="{Binding IsNew}" VerticalAlignment="Top">
-                                                    <TextBlock Text="{l:T 'New'}" FontSize="11" />
+                                                    <TextBlock Text="{l:T 'New'}" FontSize="{DynamicResource JP.FontSize.11}" />
                                                 </Border>
                                                 <ToggleButton Grid.Column="2" Classes="small ghost" Padding="4,0" VerticalAlignment="Top" IsChecked="{Binding IsExpanded}"
                                                               IsVisible="{Binding HasChoices}" ToolTip.Tip="{l:T 'Show or hide the details and fixes'}">
@@ -185,6 +185,13 @@
                                                             ToolTip.Tip="{l:T 'Opens the first relation in the Relations page and names the other one'}" />
                                                     <Button Classes="small ghost" Content="{l:T 'Switch off in all'}" Command="{Binding SwitchOffAllCommand}"
                                                             ToolTip.Tip="{l:T 'None of these relations keeps it for these aircraft (a tick brings it back). Ctrl+Z undoes it.'}" />
+                                                </WrapPanel>
+                                                <WrapPanel ItemSpacing="6" LineSpacing="4" IsVisible="{Binding HasMergeCopies}">
+                                                    <Button Classes="small accent" Content="{Binding MergeCopiesText}" Command="{Binding MergeCopiesCommand}"
+                                                            ToolTip.Tip="{l:T 'One relation with every aircraft of the copies, their groups and their tuning per aircraft; the copies are removed. Ctrl+Z undoes it.'}" />
+                                                    <Button Classes="small" Content="{Binding MergeAllCopiesText}" Command="{Binding MergeAllCopiesCommand}" IsVisible="{Binding HasMergeAllCopies}"
+                                                            ToolTip.Tip="{l:T 'Every family of copied relations shown here, each into one relation (one undo step)'}" />
+                                                    <Button Classes="small ghost" Content="{l:T 'Open the relations'}" Command="{Binding OpenAllCommand}" />
                                                 </WrapPanel>
                                                 <Button Classes="small ghost" Content="{l:T 'Open Issue Context'}" Command="{Binding OpenContextCommand}" IsVisible="{Binding HasOpenContext}" />
                                             </StackPanel>

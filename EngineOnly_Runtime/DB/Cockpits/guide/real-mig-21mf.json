@@ -1,0 +1,64 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mig-21mf",
+  "title": "MiG-21MF Fishbed-J",
+  "inherits": "dcs-mig-21bis",
+  "variants": [
+    "mig-21mf"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mikoyan-Gurevich MiG-21 (Wikipedia), variants",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mikoyan-Gurevich_MiG-21"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS MiG-21bis Flight Manual (EN)",
+      "file": "Mods/aircraft/MIG-21bis/Doc/DCS MiG-21bis EN.pdf"
+    }
+  ],
+  "intro": "The MiG-21MF is a 1970s version of the famous Soviet delta-wing fighter, one step before the MiG-21bis that DCS models. It has the RP-22 radar, the ASP-PFD gunsight and the R-13-300 engine, which has no emergency afterburner stage. The cockpit, the stick and the throttle are taken from the MiG-21bis, so this guide follows the bis; the throttle entry describes the MF's engine.",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "panels": [
+        {
+          "id": "throttle",
+          "name": "Throttle (left console)",
+          "src": "m1",
+          "page": "50",
+          "text": "The throttle lever on the left console sets the engine's power. The twist grip, the switches and the buttons on it handle the radar, the sight, the radio and the air brakes.",
+          "context": "The pilot can keep his hand on the throttle for most things. It has an idle stop and a stop position that need levers to pass.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Moving this lever forward gives the R-13-300 engine more power and moving it back gives less. Past the maximum dry power position it lights the afterburner, which burns extra fuel at the back of the engine for much more push. The MF has no emergency afterburner stage like the MiG-21bis.",
+              "context": "It is the same lever as in the MiG-21bis, so its stops (stop, idle, maximum, afterburner) and its twist grip work alike; only the engine behind it is the older, slightly weaker one.",
+              "src": "m1",
+              "page": "50"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

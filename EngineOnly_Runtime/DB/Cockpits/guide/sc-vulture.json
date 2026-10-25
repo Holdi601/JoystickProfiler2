@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-vulture",
+  "title": "Vulture (Drake Interplanetary, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-vulture"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Vulture (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Vulture"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Vulture is a light salvage ship from Drake Interplanetary in Star Citizen: it takes apart wrecks to sell the material. The pilot flies alone and works the salvage heads from the cockpit. In salvage mode the salvage beams fire on the same trigger as the guns.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Vulture: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Vulture's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (two)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Vulture has two guns for defence. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "salvage",
+              "name": "Salvage heads",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Salvage heads scrape material off wrecks. The pilot fires them with the trigger in salvage mode.",
+              "context": "Salvage mode has no stick button in this preset; the pilot switches it on the keyboard, then the trigger works the beams.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (12 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The hold takes 12 SCU, for example the salvaged material. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

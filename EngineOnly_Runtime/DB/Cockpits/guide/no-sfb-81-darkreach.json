@@ -1,0 +1,266 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "no-sfb-81-darkreach",
+  "title": "SFB-81 Darkreach (Nuclear Option)",
+  "inherits": "game-nuclear-option",
+  "remove": [
+    "stick",
+    "throttle",
+    "pedals"
+  ],
+  "variants": [
+    "no-sfb-81-darkreach"
+  ],
+  "games": [
+    "NuclearOption"
+  ],
+  "sets": [
+    "NuclearOption/Darkreach"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "SFB-81 Darkreach (Nuclear Option Wiki)",
+      "kind": "reference",
+      "url": "https://nuclearoption.wiki.gg/wiki/SFB-81_Darkreach"
+    },
+    {
+      "id": "nw",
+      "title": "Nuclear Option Wiki: Controls",
+      "kind": "game-manual",
+      "url": "https://nuclearoption.wiki.gg/wiki/Nuclear_Option_Wiki:Controls"
+    },
+    {
+      "id": "ns",
+      "title": "Steam: Question Joystick/keyboard ? (Nuclear Option discussions)",
+      "kind": "tutorial",
+      "url": "https://steamcommunity.com/app/2168680/discussions/0/5715697457572661391/"
+    },
+    {
+      "id": "na",
+      "title": "Nuclear Option 0.34.2 Rewired action catalog (JoyPro DB/NuclearOption/actions.tsv)",
+      "kind": "game-files",
+      "file": "NuclearOption_Data/resources.assets"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The SFB-81 Darkreach is a fictional strategic stealth bomber from Nuclear Option, flown by two pilots. Its four internal bays carry bombs and cruise missiles, nuclear ones included; it has no weapons against other aircraft. The flight deck has a HUD and the shared main and status displays.",
+  "areas": [
+    {
+      "id": "flight-controls",
+      "where": "hotas",
+      "name": "Stick, throttle and pedals",
+      "text": "The default joystick map with what is special in this aircraft.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick",
+          "src": "nw",
+          "text": "The joystick flies the aircraft and holds most of its buttons. Nuclear Option uses one global key map for all aircraft, so every button does the same job in every aircraft.",
+          "context": "The buttons are named by number because Nuclear Option binds them by joystick button number; on most sticks button 1 is the trigger.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Stick axes (pitch, roll, yaw)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward points the nose down, pulling it points the nose up. Moving it sideways rolls the aircraft. Twisting it (or the rudder pedals) turns the nose left and right (yaw).",
+              "context": "These are the first axes of the joystick by default; the game's flight computer turns them into movements of the control surfaces.",
+              "src": "nw"
+            },
+            {
+              "id": "trigger",
+              "name": "Button 1 (trigger): release",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Releases the selected bomb or cruise missile from the Darkreach's internal bays. The bomber carries nothing to fire at other aircraft.",
+              "context": "The pilot selects the target first; cruise missiles then fly to it on their own.",
+              "src": "s1"
+            },
+            {
+              "id": "select",
+              "name": "Button 2: Target Select",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "Selects the unit in the middle of the pilot's view as the target.",
+              "context": "The pilot looks or points the nose at a unit and presses it; guided weapons then go for that target.",
+              "src": "nw"
+            },
+            {
+              "id": "cancel",
+              "name": "Button 3: Target Cancel",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "A short press drops the last selected target. Holding the button clears all targets.",
+              "context": "Useful after a target is destroyed or when the pilot picked the wrong one.",
+              "src": "nw"
+            },
+            {
+              "id": "weapon",
+              "name": "Button 4: Next Weapon",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "A short press steps to the next weapon. Holding the button switches the automatic turret control on or off in aircraft that have a turret.",
+              "context": "The selected weapon shows on the HUD.",
+              "src": "nw"
+            },
+            {
+              "id": "cm-type",
+              "name": "Button 5: Next Countermeasure",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.1"
+              ],
+              "text": "Steps to the next kind of countermeasure, the things the aircraft throws out to fool enemy missiles.",
+              "context": "Flares fool heat-seeking missiles, chaff fools radar missiles; the pilot picks the right one for the threat.",
+              "src": "nw"
+            },
+            {
+              "id": "gear",
+              "name": "Button 6: Landing gear",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.2"
+              ],
+              "text": "Raises or lowers the landing gear, the wheels and their legs.",
+              "context": "Up after take-off for more speed, down before landing; the status display shows the gear position.",
+              "src": "nw"
+            },
+            {
+              "id": "cm-fire",
+              "name": "Button 7: Countermeasures",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.3"
+              ],
+              "text": "Releases the selected countermeasure, a flare or a bundle of chaff.",
+              "context": "The pilot presses it when a missile warning sounds, often while turning hard.",
+              "src": "nw"
+            },
+            {
+              "id": "nvg",
+              "name": "Button 8: Night vision",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.4"
+              ],
+              "text": "Switches night vision on or off, which makes the dark visible.",
+              "context": "It helps on night missions to see the ground and other aircraft.",
+              "src": "nw"
+            },
+            {
+              "id": "fa",
+              "name": "Button 9: Flight assist / auto-hover",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.5"
+              ],
+              "text": "A short press switches flight assist on or off. In the VTOL aircraft, holding it turns on auto-hover, which keeps the aircraft hovering in place.",
+              "context": "Flight assist is the flight computer's help that keeps the aircraft smooth and within safe limits.",
+              "src": "nw"
+            },
+            {
+              "id": "radar",
+              "name": "Button 10: Radar",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "Switches the radar on or off. The radar sends radio waves to find other aircraft and units.",
+              "context": "A radar that is on finds more but also tells the enemy where the aircraft is.",
+              "src": "nw"
+            },
+            {
+              "id": "eject",
+              "name": "Button 11: Eject",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.7"
+              ],
+              "text": "Ejects the crew: the seats shoot the crew out of the aircraft in an emergency.",
+              "context": "Used only when the aircraft cannot be saved.",
+              "src": "nw"
+            },
+            {
+              "id": "stick-grip",
+              "name": "Stick grip: the game's flight commands",
+              "type": "other",
+              "match": [
+                "label:Stick grip: the game's flight controls (bind them to any button)"
+              ],
+              "text": "In the game's control picture the stick stands for all of Nuclear Option's flight commands, which the player can bind to any button. Besides the defaults above there are commands without a default joystick button, such as Radial Menu, Axis Modifier, Nav Lights, Toggle Engine, Previous Weapon, Link Guns, Weapon Wheel, Turret Control and Custom Axis 1.",
+              "context": "The same command list applies to every aircraft; the player sets the binds once in the game's control settings.",
+              "src": "na"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "nw",
+          "text": "The throttle lever sets the power of all engines at once, like a car's gas pedal.",
+          "context": "Nuclear Option reads it from the fourth axis of the device by default; the player binds the real throttle lever there.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle axis",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Forward gives more power to all engines, back gives less.",
+              "context": "More power means more speed and climb, but also more fuel used and more heat for heat-seeking missiles to follow.",
+              "src": "nw"
+            },
+            {
+              "id": "throttle-grip",
+              "name": "Throttle grip: the game's flight commands",
+              "type": "other",
+              "match": [
+                "label:Throttle grip: the game's flight controls (bind them to any button)"
+              ],
+              "text": "In the game's control picture the throttle stands for the same list of flight commands as the stick. The player can put any of them, for example Custom Axis 1 or Nav Lights, on the throttle's own buttons and axes.",
+              "context": "Binds are global in Nuclear Option, so a throttle set up once works in every aircraft.",
+              "src": "na"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Pedals",
+          "src": "nw",
+          "text": "The brake axis slows the wheels on the ground.",
+          "context": "By default it is the fifth axis of the device; the player binds a toe brake of the rudder pedals there.",
+          "controls": [
+            {
+              "id": "brake",
+              "name": "Brake axis",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake"
+              ],
+              "text": "Pressing the brake slows and stops the aircraft on the ground, harder the further it is pressed.",
+              "context": "Used after landing and while taxiing; it has no effect in the air.",
+              "src": "nw"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

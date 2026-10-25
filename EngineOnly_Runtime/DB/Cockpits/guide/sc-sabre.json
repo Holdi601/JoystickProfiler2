@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-sabre",
+  "title": "Sabre (Aegis Dynamics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-sabre"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Sabre (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Sabre"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Sabre is a single-seat stealth fighter from Aegis Dynamics in Star Citizen, built for winning control of the space around it. The cockpit sits inside an angular hull shaped to be hard to detect. The common Star Citizen controls apply unchanged.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Sabre: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Sabre's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (four)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Sabre has four guns, all fired by the pilot with the trigger.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (four missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Sabre carries four missiles in its racks. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "stealth",
+              "name": "Low signature hull",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The Sabre's hull has flat, angled shapes that keep the ship hard to see on other ships' radar.",
+              "context": "Being hard to detect lets the ship get close before others see it; switching off systems in the seat panel helps further.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

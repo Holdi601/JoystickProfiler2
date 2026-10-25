@@ -1,0 +1,611 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-space-shuttle",
+  "title": "Space Shuttle (commander's station)",
+  "variants": [
+    "space-shuttle-cdr"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Space Shuttle Controllers Workbook CONT 21002 (NASA/USA)",
+      "kind": "manual",
+      "url": "https://ibiblio.org/apollo/Shuttle/383442main_controllers_workbook_21002.pdf"
+    },
+    {
+      "id": "s2",
+      "title": "NSTS 1988 News Reference: Rotational hand controllers (GlobalSecurity mirror)",
+      "kind": "manual",
+      "url": "https://www.globalsecurity.org/space/library/report/1988/sts-rhc.html"
+    },
+    {
+      "id": "s3",
+      "title": "Space Shuttle orbiter (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Space Shuttle orbiter (1981-2011) was a reusable spaceplane: it launched like a rocket, flew in orbit like a spacecraft and glided home without engines to land on a runway. The commander sat on the left of the flight deck with a hand controller in front of the seat, the speed brake lever and a translation handle on the left, and rudder pedals. Controls and trim follow the NASA controllers workbook; panel numbers and button names follow the shuttle crew documents as known.",
+  "areas": [
+    {
+      "id": "f2",
+      "where": "glareshield",
+      "name": "Glareshield panel F2",
+      "text": "The flight control mode push buttons.",
+      "panels": [
+        {
+          "id": "f2",
+          "name": "Glareshield panel F2 (flight control mode PBIs)",
+          "text": "Lighted push buttons (PBIs) under the glareshield that decide whether the computers or the commander steer.",
+          "context": "During the return the commander often switched to CSS to fly the final approach and landing by hand.",
+          "controls": [
+            {
+              "id": "pitch",
+              "name": "PITCH AUTO / CSS",
+              "type": "button",
+              "match": [
+                "item:f2:1"
+              ],
+              "text": "Push buttons that choose who steers the nose up and down: AUTO lets the guidance computers steer, CSS (control stick steering) lets the commander steer with the hand controller.",
+              "context": "The lit button shows which mode is active.",
+              "src": "s1"
+            },
+            {
+              "id": "rollyaw",
+              "name": "ROLL/YAW AUTO / CSS",
+              "type": "button",
+              "match": [
+                "item:f2:2"
+              ],
+              "text": "The same choice for rolling and turning the orbiter: computers (AUTO) or the hand controller (CSS).",
+              "context": "Pitch and roll/yaw can be switched separately.",
+              "src": "s1"
+            },
+            {
+              "id": "spdbk",
+              "name": "SPD BK/THROT AUTO / MAN",
+              "type": "button",
+              "match": [
+                "item:f2:3"
+              ],
+              "text": "Buttons that choose whether the speed brake (and the engine throttle during launch) is set by the computers or by hand with the speed brake/thrust controller.",
+              "context": "The speed brake is a split rudder that opens to slow the orbiter during the glide home.",
+              "src": "s1"
+            },
+            {
+              "id": "bodyflap",
+              "name": "BODY FLAP AUTO / MAN",
+              "type": "button",
+              "match": [
+                "item:f2:4"
+              ],
+              "text": "Buttons that choose whether the body flap, a movable plate under the engines, is moved by the computers or by hand.",
+              "context": "The body flap helps keep the nose at the right angle during the return through the atmosphere.",
+              "src": "s3"
+            },
+            {
+              "id": "alarm",
+              "name": "Master alarm",
+              "type": "light",
+              "match": [
+                "item:f2:5"
+              ],
+              "text": "A light that comes on with a tone when a system has a problem. Pressing it switches the alarm off.",
+              "context": "The caution and warning matrix on the centre panel then shows which system it is."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "forward",
+      "where": "front-center",
+      "name": "Forward panels F3, F6-F8",
+      "text": "Screens, abort switch, gear and drag chute.",
+      "panels": [
+        {
+          "id": "f6-f8",
+          "name": "Forward panels F6-F8 (MEDS displays)",
+          "text": "The glass cockpit screens (MEDS) and the commander's flight panel F6 with the abort switch and the gear buttons.",
+          "context": "From 2000 the orbiters had these flat screens instead of the old round dials and tube screens.",
+          "controls": [
+            {
+              "id": "cdr-mdu",
+              "name": "Commander's MDUs (CDR1, CDR2)",
+              "type": "display",
+              "match": [
+                "item:f6-f8:1"
+              ],
+              "text": "The commander's two screens. They show the flight instruments (attitude, heading, speed and height tapes) or pages about the systems.",
+              "context": "The commander flies by them during launch and landing.",
+              "src": "s3"
+            },
+            {
+              "id": "centre-mdu",
+              "name": "Centre MDUs on F7",
+              "type": "display",
+              "match": [
+                "item:f6-f8:2"
+              ],
+              "text": "The shared screens in the middle of the panel, which show the computer pages and system displays for both pilots.",
+              "context": "Commander and pilot work with them together."
+            },
+            {
+              "id": "cw",
+              "name": "Caution and warning matrix (F7)",
+              "type": "light",
+              "match": [
+                "item:f6-f8:3"
+              ],
+              "text": "A board of labelled lights, each saying which system has a problem.",
+              "context": "When the master alarm sounds, the crew looks here."
+            },
+            {
+              "id": "abort",
+              "name": "Abort mode rotary switch and ABORT PBI (F6)",
+              "type": "selector",
+              "match": [
+                "item:f6-f8:4"
+              ],
+              "positions": [
+                {
+                  "name": "RTLS",
+                  "text": "Return to the launch site."
+                },
+                {
+                  "name": "TAL",
+                  "text": "Land on a runway across the ocean."
+                },
+                {
+                  "name": "ATO",
+                  "text": "Abort to a lower, safe orbit."
+                }
+              ],
+              "text": "A knob that chooses the kind of emergency return during launch, and a push button that starts it. RTLS turns back to the launch site, TAL lands across the ocean, ATO goes to a lower orbit.",
+              "context": "It was used once for real: in 1985 an engine failure led to an abort to orbit (ATO).",
+              "src": "s3"
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear ARM and DN PBIs (F6)",
+              "type": "button",
+              "match": [
+                "item:f6-f8:5"
+              ],
+              "text": "Two push buttons: ARM prepares the landing gear, DN lowers it.",
+              "context": "The gear goes down only shortly before touchdown, because it cannot be raised again in flight."
+            }
+          ]
+        },
+        {
+          "id": "f3",
+          "name": "Panel F3 (trim enable, drag chute)",
+          "text": "Switches between the two pilots' panels for enabling the trim and the buttons for the landing drag chute.",
+          "context": "They are used for the glide home and the landing.",
+          "controls": [
+            {
+              "id": "trim-en",
+              "name": "Trim RHC/PNL enable-inhibit",
+              "type": "switch2",
+              "match": [
+                "item:f3:1"
+              ],
+              "positions": [
+                {
+                  "name": "ENABLE",
+                  "text": "Trimming is allowed."
+                },
+                {
+                  "name": "INHIBIT",
+                  "text": "Trimming is blocked."
+                }
+              ],
+              "text": "This switch allows or blocks trimming with the hand controller and the panel trim switches.",
+              "context": "It is a safety switch that keeps the trim from being changed by accident.",
+              "src": "s1"
+            },
+            {
+              "id": "trim-pwr",
+              "name": "Trim panel on/off",
+              "type": "switch2",
+              "match": [
+                "item:f3:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The panel trim has power."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The panel trim is off."
+                }
+              ],
+              "text": "This switch powers the panel trim switches.",
+              "context": "Without power the panel trim switches do nothing.",
+              "src": "s1"
+            },
+            {
+              "id": "chute",
+              "name": "Drag chute ARM / DEPLOY / JETT PBIs",
+              "type": "button",
+              "match": [
+                "item:f3:3"
+              ],
+              "text": "Buttons for the drag chute, a big parachute behind the orbiter that helps it stop on the runway: arm it, let it out after touchdown, and throw it off when slow.",
+              "context": "It was added to the orbiters from 1992.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l2",
+      "where": "left-console",
+      "name": "Left panel L2",
+      "text": "Trim, body flap and entry mode.",
+      "panels": [
+        {
+          "id": "l2",
+          "name": "Left panel L2 (trim, body flap, entry mode)",
+          "text": "The commander's switches for the trim, the body flap and the entry flight control.",
+          "context": "They are used during the return and the glide to the runway.",
+          "controls": [
+            {
+              "id": "trim",
+              "name": "Panel trim switches",
+              "type": "switch",
+              "match": [
+                "item:l2:1"
+              ],
+              "text": "Switches that trim the roll and yaw of the control surfaces (the movable parts of the wings and tail), small adjustments so the orbiter flies straight without holding the controls.",
+              "context": "They work only when the trim is enabled on panel F3.",
+              "src": "s1"
+            },
+            {
+              "id": "bodyflap",
+              "name": "Body flap switch",
+              "type": "switch",
+              "match": [
+                "item:l2:2"
+              ],
+              "text": "This switch moves the body flap up or down by hand.",
+              "context": "It is used when the body flap mode on F2 is set to manual.",
+              "src": "s1"
+            },
+            {
+              "id": "entry-mode",
+              "name": "Entry mode switch",
+              "type": "switch3",
+              "match": [
+                "item:l2:3"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "Normal entry flight control."
+                },
+                {
+                  "name": "LO GAIN",
+                  "text": "The control reacts more gently."
+                },
+                {
+                  "name": "NO Y JET",
+                  "text": "The yaw jets are not used."
+                }
+              ],
+              "text": "This switch chooses how the flight control works during the return: normal, with lower gains, or without the yaw jets (the small rocket jets that turn the nose sideways).",
+              "context": "AUTO is the normal setting; the others are for failures.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c3",
+      "where": "center-pedestal",
+      "name": "Centre console C3",
+      "text": "Orbital engines, flight control channels, autopilot.",
+      "panels": [
+        {
+          "id": "c3",
+          "name": "Centre console C3 (OMS, FCS channels)",
+          "text": "The console between the two seats with the orbital engine switches, the flight control channels, the autopilot buttons and the air data probes.",
+          "context": "Both pilots reach it; the autopilot buttons here were used throughout the time in orbit.",
+          "controls": [
+            {
+              "id": "oms",
+              "name": "OMS engine switches",
+              "type": "switch3",
+              "match": [
+                "item:c3:1"
+              ],
+              "positions": [
+                {
+                  "name": "ARM-PRESS",
+                  "text": "Armed, with the tanks pressurized."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The engine is armed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The engine cannot fire."
+                }
+              ],
+              "text": "Switches that arm the two orbital manoeuvring engines (OMS), the engines at the tail that change the orbit and start the return.",
+              "context": "They are armed before every OMS burn, including the deorbit burn that brings the orbiter home.",
+              "src": "s3"
+            },
+            {
+              "id": "fcs",
+              "name": "FCS channel switches",
+              "type": "switch3",
+              "match": [
+                "item:c3:2"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The channel works normally."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The channel is switched off."
+                },
+                {
+                  "name": "OVERRIDE",
+                  "text": "The channel is forced to stay on."
+                }
+              ],
+              "text": "Switches for the channels of the flight control system, the electronics that move the control surfaces. The channels back each other up.",
+              "context": "AUTO is normal; a bad channel can be switched off or forced on.",
+              "src": "s1"
+            },
+            {
+              "id": "dap",
+              "name": "DAP pushbuttons",
+              "type": "button",
+              "match": [
+                "item:c3:3"
+              ],
+              "text": "Buttons for the digital autopilot (DAP) in orbit: how the orbiter holds its attitude and how the hand controllers fire the steering jets.",
+              "context": "The crew set them for each task, for example docking or holding still for an experiment. JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            },
+            {
+              "id": "probes",
+              "name": "Air data probe switches",
+              "type": "switch",
+              "match": [
+                "item:c3:4"
+              ],
+              "text": "Switches that swing out the air data probes, small tubes on the nose that measure speed and height in the air.",
+              "context": "They are deployed during the glide home, once the orbiter is slow enough."
+            },
+            {
+              "id": "plt-trim",
+              "name": "Pilot's panel trim and body flap",
+              "type": "switch",
+              "match": [
+                "item:c3:5"
+              ],
+              "text": "The second set of trim and body flap switches, for the pilot on the right.",
+              "context": "With them the pilot can trim and move the body flap just like the commander."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panels",
+      "text": "Computer switches and circuit breakers.",
+      "panels": [
+        {
+          "id": "overhead",
+          "name": "Overhead panels O1-O17",
+          "text": "The panels in the roof with the computer switches and the circuit breakers.",
+          "context": "The five general purpose computers that fly the orbiter are switched here.",
+          "controls": [
+            {
+              "id": "gpc",
+              "name": "GPC mode switches (O6)",
+              "type": "switch3",
+              "match": [
+                "item:overhead:1"
+              ],
+              "positions": [
+                {
+                  "name": "HALT",
+                  "text": "The computer is stopped."
+                },
+                {
+                  "name": "STBY",
+                  "text": "The computer waits on standby."
+                },
+                {
+                  "name": "RUN",
+                  "text": "The computer runs its programs."
+                }
+              ],
+              "text": "Switches for the general purpose computers (GPCs), the five computers that fly the orbiter. Each one can be stopped, put on standby or set to run.",
+              "context": "Four computers normally run the same program and vote; the fifth runs the backup flight system.",
+              "src": "s3"
+            },
+            {
+              "id": "cb",
+              "name": "Circuit breakers (O14-O16)",
+              "type": "switch",
+              "match": [
+                "item:overhead:2"
+              ],
+              "text": "Rows of circuit breakers, safety switches that cut the power to a system when it draws too much.",
+              "context": "The crew sets them with the checklists; a tripped breaker explains a dead system."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers and pedals",
+      "text": "Everything the commander holds or pushes.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Rotational hand controller",
+          "text": "The pistol grip in front of the commander's seat, between the knees.",
+          "context": "It flies the orbiter by hand: through the steering jets in space and through the control surfaces in the air.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Rotational hand controller (RHC)",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the grip forward or back pitches the orbiter, sideways rolls it, twisting yaws it. Twisting for yaw works only during launch and in orbit; in the air the pedals turn the nose.",
+              "context": "On a joystick it is the X, Y and twist axes; the commander uses it for docking and for flying the landing by hand.",
+              "src": "s2"
+            },
+            {
+              "id": "trim",
+              "name": "RHC trim switch",
+              "type": "hat",
+              "match": [
+                "control:rhc.hat.trim"
+              ],
+              "text": "A four-way switch on top of the grip for the trim: forward and back trim the pitch, left and right the roll.",
+              "context": "Trim means small adjustments so the orbiter flies steadily without holding the grip. It works when the trim is enabled on panel F3.",
+              "src": "s1"
+            },
+            {
+              "id": "bfs",
+              "name": "BFS engage button",
+              "type": "button",
+              "match": [
+                "control:rhc.button.bfs"
+              ],
+              "text": "A red button on the grip that hands control to the backup flight system (BFS), the fifth computer with its own separately written program.",
+              "context": "It is the emergency step if the four main computers fail; it was never needed in flight.",
+              "src": "s3"
+            },
+            {
+              "id": "ptt",
+              "name": "Communications switch",
+              "type": "button",
+              "match": [
+                "control:rhc.button.ptt"
+              ],
+              "text": "While this switch on the grip is held, the commander's voice goes out on the radio or the intercom.",
+              "context": "It works like the button of a walkie-talkie.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "sbtc",
+          "name": "Speed brake/thrust controller (SBTC)",
+          "text": "The lever on the commander's left side console.",
+          "context": "On the commander's side it sets the speed brake during the glide home.",
+          "controls": [
+            {
+              "id": "axis",
+              "name": "Speed brake/thrust controller (SBTC), left",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Pulling this lever back opens the speed brake, the split rudder at the tail that opens like a book to slow the orbiter; pushing it forward closes it.",
+              "context": "The orbiter glides home without engine power, so the speed brake is the main way to control its speed.",
+              "src": "s1"
+            },
+            {
+              "id": "takeover",
+              "name": "SBTC takeover switch",
+              "type": "button",
+              "match": [
+                "control:throttle.button.takeover"
+              ],
+              "text": "Pressing this button on the lever hands the speed brake from the computers to the commander.",
+              "context": "From then on the lever sets the speed brake by hand.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "Translational hand controller",
+          "text": "The T-handle at the left of the commander's seat.",
+          "context": "It moves the orbiter in orbit without turning it; there is no use for it in the air.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Translational hand controller (THC)",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This handle moves the whole orbiter without turning it (translation): forward, back, left, right, up and down, by firing the steering jets.",
+              "context": "It was used for meeting and docking with space stations and for catching satellites; on a joystick it is a second three-axis controller.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Rudder pedals",
+          "text": "The pedals at the commander's feet with toe brakes on top.",
+          "context": "They work in the air and on the runway, not in space.",
+          "controls": [
+            {
+              "id": "rudder",
+              "name": "Rudder pedals (RPTA)",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left or right pedal moves the rudder at the tail and, on the runway, steers the nose wheel.",
+              "context": "They are used in the last part of the glide and to keep the orbiter on the runway centre line.",
+              "src": "s1"
+            },
+            {
+              "id": "brake-l",
+              "name": "Left toe brake",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake_left"
+              ],
+              "text": "Pressing the top of the left pedal brakes the left main wheels.",
+              "context": "The commander brakes after the nose wheel is down; braking one side more helps steer."
+            },
+            {
+              "id": "brake-r",
+              "name": "Right toe brake",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake_right"
+              ],
+              "text": "Pressing the top of the right pedal brakes the right main wheels.",
+              "context": "It is used together with the left toe brake to stop on the runway."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -29,12 +29,21 @@
             </FluentTheme.Palettes>
         </FluentTheme>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <!-- The colour pickers of the theme editor (spectrum and sliders only; the texts around them are JoyPro's) -->
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
         <StyleInclude Source="avares://JoyPro.Gui/Styles/IconStyles.axaml" />
         <StyleInclude Source="avares://JoyPro.Gui/Styles/DesignStyles.axaml" />
 
-        <Style Selector="Window">
+        <Style Selector=":is(TopLevel)">
             <!-- Bahnschrift, with the CJK font of the language shown (App.axaml.cs, Languages.FontStack) -->
             <Setter Property="FontFamily" Value="{DynamicResource JP.UiFont}" />
+            <!-- The theme's default weight (Settings > Appearance, Services/ThemeService.cs) -->
+            <Setter Property="FontWeight" Value="{DynamicResource JP.UiFontWeight}" />
+        </Style>
+
+        <!-- The theme's line spacing: extra room between the lines of a wrapped text -->
+        <Style Selector="TextBlock">
+            <Setter Property="LineSpacing" Value="{DynamicResource JP.LineSpacing}" />
         </Style>
 
         <Style Selector="Button">

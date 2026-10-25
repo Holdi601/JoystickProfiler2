@@ -62,7 +62,7 @@ game ──UDP / HTTP / shared memory / SimConnect / files──> feed (Telemetr
 
 ### Settings (`<data>\Telemetry\telemetry-recording.json`)
 
-`<data>` = `JOYPRO_DATA_DIR`, else `%LOCALAPPDATA%\JoyPro`. Written by the GUI and by `engine telemetry config set`,
+`<data>` = `JOYPRO_DATA_DIR`, else `%LOCALAPPDATA%\JoyPro2`. Written by the GUI and by `engine telemetry config set`,
 read by JoyPro.Ffb at start and on "reload".
 
 | Key | Default | Meaning |

@@ -1,0 +1,352 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "tca-av-8b",
+  "title": "AV-8B Harrier II (Tiny Combat Arena)",
+  "variants": [
+    "tca-av-8b"
+  ],
+  "games": [
+    "TinyCombatArena"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Tiny Combat Arena on Steam",
+      "kind": "reference",
+      "url": "https://store.steampowered.com/app/1347550/Tiny_Combat_Arena/"
+    },
+    {
+      "id": "tg",
+      "title": "Tiny Combat Arena 0.17.2.3 Rewired action catalog (JoyPro DB/TinyCombatArena/actions.tsv)",
+      "kind": "game-files",
+      "file": "Arena_Data/sharedassets1.assets"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The AV-8B Harrier II is the one aircraft the player flies in Tiny Combat Arena's early access: an attack jet that can hover and land vertically by pointing its four engine nozzles down. The cockpit is simple and low-poly, but its stick, throttle, nozzle lever, pedals and gear lever move with the player's input. Tiny Combat Arena gives HOTAS defaults only to joysticks it recognises, so the button places below are the usual ones, not confirmed defaults.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "HUD",
+      "text": "The glass screen in front of the pilot's eyes.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD (head-up display)",
+          "db": "hud",
+          "src": "c1",
+          "text": "The HUD is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks. Its units can be set to Authentic, Imperial or Metric.",
+          "context": "The pilot flies and aims with it; it changes when the weapons are put away for navigation.",
+          "controls": [
+            {
+              "id": "speed-alt",
+              "name": "Airspeed and altitude",
+              "type": "gauge",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "Numbers that show how fast the jet flies and how high it is.",
+              "context": "The pilot watches both on attack runs and when slowing down to hover.",
+              "src": "c1"
+            },
+            {
+              "id": "heading",
+              "name": "Heading",
+              "type": "gauge",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A scale that shows the compass direction the nose points to.",
+              "context": "Used to fly towards a target or back home.",
+              "src": "c1"
+            },
+            {
+              "id": "cues",
+              "name": "Weapon and target cues",
+              "type": "display",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "Shows the selected weapon, a box around the locked target and the aiming marks.",
+              "context": "The target is locked with the lock button; the cues then show where to aim and when to release.",
+              "src": "c1"
+            },
+            {
+              "id": "nav",
+              "name": "Nav mode",
+              "type": "indicator",
+              "match": [
+                "item:hud:4"
+              ],
+              "text": "Shows when navigation mode is on, which puts the weapons away and shows flight information only.",
+              "context": "The game's action Select Nav Mode switches it; it has no default button.",
+              "src": "tg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mfds",
+      "where": "front-center",
+      "name": "MFDs",
+      "text": "The cockpit displays.",
+      "panels": [
+        {
+          "id": "mfds",
+          "name": "MFDs (cockpit displays)",
+          "db": "mfds",
+          "src": "c1",
+          "text": "The displays in the panel: a short-range radar with threat warnings and a counter for chaff and flares.",
+          "context": "The pilot checks them for threats and for the countermeasures left.",
+          "controls": [
+            {
+              "id": "radar",
+              "name": "Radar / threat warning display",
+              "type": "display",
+              "match": [
+                "item:mfds:1"
+              ],
+              "text": "A short-range radar that shows other aircraft, together with threat warnings when an enemy radar is looking at the jet. It changes its range by itself.",
+              "context": "It helps to find enemies before they are close.",
+              "src": "c1"
+            },
+            {
+              "id": "cm-counter",
+              "name": "Chaff / flare counter",
+              "type": "indicator",
+              "match": [
+                "item:mfds:2"
+              ],
+              "text": "Shows how much chaff (clouds of metal strips for radar missiles) and how many flares (hot decoys for heat-seeking missiles) are left.",
+              "context": "The pilot drops them with the countermeasure button when a missile comes.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Throttle quadrant",
+      "text": "The throttle and nozzle levers on the left.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Throttle quadrant",
+          "db": "left-console",
+          "src": "c1",
+          "text": "The throttle lever and the nozzle lever on the left side. Both move in the cockpit as the player moves the real controls.",
+          "context": "The Harrier is the only aircraft in the game with a nozzle lever; it is what lets it hover.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:1"
+              ],
+              "text": "Sets the engine's thrust: forward for more, back for less.",
+              "context": "In a hover the throttle decides whether the jet climbs or sinks.",
+              "src": "c1"
+            },
+            {
+              "id": "nozzle",
+              "name": "Nozzle lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "Turns the four engine nozzles from pointing back (normal flight) to pointing down (hover and short take-off).",
+              "context": "Pointing the nozzles down turns the engine's push into lift, so the jet can hover and land vertically.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gear",
+      "where": "front-left",
+      "name": "Gear lever",
+      "text": "The landing gear lever and its lights.",
+      "panels": [
+        {
+          "id": "gear",
+          "name": "Gear lever",
+          "db": "gear",
+          "src": "c1",
+          "text": "The lever that raises and lowers the landing gear, with lights that show where the gear is.",
+          "context": "The game's action Toggle Landing Gear moves it; it has no default joystick button.",
+          "controls": [
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:gear:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The gear is folded away for flight."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The gear is down for landing and taxiing."
+                }
+              ],
+              "text": "Raises or lowers the landing gear, the wheels and their legs.",
+              "context": "Up after take-off, down before landing.",
+              "src": "tg"
+            },
+            {
+              "id": "gear-lights",
+              "name": "Gear lights",
+              "type": "light",
+              "match": [
+                "item:gear:2"
+              ],
+              "text": "Lights that show whether the gear is up, moving or down.",
+              "context": "The pilot checks them before touching down.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The joystick controls and the game's actions on them.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Stick",
+          "src": "tg",
+          "text": "The joystick flies the jet and holds the weapon buttons.",
+          "context": "Only the hat's look function is a documented default; the buttons are where the game's actions usually go.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Stick axes (pitch, roll, yaw)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Forward and back point the nose down and up, sideways rolls the jet, and the twist turns the nose left and right.",
+              "context": "The stick in the cockpit moves with the player's stick.",
+              "src": "tg"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (fire gun)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Fires the jet's gun while the trigger is held.",
+              "context": "The gun shoots straight ahead; the aiming mark on the HUD shows where the rounds go.",
+              "src": "tg"
+            },
+            {
+              "id": "release",
+              "name": "Weapon release",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "Releases the selected weapon, such as a bomb or a missile.",
+              "context": "The weapon is chosen with the weapon select button; the HUD cues show when to release.",
+              "src": "tg"
+            },
+            {
+              "id": "lock",
+              "name": "Lock button",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "A short press locks a target; holding the button unlocks it.",
+              "context": "Guided weapons need a locked target; the lock box shows on the HUD.",
+              "src": "tg"
+            },
+            {
+              "id": "weapon-select",
+              "name": "Weapon select button",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "Steps to the next weapon the jet carries, such as bombs or missiles.",
+              "context": "The selected weapon shows on the HUD. The game also has Select Previous Weapon without a default button.",
+              "src": "tg"
+            },
+            {
+              "id": "hat",
+              "name": "Hat switch (look around)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "Turns the pilot's view up, down, left and right.",
+              "context": "This is the game's documented default for the hat.",
+              "src": "tg"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "tg",
+          "text": "The throttle sets the thrust; a second axis can work the nozzles, and a button drops countermeasures.",
+          "context": "The game has more actions without a default: flaps, gear, brakes, engine on or off, instant zero or full throttle, raise or lower nozzle and eject.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Throttle axis",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Forward gives more thrust, back gives less.",
+              "context": "The throttle lever in the cockpit moves with it.",
+              "src": "tg"
+            },
+            {
+              "id": "nozzle-axis",
+              "name": "Nozzle (VTOL axis)",
+              "type": "axis",
+              "match": [
+                "control:throttle.lever.nozzle"
+              ],
+              "text": "Sets the angle of the engine nozzles from back to down. It is not bound by default; the player puts it on a second throttle axis.",
+              "context": "Without it the nozzles can be moved with the game's raise and lower nozzle actions.",
+              "src": "tg"
+            },
+            {
+              "id": "cm",
+              "name": "Countermeasure button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.1"
+              ],
+              "text": "Drops chaff and flares to fool enemy missiles.",
+              "context": "The counter on the cockpit display shows how many are left.",
+              "src": "tg"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

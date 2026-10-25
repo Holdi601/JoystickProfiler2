@@ -63,6 +63,14 @@ public sealed partial class CheckIssueCard : ObservableObject
     public ICommand? OpenContextCommand { get; init; }
     public bool HasOpenContext => OpenContextCommand != null;
 
+    // "Copied relations" (engine relations merge-copies): merge this family, or every family, into one each.
+    public string MergeCopiesText { get; init; } = string.Empty;
+    public ICommand? MergeCopiesCommand { get; init; }
+    public bool HasMergeCopies => MergeCopiesCommand != null;
+    public string MergeAllCopiesText { get; init; } = string.Empty;
+    public ICommand? MergeAllCopiesCommand { get; init; }
+    public bool HasMergeAllCopies => MergeAllCopiesCommand != null;
+
     [ObservableProperty]
     private bool isExpanded = true;
 }

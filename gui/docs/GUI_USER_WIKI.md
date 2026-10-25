@@ -40,6 +40,9 @@ JoyPro2 helps you:
   on a bind yet) are saved 2 seconds after your last change, and at once when you close JoyPro, open another profile,
   or export / import. `Ctrl+S` still saves at once. `More > Save as...` saves a copy under another name and goes on
   with the copy.
+- Back / Forward arrows (Alt+Left / Alt+Right, the mouse's back and forward buttons): like a browser, back to the page
+  and the place you were (the same Check list scrolled to the same card after `Open both relations`, the relation that
+  was open, the search). They change nothing in the profile.
 - `Undo` / `Redo` (Ctrl+Z / Ctrl+Y, also Ctrl+Shift+Z): step back and forth through your changes, also after a
   restart of JoyPro. The tooltip says what the next undo takes back.
 - `History`: every save is a version. The panel lists them, newest first, with what changed ("Relation 'Throttle
@@ -440,7 +443,7 @@ spring. Supported: DCS World, IL-2 Great Battles, IL-2 Korea, War Thunder.
   see everything. The panel on the right edits the selected node; a Telemetry node offers the game's keys, a Curve node
   gets a Bezier editor (drag points and handles, double-click adds a point, right-click removes one). `New from built-in`
   starts from a copy of the built-in graph; `Save as` stores it in the Graphs folder
-  (`%LOCALAPPDATA%\JoyPro\Ffb\Telemetry\Graphs\*.jpffb.json`), where the game and aircraft pickers find it. While a game
+  (`%LOCALAPPDATA%\JoyPro2\Ffb\Telemetry\Graphs\*.jpffb.json`), where the game and aircraft pickers find it. While a game
   runs, the nodes show their live values; without the game, constants and their maths are previewed.
 - **Telemetry inspector tab**: every value the game sends right now (key, value, title, unit), with a filter; useful to
   pick keys for Telemetry nodes.
@@ -630,6 +633,13 @@ its controls. `Choose folder...` makes a folder the game's installation (for a g
 detected` forgets it again. `Hide` hides a game; the hidden ones are listed under "Hidden games" with `Show again`
 (as below the Start page's cards). `Run setup again` opens the first-start setup. Games that are not installed are
 blocked for import, export, scan, DB refresh and backup restore. Details: [docs/installs.md](../../docs/installs.md).
+
+`Appearance`: Light, Dark, System or a theme of your own; `Text size` and `UI scale` (80 % to 200 %, on top of the
+Windows display scaling; Ctrl+Plus / Ctrl+Minus / Ctrl+0 change the text size). The `Theme editor` makes a theme from
+Light or Dark: every colour of JoyPro (pages, text, buttons, chips, banner, bottom bar, charts, markers) with a colour
+picker, the font and the font of key caps, weight, line spacing and heading size, a live preview, and a warning with
+`Fix the contrast` when a text would be hard to read. `Export...` saves a theme as a file to share; `Import...` takes one
+in. Details: [docs/ui/themes.md](../../docs/ui/themes.md).
 
 `Confirmations`: the questions JoyPro asks before it changes something hard to take back, with a switch for each
 question that can be turned off.

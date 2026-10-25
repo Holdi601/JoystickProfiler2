@@ -1,0 +1,313 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-uh-1y",
+  "title": "UH-1Y Venom",
+  "variants": [
+    "uh-1y"
+  ],
+  "games": [
+    "Arma2"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Bell UH-1Y Venom (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Bell_UH-1Y_Venom"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The UH-1Y Venom is the US Marine Corps' modern Huey: a twin-engine utility helicopter with a four-bladed rotor and T700 engines, much stronger than the old one-engine Hueys. The two pilots sit side by side in a glass cockpit with four screens that it shares with the AH-1Z Viper attack helicopter. The switches on its grips are not described in public sources, so this guide lists the basic controls every US utility helicopter has and describes the panels only in general terms.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The four screens and the standby instrument.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel (glass cockpit)",
+          "text": "Four colour screens across the panel, two for each pilot, with a small standby instrument and the master warning lights.",
+          "context": "The UH-1Y shares this glass cockpit with the AH-1Z Viper; almost everything the crew reads is on the screens.",
+          "controls": [
+            {
+              "id": "plt-mfd",
+              "name": "Pilot MFDs (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The pilot's two colour screens (multi-function screens with buttons around their edge). They show the flight instruments, the navigation map, the engines and the systems.",
+              "context": "Instead of dozens of round dials, the crew picks the page each screen shows; one screen can replace another that fails.",
+              "src": "w1"
+            },
+            {
+              "id": "cplt-mfd",
+              "name": "Copilot MFDs (2)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The copilot's two colour screens (multi-function screens with buttons around their edge). They show the same pages as the pilot's screens, so either pilot can fly and navigate.",
+              "context": "With two pilots, one usually flies while the other watches the map, the radios and the systems on these screens."
+            },
+            {
+              "id": "bezel",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Buttons around the edge of each screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The crew uses them to change pages and options; the page layout is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby",
+              "name": "Standby flight display",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A small separate instrument that shows the attitude (nose up or down, leaning left or right), the speed and the height. It keeps working when the big screens fail. It also shows the heading.",
+              "context": "It is the backup that lets the pilot fly safely to a landing if the main displays go dark."
+            },
+            {
+              "id": "mwc",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "Two big lights: master warning means \"danger now\", master caution means \"something needs your attention\". The message on the display says what is wrong.",
+              "context": "Pressing the light usually acknowledges it, so it is ready to show the next problem."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-pedestal",
+      "where": "center-pedestal",
+      "name": "Centre pedestal",
+      "text": "Keyboard, radio panels and countermeasures between the seats.",
+      "panels": [
+        {
+          "id": "center-pedestal",
+          "name": "Centre pedestal",
+          "text": "The console between the seats with the keyboard for data entry, the radio and intercom panels and the countermeasures control.",
+          "context": "Both pilots reach it; it holds the controls used to set up the flight and to talk.",
+          "controls": [
+            {
+              "id": "keyboard",
+              "name": "Data entry keyboard",
+              "type": "keypad",
+              "match": [
+                "item:center-pedestal:1"
+              ],
+              "text": "A keypad with a small screen where the crew types navigation points, radio frequencies and system data, like a small computer keyboard.",
+              "context": "The crew sets up the route and the radios with it before the flight and changes them in flight. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "comm",
+              "name": "Communication control panels",
+              "type": "knob",
+              "match": [
+                "item:center-pedestal:2"
+              ],
+              "text": "One panel for each seat with knobs that set the volume of each radio and the intercom (the phone line between the crew members), and choose the radio to talk on.",
+              "context": "Each pilot sets his own panel, so both can listen to different radios. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "cms",
+              "name": "Countermeasures control",
+              "type": "switch",
+              "match": [
+                "item:center-pedestal:3"
+              ],
+              "text": "The switches that arm the dispensers of countermeasures, things the helicopter throws out to fool enemy missiles: chaff (clouds of metal strips for radar missiles) and flares (hot burning decoys for heat-seeking missiles). It also switches the missile warning system on and off.",
+              "context": "They are armed after take-off and made safe before landing, so nothing fires on the ground. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead console",
+      "text": "Engine levers, fuel, electrics and lights in the roof.",
+      "panels": [
+        {
+          "id": "overhead-console",
+          "name": "Overhead console",
+          "text": "The roof panel above the pilots with the engine power levers and the switches for fuel, electricity and the outside lights.",
+          "context": "The crew uses it for the start-up and the shutdown; in flight it is rarely touched.",
+          "controls": [
+            {
+              "id": "power-levers",
+              "name": "Engine power control levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-console:1",
+                "control:panel.lever.power"
+              ],
+              "text": "Two levers, one for each of the two T700 engines. They give each engine fuel and decide its power setting, from off through idle to the flying position. In the UH-1Y they sit in the roof above the pilots.",
+              "context": "The pilot moves them one at a time during the engine start and both together to the flying position before take-off; in flight a computer then governs the engines."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel control switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:2"
+              ],
+              "text": "Switches for the fuel valves and boost pumps: pumps move fuel from the tanks to the engines, valves open or close the fuel lines.",
+              "context": "The pilot sets them up before the engine start and uses them when a tank or a pump has a problem. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "elec",
+              "name": "Electrical power switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:3"
+              ],
+              "text": "Switches for the helicopter's electricity: the battery, the generators and the APU (a small extra engine that makes electricity before the main engines run). The battery stores electricity for when the engines are off; generators make electricity while the engines run.",
+              "context": "They are among the first switches the pilot uses when climbing in, because almost every other system needs electricity. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "ext-lights",
+              "name": "Exterior lighting switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:4"
+              ],
+              "text": "Switches and knobs for the lights: the outside lights that show other aircraft where the helicopter is, and the lamps that light the instruments inside. Here they are the position, anti-collision and formation lights.",
+              "context": "The pilot sets them before a night flight so the instruments are readable without dazzling the eyes. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The flight controls the pilot holds.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The stick between the pilot's knees with the radio trigger, the trim switches and the cargo hook release.",
+          "context": "The right hand holds it nearly all the time; JoyPro lists the switches every US utility helicopter has, as the UH-1Y's own grip is not described in public sources.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick between the pilot's knees. It tilts the rotor: forward makes the helicopter fly forward, back slows it down, left and right move it sideways.",
+              "context": "It is the main flight control together with the collective and the pedals; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "ics",
+              "name": "Radio / ICS trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "A trigger with two steps on the front of the grip. The first step talks on the intercom (the phone line between the crew members); pulled all the way it transmits on the selected radio.",
+              "context": "Like the button of a walkie-talkie: the voice goes out only while it is held. The intercom panel decides which radio the second step uses."
+            },
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way switch on top of the grip for the trim, small adjustments so the helicopter flies steadily without the pilot holding the stick against a force. Forward trims the nose down, back up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed, so the cyclic stays where it is without effort."
+            },
+            {
+              "id": "ftr",
+              "name": "Force trim release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim_release"
+              ],
+              "text": "While this button is held, the trim lets go of the stick, so it moves freely without any spring force. When it is released, the trim holds the new position as the new centre.",
+              "context": "The pilot presses it to set a new stick position quickly, for example when changing from cruise to hover."
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo hook release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.cargo_release"
+              ],
+              "text": "Pressing this button opens the cargo hook under the belly, so a load hanging below the helicopter on a sling drops off.",
+              "context": "The hook has to be armed first; the pilot sets the load down gently in the hover before releasing it."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "text": "The lever at the left of the seat that makes the helicopter climb or sink, with the searchlight switches on its head.",
+          "context": "The left hand holds it in flight; the engine power itself is set with the levers overhead.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the pilot's seat. Raising it makes the four main rotor blades bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "More collective needs more engine power; the pilot raises it gently and watches the torque and rotor speed."
+            },
+            {
+              "id": "sl-switch",
+              "name": "Searchlight ON/OFF switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The searchlight is lit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The searchlight is dark."
+                }
+              ],
+              "text": "This switch turns the movable searchlight under the helicopter on and off.",
+              "context": "It works together with the searchlight control switch, which aims the light."
+            },
+            {
+              "id": "sl-hat",
+              "name": "Searchlight control switch",
+              "type": "hat",
+              "match": [
+                "control:collective.hat.searchlight"
+              ],
+              "text": "A four-way switch that aims the searchlight: forward and back swing it out and in, left and right turn it to the side.",
+              "context": "The pilot points the light at a landing spot or at something on the ground without taking a hand off the controls."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,592 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-oh-58a",
+  "title": "OH-58A/C Kiowa",
+  "variants": [
+    "oh-58a"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Bell OH-58 Kiowa (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Bell_OH-58_Kiowa"
+    },
+    {
+      "id": "m2",
+      "title": "DCS UH-1H Flight Manual EN (Bell grip switches of the same era)",
+      "kind": "manual",
+      "file": "Mods/aircraft/Uh-1H/Doc/DCS UH-1H Flight Manual_EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The OH-58A/C Kiowa is a light observation helicopter of the US Army, built from the civil Bell 206 JetRanger: one turbine engine, a two-bladed rotor and two seats side by side with dual controls, behind a large glass nose for a good view. It has no mast-mounted sight; that came with the later OH-58D Kiowa Warrior. Its grips are not described in public sources, so JoyPro takes the collective head from the Bell 206 and the cyclic switches from the UH-1H of the same era.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The round dials shared by both pilots.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "text": "The small panel of round dials shared by both seats: flight instruments on the left, engine instruments on the right, warning lights on top.",
+          "context": "The Kiowa's panel is that of the civil Bell 206 JetRanger with a few military additions.",
+          "controls": [
+            {
+              "id": "cwp",
+              "name": "Caution / warning light panel",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Labelled warning lights for the engine and the drive system. Each one comes on to say what is wrong. Among them are engine out, rotor speed, metal chips in a gearbox, low fuel and transmission warnings.",
+              "context": "A warning light needs action at once; the pilot reads the label and follows the emergency steps for it."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in knots.",
+              "context": "Below a certain speed a helicopter can hover and fly sideways, so the needle near zero is normal; the pilot watches it in the climb-out and when slowing down to land."
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the helicopter leans to one side, like a picture of the horizon (artificial horizon).",
+              "context": "It is the main instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "The height gauge. It shows the height above sea level; the pilot sets the local air pressure on it so it reads right. The pressure is set in a small window on the dial.",
+              "context": "The pilot uses it to hold a cruising height and to follow the heights given by the tower."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This dial shows whether the helicopter climbs or sinks, and how fast.",
+              "context": "The pilot uses it to keep a steady, gentle descent when coming in to land and to hold level flight."
+            },
+            {
+              "id": "turn-slip",
+              "name": "Turn and slip indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "A needle shows how fast the helicopter turns, and a small ball in a curved glass tube shows whether it slides sideways through the air.",
+              "context": "The pilot keeps the ball in the middle with the pedals, so the helicopter flies cleanly and not crabwise."
+            },
+            {
+              "id": "rmi",
+              "name": "Radio magnetic indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "A compass card with a needle. The card shows the heading; the needle points to a radio beacon on the ground (ADF, a receiver that finds the direction of a beacon).",
+              "context": "The pilot turns until the needle points straight up to fly towards the beacon."
+            },
+            {
+              "id": "tach",
+              "name": "Dual tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "Two needles on one dial show how fast the engine's power turbine (N2, the turbine that drives the rotor) and the main rotor turn (RPM). In normal flight the needles sit together in the green band.",
+              "context": "Rotor speed is the life of a helicopter: too slow and the blades lose their lift, too fast and they are overstressed, so the pilot checks it all the time."
+            },
+            {
+              "id": "torque",
+              "name": "Torquemeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows the torque of the T63 turbine engine: how hard it twists the rotor shaft. It is the best measure of how much power is used. It is read in psi (pounds per square inch).",
+              "context": "When the pilot raises the collective the torque rises; the pilot keeps it below the red limit, especially when heavy or in hot weather."
+            },
+            {
+              "id": "tot",
+              "name": "Turbine outlet temperature indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "This gauge shows how hot the gas leaving the turbine of the T63 engine is (TOT). Too hot damages the turbine.",
+              "context": "The pilot watches it closely during the engine start and when using a lot of power."
+            },
+            {
+              "id": "n1",
+              "name": "Gas producer tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "This gauge shows in percent how fast the engine's compressor spins (the gas producer, often called N1 or NG).",
+              "context": "During the start the pilot watches it climb before giving fuel and letting go of the starter."
+            },
+            {
+              "id": "eng-oil",
+              "name": "Engine oil pressure / temperature",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:12"
+              ],
+              "text": "This gauge shows the oil pressure and the oil temperature of the engine on one dual gauge. Oil keeps the moving parts from wearing out and carries heat away.",
+              "context": "The pilot checks it after the engine start and keeps an eye on it in flight; a pressure drop or a hot reading is a reason to land soon."
+            },
+            {
+              "id": "xmsn-oil",
+              "name": "Transmission oil pressure / temperature",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:13"
+              ],
+              "text": "This gauge shows the oil pressure and temperature of the transmission, the big gearbox that drives the rotor. Oil keeps the moving parts from wearing out and carries heat away.",
+              "context": "A transmission problem is serious in a helicopter, because the rotor depends on it; the pilot checks this gauge with the engine gauges."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:14"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks, in pounds.",
+              "context": "The pilot checks it before take-off and often in flight, to know when it is time to turn home."
+            },
+            {
+              "id": "load",
+              "name": "Loadmeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:15"
+              ],
+              "text": "This gauge shows how much of its electrical power the starter-generator is giving, in percent.",
+              "context": "A generator (makes electricity while the engine runs) that shows no load may have failed; the battery then has to carry the load."
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:16"
+              ],
+              "text": "The cockpit clock shows the time; most can also time a flight or a leg, like a stopwatch.",
+              "context": "The pilot uses it to time the legs of a route and to keep track of fuel and flying time."
+            },
+            {
+              "id": "compass",
+              "name": "Standby magnetic compass",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:17"
+              ],
+              "text": "A simple magnetic compass, like a hiking compass, that shows the heading without any electricity. It sits on the centre post of the windshield.",
+              "context": "It is the backup when the electric compass system or the power fails."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radio-console",
+      "where": "center-pedestal",
+      "name": "Radio console",
+      "text": "The radios between the seats.",
+      "panels": [
+        {
+          "id": "radio-console",
+          "name": "Radio console",
+          "text": "The radio and navigation boxes in the console between the seats.",
+          "context": "As an observation helicopter the Kiowa talks a lot to the ground troops and to other aircraft, so it carries several radios.",
+          "controls": [
+            {
+              "id": "ics",
+              "name": "Intercom control panel",
+              "type": "selector",
+              "match": [
+                "item:radio-console:1"
+              ],
+              "text": "This panel decides which radio the pilot's transmit switch talks on and which radios and the intercom (the phone line between the crew members) are heard in the headset.",
+              "context": "Each crew seat has its own; the pilot sets it before take-off so the right radio answers the cyclic switch. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "uhf",
+              "name": "UHF radio control",
+              "type": "selector",
+              "match": [
+                "item:radio-console:2"
+              ],
+              "text": "The control box of the UHF radio: it turns the radio on, sets the frequency (the \"station number\" a radio talks on) or a stored channel, and the mode.",
+              "context": "The crew sets it before each part of the flight; the transmit switch on the cyclic then makes this radio send. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "vhf",
+              "name": "VHF radio control",
+              "type": "selector",
+              "match": [
+                "item:radio-console:3"
+              ],
+              "text": "The control box of the VHF radio: it turns the radio on, sets the frequency (the \"station number\" a radio talks on) or a stored channel, and the mode.",
+              "context": "The VHF radio is used to talk to airfields and other aircraft. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "fm",
+              "name": "FM radio control",
+              "type": "selector",
+              "match": [
+                "item:radio-console:4"
+              ],
+              "text": "The control box of the FM radio: it turns the radio on, sets the frequency (the \"station number\" a radio talks on) or a stored channel, and the mode. With FM homing, a needle on the instruments points towards a station that transmits.",
+              "context": "The FM radio is the one the army ground troops use. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "adf",
+              "name": "ADF control",
+              "type": "selector",
+              "match": [
+                "item:radio-console:5"
+              ],
+              "text": "The control of the ADF, a receiver that finds the direction of a radio beacon on the ground. It sets the beacon's frequency and the mode.",
+              "context": "The needle of the bearing instrument then points to the tuned beacon. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "xpdr",
+              "name": "Transponder control",
+              "type": "selector",
+              "match": [
+                "item:radio-console:6"
+              ],
+              "text": "The control of the IFF / transponder, a radio box that answers \"who are you?\" questions from radars with a code number.",
+              "context": "The crew sets the codes before the flight so ground radars and friendly forces can identify the helicopter. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead console",
+      "text": "Electrical switches and circuit breakers in the roof.",
+      "panels": [
+        {
+          "id": "overhead-console",
+          "name": "Overhead console",
+          "text": "Switches and circuit breakers in the roof: battery, generator, force trim, hydraulics, lights and pitot heat.",
+          "context": "The pilot uses it at the start: battery on, then after the engine start the generator.",
+          "controls": [
+            {
+              "id": "bat",
+              "name": "BAT switch",
+              "type": "switch2",
+              "match": [
+                "item:overhead-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The battery powers the helicopter."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The battery is disconnected."
+                }
+              ],
+              "text": "This switch connects the battery, which stores electricity for when the engine is off.",
+              "context": "It is the first switch of the start-up; the battery also powers the engine starter."
+            },
+            {
+              "id": "gen",
+              "name": "GEN switch",
+              "type": "switch3",
+              "match": [
+                "item:overhead-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The generator feeds the electrical system."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The generator is off line."
+                },
+                {
+                  "name": "RESET",
+                  "text": "Resets the generator after it has dropped off line."
+                }
+              ],
+              "text": "This switch puts the starter-generator on line, the machine that starts the engine and then makes electricity while it runs. RESET brings it back after a fault.",
+              "context": "The pilot switches it on after the engine has started; the loadmeter then shows that it works."
+            },
+            {
+              "id": "force-trim",
+              "name": "Force trim switch",
+              "type": "switch2",
+              "match": [
+                "item:overhead-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The cyclic is held at its trimmed position."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No force trim."
+                }
+              ],
+              "text": "This switch turns the force trim on or off: springs and magnetic brakes that hold the cyclic where it was put.",
+              "context": "With force trim on, the button on the cyclic releases it for a moment; with it off, the stick has no holding force."
+            },
+            {
+              "id": "hyd",
+              "name": "Hydraulic boost switch",
+              "type": "switch2",
+              "match": [
+                "item:overhead-console:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The hydraulic boost helps move the controls."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The controls work without help and feel heavy."
+                }
+              ],
+              "text": "This switch turns on the hydraulics (oil under high pressure) that help the pilot move the controls, like power steering in a car.",
+              "context": "Without the boost the controls still work but are much heavier; it is switched off only for tests or when it fails."
+            },
+            {
+              "id": "lights",
+              "name": "Light switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-console:5"
+              ],
+              "text": "Switches and knobs for the lights: the outside lights that show other aircraft where the helicopter is, and the lamps that light the instruments inside. Here they are the position, anti-collision and instrument lights.",
+              "context": "The pilot sets them before a night flight so the instruments are readable without dazzling the eyes. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "pitot",
+              "name": "Pitot heat switch",
+              "type": "switch2",
+              "match": [
+                "item:overhead-console:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The pitot tube is heated."
+                },
+                {
+                  "name": "OFF",
+                  "text": "No heating."
+                }
+              ],
+              "text": "This switch heats the pitot tube, the small tube outside that measures the airspeed, so it does not freeze.",
+              "context": "If the tube ices up, the airspeed indicator shows wrong values; the pilot uses it in cold, wet air."
+            },
+            {
+              "id": "cb",
+              "name": "Circuit breakers",
+              "type": "other",
+              "match": [
+                "item:overhead-console:7"
+              ],
+              "text": "Rows of circuit breakers, safety switches that cut the power to one piece of equipment when it draws too much. A breaker pops out and can be pushed back in. Here they protect the DC buses (groups of electric lines).",
+              "context": "The crew checks them before the flight; a popped breaker explains why a system has gone dead."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The flight controls the pilot holds.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The stick between the pilot's knees with the radio trigger, the force trim button, the gun button and the cargo release.",
+          "context": "JoyPro takes these switches from the Bell UH-1H grip of the same era, because the Kiowa's own grip is not described in the sources it uses.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick between the pilot's knees. It tilts the rotor: forward makes the helicopter fly forward, back slows it down, left and right move it sideways.",
+              "context": "It is the main flight control together with the collective and the pedals; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "ics",
+              "name": "Radio / ICS switch",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "A trigger with two steps on the front of the grip. The first step talks on the intercom (the phone line between the crew members); pulled all the way it transmits on the selected radio.",
+              "context": "Like the button of a walkie-talkie: the voice goes out only while it is held. The intercom panel decides which radio the second step uses.",
+              "src": "m2"
+            },
+            {
+              "id": "force-trim",
+              "name": "Force trim release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.force_trim"
+              ],
+              "text": "Force trim is a set of springs and magnetic brakes that holds the cyclic where it was put. While this button is held, force trim is off and the stick moves freely; when it is let go, the stick is held at the new position.",
+              "context": "This is how the pilot trims a helicopter of this kind: hold the button, move the stick to where it needs to be, release.",
+              "src": "m2"
+            },
+            {
+              "id": "fire",
+              "name": "Armament fire button",
+              "type": "button",
+              "match": [
+                "control:stick.button.fire"
+              ],
+              "text": "On an armed OH-58A this button fires the M27 kit, a 7.62 mm minigun on the left side of the fuselage.",
+              "context": "The gun points straight ahead, so the pilot aims by pointing the helicopter. Unarmed Kiowas have no use for it.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.cargo_release"
+              ],
+              "text": "Pressing this button opens the cargo hook under the belly, so a load hanging below the helicopter on a sling drops off.",
+              "context": "The hook has to be armed first; the pilot sets the load down gently in the hover before releasing it."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective with the Bell 206 head",
+          "text": "The lever at the left of the seat with the twist-grip throttle at its end and the starter, governor and landing light switches on its head.",
+          "context": "This head is the one of the civil Bell 206 JetRanger; the engine is started and controlled from here.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the pilot's seat. Raising it makes the two main rotor blades bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "More collective needs more engine power; the pilot raises it gently and watches the torque and rotor speed."
+            },
+            {
+              "id": "throttle",
+              "name": "Twist-grip throttle",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "The end of the collective is a twist grip, like a motorbike's throttle. Turning it gives the engine more or less fuel, from closed (engine off) through idle to fully open. Fully closed (CLOSED) shuts the engine off.",
+              "context": "For flight the grip is turned fully open and the governor then holds the rotor speed by itself; the pilot closes it to idle before shutting down."
+            },
+            {
+              "id": "idle-release",
+              "name": "Throttle idle release button",
+              "type": "button",
+              "match": [
+                "control:collective.button.idle_release"
+              ],
+              "text": "A button that frees the twist-grip throttle so it can be turned past the idle stop to fully closed, which shuts the engine down. It sits next to the twist grip.",
+              "context": "The stop prevents the engine from being shut off by accident in flight; the pilot uses the button only for the shutdown."
+            },
+            {
+              "id": "start",
+              "name": "Starter switch",
+              "type": "button",
+              "match": [
+                "control:collective.button.start"
+              ],
+              "text": "While this switch is held, the electric starter spins the engine. When the engine runs on its own, the pilot lets go. The engine lights up while the pilot holds it.",
+              "context": "It is the main step of the engine start, after the battery and fuel switches are on; the pilot watches the engine temperature while holding it."
+            },
+            {
+              "id": "rpm",
+              "name": "Governor RPM switch",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.rpm_trim"
+              ],
+              "positions": [
+                {
+                  "name": "INCR",
+                  "text": "Held here, the governed speed rises a little."
+                },
+                {
+                  "name": "DECR",
+                  "text": "Held here, the governed speed drops a little."
+                }
+              ],
+              "text": "A small switch that raises (INCR) or lowers (DECR) the power turbine speed the governor holds. The governor keeps the rotor at the right speed by itself. The switch springs back to the middle.",
+              "context": "The pilot uses it after the start to set the normal flying speed of the rotor, and to correct it in flight."
+            },
+            {
+              "id": "ll",
+              "name": "Landing light switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The landing light under the nose is lit."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "This switch turns the landing light on and off: a strong lamp under the helicopter that lights the ground in front for landing at night.",
+              "context": "The pilot switches it on for the approach and the landing in the dark, and off again in cruise."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

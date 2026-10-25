@@ -33,7 +33,8 @@ public partial class App : Application
             Avalonia.Threading.Dispatcher.UIThread.Post(ApplyUiFont);
             return;
         }
-        Resources["JP.UiFont"] = new Avalonia.Media.FontFamily(Localization.Languages.FontStack(Localization.Loc.Current));
+        // The theme's fonts and text size too (Settings > Appearance).
+        Services.ThemeService.ApplyTypography();
     }
 
     public override void OnFrameworkInitializationCompleted()

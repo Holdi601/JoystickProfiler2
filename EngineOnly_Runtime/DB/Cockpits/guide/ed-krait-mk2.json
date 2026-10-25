@@ -1,0 +1,108 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "ed-krait-mk2",
+  "title": "Krait Mk II (Elite Dangerous)",
+  "inherits": "game-elite-dangerous",
+  "variants": [
+    "ed-krait-mk2"
+  ],
+  "games": [
+    "EliteDangerous"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Krait Mk II (Inara)",
+      "kind": "reference",
+      "url": "https://inara.cz/elite/ship/27/"
+    },
+    {
+      "id": "w2",
+      "title": "Krait Mk II (Coriolis ship data)",
+      "kind": "reference",
+      "url": "https://github.com/EDCD/coriolis-data/blob/master/ships/krait_mkii.json"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Krait Mk II by Faulcon DeLacy is a medium multi-role ship that can carry a fighter hangar. Its cockpit has the pilot seat, a multicrew seat and a seat for the fighter pilot. The fighter launch and its orders are on the role panel; the preset puts them on no HOTAS button.",
+  "areas": [
+    {
+      "id": "right-panel",
+      "where": "right-side",
+      "name": "Right panel (internal)",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Krait Mk II: seats and hardpoints",
+          "db": "ship",
+          "src": "c1",
+          "text": "Facts about the Krait Mk II that set it apart from the other ships: its seats, its weapon mounts and the landing pad size it needs.",
+          "context": "Everything else in the Krait Mk II's cockpit works like in every other Elite Dangerous ship.",
+          "controls": [
+            {
+              "id": "pilot-seat",
+              "name": "Pilot seat (helm)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The pilot's seat of the Krait Mk II, the helm. Whoever sits here flies the ship and has the whole HOTAS layout of this guide.",
+              "context": "The Krait Mk II takes up to three people in all; the other seats are for crew who join in multicrew.",
+              "src": "c1"
+            },
+            {
+              "id": "crew-seats",
+              "name": "Multicrew seats",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The extra seats of the Krait Mk II, for up to three crew in all. A friend who joins can sit here as gunner, or as fighter controller when the ship carries a fighter.",
+              "context": "A gunner works the turreted weapons while the pilot flies; the roles are chosen on the role panel.",
+              "src": "c1"
+            },
+            {
+              "id": "fighter-seat",
+              "name": "Fighter pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The seat from which a crew member or a hired pilot flies the small fighter that the Krait Mk II can carry in a hangar.",
+              "context": "The fighter is launched and given orders on the role panel; the preset has no HOTAS button for that.",
+              "src": "c1"
+            },
+            {
+              "id": "hardpoints",
+              "name": "Hardpoints (weapon mounts)",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The weapon mounts of the Krait Mk II: three large and two medium hardpoints. Bigger mounts take bigger, stronger weapons.",
+              "context": "The pilot puts the Krait Mk II's weapons into fire groups on the right panel and fires them with the trigger and the weapon release button.",
+              "src": "w2"
+            },
+            {
+              "id": "pad",
+              "name": "Landing pad size",
+              "type": "indicator",
+              "match": [
+                "item:ship:5"
+              ],
+              "text": "The Krait Mk II needs a medium landing pad or a bigger one. Stations have small, medium and large pads, and small outposts may not have the bigger ones.",
+              "context": "When the pilot asks a station for docking, the station gives a pad that fits the ship's size.",
+              "src": "w2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

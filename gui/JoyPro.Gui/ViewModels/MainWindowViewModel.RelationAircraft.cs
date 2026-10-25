@@ -660,7 +660,9 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task OpenAircraftCheckRelationAsync(AircraftCheckItem? item)
     {
-        if (item != null)
-            await OpenBuilderRelationAsync(item.Relation);
+        if (item == null)
+            return;
+        RememberPlace();
+        await OpenBuilderRelationAsync(item.Relation);
     }
 }

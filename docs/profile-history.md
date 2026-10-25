@@ -40,6 +40,11 @@ open last. Nothing to press, nothing lost on a crash, and the history never fill
 - **New profile** has no dialog: `Documents\JoyPro2\profiles\profile-<date-time>.pr0file` (`JOYPRO_PROFILES_DIR`
   replaces the folder; tests). `More > Rename...` renames the file (its history goes along), `More > Save as...`
   writes a copy and goes on with it (the copy starts its own history, "Saved as a copy of ...").
+  Renaming onto the name of another profile asks first ("Replace the profile ...?"); yes keeps the replaced file as
+  `<name>.pr0file.bak` next to it (`<name>.pr0file.<date-time>.bak` when a .bak is there already) together with its
+  history, and the renamed profile, with its history, is the open one. Renaming the .bak back undoes it. No changes
+  nothing; a replaced file that is open in another program or read-only stops the rename with a message (nothing is
+  changed then).
 
 ## The last profile at start
 
@@ -51,7 +56,7 @@ as fast as without a profile; the busy area shows "Loading profile...". When the
 
 ## Versions
 
-Where: `<data>\ProfileHistory\<profile id>\`, data = `JOYPRO_DATA_DIR` or `%LOCALAPPDATA%\JoyPro` (the engine's data
+Where: `<data>\ProfileHistory\<profile id>\`, data = `JOYPRO_DATA_DIR` or `%LOCALAPPDATA%\JoyPro2` (the engine's data
 folder, next to `GameBackups`). The profile id is `<file name, 32 characters>-<10 hex of the full path>`.
 
 | File | What |

@@ -1,0 +1,89 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-35b",
+  "title": "F-35B Lightning II (short take-off / vertical landing)",
+  "inherits": "real-f-35",
+  "variants": [
+    "f-35b"
+  ],
+  "games": [
+    "Arma2"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Lockheed Martin F-35 Lightning II (Wikipedia), cockpit and variants",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Lockheed_Martin_F-35_Lightning_II"
+    },
+    {
+      "id": "w2",
+      "title": "What is good and bad about the F-35 cockpit (Hush-Kit, pilot interview)",
+      "kind": "reference",
+      "url": "https://hushkit.net/2021/01/21/what-is-good-and-bad-about-the-f-35-cockpit/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The F-35B is the version that can take off from short decks and land straight down, like the Harrier: a lift fan behind the cockpit and a swivelling engine nozzle push it up. Its cockpit is that of the F-35A plus the STOVL mode, in which the flight computer turns the stick and throttle into hover commands; there is no separate nozzle lever and no gun built in. This guide follows the F-35A guide.",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Side-stick and throttle",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Side-stick",
+          "text": "A side-stick on the right console instead of a centre stick, with the trigger and the weapon release button.",
+          "context": "Its HOTAS switch layout is not public; only the stick, trigger and release are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Side-stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick on the right console. In normal flight it rolls and pitches the aircraft. In the STOVL mode (short take-off and vertical landing) the flight computer turns its movements into commands for the flight path and speed, and for banking or sliding sideways in the hover.",
+              "context": "Thanks to this 'unified' control the F-35B needs no nozzle lever like the Harrier; the computer works the lift fan and the swivelling nozzle."
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the side-stick. Pulling it fires the gun pod under the fuselage; the F-35B has no gun built in.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "text": "The single throttle on the left console.",
+          "context": "Its switches are not public; only the thrust function is listed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (active inceptor)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "The lever that sets the engine power, like a car's gas pedal, in normal flight. In the STOVL mode the flight computer turns it into a vertical speed command: forward climbs, back sinks.",
+              "context": "The pilot does not manage the lift fan and nozzle himself; the computer does it from the throttle and stick commands."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

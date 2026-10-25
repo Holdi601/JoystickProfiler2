@@ -1,0 +1,202 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-b-wing",
+  "title": "A/SF-01 B-wing (Star Wars, Return of the Jedi)",
+  "variants": [
+    "b-wing-a-sf-01"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "List of Star Wars starfighters: B-wing (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/List_of_Star_Wars_starfighters"
+    },
+    {
+      "id": "s2",
+      "title": "B-wing Fighter (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/b-wing-fighter"
+    },
+    {
+      "id": "s3",
+      "title": "Return of the Jedi (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Return_of_the_Jedi"
+    }
+  ],
+  "intro": "The B-wing is a fictional heavy Rebel assault fighter from the Star Wars films, first seen in Return of the Jedi. Its long wing turns around a cockpit pod that stays level (gyro-stabilised), so the pilot keeps the horizon while the rest of the ship rotates. One pilot sits in that pod at one end of the wing.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The forward view from the stabilised pod.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s2",
+          "text": "The window of the cockpit pod, with a view forward.",
+          "context": "Because the pod stays level, the view does not spin when the ship rolls.",
+          "controls": [
+            {
+              "id": "pod",
+              "name": "Gyro-stabilised pod",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "The cockpit pod stays level while the long main wing rotates around it.",
+              "context": "This keeps the pilot's view steady, so the pilot does not get dizzy when the ship turns its wing.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The panel in front of the pilot in the cockpit pod.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s3",
+          "text": "Screens and lights in front of the pilot.",
+          "context": "They show targets and the state of the ship.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Forward displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Screens in front of the pilot show targeting and sensor pictures.",
+              "context": "The B-wing attacks big ships, so the pilot picks targets on these screens.",
+              "src": "s3"
+            },
+            {
+              "id": "lights",
+              "name": "Status lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "Small system lights on the B-wing's panel in the pod.",
+              "context": "The film does not explain each light.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consoles",
+      "where": "left-console",
+      "name": "Side consoles",
+      "text": "Switches beside the seat.",
+      "panels": [
+        {
+          "id": "side-consoles",
+          "name": "Side consoles",
+          "db": "side-consoles",
+          "src": "s2",
+          "text": "Switches beside the seat and the weapon selection.",
+          "context": "The B-wing carries several kinds of weapons.",
+          "controls": [
+            {
+              "id": "switches",
+              "name": "Switch banks",
+              "type": "switch",
+              "match": [
+                "item:side-consoles:1"
+              ],
+              "text": "Toggle switches on both sides of the B-wing pilot's seat.",
+              "context": "They belong to the ship's systems; the film does not name them.",
+              "src": "s3"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapon selection",
+              "type": "other",
+              "match": [
+                "item:side-consoles:2"
+              ],
+              "text": "The B-wing has laser cannons, ion cannons and torpedoes, as the Databank says. A selector for them is not shown.",
+              "context": "The pilot uses the heavy weapons against big ships.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Flight controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight controls",
+          "src": "s3",
+          "text": "The hand controls in front of the pilot.",
+          "context": "They fly the ship while the pod stays level.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Flight controls",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The flight controls tip the nose up and down and roll the ship. When it rolls, the hull turns around the pod and the cockpit stays level.",
+              "context": "This is the special trick of the B-wing: the pilot's view does not roll with the ship.",
+              "src": "s2"
+            },
+            {
+              "id": "fire",
+              "name": "Fire control",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A control on the flight grips fires the B-wing's cannons.",
+              "context": "The cannons sit along the long main wing.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s3",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "Return of the Jedi does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

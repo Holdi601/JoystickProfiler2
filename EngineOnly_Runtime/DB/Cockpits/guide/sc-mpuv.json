@@ -1,0 +1,97 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-mpuv",
+  "title": "MPUV Cargo (Argo Astronautics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-mpuv"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "MPUV Cargo (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/MPUV_Cargo"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The MPUV Cargo is a short-range cargo shuttle from Argo Astronautics in Star Citizen, flown by one pilot. A small cargo pod sits behind the cockpit. It has no weapons, so the trigger only works in the operator modes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "MPUV Cargo: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the MPUV Cargo's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "unarmed",
+              "name": "Unarmed",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The MPUV Cargo has no guns and no missiles.",
+              "context": "It is a work shuttle for moving goods between big ships and stations, not for fighting.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (2 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The pod holds 2 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Two sticks (HOSAS)",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (flight stick)",
+          "src": "g1",
+          "text": "The right-hand stick steers the ship's nose and does the fighting: it fires the weapons, picks targets and holds the buttons for radar, quantum travel, scanning and mining.",
+          "context": "This is the game's own two-stick preset for the Thrustmaster T.16000M. Many buttons change their job with the operator mode shown on the HUD; the stick's base buttons 5 to 16 sit on the stick's foot.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "label:Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "This ship has no pilot guns, so the trigger works only in the operator modes. In quantum mode, holding it starts the jump of the quantum drive.",
+              "context": "The destination is chosen on the star map first; in scanning or mining mode the trigger does that mode's job instead.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

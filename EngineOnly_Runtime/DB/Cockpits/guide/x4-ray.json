@@ -1,0 +1,91 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-ray",
+  "title": "Ray (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-ray"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Kingdom End (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Downloadable%20Content/04%20-%20Kingdom%20End/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Ray is a large Boron destroyer from the Kingdom End expansion, flown from the captain's chair. Forward guns, where fitted, fire on the trigger, and the turrets fire on their own; JoyPro has not checked its weapons.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Ray: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Ray that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Ray are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Captain's chair (bridge)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Ray is a big ship, so the pilot flies it from the captain's chair on the bridge instead of a small cockpit. The stick controls are the same as in a fighter.",
+              "context": "A big ship like the Ray turns and speeds up slowly; the pilot plans moves earlier than in a fighter.",
+              "src": "c1"
+            },
+            {
+              "id": "guns",
+              "name": "Forward guns",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Ray has where forward guns that point where the nose points. The pilot fires them with the trigger and aims by turning the whole ship.",
+              "context": "The aiming mark in front of the target on the HUD shows where to point the nose.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turrets",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The Ray carries turrets, gun mounts that turn and fire on their own without the pilot.",
+              "context": "Their behaviour is set in the menus; JoyPro has not checked how many the ship has.",
+              "src": "w1"
+            },
+            {
+              "id": "class",
+              "name": "Ship class",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "X4 sorts ships by size: S (small), M (medium), L (large) and XL (extra large). The Ray is: Boron L-class destroyer; armament not checked.",
+              "context": "The size decides whether the ship is flown from a cockpit or a bridge and where it can dock.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

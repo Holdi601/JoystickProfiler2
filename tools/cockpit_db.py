@@ -15,6 +15,8 @@ sheets for a look and prints what researchers need (function ids, the DCS seed r
     py -3 tools/cockpit_db.py merge <draft.json> --into <file.json> [--replace] [--only id,id] [--skip id,id]
     py -3 tools/cockpit_db.py render <aircraft> [variant] [--out <folder>] [--light] [--drawing <id>]
     py -3 tools/cockpit_db.py photos-merge <photos.json> ...   adds photo links {"photos": {"<aircraft>": [...]}}
+    py -3 tools/cockpit_db.py check-links [--only id,id] [--timeout s]   every photo and link address answers (HEAD;
+                                                            offline: says so and passes)
     py -3 tools/cockpit_db.py get <aircraft> [variant]      a variant with its controls (engine cockpits get --text)
     py -3 tools/cockpit_db.py coverage                     the coverage numbers (engine cockpits coverage)
     py -3 tools/cockpit_db.py drawings                     the drawings and their parts
@@ -438,6 +440,82 @@ def cmd_pages(args):
             shutil.rmtree(work, ignore_errors=True)
 
 
+def cmd_check_links(args):
+    """Every photo address (picture and page) and link of the database answers: a HEAD request each (a ranged GET of one
+    byte where a server refuses HEAD), one at a time per site, a little apart, with JoyPro's user agent; 429/503 are
+    tried again after a pause. Offline (no answer from any site): says so and passes. Nothing is downloaded."""
+    import time
+    import urllib.error
+    import urllib.request
+    from urllib.parse import urlparse
+    ua = {"User-Agent": "JoyPro2 cockpit link check (https://github.com/Holdi601/JoystickProfiler2)"}
+    timeout = float(args[args.index("--timeout") + 1]) if "--timeout" in args else 20.0
+    only = args[args.index("--only") + 1].split(",") if "--only" in args else None
+    targets = []
+    for f in cockpit_files():
+        for a in load(f).get("aircraft", []):
+            if only and a.get("id") not in only:
+                continue
+            for p in a.get("photos", []) or []:
+                for key in ("url", "page"):
+                    if p.get(key):
+                        targets.append((a["id"], key, p[key]))
+            for link in a.get("links", []) or []:
+                if link.get("url"):
+                    targets.append((a["id"], "link", link["url"]))
+    seen, unique = set(), []
+    for t in targets:
+        if t[2] not in seen:
+            seen.add(t[2])
+            unique.append(t)
+
+    def ask(url):
+        for attempt in range(4):
+            for method, extra in (("HEAD", {}), ("GET", {"Range": "bytes=0-0"})):
+                try:
+                    req = urllib.request.Request(url, headers=dict(ua, **extra), method=method)
+                    with urllib.request.urlopen(req, timeout=timeout) as r:
+                        return r.status
+                except urllib.error.HTTPError as e:
+                    if e.code in (429, 503):
+                        time.sleep(2 ** (attempt + 1))
+                        break
+                    if method == "GET" or e.code not in (403, 405, 501):
+                        return e.code
+                except Exception as e:
+                    if method == "GET":
+                        return "error: " + type(e).__name__
+            else:
+                continue
+        return 429
+
+    last = {}
+    failed, answered = [], 0
+    for i, (aircraft, key, url) in enumerate(unique):
+        host = urlparse(url).netloc
+        wait = 0.3 - (time.time() - last.get(host, 0))
+        if wait > 0:
+            time.sleep(wait)
+        status = ask(url)
+        last[host] = time.time()
+        if isinstance(status, int):
+            answered += 1
+        if status not in (200, 206):
+            failed.append((aircraft, key, url, status))
+        if answered == 0 and i >= 4:
+            print(f"offline: no site answered, the {len(unique)} links were not checked")
+            return 0
+    # 403 Forbidden: a site that refuses programs (the fan wikis' bot protection) but opens in a browser; listed, not failed.
+    blocked = [f for f in failed if f[3] == 403]
+    failed = [f for f in failed if f[3] != 403]
+    for aircraft, key, url, status in blocked:
+        print(f"REFUSES PROGRAMS (opens in a browser) {aircraft} {key} {url}")
+    for aircraft, key, url, status in failed:
+        print(f"FAIL {status} {aircraft} {key} {url}")
+    print(f"{len(unique) - len(failed) - len(blocked)} of {len(unique)} links answer, {len(blocked)} refuse programs, {len(failed)} fail")
+    return 1 if failed else 0
+
+
 def cmd_simple(action):
     code, text = run_engine(["cockpits", action, "--text"])
     print(text)
@@ -469,6 +547,8 @@ def main():
         return cmd_render(args)
     if cmd in ("coverage", "drawings"):
         return cmd_simple(cmd)
+    if cmd == "check-links":
+        return cmd_check_links(args)
     if cmd == "photos-merge":
         return cmd_photos_merge(args)
     if cmd == "get":

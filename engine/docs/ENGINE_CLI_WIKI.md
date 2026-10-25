@@ -132,8 +132,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine profile history restore <id> | undo | redo   (writes a version back into the profile; that is a version too, so it can be undone)
   engine profile history keep <id> [on|off] | checkpoint [--label <text>]   (a kept version is never cleaned up; a checkpoint keeps the profile as it is now)
   engine profile history prune [--all] [--dry-run] | usage [--all]   (clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total)
-  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]
-  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]
+  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]
+  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]
   engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included)
   engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)
   engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)
@@ -401,11 +401,11 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine p3d6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
   engine p3d6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
   engine p3d6 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
-  engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--modifier-colors <modifier=#RRGGBB,...>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--font <family>] [--font-size <n>] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)
-  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)
+  engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the sheet style options colour the page, tables, lines, markers and labels, a device's own style in its layout wins; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)
+  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)
   engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)
   engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)
-  engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)
+  engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)
   engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]
   engine layout identify [--device <name>] [--devices <csv>] [--connected]   (vendor/model from VID:PID and HID name, picture search link)
   engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]
@@ -417,7 +417,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)
   engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)
   engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)
-  engine relations list [filter]
+  engine relations list [filter] [--titles]   (--titles: each relation with the titles of its actions)
   engine relations show <relation-name>
   engine relations add <name> [--axis|--button|--type axis|button] [--node game:id[:plane1|plane2]] [--from relation] [--group g] [--device d --input i --modifier m]
   engine relations group list [relation-name]
@@ -458,6 +458,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]
   engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]
   engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]
+  engine relations merge-copies [--dry-run] [--name <relation>]
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g] [--all-examples]
   engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]
@@ -485,7 +486,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]   (a callout sheet per device)
   engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
   engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)
-  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)
+  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)
   engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]
   engine binds list [filter]
   engine binds show <bind-or-relation>
@@ -898,7 +899,7 @@ Examples:
 engine --help
 ```
 
-### `engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]`
+### `engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]`
 What it does: Parses DCS input files and previews what would be imported, without applying changes.
 
 Arguments and example values:
@@ -921,6 +922,8 @@ Arguments and example values:
 - `--import-deadzone`: Include axis deadzone settings.
 - `--import-saturation-x`: Include DCS saturation X setting.
 - `--import-saturation-y`: Include DCS saturation Y setting.
+- `--only-connected`: Command argument. See examples for typical values.
+- `--merge-same-name`: Command argument. See examples for typical values.
 - `--confirm`: Controls suggestion confirmation (true) vs auto-accept (false).
 
 How arguments interact:
@@ -933,7 +936,7 @@ Examples:
 engine dcs scan 'C:\Users\Pilot\Saved Games\DCS.openbeta' --plane 'A-10C_2' --confirm false --text
 ```
 
-### `engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--confirm true|false]`
+### `engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]`
 What it does: Parses DCS input files and applies results to the in-memory profile.
 
 Arguments and example values:
@@ -960,6 +963,8 @@ Arguments and example values:
 - `--import-deadzone`: Include axis deadzone settings.
 - `--import-saturation-x`: Include DCS saturation X setting.
 - `--import-saturation-y`: Include DCS saturation Y setting.
+- `--only-connected`: Command argument. See examples for typical values.
+- `--merge-same-name`: Command argument. See examples for typical values.
 - `--confirm`: Controls suggestion confirmation (true) vs auto-accept (false).
 
 How arguments interact:
@@ -4794,7 +4799,7 @@ Examples:
 engine p3d6 refresh-db --text
 ```
 
-### `engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--modifier-colors <modifier=#RRGGBB,...>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--font <family>] [--font-size <n>] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)`
+### `engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the sheet style options colour the page, tables, lines, markers and labels, a device's own style in its layout wins; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)`
 What it does: Renders joystick layout images per game/plane (command descriptions) and overview images (relation names) from JoyPro .layout mappings.
 
 Arguments and example values:
@@ -4821,20 +4826,35 @@ Arguments and example values:
 - `--legend-width`: Command argument. See examples for typical values.
 - `--legend-max-rows`: Command argument. See examples for typical values.
 - `--legend-font-size`: Command argument. See examples for typical values.
-- `--modifier-colors`: Command argument. See examples for typical values.
-- `<modifier=#RRGGBB,...>`: Command argument. See examples for typical values.
 - `--button-symbol`: Command argument. See examples for typical values.
 - `--axis-symbol`: Command argument. See examples for typical values.
 - `--pov-symbol`: Command argument. See examples for typical values.
 - `--slider-symbol`: Command argument. See examples for typical values.
+- `--sheet-style`: Command argument. See examples for typical values.
+- `<style.json>`: Command argument. See examples for typical values.
 - `--font`: Command argument. See examples for typical values.
 - `<family>`: Command argument. See examples for typical values.
 - `--font-size`: Command argument. See examples for typical values.
+- `--font-weight`: Command argument. See examples for typical values.
 - `--text-color`: Command argument. See examples for typical values.
 - `<#RRGGBB|#AARRGGBB>`: Command argument. See examples for typical values.
 - `--outline-color`: Command argument. See examples for typical values.
 - `<color|none>`: Command argument. See examples for typical values.
 - `--label-background`: Command argument. See examples for typical values.
+- `--page-background`: Command argument. See examples for typical values.
+- `<color>`: Command argument. See examples for typical values.
+- `--table-background`: Command argument. See examples for typical values.
+- `--table-border`: Command argument. See examples for typical values.
+- `--header-background`: Command argument. See examples for typical values.
+- `--header-text`: Command argument. See examples for typical values.
+- `--table-text`: Command argument. See examples for typical values.
+- `--line-color`: Command argument. See examples for typical values.
+- `--marker-color-button`: Command argument. See examples for typical values.
+- `--marker-color-axis`: Command argument. See examples for typical values.
+- `--marker-color-hat`: Command argument. See examples for typical values.
+- `--marker-color-slider`: Command argument. See examples for typical values.
+- `--modifier-colors`: Command argument. See examples for typical values.
+- `<modifier=#RRGGBB,...>`: Command argument. See examples for typical values.
 - `--style`: Command argument. See examples for typical values.
 - `--print-width`: Command argument. See examples for typical values.
 - `<px>`: Command argument. See examples for typical values.
@@ -4852,7 +4872,7 @@ Examples:
 engine --help
 ```
 
-### `engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)`
+### `engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -4882,6 +4902,32 @@ Arguments and example values:
 - `<px>`: Command argument. See examples for typical values.
 - `--save`: Command argument. See examples for typical values.
 - `<file.json>`: Path to a JSON file. Example: C:\JoyPro\sync-choices.json.
+- `--sheet-style`: Command argument. See examples for typical values.
+- `<style.json>`: Command argument. See examples for typical values.
+- `--font`: Command argument. See examples for typical values.
+- `<family>`: Command argument. See examples for typical values.
+- `--font-size`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--font-weight`: Command argument. See examples for typical values.
+- `--text-color`: Command argument. See examples for typical values.
+- `<#RRGGBB|#AARRGGBB>`: Command argument. See examples for typical values.
+- `--outline-color`: Command argument. See examples for typical values.
+- `<color|none>`: Command argument. See examples for typical values.
+- `--label-background`: Command argument. See examples for typical values.
+- `--page-background`: Command argument. See examples for typical values.
+- `<color>`: Command argument. See examples for typical values.
+- `--table-background`: Command argument. See examples for typical values.
+- `--table-border`: Command argument. See examples for typical values.
+- `--header-background`: Command argument. See examples for typical values.
+- `--header-text`: Command argument. See examples for typical values.
+- `--table-text`: Command argument. See examples for typical values.
+- `--line-color`: Command argument. See examples for typical values.
+- `--marker-color-button`: Command argument. See examples for typical values.
+- `--marker-color-axis`: Command argument. See examples for typical values.
+- `--marker-color-hat`: Command argument. See examples for typical values.
+- `--marker-color-slider`: Command argument. See examples for typical values.
+- `--modifier-colors`: Command argument. See examples for typical values.
+- `<modifier=#RRGGBB,...>`: Command argument. See examples for typical values.
 - `--check-all`: Command argument. See examples for typical values.
 
 Examples:
@@ -4915,7 +4961,7 @@ Examples:
 engine --help
 ```
 
-### `engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)`
+### `engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -4933,7 +4979,32 @@ Arguments and example values:
 - `--light`: Command argument. See examples for typical values.
 - `--print-width`: Command argument. See examples for typical values.
 - `<px>`: Command argument. See examples for typical values.
+- `--sheet-style`: Command argument. See examples for typical values.
+- `<style.json>`: Command argument. See examples for typical values.
+- `--font`: Command argument. See examples for typical values.
+- `<family>`: Command argument. See examples for typical values.
+- `--font-size`: Command argument. See examples for typical values.
 - `<n>`: Integer numeric value. Example: 45.
+- `--font-weight`: Command argument. See examples for typical values.
+- `--text-color`: Command argument. See examples for typical values.
+- `<#RRGGBB|#AARRGGBB>`: Command argument. See examples for typical values.
+- `--outline-color`: Command argument. See examples for typical values.
+- `<color|none>`: Command argument. See examples for typical values.
+- `--label-background`: Command argument. See examples for typical values.
+- `--page-background`: Command argument. See examples for typical values.
+- `<color>`: Command argument. See examples for typical values.
+- `--table-background`: Command argument. See examples for typical values.
+- `--table-border`: Command argument. See examples for typical values.
+- `--header-background`: Command argument. See examples for typical values.
+- `--header-text`: Command argument. See examples for typical values.
+- `--table-text`: Command argument. See examples for typical values.
+- `--line-color`: Command argument. See examples for typical values.
+- `--marker-color-button`: Command argument. See examples for typical values.
+- `--marker-color-axis`: Command argument. See examples for typical values.
+- `--marker-color-hat`: Command argument. See examples for typical values.
+- `--marker-color-slider`: Command argument. See examples for typical values.
+- `--modifier-colors`: Command argument. See examples for typical values.
+- `<modifier=#RRGGBB,...>`: Command argument. See examples for typical values.
 - `--layout-map`: Map joystick name to layout/image file path. Example: --layout-map 'VKB Gladiator NXT=C:\\JoyPro\\LayoutImages\\VKB.layout'.
 
 Examples:
@@ -5134,11 +5205,12 @@ Examples:
 engine --help
 ```
 
-### `engine relations list [filter]`
+### `engine relations list [filter] [--titles]   (--titles: each relation with the titles of its actions)`
 What it does: Lists relations (logical actions) in the profile.
 
 Arguments and example values:
 - `filter`: Text filter (case-insensitive substring). Example values: 'A-10', 'Hornet', 'VKB'.
+- `--titles`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
@@ -5806,6 +5878,19 @@ Examples:
 engine --help
 ```
 
+### `engine relations merge-copies [--dry-run] [--name <relation>]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
+- `<relation>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
 ### `engine relations meanings [--game g] [--top N]`
 What it does: Runs this command operation.
 
@@ -6213,7 +6298,7 @@ Examples:
 engine --help
 ```
 
-### `engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)`
+### `engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -6236,7 +6321,7 @@ Arguments and example values:
 - `--coverage`: Command argument. See examples for typical values.
 - `--model`: Command argument. See examples for typical values.
 - `--url`: Command argument. See examples for typical values.
-- `<https photo on the maker's host>`: Command argument. See examples for typical values.
+- `<https photo on the maker's host or an allowed review site>`: Command argument. See examples for typical values.
 - `--view`: Command argument. See examples for typical values.
 - `<front|side|back|top|base|three-quarter|sheet>`: Command argument. See examples for typical values.
 - `--page`: Command argument. See examples for typical values.
@@ -6246,6 +6331,15 @@ Arguments and example values:
 - `--shows`: Command argument. See examples for typical values.
 - `--sha256`: Command argument. See examples for typical values.
 - `<hex>`: Command argument. See examples for typical values.
+- `--source`: Command argument. See examples for typical values.
+- `--site`: Command argument. See examples for typical values.
+- `--licence`: Command argument. See examples for typical values.
+- `<note>`: Command argument. See examples for typical values.
+- `--archive`: Command argument. See examples for typical values.
+- `<web.archive.org url>`: Command argument. See examples for typical values.
+- `--width`: Command argument. See examples for typical values.
+- `<px>`: Command argument. See examples for typical values.
+- `--height`: Command argument. See examples for typical values.
 - `--check`: Command argument. See examples for typical values.
 - `<v>`: Command argument. See examples for typical values.
 - `--png`: Command argument. See examples for typical values.
@@ -6260,7 +6354,6 @@ Arguments and example values:
 - `<yaw>`: Command argument. See examples for typical values.
 - `<pitch>`: Command argument. See examples for typical values.
 - `--size`: Command argument. See examples for typical values.
-- `<px>`: Command argument. See examples for typical values.
 - `--skip`: Command argument. See examples for typical values.
 - `<regex>`: Command argument. See examples for typical values.
 - `--folder`: Command argument. See examples for typical values.

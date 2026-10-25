@@ -1,0 +1,371 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-gripen",
+  "title": "JAS 39A / 39B Gripen",
+  "variants": [
+    "gripen-a-b"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Saab JAS 39 Gripen (Wikipedia), cockpit and avionics",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Saab_JAS_39_Gripen"
+    },
+    {
+      "id": "r1",
+      "title": "avrosys.nu: JAS 39 Gripen (Military Aviation in Sweden)",
+      "kind": "reference",
+      "url": "https://www.avrosys.nu/aircraft/Attack/178jas39/178JAS39.htm"
+    },
+    {
+      "id": "r2",
+      "title": "Saab: Gripen E Wide Area Display",
+      "kind": "reference",
+      "url": "https://www.saab.com/markets/india/gripen-for-india/gripen-for-india/gripen-es-wad-takes-situational-awareness-to-a-different-level"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Saab JAS 39 Gripen is a light Swedish fighter with one engine, a delta wing and small front wings (canards). The pilot sits in a glass cockpit with a wide head-up display, three screens of the same size and a centre stick; the throttle is on the left. In the A the screens are monochrome (one colour); the two-seat B has a second cockpit with its own screens and no gun. No public description of the grip switches was found, so this guide keeps to the common functions and the general console layout.",
+  "areas": [
+    {
+      "id": "front",
+      "where": "front-center",
+      "name": "Front panel and displays",
+      "text": "The HUD on top and the three screens in front of the pilot.",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Front panel: wide-angle HUD and three displays",
+          "src": "w1",
+          "text": "The front of the cockpit: a wide head-up display on top and three screens of the same size below it. The left one shows flight data, the middle one a map, the right one the sensors.",
+          "context": "Any screen can show any page, so if one fails the pilot moves its page to another one. The role of the aircraft (fighter, attack, reconnaissance) changes with a button press, not with new hardware.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Wide-angle HUD",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the aiming marks; later aircraft can also show a night camera picture (FLIR), so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "data-entry",
+              "name": "HUD / data entry control panel",
+              "type": "keypad",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A keypad with a small text display below the HUD, where the pilot types numbers such as radio frequencies and navigation points.",
+              "context": "It is used mainly for radio and navigation data; the pilot types here and checks the result in the HUD or on the screens. Its single switches are not described in the sources JoyPro uses.",
+              "src": "w1"
+            },
+            {
+              "id": "fd",
+              "name": "Left display: flight data (FD)",
+              "type": "display",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "The left colour screen (a multi-function screen with buttons around its edge). It shows the main flight information: attitude, speed, height and heading, like a set of instruments drawn on one screen.",
+              "context": "It replaces the classic round instruments; the pilot looks at it when the HUD is not enough, for example in cloud.",
+              "src": "w1"
+            },
+            {
+              "id": "hsd",
+              "name": "Centre display: horizontal situation (HSD)",
+              "type": "display",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "The middle colour screen (a multi-function screen with buttons around its edge). It shows an electronic map with the planned route and the tactical picture: friends, enemies and threats around the aircraft.",
+              "context": "It is the screen for finding the way and for keeping track of the whole situation; data from other aircraft by radio link also appears here.",
+              "src": "w1"
+            },
+            {
+              "id": "msd",
+              "name": "Right display: multi-sensor (MSD)",
+              "type": "display",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "The right colour screen (a multi-function screen with buttons around its edge). It shows the pictures of the sensors: the radar, the night camera (FLIR) and the electronic warfare page that shows enemy radars.",
+              "context": "The pilot uses it to look for targets and threats.",
+              "src": "w1"
+            },
+            {
+              "id": "bezel-keys",
+              "name": "Display bezel keys",
+              "type": "button",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "Buttons around the edges of the screens. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "With them the pilot picks the format of each screen; the A/B have monochrome screens, the C/D colour ones, but the keys work the same way.",
+              "src": "w1"
+            },
+            {
+              "id": "standby",
+              "name": "Standby instruments",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "text": "Small backup instruments for attitude, airspeed and altitude. They keep working when the main screens or computers fail.",
+              "context": "The pilot uses them to fly safely home if the main displays are lost."
+            },
+            {
+              "id": "warning-lights",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:front-panel:8"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "A warning light means danger now, a caution light means something needs attention soon; the screens then show which system it is."
+            },
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:front-panel:9"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The throttle side: engine, fuel, radio and trim.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console",
+          "text": "The left side panel beside the throttle, with the engine, fuel, radio and trim controls.",
+          "context": "The pilot's left hand stays on the throttle most of the time and reaches these panels for set-up and changes.",
+          "controls": [
+            {
+              "id": "engine-fuel",
+              "name": "Engine and fuel controls",
+              "type": "other",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "Switches for starting the single engine and feeding it with fuel, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio / communication panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "trim-fcs",
+              "name": "Trim and flight control panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "Switches for the flight control system, the computers and helpers between the stick and the control surfaces, and for the trim. The Gripen is flown through a triplex (three-times redundant) digital fly-by-wire system.",
+              "context": "The pilot normally leaves them as set and uses them for tests and failures. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, lights, air and oxygen.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The right side panel with the electricity, lights, cockpit air and oxygen.",
+          "context": "These are mostly set before take-off and seldom touched in flight.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical power panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "ecs",
+              "name": "Environmental control panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "The controls for the cockpit's heating, cooling and fresh air (environmental control), and for the cabin pressure at height.",
+              "context": "The pilot sets a comfortable temperature and keeps the canopy free of mist. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen controls",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "The controls for the breathing gas the pilot needs at high altitude, where the air is too thin (oxygen).",
+              "context": "The pilot checks the oxygen before take-off and wears the mask for the whole flight. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The two grips the pilot holds all the time.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The centre stick between the pilot's knees. Its grip carries the trigger and the weapon release button.",
+          "context": "No public description of the Gripen's grip switches exists, so JoyPro lists only the common functions.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands. On the Gripen the computers move the canards (the small front wings) and the elevons (the movable rear edges of the delta wing).",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the gun or the selected missile. The two-seat B and D have no gun.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches the selected bomb, rocket or missile.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "text": "The single throttle lever on the left console. Its grip carries the cursor control, the airbrake switch and the radio button.",
+          "context": "Only the common functions are listed; the full Gripen throttle switch set is not public.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:1"
+              ],
+              "text": "The lever that makes the single engine (RM12 in the A to D, F414G in the E/F) stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push. Pulled back past idle to the stop it shuts the engine off.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            },
+            {
+              "id": "cursor",
+              "name": "Cursor control",
+              "type": "hat",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "A tiny thumb joystick on the throttle grip that moves the cursor on the screens. Pressing it designates (marks) the target.",
+              "context": "The pilot uses it to pick targets on the radar or sensor picture without taking his hand off the throttle."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft)",
+                  "text": "The airbrakes open."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "transmit",
+              "name": "Radio transmit",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

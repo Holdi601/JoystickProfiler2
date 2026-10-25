@@ -28,7 +28,7 @@ namespace JoyPro.Usage
         }
     }
 
-    // JoyPro's own usage summary (docs/usage-statistics.md): <data>\Usage, data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro
+    // JoyPro's own usage summary (docs/usage-statistics.md): <data>\Usage, data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2
     // (so a portable setup with its own data folder carries it along).
     //   sessions.jsonl   one session per line; a session read again (same key) is appended again and the more complete
     //                    read wins when the file is read; compacted when it holds many replaced lines

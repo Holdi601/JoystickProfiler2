@@ -116,7 +116,7 @@ public sealed class SettingsTabStrip : WrapPanel
                 CornerRadius = new CornerRadius(12),
                 BorderThickness = new Thickness(1),
                 Cursor = new Cursor(StandardCursorType.Hand),
-                Child = new TextBlock { Text = T(item.TabTitle), FontSize = 12, VerticalAlignment = VerticalAlignment.Center, MaxWidth = 260, TextTrimming = TextTrimming.CharacterEllipsis },
+                Child = ThemedText(T(item.TabTitle)),
             };
             ToolTip.SetTip(tab, T("{0} - Click: open/close - Double-click: show only this section - Drag: move it", T(item.Title)));
             tab.PointerPressed += OnTabPressed;
@@ -219,5 +219,13 @@ public sealed class SettingsTabStrip : WrapPanel
         pressed = null;
         dragging = false;
         dropTarget = null;
+    }
+
+    // A tab's caption at the theme's text size (Settings > Appearance).
+    private static TextBlock ThemedText(string text)
+    {
+        TextBlock block = new() { Text = text, VerticalAlignment = VerticalAlignment.Center, MaxWidth = 260, TextTrimming = TextTrimming.CharacterEllipsis };
+        block.Bind(TextBlock.FontSizeProperty, block.GetResourceObservable("JP.FontSize.12"));
+        return block;
     }
 }

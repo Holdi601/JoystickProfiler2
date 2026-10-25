@@ -127,6 +127,13 @@ public sealed class DeviceMarkerCanvas : Control
     public static readonly StyledProperty<IBrush?> LabelForegroundProperty =
         AvaloniaProperty.Register<DeviceMarkerCanvas, IBrush?>(nameof(LabelForeground));
 
+    // The cheat sheet style of the Layout page (docs/ui/layout-redesign.md "Sheet style"; null = JoyPro's marker
+    // colours): the marker colour per kind of input and per modifier, the halo, box and weight of plain labels.
+    public static readonly StyledProperty<JoyPro.DeviceReference.SheetStyle?> SheetStyleProperty =
+        AvaloniaProperty.Register<DeviceMarkerCanvas, JoyPro.DeviceReference.SheetStyle?>(nameof(SheetStyle));
+
+    public JoyPro.DeviceReference.SheetStyle? SheetStyle { get => GetValue(SheetStyleProperty); set => SetValue(SheetStyleProperty, value); }
+
     // The marker just bound (Bind mode): ringed in green for a moment so the user sees where the bind went.
     public static readonly StyledProperty<object?> FlashMarkerProperty =
         AvaloniaProperty.Register<DeviceMarkerCanvas, object?>(nameof(FlashMarker));
@@ -264,9 +271,9 @@ public sealed class DeviceMarkerCanvas : Control
     private readonly Decorator overlayHost = new() { RenderTransformOrigin = RelativePoint.TopLeft };
     private readonly MarkerLayer markerLayer;
     private readonly Border zoomBar;
-    private readonly TextBlock zoomLabel = new() { MinWidth = 46, TextAlignment = TextAlignment.Center, VerticalAlignment = VerticalAlignment.Center, FontSize = 12, FontWeight = FontWeight.SemiBold };
+    private readonly TextBlock zoomLabel = new() { MinWidth = 46, TextAlignment = TextAlignment.Center, VerticalAlignment = VerticalAlignment.Center, FontWeight = FontWeight.SemiBold };
     private readonly Border hintBar;
-    private readonly TextBlock hintLabel = new() { FontSize = 11.5, VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+    private readonly TextBlock hintLabel = new() { VerticalAlignment = VerticalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
 
     private readonly List<Badge> badges = [];
     private readonly List<INotifyPropertyChanged> observedMarkers = [];
@@ -519,7 +526,7 @@ public sealed class DeviceMarkerCanvas : Control
         }
         else if (change.Property == ModeProperty || change.Property == ShowCommandsProperty || change.Property == ShowBadgesProperty ||
                  change.Property == PlainLabelsProperty || change.Property == LabelFontFamilyProperty || change.Property == LabelFontSizeProperty ||
-                 change.Property == LabelForegroundProperty || change.Property == FlashMarkerProperty)
+                 change.Property == LabelForegroundProperty || change.Property == FlashMarkerProperty || change.Property == SheetStyleProperty)
         {
             UpdateHint();
             MarkersChanged();
@@ -999,6 +1006,20 @@ public sealed class DeviceMarkerCanvas : Control
         IBrush accent = Resource("JP.AccentBrush") ?? BadgeSelectedBrush;
         if (badge.Command != null)
         {
+            // The sheet style's box behind the label and its halo (as the engine draws the cheat sheet).
+            JoyPro.DeviceReference.SheetStyle? style = SheetStyle;
+            if (style != null)
+            {
+                Color back = SheetStyleLook.ColorOf(style.LabelBackground, Colors.Transparent);
+                if (back.A > 0)
+                    context.DrawRectangle(new SolidColorBrush(back), null, badge.Rect.Inflate(new Thickness(2, 1)), 2, 2);
+                Color halo = SheetStyleLook.ColorOf(style.OutlineColor, Colors.Transparent);
+                if (halo.A > 0 && badge.Halo != null)
+                {
+                    foreach ((double dx, double dy) in new[] { (-1.0, 0.0), (1.0, 0.0), (0.0, -1.0), (0.0, 1.0) })
+                        badge.Halo.Draw(context, new Point(badge.Rect.X + dx, badge.Rect.Y + dy));
+                }
+            }
             badge.Command.Draw(context, badge.Rect.TopLeft);
             if (selected || ReferenceEquals(badge.Marker, hovered))
                 context.DrawRectangle(null, new Pen(accent, selected ? 2 : 1), badge.Rect.Inflate(3), 3, 3);
@@ -1202,7 +1223,7 @@ public sealed class DeviceMarkerCanvas : Control
         if (badge.Compact)
         {
             context.DrawEllipse(free ? BadgeFreeBrush : boundInBind ? BadgeBoundBrush : BadgeBrush, free ? BadgeFreePen : BadgePen, rect.Center, rect.Width / 2, rect.Height / 2);
-            context.DrawEllipse(KindBrush(badge.Marker.Kind), null, rect.Center, badge.DotSize / 2, badge.DotSize / 2);
+            context.DrawEllipse(KindBrush(badge.Marker), null, rect.Center, badge.DotSize / 2, badge.DotSize / 2);
             return;
         }
         using (context.PushOpacity(ReferenceEquals(badge.Marker, dragMarker) && dragMoved ? 0.9 : 1))
@@ -1220,7 +1241,7 @@ public sealed class DeviceMarkerCanvas : Control
 
             double dot = badge.DotSize;
             Point dotCenter = new(rect.X + badge.PadX + dot / 2, rect.Y + rect.Height / 2);
-            context.DrawEllipse(selected ? Brushes.White : boundInBind ? BoundDotFill : KindBrush(badge.Marker.Kind), null, dotCenter, dot / 2, dot / 2);
+            context.DrawEllipse(selected ? Brushes.White : boundInBind ? BoundDotFill : KindBrush(badge.Marker), null, dotCenter, dot / 2, dot / 2);
 
             double x = rect.X + badge.PadX + dot + badge.Gap;
             if (badge.Modifier != null)
@@ -1238,13 +1259,28 @@ public sealed class DeviceMarkerCanvas : Control
         }
     }
 
-    private static IBrush KindBrush(string? kind) =>
+    // A marker's colour: its modifier's colour, else its kind's (the sheet style's, else JoyPro's).
+    private IBrush KindBrush(IDeviceMarker marker)
+    {
+        JoyPro.DeviceReference.SheetStyle? style = SheetStyle;
+        if (style != null)
+        {
+            string modifierColor = string.IsNullOrWhiteSpace(marker.Modifier) ? string.Empty : style.ModifierColor(marker.Modifier);
+            string color = modifierColor.Length > 0 ? modifierColor : style.MarkerColor(marker.Kind);
+            if (color.Length > 0)
+                return SheetStyleLook.BrushOf(color, Colors.Gray);
+        }
+        return KindBrush(marker.Kind);
+    }
+
+    // The theme's marker colours (Settings > Appearance > Markers).
+    private IBrush KindBrush(string? kind) =>
         (kind ?? string.Empty).Trim().ToLowerInvariant() switch
         {
-            "axis" => new SolidColorBrush(Color.Parse("#C084FC")),
-            "pov" => new SolidColorBrush(Color.Parse("#2DD4BF")),
-            "slider" => new SolidColorBrush(Color.Parse("#FBBF24")),
-            _ => new SolidColorBrush(Color.Parse("#60A5FA"))
+            "axis" => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Marker.AxisBrush", "#C084FC"),
+            "pov" => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Marker.HatBrush", "#2DD4BF"),
+            "slider" => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Marker.SliderBrush", "#FBBF24"),
+            _ => JoyPro.Gui.Services.ThemeService.Brush(this, "JP.Marker.ButtonBrush", "#60A5FA")
         };
 
     private IReadOnlyList<Badge> GetBadges()
@@ -1324,11 +1360,13 @@ public sealed class DeviceMarkerCanvas : Control
         if (text.Length > 0)
         {
             double size = Math.Max(1, LabelFontSize * zoom);
-            Typeface face = new(LabelFontFamily ?? FontFamily.Default);
+            Typeface face = new(LabelFontFamily ?? FontFamily.Default, FontStyle.Normal, SheetStyleLook.Weight(SheetStyle));
             TextLayout command = new(text, face, size, LabelForeground ?? Brushes.Black);
+            Color halo = SheetStyle == null ? Colors.Transparent : SheetStyleLook.ColorOf(SheetStyle.OutlineColor, Colors.Transparent);
+            TextLayout? haloText = halo.A > 0 ? new TextLayout(text, face, size, new SolidColorBrush(halo)) : null;
             // GDI+ starts the text a little right of and below the point.
             Point at = new(origin.X + size * 0.12, origin.Y + size * 0.05);
-            return new Badge(marker, new Rect(at, new Size(command.WidthIncludingTrailingWhitespace, command.Height)), tag, command, null, 1, 5, 0, 0) { Plain = true };
+            return new Badge(marker, new Rect(at, new Size(command.WidthIncludingTrailingWhitespace, command.Height)), tag, command, null, 1, 5, 0, 0) { Plain = true, Halo = haloText };
         }
         Rect rect = look ? new Rect(origin, new Size(14, 14)) : new Rect(origin, new Size(tag.WidthIncludingTrailingWhitespace + 10, tag.Height + 4));
         return new Badge(marker, rect, tag, null, null, 1, 5, 0, 0) { Plain = true, Compact = look };
@@ -1693,12 +1731,15 @@ public sealed class DeviceMarkerCanvas : Control
         public double PartRadius { get; init; }
         public Rect BadgeRect { get; init; }
         public Rect CommandRect { get; set; }
+        // A plain label's text in the sheet style's halo colour (drawn around it).
+        public TextLayout? Halo { get; init; }
 
         public void Dispose()
         {
             Label.Dispose();
             Command?.Dispose();
             Modifier?.Dispose();
+            Halo?.Dispose();
         }
     }
 

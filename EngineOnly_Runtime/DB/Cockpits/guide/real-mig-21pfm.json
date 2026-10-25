@@ -1,0 +1,486 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mig-21pfm",
+  "title": "MiG-21PFM Fishbed-F",
+  "variants": [
+    "mig-21pfm"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mikoyan-Gurevich MiG-21 (Wikipedia), variants",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mikoyan-Gurevich_MiG-21"
+    },
+    {
+      "id": "d1",
+      "title": "DCS MiG-21bis Flight Manual (EN) (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/MIG-21bis/Doc/DCS MiG-21bis EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The MiG-21PFM is an earlier version of the famous Soviet delta-wing fighter, from the 1960s. It has the small RP-21 radar, a gyro gunsight, a canopy hinged at the front and no gun built in; a GP-9 gun pod can be carried under the fuselage. The stick and throttle controls it shares with the MiG-21bis are taken from the DCS manual; the panels are the general layout of the type and stay short.",
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "ASP-PF gunsight",
+      "text": "The gyro gunsight on top of the panel.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "ASP-PF gunsight",
+          "text": "A gyro gunsight that projects an aiming mark onto a glass in front of the pilot. A gyroscope inside moves the mark to allow for the target's movement in a turn.",
+          "context": "It is used for the gun pod, the rockets and the missiles; the PFM has no head-up display.",
+          "controls": [
+            {
+              "id": "sight-head",
+              "name": "Sight head (reflector)",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass of the sight, on which the aiming dot (pipper) and the range ring appear.",
+              "context": "The pilot puts the pipper on the target and fires when the range ring shows the right distance."
+            },
+            {
+              "id": "sight-mode",
+              "name": "Sight mode switch",
+              "type": "switch",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "This switch picks the mode of the sight, for example for the gun, the rockets or the missiles.",
+              "context": "The pilot sets it to the weapon he is about to use. The exact positions are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "wingspan",
+              "name": "Target wingspan / range setting",
+              "type": "knob",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "This knob tells the sight how big the target is (its wingspan) or how far away it is.",
+              "context": "With it the sight can work out the range and show the right aiming point."
+            },
+            {
+              "id": "sight-brightness",
+              "name": "Sight brightness knob",
+              "type": "knob",
+              "match": [
+                "item:hud:4"
+              ],
+              "text": "Turning this knob makes the aiming mark brighter or darker.",
+              "context": "The pilot sets it so the mark is clear against a bright sky or a dark ground."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The radar scope over the flight and engine dials.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Main instrument panel and RP-21 scope",
+          "src": "w1",
+          "text": "The main panel: the round screen of the RP-21 radar at the top, flight and engine instruments below, warning lights and the armament panel.",
+          "context": "The PFM is an interceptor of the 1960s; the pilot was guided to his target from the ground and used the radar for the last part of the attack.",
+          "controls": [
+            {
+              "id": "rp21",
+              "name": "RP-21 radar scope",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The round screen of the RP-21 Sapfir radar. It shows the target the radar has found and, once locked, guides the pilot to it.",
+              "context": "The radar only looks forward and has a short range, so ground control first leads the pilot close to the target.",
+              "src": "w1"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "ksi",
+              "name": "Course system indicator (KSI)",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing."
+            },
+            {
+              "id": "tacho",
+              "name": "Tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "This gauge shows how fast the engine turns (RPM).",
+              "context": "The pilot checks it during the start and when he sets the power."
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust temperature gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This gauge shows how hot the gas leaving the engine is.",
+              "context": "Too hot means the engine is in danger; the pilot watches it during the start and at full power."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The MiG-21 carries little fuel, so the pilot watches this closely."
+            },
+            {
+              "id": "warnings",
+              "name": "Warning lights panel",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When a warning comes on, the pilot looks here first to see which system needs attention."
+            },
+            {
+              "id": "armament",
+              "name": "Weapon selector and armament panel",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:11"
+              ],
+              "text": "The panel for choosing and arming the weapons: missiles, rockets, bombs or the gun pod.",
+              "context": "The pilot sets it before the attack; the buttons on the stick then fire. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console with throttle",
+      "text": "The throttle, flaps, radio and engine start.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console: throttle",
+          "text": "The left side with the throttle, the flap buttons, the radio, the engine start controls and the drag chute button.",
+          "context": "The left hand stays on the throttle and reaches these controls around it.",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Flaps buttons",
+              "type": "button",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "This control moves the flaps, parts of the wing that slide out to give more lift at low speed. On the MiG-21 they are buttons for the flap positions.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once the aircraft is fast enough."
+            },
+            {
+              "id": "radio",
+              "name": "Radio control panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "engine-start",
+              "name": "Engine start / relight controls",
+              "type": "light",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "Controls and lights for starting the engine on the ground and restarting (relighting) it in flight.",
+              "context": "If the engine stops in flight, the pilot uses these to bring it back. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "drag-chute",
+              "name": "Drag chute button",
+              "type": "button",
+              "match": [
+                "item:left-console:5"
+              ],
+              "text": "Pressing this button opens a parachute at the tail after touchdown to slow the aircraft down.",
+              "context": "The MiG-21 lands fast, so the chute helps it stop on the runway."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, compass, lights and IFF.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console: radio and electrics",
+          "text": "The right side with the electrical switches, the compass controls, the lights and the IFF.",
+          "context": "These are set before take-off.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical switches",
+              "type": "switch",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "Switches for the electricity: the battery and the generator, and the systems they feed.",
+              "context": "The pilot switches them on first when he climbs in. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "compass",
+              "name": "Navigation / compass controls",
+              "type": "gauge",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Controls of the compass system, which tells the pilot his heading.",
+              "context": "The pilot aligns it before take-off. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "iff",
+              "name": "IFF panel",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "The IFF box answers 'who are you?' questions from radars with a code number, so friendly radars and fighters know this aircraft is a friend.",
+              "context": "The pilot sets the codes before the flight. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "d1",
+          "text": "The centre stick with the gun trigger and its safety, the pitch trim switch, the weapon button and the wheel brake lever.",
+          "context": "These controls are the ones the PFM shares with the MiG-21bis; the bis autopilot and radar lock buttons are not part of the PFM.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the GP-9 gun pod (a GSh-23 cannon under the fuselage). The PFM has no gun built in.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go.",
+              "src": "d1"
+            },
+            {
+              "id": "trigger-safety",
+              "name": "Gun trigger safety",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.trigger"
+              ],
+              "positions": [
+                {
+                  "name": "Up (safe)",
+                  "text": "The trigger is locked."
+                },
+                {
+                  "name": "Down (armed)",
+                  "text": "The trigger fires the gun."
+                }
+              ],
+              "text": "A safety catch over the gun trigger. Up is safe, down arms the trigger.",
+              "context": "The pilot flips it down only when he is about to fire.",
+              "src": "d1"
+            },
+            {
+              "id": "trim",
+              "name": "Trimmer button (pitch only)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up; it only trims the nose up and down.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "d1"
+            },
+            {
+              "id": "weapon-release",
+              "name": "Bomb, rocket, missile fire button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches bombs, rockets or missiles. It sits under a red cap.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way.",
+              "src": "d1"
+            },
+            {
+              "id": "brake",
+              "name": "Gear brake lever",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.brake"
+              ],
+              "text": "A lever on the back of the stick grip that the fingers squeeze to brake the wheels. The rudder pedals decide which side brakes more, so the pilot can steer with the brakes.",
+              "context": "This is the Russian way of braking: the brakes are on the stick, not on the pedals. The pilot uses it while taxiing and after landing.",
+              "src": "d1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "d1",
+          "text": "The single throttle lever with the airbrake switch, the radio button and the engine stop lock.",
+          "context": "The throttle of the bis has a twist grip for the radar; the PFM list keeps only the shared controls.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:1"
+              ],
+              "text": "The lever that makes the R-11F2S-300 engine stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push. Its stops are STOP, IDLE, MAX and afterburner.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake control switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The airbrakes open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again.",
+              "src": "d1"
+            },
+            {
+              "id": "ptt",
+              "name": "Radio PTT button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft.",
+              "src": "d1"
+            },
+            {
+              "id": "stop-lock",
+              "name": "Throttle engine-stop and locking lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.stop"
+              ],
+              "text": "A small lever at the throttle base. It must be unlocked before the throttle can be pulled back to STOP, which shuts the engine off.",
+              "context": "The lock prevents the pilot from stopping the engine by accident.",
+              "src": "d1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

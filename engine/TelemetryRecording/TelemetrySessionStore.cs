@@ -15,13 +15,10 @@ namespace JoyPro.TelemetrySessions
     {
         public const string DataFolderVariable = "JOYPRO_DATA_DIR";
 
-        // <data>\Telemetry (data = JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro, as the engine's other data).
+        // <data>\Telemetry (data = JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro2, as the engine's other data).
         public static string DataFolder()
         {
-            string root = Environment.GetEnvironmentVariable(DataFolderVariable);
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            return Path.Combine(root, "Telemetry");
+            return Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), "Telemetry");
         }
 
         public static string ConfigPath()

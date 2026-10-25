@@ -214,7 +214,7 @@ plus the CUDA runtime DLLs of the same CUDA version (about 600 MB). `engine llm 
 - The model URL is pinned to a Hugging Face revision; size and SHA-256 are checked. llama.cpp comes from the
   official GitHub release; its SHA-256 is taken from the release metadata, and a release without one is refused.
   Downloads resume from `<file>.part` (HTTP Range); a file with a wrong checksum is deleted.
-- Files: `%LOCALAPPDATA%\JoyPro\Llm` (or `JOYPRO_DATA_DIR\Llm`): `models\`, `runtime\<cpu|vulkan|cuda>\`,
+- Files: `%LOCALAPPDATA%\JoyPro2\Llm` (or `JOYPRO_DATA_DIR\Llm`): `models\`, `runtime\<cpu|vulkan|cuda>\`,
   `settings.json`, `download-progress.json`.
 
 ### Your own llama.cpp and model

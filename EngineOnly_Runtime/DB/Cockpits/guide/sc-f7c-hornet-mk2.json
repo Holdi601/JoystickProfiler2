@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-f7c-hornet-mk2",
+  "title": "F7C Hornet Mk II (Anvil Aerospace, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-f7c-hornet-mk2"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "F7C Hornet Mk II (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/F7C_Hornet_Mk_II"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The F7C Hornet Mk II is the civilian version of Anvil's medium fighter in Star Citizen. The pilot sits alone under a framed canopy. The common controls apply unchanged.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "F7C Hornet Mk II: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the F7C Hornet Mk II's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot gun mounts (two)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The F7C Hornet Mk II has two mounts for pilot guns. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (eight missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Eight missiles hang in the F7C Hornet Mk II's racks. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (2 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "A small space holds 2 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

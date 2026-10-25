@@ -17,7 +17,7 @@
     <Window.Styles>
         <!-- Steps: the shared round number (Border.step, IconStyles.axaml); the steps still to come are grey. -->
         <Style Selector="Border.step.todo">
-            <Setter Property="Background" Value="#475569" />
+            <Setter Property="Background" Value="{DynamicResource JP.StepTodoBrush}" />
         </Style>
         <Style Selector="TextBlock.stepTitle.current">
             <Setter Property="FontWeight" Value="Bold" />
@@ -26,7 +26,7 @@
             <Setter Property="Opacity" Value="0.6" />
         </Style>
         <Style Selector="Border.card">
-            <Setter Property="BorderBrush" Value="#334155" />
+            <Setter Property="BorderBrush" Value="{DynamicResource JP.BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="10" />
@@ -36,11 +36,12 @@
     <Grid x:Name="WizardRoot" RowDefinitions="Auto,*,Auto" Margin="16">
         <!-- Header: the step and the five steps -->
         <StackPanel Spacing="10" Margin="0,0,0,12">
-            <TextBlock Text="{Binding StepHeading}" FontSize="22" FontWeight="Bold" />
+            <TextBlock Text="{Binding StepHeading}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" />
             <ItemsControl ItemsSource="{Binding Steps}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="18" />
+                        <!-- Wraps on a narrow window (a small screen at 150 %) instead of running past its edge. -->
+                        <WrapPanel Orientation="Horizontal" ItemSpacing="18" LineSpacing="6" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -138,10 +139,10 @@
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Your aircraft'}" Margin="0,0,0,6" />
                     <TextBox DockPanel.Dock="Top" Text="{Binding AircraftFilter}" Watermark="{l:T 'Search, e.g. F-16, helicopter, Star Citizen'}" Margin="0,0,0,6" />
-                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                    <WrapPanel DockPanel.Dock="Bottom" ItemSpacing="8" LineSpacing="6" Margin="0,8,0,0">
                         <Button Content="{l:T 'Add as next priority'}" Command="{Binding AddAsNewPriorityCommand}" ToolTip.Tip="{l:T 'A new row at the end of the priority list'}" />
                         <Button Content="{l:T 'Add as equal'}" Command="{Binding AddToSelectedPriorityCommand}" ToolTip.Tip="{l:T 'Into the selected row: counts the same as the aircraft there'}" />
-                    </StackPanel>
+                    </WrapPanel>
                     <ListBox x:Name="AircraftList" ItemsSource="{Binding Aircraft}" SelectedItem="{Binding SelectedAircraft}">
                         <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="models:SetupAircraftItem">
@@ -159,15 +160,13 @@
                     <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Opacity="0.8" Margin="0,0,0,6"
                                Text="{l:T 'The higher an aircraft, the more its binds get the best places. Aircraft in one row count the same; aircraft you do not list count least. Drag aircraft onto a row or drag rows to reorder.'}" />
                     <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,8,0,0">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
+                        <WrapPanel ItemSpacing="6" LineSpacing="6">
                             <Button Content="{l:T 'Up'}" Command="{Binding PriorityUpCommand}" />
                             <Button Content="{l:T 'Down'}" Command="{Binding PriorityDownCommand}" />
                             <Button Content="{l:T 'Equal with above'}" Command="{Binding MergeWithAboveCommand}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Spacing="6">
                             <Button Content="{l:T 'Own row'}" Command="{Binding SplitFromRowCommand}" ToolTip.Tip="{l:T 'The selected aircraft gets a row of its own below'}" />
                             <Button Content="{l:T 'Remove'}" Command="{Binding RemovePriorityCommand}" />
-                        </StackPanel>
+                        </WrapPanel>
                         <ListBox ItemsSource="{Binding SelectedTier.Aircraft, FallbackValue={x:Null}}" SelectedItem="{Binding SelectedTierAircraft}" MaxHeight="120"
                                  IsVisible="{Binding HasTiers}" />
                     </StackPanel>
@@ -249,7 +248,7 @@
             <Grid IsVisible="{Binding IsPlanStep}" ColumnDefinitions="3*,2*" ColumnSpacing="16">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,10">
-                        <TextBlock Text="{Binding PlanHeadline}" FontSize="16" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding PlanHeadline}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" TextWrapping="Wrap" />
                         <Button Content="{l:T 'Make the plan again'}" Command="{Binding MakePlanCommand}" IsEnabled="{Binding !IsWorking}" />
                     </StackPanel>
                     <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Quality per aircraft'}" Margin="0,0,0,6" />
@@ -372,7 +371,7 @@
         </Panel>
 
         <!-- Status and navigation -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+        <Grid x:Name="WizardFooter" Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
             <TextBlock Text="{Binding Status}" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,12,0" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
                 <Button Content="{l:T 'Back'}" Command="{Binding BackCommand}" IsEnabled="{Binding CanGoBack}" />

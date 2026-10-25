@@ -1,0 +1,109 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-corsair",
+  "title": "Corsair (Drake Interplanetary, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-corsair"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Corsair (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Corsair"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Corsair is an expedition ship from Drake Interplanetary in Star Citizen for a crew of four. Its cockpit sits off to one side of the nose; behind it are crew quarters, a scanning room and a cargo hold. The pilot uses the common controls.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Corsair: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Corsair's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (six, on folding wings)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "Six pilot guns sit on wings that can change their position. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (eight missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Corsair carries eight missiles. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (72 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The hold takes 72 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Corsair: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Corsair besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "turrets",
+              "name": "Turrets (two manned, one remote)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "Two manned turrets and one remote turret for the crew of the Corsair.",
+              "context": "A turret seat has its own controls: there the right stick aims the turret instead of steering the ship.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

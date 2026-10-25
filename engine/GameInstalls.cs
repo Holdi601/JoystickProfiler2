@@ -147,8 +147,7 @@ namespace JoyPro.Engine
 
         public static string DataRoot()
         {
-            string root = Environment.GetEnvironmentVariable(GameBackups.DataFolderVariable);
-            return string.IsNullOrWhiteSpace(root) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro") : root;
+            return global::JoyPro.Logging.JoyProDataFolder.Root();
         }
 
         // "dcs", "il2", "bms", "Falcon BMS" -> the game id (empty when unknown).

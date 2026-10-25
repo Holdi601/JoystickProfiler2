@@ -483,7 +483,8 @@ public sealed partial class CockpitsViewModel : ObservableObject
                 Sources.Add(new CockpitLinkItem { Title = s.Title, Url = s.Url, Detail = SourceKind(s.Kind) + (s.Covers.Length > 0 ? " · " + s.Covers : string.Empty) });
             foreach (CockpitLink l in v.Aircraft?.Links ?? [])
                 Sources.Add(new CockpitLinkItem { Title = l.Title, Url = l.Url, Detail = T("Link") });
-            Plan = v.Panels.Count > 0 ? CockpitSchematic.Plan(v) : null;
+            // No plan of area boxes (the user's verdict): the pictures from the games or the guide's tree show the cockpit.
+            Plan = null;
             PhotoLoad = LoadPhotosAsync();
         }
         else
@@ -516,7 +517,8 @@ public sealed partial class CockpitsViewModel : ObservableObject
         foreach (CockpitSheet sheet in CockpitSchematic.SheetsOf(catalog, Variant))
         {
             CockpitSheet s = sheet;
-            DeviceLineArt? art = CockpitManualPages.DeviceArt(CockpitService.Folder() ?? string.Empty, Variant, s.Device);
+            // The traced line drawings are not shown (CockpitManualPages.TracedDrawings).
+            DeviceLineArt? art = CockpitManualPages.TracedDrawings ? CockpitManualPages.DeviceArt(CockpitService.Folder() ?? string.Empty, Variant, s.Device) : null;
             if (art != null)
                 traced.Add(art);
             CockpitSheetItem item = new(s, input => RowText(s, input), art);

@@ -84,8 +84,33 @@ The printable pictures, as before (devices, games, aircraft, what to make, look,
 
 - A device needs a layout file: the user's own (JoyPro 1, his picture); else the device's sheet of tables and lines
   (the picture last shown for it on the Device pictures section, saved before the export); else the picked one.
-- **White page** (light style instead of JoyPro 1's grey page) and **One page with all devices** (per aircraft and
-  for the overview; `--style`, `--combine`). Sheets are printed 3508 px wide (A4 landscape at 300 dpi).
+- **One page with all devices** (per aircraft and for the overview; `--combine`). Sheets are printed 3508 px wide (A4
+  landscape at 300 dpi). The page colour of the sheet style decides the grey or the white page (`--style`).
+
+#### Sheet style
+
+One style for the look of every cheat sheet, edited in the **Sheet style** panel (`Views/Controls/SheetStyleEditor`,
+`ViewModels/SheetStyleViewModel.cs`, `MainWindowViewModel.SheetStyle.cs`): on Device pictures (right column) and in the
+cheat sheet options. Values: font (installed fonts, `FontPickerField`), size (16 = the tables' own size, 24 = 1.5 times;
+on a layout picture the labels' point size), weight; the labels' text, halo and box colour; page, table, table border,
+header row (background and text), table text, leader lines; a marker colour per kind of input (button, axis, hat,
+slider); modifier colours as a list (name + colour, add/remove; markers of binds with the modifier and a bar over its
+column); JoyPro's drawing of the device (`DrawingStyleEditor`). All colours are `ColorField`s (`#AARRGGBB`; fully
+transparent halo or box = none).
+
+- Presets: **JoyPro default** (JoyPro 1's grey page, white tables), **Print** (white page), **High contrast**, **Dark
+  sheet**; **Save as preset** keeps the style under a name (`<data>\SheetStyles\<name>.json`), Delete removes it.
+- The global style is kept in `<settings>\sheet-style.json` (survives a restart).
+- **This device uses its own style** (Device pictures): the shown device's sheet gets a copy to change. It is stored
+  where the engine reads it for that device: inside its sheet (`"style"` of the callouts, saved at once, not part of the
+  sheet's undo) or `<layout>.style.json` next to a .layout file. "Share layout..." carries it with the sheet, "Import
+  layout..." brings it back. Off removes it again.
+- The editor draws with the shown device's style (`LayoutSheetStyle`: `CalloutSheetCanvas.SheetStyle`,
+  `DeviceMarkerCanvas.SheetStyle`, the layout file's tables and lines, the label font, size and colour); "Create cheat
+  sheets" passes the global style to `layout render` (`--font --font-size --font-weight --text-color --outline-color
+  --label-background --page-background --table-background --table-border --header-background --header-text --table-text
+  --line-color --marker-color-button|axis|hat|slider --modifier-colors`, or `--sheet-style <preset|file>`). The shared
+  `engine/DeviceReference/SheetStyle.cs` resolves the palette for both, so screen and print match.
 - Otherwise JoyPro asks the engine (`layout suggest --device`). For a device the catalog knows, the engine makes a
   layout on JoyPro's drawing with a marker on every input. So cheat sheets do not need the shipped `LayoutTemplates`
   pictures.
@@ -257,6 +282,7 @@ Two kinds of markers implement it:
 | `Source` / `Schematic` | the photo or JoyPro's drawing, drawn at the sheet's picture rectangle |
 | `Mode` | View / EditMarkers / Bind (`DeviceCanvasMode`) |
 | `HeaderGame`, `HeaderPlane` | the GAME / PLANE band of a preview |
+| `SheetStyle` | the cheat sheet style (palette, font, size, weight, modifier bars); null = the theme's base palette |
 | `ShowGrid` | the snap grid in Edit mode |
 | `RowClicked` (input, modifier) | a row was clicked |
 | `RowChangeRequested` (input, modifier) | right-click > Change... |

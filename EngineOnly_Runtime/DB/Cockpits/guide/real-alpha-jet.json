@@ -1,0 +1,418 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-alpha-jet",
+  "title": "Alpha Jet E (trainer)",
+  "variants": [
+    "alpha-jet-e"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Dassault/Dornier Alpha Jet (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Dassault/Dornier_Alpha_Jet"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Alpha Jet is a French-German jet trainer and light attack aircraft with two engines and two seats one behind the other; it is also the aircraft of the French display team Patrouille de France. Both seats have a centre stick, two throttles and analogue round instruments; the instructor sits higher in the back. No public pilot's notes were found, so this guide follows the general layout of the type and stays short on the single switches.",
+  "areas": [
+    {
+      "id": "front",
+      "where": "front-center",
+      "name": "Front instrument panel",
+      "text": "The sight and the round instruments.",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Front instrument panel",
+          "src": "w1",
+          "text": "The round-dial panel of the trainer, with the sight on top.",
+          "context": "Student pilots learn here to fly by the classic instruments; the same panel is repeated in the rear seat for the instructor.",
+          "controls": [
+            {
+              "id": "sight",
+              "name": "Gunsight",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The aiming sight on top of the panel. It projects an aiming mark onto a glass, so the pilot sees where the gun or rockets will hit. The trainer has a fixed or gyro sight; the German A version has a head-up sight.",
+              "context": "It is used for weapons training and, on the A, for real ground attack.",
+              "src": "w1"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing."
+            },
+            {
+              "id": "engine",
+              "name": "Engine RPM and temperature gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "text": "Gauges that show how fast each of the two engines turns and how hot it runs. They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel gauges",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:8"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            },
+            {
+              "id": "warning",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:front-panel:9"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When a warning comes on, the pilot looks here first to see which system needs attention."
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:front-panel:10"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Throttles, flaps, start and radio.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console",
+          "text": "Throttles, flaps, engine start and radios.",
+          "context": "The left hand works the two throttles and reaches the flap lever and the start panel next to them.",
+          "controls": [
+            {
+              "id": "flap-lever",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "This control moves the flaps, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once the aircraft is fast enough."
+            },
+            {
+              "id": "engine-start",
+              "name": "Engine start panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "Switches for starting the two Larzac engines, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, navigation, lights, oxygen.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "Electricity, navigation, lights and oxygen.",
+          "context": "These switches are mostly set before take-off.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "navigation",
+              "name": "Navigation panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Controls of the navigation system, the system that always knows where the aircraft is and which way to fly to the next point.",
+              "context": "The pilot uses it to choose where to fly and to get steering to the next point. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen panel",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "The controls for the breathing gas the pilot needs at high altitude, where the air is too thin (oxygen).",
+              "context": "The pilot checks the oxygen before take-off and wears the mask for the whole flight. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Rear cockpit",
+      "text": "The instructor's seat behind and above the student.",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Rear (instructor) cockpit",
+          "text": "The raised rear seat of the instructor, with its own instruments, stick and throttles.",
+          "context": "The instructor sits higher so he can see over the student's head, and can take over the controls at any time.",
+          "controls": [
+            {
+              "id": "rear-panel",
+              "name": "Duplicated instrument panel",
+              "type": "gauge",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "A second set of instruments in the rear seat, so the instructor sees the same flight data as the student.",
+              "context": "The instructor uses it to watch and judge the student's flying."
+            },
+            {
+              "id": "rear-controls",
+              "name": "Stick and throttles (rear seat)",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "A second stick and pair of throttles in the rear seat. They are connected to the front ones.",
+              "context": "The instructor can fly the aircraft from here, for example to show a manoeuvre or to correct a mistake."
+            },
+            {
+              "id": "instructor-priority",
+              "name": "Instructor priority controls",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:3"
+              ],
+              "text": "Controls that let the instructor take priority over the student for some functions.",
+              "context": "The single switches of the instructor priority controls are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The centre stick with trim, trigger and weapon button.",
+          "context": "The same stick exists in both seats.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again."
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the gun pod under the fuselage.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches bombs or rockets.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "text": "The two throttle levers for the two engines, with the airbrake switch and the radio button on the grips.",
+          "context": "The Alpha Jet has no afterburner.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left Larzac engine stronger or weaker, like a car's gas pedal.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right Larzac engine stronger or weaker, like a car's gas pedal.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft)",
+                  "text": "The airbrakes open."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "transmit",
+              "name": "Radio transmit button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

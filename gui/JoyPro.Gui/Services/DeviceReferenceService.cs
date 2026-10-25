@@ -14,7 +14,7 @@ namespace JoyPro.Gui.Services;
 // the user's own definitions), identification, JoyPro's schematic of a model, and what the user keeps per model:
 // his own photo, marker positions per picture, edited legend texts, the setting for manufacturer pictures.
 //
-// Everything the user makes lives in <data>\DeviceReference (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro, like the
+// Everything the user makes lives in <data>\DeviceReference (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2, like the
 // engine's data); user device definitions in <data>\Devices, where the engine reads them too.
 public static class DeviceReferenceService
 {
@@ -30,10 +30,7 @@ public static class DeviceReferenceService
 
     public static string DataFolder()
     {
-        string? root = Environment.GetEnvironmentVariable(DeviceCatalog.DataFolderVariable);
-        if (string.IsNullOrWhiteSpace(root))
-            root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-        return Path.Combine(root, "DeviceReference");
+        return Path.Combine(JoyPro.Logging.JoyProDataFolder.Root(), "DeviceReference");
     }
 
     public static string UserDefinitionFolder() => DeviceCatalog.UserFolder();
@@ -74,6 +71,8 @@ public static class DeviceReferenceService
                 string key = CatalogFolder() + "|" + UserDefinitionFolder();
                 if (catalog == null || catalogKey != key)
                 {
+                    // A newer photo list downloaded from JoyPro's releases replaces the shipped DB\DevicePhotos.
+                    DeviceCatalog.PhotoFolderResolver ??= shipped => new DevicePhotoList().FolderFor(shipped)!;
                     catalog = DeviceCatalog.Load(CatalogFolder(), UserDefinitionFolder());
                     catalogKey = key;
                 }
@@ -160,6 +159,10 @@ public static class DeviceReferenceService
         public Dictionary<string, string> PhotoAnswers { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
         public bool GameCovers { get; set; } = true;
+
+        // Download the reference photos of a device in the background as soon as it appears (ReferencePhotoStore);
+        // off = JoyPro offers them and waits for a click.
+        public bool AutoDownloadPhotos { get; set; }
 
         // The picture packs of JoyPro's releases on the Cockpits page: ask (default), always or never (CockpitPicturePacks).
         public string? CockpitPictureDownloads { get; set; }

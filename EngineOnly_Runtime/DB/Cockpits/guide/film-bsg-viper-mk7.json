@@ -1,0 +1,100 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-bsg-viper-mk7",
+  "title": "Colonial Viper Mk VII (Battlestar Galactica, 2004)",
+  "inherits": "film-bsg-viper",
+  "variants": [
+    "bsg-viper-mk7"
+  ],
+  "games": [],
+  "sets": [],
+  "remove": [
+    "analog-panel"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Battlestar Galactica (2004 TV series) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Battlestar_Galactica_(2004_TV_series)"
+    },
+    {
+      "id": "s2",
+      "title": "Battlestar Galactica (fictional spacecraft) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Battlestar_Galactica_(fictional_spacecraft)"
+    }
+  ],
+  "intro": "The Viper Mk VII is the newer version of the fictional Colonial fighter in Battlestar Galactica (2004). It has the same stick and throttle as the Mk II, but a computerised panel with screens and a networked flight computer. In the miniseries a Cylon computer virus shuts these fighters down.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s1",
+          "text": "The canopy over the Viper Mk VII pilot's seat.",
+          "context": "It gives a good view for dogfights against Cylon fighters.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "A clear canopy over the single seat of the Viper Mk VII.",
+              "context": "The pilot looks out through it to find enemy fighters.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "digital",
+      "where": "front-left",
+      "name": "Digital instrument panel",
+      "text": "Computerised displays instead of the old dials.",
+      "panels": [
+        {
+          "id": "digital-panel",
+          "name": "Digital instrument panel",
+          "db": "digital-panel",
+          "src": "s1",
+          "text": "Screens instead of the old round dials, and the networked flight computer.",
+          "context": "The newer panel shows more information, but its computer link is a weakness in the series.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Flight displays",
+              "type": "display",
+              "match": [
+                "item:digital-panel:1"
+              ],
+              "text": "Screens show the flight information that the old Viper shows on round dials.",
+              "context": "The pilot reads speed, fuel and engine state from them.",
+              "src": "s1"
+            },
+            {
+              "id": "computer",
+              "name": "Networked flight computer",
+              "type": "other",
+              "match": [
+                "item:digital-panel:2"
+              ],
+              "text": "A flight computer that is linked to the other ships' computers.",
+              "context": "In the miniseries a Cylon virus uses this link to shut the fighters down, which the old Mk II escapes.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

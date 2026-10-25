@@ -41,6 +41,47 @@ public sealed class CockpitDatabaseTests
         Assert.True(problems.Count == 0, string.Join(Environment.NewLine, problems.Take(60)));
     }
 
+    // No area boxes and no traced drawings: without pictures from a game the overview is its numbered list, a grip page
+    // keeps JoyPro's clean vector drawing of the grip and its HOTAS table.
+    [Fact]
+    public void Pages_WithoutPictures_ShowNoAreaBoxesNorTracedDrawings_ButTheGripsVectorDrawing()
+    {
+        CockpitCatalog catalog = CockpitCatalog.Load(ShippedCockpits);
+        CockpitVariant v = catalog.Resolve(catalog.Aircraft.First(a => a.Id == "f-16").Variants.First(x => x.Id == "f-16c-block-50"));
+        ManualPageOptions o = new() { Folder = ShippedCockpits };
+        ManualPage overview = CockpitManualPages.Overview(catalog, v, o);
+        Assert.DoesNotContain(overview.Items, i => i.Kind == "drawing");
+        Assert.Contains(overview.Items, i => i.Kind == "text" && i.Lines.Any(l => l.Length > 0));
+        ManualPage stick = CockpitManualPages.Device(catalog, v, "stick", o)!;
+        ManualPageItem drawing = Assert.Single(stick.Items, i => i.Kind == "drawing");
+        Assert.Null(drawing.Art!.LineArt);
+        foreach (CockpitPanel p in v.Panels)
+            Assert.DoesNotContain(CockpitManualPages.Panel(catalog, v, p, o).Items, i => i.Kind == "drawing");
+    }
+
+    [Theory]
+    [InlineData("laminar/B738/switch/gen2_up", "Gen 2 up")]
+    [InlineData("sim/electrical/battery_1_on", "Battery 1 on (electrical)")]
+    [InlineData("laminar/B738/autopilot/cmd_a_press", "Cmd a press (autopilot)")]
+    [InlineData("sim/cockpit2/switches/instrument_brightness_ratio[4]", "Instrument brightness ratio 4")]
+    [InlineData("JFS Switch - START 1 / OFF", "JFS Switch - START 1 / OFF")]
+    public void CommandName_MakesXPlaneCommandPathsReadable(string id, string name)
+    {
+        Assert.Equal(name, CockpitManualPages.CommandName(id));
+    }
+
+    // A Star Citizen ship has no type number, so the picture sets are found only by the game's own ship name
+    // ("Aegis Gladius"): every listed Star Citizen ship names it.
+    [Fact]
+    public void EveryStarCitizenShip_NamesItsShipInTheGame()
+    {
+        CockpitCatalog catalog = CockpitCatalog.Load(ShippedCockpits);
+        List<string> missing = catalog.Aircraft.Where(a => !a.Hidden).SelectMany(a => a.Variants)
+            .Where(v => v.Games.Any(g => g.Game == "StarCitizen") && v.Games.Where(g => g.Game == "StarCitizen").All(g => string.IsNullOrWhiteSpace(g.Plane)))
+            .Select(v => v.Id).ToList();
+        Assert.True(missing.Count == 0, string.Join(", ", missing));
+    }
+
     [Fact]
     public void EveryVariant_HasStickAndThrottleControls_FunctionsSourcesAndConfidence()
     {
@@ -363,7 +404,7 @@ public sealed class CockpitDatabaseTests
             Assert.True(vm.Show("f-16", "f-16c-block-50"));
             Assert.Equal("f-16c-block-50", vm.Variant!.Id);
             Assert.Equal(2, vm.Sheets.Count);
-            Assert.NotNull(vm.Plan);
+            Assert.Null(vm.Plan); // no plan of area boxes
             Assert.NotEmpty(vm.Sources);
 
             vm.ApplyCompare("""{"Aircraft":"f-16","Variant":"f-16c-block-50","Matched":1,"Total":40,"Functions":[{"Control":"stick.hat.tms","Dir":"fwd","Relations":[{"Relation":"TMS Up","Device":"Stick","Input":"JOY_BTN7"}]}]}""");

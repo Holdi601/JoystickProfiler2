@@ -1,0 +1,186 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mirage-2000d-n",
+  "title": "Mirage 2000D / 2000N (front seat)",
+  "inherits": "dcs-m-2000c",
+  "variants": [
+    "mirage-2000d-n"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "wd",
+      "title": "Dassault Mirage 2000N/2000D (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Dassault_Mirage_2000N/2000D"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Mirage 2000N and 2000D are the two-seat strike versions of the Mirage 2000: the N carried a nuclear missile, the D conventional bombs and missiles. The pilot in front keeps a 2000-style stick and throttle; the weapon system officer behind runs the navigation, the targeting pod and the weapons. This guide shows the 2000C cockpit that DCS models for the stick, throttle and consoles, plus the pilot's own front panel and the rear seat. The extra low-level and terrain-following functions of the grips are not public.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main panel: head-up display and radar screen",
+      "panels": [
+        {
+          "id": "front-panel-d",
+          "name": "Pilot's front panel of the 2000D / 2000N",
+          "src": "wd",
+          "text": "This is the front panel of the strike versions. It shows what the pilot needs for flying very low and for attacking ground targets.",
+          "context": "The pilot flies, follows the terrain and drops the weapons from here, while the officer in the back seat runs the navigation, the pod and the weapon systems.",
+          "controls": [
+            {
+              "id": "hud-d",
+              "name": "Head-up display (HUD)",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks. In these versions it shows the marks for low-level flight, terrain following and the attack.",
+              "context": "Terrain following means the jet flies close to the ground and follows hills and valleys; the HUD tells the pilot where to steer.",
+              "src": "wd"
+            },
+            {
+              "id": "hdd-d",
+              "name": "Head-down radar / navigation display",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A screen in the panel that shows the picture of the Antilope 5 radar: a map of the ground made by radar echoes, and the terrain-following picture.",
+              "context": "It helps the crew find the way and the target at night and in bad weather, when the ground cannot be seen.",
+              "src": "wd"
+            },
+            {
+              "id": "weapon-panel-d",
+              "name": "Weapon control panel",
+              "type": "other",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "A panel for choosing which of the strike weapons under the aircraft is used and how.",
+              "context": "Its exact switches are not described in the sources JoyPro uses; in these versions much of the weapon work is done by the officer in the back seat."
+            },
+            {
+              "id": "flight-instruments-d",
+              "name": "Flight instruments",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "The dials for attitude (nose up or down, wings level), heading, height and speed.",
+              "context": "The pilot uses them together with the HUD to fly, especially in cloud and at night."
+            },
+            {
+              "id": "engine-fuel-d",
+              "name": "Engine and fuel indicators",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "Indicators that show how the engine works and how much fuel is still on board.",
+              "context": "Strike missions are long and low, which uses a lot of fuel, so the pilot watches these often."
+            },
+            {
+              "id": "gear-handle-d",
+              "name": "Landing gear handle",
+              "type": "lever",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold into the aircraft after take-off."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock for landing."
+                }
+              ],
+              "text": "This handle raises and lowers the wheels and their legs (landing gear).",
+              "context": "The catalog lists it with the front panel of these versions; the 2000C entry on the left vertical panel explains the same handle in detail."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-seat-d",
+      "where": "rear",
+      "name": "Rear seat (weapon system officer)",
+      "text": "The back seat of the two-seater: a work place for navigation, radar, pod and weapons.",
+      "panels": [
+        {
+          "id": "rear-cockpit-d",
+          "name": "Rear seat (navigator / weapon system officer)",
+          "src": "wd",
+          "text": "The second crew member sits behind the pilot. He has no stick and no throttle in these versions; his seat is a work place for navigation, radar, targeting pod and weapons.",
+          "context": "Splitting the work lets the pilot concentrate on flying very low while the officer finds the target and prepares the attack.",
+          "controls": [
+            {
+              "id": "rear-radar-map",
+              "name": "Radar / map display",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "A screen in the rear seat that shows the radar picture of the ground and the map.",
+              "context": "The officer uses it to follow the route and to find the target area."
+            },
+            {
+              "id": "rear-pod",
+              "name": "Targeting pod display",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "A screen that shows the video of the targeting pod, a camera with a zoom and a laser under the plane (PDL-CTS or Damocles on the 2000D).",
+              "context": "With it the officer finds the exact target and marks it with the laser for laser-guided bombs.",
+              "src": "wd"
+            },
+            {
+              "id": "rear-nav-keyboard",
+              "name": "Navigation keyboard and panels",
+              "type": "keypad",
+              "match": [
+                "item:rear-cockpit:3"
+              ],
+              "text": "A keyboard and panels where the officer types navigation data, such as the points of the route.",
+              "context": "The navigation system uses these points to guide the pilot along the planned way."
+            },
+            {
+              "id": "rear-hand-controller",
+              "name": "Hand controller",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:4"
+              ],
+              "text": "A small hand grip that moves a cursor on the sensor and pod pictures.",
+              "context": "The officer uses it to aim the radar or the pod at the target."
+            },
+            {
+              "id": "rear-weapons-cm",
+              "name": "Weapon and countermeasure panels",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:5"
+              ],
+              "text": "Panels for setting up the weapons and the countermeasures, the things the plane throws out to fool enemy missiles: chaff (clouds of metal strips for radar missiles) and flares (hot burning decoys for heat-seeking missiles).",
+              "context": "Their exact switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

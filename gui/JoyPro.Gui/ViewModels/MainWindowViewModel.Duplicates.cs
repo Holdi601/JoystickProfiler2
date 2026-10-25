@@ -429,15 +429,18 @@ public sealed partial class MainWindowViewModel
         CheckSections.Clear();
         if (kind is "all" or "duplicates")
             AddSection("duplicates", T("Actions in several relations"), T("Two inputs do the same thing in the game: usually one of them is left over."), true, Sorted(duplicateCards.Where(Matches)));
+        if (kind is "all" or "duplicates")
+            AddSection("copies", T("Copied relations"), T("An import made copies of a relation with the same input: they can be merged back into one."), true, Sorted(copyCards.Where(Matches)));
         if (kind is "all" or "errors")
             AddSection("errors", T("Errors"), T("The export cannot write these as they are."), true,
                 Sorted(allValidationIssues.Where(i => i.Kind == "Error").Select(PlainCard).Where(Matches)));
         if (kind is "all" or "notes")
             AddSection("notes", T("Notes"), T("Harmless, worth a look."), false,
                 Sorted(allValidationIssues.Where(i => i.Kind == "Warning").Select(PlainCard).Where(Matches)));
-        CheckSummaryText = duplicateCards.Count == 0 && !allValidationIssues.Any() ? string.Empty
+        CheckSummaryText = duplicateCards.Count == 0 && copyCards.Count == 0 && !allValidationIssues.Any() ? string.Empty
             : T("{0} actions in several relations ({1} cards), {2} errors, {3} notes", DuplicateActionCount, duplicateCards.Count,
-                allValidationIssues.Count(i => i.Kind == "Error"), allValidationIssues.Count(i => i.Kind == "Warning"));
+                allValidationIssues.Count(i => i.Kind == "Error"), allValidationIssues.Count(i => i.Kind == "Warning")) +
+              (copyCards.Count == 0 ? string.Empty : ", " + T("{0} copied relations", copyCards.Sum(c => c.Relations.Count - 1)));
 
         void AddSection(string sectionKind, string title, string severity, bool serious, IEnumerable<CheckIssueCard> cards)
         {
@@ -591,6 +594,8 @@ public sealed partial class MainWindowViewModel
         RelationListItem? first = relations.Select(r => allRelations.FirstOrDefault(v => string.Equals(v.Name, r, StringComparison.OrdinalIgnoreCase))).FirstOrDefault(m => m != null);
         if (first == null)
             return;
+        // Back (header, Alt+Left) returns to this Check list, scrolled to this card.
+        RememberPlace();
         CurrentStage = UiStage.Relations;
         SelectedRelation = first;
         StatusText = T("Opened '{0}'. The other one: {1}", first.Name, string.Join(", ", relations.Where(r => !string.Equals(r, first.Name, StringComparison.OrdinalIgnoreCase)).Select(r => "'" + r + "'")));

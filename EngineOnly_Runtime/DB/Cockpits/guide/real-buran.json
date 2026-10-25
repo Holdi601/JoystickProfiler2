@@ -1,0 +1,238 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-buran",
+  "title": "Buran (commander's station)",
+  "variants": [
+    "buran-commander"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Buran composition (buran.fr, Vassili Petrovitch)",
+      "kind": "reference",
+      "url": "https://buran.fr/en/bourane-buran/bourane-consti.php"
+    },
+    {
+      "id": "s2",
+      "title": "Buran (spacecraft) (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Buran_(spacecraft)"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Buran was the Soviet reusable orbiter, similar in shape to the American Space Shuttle. It flew only once, in November 1988, without a crew: its computers launched it, flew two orbits and landed it on a runway by themselves. The flight deck was built for a commander and a pilot side by side, with sticks, pedals, a translation controller and three screens, plus stations behind for an engineer and a robot arm operator. The controls are inferred from the labels of a cockpit diagram, so this guide says little about them.",
+  "areas": [
+    {
+      "id": "dashboard",
+      "where": "front-center",
+      "name": "Dashboard",
+      "text": "The screens and flight instruments.",
+      "panels": [
+        {
+          "id": "dashboard",
+          "name": "Dashboard with three CRT displays",
+          "text": "The front panel of the flight deck with three screens and flight instruments.",
+          "context": "It was laid out for a crew, but Buran's only flight was flown by its computers alone.",
+          "controls": [
+            {
+              "id": "crt",
+              "name": "CRT displays",
+              "type": "display",
+              "match": [
+                "item:dashboard:1"
+              ],
+              "text": "Three tube screens (CRT) that show the flight and the systems.",
+              "context": "They are the information display system of the flight deck.",
+              "src": "s1"
+            },
+            {
+              "id": "instr",
+              "name": "Flight instruments",
+              "type": "gauge",
+              "match": [
+                "item:dashboard:2"
+              ],
+              "text": "Instruments for the attitude (which way the orbiter points) and the speed.",
+              "context": "They would have been the commander's main instruments for the landing glide."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "desks",
+      "where": "left-console",
+      "name": "Side desks",
+      "text": "The commander's and pilot's side desks.",
+      "panels": [
+        {
+          "id": "side-desks",
+          "name": "Left and right desks",
+          "text": "The side desks of the commander and the pilot with system switches.",
+          "context": "JoyPro infers them from a labelled cockpit diagram; their switches are not described.",
+          "controls": [
+            {
+              "id": "cdr-desk",
+              "name": "Commander's side desk",
+              "type": "switch",
+              "match": [
+                "item:side-desks:1"
+              ],
+              "text": "The desk at the commander's side with switches for the systems.",
+              "context": "JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            },
+            {
+              "id": "plt-desk",
+              "name": "Pilot's side desk",
+              "type": "switch",
+              "match": [
+                "item:side-desks:2"
+              ],
+              "text": "The desk at the pilot's side with switches for the systems.",
+              "context": "JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "central",
+      "where": "center-pedestal",
+      "name": "Central desk",
+      "text": "Shared controls between the seats.",
+      "panels": [
+        {
+          "id": "central-desk",
+          "name": "Central desk",
+          "text": "The desk between the two seats with shared controls.",
+          "context": "Both pilots would have reached it.",
+          "controls": [
+            {
+              "id": "shared",
+              "name": "Shared controls",
+              "type": "switch",
+              "match": [
+                "item:central-desk:1"
+              ],
+              "text": "Controls between the seats that both the commander and the pilot can use.",
+              "context": "JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Rear stations",
+      "text": "Engineer and robot arm stations.",
+      "panels": [
+        {
+          "id": "rear",
+          "name": "Flight engineer and RMS stations",
+          "text": "Further stations behind the two pilot seats.",
+          "context": "Like the American Shuttle, Buran was planned with stations for an engineer and for a robot arm.",
+          "controls": [
+            {
+              "id": "fe",
+              "name": "Flight engineer station",
+              "type": "other",
+              "match": [
+                "item:rear:1"
+              ],
+              "text": "A station behind the pilots for a flight engineer who watches the systems.",
+              "context": "JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            },
+            {
+              "id": "rms",
+              "name": "Manipulator desk",
+              "type": "other",
+              "match": [
+                "item:rear:2"
+              ],
+              "text": "A desk with the controls of a robot arm for moving cargo in the payload bay.",
+              "context": "JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, controller and pedals",
+      "text": "The flight controls.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Control stick",
+          "text": "The stick in front of the commander's seat.",
+          "context": "It would have flown the orbiter by hand.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the stick forward or back pitches the orbiter, sideways rolls it.",
+              "context": "Buran never flew with a crew, so this stick was never used in space; on a joystick it is the X and Y axes.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "Translation controller (controller block)",
+          "text": "A controller block next to the commander's seat.",
+          "context": "It would have moved the orbiter in orbit without turning it.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Translation controller",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This controller moves the whole orbiter forward, back, left, right, up or down by firing its steering jets (translation).",
+              "context": "It was meant for meeting and docking with a space station.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Pedals",
+          "text": "The rudder pedals at the commander's feet.",
+          "context": "They work only in the air, for the landing.",
+          "controls": [
+            {
+              "id": "rudder",
+              "name": "Pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left or right pedal moves the rudder and turns the nose during the landing glide.",
+              "context": "On the real flight the computer landed Buran by itself on the runway at Baikonur.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

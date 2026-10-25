@@ -33,8 +33,9 @@ namespace JoyPro.CockpitPictures
         {
             Forward = direction.Normalized;
             Vec3 worldUp = new Vec3(0, 1, 0);
+            // Straight up: aft at the top (the head tilted back); straight down: forward at the top.
             if (Math.Abs(Vec3.Dot(Forward, worldUp)) > 0.98)
-                worldUp = new Vec3(1, 0, 0);
+                worldUp = Forward.Y > 0 ? new Vec3(-1, 0, 0) : new Vec3(1, 0, 0);
             Right = Vec3.Cross(Forward, worldUp).Normalized;
             Up = Vec3.Cross(Right, Forward).Normalized;
         }

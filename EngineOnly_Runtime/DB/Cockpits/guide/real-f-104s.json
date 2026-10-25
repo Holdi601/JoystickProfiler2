@@ -1,0 +1,73 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-104s",
+  "title": "F-104S Starfighter",
+  "inherits": "real-f-104",
+  "variants": [
+    "f-104s"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w3",
+      "title": "Aeritalia F-104S Starfighter (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Aeritalia_F-104S_Starfighter"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "w2",
+      "title": "HyperScale: 1/1 F-104 Starfighter control stick grip review",
+      "kind": "reference",
+      "url": "https://hyperscale.com/2010/reviews/kits/f104stickreviewme_1.htm"
+    }
+  ],
+  "intro": "The F-104S is the Italian interceptor version of the Starfighter, built by Aeritalia, with the R21G radar and the radar-guided Sparrow and Aspide missiles; early interceptors had no gun. It keeps the F-104G basics, so this guide follows the F-104G guide; Sparrow-related grip functions are not checked.",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "w2",
+          "text": "The centre stick. Only the trim hat and the gun trigger are confirmed; the other buttons follow the grip family of that time and are marked as inferred.",
+          "context": "The HyperScale review of a real grip shows its shape and buttons.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "positions": [
+                {
+                  "name": "First step",
+                  "text": "Gun camera (inferred)."
+                },
+                {
+                  "name": "Second step",
+                  "text": "Fire the gun (if fitted) or AIM-9."
+                }
+              ],
+              "text": "The trigger at the front of the grip. The first step runs the gun camera; the second fires the gun (on aircraft that kept it) or a Sidewinder missile.",
+              "context": "Early F-104S interceptors had the gun removed to make room for the Sparrow missile electronics. The gun camera step is inferred.",
+              "src": "w2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

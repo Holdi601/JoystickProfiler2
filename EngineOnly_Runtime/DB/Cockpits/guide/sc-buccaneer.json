@@ -1,0 +1,69 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-buccaneer",
+  "title": "Buccaneer (Drake Interplanetary, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-buccaneer"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Buccaneer (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Buccaneer"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Buccaneer is a light fighter from Drake Interplanetary in Star Citizen. The pilot sits alone, high up in the narrow body. It uses the common controls without changes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Buccaneer: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Buccaneer's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (five)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Buccaneer has five guns, a lot for its size, all fired by the pilot.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (four missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Four missiles hang in the Buccaneer's racks. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -57,15 +57,12 @@ public static class AppInfo
 
     public static string InstallFolder => AppContext.BaseDirectory;
 
-    // JOYPRO_DATA_DIR replaces %LOCALAPPDATA%\JoyPro2 (tests).
+    // The one data folder (JoyProDataFolder): %LOCALAPPDATA%\JoyPro2, or JOYPRO_DATA_DIR (tests, portable setups).
     public static string DataFolder
     {
         get
         {
-            string? overrideDir = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-            string folder = string.IsNullOrWhiteSpace(overrideDir)
-                ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro2")
-                : overrideDir;
+            string folder = JoyPro.Logging.JoyProDataFolder.Root();
             Directory.CreateDirectory(folder);
             return folder;
         }

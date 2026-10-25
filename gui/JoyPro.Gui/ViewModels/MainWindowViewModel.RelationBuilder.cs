@@ -50,6 +50,9 @@ public sealed partial class MainWindowViewModel
 
     private void SetBuilderPanel(BuilderPanelKind panel)
     {
+        // The editor's panel is a place of the navigation history (Back returns to Find actions, ...).
+        if (panel != builderPanel && CurrentStage == UiStage.Relations)
+            RememberPlace();
         builderPanel = panel;
         OnBuilderLayoutChanged();
     }
@@ -1625,6 +1628,7 @@ public sealed partial class MainWindowViewModel
     {
         if (string.IsNullOrWhiteSpace(name) || !allRelations.Any(r => r.Name == name))
             return;
+        RememberPlace();
         await OpenBuilderRelationAsync(name);
     }
 

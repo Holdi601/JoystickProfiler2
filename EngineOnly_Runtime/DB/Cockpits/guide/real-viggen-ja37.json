@@ -1,0 +1,396 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-viggen-ja37",
+  "title": "JA 37 Viggen (fighter)",
+  "variants": [
+    "viggen-ja37"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "wv",
+      "title": "Saab 37 Viggen (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Saab_37_Viggen"
+    },
+    {
+      "id": "d1",
+      "title": "DCS AJS37 Flight Manual (EN) (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/AJS37/Doc/DCS_AJS37_Flight_Manual_EN_RC2.1.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The JA 37 is the fighter version of the Swedish Viggen, a canard-delta jet (a big delta wing with small extra wings in front). It has the PS-46/A radar, a head-up display and two screens of the EP-17 display system, one for the radar and one for the tactical picture shared by datalink. Its front panel is so different from the attack Viggen's that this guide does not reuse the AJS 37 panels. The AJS 37's radar handle is gone; the remaining stick and throttle controls are the AJS ones, and the JA 37's own radar switches on the grips are not public.",
+  "areas": [
+    {
+      "id": "front-panel",
+      "where": "front-center",
+      "name": "Front panel",
+      "text": "The HUD and the two EP-17 screens.",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Front panel (EP-17 display system)",
+          "src": "wv",
+          "text": "The JA 37's front panel: a head-up display on top and two screens of the EP-17 display system below it, one for the radar and one for the tactical picture, with flight and engine instruments around.",
+          "context": "This is the fighter's cockpit, built for intercepts guided by the Swedish air defence network; it is very different from the attack Viggen's front panel.",
+          "controls": [
+            {
+              "id": "si",
+              "name": "Head-up display (SI)",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height and the marks for the intercept and for aiming the gun, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "wv"
+            },
+            {
+              "id": "mi",
+              "name": "Radar display (MI)",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A screen that shows the picture of the PS-46/A radar, which finds other aircraft even when they fly low against the ground (pulse-Doppler).",
+              "context": "The pilot searches and locks targets on it for the missiles.",
+              "src": "wv"
+            },
+            {
+              "id": "ti",
+              "name": "Tactical indicator (TI)",
+              "type": "display",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "An electronic map that shows the tactical situation: friends, targets and data sent by radio from the ground control and other fighters (datalink).",
+              "context": "The Swedish fighter link let JA 37 pilots share their picture long before most other air forces.",
+              "src": "wv"
+            },
+            {
+              "id": "flight-instruments",
+              "name": "Flight instruments",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "The instruments for attitude (nose up or down, wings level), speed, height and heading.",
+              "context": "The pilot uses them together with the HUD, and alone if the displays fail."
+            },
+            {
+              "id": "engine-fuel",
+              "name": "Engine and fuel instruments",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "Instruments that show how the engine works and how much fuel is left.",
+              "context": "The RM8B engine with its afterburner uses fuel fast, so the pilot checks the fuel often."
+            },
+            {
+              "id": "warning",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When something fails, the pilot looks here to see which system it is."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left side panel",
+      "text": "Throttle, radio, engine and armament.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left side panel",
+          "text": "The throttle side with radio, engine and armament controls.",
+          "context": "Panels are known only from public descriptions of the JA 37.",
+          "controls": [
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "engine",
+              "name": "Engine controls",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "Switches for starting the RM8B engine and keeping it running, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "armament-mode",
+              "name": "Armament / master mode panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "A panel for the weapons and the master mode, the main setting that tells the systems whether the pilot is navigating, fighting or landing.",
+              "context": "The pilot changes mode for each part of the mission. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right side panel",
+      "text": "Navigation, datalink, lights, electricity.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right side panel",
+          "text": "Navigation, datalink, lighting and electrical controls.",
+          "context": "Panels are known only from public descriptions of the JA 37.",
+          "controls": [
+            {
+              "id": "navigation",
+              "name": "Navigation panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "Controls of the navigation system, the system that always knows where the aircraft is and which way to fly to the next point.",
+              "context": "The pilot uses it to choose where to fly and to get steering to the next point. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "datalink",
+              "name": "Datalink / fighter link panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "The controls of the datalink, which shares positions of friends and targets between aircraft and the ground by radio.",
+              "context": "Its data appears on the tactical indicator. Its single switches are not described in the sources JoyPro uses.",
+              "src": "wv"
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "d1",
+          "text": "The centre stick, taken from the AJS 37 for the controls the versions share.",
+          "context": "The JA 37's radar controls on the grips are not described publicly, so only the shared controls are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. A force sensor in the stick tells the autopilot what the pilot wants.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "ptt",
+              "name": "FR 22 radio transmit button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ptt"
+              ],
+              "text": "While this thumb button is held, the FR 22 radio sends the pilot's voice.",
+              "context": "The pilot uses it to talk to the fighter controller on the ground and to his wingman.",
+              "src": "d1"
+            },
+            {
+              "id": "trim",
+              "name": "Trim hat switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "d1"
+            },
+            {
+              "id": "trigger-safety",
+              "name": "Trigger safety bracket",
+              "type": "guard",
+              "match": [
+                "control:stick.guard.trigger_safety"
+              ],
+              "positions": [
+                {
+                  "name": "ON (unsafe)",
+                  "text": "The trigger works; the weapons can fire."
+                },
+                {
+                  "name": "OFF (safe)",
+                  "text": "The trigger is locked."
+                }
+              ],
+              "text": "A bracket in front of the trigger that locks it, like the safety catch of a gun. Folded away, the trigger works and the weapons are armed.",
+              "context": "The pilot opens it only when he is ready to shoot.",
+              "src": "d1"
+            },
+            {
+              "id": "snurk",
+              "name": "Autopilot disconnect button (SNURK)",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_disconnect"
+              ],
+              "text": "Pressing this button switches off all autopilot modes at once.",
+              "context": "It is the quick way for the pilot to take back the controls if the autopilot does something unwanted.",
+              "src": "d1"
+            },
+            {
+              "id": "event",
+              "name": "Event marking button",
+              "type": "button",
+              "match": [
+                "control:stick.button.event"
+              ],
+              "text": "A button for marking events, so a moment of the flight can be found again in the records. JoyPro's table, taken from the AJS 37, says it has no function in DCS.",
+              "context": "It does not affect how the aircraft flies.",
+              "src": "d1"
+            },
+            {
+              "id": "trigger",
+              "name": "Weapon release trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires or releases the selected weapon. It only works with the safety bracket open.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go.",
+              "src": "d1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "d1",
+          "text": "The single throttle lever on the left side with the Sidewinder uncage button, the countermeasures button, the autothrottle / missile button and the airbrake switch.",
+          "context": "These are the AJS 37's throttle controls; the JA 37 adds radar functions that are not public.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle lever",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:1"
+              ],
+              "text": "The lever that makes the RM8B engine stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push. Past maximum dry thrust it has three afterburner zones; from OFF it goes through idle first.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS.",
+              "src": "d1"
+            },
+            {
+              "id": "uncage",
+              "name": "RB24J uncage button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.uncage"
+              ],
+              "text": "This button frees or locks the seeker head of the Sidewinder (RB24J) heat-seeking missile. Freed, the seeker follows the hottest thing in front of it.",
+              "context": "The pilot uncages it when the seeker has found the target, just before firing.",
+              "src": "d1"
+            },
+            {
+              "id": "cm-release",
+              "name": "Countermeasures quick release",
+              "type": "button",
+              "match": [
+                "control:throttle.button.cm_release"
+              ],
+              "text": "Pressing this button starts the quick release of chaff and flares; pressing it again stops it. Chaff confuses radar missiles, flares confuse heat-seeking missiles.",
+              "context": "The pilot uses it when a missile is coming at him.",
+              "src": "d1"
+            },
+            {
+              "id": "afk-ir",
+              "name": "AFK quick disconnect / IR missile fast select",
+              "type": "button",
+              "match": [
+                "control:throttle.button.afk_ir"
+              ],
+              "text": "With the wheels down this button switches off the automatic throttle (AFK). With the wheels up it selects the next heat-seeking missile.",
+              "context": "The automatic throttle holds the speed in the landing approach; this button gives the pilot the engine back at once.",
+              "src": "d1"
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft, held)",
+                  "text": "The airbrakes open while the switch is held back."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again.",
+              "src": "d1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-c2-hercules",
+  "title": "C2 Hercules (Crusader Industries, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-c2-hercules"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "C2 Hercules (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/C2_Hercules_Starlifter"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The C2 Hercules is a heavy lift transport from Crusader Industries in Star Citizen, flown by a crew of two. The two-seat cockpit sits high in the nose above the huge cargo bay. VTOL mode on left base button 5 helps when landing.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "C2 Hercules: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the C2 Hercules's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (two)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The C2 Hercules has two guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (696 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The huge bay holds 696 SCU. For landing heavy, the pilot uses VTOL mode.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "C2 Hercules: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the C2 Hercules besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "remote-turrets",
+              "name": "Remote turrets (two)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "Two remote turrets defend the C2 Hercules. It is aimed through a camera from inside the ship.",
+              "context": "A remote turret is aimed from a seat inside the ship through a camera, not from a glass bubble on the turret itself.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

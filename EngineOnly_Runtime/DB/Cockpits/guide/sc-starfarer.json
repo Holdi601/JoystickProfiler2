@@ -1,0 +1,87 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-starfarer",
+  "title": "Starfarer (MISC, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-starfarer"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Starfarer (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Starfarer"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Starfarer is a large refuelling ship and gas collector from MISC in Star Citizen, with a crew of up to eight. It is flown from a bridge at the front, with fuel stations and turret seats for the crew. Refuelling other ships is a job for a crew station, not for the pilot.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Starfarer: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Starfarer's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "cargo",
+              "name": "Cargo and fuel (291 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Starfarer holds 291 SCU and has fuel tanks for refuelling other ships.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Starfarer: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Starfarer besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "refuel",
+              "name": "Refuelling station",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "A crew station works the refuelling arm (boom) that gives fuel to other ships.",
+              "context": "The pilot holds the ship steady while the crew member at this station connects to the other ship.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mirage-2000-5",
+  "title": "Mirage 2000-5",
+  "inherits": "dcs-m-2000c",
+  "variants": [
+    "mirage-2000-5"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w5",
+      "title": "Dassault Mirage 2000-5 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Dassault_Mirage_2000-5"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Mirage 2000-5 is the multirole upgrade of the French Mirage 2000 delta-wing fighter. The airframe, the centre stick and the throttle are those of the 2000C, but the front panel is a glass cockpit built around the RDY radar: a HUD, a head-level display just below it and colour screens at the sides. This guide shows the 2000C cockpit that DCS models, plus the 2000-5's own front panel in the main panel area. The consoles are taken from the 2000C as the closest documented layout, and the extra radar and MICA functions of the -5 grips are not public.",
+  "areas": [
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Main panel: head-up display and radar screen",
+      "panels": [
+        {
+          "id": "front-panel-5",
+          "name": "Glass front panel of the 2000-5 (HUD, head-level display, lateral displays)",
+          "src": "w5",
+          "text": "This is the new front panel of the 2000-5. Instead of the round radar screen and many dials of the 2000C, it has a head-up display, a second display just below it and two colour screens at the sides.",
+          "context": "The pilot reads almost everything here: flying data in the HUD, the air picture from the RDY radar in the head-level display, and systems, navigation and weapons on the side screens.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display (HUD)",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). The pilot sees them while looking outside.",
+              "context": "It shows speed, height, heading and the marks for the gun and the missiles, so the pilot does not need to look down in a fight.",
+              "src": "w5"
+            },
+            {
+              "id": "head-level",
+              "name": "Head-level display (collimated)",
+              "type": "display",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A screen just below the HUD whose picture is focused far away, like the HUD, so the eyes do not have to refocus when they move from the sky to the screen. It shows the tactical picture: the aircraft the radar has found and the situation around the jet.",
+              "context": "It is the main screen for the air fight with the RDY radar and the MICA missiles; the pilot keeps it in view together with the HUD.",
+              "src": "w5"
+            },
+            {
+              "id": "left-display",
+              "name": "Left lateral display",
+              "type": "display",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "The colour screen on the left of the front panel. It shows pages about the aircraft's systems, the navigation and the weapons hanging under the wings (stores).",
+              "context": "The pilot calls up the page needed at the moment with the keys around the screens.",
+              "src": "w5"
+            },
+            {
+              "id": "right-display",
+              "name": "Right lateral display",
+              "type": "display",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "The colour screen on the right of the front panel. It shows tactical pages and the pictures of the sensors, such as the radar.",
+              "context": "Together with the left screen it replaces many of the separate instruments of the 2000C.",
+              "src": "w5"
+            },
+            {
+              "id": "display-keys",
+              "name": "Display keys",
+              "type": "button",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "Buttons around the displays. Each one picks a page or an option shown next to it, so the same key can do different things on different pages.",
+              "context": "With them the pilot changes what each screen shows; the exact page layout of the 2000-5 is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby-adi",
+              "name": "Standby attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "A small backup instrument that shows whether the nose is up or down and the wings are level, like an artificial horizon.",
+              "context": "The pilot uses it if the screens fail, to keep the jet the right way up until it is safe."
+            },
+            {
+              "id": "standby-alt-speed",
+              "name": "Standby altimeter and airspeed",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "text": "Small backup instruments for the height and the speed through the air. They work without the computers and screens.",
+              "context": "They are the pilot's last reference for height and speed when the main displays are lost."
+            },
+            {
+              "id": "gear-handle-5",
+              "name": "Landing gear handle",
+              "type": "lever",
+              "match": [
+                "item:front-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft after take-off."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock for landing."
+                }
+              ],
+              "text": "This handle raises and lowers the wheels and their legs (landing gear).",
+              "context": "The catalog lists it with the 2000-5 front panel. In the 2000C the gear handle sits on the left vertical panel; its entry there explains it in detail."
+            },
+            {
+              "id": "engine-fuel-5",
+              "name": "Engine and fuel indicators",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:9"
+              ],
+              "text": "Indicators that show how the engine is running and how much fuel is left.",
+              "context": "The pilot checks them during the start, before take-off and regularly in flight to plan the way home."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

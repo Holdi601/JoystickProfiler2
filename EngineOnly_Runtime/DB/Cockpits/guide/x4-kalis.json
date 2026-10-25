@@ -1,0 +1,69 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-kalis",
+  "title": "Kalis (X4: Foundations)",
+  "inherits": "game-x4",
+  "variants": [
+    "x4-kalis"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Cradle of Humanity (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Downloadable%20Content/02%20-%20Cradle%20of%20Humanity/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Kalis is a small Terran heavy fighter from the Cradle of Humanity expansion. It uses the shared X4 flight controls; JoyPro has not checked its weapons.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Kalis: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Kalis that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Kalis are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Kalis is flown from a cockpit seat, as small and medium ships are. The pilot sits here and has all the controls of this guide.",
+              "context": "From this seat the pilot sees the HUD, the radar and the monitors of the Kalis.",
+              "src": "c1"
+            },
+            {
+              "id": "class",
+              "name": "Ship class",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "X4 sorts ships by size: S (small), M (medium), L (large) and XL (extra large). The Kalis is: Terran S-class heavy fighter; armament not checked.",
+              "context": "The size decides whether the ship is flown from a cockpit or a bridge and where it can dock.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

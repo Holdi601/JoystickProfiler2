@@ -1,0 +1,448 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-apollo",
+  "title": "Apollo Command Module (Block II)",
+  "variants": [
+    "apollo-cm"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Apollo Experience Report: Spacecraft Hand Controller Development (NASA TN D-7884)",
+      "kind": "manual",
+      "url": "https://ntrs.nasa.gov/citations/19750010202"
+    },
+    {
+      "id": "s2",
+      "title": "Translation Hand Controller (NASSP, Project Apollo for Orbiter)",
+      "kind": "reference",
+      "url": "https://nassp.space/index.php/THC"
+    },
+    {
+      "id": "s3",
+      "title": "Rotation Hand Controller (NASSP)",
+      "kind": "reference",
+      "url": "https://nassp.space/index.php/RHC"
+    },
+    {
+      "id": "s4",
+      "title": "Apollo command and service module (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Apollo_command_and_service_module"
+    },
+    {
+      "id": "s5",
+      "title": "Apollo 15 CSM Launch Checklist, index of panels (Apollo Flight Journal, NASA)",
+      "kind": "reference",
+      "url": "https://www.nasa.gov/history/afj/ap15fj/csmlcindex.html"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Apollo Command Module (1968-1975) carried three astronauts to the Moon and back. They sat on three couches side by side facing the big main display console; the commander on the left had the rotation hand controller at his right hand and the translation hand controller at his left. Below the couches was the navigation station with a sextant for star sightings. Panel numbers 2, 3, 5, 8, 122 and 225-229 are confirmed by a NASA checklist index; the other panel numbers and contents follow the operations handbook as known, not checked page by page.",
+  "areas": [
+    {
+      "id": "mdc-1",
+      "where": "front-left",
+      "name": "Main display console, panel 1",
+      "text": "Flight controls side in front of the commander.",
+      "panels": [
+        {
+          "id": "mdc-1",
+          "name": "Main display console, panel 1 (commander)",
+          "text": "The flight control side of the main console in front of the commander in the left couch.",
+          "context": "The commander flies the spacecraft; the attitude ball and the abort lights are in front of him.",
+          "controls": [
+            {
+              "id": "fdai",
+              "name": "FDAI 1",
+              "type": "gauge",
+              "match": [
+                "item:mdc-1:1"
+              ],
+              "text": "The attitude ball (flight director attitude indicator): a ball with a horizon and markings that shows which way the spacecraft points, with needles for the turning rate and for the error to the wanted attitude.",
+              "context": "The crew pointed the spacecraft with it before every engine burn and for the return.",
+              "src": "s4"
+            },
+            {
+              "id": "ems",
+              "name": "Entry monitor system (EMS)",
+              "type": "display",
+              "match": [
+                "item:mdc-1:2"
+              ],
+              "text": "A display with a speed-change counter for engine burns and a scrolling chart that shows the braking force and speed during the return through the atmosphere.",
+              "context": "It let the crew check the burns and the re-entry independently of the guidance computer.",
+              "src": "s4"
+            },
+            {
+              "id": "lv-abort",
+              "name": "Launch vehicle and abort lights",
+              "type": "light",
+              "match": [
+                "item:mdc-1:3"
+              ],
+              "text": "Lights for the engines of the Saturn rocket and the emergency detection system, which watched the rocket during launch.",
+              "context": "They helped the commander decide quickly whether to abort the launch."
+            },
+            {
+              "id": "scs",
+              "name": "SCS attitude and control switches",
+              "type": "switch",
+              "match": [
+                "item:mdc-1:4"
+              ],
+              "text": "Switches for the backup attitude control (SCS, stabilization and control system): the attitude to hold, how fast the spacecraft may turn, and whether the SCS or the guidance computer (G&N) steers.",
+              "context": "The SCS took over when the guidance computer was not used. JoyPro's sources do not describe its single switches.",
+              "src": "s4"
+            },
+            {
+              "id": "alarm",
+              "name": "Master alarm (CDR)",
+              "type": "light",
+              "match": [
+                "item:mdc-1:5"
+              ],
+              "text": "A light that comes on with a tone when any system has a problem. Pressing it switches the alarm off.",
+              "context": "The caution and warning lights in the middle of the console then say which system it is."
+            },
+            {
+              "id": "timer",
+              "name": "Event timer",
+              "type": "display",
+              "match": [
+                "item:mdc-1:6"
+              ],
+              "text": "A timer that counts the time of engine burns and other events.",
+              "context": "The crew used it to time burns and the steps of the flight plan."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mdc-2",
+      "where": "front-center",
+      "name": "Main display console, panel 2",
+      "text": "Cautions, propellant, guidance computer.",
+      "panels": [
+        {
+          "id": "mdc-2",
+          "name": "Main display console, panel 2 (centre)",
+          "text": "The middle of the console: the caution lights, the propellant gauges, the keyboard of the guidance computer and the switches for separation and the parachutes.",
+          "context": "All three astronauts could see it; the guidance computer keyboard here was the busiest control of the flight.",
+          "controls": [
+            {
+              "id": "cw",
+              "name": "Caution and warning matrix",
+              "type": "light",
+              "match": [
+                "item:mdc-2:1"
+              ],
+              "text": "A board of labelled lights, each saying which system has failed.",
+              "context": "When the master alarm sounds, the crew looks here to find the problem."
+            },
+            {
+              "id": "prop",
+              "name": "SPS and RCS propellant indicators",
+              "type": "gauge",
+              "match": [
+                "item:mdc-2:2"
+              ],
+              "text": "Gauges for how much fuel is left, and at what pressure, for the big main engine (SPS) and for the small steering jets (RCS).",
+              "context": "The SPS engine put the spacecraft into Moon orbit and brought it home, so its fuel was watched closely.",
+              "src": "s4"
+            },
+            {
+              "id": "dsky",
+              "name": "DSKY",
+              "type": "keypad",
+              "match": [
+                "item:mdc-2:3"
+              ],
+              "text": "The display and keyboard of the Apollo guidance computer. The astronaut types two-digit commands (VERB for an action, NOUN for the data) and reads the numbers it shows.",
+              "context": "The computer navigated and steered the spacecraft; the crew told it what to do through this keyboard.",
+              "src": "s4"
+            },
+            {
+              "id": "met",
+              "name": "Mission timer",
+              "type": "display",
+              "match": [
+                "item:mdc-2:4"
+              ],
+              "text": "A clock that shows the time since launch.",
+              "context": "The whole flight plan is written in time from launch."
+            },
+            {
+              "id": "seq",
+              "name": "Sequential and earth landing system switches",
+              "type": "switch",
+              "match": [
+                "item:mdc-2:5"
+              ],
+              "text": "Switches for the big separation steps (from the rocket, from the service module), the docking equipment and the parachutes of the landing.",
+              "context": "They were used at fixed points of the flight plan. JoyPro's sources do not describe its single switches.",
+              "src": "s4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mdc-3",
+      "where": "front-right",
+      "name": "Main display console, panel 3",
+      "text": "Electricity, environment, radio.",
+      "panels": [
+        {
+          "id": "mdc-3",
+          "name": "Main display console, panel 3 (LM pilot)",
+          "text": "The systems side of the console: electricity, environment and radio.",
+          "context": "The astronaut in the right couch looked after these systems.",
+          "controls": [
+            {
+              "id": "fc",
+              "name": "Fuel cell controls and meters",
+              "type": "switch",
+              "match": [
+                "item:mdc-3:1"
+              ],
+              "text": "Switches and meters for the fuel cells, which make electricity and drinking water from hydrogen and oxygen. A purge cleans them.",
+              "context": "The fuel cells were the main source of electricity on the way to the Moon.",
+              "src": "s4"
+            },
+            {
+              "id": "bus",
+              "name": "DC and AC bus meters",
+              "type": "gauge",
+              "match": [
+                "item:mdc-3:2"
+              ],
+              "text": "Meters that show the voltage of the electrical buses, the groups of electric lines that feed the equipment.",
+              "context": "A low reading warns that the power supply has a problem."
+            },
+            {
+              "id": "ecs",
+              "name": "Environmental control switches",
+              "type": "switch",
+              "match": [
+                "item:mdc-3:3"
+              ],
+              "text": "Switches for the cooling loops (a liquid that carries heat to radiators outside), the radiators and the cabin air.",
+              "context": "They kept the crew and the electronics at a safe temperature. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "sband",
+              "name": "S-band communications",
+              "type": "switch",
+              "match": [
+                "item:mdc-3:4"
+              ],
+              "text": "Switches for the S-band radio, which carried voice, data and television between the spacecraft and Earth.",
+              "context": "It worked all the way to the Moon through big antennas on the ground. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "sps-press",
+              "name": "SPS propellant pressure meters",
+              "type": "gauge",
+              "match": [
+                "item:mdc-3:5"
+              ],
+              "text": "Meters for the pressure in the fuel and oxidizer tanks of the main engine (the oxidizer is what the fuel burns with).",
+              "context": "The engine only works when both tanks are pressurized correctly."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leb",
+      "where": "floor",
+      "name": "Lower equipment bay",
+      "text": "The navigation station below the couches.",
+      "panels": [
+        {
+          "id": "leb",
+          "name": "Lower equipment bay (panel 122)",
+          "text": "The navigation station below the couches, where an astronaut could stand at the optics.",
+          "context": "Here the crew measured stars to correct the guidance platform, the device that keeps track of the spacecraft's attitude and speed.",
+          "controls": [
+            {
+              "id": "dsky2",
+              "name": "LEB DSKY",
+              "type": "keypad",
+              "match": [
+                "item:leb:1"
+              ],
+              "text": "A second keyboard and display of the guidance computer, next to the optics.",
+              "context": "The navigator used it while taking star sightings, without going back to the couch.",
+              "src": "s4"
+            },
+            {
+              "id": "sextant",
+              "name": "Sextant and scanning telescope",
+              "type": "other",
+              "match": [
+                "item:leb:2"
+              ],
+              "text": "Optical instruments for measuring stars: a sextant for precise angles and a telescope with a wide view to find them.",
+              "context": "Star sightings let the computer correct its guidance platform and its position, as sailors once did with the stars.",
+              "src": "s4"
+            },
+            {
+              "id": "optics",
+              "name": "Optics controls",
+              "type": "switch",
+              "match": [
+                "item:leb:3"
+              ],
+              "text": "Switches that choose how the optics are aimed (by hand or by the computer), set them to zero and drive them.",
+              "context": "They are used during the star sightings. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "mic",
+              "name": "Minimum impulse controller",
+              "type": "other",
+              "match": [
+                "item:leb:4"
+              ],
+              "text": "An extra small rotation controller at the navigation station that fires the steering jets in tiny pulses.",
+              "context": "It turns the spacecraft very finely, for example to hold a star in the sextant."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "side",
+      "where": "left-side",
+      "name": "Side panels and circuit breakers",
+      "text": "Breakers and switches on the walls.",
+      "panels": [
+        {
+          "id": "side-panels",
+          "name": "Side panels and circuit breakers",
+          "text": "Circuit breakers and system switches on the side walls of the cabin.",
+          "context": "Most were set before launch; a tripped breaker is reset here.",
+          "controls": [
+            {
+              "id": "p8",
+              "name": "Panel 8 (left side)",
+              "type": "switch",
+              "match": [
+                "item:side-panels:1"
+              ],
+              "text": "A panel on the left wall with circuit breakers (safety switches that cut power when something draws too much), the power of the backup attitude control and the floodlights.",
+              "context": "JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "p5",
+              "name": "Panel 5 (right side)",
+              "type": "switch",
+              "match": [
+                "item:side-panels:2"
+              ],
+              "text": "A panel on the right side with further system switches.",
+              "context": "JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "p225",
+              "name": "Panels 225-229 (right equipment bay)",
+              "type": "switch",
+              "match": [
+                "item:side-panels:3"
+              ],
+              "text": "Rows of circuit breakers in the right equipment bay.",
+              "context": "They protect the electrical lines of the systems; the crew checks them with the launch checklist."
+            },
+            {
+              "id": "audio",
+              "name": "Audio control panels",
+              "type": "switch",
+              "match": [
+                "item:side-panels:4"
+              ],
+              "text": "One audio panel for each astronaut (panels 9, 10 and 6) that sets which radios and the intercom he hears and talks on, and how loud.",
+              "context": "JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers",
+      "text": "The rotation and translation hand controllers.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Rotation hand controller",
+          "text": "The pistol grip on the right armrest of the commander's couch; the other couches have their own.",
+          "context": "It turns the spacecraft; the translation controller in the left hand moves it.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Rotation hand controller (RHC)",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the grip forward or back pitches the spacecraft, sideways rolls it, twisting yaws it. The turning speed follows how far the grip is moved (rate command).",
+              "context": "On a joystick it is the X, Y and twist axes; the crew used it for docking and for flying by hand.",
+              "src": "s3"
+            },
+            {
+              "id": "ptt",
+              "name": "Push-to-talk switch",
+              "type": "button",
+              "match": [
+                "control:rhc.button.ptt"
+              ],
+              "text": "While this switch on the grip is held, the astronaut's voice goes out on the intercom or the radio.",
+              "context": "It works like the button of a walkie-talkie; the grip is shaped for the left or the right hand.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "Translation hand controller",
+          "text": "The T-handle on the left armrest of the commander's couch.",
+          "context": "It moves the spacecraft without turning it; twisting it hands control to the backup system or aborts the launch.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Translation hand controller (THC)",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This handle moves the whole spacecraft without turning it (translation): pushed in forward, pulled out back, and left, right, up and down, by firing the steering jets.",
+              "context": "It was used for docking with the Lunar Module; on a joystick it is a second three-axis controller.",
+              "src": "s2"
+            },
+            {
+              "id": "twist",
+              "name": "THC handle rotation",
+              "type": "other",
+              "match": [
+                "control:thc.twist"
+              ],
+              "text": "Twisting the T-handle clockwise takes the guidance computer out of control and gives it to the backup system (SCS) and the manual engine steering; twisting it counter-clockwise starts a launch abort.",
+              "context": "These are emergency actions, which is why they sit on the handle the commander holds during launch.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

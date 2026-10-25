@@ -1,0 +1,916 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-star-citizen",
+  "title": "Star Citizen: default two-stick layout (HOSAS)",
+  "variants": [
+    "star-citizen-hosas"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    },
+    {
+      "id": "g2",
+      "title": "Star Citizen Wiki: Guide - Controls",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Guide:Controls"
+    },
+    {
+      "id": "g3",
+      "title": "Thrustmaster T.16000M FCS user manual",
+      "kind": "reference",
+      "url": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+      "id": "g4",
+      "title": "Star Citizen (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Citizen"
+    }
+  ],
+  "intro": "Star Citizen is a space game where players fly hundreds of different ships. Every cockpit looks different, but the pilot seat works the same way in all of them: the flight data shows on the helmet visor, the ship's systems on the screens (MFDs), and every cockpit button can be pressed by looking at it in interaction mode. This guide explains the game's own preset for two joysticks (HOSAS, the Thrustmaster T.16000M pair): the right stick steers and fights, the left stick moves the ship sideways, up, down, forward and back. The bindings can change between game updates.",
+  "areas": [
+    {
+      "id": "visor",
+      "where": "glareshield",
+      "name": "Visor HUD",
+      "text": "The flight and combat data on the pilot's helmet glass and on the ship's head-up display.",
+      "panels": [
+        {
+          "id": "visor-hud",
+          "name": "Visor HUD (helmet and ship head-up display)",
+          "db": "visor-hud",
+          "src": "g1",
+          "text": "The visor HUD puts the most important flight and fight numbers on the inside of the pilot's helmet glass and on the ship's head-up display, so the pilot sees them while looking outside.",
+          "context": "It is the pilot's main source of information in every Star Citizen ship. Most stick buttons change something the pilot then sees here: the mode, the target, the shields or the speed limit.",
+          "controls": [
+            {
+              "id": "speed",
+              "name": "Speed readout",
+              "type": "display",
+              "match": [
+                "item:visor-hud:1"
+              ],
+              "text": "This number shows how fast the ship is flying right now. Next to it the HUD shows the speed limit the pilot has set with the left base slider.",
+              "context": "The ship will not fly faster than the speed limiter allows, so the pilot reads both numbers together when racing, landing or fighting.",
+              "src": "g1"
+            },
+            {
+              "id": "mode",
+              "name": "Master and operator mode indicator",
+              "type": "indicator",
+              "match": [
+                "item:visor-hud:2"
+              ],
+              "text": "This shows which big mode the ship is in, SCM or NAV, and which job the pilot's buttons do right now: guns, missiles, quantum travel, scanning, mining or salvage.",
+              "context": "SCM is the fighting mode with shields and weapons ready; NAV is the travel mode for higher speed and quantum travel. Many stick buttons change their job with the operator mode, so a glance here explains what the next press will do.",
+              "src": "g1"
+            },
+            {
+              "id": "target",
+              "name": "Target box and lead marker",
+              "type": "display",
+              "match": [
+                "item:visor-hud:3"
+              ],
+              "text": "A box marks the selected target and shows how far away it is. A small aiming dot, the lead marker, shows where to point the guns so the shots meet the moving target.",
+              "context": "The targeting hat and the base buttons 5 to 7 on the right stick pick, lock and pin the targets that appear here.",
+              "src": "g1"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapon and missile state",
+              "type": "display",
+              "match": [
+                "item:visor-hud:4"
+              ],
+              "text": "This shows the active weapon group and how the guns move (fixed, or turning a little towards the target). In missile mode it shows the missile type and how many are armed.",
+              "context": "The head button left of the right stick changes the gun movement mode and the thumb button changes the missile type; the result shows here.",
+              "src": "g1"
+            },
+            {
+              "id": "capacitors",
+              "name": "Capacitor bars",
+              "type": "gauge",
+              "match": [
+                "item:visor-hud:5"
+              ],
+              "text": "Three bars show how the ship's stored energy is shared between weapons, engines and shields. A full bar means that system gets more energy.",
+              "context": "The pilot moves the energy with the hat on the left stick: up for engines, left for weapons, right for shields, down to share it evenly again.",
+              "src": "g1"
+            },
+            {
+              "id": "shields",
+              "name": "Shield faces and hull",
+              "type": "gauge",
+              "match": [
+                "item:visor-hud:6"
+              ],
+              "text": "This picture shows how strong the shield is on each side of the ship and how damaged the hull (the ship's body) is.",
+              "context": "When one side gets weak the pilot can turn that side away from the enemy or strengthen it with the shield buttons on the left stick base.",
+              "src": "g1"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel gauges",
+              "type": "gauge",
+              "match": [
+                "item:visor-hud:7"
+              ],
+              "text": "Two gauges show how much fuel is left: hydrogen fuel for the normal thrusters and quantum fuel for the quantum drive.",
+              "context": "Hydrogen runs low after long boosting; quantum fuel decides how far the ship can jump. The pilot refuels at stations.",
+              "src": "g1"
+            },
+            {
+              "id": "flight-state",
+              "name": "Flight state indicators",
+              "type": "indicator",
+              "match": [
+                "item:visor-hud:8"
+              ],
+              "text": "Small marks show whether the flight helper is coupled or decoupled, whether cruise control is on, whether VTOL mode is on and whether the landing gear is down.",
+              "context": "Each of these is switched by a button on the left stick, so the pilot checks here that the press did what was intended.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "text": "The ship's screens in front of the pilot: the MFD pages and the radar and scanning display.",
+      "panels": [
+        {
+          "id": "mfd",
+          "name": "Multi-function displays (MFD pages)",
+          "db": "mfd",
+          "src": "g1",
+          "text": "These are the ship's screens around the flight controls. Each screen can show a different page: power, shields, weapons, radio, the ship's own health, the target, or quantum travel.",
+          "context": "The pilot picks the pages on the screens themselves or by looking at them in interaction mode. They show more detail than the visor HUD and let the pilot change settings that have no stick button.",
+          "controls": [
+            {
+              "id": "power",
+              "name": "Power page",
+              "type": "display",
+              "match": [
+                "item:mfd:1"
+              ],
+              "text": "This page shows how much power each group of ship parts gets, and how the stored energy is shared between weapons, engines and shields.",
+              "context": "It is the detailed view of the capacitor bars on the HUD; the left stick's hat changes the same sharing quickly in a fight.",
+              "src": "g1"
+            },
+            {
+              "id": "shields",
+              "name": "Shields page",
+              "type": "display",
+              "match": [
+                "item:mfd:2"
+              ],
+              "text": "This page shows each side (face) of the shield and how much strength it has left.",
+              "context": "The pilot looks here to see which side needs help, then uses the shield buttons on the left stick base.",
+              "src": "g1"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapons page",
+              "type": "display",
+              "match": [
+                "item:mfd:3"
+              ],
+              "text": "This page lists the guns in their groups, how they aim (fixed or gimballed, which means they turn a little towards the target) and the missile racks.",
+              "context": "The trigger fires the selected group; the head button on the right stick changes the aiming mode shown here.",
+              "src": "g1"
+            },
+            {
+              "id": "comms",
+              "name": "Comms page",
+              "type": "display",
+              "match": [
+                "item:mfd:4"
+              ],
+              "text": "This page handles radio calls: calling other ships (hails), choosing channels and asking a station for permission to land or dock.",
+              "context": "Before landing at a station the pilot asks for a landing pad here; the station then opens a hangar or marks a pad.",
+              "src": "g1"
+            },
+            {
+              "id": "self-status",
+              "name": "Self status page",
+              "type": "display",
+              "match": [
+                "item:mfd:5"
+              ],
+              "text": "This page shows the ship's own health: damage, how hot it is and how each part (component) is doing.",
+              "context": "The pilot checks it after a fight or when something stops working, for example when a part overheats.",
+              "src": "g1"
+            },
+            {
+              "id": "target-status",
+              "name": "Target status page",
+              "type": "display",
+              "match": [
+                "item:mfd:6"
+              ],
+              "text": "This page shows the selected target's shields, hull and parts.",
+              "context": "It helps the pilot decide where to shoot; the hat on the right stick can pick one part of the target (a sub-target).",
+              "src": "g1"
+            },
+            {
+              "id": "quantum",
+              "name": "Quantum page",
+              "type": "display",
+              "match": [
+                "item:mfd:7"
+              ],
+              "text": "This page shows the chosen travel destination, the quantum fuel and whether the quantum drive is warming up (spooling).",
+              "context": "The destination is chosen on the star map; then the pilot switches quantum mode on and holds base button 12 on the right stick to jump.",
+              "src": "g1"
+            }
+          ]
+        },
+        {
+          "id": "radar",
+          "name": "Radar and scanning display",
+          "db": "radar",
+          "src": "g1",
+          "text": "This display shows the radar picture of what is around the ship, the ring of the active radar ping, and what a scan of an object found.",
+          "context": "The pilot uses it to find other ships, wrecks and rocks before they are visible. The ping and scan buttons sit on the right stick base.",
+          "controls": [
+            {
+              "id": "contacts",
+              "name": "Radar contacts",
+              "type": "display",
+              "match": [
+                "item:radar:1"
+              ],
+              "text": "Marks around the ship show other objects by the signals they give off, such as heat or electricity.",
+              "context": "Quiet objects show up late; an active ping finds them sooner but also makes the own ship easier to notice.",
+              "src": "g1"
+            },
+            {
+              "id": "ping-ring",
+              "name": "Ping ring",
+              "type": "display",
+              "match": [
+                "item:radar:2"
+              ],
+              "text": "A ring shows the active ping (a strong radar pulse) and how wide its cone is.",
+              "context": "Base buttons 8 and 10 on the right stick make the cone wider or narrower, and base button 9 sends the ping.",
+              "src": "g1"
+            },
+            {
+              "id": "scan-result",
+              "name": "Scan result",
+              "type": "display",
+              "match": [
+                "item:radar:3"
+              ],
+              "text": "This shows what the scan of the object in the middle of the view found, for example its cargo, its crew or what a rock is made of.",
+              "context": "Miners use it to choose rocks worth mining; traders and fighters use it to learn about other ships.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seat",
+      "where": "left-console",
+      "name": "Seat controls",
+      "text": "The seat's own actions for power, engines, shields, weapons, doors, lights and the self-destruct.",
+      "panels": [
+        {
+          "id": "seat",
+          "name": "Pilot seat controls (power, doors, lights)",
+          "db": "seat",
+          "src": "g1",
+          "text": "These are the seat's own actions: wake the ship up, switch its big systems on and off, open the doors and switch on the lights. Most of them also exist as buttons in the cockpit.",
+          "context": "In Star Citizen the pilot can press cockpit buttons by looking at them in interaction mode, or use these actions bound to keys or stick buttons. The left stick in this preset has no button for them; they sit on the keyboard.",
+          "controls": [
+            {
+              "id": "flight-ready",
+              "name": "Flight Ready",
+              "type": "button",
+              "match": [
+                "label:Flight Ready",
+                "item:seat:1"
+              ],
+              "text": "This one action wakes the whole ship up: it switches on the power and starts the engines in one step.",
+              "context": "It is the first thing the pilot does after sitting down. After it the ship can lift off; without it nothing works.",
+              "src": "g1"
+            },
+            {
+              "id": "power",
+              "name": "Power on / off",
+              "type": "switch2",
+              "match": [
+                "label:Power",
+                "item:seat:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The ship has power; screens and systems can work."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ship is dark and nothing works."
+                }
+              ],
+              "text": "This switches the ship's power on or off, like the main switch of a house.",
+              "context": "Flight Ready does this together with the engines; the separate switch is useful for parking the ship quietly or restarting it.",
+              "src": "g1"
+            },
+            {
+              "id": "thrusters",
+              "name": "Thrusters on / off (engines)",
+              "type": "switch2",
+              "match": [
+                "label:Engines",
+                "label:Engine",
+                "label:Engine System",
+                "item:seat:3"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The thrusters can push the ship."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The ship cannot move by itself."
+                }
+              ],
+              "text": "This switches the thrusters on or off. Thrusters are the ship's rocket engines that push it in every direction.",
+              "context": "Switching them off while parked keeps the ship quiet and hard to find; they must be on to fly.",
+              "src": "g1"
+            },
+            {
+              "id": "shields",
+              "name": "Shields on / off",
+              "type": "switch2",
+              "match": [
+                "label:Shields",
+                "item:seat:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The shield protects the ship."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Hits go straight to the hull."
+                }
+              ],
+              "text": "This switches the shield generator on or off. The shield is an invisible protective bubble that takes hits before the hull does.",
+              "context": "It is normally on in a fight; turning it off saves power and makes the ship harder to detect.",
+              "src": "g1"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapons on / off",
+              "type": "switch2",
+              "match": [
+                "label:Weapons",
+                "item:seat:5"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapons have power and can fire."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The weapons are cold and cannot fire."
+                }
+              ],
+              "text": "This switches the power for the guns and missiles on or off.",
+              "context": "With weapon power off the trigger does nothing; it is a safety step when flying near stations.",
+              "src": "g1"
+            },
+            {
+              "id": "doors",
+              "name": "Doors and ports",
+              "type": "button",
+              "match": [
+                "label:Door",
+                "label:Doors",
+                "item:seat:6"
+              ],
+              "text": "These actions open, close, lock or unlock all the ship's doors and ports at once.",
+              "context": "The pilot opens them to let the crew or cargo in, and locks them so nobody else can walk aboard.",
+              "src": "g1"
+            },
+            {
+              "id": "lights",
+              "name": "Lights",
+              "type": "button",
+              "match": [
+                "label:Lights",
+                "label:Headlights",
+                "item:seat:7"
+              ],
+              "text": "This switches the ship's lights on or off, like the headlights of a car.",
+              "context": "Lights help on the dark side of a planet or inside caves and stations, but they also make the ship easier to see.",
+              "src": "g1"
+            },
+            {
+              "id": "self-destruct",
+              "name": "Self destruct",
+              "type": "button",
+              "match": [
+                "label:Self Destruct",
+                "item:seat:8"
+              ],
+              "text": "Holding this starts a countdown, and at the end the ship blows itself up.",
+              "context": "It is a last choice, for example so that pirates cannot take the ship. The countdown gives the crew time to leave.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mobiglas",
+      "where": "left-side",
+      "name": "mobiGlas (wrist)",
+      "text": "The wrist computer with the star map, the contracts and the friends list.",
+      "panels": [
+        {
+          "id": "mobiglas",
+          "name": "mobiGlas (wrist computer)",
+          "db": "mobiglas",
+          "src": "g1",
+          "text": "The mobiGlas is a small computer on the pilot's wrist. It shows the star map, the jobs the pilot has taken and the friends list.",
+          "context": "The pilot can open it in the seat as well as on foot. The star map is where travel destinations for the quantum drive are chosen.",
+          "controls": [
+            {
+              "id": "starmap",
+              "name": "Star map",
+              "type": "display",
+              "match": [
+                "item:mobiglas:1"
+              ],
+              "text": "The star map shows planets, moons and stations. The pilot plans a route here and picks where the quantum drive should jump to.",
+              "context": "After a destination is set, the quantum page and the HUD show it, and quantum mode can take the ship there.",
+              "src": "g1"
+            },
+            {
+              "id": "contracts",
+              "name": "Contracts",
+              "type": "display",
+              "match": [
+                "item:mobiglas:2"
+              ],
+              "text": "This shows the jobs (missions) the pilot has accepted and puts their markers on the HUD.",
+              "context": "Mission markers can be chosen as a travel destination on the star map.",
+              "src": "g1"
+            },
+            {
+              "id": "comms",
+              "name": "Comms",
+              "type": "display",
+              "match": [
+                "item:mobiglas:3"
+              ],
+              "text": "This shows friends, the party (the group flying together) and the chat channels.",
+              "context": "Players use it to meet up and fly together in one ship or in a group.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Two sticks (HOSAS)",
+      "text": "The right stick steers and fights; the left stick moves the ship in every direction and holds the ship-system buttons.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (flight stick)",
+          "src": "g1",
+          "text": "The right-hand stick steers the ship's nose and does the fighting: it fires the weapons, picks targets and holds the buttons for radar, quantum travel, scanning and mining.",
+          "context": "This is the game's own two-stick preset for the Thrustmaster T.16000M. Many buttons change their job with the operator mode shown on the HUD; the stick's base buttons 5 to 16 sit on the stick's foot.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Right stick (pitch, yaw, roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the ship's nose down or up. Moving it left or right turns the nose left or right (yaw). Twisting the stick rolls the ship around its long axis.",
+              "context": "In this preset left and right turn the nose instead of rolling, which suits flying in space; the twist does the rolling.",
+              "src": "g1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "label:Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "Pulling the trigger fires the selected group of guns.",
+              "context": "Its job follows the operator mode: in missile mode it launches missiles, in mining or salvage mode it works the mining laser or the salvage beams.",
+              "src": "g1"
+            },
+            {
+              "id": "thumb",
+              "name": "Thumb button (button 2)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button picks the next type of missile.",
+              "context": "It works in missile mode; the HUD shows the chosen type. In this preset the switch into missile mode itself sits on the keyboard.",
+              "src": "g1"
+            },
+            {
+              "id": "head-left",
+              "name": "Head button left (button 3)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "This button changes how the guns aim: fixed straight ahead, or gimballed so they turn a little towards the target.",
+              "context": "Fixed guns hit harder on some ships but need exact aiming; gimballed guns help when the target moves a lot. The HUD shows the mode.",
+              "src": "g1"
+            },
+            {
+              "id": "head-right",
+              "name": "Head button right (button 4)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "This button makes the scanner's angle narrower, so the scan looks at a smaller area in front of the ship.",
+              "context": "It belongs to the scanning job: a narrow angle reaches farther and picks one object among many.",
+              "src": "g1"
+            },
+            {
+              "id": "hat",
+              "name": "Hat (targeting)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "The small hat on top picks targets. Up steps through the targets in view, down jumps to the nearest enemy (twice quickly: the one attacking the ship). Right picks the next part of the target, left goes back to the whole target.",
+              "context": "Picking a part (sub-target) such as the engines or the guns lets the pilot disable a ship instead of destroying it.",
+              "src": "g1"
+            },
+            {
+              "id": "base-5",
+              "name": "Base button 5 (target 1)",
+              "type": "button",
+              "match": [
+                "label:Button pin1",
+                "control:stick.base.button.1"
+              ],
+              "text": "A short press locks the target pinned in slot 1. Holding the button pins the current target into slot 1, so it stays marked.",
+              "context": "Pinning keeps important targets easy to find in a busy fight; buttons 6 and 7 do the same for slots 2 and 3.",
+              "src": "g1"
+            },
+            {
+              "id": "base-6",
+              "name": "Base button 6 (target 2)",
+              "type": "button",
+              "match": [
+                "label:Button pin2",
+                "control:stick.base.button.2"
+              ],
+              "text": "A short press locks the target pinned in slot 2; holding it pins the current target into slot 2.",
+              "context": "The second of three pin slots; the HUD target box shows which slot a target has.",
+              "src": "g1"
+            },
+            {
+              "id": "base-7",
+              "name": "Base button 7 (target 3)",
+              "type": "button",
+              "match": [
+                "label:Button pin3",
+                "control:stick.base.button.3"
+              ],
+              "text": "A short press locks the target pinned in slot 3; holding it pins the current target into slot 3.",
+              "context": "The third pin slot, useful for keeping an eye on a third ship, for example a wingman or a mission target.",
+              "src": "g1"
+            },
+            {
+              "id": "base-8",
+              "name": "Base button 8 (widen ping)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.4"
+              ],
+              "text": "This button makes the cone of the radar ping wider.",
+              "context": "A wide ping looks around more of the ship at once but does not reach as far; the ping ring on the radar display shows the width.",
+              "src": "g1"
+            },
+            {
+              "id": "base-9",
+              "name": "Base button 9 (radar ping)",
+              "type": "button",
+              "match": [
+                "label:Button Ping",
+                "control:stick.base.button.5"
+              ],
+              "text": "This button sends an active radar ping, a strong pulse that finds objects the normal radar has not noticed yet.",
+              "context": "Found objects appear on the radar and the HUD. After a ping the radar needs a moment before the next one.",
+              "src": "g1"
+            },
+            {
+              "id": "base-10",
+              "name": "Base button 10 (narrow ping)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "This button makes the cone of the radar ping narrower.",
+              "context": "A narrow ping reaches farther in one direction, for example towards a mission marker.",
+              "src": "g1"
+            },
+            {
+              "id": "base-12",
+              "name": "Base button 12 (quantum)",
+              "type": "button",
+              "match": [
+                "label:Quantum Travel",
+                "control:stick.base.button.8"
+              ],
+              "text": "A short press switches quantum mode on or off. Holding the button starts the jump: the quantum drive (a very fast travel drive) carries the ship across the star system to the chosen destination.",
+              "context": "The destination is picked on the star map first. Quantum mode belongs to NAV mode; the quantum page shows the drive warming up.",
+              "src": "g1"
+            },
+            {
+              "id": "base-13",
+              "name": "Base button 13 (mining mode)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.9"
+              ],
+              "text": "This button switches mining mode on or off on ships with a mining laser.",
+              "context": "In mining mode the trigger works the mining laser and the base slider sets its power. Ships without a mining laser do nothing here.",
+              "src": "g1"
+            },
+            {
+              "id": "base-14",
+              "name": "Base button 14 (narrow scan focus)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.10"
+              ],
+              "text": "This button narrows the scan focus, so the scanner concentrates on a smaller area.",
+              "context": "It is used in scanning mode together with button 16, which widens the focus again.",
+              "src": "g1"
+            },
+            {
+              "id": "base-15",
+              "name": "Base button 15 (scanning mode)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.11"
+              ],
+              "text": "This button switches scanning mode on or off. In scanning mode the ship looks closely at the object in the middle of the view.",
+              "context": "The scan result appears on the radar and scanning display; buttons 14 and 16 change the focus.",
+              "src": "g1"
+            },
+            {
+              "id": "base-16",
+              "name": "Base button 16 (widen scan focus)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.12"
+              ],
+              "text": "This button widens the scan focus, so the scanner looks at a bigger area.",
+              "context": "A wide focus is good for searching; a narrow one for looking at one object.",
+              "src": "g1"
+            },
+            {
+              "id": "slider",
+              "name": "Base slider (mining laser power)",
+              "type": "slider",
+              "match": [
+                "control:stick.axis.slider"
+              ],
+              "text": "The slider on the right stick's foot sets how strong the mining laser is.",
+              "context": "In mining mode the miner raises the power slowly until the rock breaks, without overheating it.",
+              "src": "g1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Left stick (thrust and strafe stick)",
+          "src": "g1",
+          "text": "The left-hand stick moves the whole ship without turning it: forward and back, left and right, up and down. Its buttons handle boost, decoys, energy, landing, speed and shields.",
+          "context": "In space a ship can slide in any direction. The right stick turns the nose, the left stick pushes the ship; together they let the pilot dodge and land with care.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Left stick (strafe forward/back, left/right, up/down)",
+              "type": "axis",
+              "match": [
+                "control:throttle.gimbal"
+              ],
+              "text": "Pushing the stick forward makes the ship fly forward, pulling it back slows it down or flies backwards. Left and right slide the ship sideways, and twisting the stick moves it up or down.",
+              "context": "Sliding sideways (strafing) without turning is how pilots dodge shots and line up on landing pads.",
+              "src": "g1"
+            },
+            {
+              "id": "trigger",
+              "name": "Left trigger (boost)",
+              "type": "trigger",
+              "match": [
+                "label:Button boost",
+                "control:throttle.trigger"
+              ],
+              "text": "Holding this trigger gives the ship a burst of extra push for faster speed and quicker turns, like a car's turbo.",
+              "context": "Boost uses up a reserve that refills when released, and it burns fuel faster.",
+              "src": "g1"
+            },
+            {
+              "id": "thumb",
+              "name": "Left thumb button (coupled / decoupled)",
+              "type": "button",
+              "match": [
+                "label:Coupled",
+                "control:throttle.button.thumb.1"
+              ],
+              "text": "This button switches the flight helper between coupled and decoupled. Coupled: the ship slows to a stop when the pilot lets go. Decoupled: the ship keeps drifting in the same direction.",
+              "context": "Decoupled flight lets a pilot fly one way while pointing the guns another way; coupled is easier for normal flying and landing.",
+              "src": "g1"
+            },
+            {
+              "id": "head-3",
+              "name": "Left head button 3 (decoys)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.thumb.2"
+              ],
+              "text": "A short press throws out a decoy, a hot flare that pulls away heat-seeking missiles. Holding it throws out several in a row.",
+              "context": "It is the answer to a missile warning when the missile follows the ship's heat; button 4 handles the other kind.",
+              "src": "g1"
+            },
+            {
+              "id": "head-4",
+              "name": "Left head button 4 (noise)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.thumb.3"
+              ],
+              "text": "This button throws out noise, a cloud that confuses missiles that do not follow heat.",
+              "context": "Together with the decoys it is the ship's countermeasure set (things the ship throws out to fool missiles).",
+              "src": "g1"
+            },
+            {
+              "id": "hat",
+              "name": "Left hat (energy to engines, weapons, shields)",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.1"
+              ],
+              "text": "This hat sends the ship's stored energy where it is needed: up to the engines, left to the weapons, right to the shields. Down shares it evenly again.",
+              "context": "The capacitor bars on the HUD show the result. More energy to the guns means more shots; more to the shields means they recover faster.",
+              "src": "g1"
+            },
+            {
+              "id": "slider",
+              "name": "Left base slider (speed limiter)",
+              "type": "slider",
+              "match": [
+                "control:throttle.axis.slider.1"
+              ],
+              "text": "The slider on the left stick's foot sets the ship's top speed.",
+              "context": "A low limit makes the ship easier to control in a dogfight or near a station; the HUD shows the limit next to the speed.",
+              "src": "g1"
+            },
+            {
+              "id": "base-5",
+              "name": "Left base button 5 (VTOL mode)",
+              "type": "button",
+              "match": [
+                "label:VTOL",
+                "control:throttle.base.button.1"
+              ],
+              "text": "This button switches VTOL mode on or off on ships that have it. In VTOL mode the engines turn downwards to help the ship hover and land on a planet.",
+              "context": "It matters for heavier ships flying in a planet's gravity; ships without VTOL engines ignore it.",
+              "src": "g1"
+            },
+            {
+              "id": "base-6",
+              "name": "Left base button 6 (landing gear)",
+              "type": "button",
+              "match": [
+                "label:Landing Gear",
+                "control:throttle.base.button.2"
+              ],
+              "text": "A short press puts the landing gear (the ship's legs) out or in. Holding it starts the automatic landing.",
+              "context": "The automatic landing works over an assigned landing pad; the HUD shows whether the gear is down.",
+              "src": "g1"
+            },
+            {
+              "id": "base-8",
+              "name": "Left base button 8 (speed limiter on / off)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.4"
+              ],
+              "text": "This button switches the speed limiter on or off.",
+              "context": "With the limiter off the ship can fly as fast as its mode allows; the slider sets the limit while it is on.",
+              "src": "g1"
+            },
+            {
+              "id": "base-9",
+              "name": "Left base button 9 (combat speed)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.5"
+              ],
+              "text": "This button sets the speed limiter to the ship's best fighting speed in one press.",
+              "context": "At that speed the ship turns best, so pilots press it when a fight begins.",
+              "src": "g1"
+            },
+            {
+              "id": "base-10",
+              "name": "Left base button 10 (cruise control)",
+              "type": "button",
+              "match": [
+                "label:Cruise Control",
+                "control:throttle.base.button.6"
+              ],
+              "text": "This button switches cruise control on or off. With it on, the ship keeps flying forward at the set speed without the pilot holding the stick forward.",
+              "context": "It is useful for long flights inside a planet's air or between nearby places; the HUD shows when it is on.",
+              "src": "g1"
+            },
+            {
+              "id": "base-12",
+              "name": "Left base button 12 (front shield)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.8"
+              ],
+              "text": "This button makes the front of the shield stronger by moving shield strength there from the other sides.",
+              "context": "The pilot uses it when attacking head-on. Buttons 14, 15 and 16 do the same for the right, back and left; button 13 shares it evenly again.",
+              "src": "g1"
+            },
+            {
+              "id": "base-13",
+              "name": "Left base button 13 (reset shields)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.9"
+              ],
+              "text": "This button shares the shield strength evenly on all sides again.",
+              "context": "It undoes the front, back, left and right shield buttons; the shields page and the HUD show the faces.",
+              "src": "g1"
+            },
+            {
+              "id": "base-14",
+              "name": "Left base button 14 (right shield)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.10"
+              ],
+              "text": "This button makes the right side of the shield stronger.",
+              "context": "Useful when the enemy is on the ship's right, for example while flying in a circle around it.",
+              "src": "g1"
+            },
+            {
+              "id": "base-15",
+              "name": "Left base button 15 (back shield)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.11"
+              ],
+              "text": "This button makes the back of the shield stronger.",
+              "context": "Useful when running away from an attacker that is chasing the ship.",
+              "src": "g1"
+            },
+            {
+              "id": "base-16",
+              "name": "Left base button 16 (left shield)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.12"
+              ],
+              "text": "This button makes the left side of the shield stronger.",
+              "context": "Useful when the enemy is on the ship's left side.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

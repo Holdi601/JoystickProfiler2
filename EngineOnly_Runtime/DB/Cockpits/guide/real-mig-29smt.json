@@ -1,0 +1,165 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mig-29smt",
+  "title": "MiG-29SMT Fulcrum (9.19)",
+  "inherits": "dcs-mig-29a",
+  "variants": [
+    "mig-29smt"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mikoyan MiG-29 (Wikipedia), SMT / K / M",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mikoyan_MiG-29"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The MiG-29SMT is an upgraded MiG-29 with a glass cockpit: two colour multifunction screens replace the round radar screen and many dials, a keypad sits under the HUD, and a bigger fuel tank behind the cockpit and an in-flight refuelling probe give it more range. The stick and the two throttle grips are those of the 9.12 MiG-29A, so this guide follows the DCS MiG-29A cockpit and adds the SMT's new front panel. The consoles are taken from the 9.12; SMT changes there and new grip functions are not public.",
+  "areas": [
+    {
+      "id": "glareshield",
+      "where": "glareshield",
+      "name": "HUD, head-down display and mirrors",
+      "panels": [
+        {
+          "id": "smt-hud",
+          "name": "HUD (ILS-31) and up-front data entry panel",
+          "src": "w1",
+          "text": "The head-up display and the keypad under it. The SMT adds a data entry panel here, so the pilot can type without looking down at the consoles.",
+          "context": "Together with the two colour screens it is the core of the SMT's new glass cockpit.",
+          "controls": [
+            {
+              "id": "smt-hud-display",
+              "name": "Head-up display (ILS-31)",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks.",
+              "context": "In a fight the pilot keeps his eyes here; it also shows where the radar or the helmet sight has locked a target.",
+              "src": "w1"
+            },
+            {
+              "id": "smt-ufcp",
+              "name": "Up-front data entry panel",
+              "type": "keypad",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A keypad below the HUD where the pilot types numbers, such as navigation points and radio settings.",
+              "context": "Its exact keys are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "smt-hud-control",
+              "name": "HUD control panel",
+              "type": "other",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "A small panel with the settings of the head-up display, such as brightness and modes.",
+              "context": "The pilot sets it before take-off and adjusts the brightness for day or night."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "front-center",
+      "where": "front-center",
+      "name": "Flight instruments (front panel, centre)",
+      "panels": [
+        {
+          "id": "smt-mfd",
+          "name": "Two colour MFDs (MFI-10) and standby instruments",
+          "src": "w1",
+          "text": "Two colour multifunction screens take the place of the 9.12's radar screen and many of its dials. Small backup instruments stay for emergencies.",
+          "context": "The SMT's pages for radar, navigation, weapons and systems all appear on these two screens.",
+          "controls": [
+            {
+              "id": "smt-left-mfd",
+              "name": "Left MFD (MFI-10)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The left colour screen. It can show the radar picture, the map, the weapons or the aircraft's systems.",
+              "context": "The pilot picks the page with the keys around the screen.",
+              "src": "w1"
+            },
+            {
+              "id": "smt-right-mfd",
+              "name": "Right MFD (MFI-10)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The right colour screen. It works like the left one, so the pilot can keep two different pages in view at once, for example the radar on one and the map on the other.",
+              "context": "Which page is shown where is the pilot's choice.",
+              "src": "w1"
+            },
+            {
+              "id": "smt-mfd-keys",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Buttons around the edges of the two screens. Each one picks the word printed next to it on the screen, so the same key does different things on different pages.",
+              "context": "The page structure of the SMT is not public, so JoyPro does not list the single keys."
+            },
+            {
+              "id": "smt-standby-adi",
+              "name": "Standby attitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "A small backup instrument that shows whether the nose is up or down and the wings are level.",
+              "context": "The pilot uses it if both screens fail."
+            },
+            {
+              "id": "smt-standby-air",
+              "name": "Standby airspeed and altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "Small backup dials for speed and height that work without the screens.",
+              "context": "They are the pilot's reference when the main displays are lost."
+            },
+            {
+              "id": "smt-engine-fuel",
+              "name": "Engine and fuel indicators",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "Indicators for the two RD-33 engines and for the fuel left on board.",
+              "context": "The SMT carries more fuel in a larger tank behind the cockpit, so the fuel reading matters on long flights."
+            },
+            {
+              "id": "smt-warning",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "A board of labelled lights or messages, each saying what is wrong.",
+              "context": "When something fails the pilot looks here first to see which system is affected."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

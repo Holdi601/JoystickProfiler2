@@ -5,20 +5,26 @@
         Title="JoyPro2"
         Icon="/Assets/joypro2_gui.ico"
         Width="520"
+        MinWidth="360"
+        MinHeight="200"
         SizeToContent="Height"
-        CanResize="False"
+        CanResize="True"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner">
-    <!-- A question before an action that changes game files or the profile (MainWindowViewModel.ConfirmAsync). -->
-    <Grid RowDefinitions="Auto,Auto" Margin="18" RowSpacing="16">
-        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
-            <PathIcon x:Name="QuestionIcon" Width="36" Height="36" VerticalAlignment="Top" Data="{StaticResource Icon.Info}" Classes="info" />
-            <StackPanel Grid.Column="1" Spacing="8">
-                <TextBlock x:Name="TitleText" FontSize="18" FontWeight="Bold" TextWrapping="Wrap" />
-                <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+    <!-- A question before an action that changes game files or the profile (MainWindowViewModel.ConfirmAsync). A long
+         message (the support file's list) scrolls; the buttons below always stay in view, and WindowFit keeps the window
+         inside the screen's working area at any scaling. -->
+    <Grid x:Name="ConfirmRoot" RowDefinitions="*,Auto" Margin="18" RowSpacing="16">
+        <ScrollViewer x:Name="MessageScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                <PathIcon x:Name="QuestionIcon" Width="36" Height="36" VerticalAlignment="Top" Data="{StaticResource Icon.Info}" Classes="info" />
+                <StackPanel Grid.Column="1" Spacing="8">
+                    <TextBlock x:Name="TitleText" FontSize="{DynamicResource JP.FontSize.18}" FontWeight="Bold" TextWrapping="Wrap" />
+                    <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+        <Grid x:Name="ConfirmFooter" Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
         <CheckBox x:Name="DontAskAgainBox" Content="{l:T 'Do not ask again'}" IsVisible="False" VerticalAlignment="Center"
                   ToolTip.Tip="{l:T 'JoyPro does this without asking from now on. Settings > Confirmations asks again.'}" />
         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">

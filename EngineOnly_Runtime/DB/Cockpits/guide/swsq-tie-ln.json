@@ -1,0 +1,112 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "swsq-tie-ln",
+  "title": "TIE/ln fighter (Star Wars: Squadrons)",
+  "inherits": "game-star-wars-squadrons",
+  "variants": [
+    "swsq-tie-ln"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "TIE fighter (Wookieepedia)",
+      "kind": "reference",
+      "url": "https://starwars.fandom.com/wiki/TIE_fighter"
+    },
+    {
+      "id": "q1",
+      "title": "STAR WARS: Squadrons PC text manual (EA accessibility resources)",
+      "kind": "reference",
+      "url": "https://www.ea.com/able/resources/star-wars/star-wars-squadrons/pc/text-manual"
+    }
+  ],
+  "intro": "The TIE fighter in Star Wars: Squadrons is the Empire's standard fighter. It has no shield focus; button 7 does power conversion instead, moving power between lasers and engines.",
+  "areas": [
+    {
+      "id": "instruments",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "TIE/ln fighter: class and loadout",
+          "db": "ship",
+          "src": "w1",
+          "text": "This lists the TIE fighter's class and its parts as the hangar shows them.",
+          "context": "All other controls work as in every Squadrons ship; the parts (components) can be changed in the hangar before a battle.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The TIE fighter has a single-seat cockpit: one pilot and no crew.",
+              "context": "The pilot flies alone and does every job: flying, shooting, power and team messages.",
+              "src": "w1"
+            },
+            {
+              "id": "class",
+              "name": "Class: fighter (Imperial)",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The TIE fighter is the Empire's all-round fighter.",
+              "context": "The class decides the ship's role in a battle and which components the hangar offers for it.",
+              "src": "w1"
+            },
+            {
+              "id": "lasers",
+              "name": "Laser cannons (twin, under the cockpit)",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "Two laser cannons under the cockpit fire as the primary weapon.",
+              "context": "They fire with the trigger; more weapon power on the hat lets them fire longer.",
+              "src": "w1"
+            },
+            {
+              "id": "aux",
+              "name": "Auxiliaries (left and right)",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The TIE fighter carries two auxiliary components: the left one on button 3, the right one on button 4.",
+              "context": "Head buttons 3 and 4 on the stick use them; the auxiliary status display shows their cooldown.",
+              "src": "w1"
+            },
+            {
+              "id": "cm",
+              "name": "Countermeasures",
+              "type": "other",
+              "match": [
+                "item:ship:5"
+              ],
+              "text": "The TIE fighter's countermeasure component sits on head button 6 of the stick.",
+              "context": "Head button 6 fires it; it is the answer to a missile warning.",
+              "src": "w1"
+            },
+            {
+              "id": "button-7",
+              "name": "Button 7: power conversion",
+              "type": "other",
+              "match": [
+                "item:ship:6"
+              ],
+              "text": "On this Imperial ship base button 7 is power conversion: it moves power between the lasers and the engines.",
+              "context": "Imperial ships have no shield focus; power conversion gives them speed or firepower when needed.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

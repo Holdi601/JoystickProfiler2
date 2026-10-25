@@ -22,6 +22,7 @@ public sealed partial class MainWindowViewModel
         ("startup", N("Startup"), "last profile open start autosave history versions", N("Startup")),
         ("pages", N("Pages in the bottom bar"), "pages tabs navigation bottom bar menu hide show order reorder move drag", N("Pages")),
         ("language", N("Language"), "language translation locale english deutsch windows", N("Language")),
+        ("appearance", N("Appearance"), "theme colours colors dark light custom own font fonts text size bigger smaller scale zoom contrast editor import export share accessibility", N("Appearance")),
         ("tray", N("Run in the background (system tray)"), "tray windows autostart sign in close to tray helper watcher", N("System tray")),
         ("confirmations", N("Confirmations"), "ask confirm question before delete remove warning dialog", N("Confirmations")),
         ("about", N("About JoyPro and updates"), "version build commit date update check release github download install skip license about", N("About and updates")),
@@ -261,6 +262,9 @@ public sealed partial class MainWindowViewModel
         if (!item.MatchesSearch)
             SettingsSearchText = string.Empty;
         bool open = !item.IsContentVisible;
+        // Opening scrolls to the section: Back (header, Alt+Left) returns to where the page was.
+        if (open)
+            RememberPlace();
         if (!open && item.OpenedBySearch)
             SettingsSearchText = string.Empty;
         item.IsExpanded = open;
@@ -271,6 +275,7 @@ public sealed partial class MainWindowViewModel
     // A double click on a tab: only this section open, and the page jumps to it.
     public void ShowOnlySettingsSection(SettingsSectionItem item)
     {
+        RememberPlace();
         SettingsSearchText = string.Empty;
         foreach (SettingsSectionItem other in SettingsSections)
             other.IsExpanded = ReferenceEquals(other, item);
@@ -287,6 +292,7 @@ public sealed partial class MainWindowViewModel
         SettingsSectionItem? item = target as SettingsSectionItem ?? (target is string id ? FindSettingsSection(id) : null);
         if (item == null)
             return;
+        RememberPlace();
         if (!item.MatchesSearch)
             SettingsSearchText = string.Empty;
         item.IsExpanded = true;

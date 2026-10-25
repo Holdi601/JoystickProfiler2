@@ -1,0 +1,235 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-blue-thunder",
+  "title": "Blue Thunder (film)",
+  "variants": [
+    "blue-thunder-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Blue Thunder (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Blue_Thunder"
+    }
+  ],
+  "intro": "Blue Thunder is the fictional armoured surveillance helicopter of the film Blue Thunder (1983). It has a 20 mm cannon that follows the pilot's helmet, a near-silent whisper mode and a turbine boost. The pilot sits in front, and the observer sits behind at the cameras, recorders and long-range microphones.",
+  "areas": [
+    {
+      "id": "helmet",
+      "where": "glareshield",
+      "name": "Helmet sight",
+      "text": "The pilot's helmet aims the chin turret.",
+      "panels": [
+        {
+          "id": "helmet-sight",
+          "name": "Helmet sight",
+          "db": "helmet-sight",
+          "src": "s1",
+          "text": "The pilot's helmet is linked to the gun turret under the nose.",
+          "context": "Wherever the pilot looks, the cannon points.",
+          "controls": [
+            {
+              "id": "sight",
+              "name": "Helmet sight",
+              "type": "other",
+              "match": [
+                "item:helmet-sight:1"
+              ],
+              "text": "A sight on the pilot's helmet. The 20 mm turret under the nose follows the pilot's head.",
+              "context": "The pilot aims the cannon just by looking at the target.",
+              "src": "s1"
+            },
+            {
+              "id": "turret",
+              "name": "Chin turret",
+              "type": "other",
+              "match": [
+                "item:helmet-sight:2"
+              ],
+              "text": "A 20 mm cannon in a turret under the helicopter's nose.",
+              "context": "It is aimed by the helmet sight and fired with the trigger on the cyclic.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Flight displays in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s1",
+          "text": "The flight displays and the controls for whisper mode and turbine boost.",
+          "context": "These two special modes make the helicopter quiet or extra fast.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Flight displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Screens show the flight data to the Blue Thunder pilot.",
+              "context": "The pilot watches them while flying low over the city.",
+              "src": "s1"
+            },
+            {
+              "id": "whisper",
+              "name": "Whisper mode",
+              "type": "switch2",
+              "match": [
+                "item:instrument-panel:2",
+                "control:panel.switch.whisper"
+              ],
+              "positions": [
+                {
+                  "name": "WHISPER",
+                  "text": "Whisper mode: the helicopter flies almost silently."
+                },
+                {
+                  "name": "NORMAL",
+                  "text": "Normal mode: the helicopter makes its usual noise."
+                }
+              ],
+              "text": "This control switches whisper mode on, which makes the helicopter almost silent.",
+              "context": "It lets the crew watch and listen without being heard.",
+              "src": "s1"
+            },
+            {
+              "id": "boost",
+              "name": "Turbine boost",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3",
+                "control:panel.switch.turbine_boost"
+              ],
+              "text": "This control gives the engines a boost for extra speed.",
+              "context": "It helps in a chase, for example to escape other aircraft.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "surveillance",
+      "where": "rear",
+      "name": "Surveillance station",
+      "text": "The observer's station behind the pilot.",
+      "panels": [
+        {
+          "id": "surveillance",
+          "name": "Surveillance station",
+          "db": "surveillance",
+          "src": "s1",
+          "text": "The observer's equipment for watching, listening and recording.",
+          "context": "Blue Thunder is built to watch people from the air.",
+          "controls": [
+            {
+              "id": "cameras",
+              "name": "Cameras",
+              "type": "other",
+              "match": [
+                "item:surveillance:1"
+              ],
+              "text": "Day cameras and infrared cameras, which see heat and work in the dark.",
+              "context": "The observer films what the helicopter watches.",
+              "src": "s1"
+            },
+            {
+              "id": "audio",
+              "name": "Audio pickups",
+              "type": "other",
+              "match": [
+                "item:surveillance:2"
+              ],
+              "text": "Long-range microphones that can hear people far away.",
+              "context": "Together with whisper mode they let the crew listen without being noticed.",
+              "src": "s1"
+            },
+            {
+              "id": "recorders",
+              "name": "Recorders and data link",
+              "type": "other",
+              "match": [
+                "item:surveillance:3"
+              ],
+              "text": "Recorders and a computer link to databases.",
+              "context": "The crew records what they see and hear and looks up information while flying.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "s1",
+          "text": "The cyclic stick in front of the Blue Thunder pilot.",
+          "context": "It tilts the helicopter and fires the cannon.",
+          "controls": [
+            {
+              "id": "cyclic",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the cyclic forward tips the helicopter forward so it flies forward; moving it sideways makes it fly sideways.",
+              "context": "It tilts the rotor in the direction the pilot wants to fly.",
+              "src": "s1"
+            },
+            {
+              "id": "trigger",
+              "name": "Cannon trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A trigger on the cyclic grip fires the 20 mm cannon.",
+              "context": "The cannon points wherever the pilot looks through the helmet sight.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "src": "s1",
+          "text": "The collective lever at the Blue Thunder pilot's left hand.",
+          "context": "It makes the helicopter climb or sink.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling the collective up makes the helicopter climb; pushing it down makes it sink.",
+              "context": "It changes how strongly the rotor blades bite the air.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

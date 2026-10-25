@@ -511,7 +511,7 @@ public sealed class LayoutWorkspaceTests
         await vm.ShowWorkspaceDeviceAsync(Stick);
         WorkspacePictureChoice file = Assert.Single(vm.WorkspacePictures, p => p.IsLayoutFile);
         Assert.Same(file, vm.WorkspacePictures[0]);
-        Assert.Contains("VKB_GunfighterMK3", file.Title, StringComparison.Ordinal);
+        Assert.Contains("VKB GunfighterMK3", file.Title, StringComparison.Ordinal);
 
         vm.SelectedWorkspacePicture = file;
         Assert.True(vm.LayoutShowsLayoutFile);

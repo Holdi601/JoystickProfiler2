@@ -67,7 +67,7 @@ public sealed class DcsActionTitleTests
     [Fact]
     public void RealDcsDb_ResolvesTheReportedIds_WhenPresent()
     {
-        string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro", "GameData", "DB", "DCS");
+        string dir = Path.Combine(JoyPro.Gui.Tests.QualityGate.Gate.UserGameData(), "DB", "DCS");
         string spitfire = Path.Combine(dir, "SpitfireLFMkIX.html");
         string harrier = Path.Combine(dir, "AV8BNA.html");
         if (!File.Exists(spitfire) || !File.Exists(harrier))

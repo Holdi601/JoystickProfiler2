@@ -15,9 +15,12 @@
         WindowStartupLocation="CenterOwner">
     <!-- Replace a device (MainWindowViewModel.DeviceReplace.cs, engine devices replace): old device -> new device, the
          preview of every input, changeable per input, and how to merge when the new device has binds already. -->
-    <Grid x:Name="ReplaceRoot" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto,Auto" Margin="16" RowSpacing="10">
+    <!-- Everything above the buttons scrolls as one; the buttons always stay in view (a small screen at 150 %). -->
+    <Grid x:Name="ReplaceRoot" RowDefinitions="*,Auto" Margin="16" RowSpacing="10">
+        <ScrollViewer x:Name="ReplaceScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="10">
         <StackPanel Spacing="4">
-            <TextBlock Text="{l:T 'Replace a device'}" FontSize="22" FontWeight="Bold" />
+            <TextBlock Text="{l:T 'Replace a device'}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" />
             <TextBlock TextWrapping="Wrap" Opacity="0.85"
                        Text="{l:T 'Moves every bind and modifier of one device to another, input by input: a new stick, or your old profile on a new PC. The same product keeps its input ids; another device is mapped by its parts (trigger to trigger, hat to hat, roll to roll). Change any input below before you move them; one Undo takes it all back.'}" />
         </StackPanel>
@@ -44,23 +47,22 @@
         <Border Grid.Row="3" Classes="card" Padding="10,8">
             <StackPanel Spacing="3">
                 <TextBlock Text="{Binding ReplaceSummary}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding ReplaceModels}" TextWrapping="Wrap" FontSize="12" Opacity="0.85" IsVisible="{Binding ReplaceHasPreview}" />
-                <TextBlock Text="{Binding ReplaceCounts}" TextWrapping="Wrap" FontSize="12" IsVisible="{Binding ReplaceHasPreview}" />
-                <TextBlock Text="{Binding ReplaceUnmappedText}" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasReplaceUnmapped}" />
-                <TextBlock Text="{Binding ReplaceWarnings}" TextWrapping="Wrap" FontSize="12" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasReplaceWarnings}" />
-                <TextBlock Text="{l:T 'Working out the inputs...'}" FontSize="12" Opacity="0.7" IsVisible="{Binding IsReplacePreviewing}" />
+                <TextBlock Text="{Binding ReplaceModels}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.85" IsVisible="{Binding ReplaceHasPreview}" />
+                <TextBlock Text="{Binding ReplaceCounts}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" IsVisible="{Binding ReplaceHasPreview}" />
+                <TextBlock Text="{Binding ReplaceUnmappedText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasReplaceUnmapped}" />
+                <TextBlock Text="{Binding ReplaceWarnings}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasReplaceWarnings}" />
+                <TextBlock Text="{l:T 'Working out the inputs...'}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" IsVisible="{Binding IsReplacePreviewing}" />
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="4" RowDefinitions="Auto,*" IsVisible="{Binding ReplaceHasPreview}">
+        <Grid Grid.Row="4" RowDefinitions="Auto,Auto" IsVisible="{Binding ReplaceHasPreview}">
             <Grid ColumnDefinitions="2*,24,2*,2*,2*" ColumnSpacing="8" Margin="8,0,8,4">
-                <TextBlock Text="{l:T 'Input of the old device'}" FontWeight="SemiBold" FontSize="12" />
-                <TextBlock Grid.Column="2" Text="{l:T 'Goes to'}" FontWeight="SemiBold" FontSize="12" />
-                <TextBlock Grid.Column="3" Text="{l:T 'Why'}" FontWeight="SemiBold" FontSize="12" />
-                <TextBlock Grid.Column="4" Text="{l:T 'Used by'}" FontWeight="SemiBold" FontSize="12" />
+                <TextBlock Text="{l:T 'Input of the old device'}" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.12}" />
+                <TextBlock Grid.Column="2" Text="{l:T 'Goes to'}" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.12}" />
+                <TextBlock Grid.Column="3" Text="{l:T 'Why'}" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.12}" />
+                <TextBlock Grid.Column="4" Text="{l:T 'Used by'}" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.12}" />
             </Grid>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl ItemsSource="{Binding ReplaceRows}">
+                <ItemsControl Grid.Row="1" ItemsSource="{Binding ReplaceRows}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:DeviceReplaceRow">
                             <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="0,0,0,1" Padding="8,5">
@@ -68,23 +70,22 @@
                                     <TextBlock Text="{Binding OldText}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip.Tip="{Binding OldText}" />
                                     <TextBlock Grid.Column="1" Text="→" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.7" />
                                     <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
-                                        <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding ChosenInput}" HorizontalAlignment="Stretch" FontSize="12"
+                                        <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding ChosenInput}" HorizontalAlignment="Stretch" FontSize="{DynamicResource JP.FontSize.12}"
                                                   ToolTip.Tip="{l:T 'Pick another input of the new device, or leave this one on the old device'}" />
-                                        <TextBlock Text="{Binding NewPartText}" FontSize="11" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding IsMapped}" />
+                                        <TextBlock Text="{Binding NewPartText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding IsMapped}" />
                                     </StackPanel>
                                     <StackPanel Grid.Column="3" Spacing="2" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsPlainMethod}" />
-                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsUnmapped}" Opacity="0.6" FontStyle="Italic" />
-                                        <TextBlock Text="{Binding MethodText}" FontSize="12" TextWrapping="Wrap" IsVisible="{Binding IsGuess}" Foreground="{DynamicResource JP.WarnTextBrush}" />
-                                        <TextBlock Text="{Binding OverlapText}" FontSize="11" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasOverlap}" />
+                                        <TextBlock Text="{Binding MethodText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" IsVisible="{Binding IsPlainMethod}" />
+                                        <TextBlock Text="{Binding MethodText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" IsVisible="{Binding IsUnmapped}" Opacity="0.6" FontStyle="Italic" />
+                                        <TextBlock Text="{Binding MethodText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" IsVisible="{Binding IsGuess}" Foreground="{DynamicResource JP.WarnTextBrush}" />
+                                        <TextBlock Text="{Binding OverlapText}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}" IsVisible="{Binding HasOverlap}" />
                                     </StackPanel>
-                                    <TextBlock Grid.Column="4" Text="{Binding UsedByText}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip.Tip="{Binding UsedByTip}" />
+                                    <TextBlock Grid.Column="4" Text="{Binding UsedByText}" FontSize="{DynamicResource JP.FontSize.12}" TextWrapping="Wrap" VerticalAlignment="Center" ToolTip.Tip="{Binding UsedByTip}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-            </ScrollViewer>
         </Grid>
 
         <Border Grid.Row="5" Classes="callout warn" IsVisible="{Binding ReplaceNeedsMerge}">
@@ -101,7 +102,10 @@
             </StackPanel>
         </Border>
 
-        <Grid Grid.Row="6" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+        </Grid>
+        </ScrollViewer>
+
+        <Grid x:Name="ReplaceFooter" Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
             <TextBlock Text="{Binding ReplaceStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="{DynamicResource JP.WarnTextBrush}" />
             <Button Grid.Column="1" Content="{l:T 'Cancel'}" Click="CancelClicked" />
             <Button Grid.Column="2" Content="{l:T 'Move binds'}" Classes="accent" IsEnabled="{Binding CanApplyReplace}" Click="ApplyClicked"

@@ -1,0 +1,482 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-ah-1w",
+  "title": "AH-1W SuperCobra (pilot)",
+  "inherits": "real-ah-1g",
+  "variants": [
+    "ah-1w"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w3",
+      "title": "Bell AH-1 SuperCobra (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Bell_AH-1_SuperCobra"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS UH-1H Flight Manual EN (Huey grip, collective switch box and reflex sight)",
+      "kind": "manual",
+      "file": "Mods/aircraft/Uh-1H/Doc/DCS UH-1H Flight Manual_EN.pdf"
+    }
+  ],
+  "intro": "The AH-1W SuperCobra is the twin-engine Cobra of the US Marine Corps (from 1986), with two T700 engines, a 20 mm cannon in the chin turret and guided missiles such as the TOW and Hellfire. The gunner sits in front, the pilot behind. With two engines the twist-grip throttle, idle release and starter of the single-engine Cobras are replaced by power levers on the left console. JoyPro takes the remaining grip switches from the AH-1G, so this guide builds on the AH-1G guide; its panels are described from public sources.",
+  "remove": [
+    "instrument-panel",
+    "armament",
+    "collective/throttle",
+    "collective/idle-release",
+    "collective/starter"
+  ],
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The stick between the pilot's knees with the force trim button, the radio trigger and the two weapon switches.",
+          "context": "The Cobra uses the Huey's flight controls, so its grip works like the UH-1H's, with weapon switches added.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick between the pilot's knees. It tilts the rotor: forward makes the helicopter fly forward, back slows it down, left and right move it sideways.",
+              "context": "It is the main flight control together with the collective and the pedals; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "force-trim",
+              "name": "Force trim switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.force_trim"
+              ],
+              "text": "Force trim is a set of springs and magnetic brakes that holds the cyclic where it was put. While this button is held, force trim is off and the stick moves freely; when it is let go, the stick is held at the new position.",
+              "context": "This is how the pilot trims a helicopter of this kind: hold the button, move the stick to where it needs to be, release.",
+              "src": "m1"
+            },
+            {
+              "id": "ics",
+              "name": "Radio / ICS switch",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "A trigger with two steps on the front of the grip. The first step talks on the intercom (the phone line between the crew members); pulled all the way it transmits on the selected radio.",
+              "context": "Like the button of a walkie-talkie: the voice goes out only while it is held. The intercom panel decides which radio the second step uses.",
+              "src": "m1"
+            },
+            {
+              "id": "stores-fire",
+              "name": "Wing stores fire button",
+              "type": "button",
+              "match": [
+                "control:stick.button.fire"
+              ],
+              "text": "Pressing this button under the thumb fires the selected rockets from the stub wings, as many pairs as the rocket pair selector says.",
+              "context": "The pilot aims by pointing the helicopter with the reflex sight; the master arm must be on ARM."
+            },
+            {
+              "id": "turret-trigger",
+              "name": "Turret fire trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The lower trigger on the front of the grip fires the chin turret when it is stowed straight ahead. In the SuperCobra the turret holds a 20 mm three-barrel cannon.",
+              "context": "Normally the gunner in front aims the turret with his sight; stowed, it fires where the pilot points."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "text": "The lever at the left of the seat with the governor and landing light switches on its head.",
+          "context": "With two engines the SuperCobra has no twist-grip throttle; the engines are set with the power levers on the left console.",
+          "controls": [
+            {
+              "id": "gov",
+              "name": "Governor RPM switch",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.gov_rpm"
+              ],
+              "positions": [
+                {
+                  "name": "INCR",
+                  "text": "Held here, the governed speed rises a little."
+                },
+                {
+                  "name": "DECR",
+                  "text": "Held here, the governed speed drops a little."
+                }
+              ],
+              "text": "A small switch that raises (INCR) or lowers (DECR) the engine and rotor speed the governor holds. The governor keeps the rotor at the right speed by itself. The switch springs back to the middle.",
+              "context": "The pilot uses it after the start to set the normal flying speed of the rotor, and to correct it in flight.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "Reflex sight",
+      "text": "The pilot's aiming sight above the instrument panel.",
+      "panels": [
+        {
+          "id": "reflex-sight",
+          "name": "Pilot reflex sight",
+          "text": "The pilot's gun sight above the instrument panel: a glass plate that shows a lit aiming mark (reticle) seemingly far out in front.",
+          "context": "The pilot aims the rockets and the stowed turret with it by pointing the helicopter. JoyPro describes its knobs after the UH-1H's sight.",
+          "controls": [
+            {
+              "id": "lamp",
+              "name": "Reticle lamp switch",
+              "type": "switch",
+              "match": [
+                "item:pilot-reflex-sight:1"
+              ],
+              "text": "This switch lights the aiming mark. Forward or aft of the centre switches the lamp on; the centre is off.",
+              "context": "The two lit positions let the pilot use the second lamp if one burns out. The sight is useless without its light.",
+              "src": "m1"
+            },
+            {
+              "id": "intensity",
+              "name": "Reticle intensity control",
+              "type": "knob",
+              "match": [
+                "item:pilot-reflex-sight:2"
+              ],
+              "text": "This knob makes the aiming mark brighter or dimmer.",
+              "context": "The pilot sets it so the mark is easy to see against the sky but does not dazzle at night.",
+              "src": "m1"
+            },
+            {
+              "id": "elevation",
+              "name": "Reticle elevation control",
+              "type": "knob",
+              "match": [
+                "item:pilot-reflex-sight:3"
+              ],
+              "text": "This knob moves the aiming mark up or down (its depression below the straight-ahead line).",
+              "context": "Rockets and bullets fall on their way to the target; moving the mark down lets the pilot aim for a longer distance.",
+              "src": "m1"
+            },
+            {
+              "id": "lock",
+              "name": "Locking lever",
+              "type": "lever",
+              "match": [
+                "item:pilot-reflex-sight:4"
+              ],
+              "text": "Pressing this lever unlocks the sight so it can swing down into its place in front of the pilot.",
+              "context": "When not needed, the sight stays folded up out of the way, so it does not block the view.",
+              "src": "m1"
+            },
+            {
+              "id": "placard",
+              "name": "Reticle elevation placard",
+              "type": "indicator",
+              "match": [
+                "item:pilot-reflex-sight:5"
+              ],
+              "text": "A printed scale next to the elevation knob that shows how far the aiming mark has been moved.",
+              "context": "It has no switch; the pilot reads the setting from it.",
+              "src": "m1"
+            },
+            {
+              "id": "inclinometer",
+              "name": "Inclinometer (bank/slip indicator)",
+              "type": "gauge",
+              "match": [
+                "item:pilot-reflex-sight:6"
+              ],
+              "text": "A small ball in a curved tube on the sight that shows whether the helicopter leans or slips sideways.",
+              "context": "Rockets fired while the helicopter slips fly off to the side, so the pilot keeps the ball centred when aiming.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Flight instruments and the gauges of the two engines.",
+      "panels": [
+        {
+          "id": "instrument-panel-w",
+          "name": "Pilot instrument panel (twin engine)",
+          "text": "The pilot's flight instruments and the gauges of the two T700 engines.",
+          "context": "With two engines, many gauges have two needles, one for each engine, so the pilot can compare them.",
+          "controls": [
+            {
+              "id": "mwc",
+              "name": "Master caution / warning lights",
+              "type": "light",
+              "match": [
+                "item:pilot-instrument-panel:1"
+              ],
+              "text": "Labelled warning lights for fire, rotor speed and the master caution. Each one comes on to say what is wrong.",
+              "context": "A warning light needs action at once; the pilot reads the label and follows the emergency steps for it."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:2"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in knots.",
+              "context": "Below a certain speed a helicopter can hover and fly sideways, so the needle near zero is normal; the pilot watches it in the climb-out and when slowing down to land."
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:3"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the helicopter leans to one side, like a picture of the horizon (artificial horizon).",
+              "context": "It is the main instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:4"
+              ],
+              "text": "The height gauge. It shows the height above sea level; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a cruising height and to follow the heights given by the tower."
+            },
+            {
+              "id": "radalt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:5"
+              ],
+              "text": "This instrument measures the height above the ground right below the helicopter with a radio beam, not the height above sea level.",
+              "context": "It matters most in the hover, in low flight and in the last part of the landing, when the ground is close."
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:6"
+              ],
+              "text": "This dial shows whether the helicopter climbs or sinks, and how fast.",
+              "context": "The pilot uses it to keep a steady, gentle descent when coming in to land and to hold level flight."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:7"
+              ],
+              "text": "A compass picture that shows the heading (where the nose points) and the course to a navigation point or radio beacon.",
+              "context": "The pilot follows it to fly a planned route and to find the way to the landing site."
+            },
+            {
+              "id": "tach",
+              "name": "Triple tachometer",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:8"
+              ],
+              "text": "Three needles on one dial show how fast the main rotor and the power turbines of both engines turn (RPM).",
+              "context": "In normal flight all three sit together; a needle that drops away shows which engine is losing power."
+            },
+            {
+              "id": "torque",
+              "name": "Dual torquemeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:9"
+              ],
+              "text": "This gauge shows the torque of each of the two engines: how hard it twists the rotor shaft. It is the best measure of how much power is used.",
+              "context": "When the pilot raises the collective the torque rises; the pilot keeps it below the red limit, especially when heavy or in hot weather."
+            },
+            {
+              "id": "tgt-ng",
+              "name": "Dual TGT and NG indicators",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:10"
+              ],
+              "text": "Gauges that show, for each engine, the turbine gas temperature (how hot the gas in the turbine is) and the gas producer speed (how fast the compressor spins, in percent).",
+              "context": "The pilot watches them during the engine starts and whenever a lot of power is used."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:11"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks, in pounds.",
+              "context": "The pilot checks it before take-off and often in flight, to know when it is time to turn home."
+            },
+            {
+              "id": "clock",
+              "name": "Clock",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:12"
+              ],
+              "text": "The cockpit clock shows the time; most can also time a flight or a leg, like a stopwatch.",
+              "context": "The pilot uses it to time the legs of a route and to keep track of fuel and flying time."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The pilot's armament panel and the engine power levers.",
+      "panels": [
+        {
+          "id": "armament-w",
+          "name": "Pilot armament panel (AH-1W)",
+          "text": "The pilot's master arm, weapon selection and rocket settings.",
+          "context": "The SuperCobra carries guided missiles as well as rockets; the pilot chooses here what his trigger and fire button use.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch3",
+              "match": [
+                "item:armament-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The weapons have no power."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered, but nothing can fire."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The weapons can fire."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons (master arm): nothing fires while it is off.",
+              "context": "The pilot arms the weapons only when the helicopter is clear of friendly people and near the target, and makes them safe again before landing."
+            },
+            {
+              "id": "weapon-sel",
+              "name": "Pilot weapon selector",
+              "type": "selector",
+              "match": [
+                "item:armament-panel:2"
+              ],
+              "text": "This switch chooses which weapon the pilot uses: the 20 mm gun, the rockets or the missiles on the wings.",
+              "context": "The gunner in front can use the weapons too; the selector decides what the pilot's own switches fire. JoyPro's sources do not describe its single switches.",
+              "src": "w3"
+            },
+            {
+              "id": "rms",
+              "name": "Rocket management panel",
+              "type": "keypad",
+              "match": [
+                "item:armament-panel:3"
+              ],
+              "text": "A small panel to set the rocket type, the fuze (when the warhead goes off) and how many rockets leave with each press.",
+              "context": "It is set before the attack. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "jett",
+              "name": "Wing stores emergency jettison",
+              "type": "switch",
+              "match": [
+                "item:armament-panel:4"
+              ],
+              "text": "A guarded switch that drops the wing stores in an emergency (jettison), to make the helicopter lighter. A cover over it has to be lifted first.",
+              "context": "It is used when the helicopter has an engine problem and must lose weight at once."
+            }
+          ]
+        },
+        {
+          "id": "engine-power-levers",
+          "name": "Engine power levers",
+          "text": "The power levers, start switches and fire handles of the two T700 engines.",
+          "context": "With two turbine engines the Cobra no longer has the twist-grip throttle; each engine has its own lever.",
+          "controls": [
+            {
+              "id": "pcl",
+              "name": "Power control levers",
+              "type": "lever",
+              "match": [
+                "item:engine-power-levers:1",
+                "control:panel.lever.power"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Fuel to the engine is shut off."
+                },
+                {
+                  "name": "IDLE",
+                  "text": "The position for the start and for idling on the ground."
+                },
+                {
+                  "name": "FLY",
+                  "text": "The engine control keeps the rotor at flying speed."
+                }
+              ],
+              "text": "Two levers, one for each of the two T700 engines. They give each engine fuel and decide its power setting, from off through idle to the flying position.",
+              "context": "The pilot moves them one at a time during the engine start and both together to the flying position before take-off; in flight a computer then governs the engines.",
+              "src": "w3"
+            },
+            {
+              "id": "start",
+              "name": "Engine start switches",
+              "type": "switch",
+              "match": [
+                "item:engine-power-levers:2"
+              ],
+              "text": "Switches that start each engine: a starter spins the engine until it can run on its own fuel.",
+              "context": "The engines are started one after the other; the pilot watches the engine temperature and speed gauges while they come to life. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "fire-handles",
+              "name": "Fire T-handles",
+              "type": "handle",
+              "match": [
+                "item:engine-power-levers:3"
+              ],
+              "text": "One T-shaped handle per engine. Pulling it shuts that engine down and arms the fire extinguisher.",
+              "context": "A fire warning light tells the pilot which handle to pull; the bottle is then fired into that engine. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

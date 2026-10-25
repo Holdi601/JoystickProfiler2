@@ -1,0 +1,220 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-serenity",
+  "title": "Serenity (Firefly)",
+  "variants": [
+    "serenity-firefly-class"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Serenity (Firefly vessel) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Serenity_(Firefly_vessel)"
+    },
+    {
+      "id": "s2",
+      "title": "Firefly (TV series) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Firefly_(TV_series)"
+    },
+    {
+      "id": "s3",
+      "title": "Serenity (2005 film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Serenity_(2005_film)"
+    }
+  ],
+  "intro": "Serenity is the fictional Firefly-class transport of Captain Malcolm Reynolds in the series Firefly and the film Serenity, flown by the pilot Wash. Its small bridge at the nose mixes a ship's bridge and an aircraft cockpit: the pilot's station on the left, a second station on the right, and room for the whole crew to gather.",
+  "areas": [
+    {
+      "id": "windows",
+      "where": "glareshield",
+      "name": "Forward windows",
+      "text": "The wide windows of the bridge.",
+      "panels": [
+        {
+          "id": "windows",
+          "name": "Forward windows",
+          "db": "windows",
+          "src": "s1",
+          "text": "The wide windows at the front of the bridge.",
+          "context": "They give the pilot the view for landing and for flying through danger.",
+          "controls": [
+            {
+              "id": "windows",
+              "name": "Bridge windows",
+              "type": "other",
+              "match": [
+                "item:windows:1"
+              ],
+              "text": "Wide windows give a broad view forward from Serenity's bridge.",
+              "context": "The pilot looks out through them when landing on planets.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot",
+      "where": "front-left",
+      "name": "Pilot's console",
+      "text": "The crowded console at the pilot's station.",
+      "panels": [
+        {
+          "id": "pilot-console",
+          "name": "Pilot's console",
+          "db": "pilot-console",
+          "src": "s2",
+          "text": "A crowded console of screens and switches in front of the pilot.",
+          "context": "The pilot flies the ship and watches the systems from here.",
+          "controls": [
+            {
+              "id": "screens",
+              "name": "Screens",
+              "type": "display",
+              "match": [
+                "item:pilot-console:1"
+              ],
+              "text": "Screens show the navigation and the sensors.",
+              "context": "They help the pilot find the way and see other ships.",
+              "src": "s2"
+            },
+            {
+              "id": "switches",
+              "name": "Switch rows",
+              "type": "switch",
+              "match": [
+                "item:pilot-console:2"
+              ],
+              "text": "Rows of switches for the engines and the ship's systems.",
+              "context": "The series shows the pilot working them; each switch is not explained.",
+              "src": "s2"
+            },
+            {
+              "id": "dinosaurs",
+              "name": "Toy dinosaurs",
+              "type": "other",
+              "match": [
+                "item:pilot-console:3"
+              ],
+              "text": "Wash keeps toy dinosaurs on the console. They are decoration and do nothing for the ship.",
+              "context": "They show that the bridge is a lived-in place, part of the character of the series.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot",
+      "where": "front-right",
+      "name": "Co-pilot's console",
+      "text": "The second station on the right.",
+      "panels": [
+        {
+          "id": "copilot-console",
+          "name": "Co-pilot's console",
+          "db": "copilot-console",
+          "src": "s2",
+          "text": "The second station on the right side of the bridge.",
+          "context": "Another crew member can sit and help here.",
+          "controls": [
+            {
+              "id": "station",
+              "name": "Second station",
+              "type": "other",
+              "match": [
+                "item:copilot-console:1"
+              ],
+              "text": "The second station is used by the captain or another crew member.",
+              "context": "It lets a second person watch the systems or talk on the radio while the pilot flies.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead switches",
+      "text": "Switch panels above the pilot.",
+      "panels": [
+        {
+          "id": "overhead",
+          "name": "Overhead switches",
+          "db": "overhead",
+          "src": "s2",
+          "text": "Panels of switches above the pilot's head.",
+          "context": "They belong to the ship's systems.",
+          "controls": [
+            {
+              "id": "switches",
+              "name": "Overhead switches",
+              "type": "switch",
+              "match": [
+                "item:overhead:1"
+              ],
+              "text": "Switches for the ship's systems above the pilot's head.",
+              "context": "The pilot reaches up to them during flight; the series does not name each one.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Yoke and thrust controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "yoke",
+          "name": "Control yoke",
+          "src": "s2",
+          "text": "The control yoke at the pilot's station on the left.",
+          "context": "The pilot steers the ship with both hands.",
+          "controls": [
+            {
+              "id": "yoke",
+              "name": "Control yoke",
+              "type": "axis",
+              "match": [
+                "control:yoke.gimbal"
+              ],
+              "text": "Pushing the yoke forward or pulling it back tips the nose down or up; turning it rolls and banks the ship.",
+              "context": "It is held with both hands, like the yoke of an airliner.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Thrust controls",
+          "src": "s2",
+          "text": "The thrust levers on the pilot's console.",
+          "context": "They set how hard the engines push.",
+          "controls": [
+            {
+              "id": "thrust",
+              "name": "Thrust controls",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Levers on the console that set how hard the engines push.",
+              "context": "The catalog takes them as the engine thrust; the series does not show them in detail.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-35",
+  "title": "F-35A Lightning II (conventional take-off)",
+  "variants": [
+    "f-35a"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Lockheed Martin F-35 Lightning II (Wikipedia), cockpit and variants",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Lockheed_Martin_F-35_Lightning_II"
+    },
+    {
+      "id": "w2",
+      "title": "What is good and bad about the F-35 cockpit (Hush-Kit, pilot interview)",
+      "kind": "reference",
+      "url": "https://hushkit.net/2021/01/21/what-is-good-and-bad-about-the-f-35-cockpit/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The F-35 Lightning II is an American stealth fighter with one engine, shaped so that radars see it badly. Its cockpit has no head-up display: one wide touch screen fills the panel, and flight data and camera pictures appear in the pilot's helmet. The pilot flies with a side-stick on the right and a throttle on the left, and pilots say only about ten real switches remain. The A is the conventional version with an internal gun. The grip switch layout is not public, so only stick, trigger, release and throttle are listed.",
+  "areas": [
+    {
+      "id": "helmet",
+      "where": "helmet",
+      "name": "Helmet display",
+      "text": "The F-35 has no HUD: its symbols are in the helmet.",
+      "panels": [
+        {
+          "id": "helmet-mounted-display",
+          "name": "Helmet-mounted display",
+          "src": "w1",
+          "text": "The F-35 has no head-up display. Flight data, targets and aiming cues appear in the visor of the pilot's helmet, wherever he looks.",
+          "context": "The helmet also shows the pictures of cameras around the aircraft, so the pilot can 'see through' the floor and the sides.",
+          "controls": [
+            {
+              "id": "hmds",
+              "name": "Helmet display system (HMDS)",
+              "type": "display",
+              "match": [
+                "item:helmet-mounted-display:1"
+              ],
+              "text": "A display built into the helmet visor that shows flight data, targets and cues where the pilot looks (helmet-mounted display).",
+              "context": "It replaces the HUD; the pilot can aim weapons and sensors by turning his head.",
+              "src": "w1"
+            },
+            {
+              "id": "das",
+              "name": "DAS imagery",
+              "type": "display",
+              "match": [
+                "item:helmet-mounted-display:2"
+              ],
+              "text": "The picture of the distributed aperture system: six cameras around the aircraft whose images are joined and shown in the helmet.",
+              "context": "Looking down, the pilot sees the ground through the floor; at night the cameras work like night vision.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "display",
+      "where": "front-center",
+      "name": "Panoramic cockpit display",
+      "text": "One large touch screen across the panel.",
+      "panels": [
+        {
+          "id": "panoramic-cockpit-display",
+          "name": "Panoramic cockpit display",
+          "src": "w1",
+          "text": "One big touch screen of 20 by 8 inches, made of two halves, on which the pilot arranges windows (portals) as he likes.",
+          "context": "It shows the fused picture of all sensors; the pilot touches it to make choices.",
+          "controls": [
+            {
+              "id": "left-half",
+              "name": "Left display half",
+              "type": "screen",
+              "match": [
+                "item:panoramic-cockpit-display:1"
+              ],
+              "text": "The left half of the big touch screen. The pilot sets it up with windows for sensors, weapons (stores) and systems, and touches them to select.",
+              "context": "He can resize and move the windows as the mission needs.",
+              "src": "w1"
+            },
+            {
+              "id": "right-half",
+              "name": "Right display half",
+              "type": "screen",
+              "match": [
+                "item:panoramic-cockpit-display:2"
+              ],
+              "text": "The right half of the big touch screen, often used for the tactical situation and the sensors.",
+              "context": "Together the two halves replace the many screens and dials of older fighters.",
+              "src": "w1"
+            },
+            {
+              "id": "isfd",
+              "name": "Integrated standby flight display",
+              "type": "display",
+              "match": [
+                "item:panoramic-cockpit-display:3"
+              ],
+              "text": "Small backup instruments for attitude, speed and height. They keep working when the main screens or computers fail.",
+              "context": "It sits below the main screen and keeps working if the big screen fails."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hard-switches",
+      "where": "front-left",
+      "name": "Hard switches",
+      "text": "The few real switches left in the cockpit.",
+      "panels": [
+        {
+          "id": "few-hard-switches",
+          "name": "Few hard switches",
+          "src": "w2",
+          "text": "Pilots say the F-35 has only about ten real switches; everything else is done by touch, by the stick and throttle buttons or by voice.",
+          "context": "The remaining switches are the ones that must work even when the screens do not.",
+          "controls": [
+            {
+              "id": "gear",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:few-hard-switches:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            },
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch2",
+              "match": [
+                "item:few-hard-switches:2"
+              ],
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "The weapons can be released."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "Nothing can be released."
+                }
+              ],
+              "text": "The main safety switch for the weapons: nothing is released while it is at SAFE.",
+              "context": "The pilot arms only when needed and safes again before landing.",
+              "src": "w1"
+            },
+            {
+              "id": "jettison",
+              "name": "Emergency jettison button",
+              "type": "button",
+              "match": [
+                "item:few-hard-switches:3"
+              ],
+              "text": "This button drops the external stores (weapons and tanks under the wings) in an emergency.",
+              "context": "It makes the aircraft lighter at once.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Side-stick and throttle",
+      "text": "The two grips (active inceptors).",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Side-stick",
+          "text": "A side-stick on the right console instead of a centre stick, with the trigger and the weapon release button.",
+          "context": "Its HOTAS switch layout is not public; only the stick, trigger and release are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Side-stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands. It is an 'active inceptor': motors give it feel and can move it.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the internal GAU-22/A gun.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches bombs or a missile.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "text": "The single throttle on the left console.",
+          "context": "Its switches are not public; only the thrust function is listed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (active inceptor)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "The lever that makes the F135 engine stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

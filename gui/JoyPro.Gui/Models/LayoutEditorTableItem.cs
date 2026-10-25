@@ -40,13 +40,49 @@ public sealed partial class LayoutEditorTableItem : ObservableObject
     [ObservableProperty]
     private bool isFlashing;
 
-    public string DisplayBorder => IsFlashing ? "#E0F2FE" : (IsSelected ? "#FDE047" : "#A3E635");
+    // The cheat sheet style of the Layout page (MainWindowViewModel.SheetStyle.cs, ApplySheetStyle): the border, the
+    // header row and, for a "list" table (the engine fills it in the style's table colours), the table background.
+    // Empty = JoyPro's colours of before.
+    private string sheetBorder = string.Empty;
+    private string sheetHeaderBackground = string.Empty;
+    private string sheetTableBackground = string.Empty;
+    private string sheetTableText = string.Empty;
 
-    public string DisplayHeaderBackground => IsFlashing ? "#CC0891B2" : (IsSelected ? "#CCCA8A04" : "#CC65A30D");
+    public void ApplySheetStyle(string border, string headerBackground, string tableBackground, string tableText = "")
+    {
+        sheetBorder = border ?? string.Empty;
+        sheetHeaderBackground = headerBackground ?? string.Empty;
+        sheetTableBackground = tableBackground ?? string.Empty;
+        sheetTableText = tableText ?? string.Empty;
+        OnPropertyChanged(nameof(DisplayBorder));
+        OnPropertyChanged(nameof(DisplayHeaderBackground));
+        OnPropertyChanged(nameof(DisplayBackground));
+        OnPropertyChanged(nameof(DisplayHintText));
+    }
+
+    // The "{0} column(s)" hint on the table: the style's table text when it reads on this table's own background (a
+    // panel table keeps its light background in a dark style), else dark or light text, whichever reads (4.5:1).
+    public string DisplayHintText => ReadableOn(DisplayBackground, sheetTableText);
+
+    public static string ReadableOn(string background, string preferred)
+    {
+        Avalonia.Media.Color paper = Avalonia.Media.Colors.White;
+        Avalonia.Media.Color bg = Avalonia.Media.Color.TryParse(background ?? string.Empty, out Avalonia.Media.Color b) ? JoyPro.Gui.Services.ThemeService.Over(b, paper) : paper;
+        if (Avalonia.Media.Color.TryParse(preferred ?? string.Empty, out Avalonia.Media.Color p) && JoyPro.Gui.Services.ThemeService.Contrast(JoyPro.Gui.Services.ThemeService.Over(p, bg), bg) >= 4.5)
+            return preferred!;
+        Avalonia.Media.Color dark = Avalonia.Media.Color.Parse("#0F172A"), light = Avalonia.Media.Color.Parse("#F8FAFC");
+        return JoyPro.Gui.Services.ThemeService.Contrast(dark, bg) >= JoyPro.Gui.Services.ThemeService.Contrast(light, bg) ? "#0F172A" : "#F8FAFC";
+    }
+
+    public string DisplayBorder => IsFlashing ? "#E0F2FE" : (IsSelected ? "#FDE047" : sheetBorder.Length > 0 ? sheetBorder : "#A3E635");
+
+    public string DisplayHeaderBackground => IsFlashing ? "#CC0891B2" : (IsSelected ? "#CCCA8A04" : sheetHeaderBackground.Length > 0 ? sheetHeaderBackground : "#CC65A30D");
 
     public double DisplayBorderThickness => IsFlashing ? 4 : (IsSelected ? 3 : 2);
 
-    public string DisplayBackground => BuildDisplayBackground();
+    public string DisplayBackground => string.Equals(Mode, "list", System.StringComparison.OrdinalIgnoreCase) && sheetTableBackground.Length > 0
+        ? sheetTableBackground
+        : BuildDisplayBackground();
 
     public string DisplayBoxShadow => DropShadow ? "0 2 10 0 #70000000" : "0 0 0 0 #00000000";
 
@@ -77,9 +113,14 @@ public sealed partial class LayoutEditorTableItem : ObservableObject
             normalized = "panel";
         if (!string.Equals(Mode, normalized, System.StringComparison.Ordinal))
             Mode = normalized;
+        OnPropertyChanged(nameof(DisplayBackground));
     }
 
-    partial void OnBackgroundColorChanged(string value) => OnPropertyChanged(nameof(DisplayBackground));
+    partial void OnBackgroundColorChanged(string value)
+    {
+        OnPropertyChanged(nameof(DisplayBackground));
+        OnPropertyChanged(nameof(DisplayHintText));
+    }
 
     partial void OnBackgroundOpacityChanged(double value)
     {
@@ -96,6 +137,7 @@ public sealed partial class LayoutEditorTableItem : ObservableObject
         }
 
         OnPropertyChanged(nameof(DisplayBackground));
+        OnPropertyChanged(nameof(DisplayHintText));
     }
 
     partial void OnDropShadowChanged(bool value) => OnPropertyChanged(nameof(DisplayBoxShadow));

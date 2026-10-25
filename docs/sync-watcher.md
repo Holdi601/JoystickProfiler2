@@ -15,7 +15,7 @@ over (Settings > Run in the background): **Start with Windows (in the tray)** an
 
 1. **Every JoyPro export records the game's state.** Right after a successful export (DCS, IL-2, Star Citizen and every
    registry game, also exports that only write game-wide settings) the engine stores a fingerprint of the files (or
-   registry values) JoyPro manages in `<data>\Sync\<game>.json` (`<data>` = `%LOCALAPPDATA%\JoyPro`, or
+   registry values) JoyPro manages in `<data>\Sync\<game>.json` (`<data>` = `%LOCALAPPDATA%\JoyPro2`, or
    `JOYPRO_DATA_DIR`): size, write time and SHA-256 per file, and a *baseline*, i.e. hashes of every bind (plane, action,
    device, input, modifiers) and axis tuning the file holds, read with the game's own import. JoyPro's own exports
    therefore never ask anything. A file Windows refuses to read (a Microsoft Store install keeps its data EFS-encrypted

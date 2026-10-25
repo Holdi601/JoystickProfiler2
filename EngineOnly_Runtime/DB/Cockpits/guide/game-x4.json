@@ -1,0 +1,475 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-x4",
+  "title": "X4: Foundations: cockpit and default HOSAS",
+  "variants": [
+    "x4-hosas"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "x1",
+      "title": "X4 preset libraries/inputmap_defaults_t16000m_fcs_spacesimduo.xml (catalog 08)",
+      "kind": "game-files",
+      "file": "X4 Foundations/08.cat (libraries/inputmap_defaults_t16000m_fcs_spacesimduo.xml)"
+    },
+    {
+      "id": "x2",
+      "title": "X4 Manual: Joystick and Controller Configuration and Options (Egosoft wiki)",
+      "kind": "game-manual",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/X4%3A%20Foundations%20Manual/Joystick%20and%20Controller%20Configuration%20and%20Options/"
+    },
+    {
+      "id": "x3",
+      "title": "Thrustmaster T.16000M FCS user manual",
+      "kind": "manual",
+      "url": "https://ts.thrustmaster.com/download/accessories/Manuals/T16000M/T16000M-User_manual.pdf"
+    },
+    {
+      "id": "x4",
+      "title": "X4: Foundations (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/X4:_Foundations"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "X4: Foundations is a space game about flying, trading, fighting and building. Small and medium ships are flown from a cockpit, large and extra-large ships from the captain's chair on the bridge, but the flight controls are the same for all of them. This guide explains the shared displays and the game's own preset for two Thrustmaster T.16000M sticks: the right stick steers and fires, the left stick sets the thrust and the drive modes.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "HUD",
+      "text": "The flight symbols in front of the pilot.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD (flight symbols)",
+          "db": "hud",
+          "src": "c1",
+          "text": "The HUD is the set of symbols drawn over the view in front of the pilot: speed, the target with its aiming mark, the weapons, the active modes and the ship's own shield and hull.",
+          "context": "The pilot looks through it all the time; it is the same in every X4 ship, from the smallest fighter to the biggest carrier.",
+          "controls": [
+            {
+              "id": "speed",
+              "name": "Speed and throttle",
+              "type": "gauge",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "Shows how fast the ship flies and the speed the throttle asks for. In travel mode it also shows the charge of the travel drive.",
+              "context": "The left stick sets the speed; the stop button sets it to zero.",
+              "src": "c1"
+            },
+            {
+              "id": "target",
+              "name": "Target marker and lead",
+              "type": "display",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A frame marks the selected target, and a small aiming mark in front of it shows where to shoot so the shots meet the moving target.",
+              "context": "The hat on the right stick picks the target; the pilot then aims the forward guns at the aiming mark.",
+              "src": "c1"
+            },
+            {
+              "id": "weapons",
+              "name": "Weapon groups and weapon heat",
+              "type": "indicator",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "Shows the primary and secondary weapon groups and how hot the weapons are. Weapons that get too hot stop firing until they cool down.",
+              "context": "Weapon groups are changed on the keyboard or the menus; the preset puts no stick button on them.",
+              "src": "c1"
+            },
+            {
+              "id": "modes",
+              "name": "Mode indicators",
+              "type": "indicator",
+              "match": [
+                "item:hud:4"
+              ],
+              "text": "Small symbols that show which special mode is on: travel mode, scan mode, long-range scan, SETA (time acceleration) and whether flight assist is off.",
+              "context": "The left hat switches these modes; the symbol shows the pilot which one is active.",
+              "src": "c1"
+            },
+            {
+              "id": "shield-hull",
+              "name": "Shield and hull",
+              "type": "gauge",
+              "match": [
+                "item:hud:5"
+              ],
+              "text": "Two bars for the ship's own protection: the shield, an energy layer that takes hits first, and the hull, the ship's body.",
+              "context": "When the shield bar is empty, hits damage the hull; the shield recharges after a while without hits.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radar",
+      "where": "front-center",
+      "name": "Radar",
+      "text": "The round radar in the middle of the cockpit.",
+      "panels": [
+        {
+          "id": "radar",
+          "name": "Radar",
+          "db": "radar",
+          "src": "c1",
+          "text": "The round radar in the middle of the cockpit shows the objects around the ship: ships, stations, asteroids and more, coloured by whether they are friendly, neutral or hostile.",
+          "context": "It helps the pilot find enemies and targets that are not in view. The long-range scan adds its finds to it.",
+          "controls": [
+            {
+              "id": "radar-display",
+              "name": "Radar display",
+              "type": "display",
+              "match": [
+                "item:radar:1"
+              ],
+              "text": "Shows the contacts around the ship by type and by relation: friends, neutrals and enemies.",
+              "context": "Enemies show in red; the pilot uses it to see what is behind or above the ship.",
+              "src": "c1"
+            },
+            {
+              "id": "lrs-result",
+              "name": "Long-range scan result",
+              "type": "display",
+              "match": [
+                "item:radar:2"
+              ],
+              "text": "Shows signals and anomalies found by the long-range scan pulse, such as hidden objects far away.",
+              "context": "The pulse is charged with the trigger in long-range scan mode; the finds then appear here.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "text": "The monitors beside the view for the own ship and the target.",
+      "panels": [
+        {
+          "id": "monitors",
+          "name": "Cockpit monitors",
+          "db": "monitors",
+          "src": "c1",
+          "text": "Two monitors left and right of the view: one shows the own ship, the other the selected target.",
+          "context": "They give details without opening a menu: cargo, crew and the scan level of whatever the pilot looks at.",
+          "controls": [
+            {
+              "id": "ship-monitor",
+              "name": "Ship monitor",
+              "type": "display",
+              "match": [
+                "item:monitors:1"
+              ],
+              "text": "Shows the own ship's status, its cargo and its crew.",
+              "context": "A quick look tells the pilot whether the hold is full and the ship is healthy.",
+              "src": "c1"
+            },
+            {
+              "id": "target-monitor",
+              "name": "Target monitor",
+              "type": "display",
+              "match": [
+                "item:monitors:2"
+              ],
+              "text": "Shows the details of the selected object and how much of it has been scanned.",
+              "context": "Scan mode reveals more about a target; the scan level shows here.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "radial",
+      "where": "front-center",
+      "name": "Radial menu",
+      "text": "The round menu that opens in the middle of the view.",
+      "panels": [
+        {
+          "id": "radial",
+          "name": "Radial menu",
+          "db": "radial",
+          "src": "c1",
+          "text": "A round menu shaped like a compass that opens in the middle of the view. Its directions lead to modes, maps and menus and to things the ship can drop into space.",
+          "context": "It is opened with the right head button of the right stick and lets the pilot reach much of the game without the keyboard.",
+          "controls": [
+            {
+              "id": "modes",
+              "name": "Modes",
+              "type": "other",
+              "match": [
+                "item:radial:1"
+              ],
+              "text": "Switches travel mode, scan mode, long-range scan mode and SETA, the same modes as the left hat.",
+              "context": "Useful when the pilot does not remember which hat direction belongs to which mode.",
+              "src": "c1"
+            },
+            {
+              "id": "menus",
+              "name": "Map and menus",
+              "type": "other",
+              "match": [
+                "item:radial:2"
+              ],
+              "text": "Opens the map, the missions, the list of owned ships and stations, and the ship information.",
+              "context": "The map is where the pilot plans routes and gives orders to other owned ships.",
+              "src": "c1"
+            },
+            {
+              "id": "deploy",
+              "name": "Deployables",
+              "type": "other",
+              "match": [
+                "item:radial:3"
+              ],
+              "text": "Drops things the ship carries into space: satellites, beacons, probes, mines and laser towers.",
+              "context": "Satellites and probes let the pilot watch an area from far away; mines and laser towers guard it.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Right and left stick",
+      "text": "The two sticks as the game's own preset sets them up.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (steering and weapons)",
+          "src": "x1",
+          "text": "The right-hand stick turns the ship, fires the weapons and selects targets. Its base buttons hold menus, docking and the container magnet.",
+          "context": "In the preset for two T.16000M sticks the right stick steers like a plane's stick, while the left stick moves the ship.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Right stick (pitch, yaw, roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Forward and back point the nose down and up. Left and right turn the nose left and right (yaw), the main way to steer in X4. Twisting the stick rolls the ship.",
+              "context": "Because left and right turn rather than roll, the ship turns flat like a car; roll is used to line up with stations and docks.",
+              "src": "x1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (primary weapons)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger fires the primary weapon group, usually the forward guns.",
+              "context": "Weapons fire only in normal flight, not in travel mode. In long-range scan mode holding the trigger charges the scan pulse.",
+              "src": "x1"
+            },
+            {
+              "id": "thumb",
+              "name": "Thumb button (secondary weapons)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button fires the secondary weapon group, usually the missiles.",
+              "context": "Missiles that need a lock fire at the selected target.",
+              "src": "x1"
+            },
+            {
+              "id": "head-left",
+              "name": "Head button left (deselect target)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "This button clears the current target, so nothing is selected any more.",
+              "context": "Useful to stop the aiming marks pointing at something the pilot no longer cares about.",
+              "src": "x1"
+            },
+            {
+              "id": "head-right",
+              "name": "Head button right (radial menu)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "This button opens the radial menu, the round menu with modes, maps and deployables.",
+              "context": "From the radial menu the pilot reaches most menus without the keyboard.",
+              "src": "x1"
+            },
+            {
+              "id": "hat",
+              "name": "Hat (targets)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "Up targets the object straight ahead, down targets the closest enemy, left and right step to the previous or next target.",
+              "context": "In a fight down is the fastest way to find the nearest threat.",
+              "src": "x1"
+            },
+            {
+              "id": "base-6",
+              "name": "Base button 6 (interaction menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.2"
+              ],
+              "text": "Opens the interaction menu of the target, a list of things the pilot can do with it, or opens the latest notification.",
+              "context": "Through it the pilot can, for example, ask a station to dock or talk to another pilot.",
+              "src": "x1"
+            },
+            {
+              "id": "base-10",
+              "name": "Base button 10 (options menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "Opens the game's options menu, where it can also be paused, saved or quit.",
+              "context": "The same menu the Escape key opens.",
+              "src": "x1"
+            },
+            {
+              "id": "base-11",
+              "name": "Base button 11 (container magnet)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.7"
+              ],
+              "text": "Switches on the container magnet, which pulls floating crates and wares near the ship into the hold. It can also be held.",
+              "context": "Drops from destroyed ships and mined pieces are collected this way.",
+              "src": "x1"
+            },
+            {
+              "id": "base-13",
+              "name": "Base button 13 (get up)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.9"
+              ],
+              "text": "Makes the pilot get up from the seat to walk around inside the ship or a station.",
+              "context": "X4 lets the player leave the seat once the ship is docked or safe.",
+              "src": "x1"
+            },
+            {
+              "id": "base-14",
+              "name": "Base button 14 (dock / undock)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.10"
+              ],
+              "text": "Asks the targeted station or ship for docking, or undocks when the ship is already docked.",
+              "context": "The docking computer can then fly the ship in; the pilot can also dock by hand.",
+              "src": "x1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Left stick (thrust and drive modes)",
+          "src": "x1",
+          "text": "The left-hand stick moves the ship: forward and back set the speed, sideways and twist slide the ship. Its buttons hold boost, stop, flight assist and the drive modes.",
+          "context": "With two sticks the pilot can steer with one hand and slide or brake with the other, like in a space fighter game.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Left stick (thrust and strafe)",
+              "type": "axis",
+              "match": [
+                "control:throttle.gimbal"
+              ],
+              "text": "Forward makes the ship go faster, back slows it and then flies backwards. Left and right slide the ship sideways; twisting slides it up and down.",
+              "context": "Sliding without turning (strafing) is used to dodge and to line up with a dock.",
+              "src": "x1"
+            },
+            {
+              "id": "trigger",
+              "name": "Left trigger (boost)",
+              "type": "trigger",
+              "match": [
+                "control:throttle.trigger"
+              ],
+              "text": "Pressing or holding the left trigger gives a short burst of extra speed, the boost.",
+              "context": "Boost helps to escape or to close in quickly; it cannot be used all the time.",
+              "src": "x1"
+            },
+            {
+              "id": "thumb",
+              "name": "Left thumb button (stop engines)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.thumb.1"
+              ],
+              "text": "This button sets the speed to zero so the ship comes to a stop.",
+              "context": "Handy when parking next to something or before docking by hand.",
+              "src": "x1"
+            },
+            {
+              "id": "head-3",
+              "name": "Left head button 3 (flight assist)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.thumb.2"
+              ],
+              "text": "Switches flight assist on or off. With flight assist off the ship keeps drifting in the direction it moved, like a puck on ice.",
+              "context": "Experienced pilots switch it off to fly backwards while shooting; with it on, the ship flies where it points.",
+              "src": "x1"
+            },
+            {
+              "id": "hat",
+              "name": "Left hat (drive modes)",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.1"
+              ],
+              "text": "Up switches travel mode, a fast drive for long distances. Right switches scan mode and left long-range scan mode. Down switches SETA, which makes time run faster.",
+              "context": "In travel mode the weapons do not fire. Scan mode reveals details of stations and objects; the long-range scan finds hidden things far away.",
+              "src": "x1"
+            },
+            {
+              "id": "base-5",
+              "name": "Left base button 5 (container magnet)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.1"
+              ],
+              "text": "A second button for the container magnet, which collects crates and wares near the ship. It can also be held.",
+              "context": "The preset puts the magnet on both sticks' bases so either hand can reach it.",
+              "src": "x1"
+            },
+            {
+              "id": "base-14",
+              "name": "Left base button 14 (dock / undock)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.10"
+              ],
+              "text": "A second button that asks for docking, or undocks when docked.",
+              "context": "The same command as base button 14 of the right stick.",
+              "src": "x1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

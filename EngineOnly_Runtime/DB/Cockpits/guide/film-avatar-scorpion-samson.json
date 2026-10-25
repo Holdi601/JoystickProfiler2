@@ -1,0 +1,162 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-avatar-scorpion-samson",
+  "title": "SA-2 Samson (Avatar)",
+  "inherits": "film-avatar-scorpion",
+  "variants": [
+    "sa-2-samson"
+  ],
+  "games": [],
+  "sets": [],
+  "remove": [
+    "instrument-panel/weapon-status",
+    "canopy",
+    "side-consoles",
+    "cyclic/trigger",
+    "cyclic/missile"
+  ],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Avatar (2009 film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Avatar_(2009_film)"
+    },
+    {
+      "id": "s2",
+      "title": "AT-99 Scorpion Gunship from Avatar (Fantastic Plastic)",
+      "kind": "reference",
+      "url": "https://fantastic-plastic.com/AT-99Page.htm"
+    }
+  ],
+  "intro": "The SA-2 Samson is the fictional utility aircraft of the RDA in Avatar (2009), with two ducted rotors like the Scorpion. Two pilots sit side by side ahead of an open cabin; the pilot flies with cyclic and collective, and door gunners handle the guns. The pilot has no fixed forward weapons.",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "s1",
+          "text": "The cyclic stick in front of the Samson pilot, in the right hand.",
+          "context": "It tilts the aircraft to fly forward, back and sideways; it has no weapon buttons here.",
+          "controls": [
+            {
+              "id": "cyclic",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the cyclic forward tips the Samson forward so it flies forward; moving it sideways makes it fly sideways.",
+              "context": "The pilot has no forward weapons, so the cyclic only flies; the guns are worked by the door gunners.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Displays in front of the two pilots.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s1",
+          "text": "Displays in front of the pilot and the co-pilot of the Samson.",
+          "context": "They show the flight data for both pilots.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Flight displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Screens in front of both pilots show the flight data.",
+              "context": "The pilots watch them while flying low over the forest of Pandora.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot",
+      "where": "front-right",
+      "name": "Co-pilot seat",
+      "text": "The second seat beside the pilot.",
+      "panels": [
+        {
+          "id": "copilot",
+          "name": "Co-pilot seat",
+          "db": "copilot",
+          "src": "s1",
+          "text": "The second seat beside the pilot, with its own controls.",
+          "context": "A second pilot can fly or help with the systems.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Co-pilot seat",
+              "type": "other",
+              "match": [
+                "item:copilot:1"
+              ],
+              "text": "The co-pilot's seat has a second set of flight controls.",
+              "context": "Either pilot can fly the Samson.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cabin",
+      "where": "rear",
+      "name": "Open cabin and door guns",
+      "text": "The cabin with side doors behind the cockpit.",
+      "panels": [
+        {
+          "id": "cabin",
+          "name": "Open cabin and door guns",
+          "db": "cabin",
+          "src": "s1",
+          "text": "The cabin behind the cockpit, open at the sides, with door guns and seats.",
+          "context": "It carries soldiers and cargo; the door gunners protect the aircraft.",
+          "controls": [
+            {
+              "id": "door-guns",
+              "name": "Door guns",
+              "type": "other",
+              "match": [
+                "item:cabin:1"
+              ],
+              "text": "Guns on swivel mounts in the doors, worked by door gunners, not by the pilot.",
+              "context": "They cover the sides of the aircraft while the pilot flies.",
+              "src": "s1"
+            },
+            {
+              "id": "seats",
+              "name": "Troop seats",
+              "type": "other",
+              "match": [
+                "item:cabin:2"
+              ],
+              "text": "Seats in the cabin for soldiers or passengers.",
+              "context": "The Samson carries people and cargo around Pandora.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

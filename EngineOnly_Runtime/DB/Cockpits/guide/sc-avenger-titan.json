@@ -1,0 +1,80 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-avenger-titan",
+  "title": "Avenger Titan (Aegis Dynamics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-avenger-titan"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Avenger Titan (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Avenger_Titan"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Avenger Titan is a light fighter from Aegis Dynamics in Star Citizen that can also carry some freight. The pilot sits alone at the front; behind the cockpit a small cargo bay takes the place of the original Avenger's rear cabin. The common controls apply unchanged.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Avenger Titan: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Avenger Titan's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (three)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Avenger Titan has three guns that the pilot fires. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (four missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Four missiles hang in the Avenger Titan's racks. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo bay (8 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "Behind the cockpit sits a small cargo bay for 8 SCU of goods.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

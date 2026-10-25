@@ -366,12 +366,8 @@ namespace JoyPro.CockpitPictures
                 }
                 // The grip nearest to the pilot of each kind (both yokes move together).
                 gripList = gripList.GroupBy(g => g.Device).Select(g => g.OrderBy(x => (x.Pivot - head).Length).First()).ToList();
-                foreach (CockpitCallout c in callouts)
-                {
-                    string area = CockpitViews.AreaOf(c.Position, head);
-                    c.Panel = area;
-                    c.PanelTitle = AreaTitle(area);
-                }
+                // X-Plane names no panels: the system its commands name (sim/autopilot, laminar/B738/fuel ...) and the place.
+                ControlSystems.Assign(callouts, head, AreaTitle);
                 // Controls that move with a grip (the yoke's trim and autopilot buttons) are its parts.
                 foreach (KeyValuePair<CockpitCallout, string> gp in gripParts)
                 {

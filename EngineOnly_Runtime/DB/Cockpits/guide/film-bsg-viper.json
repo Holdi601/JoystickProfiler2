@@ -1,0 +1,247 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-bsg-viper",
+  "title": "Colonial Viper Mk II (Battlestar Galactica, 2004)",
+  "variants": [
+    "bsg-viper-mk2"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Battlestar Galactica (2004 TV series) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Battlestar_Galactica_(2004_TV_series)"
+    },
+    {
+      "id": "s2",
+      "title": "Battlestar Galactica (fictional spacecraft) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Battlestar_Galactica_(fictional_spacecraft)"
+    }
+  ],
+  "intro": "The Viper is a fictional single-pilot fighter launched from battlestars in the series Battlestar Galactica (2004). The series flies the old Mk II alongside the newer, networked Mk VII. The pilot sits under a bubble canopy with a centre stick, a throttle for the left hand and an old-style panel of dials around the DRADIS scope.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The bubble canopy over the seat.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s1",
+          "text": "The clear bubble over the Viper pilot's seat.",
+          "context": "It gives a good view for dogfights against Cylon fighters.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "A clear bubble over the single seat of the Viper Mk II.",
+              "context": "The pilot looks out through it to find enemy fighters.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dradis",
+      "where": "front-center",
+      "name": "DRADIS display",
+      "text": "The radar-like scope in front of the pilot.",
+      "panels": [
+        {
+          "id": "dradis",
+          "name": "DRADIS display",
+          "db": "dradis",
+          "src": "s1",
+          "text": "A round radar-like screen that shows other ships around the Viper.",
+          "context": "DRADIS is the series' word for radar; the pilot watches it to see where friends and Cylons are.",
+          "controls": [
+            {
+              "id": "scope",
+              "name": "DRADIS scope",
+              "type": "display",
+              "match": [
+                "item:dradis:1"
+              ],
+              "text": "This round screen shows contacts, other ships, around the fighter.",
+              "context": "It warns the pilot of ships that are not yet visible through the canopy.",
+              "src": "s1"
+            },
+            {
+              "id": "markers",
+              "name": "Contact markers",
+              "type": "display",
+              "match": [
+                "item:dradis:2"
+              ],
+              "text": "Marks on the scope show which contacts are friends and which are Cylons.",
+              "context": "The pilot uses them to pick a target and avoid shooting a friend.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "analog",
+      "where": "front-left",
+      "name": "Analog instrument panel",
+      "text": "Old-style dials and switches of the old design.",
+      "panels": [
+        {
+          "id": "analog-panel",
+          "name": "Analog instrument panel",
+          "db": "analog-panel",
+          "src": "s1",
+          "text": "Old-style round dials, arming switches and warning lights.",
+          "context": "The old Mk II has no networked computers; in the series this makes it safe from the Cylons' computer attacks.",
+          "controls": [
+            {
+              "id": "gauges",
+              "name": "Flight gauges",
+              "type": "gauge",
+              "match": [
+                "item:analog-panel:1"
+              ],
+              "text": "Round dials show the speed, the fuel and the engines.",
+              "context": "The pilot checks them during the flight, like the dials of an old car.",
+              "src": "s1"
+            },
+            {
+              "id": "arming",
+              "name": "Weapons arming switches",
+              "type": "switch",
+              "match": [
+                "item:analog-panel:2"
+              ],
+              "text": "Switches that make the guns ready to fire ('hot') before an attack.",
+              "context": "Until the guns are armed, the trigger does nothing; it is a safety step.",
+              "src": "s1"
+            },
+            {
+              "id": "warnings",
+              "name": "Warning lights",
+              "type": "light",
+              "match": [
+                "item:analog-panel:3"
+              ],
+              "text": "Lights that warn the pilot of damage and low fuel.",
+              "context": "They tell the pilot when to head back to the battlestar.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "consoles",
+      "where": "left-console",
+      "name": "Side consoles",
+      "text": "Switch panels beside the seat.",
+      "panels": [
+        {
+          "id": "side-consoles",
+          "name": "Side consoles",
+          "db": "side-consoles",
+          "src": "s1",
+          "text": "The radio and the thruster controls beside the seat.",
+          "context": "They let the pilot talk to the battlestar and turn the Viper with small thrusters.",
+          "controls": [
+            {
+              "id": "comms",
+              "name": "Comms",
+              "type": "switch",
+              "match": [
+                "item:side-consoles:1"
+              ],
+              "text": "The radio (wireless) link to the battlestar and to the other pilots of the wing.",
+              "context": "Pilots get their orders and call for help over it.",
+              "src": "s1"
+            },
+            {
+              "id": "thrusters",
+              "name": "Thruster controls",
+              "type": "other",
+              "match": [
+                "item:side-consoles:2"
+              ],
+              "text": "Small reaction thrusters let the pilot spin the Viper around in space, for example to fire backwards while flying forwards.",
+              "context": "In the series a pilot uses this trick to flip the Viper and shoot at chasers.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight stick",
+          "src": "s1",
+          "text": "The centre stick in front of the pilot, held in the right hand.",
+          "context": "It steers the Viper and fires the guns.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Flight stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up; moving it left or right rolls the fighter.",
+              "context": "It is a classic fighter stick in the right hand.",
+              "src": "s1"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pulling the trigger on the front of the stick fires the guns.",
+              "context": "The guns have to be armed with the switches on the panel first.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s1",
+          "text": "The throttle lever at the pilot's left hand.",
+          "context": "It sets the power of the main engines.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Pushing the throttle forward gives the main engines more power; pulling it back gives less.",
+              "context": "The pilot sets the speed with the left hand while the right hand steers.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

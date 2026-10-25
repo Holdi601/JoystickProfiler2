@@ -1,0 +1,137 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-hammerhead",
+  "title": "Hammerhead (Aegis Dynamics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-hammerhead"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Hammerhead (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Hammerhead"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Hammerhead is a heavy patrol gunship from Aegis Dynamics in Star Citizen with a crew of eight. The pilot flies from a station on the bridge, while most of the crew sits in the six manned turrets. The pilot has no guns of his own and launches the missiles.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Hammerhead: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Hammerhead's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "missiles",
+              "name": "Missile racks (32 missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Hammerhead carries 32 missiles, and the pilot launches them in missile mode.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "no-guns",
+              "name": "No pilot guns",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Hammerhead has no guns for the pilot; all its guns sit in the turrets.",
+              "context": "Without own guns the pilot flies, uses the missiles where fitted and leaves the shooting to the crew in the turrets.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Hammerhead: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Hammerhead besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "bridge",
+              "name": "Bridge flight station",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "The pilot's seat sits at the front of the bridge, with screens (MFDs) around it.",
+              "context": "From here the pilot steers the big ship and keeps it turned so that the turrets can fire.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Manned turrets (six)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:2"
+              ],
+              "text": "Six turrets with four guns each, each one worked by its own gunner.",
+              "context": "A turret seat has its own controls: there the right stick aims the turret instead of steering the ship.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Two sticks (HOSAS)",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (flight stick)",
+          "src": "g1",
+          "text": "The right-hand stick steers the ship's nose and does the fighting: it fires the weapons, picks targets and holds the buttons for radar, quantum travel, scanning and mining.",
+          "context": "This is the game's own two-stick preset for the Thrustmaster T.16000M. Many buttons change their job with the operator mode shown on the HUD; the stick's base buttons 5 to 16 sit on the stick's foot.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "label:Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "This ship has no pilot guns, so in this layout the trigger's main job is the missiles: in missile mode it launches the armed missiles.",
+              "context": "The missile type is picked with the thumb button and the count shows on the HUD; in other operator modes the trigger does that mode's job.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-prospector",
+  "title": "Prospector (MISC, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-prospector"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Prospector (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Prospector"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Prospector is a single-seat mining ship from MISC in Star Citizen. The pilot sits in front of a mining arm that can reach out, and works the laser from the flight seat. In mining mode the right stick's base slider sets the laser power.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Prospector: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Prospector's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "mining-arm",
+              "name": "Mining arm",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "A mining arm that can reach out carries a laser head that can be swapped. The pilot fires it in mining mode.",
+              "context": "Mining mode sits on base button 13 of the right stick; the trigger fires the laser and the base slider sets its power.",
+              "src": "w1"
+            },
+            {
+              "id": "ore",
+              "name": "Ore containers (four)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Four ore containers that can be taken off hold the mined rock.",
+              "context": "When they are full the miner flies to a station or refinery to sell or refine the ore.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

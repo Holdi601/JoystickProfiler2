@@ -1,0 +1,203 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-slave-i",
+  "title": "Slave I (Star Wars, Attack of the Clones)",
+  "variants": [
+    "slave-i-firespray"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "List of Star Wars spacecraft: Slave I (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/List_of_Star_Wars_spacecraft"
+    },
+    {
+      "id": "s2",
+      "title": "Slave I (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/slave-i"
+    },
+    {
+      "id": "s3",
+      "title": "Star Wars: Episode II - Attack of the Clones (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Wars:_Episode_II_%E2%80%93_Attack_of_the_Clones"
+    }
+  ],
+  "intro": "Slave I is the fictional patrol craft of the bounty hunters Jango and Boba Fett in the Star Wars films. It stands upright when landed and flies tilted forward, with the cockpit turning so the pilot always looks ahead. The cockpit sits at the top of the hull, with a second seat behind the pilot.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The upper cockpit window.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s2",
+          "text": "The window at the top of the hull that the pilot looks through.",
+          "context": "Because the ship lands upright and flies tilted, the cockpit turns between the two.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "The window faces forward in flight. The cockpit rotates between the landing position and the flying position.",
+              "context": "This way the pilot sits normally whether the ship stands on the ground or flies.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "forward",
+      "where": "front-center",
+      "name": "Forward panel",
+      "text": "Displays and weapon controls in front of the pilot.",
+      "panels": [
+        {
+          "id": "forward-panel",
+          "name": "Forward panel",
+          "db": "forward-panel",
+          "src": "s3",
+          "text": "Screens and weapon controls in front of the pilot.",
+          "context": "In Attack of the Clones they are used in the chase through an asteroid field.",
+          "controls": [
+            {
+              "id": "scanner",
+              "name": "Scanner screen",
+              "type": "display",
+              "match": [
+                "item:forward-panel:1"
+              ],
+              "text": "This screen tracks the ship being chased.",
+              "context": "In the asteroid-field chase the pilot follows the other ship on it.",
+              "src": "s3"
+            },
+            {
+              "id": "weapon-select",
+              "name": "Weapon selection",
+              "type": "button",
+              "match": [
+                "item:forward-panel:2"
+              ],
+              "text": "Controls that pick which weapon to use: lasers, a missile or seismic charges.",
+              "context": "In the film the weapons are used one after the other during the chase.",
+              "src": "s3"
+            },
+            {
+              "id": "seismic",
+              "name": "Seismic charge release",
+              "type": "button",
+              "match": [
+                "item:forward-panel:3",
+                "control:stick.weapon_release"
+              ],
+              "text": "This control drops a seismic charge behind the ship, a bomb that explodes with a huge ring-shaped blast.",
+              "context": "It is meant to stop a chaser; the film shows it in the asteroid field, where the blast is silent at first and then loud.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "Second seat",
+      "text": "The seat behind the pilot.",
+      "panels": [
+        {
+          "id": "second-seat",
+          "name": "Second seat",
+          "db": "second-seat",
+          "src": "s3",
+          "text": "A seat behind the pilot for a passenger or helper.",
+          "context": "The ship can carry a second person besides the pilot.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Rear seat",
+              "type": "other",
+              "match": [
+                "item:second-seat:1"
+              ],
+              "text": "A seat behind the pilot's. In Attack of the Clones young Boba Fett rides there.",
+              "context": "The person in the rear seat can watch the screens and warn the pilot.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Flight controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight controls",
+          "src": "s3",
+          "text": "The hand controls in front of the pilot's seat.",
+          "context": "They fly the ship and fire its lasers.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Flight controls",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The flight controls tip the nose up and down and roll the ship left and right.",
+              "context": "In the film they steer Slave I through the asteroid field.",
+              "src": "s3"
+            },
+            {
+              "id": "fire",
+              "name": "Fire control",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A control on the flight grips fires the laser cannons.",
+              "context": "The lasers are the first weapon used in the chase before the missile and the charges.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s3",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "Attack of the Clones does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

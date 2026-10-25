@@ -20,8 +20,36 @@ namespace JoyPro.Gui.Tests;
 // remove, saved per model), the cheat sheets using the page, and its look (JOYPRO_UI_DESIGN_OUT: multiview-*.png with
 // the views drawn by the real engine).
 [SupportedOSPlatform("windows")]
-public sealed class MultiViewTests
+public sealed class MultiViewTests : IDisposable
 {
+    // A data folder of its own: other tests leave positions, sheets, grip and photo answers for the same test device in
+    // the run's shared data folder, which changed what the Layout page showed (the test failed only after them).
+    private readonly string data = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "multiview-data-" + Guid.NewGuid().ToString("N"));
+    private readonly string? previousData = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
+
+    public MultiViewTests()
+    {
+        Directory.CreateDirectory(data);
+        Environment.SetEnvironmentVariable("JOYPRO_DATA_DIR", data);
+        DeviceReferenceService.Reload();
+    }
+
+    public void Dispose()
+    {
+        Environment.SetEnvironmentVariable("JOYPRO_DATA_DIR", previousData);
+        DeviceReferenceService.Reload();
+        try
+        {
+            Directory.Delete(data, recursive: true);
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+    }
+
     [Fact]
     public void Page_ArrangesTheViewsInsideTheFormat_AndRoundTrips()
     {

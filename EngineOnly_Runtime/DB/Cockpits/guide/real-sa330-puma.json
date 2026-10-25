@@ -1,0 +1,436 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-sa330-puma",
+  "title": "SA 330 Puma",
+  "variants": [
+    "sa330-puma"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Aerospatiale SA 330 Puma (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/A%C3%A9rospatiale_SA_330_Puma"
+    },
+    {
+      "id": "m1",
+      "title": "DCS SA342M Flight manual EN (Aerospatiale grip and collective switch box)",
+      "kind": "manual",
+      "file": "Mods/aircraft/SA342/Doc/DCS SA342M Flight manual_en.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The SA 330 Puma is a French twin-engine medium transport helicopter of the late 1960s, the ancestor of the Super Puma and the Cougar. Two Turmo engines sit above the cabin; the two pilots sit side by side with the engine levers in the roof above them. Its grips are taken from the Aerospatiale grip of the Gazelle plus the cargo hook releases, and the panels are described from public sources. The glass cockpit of the British Puma HC2 is not covered.",
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "Engine levers, rotor brake, start, electrics and fire bottles.",
+      "panels": [
+        {
+          "id": "overhead-panel",
+          "name": "Overhead panel",
+          "text": "The roof panel with the engine speed select levers, the fuel shut-off levers, the rotor brake, the start switches, the electrics and the fire extinguishers.",
+          "context": "The start-up happens here: rotor brake off, fuel open, engines started, then the speed select levers forward to flight.",
+          "controls": [
+            {
+              "id": "ssl",
+              "name": "Engine speed select levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-panel:1",
+                "control:panel.lever.power"
+              ],
+              "text": "Two levers, one per Turmo engine, that set the speed the engine's governor holds; the governor then gives the engine the fuel it needs.",
+              "context": "They go to the flying position after the start; JoyPro can bind them as one axis for both engines."
+            },
+            {
+              "id": "fuel-cocks",
+              "name": "Fuel shut-off levers",
+              "type": "lever",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "text": "Two levers that open or close the fuel to each engine (fuel cocks).",
+              "context": "They are opened for the start and closed to stop an engine or in an engine fire."
+            },
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake lever",
+              "type": "lever",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "This lever works the rotor brake, which stops the main rotor from turning on the ground.",
+              "context": "It holds the blades still in wind when parked and is released before the start."
+            },
+            {
+              "id": "start",
+              "name": "Engine start switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "Switches that start each engine: a starter spins the engine until it can run on its own fuel.",
+              "context": "The engines are started one after the other; the pilot watches the engine temperature and speed gauges while they come to life. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "elec",
+              "name": "Electrical switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:5"
+              ],
+              "text": "Switches for the helicopter's electricity: the battery and the generators. The battery stores electricity for when the engines are off; generators make electricity while the engines run.",
+              "context": "They are among the first switches the pilot uses when climbing in, because almost every other system needs electricity. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "fire",
+              "name": "Fire extinguisher controls",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:6"
+              ],
+              "text": "Controls that empty a fire extinguisher bottle into an engine compartment when a fire is detected there.",
+              "context": "A fire warning light tells the crew which engine burns; the engine is shut down first, then a bottle is fired into it. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Round dials for both pilots and the engine gauges.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "text": "Round dials for both pilots, the engine gauges in the middle and the warning panel.",
+          "context": "Each pilot has his own flight instruments; the panel is described in general terms from public sources.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "Attitude indicators",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the helicopter leans to one side, like a picture of the horizon (artificial horizon). Each pilot has one.",
+              "context": "It is the main instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicators",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in knots. Each pilot has one.",
+              "context": "Below a certain speed a helicopter can hover and fly sideways, so the needle near zero is normal; the pilot watches it in the climb-out and when slowing down to land."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeters",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "The height gauge. It shows the height above sea level; the pilot sets the local air pressure on it so it reads right. Each pilot has one.",
+              "context": "The pilot uses it to hold a cruising height and to follow the heights given by the tower."
+            },
+            {
+              "id": "radalt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This instrument measures the height above the ground right below the helicopter with a radio beam, not the height above sea level.",
+              "context": "It matters most in the hover, in low flight and in the last part of the landing, when the ground is close."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicators",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "This dial shows whether the helicopter climbs or sinks, and how fast. Each pilot has one.",
+              "context": "The pilot uses it to keep a steady, gentle descent when coming in to land and to hold level flight."
+            },
+            {
+              "id": "hsi",
+              "name": "HSI / RMI",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "A compass picture that shows the heading (where the nose points) and the course to a navigation point or radio beacon. A radio magnetic indicator next to it points to radio beacons.",
+              "context": "The pilot follows it to fly a planned route and to find the way to the landing site."
+            },
+            {
+              "id": "tach",
+              "name": "Rotor and free turbine tachometer",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "Two needles on one dial show how fast the main rotor and the free turbines (the parts of the engines that drive the rotor) turn (RPM). In normal flight the needles sit together in the green band.",
+              "context": "Rotor speed is the life of a helicopter: too slow and the blades lose their lift, too fast and they are overstressed, so the pilot checks it all the time."
+            },
+            {
+              "id": "torque",
+              "name": "Torque indicators",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This gauge shows the torque of each of the two Turmo engines: how hard it twists the rotor shaft. It is the best measure of how much power is used.",
+              "context": "When the pilot raises the collective the torque rises; the pilot keeps it below the red limit, especially when heavy or in hot weather."
+            },
+            {
+              "id": "eng",
+              "name": "Engine temperature and oil gauges",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "Gauges for each engine that show how hot it runs and its oil pressure and temperature.",
+              "context": "The pilot compares the two engines; a reading that differs from its partner points to the engine with a problem."
+            },
+            {
+              "id": "wp",
+              "name": "Warning panel",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "Labelled warning lights for the whole helicopter. Each one comes on to say what is wrong. A master warning light and worded captions say what is wrong.",
+              "context": "A warning light needs action at once; the pilot reads the label and follows the emergency steps for it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "Radios, navigation, autopilot and intercom.",
+      "panels": [
+        {
+          "id": "center-console",
+          "name": "Centre console",
+          "text": "The radios, the navigation sets, the autopilot panel and the intercom between the seats.",
+          "context": "Both pilots reach it; it holds what is set before the flight and changed in flight.",
+          "controls": [
+            {
+              "id": "radios",
+              "name": "Radio control panels",
+              "type": "selector",
+              "match": [
+                "item:center-console:1"
+              ],
+              "text": "The control box of the UHF, VHF and HF radio: it turns the radio on, sets the frequency (the \"station number\" a radio talks on) or a stored channel, and the mode. Each set has its own box.",
+              "context": "The crew sets it before each part of the flight; the transmit switch on the cyclic then makes this radio send. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "nav",
+              "name": "Navigation control panel",
+              "type": "selector",
+              "match": [
+                "item:center-console:2"
+              ],
+              "text": "The controls of the navigation sets: the Doppler (measures the speed over the ground with radio waves), the ADF and the VOR (receivers that point to radio beacons on the ground).",
+              "context": "The crew tunes the beacons and follows the needles on the instruments. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "ap",
+              "name": "Autopilot panel",
+              "type": "button",
+              "match": [
+                "item:center-console:3"
+              ],
+              "text": "Buttons that switch on and off the stability channels and the autopilot. Stability helpers keep the helicopter steady and smooth; the autopilot can hold height, heading or speed so the pilot does not have to.",
+              "context": "The helpers stay on for almost the whole flight; the pilot switches them off only for tests or when one fails. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "ics",
+              "name": "Intercom panel",
+              "type": "knob",
+              "match": [
+                "item:center-console:4"
+              ],
+              "text": "This panel decides which radio the pilot's transmit switch talks on and which radios and the intercom (the phone line between the crew members) are heard in the headset.",
+              "context": "Each crew seat has its own; the pilot sets it before take-off so the right radio answers the cyclic switch. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The flight controls the pilot holds.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The stick between the pilot's knees with the trim hat, the magnetic brake, the autopilot button, the radio trigger and the cargo hook release.",
+          "context": "JoyPro takes these switches from the Aerospatiale grip of the Gazelle, because the Puma's own grip is not described in its sources.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick between the pilot's knees. It tilts the rotor: forward makes the helicopter fly forward, back slows it down, left and right move it sideways.",
+              "context": "It is the main flight control together with the collective and the pedals; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "china-hat",
+              "name": "Trim china hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way hat on top of the grip for the trim (small adjustments so the helicopter flies steadily without force on the stick): up trims the nose down, down trims it up, left and right trim the roll.",
+              "context": "It moves a small trim motor in small steps; the magnetic brake sets the larger changes.",
+              "src": "m1"
+            },
+            {
+              "id": "mag-brake",
+              "name": "Magnetic brake button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim"
+              ],
+              "text": "Pressing this button makes the stick stay where it is (the magnetic brake), so the pilot can let go of it for a moment.",
+              "context": "It is the Aerospatiale way of trimming: fly to the new position, press, and the stick is held there.",
+              "src": "m1"
+            },
+            {
+              "id": "ap",
+              "name": "Autopilot button",
+              "type": "button",
+              "match": [
+                "control:stick.button.autopilot"
+              ],
+              "text": "A button on the top right of the grip head that switches the autopilot on and off.",
+              "context": "The autopilot channels are set on the autopilot panel first.",
+              "src": "m1"
+            },
+            {
+              "id": "radio",
+              "name": "Radio / ICS trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "While this trigger on the front of the grip is held, the pilot's voice goes out on the selected radio.",
+              "context": "The intercom panel decides which radio it uses.",
+              "src": "m1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo hook release button",
+              "type": "button",
+              "match": [
+                "control:stick.button.cargo_release"
+              ],
+              "text": "Pressing this button opens the cargo hook under the belly, so a load hanging below the helicopter on a sling drops off.",
+              "context": "The hook has to be armed first; the pilot sets the load down gently in the hover before releasing it."
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective with the switch box",
+          "text": "The lever at the left of the seat with the landing light switches and the emergency hook release.",
+          "context": "The left hand holds it in flight; the labels on the switch box are French, as in all Aerospatiale helicopters.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the pilot's seat. Raising it makes the main rotor blades bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "More collective needs more engine power; the pilot raises it gently and watches the torque and rotor speed."
+            },
+            {
+              "id": "light",
+              "name": "Landing light switch",
+              "type": "switch3",
+              "match": [
+                "control:collective.switch.landing_light"
+              ],
+              "positions": [
+                {
+                  "name": "PHARE",
+                  "text": "The landing light is on."
+                },
+                {
+                  "name": "VARIO",
+                  "text": "The variable setting."
+                },
+                {
+                  "name": "ARRET",
+                  "text": "The landing light is off."
+                }
+              ],
+              "text": "This switch on the collective switch box turns the landing light on (PHARE) or off (ARRET); VARIO is the variable setting.",
+              "context": "The pilot uses the light when approaching a landing place at night.",
+              "src": "m1"
+            },
+            {
+              "id": "light-pos",
+              "name": "Landing light extend / retract switch",
+              "type": "switch2",
+              "match": [
+                "control:collective.switch.landing_light_position"
+              ],
+              "positions": [
+                {
+                  "name": "SORTI",
+                  "text": "The light swings out."
+                },
+                {
+                  "name": "RENTRE",
+                  "text": "The light swings back in."
+                }
+              ],
+              "text": "This rocker swings the landing light out of the body (SORTI) or back in (RENTRE).",
+              "context": "The light has to be out to light the ground ahead.",
+              "src": "m1"
+            },
+            {
+              "id": "hook-emer",
+              "name": "Cargo hook emergency release",
+              "type": "button",
+              "match": [
+                "control:collective.button.hook_emer"
+              ],
+              "text": "A guarded button that opens the cargo hook in an emergency, even when the normal release does not work. A cover over it stops accidental use.",
+              "context": "It is for the moment a hanging load starts to swing dangerously or the helicopter must get rid of it at once."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

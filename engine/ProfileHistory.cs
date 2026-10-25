@@ -15,7 +15,7 @@ using JoyPro.DeviceReference;
 namespace JoyPro.History
 {
     // Profile history (docs/profile-history.md): every save of a profile becomes a version in
-    // <data>\ProfileHistory\<profile id>\ (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro, like the engine's other data).
+    // <data>\ProfileHistory\<profile id>\ (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2, like the engine's other data).
     //
     //   history.json        the versions (id, time, kind, label, summary, content hash, kept, parent), the undo cursor,
     //                       the redo stack and the time of the last clean-up
@@ -270,10 +270,7 @@ namespace JoyPro.History
         {
             if (!string.IsNullOrWhiteSpace(RootOverride))
                 return RootOverride;
-            string data = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-            if (string.IsNullOrWhiteSpace(data))
-                data = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            return Path.Combine(data, FolderName);
+            return Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), FolderName);
         }
 
         // "<file name>-<10 hex of the full path>": readable in Explorer, unique per profile file.

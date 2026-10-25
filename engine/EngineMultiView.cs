@@ -35,8 +35,28 @@ namespace JoyPro.Engine
             return MultiViewLayout.Parse(File.ReadAllText(path, Encoding.UTF8));
         }
 
+        // The device's own sheet style of a page: the style of its first view sheet that has one (null = none).
+        public static SheetStyle OwnStyle(MultiViewLayout layout)
+        {
+            foreach (MultiViewItem item in layout == null ? new List<MultiViewItem>() : layout.Items)
+            {
+                try
+                {
+                    if (item.Image.Length > 0 || item.Sheet.Length == 0 || !File.Exists(item.Sheet))
+                        continue;
+                    DeviceLayoutSet set = DeviceLayoutSet.Parse(File.ReadAllText(item.Sheet, Encoding.UTF8), item.Sheet);
+                    if (set.Callouts != null && set.Callouts.Style != null)
+                        return set.Callouts.Style;
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return null;
+        }
+
         // One view at its own size: its sheet with the binds of the device (game null = relation names), or its image.
-        public static Bitmap RenderView(MultiViewItem item, string joystick, string game, string plane, bool dark, List<string> warnings)
+        public static Bitmap RenderView(MultiViewItem item, string joystick, string game, string plane, bool dark, List<string> warnings, SheetStyle style = null)
         {
             if (item.Image.Length > 0)
             {
@@ -63,7 +83,8 @@ namespace JoyPro.Engine
             Func<string, int, string> text = string.IsNullOrWhiteSpace(joystick)
                 ? (Func<string, int, string>)((input, column) => string.Empty)
                 : EngineLayoutRenderer.CalloutText(joystick, sheet, game, plane);
-            CalloutRenderOptions options = new CalloutRenderOptions { Dark = dark, PrintWidth = 0 };
+            // The view's own sheet style (its sheet's "style") wins over the page's.
+            CalloutRenderOptions options = new CalloutRenderOptions { Dark = dark, PrintWidth = 0, Style = sheet.Style ?? style };
             EngineCalloutRenderer.ApplyStyle(options, set);
             using (Bitmap picture = EngineCalloutRenderer.LoadPicture(set, sheet, null, dark, warnings))
                 return EngineCalloutRenderer.Render(sheet, picture, text, options);
@@ -80,10 +101,10 @@ namespace JoyPro.Engine
                     g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     g.SmoothingMode = SmoothingMode.AntiAlias;
                     g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                    g.Clear(EngineCalloutRenderer.PageColor(options.Dark));
+                    g.Clear(EngineCalloutRenderer.PageColor(options.Dark, options.Style));
                     foreach (MultiViewItem item in layout.Items)
                     {
-                        using (Bitmap view = RenderView(item, joystick, game, plane, options.Dark, warnings))
+                        using (Bitmap view = RenderView(item, joystick, game, plane, options.Dark, warnings, options.Style))
                         {
                             if (view == null)
                                 continue;
@@ -108,8 +129,8 @@ namespace JoyPro.Engine
     }
 
     // layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>]
-    //     [--light] [--print-width <px>]: the views at their own size as view-<n>.png (the Layout page places them) and
-    //     the page as one picture.
+    //     [--light] [--print-width <px>] [sheet style options]: the views at their own size as view-<n>.png (the Layout
+    //     page places them) and the page as one picture.
     internal static partial class Program
     {
         private static int RunLayoutMultiView(List<string> args, string outPath, bool textOutput)
@@ -121,21 +142,28 @@ namespace JoyPro.Engine
             string plane = PopOptionValue(args, "--plane") ?? string.Empty;
             int printWidth = PopOptionInt(args, "--print-width", 3508);
             bool light = PopFlag(args, "--light");
+            SheetStyle style = PopSheetStyleOptions(args, out string styleError);
+            if (styleError.Length > 0)
+                return Fail(styleError);
             if (args.Count != 1)
-                return Fail("layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>]");
+                return Fail("layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] " + SheetStyleUsage);
             string file = NormalizePath(args[0]);
             if (!EngineMultiView.IsMultiViewFile(file))
                 return Fail("Not a page with several views: " + args[0]);
             MultiViewLayout layout = EngineMultiView.Load(file);
             List<string> warnings = new List<string>();
             List<object> written = new List<object>();
+            // The device's own style (a view sheet's "style") over the given one.
+            style = EngineMultiView.OwnStyle(layout) ?? style;
+            if (style != null && !light && !style.IsDarkPage(true))
+                light = true;
             if (views.Length > 0)
             {
                 string folder = NormalizePath(views);
                 Directory.CreateDirectory(folder);
                 for (int i = 0; i < layout.Items.Count; i++)
                 {
-                    using (Bitmap view = EngineMultiView.RenderView(layout.Items[i], device, game.Length > 0 ? game : null, plane, !light, warnings))
+                    using (Bitmap view = EngineMultiView.RenderView(layout.Items[i], device, game.Length > 0 ? game : null, plane, !light, warnings, style))
                     {
                         if (view == null)
                             continue;
@@ -148,7 +176,7 @@ namespace JoyPro.Engine
             if (png.Length > 0)
             {
                 string alias = device.Length > 0 ? EngineLayoutRenderer.ResolveJoystickAlias(device) : layout.Model;
-                LayoutVisualOptions visual = new LayoutVisualOptions { LightStyle = light, PrintWidth = Math.Max(0, Math.Min(12000, printWidth)) };
+                LayoutVisualOptions visual = new LayoutVisualOptions { LightStyle = light, PrintWidth = Math.Max(0, Math.Min(12000, printWidth)), Style = style };
                 CalloutRenderOptions options = game.Length > 0
                     ? EngineLayoutRenderer.CalloutOptions(visual, game, plane, alias)
                     : EngineLayoutRenderer.CalloutOptions(visual, "All games", "Relation names", alias);

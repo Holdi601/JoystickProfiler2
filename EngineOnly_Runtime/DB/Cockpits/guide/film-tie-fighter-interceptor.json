@@ -1,0 +1,57 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-tie-fighter-interceptor",
+  "title": "TIE/IN interceptor (Star Wars, Return of the Jedi)",
+  "inherits": "film-tie-fighter",
+  "variants": [
+    "tie-interceptor"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "v1",
+      "title": "TIE Interceptor (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/tie-interceptor"
+    },
+    {
+      "id": "v2",
+      "title": "Return of the Jedi (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Return_of_the_Jedi"
+    }
+  ],
+  "intro": "The TIE interceptor is a fictional, faster version of the Empire's TIE fighter from Return of the Jedi. It has the same ball cockpit but pointed, dagger-shaped wings with four laser cannons at their tips. This guide takes the cockpit as the TIE fighter's; only the guns differ.",
+  "areas": [
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Control yoke and throttle",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control yoke",
+          "src": "v1",
+          "text": "The yoke with two hand grips in front of the pilot.",
+          "context": "The fire buttons sit under the thumbs.",
+          "controls": [
+            {
+              "id": "fire",
+              "name": "Fire buttons",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Buttons on the yoke grips under the thumbs fire the laser cannons at the tips of the dagger-shaped wings.",
+              "context": "The interceptor has four cannons instead of the TIE fighter's two, which makes it a stronger hunter of fighters.",
+              "src": "v1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

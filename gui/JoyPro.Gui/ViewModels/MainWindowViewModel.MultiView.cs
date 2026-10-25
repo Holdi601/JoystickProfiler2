@@ -59,7 +59,8 @@ public sealed partial class MainWindowViewModel
 
     public string MultiViewButtonLabel => HasMultiViewPage ? T("Page with {0} views", MultiViewStore.Load(deviceReference!.Model!.Id)!.Items.Count) : T("Several views");
 
-    public bool LayoutPageDark => !LayoutSheetLightStyle;
+    // The page of the shown device's sheets is dark: the page colour of its sheet style (MainWindowViewModel.SheetStyle.cs).
+    public bool LayoutPageDark => (deviceSheetStyle ?? globalSheetStyle).IsDarkPage(!LayoutSheetLightStyle);
 
     partial void OnSelectedMultiViewItemChanged(MultiViewItemModel? value)
     {
@@ -329,6 +330,8 @@ public sealed partial class MainWindowViewModel
             args.AddRange(["--device", device]);
         if (LayoutSheetLightStyle)
             args.Add("--light");
+        // The views in the sheet style (a view sheet's own style wins in the engine).
+        args.AddRange(SheetStyleArguments(globalSheetStyle));
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Drawing the views..."), forceText: false, background: true);
         if (result == null || result.ExitCode != 0)
             return;

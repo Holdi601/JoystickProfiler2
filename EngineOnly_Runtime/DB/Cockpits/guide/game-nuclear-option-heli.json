@@ -1,0 +1,396 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-nuclear-option-heli",
+  "title": "Nuclear Option: helicopter cockpit and default joystick map",
+  "inherits": "game-nuclear-option",
+  "remove": [
+    "main-display",
+    "status-displays",
+    "stick",
+    "throttle",
+    "pedals"
+  ],
+  "variants": [
+    "nuclear-option-heli"
+  ],
+  "games": [
+    "NuclearOption"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "nw",
+      "title": "Nuclear Option Wiki: Controls",
+      "kind": "game-manual",
+      "url": "https://nuclearoption.wiki.gg/wiki/Nuclear_Option_Wiki:Controls"
+    },
+    {
+      "id": "ns",
+      "title": "Steam: Question Joystick/keyboard ? (Nuclear Option discussions)",
+      "kind": "tutorial",
+      "url": "https://steamcommunity.com/app/2168680/discussions/0/5715697457572661391/"
+    },
+    {
+      "id": "na",
+      "title": "Nuclear Option 0.34.2 Rewired action catalog (JoyPro DB/NuclearOption/actions.tsv)",
+      "kind": "game-files",
+      "file": "NuclearOption_Data/resources.assets"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    },
+    {
+      "id": "h2",
+      "title": "SAH-46 Chicane (Nuclear Option Wiki)",
+      "kind": "reference",
+      "url": "https://nuclearoption.wiki.gg/wiki/SAH-46_Chicane"
+    }
+  ],
+  "intro": "Nuclear Option's helicopters use the same global joystick map as its aircraft, with the throttle axis acting as the collective. Their cockpits have large tactical screens for both crew seats and a display for the rotor and the engines. This guide explains what differs from the aircraft.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "HUD",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD (head-up display)",
+          "db": "hud",
+          "src": "h2",
+          "text": "The HUD of the helicopters adds a drift indicator to the usual flight numbers and weapon cues.",
+          "context": "Hovering pilots watch the drift indicator to stay over one spot.",
+          "controls": [
+            {
+              "id": "drift",
+              "name": "Drift indicator",
+              "type": "display",
+              "match": [
+                "item:hud:5"
+              ],
+              "text": "Below 75 km/h it shows the direction in which the helicopter slides over the ground.",
+              "context": "In a hover the pilot moves the cyclic against the drift until the marker sits still.",
+              "src": "h2"
+            },
+            {
+              "id": "cues",
+              "name": "Weapon and target cues",
+              "type": "display",
+              "match": [
+                "item:hud:6"
+              ],
+              "text": "Shows the selected weapon, the boxes around targets and the aiming marks of the helicopter's guns and missiles.",
+              "context": "The target is picked with Target Select; the cues then show when the weapon can hit.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tsd",
+      "where": "front-center",
+      "name": "TSD screens",
+      "text": "The large tactical screens for both crew seats.",
+      "panels": [
+        {
+          "id": "tsd-screens",
+          "name": "TSD screens (tactical situation displays)",
+          "db": "tsd-screens",
+          "src": "h2",
+          "text": "Large glass screens for the crew: a map picture with units, targets and threats, and the camera view of a locked target.",
+          "context": "Both crew seats have them, so the pilot and the gunner see the same tactical picture.",
+          "controls": [
+            {
+              "id": "tsd",
+              "name": "Tactical situation display",
+              "type": "display",
+              "match": [
+                "item:tsd-screens:1"
+              ],
+              "text": "A map picture that shows friendly units, targets and threats around the helicopter.",
+              "context": "The crew uses it to find targets and to stay away from enemy air defences.",
+              "src": "h2"
+            },
+            {
+              "id": "camera",
+              "name": "Targeting camera",
+              "type": "display",
+              "match": [
+                "item:tsd-screens:2"
+              ],
+              "text": "A zoomed camera view of the locked target.",
+              "context": "The crew checks the target in the camera before firing at it.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rotor",
+      "where": "front-left",
+      "name": "Rotor / engine display",
+      "text": "The display for the rotor speed and the engines.",
+      "panels": [
+        {
+          "id": "rotor-display",
+          "name": "Rotor / engine display",
+          "db": "rotor-display",
+          "src": "h2",
+          "text": "Shows how fast the main rotor and the tail rotor turn and whether the engines run.",
+          "context": "The engines keep the rotor at a steady speed by themselves; the display shows the pilot that all is well.",
+          "controls": [
+            {
+              "id": "main-rpm",
+              "name": "Main rotor RPM",
+              "type": "gauge",
+              "match": [
+                "item:rotor-display:1"
+              ],
+              "text": "Shows how fast the main rotor turns. The engines hold it at about 290 turns per minute.",
+              "context": "If the rotor slows down too much the helicopter loses lift.",
+              "src": "h2"
+            },
+            {
+              "id": "tail-rpm",
+              "name": "Tail rotor RPM",
+              "type": "gauge",
+              "match": [
+                "item:rotor-display:2"
+              ],
+              "text": "Shows how fast the tail rotor turns. The tail rotor keeps the helicopter from spinning and turns its nose.",
+              "context": "It turns together with the main rotor; the yaw axis changes its push.",
+              "src": "h2"
+            },
+            {
+              "id": "engine-state",
+              "name": "Engine state",
+              "type": "indicator",
+              "match": [
+                "item:rotor-display:3"
+              ],
+              "text": "Shows whether the engines run or are stopped and how much power they give.",
+              "context": "The pilot checks it at start-up and after taking hits.",
+              "src": "h2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "heli-controls",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The default joystick map as the helicopters use it.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Cyclic (stick)",
+          "src": "nw",
+          "text": "In the helicopters the joystick works as the cyclic, the stick that tilts the rotor to fly forward, back and sideways.",
+          "context": "The buttons keep the same jobs as in the aircraft, because Nuclear Option uses one map for all.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic axes (pitch, roll, tail rotor)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Forward and back tilt the rotor so the helicopter flies forward or backward, sideways tilts it to the sides. Twisting the stick (or the pedals) changes the tail rotor's push and turns the nose.",
+              "context": "Small, steady movements keep a helicopter calm; big movements make it swing.",
+              "src": "nw"
+            },
+            {
+              "id": "trigger",
+              "name": "Button 1 (trigger): fire / cargo hook",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Fires the selected weapon. When the cargo hook is selected as the weapon, it lowers and releases the cable of the hook instead.",
+              "context": "The weapon or the hook is chosen with button 4.",
+              "src": "nw"
+            },
+            {
+              "id": "select",
+              "name": "Button 2: Target Select",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "Selects the unit in the middle of the pilot's view as the target.",
+              "context": "The pilot looks or points the nose at a unit and presses it; guided weapons then go for that target.",
+              "src": "nw"
+            },
+            {
+              "id": "cancel",
+              "name": "Button 3: Target Cancel",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "A short press drops the last selected target. Holding the button clears all targets.",
+              "context": "Useful after a target is destroyed or when the pilot picked the wrong one.",
+              "src": "nw"
+            },
+            {
+              "id": "weapon",
+              "name": "Button 4: Next Weapon",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "A short press steps to the next weapon. Holding the button switches the automatic turret control on or off in aircraft that have a turret.",
+              "context": "The selected weapon shows on the HUD.",
+              "src": "nw"
+            },
+            {
+              "id": "cm-type",
+              "name": "Button 5: Next Countermeasure",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.1"
+              ],
+              "text": "Steps to the next kind of countermeasure, the things the aircraft throws out to fool enemy missiles.",
+              "context": "Flares fool heat-seeking missiles, chaff fools radar missiles; the pilot picks the right one for the threat.",
+              "src": "nw"
+            },
+            {
+              "id": "gear",
+              "name": "Button 6: Landing gear",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.2"
+              ],
+              "text": "Raises or lowers the landing gear, the wheels and their legs.",
+              "context": "Up after take-off for more speed, down before landing; the status display shows the gear position.",
+              "src": "nw"
+            },
+            {
+              "id": "cm-fire",
+              "name": "Button 7: Countermeasures",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.3"
+              ],
+              "text": "Releases the selected countermeasure, a flare or a bundle of chaff.",
+              "context": "The pilot presses it when a missile warning sounds, often while turning hard.",
+              "src": "nw"
+            },
+            {
+              "id": "nvg",
+              "name": "Button 8: Night vision",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.4"
+              ],
+              "text": "Switches night vision on or off, which makes the dark visible.",
+              "context": "It helps on night missions to see the ground and other aircraft.",
+              "src": "nw"
+            },
+            {
+              "id": "fa",
+              "name": "Button 9: Flight assist / auto-hover",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.5"
+              ],
+              "text": "A short press switches flight assist on or off. Holding it turns on auto-hover, which holds the helicopter in a steady hover by itself.",
+              "context": "Auto-hover helps when the crew needs a steady platform to aim or to pick up a load.",
+              "src": "nw"
+            },
+            {
+              "id": "radar",
+              "name": "Button 10: Radar",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "Switches the radar on or off. The radar sends radio waves to find other aircraft and units.",
+              "context": "A radar that is on finds more but also tells the enemy where the aircraft is.",
+              "src": "nw"
+            },
+            {
+              "id": "eject",
+              "name": "Button 11: Eject",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.7"
+              ],
+              "text": "Ejects the crew: the seats shoot the crew out of the aircraft in an emergency.",
+              "context": "Used only when the aircraft cannot be saved.",
+              "src": "nw"
+            },
+            {
+              "id": "stick-grip",
+              "name": "Stick grip: the game's flight commands",
+              "type": "other",
+              "match": [
+                "label:Stick grip: the game's flight controls (bind them to any button)"
+              ],
+              "text": "In the game's control picture the stick stands for all of Nuclear Option's flight commands, which the player can bind to any button. Besides the defaults above there are commands without a default joystick button, such as Radial Menu, Axis Modifier, Nav Lights, Toggle Engine, Previous Weapon, Link Guns, Weapon Wheel, Turret Control and Custom Axis 1.",
+              "context": "The same command list applies to every aircraft; the player sets the binds once in the game's control settings.",
+              "src": "na"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "src": "nw",
+          "text": "The collective is the lever at the left of a helicopter pilot that makes the helicopter climb or sink. In Nuclear Option the throttle axis works as the collective in helicopters.",
+          "context": "The engines keep the rotor speed steady, so the collective alone decides how much lift the rotor makes.",
+          "controls": [
+            {
+              "id": "collective-axis",
+              "name": "Throttle axis as collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Raising the lever makes the rotor blades bite the air more steeply, so the helicopter climbs. Lowering it makes the blades flatter and the helicopter sinks.",
+              "context": "The pilot uses it together with the cyclic: more collective in a fast climb or a heavy hover, less to come down.",
+              "src": "nw"
+            },
+            {
+              "id": "throttle-grip",
+              "name": "Throttle grip: the game's flight commands",
+              "type": "other",
+              "match": [
+                "label:Throttle grip: the game's flight controls (bind them to any button)"
+              ],
+              "text": "In the game's control picture the throttle stands for the full list of flight commands. In the helicopters its axis is the collective, and the player can also put Custom Axis 1 or other commands on the lever's buttons.",
+              "context": "Binds are global in Nuclear Option, so a collective set up once works in every helicopter.",
+              "src": "na"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Pedals",
+          "src": "nw",
+          "text": "The brake axis slows the wheels on the ground.",
+          "context": "By default it is the fifth axis of the device; the player binds a toe brake of the rudder pedals there.",
+          "controls": [
+            {
+              "id": "brake",
+              "name": "Brake axis",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.brake"
+              ],
+              "text": "Pressing the brake slows and stops the aircraft on the ground, harder the further it is pressed.",
+              "context": "Used after landing and while taxiing; it has no effect in the air.",
+              "src": "nw"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

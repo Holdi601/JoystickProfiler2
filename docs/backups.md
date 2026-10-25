@@ -14,7 +14,7 @@ break after an export, restore the set from before that export.
 
 ## How it works
 
-- One set per game and command run, in `%LOCALAPPDATA%\JoyPro\GameBackups\<date-time>_<game>\`. The set holds the
+- One set per game and command run, in `%LOCALAPPDATA%\JoyPro2\GameBackups\<date-time>_<game>\`. The set holds the
   copies plus `manifest.json` with the original paths. `JOYPRO_DATA_DIR` moves the folder (tests).
 - Files the export created (for example a new DCS `.diff.lua`) are recorded as "did not exist"; a restore removes
   them again.

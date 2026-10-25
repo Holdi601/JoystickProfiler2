@@ -23,7 +23,7 @@ CLI:
 - `engine games install disable <game> [<game> ...]` / `enable <game> [<game> ...]` (games you do not have; also comma-separated)
 - `engine games config set <game> <file or folder>` / `clear <game>` (your config location)
 
-Your choices are saved in the JoyPro data folder, `%LOCALAPPDATA%\JoyPro` (or `JOYPRO_DATA_DIR`):
+Your choices are saved in the JoyPro data folder, `%LOCALAPPDATA%\JoyPro2` (or `JOYPRO_DATA_DIR`):
 
 | File | Holds |
 |---|---|
@@ -33,10 +33,39 @@ Your choices are saved in the JoyPro data folder, `%LOCALAPPDATA%\JoyPro` (or `J
 
 The GUI reads all three through `engine games installs`, so the CLI and the GUI always agree.
 
+## Data folder
+
+JoyPro2 keeps everything it makes on this PC in **one** folder, `%LOCALAPPDATA%\JoyPro2` (the app's name): game data
+and command lists (`GameData`), backups of game files (`GameBackups`), the profile history (`ProfileHistory`), logs
+(`Logs`, `CrashReports`), the usage statistics (`Usage`), sync records (`Sync`), layouts and pictures (`Layouts`,
+`AutoLayouts`, `LayoutPreview`, `DeviceImages`, `HudImages`, `Media`, `Cache`), the local AI (`Llm`), updates
+(`Updates`) and the files of the table above. The GUI's own settings stay in `%APPDATA%\JoyPro2` (they roam with a
+Windows account). Every part uses the same folder: the engine, the GUI, the tray helper and its watcher, the force
+feedback process and the support file (`engine/JoyProDataFolder.cs`).
+
+`JOYPRO_DATA_DIR=<folder>` replaces it (portable setups, tests); JoyPro then never reads, writes or moves anything under
+`%LOCALAPPDATA%`.
+
+**Up to 2.3.x** JoyPro2 used two folders, `%LOCALAPPDATA%\JoyPro` (the engine's data) and `%LOCALAPPDATA%\JoyPro2`
+(logs, pictures, updates). The first JoyPro2 2.4 process that starts moves the old folder's content into JoyPro2:
+
+- Both folders are on the same drive, so every move is a rename: nothing is copied and deleted halfway. A start that
+  stops in the middle leaves every file either in the old or in the new place; the next start moves the rest. (Only a
+  move to another drive copies, checks size and SHA-256, and deletes the original afterwards.)
+- A file in use (an older JoyPro2 still running) stays; the old folder gets a note `MOVED-TO-JoyPro2.txt` and the next
+  start moves the rest.
+- A file that is in both folders: the same content is kept once; different content: JoyPro2's copy stays and the old
+  one is kept in `%LOCALAPPDATA%\JoyPro2\MigrationConflicts`. Nothing is deleted that is not in the new place.
+- When the old folder is empty it is replaced by a junction `%LOCALAPPDATA%\JoyPro` -> `%LOCALAPPDATA%\JoyPro2`, so an
+  older JoyPro2 (another install, a portable copy not yet updated) still finds and writes its data there. Delete the
+  junction once no JoyPro2 older than 2.4 is left on the PC; it holds no files of its own.
+- `%LOCALAPPDATA%\JoyPro2\data-migration.json` records what happened (status, files moved, files still in use,
+  conflicts).
+
 ## Game data
 
 The command lists JoyPro builds from your games are your data, not part of the program. They live in the game-data
-folder, `%LOCALAPPDATA%\JoyPro\GameData` (`<JOYPRO_DATA_DIR>\GameData` in tests), so a JoyPro update or rebuild never
+folder, `%LOCALAPPDATA%\JoyPro2\GameData` (`<JOYPRO_DATA_DIR>\GameData` in tests), so a JoyPro update or rebuild never
 replaces them and an install under Program Files needs no admin rights to refresh them:
 
 | Folder | Holds | Where |

@@ -52,6 +52,10 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        // The engine output starts closed: its row takes no room until it is opened (also before the window shows).
+        UpdateEngineOutputCompactLayout();
+        FitProfileHeader();
+        KeepListScrollingInLists();
         VirtualListGrowth.Attach(RelationsListBox);
         VirtualListGrowth.Attach(RelationNodeList, followSelected: false);
         RelationNodeList.AddHandler(DragDrop.DragOverEvent, RelationNodeListDragOver);
@@ -60,6 +64,7 @@ public partial class MainWindow : Window
         // Before the list's own arrow keys (which would move the selection instead).
         RelationNodeList.AddHandler(KeyDownEvent, RelationNodeListKeyDown, RoutingStrategies.Tunnel);
         AttachNavPagesDrag();
+        AttachNavigationHistory();
         notificationManager = new WindowNotificationManager(this)
         {
             Position = NotificationPosition.TopRight,
@@ -146,12 +151,13 @@ public partial class MainWindow : Window
     {
         if (DataContext is not MainWindowViewModel vm || !vm.HasProfile)
             return;
-        string? path = await PickProfileTargetAsync(T("Rename {0}", vm.ProfileDisplayName), vm.ProfileDisplayName + ".pr0file", vm.ProfilePath);
+        // JoyPro asks itself when the name is taken (and says how the replaced profile is kept), not the file dialog.
+        string? path = await PickProfileTargetAsync(T("Rename {0}", vm.ProfileDisplayName), vm.ProfileDisplayName + ".pr0file", vm.ProfilePath, overwritePrompt: false);
         if (!string.IsNullOrWhiteSpace(path))
             await vm.RenameProfileAsync(path);
     }
 
-    private async Task<string?> PickProfileTargetAsync(string title, string suggestedName, string currentPath)
+    private async Task<string?> PickProfileTargetAsync(string title, string suggestedName, string currentPath, bool overwritePrompt = true)
     {
         IStorageFolder? folder = null;
         string? directory = Path.GetDirectoryName(currentPath);
@@ -163,6 +169,7 @@ public partial class MainWindow : Window
             SuggestedFileName = suggestedName,
             SuggestedStartLocation = folder,
             DefaultExtension = "pr0file",
+            ShowOverwritePrompt = overwritePrompt,
             FileTypeChoices = [ProfileFileType]
         });
         return file == null ? null : GetLocalPath(file);
@@ -462,16 +469,8 @@ public partial class MainWindow : Window
             return;
         PixelRect area = screen.WorkingArea;
         double scale = screen.Scaling > 0 ? screen.Scaling : 1;
-        double maxWidth = area.Width / scale;
-        double maxHeight = area.Height / scale;
-        if (MinWidth > maxWidth)
-            MinWidth = maxWidth;
-        if (MinHeight > maxHeight)
-            MinHeight = maxHeight;
-        if (Width > maxWidth)
-            Width = maxWidth;
-        if (Height > maxHeight)
-            Height = maxHeight;
+        // With its title bar and frame (a 1280 x 720 screen at 150 % keeps the bottom edge and the status bar in view).
+        WindowFit.Apply(this, WindowFit.ClientSizeFor(area, scale));
         int width = (int)(Width * scale);
         int height = (int)(Height * scale);
         int x = Math.Min(Math.Max(Position.X, area.X), Math.Max(area.X, area.Right - width));
@@ -538,6 +537,7 @@ public partial class MainWindow : Window
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
+        ObserveAppearance(observedViewModel, DataContext as MainWindowViewModel);
         if (observedViewModel != null)
         {
             observedViewModel.PropertyChanged -= OnViewModelPropertyChanged;
@@ -556,8 +556,13 @@ public partial class MainWindow : Window
             observedViewModel.FollowInputJumped -= OnFollowInputActivity;
             observedViewModel.MultiViewRedraw -= OnMultiViewRedraw;
             observedViewModel.NavBarChanged -= OnNavBarChanged;
+            observedViewModel.RelationFilter.PropertyChanged -= OnRelationSearchChanged;
+            observedViewModel.BindFilter.PropertyChanged -= OnBindSearchChanged;
             observedViewModel.TextInputFocusProbe = null;
             observedViewModel.ConfirmHandler = null;
+            if (ReferenceEquals(observedViewModel.NavigationScrollHost, this))
+                observedViewModel.NavigationScrollHost = null;
+            CancelPendingScrollRestore();
         }
 
         observedViewModel = DataContext as MainWindowViewModel;
@@ -566,6 +571,8 @@ public partial class MainWindow : Window
             observedViewModel.PropertyChanged += OnViewModelPropertyChanged;
             observedViewModel.MultiViewRedraw += OnMultiViewRedraw;
             observedViewModel.NavBarChanged += OnNavBarChanged;
+            observedViewModel.RelationFilter.PropertyChanged += OnRelationSearchChanged;
+            observedViewModel.BindFilter.PropertyChanged += OnBindSearchChanged;
             ApplyNavBar();
             observedViewModel.WarningRequested += OnWarningRequested;
             observedViewModel.GameChangesOffered += OnGameChangesOffered;
@@ -584,9 +591,39 @@ public partial class MainWindow : Window
             observedViewModel.FollowInputJumped += OnFollowInputActivity;
             observedViewModel.TextInputFocusProbe = TextBoxHasFocus;
             observedViewModel.ConfirmHandler = AskConfirmationAsync;
+            // Back / Forward keep the scroll positions of the page's lists.
+            observedViewModel.NavigationScrollHost = this;
             // The output panel's place follows the view model (hidden when closed) from the first layout on.
             Dispatcher.UIThread.Post(UpdateEngineOutputCompactLayout);
         }
+    }
+
+    // A new search (or search scope) shows the list from its first row: the scroll offset of the long list before
+    // left a short result list scrolled past most of its rows.
+    private void OnRelationSearchChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(ListFilterViewModel.SearchText) or nameof(ListFilterViewModel.SearchScope))
+            ScrollListToTop(RelationsListBox);
+    }
+
+    private void OnBindSearchChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(ListFilterViewModel.SearchText) or nameof(ListFilterViewModel.SearchScope))
+            ScrollListToTop(this.FindControl<ListBox>("BindsListBox"));
+    }
+
+    private static void ScrollListToTop(ListBox? list)
+    {
+        if (list == null)
+            return;
+        // After the list is filled again (the filter runs on the same change).
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (list.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault() is { } scroll)
+                scroll.Offset = new Vector(scroll.Offset.X, 0);
+            if (list.ItemCount > 0)
+                list.ScrollIntoView(0);
+        }, DispatcherPriority.Background);
     }
 
     // The HUD designer's preview knows the widgets' real sizes (pictures loaded): measure after the next layout pass.
@@ -640,6 +677,7 @@ public partial class MainWindow : Window
         if (gameSetupWindow != null || DataContext is not MainWindowViewModel vm)
             return;
         gameSetupWindow = new GameSetupWindow { DataContext = vm };
+        WindowFit.ToScreen(gameSetupWindow, this);
         try
         {
             await gameSetupWindow.ShowDialog(this);
@@ -657,6 +695,7 @@ public partial class MainWindow : Window
         if (replaceDeviceWindow != null || DataContext is not MainWindowViewModel vm)
             return;
         replaceDeviceWindow = new ReplaceDeviceWindow { DataContext = vm };
+        WindowFit.ToScreen(replaceDeviceWindow, this);
         try
         {
             await replaceDeviceWindow.ShowDialog(this);
@@ -681,6 +720,7 @@ public partial class MainWindow : Window
         }
         setupWizardWindow = new SetupWizardWindow { DataContext = vm.SetupWizard };
         setupWizardWindow.Closed += (_, _) => setupWizardWindow = null;
+        WindowFit.ToScreen(setupWizardWindow, this);
         setupWizardWindow.Show(this);
     }
 
@@ -689,7 +729,9 @@ public partial class MainWindow : Window
     {
         if (!IsVisible)
             return true;
-        return await new ConfirmWindow(request).ShowDialog<bool>(this);
+        ConfirmWindow dialog = new(request);
+        WindowFit.ToScreen(dialog, this);
+        return await dialog.ShowDialog<bool>(this);
     }
 
     // A tab of the Settings page, a link to Settings > Local AI or the version in the corner: once the page is laid out,
@@ -1048,6 +1090,7 @@ public partial class MainWindow : Window
 
     // Shortcuts of the main pages (TextBoxes keep their own Ctrl+Z / Ctrl+F): Ctrl+F search, Ctrl+Shift+F database
     // search, Ctrl+N new relation, Ctrl+S save, Ctrl+Z undo the last change, F5 refresh, Ctrl+1..4 the main pages.
+    // Alt+Left / Alt+Right (Back / Forward): MainWindow.Navigation.cs.
     protected override async void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
@@ -1055,6 +1098,11 @@ public partial class MainWindow : Window
             return;
         bool ctrl = e.KeyModifiers.HasFlag(KeyModifiers.Control);
         bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
+        if (!TextBoxHasFocus() && HandleTextSizeKey(vm, e, ctrl))
+        {
+            e.Handled = true;
+            return;
+        }
         if (vm.IsLayoutStage && vm.IsDevicePicturesSection && await HandleLayoutKeyAsync(vm, e, ctrl, shift))
         {
             e.Handled = true;
@@ -1161,6 +1209,17 @@ public partial class MainWindow : Window
             default:
                 return false;
         }
+    }
+
+    // Model... on a Layout device card: the menu opens at the right edge of the whole card (over the picture), so it never
+    // covers the device list or the card's own chip and buttons.
+    internal void LayoutModelMenuClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || FlyoutBase.GetAttachedFlyout(button) is not FlyoutBase flyout)
+            return;
+        Control card = button.FindAncestorOfType<ListBoxItem>() ?? (Control)button;
+        flyout.ShowAt(card);
+        e.Handled = true;
     }
 
     private static readonly FilePickerFileType ReferencePictures = new("Pictures") { Patterns = ["*.png", "*.jpg", "*.jpeg", "*.webp", "*.bmp"] };

@@ -40,6 +40,8 @@ namespace JoyPro.Engine
         public string Function { get; set; }
         public List<EngineRelationItemDto> Nodes { get; set; }
         public EngineBindDto Bind { get; set; }
+        // "relations list --titles" only: the distinct titles of the relation's actions (every switched-on aircraft).
+        public List<string> Titles { get; set; }
 
         public EngineRelationDto()
         {
@@ -229,6 +231,21 @@ namespace JoyPro.Engine
         public int SkippedEntries { get; set; }
         // .jp binds dropped because the .diff.lua no longer has them (removed in DCS).
         public int StaleBackupEntriesSkipped { get; set; }
+        // One device under several instance GUIDs (Windows gave it a new ID over time): read as one device
+        // (MergeSameNameDevices). DCS loads only one file per aircraft; the binds of the other files of that aircraft
+        // are older copies and skipped.
+        public bool OnlyConnected { get; set; }
+        public bool MergeSameNameDevices { get; set; }
+        public int OlderDeviceCopyFilesSkipped { get; set; }
+        public int OlderDeviceCopyEntriesSkipped { get; set; }
+        // "old {GUID} -> live {GUID}" per device read as one.
+        public List<string> MergedDevices { get; set; }
+        // Same-name devices connected at the same time (real twins): kept apart.
+        public List<string> TwinDevices { get; set; }
+        // --only-connected: files of devices that are not connected.
+        public int NotConnectedFilesSkipped { get; set; }
+        public int NotConnectedEntriesSkipped { get; set; }
+        public List<string> NotConnectedDevices { get; set; }
         public List<string> Errors { get; set; }
         public List<string> Warnings { get; set; }
 
@@ -263,6 +280,11 @@ namespace JoyPro.Engine
             ForceFeedbackDevicesImported = 0;
             SkippedEntries = 0;
             StaleBackupEntriesSkipped = 0;
+            OnlyConnected = false;
+            MergeSameNameDevices = true;
+            MergedDevices = new List<string>();
+            TwinDevices = new List<string>();
+            NotConnectedDevices = new List<string>();
             Errors = new List<string>();
             Warnings = new List<string>();
         }
@@ -282,6 +304,11 @@ namespace JoyPro.Engine
         public bool ImportDeadzone { get; set; }
         public bool ImportSaturationX { get; set; }
         public bool ImportSaturationY { get; set; }
+        // Skip the files of devices that are not connected (counted in the result).
+        public bool OnlyConnected { get; set; }
+        // One device under several instance GUIDs is read as one: the connected GUID, else the GUID of the newest file
+        // (unless two or more of them are connected at once: real twins stay apart).
+        public bool MergeSameNameDevices { get; set; }
         public Action<string> StatusSink { get; set; }
 
         public EngineDcsImportOptions()
@@ -298,6 +325,8 @@ namespace JoyPro.Engine
             ImportDeadzone = false;
             ImportSaturationX = false;
             ImportSaturationY = false;
+            OnlyConnected = false;
+            MergeSameNameDevices = true;
             StatusSink = null;
         }
     }

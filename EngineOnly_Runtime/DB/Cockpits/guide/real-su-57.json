@@ -1,0 +1,383 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-su-57",
+  "title": "Su-57 Felon",
+  "variants": [
+    "su-57"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Sukhoi Su-57 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Sukhoi_Su-57"
+    },
+    {
+      "id": "d1",
+      "title": "Su-27 DCS Flaming Cliffs Flight Manual EN (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/Su-27/Doc/Su-27 DCS Flaming Cliffs Flight Manual EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Su-57 is Russia's fifth-generation stealth fighter, shaped and coated so that radars see it badly. The pilot sits under a two-piece canopy on a K-36D-5 ejection seat, in a glass cockpit with two 15-inch screens, a smaller screen and a wide head-up display. It has a HOTAS, but its buttons are not public: JoyPro uses the Su-27 family set and marks it as assumed; the panels follow the published cockpit description.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "Wide-angle HUD",
+      "text": "The HUD and the keypad under it.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "Head-up display",
+          "src": "w1",
+          "text": "A wide-angle head-up display with a data entry panel below it.",
+          "context": "The pilot reads flight and aiming data here while looking outside.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the aiming marks for the weapons, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "ufcp",
+              "name": "Up-front control panel",
+              "type": "keypad",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A keypad with a small text display below the HUD, where the pilot types numbers such as radio frequencies and navigation points.",
+              "context": "Because it sits high up near the HUD, the pilot can enter data without looking far down into the cockpit. Its single switches are not described in the sources JoyPro uses.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Two 15-inch MFDs",
+      "text": "The two large screens.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Two 15-inch MFDs",
+          "src": "w1",
+          "text": "Two large colour screens side by side, with keys around them.",
+          "context": "They show almost everything: sensors, map, weapons and systems.",
+          "controls": [
+            {
+              "id": "mfd-left",
+              "name": "Left MFD (15 in)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The large left colour screen (a multi-function screen with buttons around its edge). It shows pages such as the radar, the tactical situation or the map.",
+              "context": "The pilot chooses which page it shows; the same screen can show the radar, the map or the aircraft's systems.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-right",
+              "name": "Right MFD (15 in)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The large right colour screen (a multi-function screen with buttons around its edge). It shows pages such as the weapons, the systems or the sensors.",
+              "context": "The pilot can keep the fight picture on one screen and the systems on the other.",
+              "src": "w1"
+            },
+            {
+              "id": "bezel",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Buttons around the edges of the screens. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The pilot uses them to change pages and options; the page layout is not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "small-mfd",
+      "where": "center-pedestal",
+      "name": "Small MFD and control panel",
+      "text": "The smaller screen below the main ones.",
+      "panels": [
+        {
+          "id": "small-mfd",
+          "name": "Small MFD and control panel",
+          "src": "w1",
+          "text": "A smaller screen with a control panel below the two main screens.",
+          "context": "It adds a third picture and a place to enter data.",
+          "controls": [
+            {
+              "id": "small-mfd",
+              "name": "Small MFD",
+              "type": "display",
+              "match": [
+                "item:small-mfd:1"
+              ],
+              "text": "A smaller colour screen below the two main ones, for extra pages.",
+              "context": "The single switches of the small MFD are not described in the sources JoyPro uses.",
+              "src": "w1"
+            },
+            {
+              "id": "control-panel",
+              "name": "Control panel",
+              "type": "keypad",
+              "match": [
+                "item:small-mfd:2"
+              ],
+              "text": "A keypad below the small screen for entering data and controlling systems.",
+              "context": "Its exact keys are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The throttles with engine and radio panels.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console: throttles",
+          "text": "The throttles with engine and radio panels.",
+          "context": "The left hand stays on the throttles.",
+          "controls": [
+            {
+              "id": "engine",
+              "name": "Engine panel",
+              "type": "other",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "Switches for starting and running the two engines, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The pilot's grips.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "d1",
+          "text": "The centre stick of the Flanker family with the trim hat, the gun and stores triggers, the autopilot override lever and the target buttons.",
+          "context": "The Su-57 has a HOTAS, but its buttons are not public; JoyPro uses the Su-27 family set and marks it as assumed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Trim hat (TRIM)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "d1"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger (OGON)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the 9A1-4071K cannon.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go.",
+              "src": "d1"
+            },
+            {
+              "id": "stores-trigger",
+              "name": "Stores trigger (PODV)",
+              "type": "trigger",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A flip-down trigger in front of the gun trigger. Pulling it launches the missiles or releases the bombs and other stores.",
+              "context": "On Flanker grips the gun and the stores have separate triggers, so the pilot cannot fire the wrong one by mistake. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            },
+            {
+              "id": "ap-override",
+              "name": "Autopilot override trigger",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "A lever low on the front of the grip. While the pilot holds it, the autopilot lets go and he can fly by hand; when he releases it, the autopilot takes over again.",
+              "context": "It is useful for a quick correction without switching the autopilot off. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            },
+            {
+              "id": "weapon-select",
+              "name": "Weapon select switch",
+              "type": "button",
+              "match": [
+                "control:stick.button.weapon_select"
+              ],
+              "text": "A switch on the grip head that steps through the weapon types.",
+              "context": "The pilot picks the next weapon without looking down. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            },
+            {
+              "id": "lock",
+              "name": "Lock-on button",
+              "type": "button",
+              "match": [
+                "control:stick.button.lock"
+              ],
+              "text": "Pressing this button locks the radar or sight onto the target.",
+              "context": "Once locked, the missiles get the target data they need. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            },
+            {
+              "id": "reset",
+              "name": "Reset button (SBROS)",
+              "type": "button",
+              "match": [
+                "control:stick.button.reset"
+              ],
+              "text": "Pressing this button breaks the lock and sends the radar back to searching.",
+              "context": "The pilot uses it to drop one target and look for another. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            },
+            {
+              "id": "nws",
+              "name": "Nosewheel steering button",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws"
+              ],
+              "text": "While this button is held, the pilot steers the front wheel with the pedals on the ground (nosewheel steering, like a car's steering).",
+              "context": "It is used for taxiing. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "src": "d1",
+          "text": "The two throttle levers for the two engines, with the air brake switch, the target designator control and the countermeasures button.",
+          "context": "Only the common functions are listed.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "airbrake",
+              "name": "Air brake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft)",
+                  "text": "The air brake opens."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The air brake closes."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again.",
+              "src": "d1"
+            },
+            {
+              "id": "designator",
+              "name": "Target designator control",
+              "type": "hat",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "A tiny thumb joystick on the throttle grip that moves the target marker or the radar's scan zone on the screen. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "context": "The pilot uses it to pick targets on the radar or sensor picture without taking his hand off the throttle.",
+              "src": "d1"
+            },
+            {
+              "id": "cms",
+              "name": "Countermeasures button",
+              "type": "button",
+              "match": [
+                "control:throttle.button.cms"
+              ],
+              "text": "Pressing this button throws out chaff (metal strips that confuse radar missiles) and flares (hot decoys for heat-seeking missiles).",
+              "context": "The pilot uses it when a missile is fired at him. Assumed from the Su-27 family; not confirmed for this aircraft.",
+              "src": "d1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

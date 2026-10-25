@@ -52,6 +52,35 @@ public static class DevicePhotoConsent
                 DeviceReferenceService.ReferenceSettings settings = DeviceReferenceService.ReadSettings();
                 settings.PhotoMode = mode;
                 settings.VendorPhotos = mode != Never;
+                if (mode == Never)
+                    settings.AutoDownloadPhotos = false;
+                DeviceReferenceService.WriteSettings(settings);
+            }
+            Changed?.Invoke(null, EventArgs.Empty);
+        }
+    }
+
+    // "Download reference photos automatically" (Settings > Privacy, or "Always download" on the offer): the photos of
+    // every device that appears are downloaded in the background. Switching it on also allows the photos (mode
+    // always); the mode "never" switches it off.
+    public static bool AutoDownload
+    {
+        get
+        {
+            DeviceReferenceService.ReferenceSettings settings = DeviceReferenceService.ReadSettings();
+            return settings.AutoDownloadPhotos && Mode != Never;
+        }
+        set
+        {
+            lock (Gate)
+            {
+                DeviceReferenceService.ReferenceSettings settings = DeviceReferenceService.ReadSettings();
+                settings.AutoDownloadPhotos = value;
+                if (value)
+                {
+                    settings.PhotoMode = Always;
+                    settings.VendorPhotos = true;
+                }
                 DeviceReferenceService.WriteSettings(settings);
             }
             Changed?.Invoke(null, EventArgs.Empty);
@@ -91,6 +120,8 @@ public static class DevicePhotoConsent
                 DeviceReferenceService.ReferenceSettings settings = DeviceReferenceService.ReadSettings();
                 settings.PhotoMode = a;
                 settings.VendorPhotos = a != Never;
+                if (a == Never)
+                    settings.AutoDownloadPhotos = false;
                 if (a == Never)
                     settings.PhotoAnswers = (settings.PhotoAnswers ?? []).Where(p => p.Value != "yes").ToDictionary(p => p.Key, p => p.Value);
                 else if (!string.IsNullOrWhiteSpace(modelId))

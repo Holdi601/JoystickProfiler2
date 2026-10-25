@@ -1,0 +1,442 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mig-23",
+  "title": "MiG-23MLA / MLD Flogger",
+  "variants": [
+    "mig-23mla-mld"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mikoyan-Gurevich MiG-23 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mikoyan-Gurevich_MiG-23"
+    },
+    {
+      "id": "d1",
+      "title": "DCS MiG-21bis Flight Manual (EN) (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/MIG-21bis/Doc/DCS MiG-21bis EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The MiG-23 is a Soviet fighter with swing wings: the pilot can spread the wings wide for slow flight or sweep them back for speed. Besides the stick and the throttle he has a wing sweep handle on the left console. The view to the rear is poor. The MLA and MLD are the later fighter versions with the Sapfir-23ML radar. No public description of the grips was found, so this guide stays with the common controls and the general panel layout.",
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "HUD / sight",
+      "text": "The sight on top of the panel.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD / sight (ASP-23D)",
+          "text": "The ASP-23D sight with a head-up display, a glass in front of the pilot's eyes that shows aiming marks for the gun and missiles and navigation data.",
+          "context": "The pilot looks through it during an intercept or a dogfight.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Sight head / HUD",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows the aiming marks for the gun and the missiles and some navigation data, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "sight-control",
+              "name": "Sight control panel",
+              "type": "other",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A panel with the settings of the sight, such as its mode and brightness.",
+              "context": "The pilot sets it for the weapon he wants to use. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby-reticle",
+              "name": "Standby reticle",
+              "type": "display",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "A simple fixed aiming mark that still works when the sight's computer has failed.",
+              "context": "With it the pilot can still aim the gun roughly."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The radar display over the instruments.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel and radar display",
+          "src": "w1",
+          "text": "The main panel: the radar indicator at the top, flight and engine instruments, the wing sweep indicator, the weapon panel and the warning panel.",
+          "context": "The MiG-23 was the first Soviet fighter with a radar that could see targets below it.",
+          "controls": [
+            {
+              "id": "radar",
+              "name": "Radar indicator (Sapfir-23ML)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The screen of the Sapfir-23ML radar, which shows the aircraft the radar has found.",
+              "context": "The pilot locks a target on it for the radar-guided missiles.",
+              "src": "w1"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude director indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "hsi",
+              "name": "Navigation indicator (HSI)",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "sweep-ind",
+              "name": "Wing sweep angle indicator",
+              "type": "indicator",
+              "match": [
+                "item:instrument-panel:6"
+              ],
+              "text": "This indicator shows how far the wings are swept back: 16, 45 or 72 degrees.",
+              "context": "The pilot checks it after moving the wing sweep handle."
+            },
+            {
+              "id": "engine",
+              "name": "Tachometer and temperature gauges",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:7"
+              ],
+              "text": "Gauges that show how fast the R-35 engine turns and how hot it runs. They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel gauge",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:8"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            },
+            {
+              "id": "weapons",
+              "name": "Weapon selection panel",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:9"
+              ],
+              "text": "The panel for choosing the weapon: the missiles, the gun or ground attack stores.",
+              "context": "The pilot picks the weapon here, then fires with the stick buttons. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "warning",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:10"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When a warning comes on, the pilot looks here first to see which system needs attention."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Throttle, wing sweep, flaps, start and radio.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console: throttle and wing sweep",
+          "text": "The left side with the throttle, the wing sweep handle, the flaps control, the engine start panel and the radio.",
+          "context": "Besides stick and throttle the MiG-23 pilot has a third big control: the wing sweep handle next to the throttle.",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Flaps control",
+              "type": "switch",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "This control moves the flaps, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once the aircraft is fast enough."
+            },
+            {
+              "id": "engine-start",
+              "name": "Engine start panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "Switches for starting the R-35 engine, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:5"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, navigation, IFF and lights.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console: electrics and radios",
+          "text": "The right side with the electrical panel, the RSBN navigation panel, the IFF and the lights.",
+          "context": "These are set before the flight.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "rsbn",
+              "name": "Navigation (RSBN) panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Controls of the navigation system, the system that always knows where the aircraft is and which way to fly to the next point. RSBN is a Soviet radio beacon system that tells the plane its direction and distance to a station.",
+              "context": "The pilot uses it to choose where to fly and to get steering to the next point. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "iff",
+              "name": "IFF panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "The IFF box answers 'who are you?' questions from radars with a code number, so friendly radars and fighters know this aircraft is a friend.",
+              "context": "The pilot sets the codes before the flight. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The centre stick with the gun trigger, the weapon button, the trim switch and the wheel brake lever.",
+          "context": "No public description of the MiG-23 grip was found; the brake lever, airbrake and radio buttons are assumed as on the other MiGs of that time.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. The MiG-23 rolls with spoilers and tail halves moving in opposite directions.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the GSh-23L cannon.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "launch",
+              "name": "Weapon launch button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches missiles or stores.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            },
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up; it only trims the nose up and down.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again."
+            },
+            {
+              "id": "brake",
+              "name": "Wheel brake lever",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.brake"
+              ],
+              "text": "A lever on the back of the stick grip that the fingers squeeze to brake the wheels. The rudder pedals decide which side brakes more, so the pilot can steer with the brakes.",
+              "context": "This is the Russian way of braking: the brakes are on the stick, not on the pedals. The pilot uses it while taxiing and after landing."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and wing sweep",
+          "text": "The throttle with the airbrake switch and the radio button, and the wing sweep handle beside it.",
+          "context": "The left hand moves between the throttle and the wing sweep handle.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:1"
+              ],
+              "text": "The lever that makes the R-35 engine stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            },
+            {
+              "id": "wing-sweep",
+              "name": "Wing sweep handle",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.wing_sweep",
+                "item:left-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "16",
+                  "text": "Wings fully forward: take-off, landing, slow flight."
+                },
+                {
+                  "name": "45",
+                  "text": "Middle position: manoeuvring and cruise."
+                },
+                {
+                  "name": "72",
+                  "text": "Wings fully back: high speed."
+                }
+              ],
+              "text": "This handle sweeps the wings: forward spreads them wide (16 degrees) for take-off, landing and slow flight, back sweeps them to 45 or 72 degrees for fighting and for high speed.",
+              "context": "Wide wings give lift at low speed; swept wings cut the drag when flying fast."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The airbrakes open."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The airbrakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "radio-button",
+              "name": "Radio button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

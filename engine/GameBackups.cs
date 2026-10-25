@@ -51,10 +51,7 @@ namespace JoyPro.Engine
 
         public static string Root()
         {
-            string root = Environment.GetEnvironmentVariable(DataFolderVariable);
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            return Path.Combine(root, "GameBackups");
+            return Path.Combine(global::JoyPro.Logging.JoyProDataFolder.Root(), "GameBackups");
         }
 
         // Before JoyPro writes, replaces, moves or deletes a game file.

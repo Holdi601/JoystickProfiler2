@@ -20,7 +20,7 @@
             <Grid RowDefinitions="Auto,Auto,Auto,2*,Auto,*" RowSpacing="8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon Data="{StaticResource Icon.Airplane}" Width="24" Height="24" />
-                    <TextBlock Text="{l:T 'Cockpits'}" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" />
+                    <TextBlock Text="{l:T 'Cockpits'}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" VerticalAlignment="Center" />
                 </StackPanel>
                 <TextBox Grid.Row="1" x:Name="CockpitSearch" Text="{Binding SearchText}" Watermark="{l:T 'Search: aircraft, version, game, control (TMS)...'}" />
                 <Grid Grid.Row="2" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
@@ -44,18 +44,18 @@
                         <DataTemplate x:DataType="vm:CockpitAircraftItem">
                             <StackPanel Spacing="1">
                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.7" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Subtitle}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextTrimming="CharacterEllipsis" />
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <TextBlock Grid.Row="4" Text="{l:T 'Version / block / tranche'}" FontWeight="SemiBold" />
+                <TextBlock Grid.Row="4" Text="{l:T 'Version / block / tranche'}" FontWeight="SemiBold" TextWrapping="Wrap" />
                 <ListBox Grid.Row="5" ItemsSource="{Binding Variants}" SelectedItem="{Binding SelectedVariant}" MinHeight="44" MaxHeight="230">
                     <ListBox.ItemTemplate>
                         <DataTemplate x:DataType="vm:CockpitVariantItem">
                             <StackPanel Spacing="1">
                                 <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding Subtitle}" FontSize="12" Opacity="0.7" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Subtitle}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" TextTrimming="CharacterEllipsis" />
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -68,7 +68,7 @@
                     <TextBlock Text="{Binding Status}" Opacity="0.7" IsVisible="{Binding HasNoVariant}" TextWrapping="Wrap" />
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" IsVisible="{Binding HasVariant}">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding Title}" FontSize="{DynamicResource JP.FontSize.22}" FontWeight="Bold" TextWrapping="Wrap" />
                             <TextBlock Text="{Binding Facts}" Opacity="0.8" TextWrapping="Wrap" />
                             <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" />
                         </StackPanel>
@@ -84,7 +84,7 @@
                         </StackPanel>
                     </Grid>
                     <!-- Pictures from the user's own games (made on this PC, never shipped) -->
-                    <Border BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                    <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10,6">
                         <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
                             <TextBlock Text="{Binding PicturesStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.85" />
                             <ComboBox Grid.Column="1" ItemsSource="{Binding PictureModes}" SelectedIndex="{Binding PictureModeIndex}" MinWidth="200"
@@ -93,14 +93,14 @@
                             <Button Grid.Column="2" Content="{l:T 'Build pictures from my games'}" Command="{Binding BuildPicturesCommand}" IsEnabled="{Binding !IsBuildingPictures}"
                                     VerticalAlignment="Center"
                                     ToolTip.Tip="{l:T 'Renders the cockpits of your installed games ({0}) with every clickable control numbered and named as the game names it. Made on this PC, kept with your game data.', Arg0={Binding PictureGames}}" />
-                            <TextBlock Grid.Row="1" Text="{Binding GamePicturesText}" FontSize="12" Opacity="0.7" IsVisible="{Binding HasGamePictures}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="1" Text="{Binding GamePicturesText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" IsVisible="{Binding HasGamePictures}" TextWrapping="Wrap" VerticalAlignment="Center" />
                             <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding GamePictureSources}" SelectedIndex="{Binding GamePictureSourceIndex}" MinWidth="200"
                                       IsVisible="{Binding HasGamePictureChoice}" VerticalAlignment="Center"
                                       ToolTip.Tip="{l:T 'Pictures from: several of your games have this aircraft. The best set comes first; a set rated low quality comes last.'}" />
                             <!-- Picture packs of JoyPro's releases (CockpitsViewModel.PicturePacks.cs): the offer for this
                                  aircraft, the download with its progress, all my aircraft / one game. -->
                             <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Spacing="6">
-                                <Border IsVisible="{Binding HasPackOffer}" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                <Border IsVisible="{Binding HasPackOffer}" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                     <WrapPanel ItemSpacing="8" LineSpacing="6">
                                         <TextBlock Text="{Binding PackOfferText}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold" />
                                         <Button Classes="accent" Content="{l:T 'Download'}" Command="{Binding DownloadOfferedPacksCommand}"
@@ -111,18 +111,18 @@
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="2" IsVisible="{Binding IsDownloadingPacks}">
                                     <ProgressBar Value="{Binding PackProgress}" Minimum="0" Maximum="100" Height="8" VerticalAlignment="Center" />
                                     <Button Grid.Column="1" Grid.RowSpan="2" Classes="small" Content="{l:T 'Cancel'}" Command="{Binding CancelPackDownloadCommand}" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Row="1" Text="{Binding PackProgressText}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
+                                    <TextBlock Grid.Row="1" Text="{Binding PackProgressText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" TextWrapping="Wrap" />
                                 </Grid>
-                                <TextBlock Text="{Binding PackStatus}" TextWrapping="Wrap" FontSize="12" Opacity="0.85" IsVisible="{Binding PackStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                <TextBlock Text="{Binding PackStatus}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.85" IsVisible="{Binding PackStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                 <Expander Header="{l:T 'Picture packs from JoyPro\'s releases'}" IsExpanded="{Binding PacksExpanded}" HorizontalAlignment="Stretch">
                                     <StackPanel Spacing="6" Margin="0,4,0,0">
-                                        <TextBlock TextWrapping="Wrap" FontSize="12" Opacity="0.8"
+                                        <TextBlock TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8"
                                                    Text="{l:T 'Cockpit pictures JoyPro rendered from the games, for aircraft you cannot or do not want to build yourself. The designs, textures and names belong to their owners. Settings &gt; Privacy decides whether JoyPro asks before a download.'}" />
                                         <WrapPanel ItemSpacing="8" LineSpacing="6">
                                             <Button Content="{l:T 'Download pictures for all my aircraft'}" Command="{Binding DownloadMyAircraftPacksCommand}" IsEnabled="{Binding !IsDownloadingPacks}"
                                                     ToolTip.Tip="{l:T 'The packs of every aircraft of your installed games that JoyPro knows; you see the total size first'}" />
                                         </WrapPanel>
-                                        <TextBlock Text="{Binding PackListStatus}" TextWrapping="Wrap" FontSize="12" Opacity="0.75" IsVisible="{Binding PackListStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <TextBlock Text="{Binding PackListStatus}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.75" IsVisible="{Binding PackListStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                         <ItemsControl ItemsSource="{Binding PackGames}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="vm:CockpitPackGameItem">
@@ -156,13 +156,13 @@
                         <TextBlock Text="{Binding CompareStatus}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold" />
                         <Button Classes="small" Content="{l:T 'Hide'}" Command="{Binding ClearCompareCommand}" />
                     </StackPanel>
-                    <Border IsVisible="{Binding IsFiction}" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,6">
+                    <Border IsVisible="{Binding IsFiction}" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,6">
                         <TextBlock Text="{Binding FictionNote}" TextWrapping="Wrap" />
                     </Border>
 
                     <!-- The manual: Overview, the grips (drawing with numbered callouts and the HOTAS table per mode), one
                          page per panel (drawing and numbered list); a search over every control and function. -->
-                    <Border IsVisible="{Binding HasVariant}" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="8">
+                    <Border IsVisible="{Binding HasVariant}" BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8">
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="6">
                             <ListBox ItemsSource="{Binding MainPages}" SelectedItem="{Binding SelectedMainPage}" Background="Transparent">
                                 <ListBox.ItemsPanel>
@@ -211,22 +211,22 @@
                          control with "What does it do?"; next to the page on a wide window, above it on a narrow one
                          (CockpitsView.axaml.cs). A click on a control marks its callout, a click on a callout picks its control. -->
                     <Grid x:Name="GuideSplit" ColumnDefinitions="430,*" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="10" IsVisible="{Binding HasVariant}">
-                        <Border x:Name="GuidePane" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="8" VerticalAlignment="Top" IsVisible="{Binding HasGuideTree}">
+                        <Border x:Name="GuidePane" BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="8" VerticalAlignment="Top" IsVisible="{Binding HasGuideTree}">
                             <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6">
                                 <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                                     <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                                         <PathIcon Data="{StaticResource Icon.Airplane}" Width="16" Height="16" />
-                                        <TextBlock Text="{l:T 'Cockpit guide'}" FontWeight="Bold" FontSize="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="{l:T 'Cockpit guide'}" FontWeight="Bold" FontSize="{DynamicResource JP.FontSize.16}" VerticalAlignment="Center" />
                                     </StackPanel>
                                     <Button Grid.Column="1" Classes="small" Content="{l:T 'Open all'}" Command="{Binding ExpandAllGuideCommand}" ToolTip.Tip="{l:T 'Opens every area and panel'}" />
                                     <Button Grid.Column="2" Classes="small" Content="{l:T 'Close all'}" Command="{Binding CollapseAllGuideCommand}" ToolTip.Tip="{l:T 'Shows the areas only'}" />
                                 </Grid>
-                                <TextBlock Grid.Row="1" Text="{Binding GuideStatus}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="1" Text="{Binding GuideStatus}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.75" TextWrapping="Wrap" />
                                 <Expander Grid.Row="2" Header="{l:T 'About this cockpit'}" IsVisible="{Binding HasGuideIntro}" HorizontalAlignment="Stretch">
                                     <TextBlock Text="{Binding GuideIntro}" TextWrapping="Wrap" />
                                 </Expander>
                                 <StackPanel Grid.Row="3" Spacing="4">
-                                    <TextBlock Text="{Binding GuideSearchStatus}" FontSize="12" FontWeight="SemiBold" IsVisible="{Binding HasGuideSearchHits}" />
+                                    <TextBlock Text="{Binding GuideSearchStatus}" FontSize="{DynamicResource JP.FontSize.12}" FontWeight="SemiBold" IsVisible="{Binding HasGuideSearchHits}" />
                                     <ListBox x:Name="GuideList" ItemsSource="{Binding GuideRows}" SelectedItem="{Binding SelectedGuideRow}" Height="720" Background="Transparent">
                                         <!-- Not virtualized: rows grow when their explanation opens (a few hundred rows at most). -->
                                         <ListBox.ItemsPanel>
@@ -244,29 +244,29 @@
                                                                 ToolTip.Tip="{l:T 'Open or close'}" />
                                                         <StackPanel Grid.Column="1" Spacing="0">
                                                             <TextBlock Text="{Binding Name}" FontWeight="{Binding NameWeight}" TextWrapping="Wrap" />
-                                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Opacity="0.65" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Subtitle}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.65" TextWrapping="Wrap" />
                                                         </StackPanel>
                                                         <ToggleButton Grid.Column="2" Classes="small" VerticalAlignment="Top" IsVisible="{Binding HasDetails}"
                                                                       IsChecked="{Binding ShowDetails, Mode=OneWay}" Content="{l:T 'What does it do?'}"
                                                                       Command="{Binding $parent[ListBox].((vm:CockpitsViewModel)DataContext).ToggleGuideDetailsCommand}" CommandParameter="{Binding}" />
                                                     </Grid>
-                                                    <Border IsVisible="{Binding ShowDetails}" Padding="8,6" CornerRadius="6" Background="#1A38BDF8" BorderBrush="#3338BDF8" BorderThickness="1" Margin="24,2,0,4">
+                                                    <Border IsVisible="{Binding ShowDetails}" Padding="8,6" CornerRadius="6" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentSoftBrush}" BorderThickness="1" Margin="24,2,0,4">
                                                         <StackPanel Spacing="5">
                                                             <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" IsVisible="{Binding HasExplanation}" />
-                                                            <TextBlock Text="{Binding GenericHint}" IsVisible="{Binding IsGeneric}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding GenericHint}" IsVisible="{Binding IsGeneric}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.7" TextWrapping="Wrap" />
                                                             <StackPanel Spacing="1" IsVisible="{Binding HasContext}">
-                                                                <TextBlock Text="{l:T 'In the bigger picture'}" FontSize="11" FontWeight="SemiBold" Opacity="0.8" />
+                                                                <TextBlock Text="{l:T 'In the bigger picture'}" FontSize="{DynamicResource JP.FontSize.11}" FontWeight="SemiBold" Opacity="0.8" />
                                                                 <TextBlock Text="{Binding Context}" TextWrapping="Wrap" />
                                                             </StackPanel>
                                                             <StackPanel Spacing="1" IsVisible="{Binding HasPositions}">
-                                                                <TextBlock Text="{l:T 'Positions'}" FontSize="11" FontWeight="SemiBold" Opacity="0.8" />
+                                                                <TextBlock Text="{l:T 'Positions'}" FontSize="{DynamicResource JP.FontSize.11}" FontWeight="SemiBold" Opacity="0.8" />
                                                                 <TextBlock Text="{Binding PositionsText}" TextWrapping="Wrap" />
                                                             </StackPanel>
-                                                            <TextBlock Text="{Binding Note}" IsVisible="{Binding HasNote}" FontSize="12" Opacity="0.8" TextWrapping="Wrap" />
-                                                            <TextBlock Text="{Binding GameText}" IsVisible="{Binding HasGameText}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" />
-                                                            <TextBlock Text="{Binding CommandsText}" IsVisible="{Binding HasCommands}" FontSize="11" Opacity="0.7" TextWrapping="Wrap" />
-                                                            <TextBlock Text="{Binding Relations}" IsVisible="{Binding HasRelations}" FontSize="12" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                                            <TextBlock Text="{Binding Source}" IsVisible="{Binding HasSource}" FontSize="11" Opacity="0.6" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Note}" IsVisible="{Binding HasNote}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding GameText}" IsVisible="{Binding HasGameText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.7" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding CommandsText}" IsVisible="{Binding HasCommands}" ToolTip.Tip="{Binding CommandIds}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.7" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Relations}" IsVisible="{Binding HasRelations}" FontSize="{DynamicResource JP.FontSize.12}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding Source}" IsVisible="{Binding HasSource}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.6" TextWrapping="Wrap" />
                                                         </StackPanel>
                                                     </Border>
                                                 </StackPanel>
@@ -303,7 +303,7 @@
                     <!-- Real photos: only links, loaded after the user's yes -->
                     <Expander Header="{Binding PhotoHeader}" IsExpanded="True" HorizontalAlignment="Stretch" IsVisible="{Binding HasPhotos}">
                         <StackPanel Spacing="8">
-                            <Border IsVisible="{Binding AskPhotos}" Background="#1A38BDF8" BorderBrush="#38BDF8" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                            <Border IsVisible="{Binding AskPhotos}" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                 <StackPanel Spacing="8">
                                     <TextBlock Text="{Binding PhotoQuestion}" TextWrapping="Wrap" />
                                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -326,12 +326,12 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:CockpitPhotoItem">
-                                        <Border Width="330" Margin="0,0,8,8" CornerRadius="8" BorderThickness="1" BorderBrush="#334155" Padding="6">
+                                        <Border Width="330" Margin="0,0,8,8" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource JP.BorderBrush}" Padding="6">
                                             <StackPanel Spacing="4">
                                                 <Image Source="{Binding Image}" MaxHeight="220" Stretch="Uniform" IsVisible="{Binding Image, Converter={x:Static ObjectConverters.IsNotNull}}" />
                                                 <TextBlock Text="{Binding Caption}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                                <TextBlock Text="{Binding Credit}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" />
-                                                <TextBlock Text="{Binding Status}" FontSize="12" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                <TextBlock Text="{Binding Credit}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.75" TextWrapping="Wrap" />
+                                                <TextBlock Text="{Binding Status}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                 <WrapPanel Orientation="Horizontal">
                                                     <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Try again'}" Command="{Binding TryAgainCommand}" IsVisible="{Binding Failed}" />
                                                     <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Open the photo'}" Command="{Binding OpenPhotoCommand}" IsVisible="{Binding HasPhoto}"
@@ -354,7 +354,7 @@
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,4">
                                         <StackPanel>
                                             <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
-                                            <TextBlock Text="{Binding Detail}" FontSize="12" Opacity="0.7" />
+                                            <TextBlock Text="{Binding Detail}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" />
                                         </StackPanel>
                                         <Button Grid.Column="1" Classes="small" Content="{l:T 'Open'}" Command="{Binding OpenCommand}" IsVisible="{Binding HasUrl}" ToolTip.Tip="{Binding Url}" VerticalAlignment="Center" />
                                     </Grid>

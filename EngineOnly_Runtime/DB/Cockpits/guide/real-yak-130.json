@@ -1,0 +1,382 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-yak-130",
+  "title": "Yak-130 Mitten (front seat)",
+  "variants": [
+    "yak-130"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Yakovlev Yak-130 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Yakovlev_Yak-130"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Yak-130 is a Russian two-seat advanced jet trainer and light attack aircraft with two engines. Its digital glass cockpit, head-up display and helmet sight look like those of modern fighters, and the instructor can set the fly-by-wire system so the aircraft handles like different combat types. The student sits in front, the instructor higher in the back. No public HOTAS description exists, so this guide names the usual trainer controls and the general layout.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "Head-up display",
+      "text": "The HUD, keypad and helmet sight.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "Head-up display",
+          "src": "w1",
+          "text": "A head-up display with a data entry panel below it and a helmet-mounted sight.",
+          "context": "Students learn on it to use the same kind of displays as in modern fighters.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display (HUD)",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the aiming marks for the weapons, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "ufcp",
+              "name": "Up-front control panel",
+              "type": "keypad",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A keypad with a small text display below the HUD, where the pilot types numbers such as radio frequencies and navigation points.",
+              "context": "Because it sits high up near the HUD, the pilot can enter data without looking far down into the cockpit. Its single switches are not described in the sources JoyPro uses.",
+              "src": "w1"
+            },
+            {
+              "id": "hms",
+              "name": "Helmet-mounted sight",
+              "type": "other",
+              "match": [
+                "item:hud:3"
+              ],
+              "text": "A small display on the pilot's helmet that shows marks where the pilot looks (helmet sight).",
+              "context": "With it the pilot can aim weapons and sensors by turning his head.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Three colour screens and backup instruments.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Multifunction displays",
+          "src": "w1",
+          "text": "Three colour screens and standby instruments.",
+          "context": "The screens can show the same pages as in the fighters the students will fly later.",
+          "controls": [
+            {
+              "id": "mfd-left",
+              "name": "Left MFD",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The left colour screen (a multi-function screen with buttons around its edge). It shows pages such as the flight data.",
+              "context": "The pilot chooses which page it shows; the same screen can show the radar, the map or the aircraft's systems.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-centre",
+              "name": "Centre MFD",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The middle colour screen (a multi-function screen with buttons around its edge). It shows pages such as the map and the navigation.",
+              "context": "Which page sits where is the pilot's choice.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-right",
+              "name": "Right MFD",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "The right colour screen (a multi-function screen with buttons around its edge). It shows pages such as the systems or the weapons.",
+              "context": "Three screens let the student practise managing several pictures.",
+              "src": "w1"
+            },
+            {
+              "id": "standby",
+              "name": "Standby instruments",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "Small backup instruments for attitude, speed and height. They keep working when the main screens or computers fail.",
+              "context": "The pilot uses them to fly safely home if the main displays are lost."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Throttles, engine, radio and flaps.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console: throttles",
+          "text": "The twin throttles with engine, radio and flap controls.",
+          "context": "The left hand stays on the throttles.",
+          "controls": [
+            {
+              "id": "engine",
+              "name": "Engine panel",
+              "type": "other",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "Switches for starting and running the two engines, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "flaps",
+              "name": "Flaps control",
+              "type": "switch",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "This control moves the flaps, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once the aircraft is fast enough."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, lights and air.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The panels for electricity, lights and cockpit air.",
+          "context": "These switches are mostly set before take-off.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "ecs",
+              "name": "Environmental control panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "The controls for the cockpit's heating, cooling and fresh air (environmental control), and for the cabin pressure at height.",
+              "context": "The pilot sets a comfortable temperature and keeps the canopy free of mist. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear-cockpit",
+      "where": "rear",
+      "name": "Instructor cockpit",
+      "text": "The instructor's raised seat behind the student.",
+      "panels": [
+        {
+          "id": "rear-cockpit",
+          "name": "Instructor cockpit",
+          "src": "w1",
+          "text": "The raised rear seat of the instructor, with screens and his own controls. The instructor can set the fly-by-wire system so the Yak-130 handles like different combat aircraft.",
+          "context": "This lets one trainer prepare students for several fighter types.",
+          "controls": [
+            {
+              "id": "instr-mfds",
+              "name": "Instructor MFDs",
+              "type": "display",
+              "match": [
+                "item:rear-cockpit:1"
+              ],
+              "text": "The instructor's colour screens, showing the same kind of pages as the student's.",
+              "context": "The instructor watches the student's flying and the systems on them."
+            },
+            {
+              "id": "instr-panel",
+              "name": "Instructor control panel",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:2"
+              ],
+              "text": "A panel with the instructor's special controls, for example the settings that make the fly-by-wire imitate another aircraft.",
+              "context": "The single switches of the instructor control panel are not described in the sources JoyPro uses.",
+              "src": "w1"
+            },
+            {
+              "id": "instr-controls",
+              "name": "Stick and throttles (rear seat)",
+              "type": "other",
+              "match": [
+                "item:rear-cockpit:3"
+              ],
+              "text": "A second stick and pair of throttles in the rear seat, so the instructor can fly the aircraft.",
+              "context": "He takes over to show a manoeuvre or to correct a mistake."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The centre stick with the trim hat and the weapon release button.",
+          "context": "No public HOTAS description exists; trim, airbrake and radio button are the usual trainer set.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands. The Yak-130 has a four-channel digital fly-by-wire system.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches the selected weapon.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            },
+            {
+              "id": "trim",
+              "name": "Trim hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "text": "The two throttle levers for the two AI-222-25 engines, with the airbrake switch and the radio button.",
+          "context": "The Yak-130 has no afterburner.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left AI-222-25 engine stronger or weaker, like a car's gas pedal.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right AI-222-25 engine stronger or weaker, like a car's gas pedal.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The airbrake opens."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The airbrake closes."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "radio-button",
+              "name": "Radio button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

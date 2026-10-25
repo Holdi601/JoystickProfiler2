@@ -1,0 +1,170 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-polaris",
+  "title": "Polaris (Roberts Space Industries, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-polaris"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Polaris (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Polaris"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Polaris is a corvette, a small warship, from RSI in Star Citizen with a crew of twelve. It is flown from a bridge while the crew works the turrets, torpedoes, engineering and the fighter bay. The pilot has no guns and launches the missiles.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Polaris: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Polaris's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "missiles",
+              "name": "Missile racks (missiles and torpedoes)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "Missiles and torpedoes, 56 in all; the pilot launches the missiles in missile mode.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "no-guns",
+              "name": "No pilot guns",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "All the Polaris's guns sit in its turrets.",
+              "context": "Without own guns the pilot flies, uses the missiles where fitted and leaves the shooting to the crew in the turrets.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (576 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The Polaris holds 576 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Polaris: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Polaris besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "bridge",
+              "name": "Bridge",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "Stations for the pilot, co-pilot and officers on the Polaris's bridge.",
+              "context": "The officers on the bridge share the jobs of a warship: flying, watching the systems and leading the crew.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turret stations",
+              "type": "other",
+              "match": [
+                "item:crew-stations:2"
+              ],
+              "text": "Five manned turrets and twelve remote turrets defend the corvette.",
+              "context": "A remote turret is aimed from a seat inside the ship through a camera, not from a glass bubble on the turret itself.",
+              "src": "w1"
+            },
+            {
+              "id": "torpedo",
+              "name": "Torpedo station",
+              "type": "other",
+              "match": [
+                "item:crew-stations:3"
+              ],
+              "text": "A crew station for firing the big torpedoes.",
+              "context": "Torpedoes are very large missiles meant for big ships; a crew member aims them from here.",
+              "src": "w1"
+            },
+            {
+              "id": "fighter-bay",
+              "name": "Fighter bay",
+              "type": "other",
+              "match": [
+                "item:crew-stations:4"
+              ],
+              "text": "A bay inside the hull carries one small fighter.",
+              "context": "The fighter can launch to protect the corvette or to scout.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Two sticks (HOSAS)",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (flight stick)",
+          "src": "g1",
+          "text": "The right-hand stick steers the ship's nose and does the fighting: it fires the weapons, picks targets and holds the buttons for radar, quantum travel, scanning and mining.",
+          "context": "This is the game's own two-stick preset for the Thrustmaster T.16000M. Many buttons change their job with the operator mode shown on the HUD; the stick's base buttons 5 to 16 sit on the stick's foot.",
+          "controls": [
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "label:Trigger",
+                "control:stick.trigger"
+              ],
+              "text": "This ship has no pilot guns, so in this layout the trigger's main job is the missiles: in missile mode it launches the armed missiles.",
+              "context": "The missile type is picked with the thumb button and the count shows on the HUD; in other operator modes the trigger does that mode's job.",
+              "src": "g1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

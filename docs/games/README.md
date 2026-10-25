@@ -29,7 +29,7 @@ DB refresh of the games outside the registry: DCS `engine dcs refresh` ([dcs.md]
 A release package ships no game data (THIRD_PARTY_NOTICES.md, section 1.4): JoyPro builds each game's command list on the user's
 PC from the user's own installation, after the first-start setup, from the Start page notice ("Build List", "Build All
 Missing Lists") or with Update on the game's card. `engine db check-updates` reports such a game as `no-catalog`.
-The lists go to the game-data folder `%LOCALAPPDATA%\JoyPro\GameData` (`DB\<game>`, DCS's `CleanProfile` and
+The lists go to the game-data folder `%LOCALAPPDATA%\JoyPro2\GameData` (`DB\<game>`, DCS's `CleanProfile` and
 `KeyboardCleanProfile`), never into the program folder, so an update or rebuild of JoyPro keeps them
 ([installs.md](../installs.md#game-data); `engine db paths` shows where each list is read from).
 Every game needs to be installed (or its folder linked); what else each build needs:

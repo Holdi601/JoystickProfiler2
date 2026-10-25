@@ -155,6 +155,9 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
 
     public string Groups { get; set; } = string.Empty;
 
+    // The titles of its actions ("relations list --titles"), for the search.
+    public IReadOnlyList<string> ActionTitles { get; set; } = [];
+
     // ---- For the relation list's cards (chips and the input key cap) ----
 
     public bool IsAxis => Type.Equals("axis", StringComparison.OrdinalIgnoreCase);

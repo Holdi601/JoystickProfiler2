@@ -25,13 +25,10 @@ public static class VirtualJoystickServices
     // <GUI folder>\vjoy\JoyPro.VJoy.exe (bundled by the BuildAndBundleVJoyProcess target).
     public static Func<string> ExePath { get; set; } = () => Path.Combine(AppContext.BaseDirectory, "vjoy", "JoyPro.VJoy.exe");
 
-    // Where the forwarding table goes (JOYPRO_DATA_DIR like the engine, else %LOCALAPPDATA%\JoyPro).
+    // Where the forwarding table goes (JOYPRO_DATA_DIR like the engine, else %LOCALAPPDATA%\JoyPro2).
     public static Func<string> DataFolder { get; set; } = () =>
     {
-        string? root = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-        if (string.IsNullOrWhiteSpace(root))
-            root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-        return Path.Combine(root, "VirtualJoystick");
+        return Path.Combine(JoyPro.Logging.JoyProDataFolder.Root(), "VirtualJoystick");
     };
 
     private static string? ReadProcessPath(int pid)

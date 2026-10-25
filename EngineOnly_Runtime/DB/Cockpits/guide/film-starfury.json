@@ -1,0 +1,190 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-starfury",
+  "title": "SA-23E Starfury (Babylon 5)",
+  "variants": [
+    "starfury-sa-23e"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Babylon 5 (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Babylon_5"
+    }
+  ],
+  "intro": "The Starfury is a fictional Earth Alliance fighter in the series Babylon 5. It has four thruster pods on X-shaped wings, flies by real space physics (it keeps drifting until pushed the other way) and can spin around to fire behind it. The pilot rides almost upright in a harness at the front, with a hand controller at each side.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The forward window of the pod.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s1",
+          "text": "The small window at the front of the cockpit pod.",
+          "context": "The pilot enters the pod from the back.",
+          "controls": [
+            {
+              "id": "window",
+              "name": "Forward window",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "A small window at the front of the pod; the pilot enters through a door at the rear.",
+              "context": "The upright position gives the pilot a view straight ahead through it.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Forward displays",
+      "text": "Displays in front of the pilot.",
+      "panels": [
+        {
+          "id": "forward-displays",
+          "name": "Forward displays",
+          "db": "forward-displays",
+          "src": "s1",
+          "text": "Screens and lights in front of the pilot.",
+          "context": "They show targets, flight data and the state of the systems.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Forward displays",
+              "type": "display",
+              "match": [
+                "item:forward-displays:1"
+              ],
+              "text": "Screens in front of the pilot show the targeting and flight data.",
+              "context": "In space without up or down, the screens help the pilot keep track of where enemies are.",
+              "src": "s1"
+            },
+            {
+              "id": "lights",
+              "name": "Status lights",
+              "type": "light",
+              "match": [
+                "item:forward-displays:2"
+              ],
+              "text": "Lights that show the state of the Starfury's systems.",
+              "context": "The series does not explain each light.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "harness",
+      "where": "floor",
+      "name": "Harness / seat",
+      "text": "The pilot rides almost upright, strapped in a harness.",
+      "panels": [
+        {
+          "id": "harness",
+          "name": "Harness / seat",
+          "db": "harness",
+          "src": "s1",
+          "text": "Instead of a normal seat, the pilot stands nearly upright in a harness.",
+          "context": "This position helps the pilot cope with the hard pushes of quick turns.",
+          "controls": [
+            {
+              "id": "harness",
+              "name": "Standing harness",
+              "type": "other",
+              "match": [
+                "item:harness:1"
+              ],
+              "text": "Straps hold the pilot upright against the strong pushes of hard manoeuvres.",
+              "context": "It is one of the Starfury's best-known features.",
+              "src": "s1"
+            },
+            {
+              "id": "grips",
+              "name": "Hand grips",
+              "type": "other",
+              "match": [
+                "item:harness:2"
+              ],
+              "text": "Grips at both hands work the four engine pods on the wing tips.",
+              "context": "Firing the pods in different directions lets the Starfury spin, slide and flip in space.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right-hand controller",
+          "src": "s1",
+          "text": "The hand grip at the pilot's right side.",
+          "context": "It steers the Starfury and fires the guns.",
+          "controls": [
+            {
+              "id": "controller",
+              "name": "Right-hand controller",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Moving this grip tips the nose up and down and rolls the fighter.",
+              "context": "Because the Starfury flies like a real spaceship, turning the nose does not change the drift direction by itself.",
+              "src": "s1"
+            },
+            {
+              "id": "fire",
+              "name": "Fire control",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A control on the grip fires the pulse cannons.",
+              "context": "The Starfury can turn around and fire backwards while still drifting forwards.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Left-hand controller",
+          "src": "s1",
+          "text": "The hand grip at the Starfury pilot's left side.",
+          "context": "The catalog takes it as the thrust control.",
+          "controls": [
+            {
+              "id": "controller",
+              "name": "Left-hand controller (thrust)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This grip is taken as the thrust control: it makes the engines push harder or softer.",
+              "context": "The series does not show exactly what the left grip does, so this is a guess of the catalog.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

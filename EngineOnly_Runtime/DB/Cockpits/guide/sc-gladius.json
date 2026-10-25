@@ -1,0 +1,69 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-gladius",
+  "title": "Gladius (Aegis Dynamics, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-gladius"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Gladius (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Gladius"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Gladius is a light fighter and interceptor from Aegis Dynamics, a maker of military-style ships in Star Citizen. The pilot sits alone under a bubble canopy with a wide view for dogfighting. It uses the common Star Citizen controls without changes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Gladius: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Gladius's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (three)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Gladius carries three guns that the pilot aims by pointing the ship and fires himself.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (six missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Racks on the Gladius hold six missiles for targets that are hard to hit with the guns.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

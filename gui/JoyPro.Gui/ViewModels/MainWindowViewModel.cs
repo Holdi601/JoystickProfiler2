@@ -329,6 +329,24 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool importIgnoreEasyPlanes;
 
+    // DCS import (saved in the settings): only the devices connected now (off: devices that are not plugged in are
+    // imported too), and one device under several Windows IDs read as one (on: the connected ID, else the newest file's).
+    [ObservableProperty]
+    private bool importDcsOnlyConnected;
+
+    [ObservableProperty]
+    private bool importDcsSameNameAsOne = true;
+
+    partial void OnImportDcsOnlyConnectedChanged(bool value) => SaveUiSettings();
+
+    partial void OnImportDcsSameNameAsOneChanged(bool value) => SaveUiSettings();
+
+    private void AddDcsDeviceImportArgs(List<string> args)
+    {
+        args.AddRange(["--only-connected", ImportDcsOnlyConnected ? "true" : "false"]);
+        args.AddRange(["--merge-same-name", ImportDcsSameNameAsOne ? "true" : "false"]);
+    }
+
     [ObservableProperty]
     private bool importIncludeDefaults;
 
@@ -621,20 +639,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool layoutSkipMissing;
 
-    [ObservableProperty]
-    private string layoutFontFamily = "Segoe UI";
-
-    [ObservableProperty]
-    private string layoutFontSize = "16";
-
-    [ObservableProperty]
-    private string layoutTextColor = "#FFFFFF";
-
-    [ObservableProperty]
-    private string layoutOutlineColor = "#000000";
-
-    [ObservableProperty]
-    private string layoutBackgroundColor = "#88000000";
+    // The label font and colours of the cheat sheets: MainWindowViewModel.SheetStyle.cs (the sheet style).
 
     [ObservableProperty]
     private bool layoutSuggestIncludeConnected = true;
@@ -675,9 +680,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private string layoutLegendFontSize = "11";
-
-    [ObservableProperty]
-    private string layoutModifierColors = "LAlt=#38BDF8,LCtrl=#F59E0B,LShift=#34D399,RAlt=#A78BFA,RShift=#FB7185";
 
     [ObservableProperty]
     private string layoutButtonSymbol = "circle";
@@ -1023,7 +1025,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public bool HasModifierCreateValidationMessage => !string.IsNullOrWhiteSpace(ModifierCreateValidationMessage);
     public bool HasLayoutEditorPreview => LayoutEditorPreviewImage != null;
     public bool CanSaveLayoutEditorTemplate => !string.IsNullOrWhiteSpace(LayoutEditorSourcePath) && !string.IsNullOrWhiteSpace(LayoutEditorOutputPath);
-    public double LayoutEditorFontSizeValue => ParseOrDefault(LayoutFontSize, 14, 8, 72);
     public double LayoutEditorScaledCanvasWidth => Math.Max(1, LayoutEditorCanvasWidth * Math.Max(0.25, LayoutEditorZoom));
     public double LayoutEditorScaledCanvasHeight => Math.Max(1, LayoutEditorCanvasHeight * Math.Max(0.25, LayoutEditorZoom));
     public string LayoutEditorZoomPercentLabel => (Math.Round(LayoutEditorZoom * 100.0, 0, MidpointRounding.AwayFromZero)).ToString(CultureInfo.InvariantCulture) + "%";
@@ -1061,6 +1062,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         LayoutEditorConnectors.CollectionChanged += (_, _) => OnPropertyChanged(nameof(CanSaveLayoutEditorTemplate));
         InitializeLayoutWorkspace();
         InitializeSettingsPage();
+        InitializeSheetStyle(loadPersistedUiSettings);
+        LayoutEditorTables.CollectionChanged += (_, e) => ApplySheetStyleToNewItems(e.NewItems);
+        LayoutEditorConnectors.CollectionChanged += (_, e) => ApplySheetStyleToNewItems(e.NewItems);
         if (loadPersistedUiSettings)
         {
             LoadUiSettings();
@@ -1085,6 +1089,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         PrefillDcsRefreshPaths();
         // The Export page's last settings on top of the prefilled paths (MainWindowViewModel.ExportSettings.cs).
         InitializeExportSettings(loadPersistedUiSettings);
+        // The user's own themes (Settings > Appearance) before the theme is applied.
+        if (loadPersistedUiSettings)
+            InitializeAppearance();
         ApplyTheme(ThemeMode);
         RefreshDcsKnownDevices();
         RebuildDcsRefreshPlaneOptions(BuildDcsRefreshPlaneCandidates());
@@ -1107,6 +1114,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         InitializeVirtualJoystick(loadPersistedUiSettings);
         InitializeDesign();
         InitializeProfileHistory();
+        InitializeNavigationHistory();
         // The last profile opens once the window shows (MainWindow.OnWindowOpened -> AutoOpenLastProfileOnStartupAsync),
         // so the start stays as fast as without a profile.
     }
@@ -1395,8 +1403,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         // A weak match says where to pick the right model.
         LayoutSuggestStatus = string.IsNullOrWhiteSpace(value.TemplateName) ? string.Empty
-            : value.Score < 60 ? T("Picture: {0} (match {1}%). Not your device? Model... > Choose another model", value.TemplateName, value.Score.ToString(CultureInfo.InvariantCulture))
-            : T("Picture: {0} (match {1}%)", value.TemplateName, value.Score.ToString(CultureInfo.InvariantCulture));
+            : value.Score < 60 ? T("Picture: {0} (match {1}%). Not your device? Model... > Choose another model", value.PictureName, value.MatchPercent.ToString(CultureInfo.InvariantCulture))
+            : T("Picture: {0} (match {1}%)", value.PictureName, value.MatchPercent.ToString(CultureInfo.InvariantCulture));
         bool otherDevice = !string.Equals(layoutEditorContextDevice, (value.Device ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
         layoutEditorContextDevice = (value.Device ?? string.Empty).Trim();
         // The device reference (docs/device-reference.md) of the picked device at once: your photo, else the maker's
@@ -1727,7 +1735,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             connector.IsFlashing = false;
         }
     }
-    partial void OnLayoutFontSizeChanged(string value) => OnPropertyChanged(nameof(LayoutEditorFontSizeValue));
     partial void OnLayoutEditorNewTypeChanged(string value)
     {
         RebuildLayoutEditorInputOptions();
@@ -2615,6 +2622,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--ignore-device", ignored]);
         args.AddRange(["--include-keyboard", ImportKeyboardCommands ? "true" : "false"]);
         args.AddRange(["--ignore-easy-planes", ImportIgnoreEasyPlanes ? "true" : "false"]);
+        AddDcsDeviceImportArgs(args);
 
         if (ImportInverted)
             args.Add("--import-inverted");
@@ -2775,6 +2783,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--ignore-device", ignored]);
         args.AddRange(["--include-keyboard", ImportKeyboardCommands ? "true" : "false"]);
         args.AddRange(["--ignore-easy-planes", ImportIgnoreEasyPlanes ? "true" : "false"]);
+        AddDcsDeviceImportArgs(args);
 
         await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: N("Scanning DCS..."));
     }
@@ -2828,8 +2837,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task RefreshRelationsAsync()
     {
-        // JSON: every action's game and switched-on aircraft (the filters) and the bind's modifiers (the bind label).
-        EngineCommandResult? result = await RunEngineAsync(["relations", "list"], includeProfile: true, mutatesProfile: false, busyLabel: N("Loading relations..."),
+        // JSON: every action's game and switched-on aircraft (the filters), the bind's modifiers (the bind label) and
+        // the titles of the actions (the search).
+        EngineCommandResult? result = await RunEngineAsync(["relations", "list", "--titles"], includeProfile: true, mutatesProfile: false, busyLabel: N("Loading relations..."),
             forceText: false);
         if (result == null || result.ExitCode != 0)
             return;
@@ -3798,7 +3808,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                         ? "<none>"
                         : string.Join(", ", groups.Distinct(StringComparer.OrdinalIgnoreCase)),
                     Modifiers = bindModifiers,
-                    ActiveGamePlanes = activeGamePlanes
+                    ActiveGamePlanes = activeGamePlanes,
+                    ActionTitles = relationEl.TryGetProperty("Titles", out JsonElement titlesEl) && titlesEl.ValueKind == JsonValueKind.Array
+                        ? titlesEl.EnumerateArray().Where(t => t.ValueKind == JsonValueKind.String).Select(t => (t.GetString() ?? string.Empty).Trim()).Where(t => t.Length > 0).ToList()
+                        : []
                 });
             }
 
@@ -6088,6 +6101,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             LayoutEditorOutputPath = BuildDefaultLayoutEditorOutputPath(LayoutEditorSourcePath);
         LoadLayoutEditorPreview(inspectDoc.PreviewImagePath, inspectDoc.Width, inspectDoc.Height);
         ApplyLayoutTextStyle(inspectDoc.FontName, inspectDoc.FontSize, inspectDoc.TextColor);
+        RefreshSheetStyleScope();
         LayoutSourceCredit = (inspectDoc.Credit ?? string.Empty).Trim();
 
         LayoutEditorMarkers.Clear();
@@ -6829,8 +6843,6 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         args.AddRange(["--legend-width", ParseOrDefault(LayoutLegendWidth, 460, 120, 2000).ToString(CultureInfo.InvariantCulture)]);
         args.AddRange(["--legend-max-rows", ParseOrDefault(LayoutLegendMaxRows, 20, 1, 200).ToString(CultureInfo.InvariantCulture)]);
         args.AddRange(["--legend-font-size", ParseDoubleOrDefault(LayoutLegendFontSize, 11, 6, 48).ToString("0.##", CultureInfo.InvariantCulture)]);
-        if (!string.IsNullOrWhiteSpace(LayoutModifierColors))
-            args.AddRange(["--modifier-colors", LayoutModifierColors.Trim()]);
         if (!string.IsNullOrWhiteSpace(LayoutButtonSymbol))
             args.AddRange(["--button-symbol", LayoutButtonSymbol.Trim()]);
         if (!string.IsNullOrWhiteSpace(LayoutAxisSymbol))
@@ -6839,13 +6851,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--pov-symbol", LayoutPovSymbol.Trim()]);
         if (!string.IsNullOrWhiteSpace(LayoutSliderSymbol))
             args.AddRange(["--slider-symbol", LayoutSliderSymbol.Trim()]);
-        // Same label style as the layout editor preview.
-        if (!string.IsNullOrWhiteSpace(LayoutFontFamily))
-            args.AddRange(["--font", LayoutFontFamily.Trim()]);
-        args.AddRange(["--font-size", LayoutEditorFontSizeValue.ToString(CultureInfo.InvariantCulture)]);
-        args.AddRange(["--text-color", string.IsNullOrWhiteSpace(LayoutTextColor) ? "#FFFFFF" : LayoutTextColor.Trim()]);
-        args.AddRange(["--outline-color", string.IsNullOrWhiteSpace(LayoutOutlineColor) ? "none" : LayoutOutlineColor.Trim()]);
-        args.AddRange(["--label-background", string.IsNullOrWhiteSpace(LayoutBackgroundColor) ? "none" : LayoutBackgroundColor.Trim()]);
+        // The sheet style (the same the Layout page's editor draws with): font, size, weight, label, table, line, marker
+        // and modifier colours. A device with a style of its own carries it in its layout (the engine reads it there).
+        args.AddRange(SheetStyleArguments(globalSheetStyle));
         // Sheets with tables and lines (the Layout page's callout sheets): their look and pages of all devices.
         args.AddRange(["--style", LayoutSheetLightStyle ? "light" : "dark"]);
         if (LayoutCombinePages)
@@ -6876,6 +6884,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             await LoadDuplicateIssuesAsync();
         else
             ApplyDuplicates("{\"Duplicates\":[],\"Groups\":[]}");
+        // Relations an import copied with the same input ("<name>__N"): cards that merge them back into one.
+        await LoadMergeCopiesIssuesAsync();
         if (result.ExitCode != 0)
             StatusText = T("Validation found errors. See the issue list.");
     }
@@ -7860,6 +7870,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     internal string ResolveNodeTitleForTests(string game, string plane, string nodeId) => ResolveNodeTitle(game, plane, nodeId);
 
+    // Profile commands refused because no profile was open (a page asked for one it should not have).
+    internal List<string> ProfileCommandsWithoutProfile { get; } = [];
+
     private async Task<EngineCommandResult?> RunEngineAsync(
         IEnumerable<string> commandArgs,
         bool includeProfile,
@@ -7893,6 +7906,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             else
             {
                 StatusText = T("Profile path required for this command.");
+                // The tests check that no page runs a profile command while no profile is open.
+                ProfileCommandsWithoutProfile.Add(string.Join(" ", commandList));
                 return null;
             }
         }
@@ -10631,16 +10646,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Stopwatch watch = Stopwatch.StartNew();
         string deviceFilter = BindDeviceFilterText?.Trim() ?? string.Empty;
         List<BindListItem> passing = [];
+        Dictionary<BindListItem, FilterSubject> passingSubjects = new(ReferenceEqualityComparer.Instance);
         for (int i = 0; i < bindRows.Count; i++)
         {
             BindListItem row = bindRows[i];
-            if (!BindFilter.Matches(i < bindSubjects.Count ? bindSubjects[i] : null))
+            FilterSubject? subject = i < bindSubjects.Count ? bindSubjects[i] : null;
+            if (!BindFilter.Matches(subject))
                 continue;
             if (deviceFilter.Length > 0 && !row.Device.Contains(deviceFilter, StringComparison.OrdinalIgnoreCase))
                 continue;
             passing.Add(row);
+            if (subject != null)
+                passingSubjects[row] = subject;
         }
-        IEnumerable<BindListItem> query = ApplyBindSorting(passing);
+        // The same ranking as the Relations page: the relation called as the search first.
+        IEnumerable<BindListItem> query = RankBySearch(BindFilter, passing, r => passingSubjects.GetValueOrDefault(r), rows => ApplyBindSorting(rows.ToList()));
 
         // Clearing the list drops the grid selection; without restoring it, bind actions would silently
         // fall back to SelectedRelation, which can be a different relation than the one on screen.
@@ -11926,18 +11946,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (Application.Current == null)
             return;
 
-        ThemeVariant variant = mode switch
-        {
-            "Light" => ThemeVariant.Light,
-            "Dark" => ThemeVariant.Dark,
-            _ => ThemeVariant.Default
-        };
+        // Light, Dark, System or a theme of the user's own, with the text size and fonts (MainWindowViewModel.Appearance.cs).
         // The application lives on its UI thread; a view model made on another thread (tests next to the render tests'
         // Avalonia thread) posts the change instead of throwing "Call from invalid thread".
         if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
-            Application.Current.RequestedThemeVariant = variant;
+            ApplyAppearance();
         else
-            Avalonia.Threading.Dispatcher.UIThread.Post(() => { if (Application.Current != null) Application.Current.RequestedThemeVariant = variant; });
+            Avalonia.Threading.Dispatcher.UIThread.Post(ApplyAppearance);
     }
 
     private void RememberLastProfilePath(string? path)
@@ -11992,6 +12007,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             HllvOodleFile = state.HllvOodleFile ?? string.Empty;
             if (!string.IsNullOrWhiteSpace(state.ThemeMode))
                 ThemeMode = state.ThemeMode.Trim();
+            ActiveCustomThemeFile = state.CustomTheme?.Trim() ?? string.Empty;
+            userTextScale = state.TextScale is double textScale && double.IsFinite(textScale) ? ThemeService.ClampScale(textScale) : null;
+            UiScale = state.UiScale is double uiScaleValue && double.IsFinite(uiScaleValue) ? ThemeService.ClampScale(uiScaleValue) : 1.0;
             languageChoice = state.Language?.Trim() ?? string.Empty;
             if (OverlayCorners.Contains(state.OverlayCorner))
                 OverlayCorner = state.OverlayCorner;
@@ -12009,6 +12027,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             if (state.DuplicateAutoFixThreshold is int fixThreshold && fixThreshold >= 50 && fixThreshold <= 100)
                 duplicateAutoFixThreshold = fixThreshold;
             autoFixDuplicatesAfterImport = state.AutoFixDuplicatesAfterImport;
+            ImportDcsOnlyConnected = state.ImportDcsOnlyConnected;
+            ImportDcsSameNameAsOne = state.ImportDcsSameNameAsOne ?? true;
             if (state.LlmIdleMinutes is double idleMinutes && idleMinutes > 0)
                 LlmIdleMinutes = IsOldLlmIdleDefault(state) ? DefaultLlmIdleMinutes : Math.Clamp((decimal)idleMinutes, 0.5m, 120m);
             ApplyAutoPlacement(state.AutoPlacement);
@@ -12061,6 +12081,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 HllvOodleAnswer = HllvOodleAnswer,
                 HllvOodleFile = HllvOodleFile,
                 ThemeMode = ThemeMode,
+                CustomTheme = ActiveCustomThemeFile.Length > 0 ? ActiveCustomThemeFile : null,
+                TextScale = userTextScale,
+                UiScale = Math.Abs(UiScale - 1.0) > 1e-9 ? UiScale : null,
                 Language = languageChoice,
                 OverlayCorner = OverlayCorner,
                 OverlayMaxLines = (int)OverlayMaxLines,
@@ -12079,6 +12102,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 LlmIdleDefault = (double)DefaultLlmIdleMinutes,
                 DuplicateAutoFixThreshold = DuplicateAutoFixThreshold,
                 AutoFixDuplicatesAfterImport = AutoFixDuplicatesAfterImport,
+                ImportDcsOnlyConnected = ImportDcsOnlyConnected,
+                ImportDcsSameNameAsOne = ImportDcsSameNameAsOne,
                 SettingsSectionOrder = SettingsSectionOrderForSave(),
                 SettingsSectionsOpen = OpenSettingsSectionsForSave(),
                 AutoPlacement = AutoPlacementForSave(),
@@ -12277,6 +12302,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         public string ThemeMode { get; set; } = "System";
 
+        // The theme of the user's own when ThemeMode is Custom (its file in <data>\Themes), the text size he chose
+        // (none: the theme's or 100 %) and the UI scale, both on top of Windows' display scaling.
+        public string? CustomTheme { get; set; }
+
+        public double? TextScale { get; set; }
+
+        public double? UiScale { get; set; }
+
         // Settings > Language: a language code (Localization/Languages.cs), empty for the Windows display language.
         public string? Language { get; set; }
 
@@ -12316,6 +12349,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public int? DuplicateAutoFixThreshold { get; set; }
 
         public bool AutoFixDuplicatesAfterImport { get; set; }
+
+        // DCS import: only connected devices (off at first) and same-name devices as one (null: on).
+        public bool ImportDcsOnlyConnected { get; set; }
+
+        public bool? ImportDcsSameNameAsOne { get; set; }
 
         // Auto Assign, the Setup wizard and Lay out with AI (MainWindowViewModel.AutoPlacementSettings.cs).
         public AutoPlacementSettings? AutoPlacement { get; set; }

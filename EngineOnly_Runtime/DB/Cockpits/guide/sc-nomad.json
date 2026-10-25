@@ -1,0 +1,109 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-nomad",
+  "title": "Nomad (Consolidated Outland, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-nomad"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Nomad (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Nomad"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Nomad is a small single-seat freighter from Consolidated Outland in Star Citizen. The cockpit sits ahead of an open cargo deck and a small living space. It uses the common controls without changes.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Nomad: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Nomad's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (three)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Nomad has three guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (eight missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Nomad carries eight missiles. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo and tractor beam (24 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The open deck takes 24 SCU, loaded with the help of a tractor beam (a beam that pulls and moves objects).",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Nomad: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Nomad besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "remote-turret",
+              "name": "Remote turret",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "One remote turret on the Nomad. It is aimed through a camera from inside the ship.",
+              "context": "A remote turret is aimed from a seat inside the ship through a camera, not from a glass bubble on the turret itself.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

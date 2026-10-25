@@ -1,0 +1,165 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-su-35s",
+  "title": "Su-35S Flanker-E",
+  "inherits": "real-su-30",
+  "variants": [
+    "su-35s"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w2",
+      "title": "Sukhoi Su-35 (Wikipedia), Su-35S",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Sukhoi_Su-35"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "d1",
+      "title": "Su-27 DCS Flaming Cliffs Flight Manual EN (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/Su-27/Doc/Su-27 DCS Flaming Cliffs Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The Su-35S is a single-seat Flanker of the newest generation (often called 4++), with thrust vectoring AL-41F1S engines, digital fly-by-wire and a glass cockpit with two large 15-inch screens. JoyPro takes its stick from the Su-30SM entry (the Su-27 family set, assumed) and lists its own throttle engines; the grip functions are not public. This guide follows the Su-30SM guide without the back seat and with the Su-35S's own screens.",
+  "remove": [
+    "instrument-panel",
+    "rear-cockpit"
+  ],
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "panels": [
+        {
+          "id": "su35-displays",
+          "name": "Two large MFDs (MFI-35)",
+          "src": "w2",
+          "text": "Two large 15-inch colour screens side by side, a smaller multifunction control panel and standby instruments.",
+          "context": "The two big screens carry almost all the information; there is no back seat in the Su-35S, so one pilot does all the work.",
+          "controls": [
+            {
+              "id": "mfi35-left",
+              "name": "Left MFD (MFI-35)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "The large left colour screen (a multi-function screen with buttons around its edge). It shows pages such as the radar, the tactical situation or the map.",
+              "context": "The pilot chooses which page it shows; the same screen can show the radar, the map or the aircraft's systems.",
+              "src": "w2"
+            },
+            {
+              "id": "mfi35-right",
+              "name": "Right MFD (MFI-35)",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "The large right colour screen (a multi-function screen with buttons around its edge). It shows pages such as the weapons, the systems or the sensors.",
+              "context": "With two big screens the pilot can show the radar and the map side by side.",
+              "src": "w2"
+            },
+            {
+              "id": "mfcp",
+              "name": "Multifunction control panel",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A smaller screen with keys below the two big screens, used to control the systems and enter data.",
+              "context": "The single switches of the multifunction control panel are not described in the sources JoyPro uses.",
+              "src": "w2"
+            },
+            {
+              "id": "standby-35",
+              "name": "Standby instruments",
+              "type": "gauge",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "Small backup instruments for attitude, speed and height. They keep working when the main screens or computers fail.",
+              "context": "The pilot uses them to fly safely home if the main displays are lost."
+            },
+            {
+              "id": "warning-35",
+              "name": "Warning panel",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:5"
+              ],
+              "text": "A board of labelled lights (or messages), each saying what is wrong, for example a fire, low fuel or a failed generator.",
+              "context": "When a warning comes on, the pilot looks here first to see which system needs attention."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "panels": [
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "src": "d1",
+          "text": "The two throttle levers for the two AL-31FP engines, with the air brake switch, the target designator control and the countermeasures button.",
+          "context": "The Su-30SM's engines have thrust vectoring nozzles, which the fly-by-wire system moves through the normal stick.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left AL-41F1S engine stronger or weaker, like a car's gas pedal; pushed fully forward it adds the afterburner. The AL-41F1S has swivelling nozzles (thrust vectoring).",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right AL-41F1S engine stronger or weaker, like a car's gas pedal; pushed fully forward it adds the afterburner. The AL-41F1S has swivelling nozzles (thrust vectoring).",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            }
+          ]
+        },
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "d1",
+          "text": "The centre stick of the Flanker family with the trim hat, the gun and stores triggers, the autopilot override lever and the target buttons.",
+          "context": "Su-35S grip functions are not public; JoyPro takes the stick from the Su-30SM entry (the Su-27 family set) and marks it as assumed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

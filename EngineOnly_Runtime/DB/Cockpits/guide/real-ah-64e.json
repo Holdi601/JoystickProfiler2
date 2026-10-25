@@ -1,0 +1,307 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-ah-64e",
+  "title": "AH-64E Apache Guardian (pilot)",
+  "inherits": "dcs-ah-64d",
+  "variants": [
+    "ah-64e"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Boeing AH-64 Apache (Wikipedia), AH-64E section",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Boeing_AH-64_Apache"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    },
+    {
+      "id": "m1",
+      "title": "DCS AH-64D Flight Manual (EN)",
+      "file": "Mods/aircraft/AH-64D/Doc/DCS AH-64D Flight Manual EN.pdf"
+    }
+  ],
+  "intro": "The AH-64E Guardian is the newest version of the Apache attack helicopter, partly rebuilt from older AH-64D Longbows and partly new-built. Like the D it has two crew members in tandem: the pilot in the raised rear seat and the copilot/gunner in front. The E has stronger engines, a new gearbox and new rotor blades, the Link 16 datalink (shares positions of friends and targets between aircraft by radio) and new screen pages for controlling drones. Public sources show no changes to the grips and panels the pilot touches, so this guide follows the AH-64D cockpit that DCS models; the front seat of the E is not a separate JoyPro variant.",
+  "areas": [
+    {
+      "id": "plt-instrument-panel",
+      "where": "front-center",
+      "name": "Pilot instrument panel",
+      "panels": [
+        {
+          "id": "plt-video-panel",
+          "name": "Video panel (pilot seat)",
+          "db": "video-panel",
+          "src": "m1",
+          "page": "109",
+          "text": "This panel sets how bright the picture and the symbols are in the pilot's helmet display, the small screen in front of one eye. It also tunes the infrared camera picture.",
+          "context": "The pilot flies at night mostly by looking at this helmet display, so the brightness has to be right. The infrared camera (FLIR) sees heat instead of light.",
+          "controls": [
+            {
+              "id": "ihadss-brt",
+              "name": "IHADSS BRT knob (helmet display brightness)",
+              "type": "knob",
+              "match": [
+                "pnt_278",
+                "item:video-panel:1"
+              ],
+              "text": "Turning this knob makes the picture in the helmet display brighter or darker. IHADSS is the name of the helmet display system.",
+              "context": "On the real panel the BRT and CON knobs sit one inside the other. The outer one is brightness.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "ihadss-con",
+              "name": "IHADSS CON knob (helmet display contrast)",
+              "type": "knob",
+              "match": [
+                "pnt_279"
+              ],
+              "text": "Turning this knob changes the contrast of the helmet display picture, the difference between its light and dark parts.",
+              "context": "It is the inner knob of the pair, next to the brightness knob.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "sym-brt",
+              "name": "SYM BRT knob (symbol brightness)",
+              "type": "knob",
+              "match": [
+                "pnt_280",
+                "item:video-panel:2"
+              ],
+              "text": "This knob sets the brightness of the symbols (numbers and marks) in the helmet display, apart from the camera picture behind them.",
+              "context": "It lets the pilot keep the symbols readable without making the picture too bright.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "acm-switch",
+              "name": "ACM switch (automatic contrast mode)",
+              "type": "switch2",
+              "match": [
+                "pnt_281",
+                "item:video-panel:3"
+              ],
+              "text": "This switch is meant to let the infrared picture set its level and gain by itself when it is on. In DCS it is not implemented.",
+              "context": "When it is off, the FLIR knob next to it is used.",
+              "positions": [
+                {
+                  "name": "ACM",
+                  "text": "Automatic setting of the infrared picture (not implemented)."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The FLIR knob sets the picture by hand."
+                }
+              ],
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flir-lvl",
+              "name": "FLIR LVL knob (infrared level)",
+              "type": "knob",
+              "match": [
+                "pnt_282",
+                "item:video-panel:4"
+              ],
+              "text": "This knob sets the level of the infrared camera picture, which makes it lighter or darker overall.",
+              "context": "The picture comes from the pilot's night camera or the targeting camera. It is the outer knob of a pair.",
+              "src": "m1",
+              "page": "109"
+            },
+            {
+              "id": "flir-gain",
+              "name": "FLIR GAIN knob (infrared gain)",
+              "type": "knob",
+              "match": [
+                "pnt_283"
+              ],
+              "text": "This knob sets the gain of the infrared picture, which is how strongly small differences in heat show up.",
+              "context": "It is the inner knob of the pair, used together with the level knob.",
+              "src": "m1",
+              "page": "109"
+            }
+          ]
+        }
+      ],
+      "seat": 1
+    },
+    {
+      "id": "plt-cmws-area",
+      "where": "right-side",
+      "name": "Pilot CMWS panel",
+      "panels": [
+        {
+          "id": "plt-cmws",
+          "name": "CMWS control panel (pilot seat only)",
+          "db": "cmws-control-panel",
+          "src": "m1",
+          "page": "630",
+          "text": "The CMWS is the missile warning system. It watches with sensors for missiles fired at the helicopter and can drop flares (hot burning decoys for heat-seeking missiles) by itself.",
+          "context": "Only the pilot seat has this panel. The manual advises setting the CMWS/NAV switch to CMWS in an area where missile threats are expected.",
+          "controls": [
+            {
+              "id": "cmws-display",
+              "name": "Control indicator display",
+              "type": "display",
+              "match": [
+                "item:cmws-control-panel:1"
+              ],
+              "text": "This small display shows how many flares and chaff are left, a ring of arrows for the direction of a detected missile, and lights that say flares are being dropped and the system is ready.",
+              "context": "The manual gives up to 60 flares and up to 30 chaff.",
+              "src": "m1",
+              "page": "631"
+            },
+            {
+              "id": "cmws-power",
+              "name": "CMWS power / test switch",
+              "type": "switch3",
+              "match": [
+                "pnt_610",
+                "item:cmws-control-panel:2"
+              ],
+              "text": "This switch turns the missile warning system on or off and runs a self-test.",
+              "context": "A self-test also runs by itself after switch-on. The TEST position springs back.",
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The system is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The system is on and tests itself."
+                },
+                {
+                  "name": "TEST",
+                  "text": "Starts a self-test; held only for a moment."
+                }
+              ],
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-audio",
+              "name": "CMWS audio knob",
+              "type": "knob",
+              "match": [
+                "pnt_611",
+                "item:cmws-control-panel:3"
+              ],
+              "text": "This knob is labelled AUDIO. The manual lists it as having no function; the game names it 'CMWS Audio Volume Knob'.",
+              "context": "The volume of the missile alerts is set with the ADF knob on the communications panel.",
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-lamp",
+              "name": "CMWS LAMP knob",
+              "type": "knob",
+              "match": [
+                "pnt_612",
+                "item:cmws-control-panel:4"
+              ],
+              "text": "Turning this knob makes the display of the panel brighter or darker.",
+              "context": "It is set for day or night flying.",
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-arm",
+              "name": "CMWS ARM / SAFE switch (flare dispensers)",
+              "type": "switch2",
+              "match": [
+                "pnt_614",
+                "item:cmws-control-panel:5"
+              ],
+              "text": "This switch arms or safes the flare dispensers. Flares can only be dropped when it is on ARM, and only in the air.",
+              "context": "On the ground nothing is dispensed, whatever the switch says.",
+              "positions": [
+                {
+                  "name": "ARM",
+                  "text": "Flares can be dropped automatically on a missile threat or by hand."
+                },
+                {
+                  "name": "SAFE",
+                  "text": "No flare is dropped."
+                }
+              ],
+              "src": "m1",
+              "page": "630"
+            },
+            {
+              "id": "cmws-mode",
+              "name": "CMWS / NAV switch",
+              "type": "switch2",
+              "match": [
+                "pnt_615",
+                "item:cmws-control-panel:6"
+              ],
+              "text": "This switch decides what the ADF audio channel carries in both seats: the spoken missile alerts or the sound of the ADF radio.",
+              "context": "ADF is the radio that points to beacons on the ground. In a dangerous area the switch should be on CMWS.",
+              "positions": [
+                {
+                  "name": "CMWS",
+                  "text": "The channel carries the missile alerts."
+                },
+                {
+                  "name": "NAV",
+                  "text": "The channel carries the ADF radio sound; missile alerts are not heard."
+                }
+              ],
+              "src": "m1",
+              "page": "631"
+            },
+            {
+              "id": "cmws-jett",
+              "name": "CMWS JETTISON switch (with cover)",
+              "type": "guard",
+              "match": [
+                "pnt_618",
+                "pnt_617",
+                "item:cmws-control-panel:7"
+              ],
+              "text": "This guarded switch drops all the flares from the tail dispensers at once in an emergency. The cover must be lifted first.",
+              "context": "The system does not need to be armed for this.",
+              "src": "m1",
+              "page": "631"
+            },
+            {
+              "id": "cmws-bypass",
+              "name": "CMWS BYPASS / AUTO switch",
+              "type": "switch2",
+              "match": [
+                "pnt_616",
+                "item:cmws-control-panel:8"
+              ],
+              "text": "This switch decides whether the system may drop flares by itself when it sees a missile. Warnings are spoken either way.",
+              "context": "Flares can always be dropped by hand with the FLARE button on the cyclic.",
+              "positions": [
+                {
+                  "name": "BYPASS",
+                  "text": "No automatic flares; only the cyclic FLARE button drops flares."
+                },
+                {
+                  "name": "AUTO",
+                  "text": "The system drops flares by itself on a missile threat, and the button also works."
+                }
+              ],
+              "src": "m1",
+              "page": "631"
+            }
+          ]
+        }
+      ],
+      "seat": 1
+    }
+  ]
+}

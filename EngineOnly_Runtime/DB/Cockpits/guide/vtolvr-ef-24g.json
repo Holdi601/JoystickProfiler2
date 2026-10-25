@@ -1,0 +1,2657 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "vtolvr-ef-24g",
+  "title": "EF-24G Mischief (VTOL VR)",
+  "inherits": "game-vtol-vr",
+  "remove": [
+    "hud-controls",
+    "helmet",
+    "mfds",
+    "keypad",
+    "autopilot",
+    "armament",
+    "flight-panel",
+    "engine-panel",
+    "lights",
+    "comms",
+    "canopy-seat",
+    "stick",
+    "throttle"
+  ],
+  "variants": [
+    "vtolvr-ef-24g-pilot",
+    "vtolvr-ef-24g-ewo"
+  ],
+  "games": [
+    "VTOLVR"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "ef",
+      "title": "EF-24G (VTOL VR Wiki)",
+      "kind": "reference",
+      "url": "https://vtolvr.wiki.gg/wiki/EF-24G"
+    },
+    {
+      "id": "a2",
+      "title": "BYOJoystick: EF24GFrontManager.cs",
+      "kind": "reference",
+      "url": "https://raw.githubusercontent.com/sicsix/BYOJoystick/master/BYOJoystick/Managers/EF24GFrontManager.cs"
+    },
+    {
+      "id": "a3",
+      "title": "BYOJoystick: CEF24Hotas.cs",
+      "kind": "reference",
+      "url": "https://raw.githubusercontent.com/sicsix/BYOJoystick/master/BYOJoystick/Controls/CEF24Hotas.cs"
+    },
+    {
+      "id": "vb",
+      "title": "BYOJoystick bindable targets per seat (JoyPro DB/VTOLVR/actions.tsv, seats.tsv)",
+      "kind": "reference",
+      "url": "https://github.com/sicsix/BYOJoystick"
+    },
+    {
+      "id": "vs",
+      "title": "VTOL VR settings and controls (journal.3960.org)",
+      "kind": "tutorial",
+      "url": "https://journal.3960.org/posts/2025-11-24-vtol-vr-settings-controls/"
+    },
+    {
+      "id": "vt",
+      "title": "VTOL VR Wiki: Targeting Pod (TGP)",
+      "kind": "reference",
+      "url": "https://vtolvr.wiki.gg/wiki/Targeting_Pod_(TGP)"
+    },
+    {
+      "id": "vr",
+      "title": "VTOL VR Wiki: Radar (MFD Page)",
+      "kind": "reference",
+      "url": "https://vtolvr.wiki.gg/wiki/Radar_(MFD_Page)"
+    },
+    {
+      "id": "vn",
+      "title": "VTOL VR Wiki: Navigation (MFD Page)",
+      "kind": "reference",
+      "url": "https://vtolvr.wiki.gg/wiki/Navigation_(MFD_Page)"
+    },
+    {
+      "id": "o2",
+      "title": "VTOL VR Wiki: Settings",
+      "kind": "reference",
+      "url": "https://vtolvr.wiki.gg/wiki/Settings"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (games-other.json)",
+      "kind": "reference"
+    },
+    {
+      "id": "o3",
+      "title": "BYOJoystick: CJoystick.cs",
+      "kind": "reference",
+      "url": "https://raw.githubusercontent.com/sicsix/BYOJoystick/master/BYOJoystick/Controls/CJoystick.cs"
+    },
+    {
+      "id": "o4",
+      "title": "BYOJoystick: CThrottle.cs",
+      "kind": "reference",
+      "url": "https://raw.githubusercontent.com/sicsix/BYOJoystick/master/BYOJoystick/Controls/CThrottle.cs"
+    }
+  ],
+  "intro": "The EF-24G Mischief is VTOL VR's fictional two-seat electronic warfare fighter (a DLC aircraft) with swing wings that sweep back for speed. The pilot sits in front with the usual virtual stick and throttle; the EWO (electronic warfare officer) sits behind with two hand control units instead, working the sensors, weapons and the AN/ALQ-245 jammers, radio transmitters that blind enemy radars. The wings sweep with airspeed or by hand, and the flaps work only with the wings fully forward.",
+  "areas": [
+    {
+      "id": "pilot-hud-helmet",
+      "where": "glareshield",
+      "name": "HUD and helmet",
+      "seat": 1,
+      "text": "The HUD controls under the glareshield and the touch zones of the pilot's helmet.",
+      "panels": [
+        {
+          "id": "hud-controls",
+          "name": "HUD and helmet display controls",
+          "db": "hud-controls",
+          "src": "c1",
+          "text": "Switches and knobs for the HUD and the helmet display: power, brightness and how much they show.",
+          "context": "The pilot sets them at start-up and adjusts them for day or night.",
+          "controls": [
+            {
+              "id": "hud-power",
+              "name": "HUD power",
+              "type": "switch2",
+              "match": [
+                "item:hud-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The HUD is dark."
+                },
+                {
+                  "name": "ON",
+                  "text": "The HUD shows its symbols."
+                }
+              ],
+              "text": "This switch turns the HUD on and off. The HUD is the glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display).",
+              "context": "It is part of the start-up; without it the pilot flies on the screens and the helmet display only.",
+              "src": "c1"
+            },
+            {
+              "id": "hud-brightness",
+              "name": "HUD brightness",
+              "type": "knob",
+              "match": [
+                "item:hud-controls:2"
+              ],
+              "text": "Turning this knob makes the HUD symbols brighter or darker.",
+              "context": "Bright symbols are needed against a sunny sky, dim ones at night so they do not dazzle.",
+              "src": "c1"
+            },
+            {
+              "id": "hud-tint",
+              "name": "HUD tint",
+              "type": "knob",
+              "match": [
+                "item:hud-controls:3"
+              ],
+              "text": "This knob darkens the HUD glass itself, like sunglasses, so the symbols stay readable against a bright sky.",
+              "context": "It works together with the brightness knob; at night the tint is usually turned off.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "helmet",
+          "name": "Helmet (touch zones)",
+          "db": "helmet",
+          "src": "c1",
+          "text": "Parts of the pilot's own helmet that the player touches with the VR controller to use them, like buttons.",
+          "context": "VR has no real buttons on the helmet, so the game uses touch zones instead.",
+          "controls": [
+            {
+              "id": "oxygen-mask",
+              "name": "Oxygen mask",
+              "type": "button",
+              "match": [
+                "item:helmet:1"
+              ],
+              "text": "The pilot touches the oxygen mask on the own helmet with the VR controller and holds it there to talk on the radio (push-to-talk).",
+              "context": "In VR there is no real button, so the game uses the touch of the mask instead.",
+              "src": "c1"
+            },
+            {
+              "id": "helmet-top",
+              "name": "Helmet top",
+              "type": "button",
+              "match": [
+                "item:helmet:2"
+              ],
+              "text": "Touching the top of the own helmet with the VR controller switches the night vision goggles on or off. Night vision makes the dark visible.",
+              "context": "Used on night missions; the goggles fold down in front of the eyes.",
+              "src": "c1"
+            },
+            {
+              "id": "helmet-side",
+              "name": "Helmet side",
+              "type": "button",
+              "match": [
+                "item:helmet:3"
+              ],
+              "text": "Touching the side of the helmet switches the helmet display on or off.",
+              "context": "A quick way to remove the helmet symbols when they get in the way.",
+              "src": "c1"
+            },
+            {
+              "id": "visor",
+              "name": "Visor",
+              "type": "lever",
+              "match": [
+                "item:helmet:4"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The visor is up; the view is not tinted."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "The visor is down and darkens the view."
+                }
+              ],
+              "text": "The sun visor of the helmet. The pilot moves it up or down with the VR controller, like sunglasses that slide over the eyes.",
+              "context": "Down against a low sun, up at night or in clouds.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-front",
+      "where": "front-center",
+      "name": "Front panel: displays and autopilot",
+      "seat": 1,
+      "text": "The touch screens, the keypad and the autopilot in the middle of the panel.",
+      "panels": [
+        {
+          "id": "mfds",
+          "name": "Multi-function displays",
+          "db": "mfds",
+          "src": "c1",
+          "text": "The touch screens of the panel and the buttons around them. The page marked SOI (sensor of interest) is the one the stick thumbstick works on.",
+          "context": "Most of the aircraft's systems are run from these screens: map, radar, targeting camera and weapons.",
+          "controls": [
+            {
+              "id": "touch-mfds",
+              "name": "Touch MFDs",
+              "type": "display",
+              "match": [
+                "item:mfds:1"
+              ],
+              "text": "Large touch screens with pages for the tactical map (TSD), the targeting camera, the radar and the weapons. The pages can be arranged freely on the screen.",
+              "context": "The pilot sets up the screen to show what the mission needs; the page marked SOI follows the stick thumbstick.",
+              "src": "c1"
+            },
+            {
+              "id": "modular-touchscreen-layouts",
+              "name": "Modular touchscreen layouts",
+              "type": "button",
+              "match": [
+                "item:mfds:2"
+              ],
+              "text": "Buttons that save the arrangement of the pages on the large touch screen, or load a saved one.",
+              "context": "A saved layout lets the pilot switch quickly between, for example, an air-to-air and a ground-attack screen setup.",
+              "src": "c1"
+            },
+            {
+              "id": "tsd-buttons",
+              "name": "TSD buttons",
+              "type": "button",
+              "match": [
+                "item:mfds:3"
+              ],
+              "positions": [
+                {
+                  "name": "EOTS/TGP",
+                  "text": "Slews the targeting camera to the point under the map cursor."
+                },
+                {
+                  "name": "GPS-S",
+                  "text": "Stores a GPS point where the map cursor is."
+                }
+              ],
+              "text": "Buttons on the tactical map page. EOTS/TGP points the targeting camera at the map cursor; GPS-S stores a GPS point at the cursor.",
+              "context": "GPS points are targets for GPS-guided bombs; pointing the camera saves searching for the target by hand.",
+              "src": "c1"
+            },
+            {
+              "id": "soi-button",
+              "name": "SOI button",
+              "type": "button",
+              "match": [
+                "item:mfds:4"
+              ],
+              "text": "A button on each screen page that makes that page the SOI, the sensor of interest: the page the thumbsticks control. A green frame shows which page it is.",
+              "context": "The throttle thumbstick also steps through the pages to change the SOI.",
+              "src": "c1"
+            },
+            {
+              "id": "master-caution",
+              "name": "Master caution",
+              "type": "button",
+              "match": [
+                "item:mfds:5"
+              ],
+              "text": "A button that clears the cautions currently shown, after the pilot has seen them.",
+              "context": "A caution means something needs attention; clearing it lets a new caution stand out.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "keypad",
+          "name": "Keypad",
+          "db": "keypad",
+          "src": "c1",
+          "text": "A number pad for typing frequencies, codes, altitudes and GPS points.",
+          "context": "It works with the screens: the pilot picks a field, then types the value.",
+          "controls": [
+            {
+              "id": "number-keys-0-9",
+              "name": "Number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "item:keypad:1"
+              ],
+              "text": "Ten keys for typing numbers into the selected field: radio frequencies, codes, altitudes and GPS points.",
+              "context": "The pilot first touches the field to change, then types the number.",
+              "src": "c1"
+            },
+            {
+              "id": "enter",
+              "name": "Enter",
+              "type": "button",
+              "match": [
+                "item:keypad:2"
+              ],
+              "text": "This key accepts the number that was typed.",
+              "context": "Nothing changes until the pilot presses it, so a typing mistake can still be fixed.",
+              "src": "c1"
+            },
+            {
+              "id": "clear",
+              "name": "Clear",
+              "type": "button",
+              "match": [
+                "item:keypad:3"
+              ],
+              "text": "This key clears the number that was typed, to start again.",
+              "context": "Used after a typing mistake, before pressing Enter.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "autopilot",
+          "name": "Autopilot panel",
+          "db": "autopilot",
+          "src": "c1",
+          "text": "The autopilot panel: the autopilot is the system that can hold the aircraft's height, heading or path so the pilot does not have to.",
+          "context": "The pilot turns modes on with these buttons and sets the values they hold.",
+          "controls": [
+            {
+              "id": "nav-mode",
+              "name": "NAV mode",
+              "type": "button",
+              "match": [
+                "item:autopilot:1"
+              ],
+              "text": "This button makes the autopilot fly the planned route to the current waypoint, a point on the planned route the aircraft can steer to.",
+              "context": "The route is set on the map page; the autopilot then steers from point to point.",
+              "src": "c1"
+            },
+            {
+              "id": "speed-hold",
+              "name": "Speed hold",
+              "type": "button",
+              "match": [
+                "item:autopilot:2"
+              ],
+              "text": "This button makes the autopilot keep the current airspeed.",
+              "context": "It saves the pilot from working the throttle on long flights.",
+              "src": "c1"
+            },
+            {
+              "id": "heading-hold",
+              "name": "Heading hold",
+              "type": "button",
+              "match": [
+                "item:autopilot:3"
+              ],
+              "text": "This button makes the autopilot keep the set heading, the compass direction the nose points to.",
+              "context": "The pilot can then use the hands for the screens while the aircraft flies straight.",
+              "src": "c1"
+            },
+            {
+              "id": "altitude-hold",
+              "name": "Altitude hold",
+              "type": "button",
+              "match": [
+                "item:autopilot:4"
+              ],
+              "text": "This button makes the autopilot keep the set altitude.",
+              "context": "Together with heading hold it lets the aircraft fly on its own for a while.",
+              "src": "c1"
+            },
+            {
+              "id": "a-p-off",
+              "name": "A/P off",
+              "type": "button",
+              "match": [
+                "item:autopilot:5"
+              ],
+              "text": "This button switches all autopilot modes off at once, so the pilot flies by hand again.",
+              "context": "Pilots use it when they need full control quickly, for example in a fight.",
+              "src": "c1"
+            },
+            {
+              "id": "altitude-mode",
+              "name": "Altitude mode",
+              "type": "switch",
+              "match": [
+                "item:autopilot:6"
+              ],
+              "text": "This switch changes what the held altitude is measured from.",
+              "context": "The catalog does not give its two positions; it belongs to the altitude hold.",
+              "src": "c1"
+            },
+            {
+              "id": "clear-waypoint",
+              "name": "Clear waypoint",
+              "type": "button",
+              "match": [
+                "item:autopilot:7"
+              ],
+              "text": "This button clears the current waypoint.",
+              "context": "Used when the pilot no longer wants to fly to that point.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ew-panel",
+          "name": "Jammer controls (AN/ALQ-245)",
+          "db": "ew-panel",
+          "src": "c1",
+          "text": "The controls of the AN/ALQ-245 jammer pods: which transmitter, which band and mode, how much power and at what target.",
+          "context": "Electronic warfare is this aircraft's main job; the jammers protect friendly aircraft from enemy radars.",
+          "controls": [
+            {
+              "id": "transmitter-select",
+              "name": "Transmitter select",
+              "type": "rocker",
+              "match": [
+                "item:ew-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NEXT",
+                  "text": "Selects the next transmitter."
+                },
+                {
+                  "name": "PREV",
+                  "text": "Selects the previous transmitter."
+                }
+              ],
+              "text": "This rocker chooses which jammer transmitter the other EW buttons work on. Jammers are radio transmitters that blind enemy radars.",
+              "context": "The aircraft carries several transmitters; each is set up one after the other.",
+              "src": "c1"
+            },
+            {
+              "id": "em-band",
+              "name": "EM band",
+              "type": "button",
+              "match": [
+                "item:ew-panel:2"
+              ],
+              "text": "This button steps the selected transmitter through its frequency bands.",
+              "context": "The band must match the radar to be jammed.",
+              "src": "c1"
+            },
+            {
+              "id": "transmitter-mode",
+              "name": "Transmitter mode",
+              "type": "button",
+              "match": [
+                "item:ew-panel:3"
+              ],
+              "text": "This button steps the selected transmitter through its jamming modes.",
+              "context": "Different modes suit different kinds of radar.",
+              "src": "c1"
+            },
+            {
+              "id": "transmitter-power",
+              "name": "Transmitter power",
+              "type": "rocker",
+              "match": [
+                "item:ew-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "+",
+                  "text": "More transmitter power."
+                },
+                {
+                  "name": "-",
+                  "text": "Less transmitter power."
+                }
+              ],
+              "text": "This rocker raises or lowers the power of the selected transmitter.",
+              "context": "More power jams better but makes the aircraft easier to find.",
+              "src": "c1"
+            },
+            {
+              "id": "start-stop",
+              "name": "Start / stop",
+              "type": "button",
+              "match": [
+                "item:ew-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The transmitter starts jamming."
+                },
+                {
+                  "name": "STOP",
+                  "text": "The transmitter stops."
+                }
+              ],
+              "text": "This button starts or stops the selected transmitter.",
+              "context": "A transmitter works only while started; it can be stopped to stay quiet.",
+              "src": "c1"
+            },
+            {
+              "id": "stop-all",
+              "name": "Stop all",
+              "type": "button",
+              "match": [
+                "item:ew-panel:6"
+              ],
+              "text": "This button stops every jammer transmitter at once.",
+              "context": "A quick way to go quiet, for example after the threat has passed.",
+              "src": "c1"
+            },
+            {
+              "id": "target-source",
+              "name": "Target source",
+              "type": "button",
+              "match": [
+                "item:ew-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "TSD",
+                  "text": "Aims at the map target."
+                },
+                {
+                  "name": "TGP",
+                  "text": "Aims at the targeting pod's target."
+                },
+                {
+                  "name": "GPS",
+                  "text": "Aims at the GPS point."
+                },
+                {
+                  "name": "CLEAR",
+                  "text": "Clears the aim."
+                }
+              ],
+              "text": "This button aims the selected transmitter at the target from the map (TSD), the targeting pod (TGP) or a GPS point, or clears the aim.",
+              "context": "A jammer pointed at the right radar works best.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-left-front",
+      "where": "front-left",
+      "name": "Left front: armament, gear and flight assist",
+      "seat": 1,
+      "text": "The weapon and defence switches, the gear and the stability switches.",
+      "panels": [
+        {
+          "id": "armament",
+          "name": "Armament and defence",
+          "db": "armament",
+          "src": "c1",
+          "text": "Master arm, jettison, countermeasures and the threat warning: the weapon and defence switches.",
+          "context": "The pilot sets them before the fight: arm the weapons, enable flares and chaff, check the threat warning.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm",
+              "type": "switch2",
+              "match": [
+                "item:armament:1"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "No weapon can fire."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The weapons can fire."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons: nothing fires while it is on SAFE. In a two-seater its light shows which seat may fire.",
+              "context": "The pilot arms it only near the fight and makes it safe again before landing.",
+              "src": "c1"
+            },
+            {
+              "id": "master-mode-selector",
+              "name": "Master mode selector",
+              "type": "selector",
+              "match": [
+                "item:armament:2"
+              ],
+              "positions": [
+                {
+                  "name": "WPN",
+                  "text": "The stick works the weapons."
+                },
+                {
+                  "name": "EW",
+                  "text": "The stick works the jammers."
+                }
+              ],
+              "text": "This selector chooses between the weapons (WPN) and electronic warfare (EW). In EW the stick's buttons work the jammers instead of the weapons.",
+              "context": "Jammers are radio transmitters that blind enemy radars; the EW panel sets them up.",
+              "src": "c1"
+            },
+            {
+              "id": "arming-mode",
+              "name": "Arming mode",
+              "type": "selector",
+              "match": [
+                "item:armament:3"
+              ],
+              "positions": [
+                {
+                  "name": "AA",
+                  "text": "Air-to-air weapons are armed."
+                },
+                {
+                  "name": "AG",
+                  "text": "Air-to-ground weapons are armed."
+                }
+              ],
+              "text": "This selector arms either the air-to-air or the air-to-ground weapons, one group at a time.",
+              "context": "The pilot picks the group for the task: other aircraft or targets on the ground.",
+              "src": "c1"
+            },
+            {
+              "id": "jettison-selector",
+              "name": "Jettison selector",
+              "type": "selector",
+              "match": [
+                "item:armament:4"
+              ],
+              "positions": [
+                {
+                  "name": "ALL",
+                  "text": "All stores."
+                },
+                {
+                  "name": "PYLON",
+                  "text": "The stores of the chosen pylon."
+                },
+                {
+                  "name": "SEL",
+                  "text": "The selected stores."
+                },
+                {
+                  "name": "TANKS",
+                  "text": "The fuel tanks."
+                }
+              ],
+              "text": "This selector chooses which stores the jettison button drops.",
+              "context": "Dropping stores makes the aircraft lighter and faster, for example to escape or to land safely.",
+              "src": "c1"
+            },
+            {
+              "id": "jettison",
+              "name": "Jettison",
+              "type": "button",
+              "match": [
+                "item:armament:5"
+              ],
+              "text": "This button drops the marked or selected stores (jettison).",
+              "context": "It is an emergency action: the stores fall away unarmed.",
+              "src": "c1"
+            },
+            {
+              "id": "flares",
+              "name": "Flares",
+              "type": "switch2",
+              "match": [
+                "item:armament:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No flares are released."
+                },
+                {
+                  "name": "ON",
+                  "text": "Flares can be released."
+                }
+              ],
+              "text": "This switch allows the flare dispenser to work. Flares are hot burning decoys that fool heat-seeking missiles.",
+              "context": "With it on, the countermeasure button on the throttle releases flares.",
+              "src": "c1"
+            },
+            {
+              "id": "chaff",
+              "name": "Chaff",
+              "type": "switch2",
+              "match": [
+                "item:armament:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No chaff is released."
+                },
+                {
+                  "name": "ON",
+                  "text": "Chaff can be released."
+                }
+              ],
+              "text": "This switch allows the chaff dispenser to work. Chaff is a cloud of metal strips that fools radar missiles.",
+              "context": "With it on, the countermeasure button on the throttle releases chaff.",
+              "src": "c1"
+            },
+            {
+              "id": "rwr-mode",
+              "name": "RWR mode",
+              "type": "selector",
+              "match": [
+                "item:armament:8"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Shows threats and sounds the warning tones."
+                },
+                {
+                  "name": "MUTE",
+                  "text": "Shows threats without sound."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The warning receiver is off."
+                }
+              ],
+              "text": "This selector sets the RWR, the radar warning receiver that tells the pilot when an enemy radar is looking at the plane: on, silent (no sound) or off.",
+              "context": "Silent keeps the picture but stops the warning tones.",
+              "src": "c1"
+            },
+            {
+              "id": "radar-power",
+              "name": "Radar power",
+              "type": "switch2",
+              "match": [
+                "item:armament:9"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar is silent."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar searches."
+                }
+              ],
+              "text": "This switch turns the aircraft's radar on and off. The radar sends radio waves and listens for echoes to find other aircraft.",
+              "context": "A radar that is on finds more but also tells the enemy where the aircraft is.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "flight-panel",
+          "name": "Gear, flaps and flight assist",
+          "db": "flight-panel",
+          "src": "c1",
+          "text": "Landing gear, flaps, brakes, carrier gear and the stability systems.",
+          "context": "The pilot works them for take-off, landing and carrier operations.",
+          "controls": [
+            {
+              "id": "landing-gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:flight-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The gear is folded away."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The gear is down."
+                }
+              ],
+              "text": "Pull this lever and the landing gear, the wheels and their legs, comes down or goes up.",
+              "context": "Up after take-off, down before landing; a carrier landing also needs the hook.",
+              "src": "c1"
+            },
+            {
+              "id": "flaps-lever",
+              "name": "Flaps lever",
+              "type": "lever",
+              "match": [
+                "item:flight-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "1",
+                  "text": "First flap position."
+                },
+                {
+                  "name": "2",
+                  "text": "Second flap position."
+                },
+                {
+                  "name": "3",
+                  "text": "Third flap position."
+                },
+                {
+                  "name": "4",
+                  "text": "Fourth flap position."
+                }
+              ],
+              "text": "This lever sets the flaps, parts of the wing that slide out to give more lift at low speed.",
+              "context": "More flaps for take-off and landing, none for fast flight.",
+              "src": "c1"
+            },
+            {
+              "id": "brake-lock",
+              "name": "Brake lock",
+              "type": "switch2",
+              "match": [
+                "item:flight-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The wheels can roll."
+                },
+                {
+                  "name": "ON",
+                  "text": "The wheels are held."
+                }
+              ],
+              "text": "This switch is the parking brake: it holds the wheels still while parked.",
+              "context": "It is set before the engines start and released before taxiing.",
+              "src": "c1"
+            },
+            {
+              "id": "launch-bar",
+              "name": "Launch bar",
+              "type": "switch2",
+              "match": [
+                "item:flight-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "RETRACT",
+                  "text": "The launch bar is up."
+                },
+                {
+                  "name": "EXTEND",
+                  "text": "The launch bar is down for the catapult."
+                }
+              ],
+              "text": "This switch lowers the launch bar on the nose wheel, the hook that connects to an aircraft carrier's catapult.",
+              "context": "Extended for a catapult launch, retracted after take-off.",
+              "src": "c1"
+            },
+            {
+              "id": "catapult-take-off-trim",
+              "name": "Catapult take-off trim",
+              "type": "switch2",
+              "match": [
+                "item:flight-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Normal trim."
+                },
+                {
+                  "name": "ON",
+                  "text": "Trim set for the catapult launch."
+                }
+              ],
+              "text": "This switch sets the trim for a catapult launch. Trim means small adjustments so the aircraft flies straight without the pilot holding the stick.",
+              "context": "It is set before a carrier launch so the nose does not dip as the jet leaves the deck.",
+              "src": "c1"
+            },
+            {
+              "id": "arrestor-hook",
+              "name": "Arrestor hook",
+              "type": "switch2",
+              "match": [
+                "item:flight-panel:6"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The hook is up."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The hook is down to catch the wire."
+                }
+              ],
+              "text": "This switch lowers the tail hook, which catches the wire when landing on an aircraft carrier.",
+              "context": "Down before a carrier landing, up afterwards.",
+              "src": "c1"
+            },
+            {
+              "id": "wing-sweep-lever",
+              "name": "Wing sweep lever",
+              "type": "lever",
+              "match": [
+                "item:flight-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "FWD",
+                  "text": "Wings forward for slow flight."
+                },
+                {
+                  "name": "AFT",
+                  "text": "Wings swept back for high speed."
+                }
+              ],
+              "text": "This lever sweeps the wings back or forward by hand.",
+              "context": "Swept back the jet goes faster; forward it flies better slowly. The flaps work only with the wings fully forward.",
+              "src": "c1"
+            },
+            {
+              "id": "auto-sweep",
+              "name": "Auto sweep",
+              "type": "switch2",
+              "match": [
+                "item:flight-panel:8"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The pilot sweeps the wings by hand."
+                },
+                {
+                  "name": "ON",
+                  "text": "The wings sweep with the airspeed."
+                }
+              ],
+              "text": "This switch lets the flight computer sweep the wings by itself as the airspeed changes.",
+              "context": "With it on, the pilot does not need to work the wing sweep lever.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "seat": 1,
+      "text": "The start-up switches, the lights and, in some seats, other controls.",
+      "panels": [
+        {
+          "id": "engine-panel",
+          "name": "Engine and electrical panel",
+          "db": "engine-panel",
+          "src": "c1",
+          "text": "The start-up switches: battery, APU, engines and fuel.",
+          "context": "The start-up runs from here: battery, then APU, then the engines.",
+          "controls": [
+            {
+              "id": "main-battery",
+              "name": "Main battery",
+              "type": "switch2",
+              "match": [
+                "item:engine-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No electricity."
+                },
+                {
+                  "name": "ON",
+                  "text": "The battery powers the cockpit."
+                }
+              ],
+              "text": "This switch connects the battery, which stores electricity for when the engines are off.",
+              "context": "It is the first switch of the start-up; the screens and the APU need it.",
+              "src": "c1"
+            },
+            {
+              "id": "apu",
+              "name": "APU",
+              "type": "switch2",
+              "match": [
+                "item:engine-panel:2"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The APU is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The APU runs."
+                }
+              ],
+              "text": "This switch starts the APU, a small extra engine that makes electricity and air before the main engines run.",
+              "context": "The APU is needed to start the main engines; it is switched off once they run.",
+              "src": "c1"
+            },
+            {
+              "id": "left-engine-switch",
+              "name": "Left engine switch",
+              "type": "switch2",
+              "match": [
+                "item:engine-panel:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The left engine is stopped."
+                },
+                {
+                  "name": "ON",
+                  "text": "The left engine starts and runs."
+                }
+              ],
+              "text": "This switch starts or stops the left engine.",
+              "context": "After the APU runs, the pilot starts one engine after the other.",
+              "src": "c1"
+            },
+            {
+              "id": "right-engine-switch",
+              "name": "Right engine switch",
+              "type": "switch2",
+              "match": [
+                "item:engine-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The right engine is stopped."
+                },
+                {
+                  "name": "ON",
+                  "text": "The right engine starts and runs."
+                }
+              ],
+              "text": "This switch starts or stops the right engine.",
+              "context": "It is flipped after the left engine in the start-up, or in the order the pilot prefers.",
+              "src": "c1"
+            },
+            {
+              "id": "fuel-port",
+              "name": "Fuel port",
+              "type": "switch2",
+              "match": [
+                "item:engine-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "CLOSED",
+                  "text": "The port is closed."
+                },
+                {
+                  "name": "OPEN",
+                  "text": "The port is open for refuelling."
+                }
+              ],
+              "text": "This switch opens or closes the refuelling port, the opening that takes fuel from a tanker aircraft in flight.",
+              "context": "The pilot opens it before joining the tanker and closes it afterwards.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "lights",
+          "name": "Lights panel",
+          "db": "lights",
+          "src": "c1",
+          "text": "Switches for the cockpit lights and the outside lights.",
+          "context": "Mostly used at night and when flying in formation.",
+          "controls": [
+            {
+              "id": "interior-lights",
+              "name": "Interior lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Cockpit flood lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Cockpit flood lights on."
+                }
+              ],
+              "text": "This switch turns on the flood lights that light up the whole cockpit.",
+              "context": "Used at night to see the switches.",
+              "src": "c1"
+            },
+            {
+              "id": "instrument-brightness",
+              "name": "Instrument brightness",
+              "type": "knob",
+              "match": [
+                "item:lights:2"
+              ],
+              "text": "Turning this knob makes the panel and instrument lighting brighter or darker.",
+              "context": "The pilot dims it at night so the eyes stay used to the dark outside.",
+              "src": "c1"
+            },
+            {
+              "id": "navigation-lights",
+              "name": "Navigation lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Position lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Position lights on."
+                }
+              ],
+              "text": "This switch turns the position lights on the wing tips and tail on and off.",
+              "context": "They show other pilots where the aircraft is and which way it flies.",
+              "src": "c1"
+            },
+            {
+              "id": "formation-lights",
+              "name": "Formation lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Formation lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Formation lights on."
+                }
+              ],
+              "text": "This switch turns the formation strip lights on and off, glowing strips that help wingmen hold their position at night.",
+              "context": "Used when flying close together in the dark.",
+              "src": "c1"
+            },
+            {
+              "id": "strobe-lights",
+              "name": "Strobe lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Strobes off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Strobes flashing."
+                }
+              ],
+              "text": "This switch turns the flashing anti-collision strobes on and off.",
+              "context": "They make the aircraft easy to see; in combat pilots may turn them off.",
+              "src": "c1"
+            },
+            {
+              "id": "landing-lights",
+              "name": "Landing lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Landing lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Landing lights on."
+                }
+              ],
+              "text": "This switch turns the landing and taxi lights on and off.",
+              "context": "Used to light up the runway, the deck or the landing zone at night.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "seat": 1,
+      "text": "The radio, intercom, canopy and seat controls.",
+      "panels": [
+        {
+          "id": "comms",
+          "name": "Comms panel",
+          "db": "comms",
+          "src": "c1",
+          "text": "The radio settings, the crew intercom where there is one, and the music player.",
+          "context": "The pilot sets the radio channel and volume before talking to the team.",
+          "controls": [
+            {
+              "id": "radio-channel",
+              "name": "Radio channel",
+              "type": "selector",
+              "match": [
+                "item:comms:1"
+              ],
+              "positions": [
+                {
+                  "name": "TEAM",
+                  "text": "Talks to the own team."
+                },
+                {
+                  "name": "FREQ",
+                  "text": "Talks on the set frequency."
+                },
+                {
+                  "name": "GLOBAL",
+                  "text": "Talks to everyone."
+                }
+              ],
+              "text": "This selector chooses where the radio talks: the team channel, a set frequency, or the global channel for everyone.",
+              "context": "In multiplayer the team channel is for friends; a frequency is the station number a radio talks on.",
+              "src": "c1"
+            },
+            {
+              "id": "radio-mode",
+              "name": "Radio mode",
+              "type": "selector",
+              "match": [
+                "item:comms:2"
+              ],
+              "positions": [
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone is always open."
+                },
+                {
+                  "name": "PTT",
+                  "text": "The microphone opens while push-to-talk is held."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The microphone is off."
+                }
+              ],
+              "text": "This selector sets the microphone: always open (hot mic), only while the talk button is pressed (PTT), or off.",
+              "context": "Push-to-talk is the usual setting; the talk button is on the stick or the oxygen mask.",
+              "src": "c1"
+            },
+            {
+              "id": "radio-volume",
+              "name": "Radio volume",
+              "type": "knob",
+              "match": [
+                "item:comms:3"
+              ],
+              "text": "Turning this knob makes the radio louder or quieter.",
+              "context": "It sets the overall radio sound; the team channel has its own knob.",
+              "src": "c1"
+            },
+            {
+              "id": "team-volume",
+              "name": "Team volume",
+              "type": "knob",
+              "match": [
+                "item:comms:4"
+              ],
+              "text": "Turning this knob sets the volume of the team channel.",
+              "context": "It lets the pilot hear the team louder or quieter than other radio sound.",
+              "src": "c1"
+            },
+            {
+              "id": "intercom",
+              "name": "Intercom",
+              "type": "switch2",
+              "match": [
+                "item:comms:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The intercom is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The intercom is on."
+                }
+              ],
+              "text": "This switch turns the crew intercom on and off, the phone line between the crew members. It is hands-free and opens by voice; a green light shows when a microphone is keyed.",
+              "context": "The two crew members talk over it without pressing any button.",
+              "src": "c1"
+            },
+            {
+              "id": "intercom-volume",
+              "name": "Intercom volume",
+              "type": "knob",
+              "match": [
+                "item:comms:6"
+              ],
+              "text": "Turning this knob makes the intercom louder or quieter, separately from the radio.",
+              "context": "The crew can hear each other clearly even with loud radio traffic.",
+              "src": "c1"
+            },
+            {
+              "id": "music-player",
+              "name": "Music player",
+              "type": "button",
+              "match": [
+                "item:comms:7"
+              ],
+              "positions": [
+                {
+                  "name": "PLAY/PAUSE",
+                  "text": "Starts or pauses the music."
+                },
+                {
+                  "name": "NEXT",
+                  "text": "Next track."
+                },
+                {
+                  "name": "PREV",
+                  "text": "Previous track."
+                },
+                {
+                  "name": "VOL",
+                  "text": "Music volume."
+                }
+              ],
+              "text": "The cockpit music player plays the player's own music while flying. Its buttons play or pause, skip forward or back and set the volume.",
+              "context": "It has nothing to do with the aircraft's systems; it is a comfort feature of the game.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "canopy-seat",
+          "name": "Canopy, doors and seat",
+          "db": "canopy-seat",
+          "src": "c1",
+          "text": "Canopy or doors, seat height, ejection and, in two-seaters, the seat change.",
+          "context": "Used before and after the flight, and the ejection handle only in an emergency.",
+          "controls": [
+            {
+              "id": "canopy-switch",
+              "name": "Canopy switch",
+              "type": "switch2",
+              "match": [
+                "item:canopy-seat:1"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The canopy opens."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The canopy closes."
+                }
+              ],
+              "text": "This switch opens or closes the canopy, the clear glass roof over the cockpit.",
+              "context": "It is closed before take-off and opened after landing.",
+              "src": "c1"
+            },
+            {
+              "id": "seat-height",
+              "name": "Seat height",
+              "type": "rocker",
+              "match": [
+                "item:canopy-seat:2"
+              ],
+              "positions": [
+                {
+                  "name": "RAISE",
+                  "text": "Moves the seat up."
+                },
+                {
+                  "name": "LOWER",
+                  "text": "Moves the seat down."
+                }
+              ],
+              "text": "This rocker moves the seat up or down so the pilot's eyes sit at the right height for the HUD and the view.",
+              "context": "In VR the player's real height differs, so the seat is adjusted at the start.",
+              "src": "c1"
+            },
+            {
+              "id": "ejection-handle",
+              "name": "Ejection handle",
+              "type": "handle",
+              "match": [
+                "item:canopy-seat:3"
+              ],
+              "text": "Pulling this handle fires the ejection seat, the seat that shoots the crew out of the aircraft in an emergency.",
+              "context": "Used only when the aircraft cannot be saved.",
+              "src": "c1"
+            },
+            {
+              "id": "switch-seat-button",
+              "name": "Switch Seat button",
+              "type": "button",
+              "match": [
+                "item:canopy-seat:4"
+              ],
+              "text": "In singleplayer this button moves the player to the other seat of the two-seat cockpit.",
+              "context": "It lets one player use both seats, for example to fly and then to work the sensors.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pilot-hotas",
+      "where": "hotas",
+      "name": "Pilot's virtual stick and throttle",
+      "seat": 1,
+      "text": "The front seat's VR stick and throttle.",
+      "panels": [
+        {
+          "id": "pilot-stick",
+          "name": "Virtual stick (right hand)",
+          "src": "o3",
+          "text": "The virtual joystick, held with the right VR controller. It flies the aircraft and its buttons fire, change weapons, talk on the radio and slew the sensors.",
+          "context": "VTOL VR has no fixed key map for a real joystick; JoyPro's catalog follows the game's own VR controls and the BYOJoystick tool.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Virtual joystick (pitch, roll, yaw)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The pilot grabs the virtual stick with the right VR controller's grip button. Forward and back point the nose down and up, sideways rolls the aircraft, and twisting turns the nose (yaw) and steers the nose wheel on the ground.",
+              "context": "A real joystick bound with a helper tool such as BYOJoystick takes the place of the hand on the virtual stick.",
+              "src": "o3"
+            },
+            {
+              "id": "trigger",
+              "name": "Stick trigger (fire)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Fires the selected weapon. For a heat-seeking missile the trigger also uncages the seeker, letting the missile's eye follow the target.",
+              "context": "The master arm switch must be on ARM; the weapon is chosen with the action button.",
+              "src": "o3"
+            },
+            {
+              "id": "menu",
+              "name": "Action (menu) button (cycle weapon)",
+              "type": "button",
+              "match": [
+                "control:stick.button.menu"
+              ],
+              "text": "Steps to the next weapon. The catalog notes that it fires a weapon whose seeker is already uncaged.",
+              "context": "The selected weapon shows on the HUD and on the weapons page.",
+              "src": "o3"
+            },
+            {
+              "id": "secondary",
+              "name": "Secondary action button (radio)",
+              "type": "button",
+              "match": [
+                "control:stick.button.secondary"
+              ],
+              "text": "While held, the radio microphone is open so the pilot can talk (push-to-talk).",
+              "context": "The same job as touching the oxygen mask; the radio channel is set on the comms panel.",
+              "src": "o3"
+            },
+            {
+              "id": "ministick",
+              "name": "Stick thumbstick / trackpad (slew)",
+              "type": "axis",
+              "match": [
+                "control:stick.ministick"
+              ],
+              "text": "Moves whatever the SOI page shows: on the targeting pod page it slews the camera, on the radar page it moves the cursor, on the map page it pans the map. Pressing it locks the camera on a point, locks a radar target, or activates what is under the map cursor.",
+              "context": "On the radar a first press locks while the radar keeps scanning (TWS), a second press makes the radar follow only that target (STT). The SOI is the page with the green frame.",
+              "src": "vs"
+            }
+          ]
+        },
+        {
+          "id": "pilot-throttle",
+          "name": "Virtual throttle (left hand)",
+          "src": "o4",
+          "text": "The virtual throttle, held with the left VR controller. It sets the thrust and its buttons brake, release countermeasures and change the SOI page.",
+          "context": "Like the stick, it is grabbed with the controller's grip button and then moved like a real lever.",
+          "controls": [
+            {
+              "id": "throttle-axis",
+              "name": "Virtual throttle (thrust)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "The pilot grabs the virtual throttle with the left VR controller's grip button. Pushing it forward gives more thrust, pulling it back less.",
+              "context": "A real throttle bound with a helper tool takes the place of the hand on the virtual lever.",
+              "src": "o4"
+            },
+            {
+              "id": "throttle-trigger",
+              "name": "Throttle trigger (brakes and airbrake)",
+              "type": "trigger",
+              "match": [
+                "control:throttle.trigger"
+              ],
+              "text": "While held, the wheel brakes work on the ground and the airbrake opens in the air. The airbrake is a set of panels that open into the wind to slow the aircraft down.",
+              "context": "Used to stop after landing and to slow down quickly in flight.",
+              "src": "o4"
+            },
+            {
+              "id": "throttle-menu",
+              "name": "Throttle action button (countermeasures)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.menu"
+              ],
+              "text": "Releases countermeasures: chaff (clouds of metal strips for radar missiles) and flares (hot decoys for heat-seeking missiles).",
+              "context": "Only the kinds switched on at the armament panel are released.",
+              "src": "o4"
+            },
+            {
+              "id": "throttle-mini",
+              "name": "Throttle thumbstick / trackpad (SOI and zoom)",
+              "type": "axis",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "Left and right step to the previous or next SOI page. Up and down zoom the targeting pod or the map, or tilt the radar's search up and down on the radar page.",
+              "context": "Changing the SOI decides which page the stick thumbstick works on.",
+              "src": "vs"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ewo-hud-helmet",
+      "where": "glareshield",
+      "name": "Rear seat: HUD and helmet",
+      "seat": 2,
+      "text": "The HUD controls under the glareshield and the touch zones of the pilot's helmet.",
+      "panels": [
+        {
+          "id": "ewo-hud-controls",
+          "name": "HUD and helmet display controls",
+          "db": "hud-controls",
+          "src": "c1",
+          "text": "Switches and knobs for the HUD and the helmet display: power, brightness and how much they show.",
+          "context": "The pilot sets them at start-up and adjusts them for day or night.",
+          "controls": [
+            {
+              "id": "hmcs-power",
+              "name": "HMCS power",
+              "type": "switch2",
+              "match": [
+                "item:hud-controls:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "No symbols in the helmet."
+                },
+                {
+                  "name": "ON",
+                  "text": "The helmet display shows its marks."
+                }
+              ],
+              "text": "This switch turns the helmet-mounted cueing system on and off: a small display on the pilot's helmet that shows marks where the pilot looks.",
+              "context": "With it on, the pilot can aim some weapons and sensors just by looking at a target.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ewo-helmet",
+          "name": "Helmet (touch zones)",
+          "db": "helmet",
+          "src": "c1",
+          "text": "Parts of the pilot's own helmet that the player touches with the VR controller to use them, like buttons.",
+          "context": "VR has no real buttons on the helmet, so the game uses touch zones instead.",
+          "controls": [
+            {
+              "id": "oxygen-mask",
+              "name": "Oxygen mask",
+              "type": "button",
+              "match": [
+                "item:helmet:1"
+              ],
+              "text": "The pilot touches the oxygen mask on the own helmet with the VR controller and holds it there to talk on the radio (push-to-talk).",
+              "context": "In VR there is no real button, so the game uses the touch of the mask instead.",
+              "src": "c1"
+            },
+            {
+              "id": "helmet-top",
+              "name": "Helmet top",
+              "type": "button",
+              "match": [
+                "item:helmet:2"
+              ],
+              "text": "Touching the top of the own helmet with the VR controller switches the night vision goggles on or off. Night vision makes the dark visible.",
+              "context": "Used on night missions; the goggles fold down in front of the eyes.",
+              "src": "c1"
+            },
+            {
+              "id": "helmet-side",
+              "name": "Helmet side",
+              "type": "button",
+              "match": [
+                "item:helmet:3"
+              ],
+              "text": "Touching the side of the helmet switches the helmet display on or off.",
+              "context": "A quick way to remove the helmet symbols when they get in the way.",
+              "src": "c1"
+            },
+            {
+              "id": "visor",
+              "name": "Visor",
+              "type": "lever",
+              "match": [
+                "item:helmet:4"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The visor is up; the view is not tinted."
+                },
+                {
+                  "name": "CLOSED",
+                  "text": "The visor is down and darkens the view."
+                }
+              ],
+              "text": "The sun visor of the helmet. The pilot moves it up or down with the VR controller, like sunglasses that slide over the eyes.",
+              "context": "Down against a low sun, up at night or in clouds.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ewo-front",
+      "where": "front-center",
+      "name": "Rear seat: Front panel: displays and autopilot",
+      "seat": 2,
+      "text": "The touch screens, the keypad and the autopilot in the middle of the panel.",
+      "panels": [
+        {
+          "id": "ewo-mfds",
+          "name": "Multi-function displays",
+          "db": "mfds",
+          "src": "c1",
+          "text": "The touch screens of the panel and the buttons around them. The page marked SOI (sensor of interest) is the one the stick thumbstick works on.",
+          "context": "Most of the aircraft's systems are run from these screens: map, radar, targeting camera and weapons.",
+          "controls": [
+            {
+              "id": "touch-mfds",
+              "name": "Touch MFDs",
+              "type": "display",
+              "match": [
+                "item:mfds:1"
+              ],
+              "text": "Large touch screens with pages for the tactical map (TSD), the targeting camera, the radar and the weapons. The pages can be arranged freely on the screen.",
+              "context": "The pilot sets up the screen to show what the mission needs; the page marked SOI follows the stick thumbstick.",
+              "src": "c1"
+            },
+            {
+              "id": "modular-touchscreen-layouts",
+              "name": "Modular touchscreen layouts",
+              "type": "button",
+              "match": [
+                "item:mfds:2"
+              ],
+              "text": "Buttons that save the arrangement of the pages on the large touch screen, or load a saved one.",
+              "context": "A saved layout lets the pilot switch quickly between, for example, an air-to-air and a ground-attack screen setup.",
+              "src": "c1"
+            },
+            {
+              "id": "tsd-buttons",
+              "name": "TSD buttons",
+              "type": "button",
+              "match": [
+                "item:mfds:3"
+              ],
+              "positions": [
+                {
+                  "name": "EOTS/TGP",
+                  "text": "Slews the targeting camera to the point under the map cursor."
+                },
+                {
+                  "name": "GPS-S",
+                  "text": "Stores a GPS point where the map cursor is."
+                }
+              ],
+              "text": "Buttons on the tactical map page. EOTS/TGP points the targeting camera at the map cursor; GPS-S stores a GPS point at the cursor.",
+              "context": "GPS points are targets for GPS-guided bombs; pointing the camera saves searching for the target by hand.",
+              "src": "c1"
+            },
+            {
+              "id": "soi-button",
+              "name": "SOI button",
+              "type": "button",
+              "match": [
+                "item:mfds:4"
+              ],
+              "text": "A button on each screen page that makes that page the SOI, the sensor of interest: the page the thumbsticks control. A green frame shows which page it is.",
+              "context": "The throttle thumbstick also steps through the pages to change the SOI.",
+              "src": "c1"
+            },
+            {
+              "id": "master-caution",
+              "name": "Master caution",
+              "type": "button",
+              "match": [
+                "item:mfds:5"
+              ],
+              "text": "A button that clears the cautions currently shown, after the pilot has seen them.",
+              "context": "A caution means something needs attention; clearing it lets a new caution stand out.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ewo-keypad",
+          "name": "Keypad",
+          "db": "keypad",
+          "src": "c1",
+          "text": "A number pad for typing frequencies, codes, altitudes and GPS points.",
+          "context": "It works with the screens: the pilot picks a field, then types the value.",
+          "controls": [
+            {
+              "id": "number-keys-0-9",
+              "name": "Number keys 0-9",
+              "type": "keypad",
+              "match": [
+                "item:keypad:1"
+              ],
+              "text": "Ten keys for typing numbers into the selected field: radio frequencies, codes, altitudes and GPS points.",
+              "context": "The pilot first touches the field to change, then types the number.",
+              "src": "c1"
+            },
+            {
+              "id": "enter",
+              "name": "Enter",
+              "type": "button",
+              "match": [
+                "item:keypad:2"
+              ],
+              "text": "This key accepts the number that was typed.",
+              "context": "Nothing changes until the pilot presses it, so a typing mistake can still be fixed.",
+              "src": "c1"
+            },
+            {
+              "id": "clear",
+              "name": "Clear",
+              "type": "button",
+              "match": [
+                "item:keypad:3"
+              ],
+              "text": "This key clears the number that was typed, to start again.",
+              "context": "Used after a typing mistake, before pressing Enter.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ewo-autopilot",
+          "name": "Autopilot panel",
+          "db": "autopilot",
+          "src": "c1",
+          "text": "The autopilot panel: the autopilot is the system that can hold the aircraft's height, heading or path so the pilot does not have to.",
+          "context": "The pilot turns modes on with these buttons and sets the values they hold.",
+          "controls": [
+            {
+              "id": "nav-mode",
+              "name": "NAV mode",
+              "type": "button",
+              "match": [
+                "item:autopilot:1"
+              ],
+              "text": "This button makes the autopilot fly the planned route to the current waypoint, a point on the planned route the aircraft can steer to.",
+              "context": "The route is set on the map page; the autopilot then steers from point to point.",
+              "src": "c1"
+            },
+            {
+              "id": "speed-hold",
+              "name": "Speed hold",
+              "type": "button",
+              "match": [
+                "item:autopilot:2"
+              ],
+              "text": "This button makes the autopilot keep the current airspeed.",
+              "context": "It saves the pilot from working the throttle on long flights.",
+              "src": "c1"
+            },
+            {
+              "id": "heading-hold",
+              "name": "Heading hold",
+              "type": "button",
+              "match": [
+                "item:autopilot:3"
+              ],
+              "text": "This button makes the autopilot keep the set heading, the compass direction the nose points to.",
+              "context": "The pilot can then use the hands for the screens while the aircraft flies straight.",
+              "src": "c1"
+            },
+            {
+              "id": "altitude-hold",
+              "name": "Altitude hold",
+              "type": "button",
+              "match": [
+                "item:autopilot:4"
+              ],
+              "text": "This button makes the autopilot keep the set altitude.",
+              "context": "Together with heading hold it lets the aircraft fly on its own for a while.",
+              "src": "c1"
+            },
+            {
+              "id": "a-p-off",
+              "name": "A/P off",
+              "type": "button",
+              "match": [
+                "item:autopilot:5"
+              ],
+              "text": "This button switches all autopilot modes off at once, so the pilot flies by hand again.",
+              "context": "Pilots use it when they need full control quickly, for example in a fight.",
+              "src": "c1"
+            },
+            {
+              "id": "altitude-mode",
+              "name": "Altitude mode",
+              "type": "switch",
+              "match": [
+                "item:autopilot:6"
+              ],
+              "text": "This switch changes what the held altitude is measured from.",
+              "context": "The catalog does not give its two positions; it belongs to the altitude hold.",
+              "src": "c1"
+            },
+            {
+              "id": "clear-waypoint",
+              "name": "Clear waypoint",
+              "type": "button",
+              "match": [
+                "item:autopilot:7"
+              ],
+              "text": "This button clears the current waypoint.",
+              "context": "Used when the pilot no longer wants to fly to that point.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ewo-ew-panel",
+          "name": "Jammer controls (AN/ALQ-245)",
+          "db": "ew-panel",
+          "src": "c1",
+          "text": "The controls of the AN/ALQ-245 jammer pods: which transmitter, which band and mode, how much power and at what target.",
+          "context": "Electronic warfare is this aircraft's main job; the jammers protect friendly aircraft from enemy radars.",
+          "controls": [
+            {
+              "id": "transmitter-select",
+              "name": "Transmitter select",
+              "type": "rocker",
+              "match": [
+                "item:ew-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "NEXT",
+                  "text": "Selects the next transmitter."
+                },
+                {
+                  "name": "PREV",
+                  "text": "Selects the previous transmitter."
+                }
+              ],
+              "text": "This rocker chooses which jammer transmitter the other EW buttons work on. Jammers are radio transmitters that blind enemy radars.",
+              "context": "The aircraft carries several transmitters; each is set up one after the other.",
+              "src": "c1"
+            },
+            {
+              "id": "em-band",
+              "name": "EM band",
+              "type": "button",
+              "match": [
+                "item:ew-panel:2"
+              ],
+              "text": "This button steps the selected transmitter through its frequency bands.",
+              "context": "The band must match the radar to be jammed.",
+              "src": "c1"
+            },
+            {
+              "id": "transmitter-mode",
+              "name": "Transmitter mode",
+              "type": "button",
+              "match": [
+                "item:ew-panel:3"
+              ],
+              "text": "This button steps the selected transmitter through its jamming modes.",
+              "context": "Different modes suit different kinds of radar.",
+              "src": "c1"
+            },
+            {
+              "id": "transmitter-power",
+              "name": "Transmitter power",
+              "type": "rocker",
+              "match": [
+                "item:ew-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "+",
+                  "text": "More transmitter power."
+                },
+                {
+                  "name": "-",
+                  "text": "Less transmitter power."
+                }
+              ],
+              "text": "This rocker raises or lowers the power of the selected transmitter.",
+              "context": "More power jams better but makes the aircraft easier to find.",
+              "src": "c1"
+            },
+            {
+              "id": "start-stop",
+              "name": "Start / stop",
+              "type": "button",
+              "match": [
+                "item:ew-panel:5"
+              ],
+              "positions": [
+                {
+                  "name": "START",
+                  "text": "The transmitter starts jamming."
+                },
+                {
+                  "name": "STOP",
+                  "text": "The transmitter stops."
+                }
+              ],
+              "text": "This button starts or stops the selected transmitter.",
+              "context": "A transmitter works only while started; it can be stopped to stay quiet.",
+              "src": "c1"
+            },
+            {
+              "id": "stop-all",
+              "name": "Stop all",
+              "type": "button",
+              "match": [
+                "item:ew-panel:6"
+              ],
+              "text": "This button stops every jammer transmitter at once.",
+              "context": "A quick way to go quiet, for example after the threat has passed.",
+              "src": "c1"
+            },
+            {
+              "id": "target-source",
+              "name": "Target source",
+              "type": "button",
+              "match": [
+                "item:ew-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "TSD",
+                  "text": "Aims at the map target."
+                },
+                {
+                  "name": "TGP",
+                  "text": "Aims at the targeting pod's target."
+                },
+                {
+                  "name": "GPS",
+                  "text": "Aims at the GPS point."
+                },
+                {
+                  "name": "CLEAR",
+                  "text": "Clears the aim."
+                }
+              ],
+              "text": "This button aims the selected transmitter at the target from the map (TSD), the targeting pod (TGP) or a GPS point, or clears the aim.",
+              "context": "A jammer pointed at the right radar works best.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ewo-left-front",
+      "where": "front-left",
+      "name": "Rear seat: Left front: armament, gear and flight assist",
+      "seat": 2,
+      "text": "The weapon and defence switches, the gear and the stability switches.",
+      "panels": [
+        {
+          "id": "ewo-armament",
+          "name": "Armament and defence",
+          "db": "armament",
+          "src": "c1",
+          "text": "Master arm, jettison, countermeasures and the threat warning: the weapon and defence switches.",
+          "context": "The pilot sets them before the fight: arm the weapons, enable flares and chaff, check the threat warning.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm",
+              "type": "switch2",
+              "match": [
+                "item:armament:1"
+              ],
+              "positions": [
+                {
+                  "name": "SAFE",
+                  "text": "No weapon can fire."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The weapons can fire."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons: nothing fires while it is on SAFE. In a two-seater its light shows which seat may fire.",
+              "context": "The pilot arms it only near the fight and makes it safe again before landing.",
+              "src": "c1"
+            },
+            {
+              "id": "master-mode-selector",
+              "name": "Master mode selector",
+              "type": "selector",
+              "match": [
+                "item:armament:2"
+              ],
+              "positions": [
+                {
+                  "name": "WPN",
+                  "text": "The stick works the weapons."
+                },
+                {
+                  "name": "EW",
+                  "text": "The stick works the jammers."
+                }
+              ],
+              "text": "This selector chooses between the weapons (WPN) and electronic warfare (EW). In EW the stick's buttons work the jammers instead of the weapons.",
+              "context": "Jammers are radio transmitters that blind enemy radars; the EW panel sets them up.",
+              "src": "c1"
+            },
+            {
+              "id": "arming-mode",
+              "name": "Arming mode",
+              "type": "selector",
+              "match": [
+                "item:armament:3"
+              ],
+              "positions": [
+                {
+                  "name": "AA",
+                  "text": "Air-to-air weapons are armed."
+                },
+                {
+                  "name": "AG",
+                  "text": "Air-to-ground weapons are armed."
+                }
+              ],
+              "text": "This selector arms either the air-to-air or the air-to-ground weapons, one group at a time.",
+              "context": "The pilot picks the group for the task: other aircraft or targets on the ground.",
+              "src": "c1"
+            },
+            {
+              "id": "jettison-selector",
+              "name": "Jettison selector",
+              "type": "selector",
+              "match": [
+                "item:armament:4"
+              ],
+              "positions": [
+                {
+                  "name": "ALL",
+                  "text": "All stores."
+                },
+                {
+                  "name": "PYLON",
+                  "text": "The stores of the chosen pylon."
+                },
+                {
+                  "name": "SEL",
+                  "text": "The selected stores."
+                },
+                {
+                  "name": "TANKS",
+                  "text": "The fuel tanks."
+                }
+              ],
+              "text": "This selector chooses which stores the jettison button drops.",
+              "context": "Dropping stores makes the aircraft lighter and faster, for example to escape or to land safely.",
+              "src": "c1"
+            },
+            {
+              "id": "jettison",
+              "name": "Jettison",
+              "type": "button",
+              "match": [
+                "item:armament:5"
+              ],
+              "text": "This button drops the marked or selected stores (jettison).",
+              "context": "It is an emergency action: the stores fall away unarmed.",
+              "src": "c1"
+            },
+            {
+              "id": "rwr-mode",
+              "name": "RWR mode",
+              "type": "selector",
+              "match": [
+                "item:armament:6"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Shows threats and sounds the warning tones."
+                },
+                {
+                  "name": "MUTE",
+                  "text": "Shows threats without sound."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The warning receiver is off."
+                }
+              ],
+              "text": "This selector sets the RWR, the radar warning receiver that tells the pilot when an enemy radar is looking at the plane: on, silent (no sound) or off.",
+              "context": "Silent keeps the picture but stops the warning tones.",
+              "src": "c1"
+            },
+            {
+              "id": "radar-power",
+              "name": "Radar power",
+              "type": "switch2",
+              "match": [
+                "item:armament:7"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The radar is silent."
+                },
+                {
+                  "name": "ON",
+                  "text": "The radar searches."
+                }
+              ],
+              "text": "This switch turns the aircraft's radar on and off. The radar sends radio waves and listens for echoes to find other aircraft.",
+              "context": "A radar that is on finds more but also tells the enemy where the aircraft is.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ewo-left-console",
+      "where": "left-console",
+      "name": "Rear seat: Left console",
+      "seat": 2,
+      "text": "The start-up switches, the lights and, in some seats, other controls.",
+      "panels": [
+        {
+          "id": "ewo-hcu-panel",
+          "name": "Hand control units",
+          "db": "hcu-panel",
+          "src": "c1",
+          "text": "The two hand control units of the rear seat, used instead of a stick and throttle.",
+          "context": "They drive the sensors, the weapons and the jammers; their buttons change with the master mode.",
+          "controls": [
+            {
+              "id": "left-hcu",
+              "name": "Left HCU",
+              "type": "other",
+              "match": [
+                "item:hcu-panel:1"
+              ],
+              "text": "The hand control unit in the left hand. Its trigger is a modifier, its button steps the transmitter mode, its thumbstick changes the SOI page and zooms.",
+              "context": "The rear seat has no stick or throttle; the two hand control units do all its work.",
+              "src": "c1"
+            },
+            {
+              "id": "right-hcu",
+              "name": "Right HCU",
+              "type": "other",
+              "match": [
+                "item:hcu-panel:2"
+              ],
+              "text": "The hand control unit in the right hand. Its trigger fires or starts jamming, its button steps the weapon or transmitter, its thumbstick slews the cursor.",
+              "context": "What the buttons do depends on the master mode: weapons (AA / AG) or jammers (EW).",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ewo-lights",
+          "name": "Lights panel",
+          "db": "lights",
+          "src": "c1",
+          "text": "Switches for the cockpit lights and the outside lights.",
+          "context": "Mostly used at night and when flying in formation.",
+          "controls": [
+            {
+              "id": "interior-lights",
+              "name": "Interior lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Cockpit flood lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Cockpit flood lights on."
+                }
+              ],
+              "text": "This switch turns on the flood lights that light up the whole cockpit.",
+              "context": "Used at night to see the switches.",
+              "src": "c1"
+            },
+            {
+              "id": "instrument-brightness",
+              "name": "Instrument brightness",
+              "type": "knob",
+              "match": [
+                "item:lights:2"
+              ],
+              "text": "Turning this knob makes the panel and instrument lighting brighter or darker.",
+              "context": "The pilot dims it at night so the eyes stay used to the dark outside.",
+              "src": "c1"
+            },
+            {
+              "id": "navigation-lights",
+              "name": "Navigation lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:3"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Position lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Position lights on."
+                }
+              ],
+              "text": "This switch turns the position lights on the wing tips and tail on and off.",
+              "context": "They show other pilots where the aircraft is and which way it flies.",
+              "src": "c1"
+            },
+            {
+              "id": "formation-lights",
+              "name": "Formation lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:4"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Formation lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Formation lights on."
+                }
+              ],
+              "text": "This switch turns the formation strip lights on and off, glowing strips that help wingmen hold their position at night.",
+              "context": "Used when flying close together in the dark.",
+              "src": "c1"
+            },
+            {
+              "id": "strobe-lights",
+              "name": "Strobe lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Strobes off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Strobes flashing."
+                }
+              ],
+              "text": "This switch turns the flashing anti-collision strobes on and off.",
+              "context": "They make the aircraft easy to see; in combat pilots may turn them off.",
+              "src": "c1"
+            },
+            {
+              "id": "landing-lights",
+              "name": "Landing lights",
+              "type": "switch2",
+              "match": [
+                "item:lights:6"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "Landing lights off."
+                },
+                {
+                  "name": "ON",
+                  "text": "Landing lights on."
+                }
+              ],
+              "text": "This switch turns the landing and taxi lights on and off.",
+              "context": "Used to light up the runway, the deck or the landing zone at night.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ewo-right-console",
+      "where": "right-console",
+      "name": "Rear seat: Right console",
+      "seat": 2,
+      "text": "The radio, intercom, canopy and seat controls.",
+      "panels": [
+        {
+          "id": "ewo-comms",
+          "name": "Comms panel",
+          "db": "comms",
+          "src": "c1",
+          "text": "The radio settings, the crew intercom where there is one, and the music player.",
+          "context": "The pilot sets the radio channel and volume before talking to the team.",
+          "controls": [
+            {
+              "id": "radio-channel",
+              "name": "Radio channel",
+              "type": "selector",
+              "match": [
+                "item:comms:1"
+              ],
+              "positions": [
+                {
+                  "name": "TEAM",
+                  "text": "Talks to the own team."
+                },
+                {
+                  "name": "FREQ",
+                  "text": "Talks on the set frequency."
+                },
+                {
+                  "name": "GLOBAL",
+                  "text": "Talks to everyone."
+                }
+              ],
+              "text": "This selector chooses where the radio talks: the team channel, a set frequency, or the global channel for everyone.",
+              "context": "In multiplayer the team channel is for friends; a frequency is the station number a radio talks on.",
+              "src": "c1"
+            },
+            {
+              "id": "radio-mode",
+              "name": "Radio mode",
+              "type": "selector",
+              "match": [
+                "item:comms:2"
+              ],
+              "positions": [
+                {
+                  "name": "HOT MIC",
+                  "text": "The microphone is always open."
+                },
+                {
+                  "name": "PTT",
+                  "text": "The microphone opens while push-to-talk is held."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The microphone is off."
+                }
+              ],
+              "text": "This selector sets the microphone: always open (hot mic), only while the talk button is pressed (PTT), or off.",
+              "context": "Push-to-talk is the usual setting; the talk button is on the stick or the oxygen mask.",
+              "src": "c1"
+            },
+            {
+              "id": "radio-volume",
+              "name": "Radio volume",
+              "type": "knob",
+              "match": [
+                "item:comms:3"
+              ],
+              "text": "Turning this knob makes the radio louder or quieter.",
+              "context": "It sets the overall radio sound; the team channel has its own knob.",
+              "src": "c1"
+            },
+            {
+              "id": "team-volume",
+              "name": "Team volume",
+              "type": "knob",
+              "match": [
+                "item:comms:4"
+              ],
+              "text": "Turning this knob sets the volume of the team channel.",
+              "context": "It lets the pilot hear the team louder or quieter than other radio sound.",
+              "src": "c1"
+            },
+            {
+              "id": "intercom",
+              "name": "Intercom",
+              "type": "switch2",
+              "match": [
+                "item:comms:5"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The intercom is off."
+                },
+                {
+                  "name": "ON",
+                  "text": "The intercom is on."
+                }
+              ],
+              "text": "This switch turns the crew intercom on and off, the phone line between the crew members. It is hands-free and opens by voice; a green light shows when a microphone is keyed.",
+              "context": "The two crew members talk over it without pressing any button.",
+              "src": "c1"
+            },
+            {
+              "id": "intercom-volume",
+              "name": "Intercom volume",
+              "type": "knob",
+              "match": [
+                "item:comms:6"
+              ],
+              "text": "Turning this knob makes the intercom louder or quieter, separately from the radio.",
+              "context": "The crew can hear each other clearly even with loud radio traffic.",
+              "src": "c1"
+            }
+          ]
+        },
+        {
+          "id": "ewo-canopy-seat",
+          "name": "Canopy, doors and seat",
+          "db": "canopy-seat",
+          "src": "c1",
+          "text": "Canopy or doors, seat height, ejection and, in two-seaters, the seat change.",
+          "context": "Used before and after the flight, and the ejection handle only in an emergency.",
+          "controls": [
+            {
+              "id": "canopy-switch",
+              "name": "Canopy switch",
+              "type": "switch2",
+              "match": [
+                "item:canopy-seat:1"
+              ],
+              "positions": [
+                {
+                  "name": "OPEN",
+                  "text": "The canopy opens."
+                },
+                {
+                  "name": "CLOSE",
+                  "text": "The canopy closes."
+                }
+              ],
+              "text": "This switch opens or closes the canopy, the clear glass roof over the cockpit.",
+              "context": "It is closed before take-off and opened after landing.",
+              "src": "c1"
+            },
+            {
+              "id": "seat-height",
+              "name": "Seat height",
+              "type": "rocker",
+              "match": [
+                "item:canopy-seat:2"
+              ],
+              "positions": [
+                {
+                  "name": "RAISE",
+                  "text": "Moves the seat up."
+                },
+                {
+                  "name": "LOWER",
+                  "text": "Moves the seat down."
+                }
+              ],
+              "text": "This rocker moves the seat up or down so the pilot's eyes sit at the right height for the HUD and the view.",
+              "context": "In VR the player's real height differs, so the seat is adjusted at the start.",
+              "src": "c1"
+            },
+            {
+              "id": "ejection-handle",
+              "name": "Ejection handle",
+              "type": "handle",
+              "match": [
+                "item:canopy-seat:3"
+              ],
+              "text": "Pulling this handle fires the ejection seat, the seat that shoots the crew out of the aircraft in an emergency.",
+              "context": "Used only when the aircraft cannot be saved.",
+              "src": "c1"
+            },
+            {
+              "id": "switch-seat-button",
+              "name": "Switch Seat button",
+              "type": "button",
+              "match": [
+                "item:canopy-seat:4"
+              ],
+              "text": "In singleplayer this button moves the player to the other seat of the two-seat cockpit.",
+              "context": "It lets one player use both seats, for example to fly and then to work the sensors.",
+              "src": "c1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ewo-hcu",
+      "where": "hotas",
+      "name": "EWO hand control units",
+      "seat": 2,
+      "text": "The two hand control units of the rear seat.",
+      "panels": [
+        {
+          "id": "ewo-right-hcu",
+          "name": "Right hand control unit (rear seat)",
+          "src": "ef",
+          "text": "The hand control unit in the EWO's right hand. Its trigger, button and thumbstick work the weapons in AA / AG master mode and the jammers in EW mode.",
+          "context": "The rear seat cannot fly; this unit is for sensors, weapons and jammers only.",
+          "controls": [
+            {
+              "id": "hcu-trigger",
+              "name": "Right HCU trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "In AA or AG master mode it fires the selected weapon. In EW mode it starts or stops jamming with the selected transmitter.",
+              "context": "The master mode selector on the armament panel decides which job the trigger has.",
+              "src": "ef"
+            },
+            {
+              "id": "hcu-button",
+              "name": "Right HCU button",
+              "type": "button",
+              "match": [
+                "control:stick.button.menu"
+              ],
+              "text": "In AA or AG mode it steps to the next weapon. In EW mode it steps to the next jammer transmitter; with the left trigger held (modifier) it steps backwards.",
+              "context": "The selected weapon or transmitter shows on the screens.",
+              "src": "ef"
+            },
+            {
+              "id": "hcu-thumb",
+              "name": "Right HCU thumbstick",
+              "type": "axis",
+              "match": [
+                "control:stick.ministick"
+              ],
+              "text": "Moves the cursor of the SOI page. Pressing it locks a target in AA or AG mode, or sets the target of the transmitter in EW mode. In EW mode with the modifier held, sideways changes the SOI page and up and down change the transmitter power.",
+              "context": "The SOI (sensor of interest) is the screen page with the green frame.",
+              "src": "ef"
+            }
+          ]
+        },
+        {
+          "id": "ewo-left-hcu",
+          "name": "Left hand control unit (rear seat)",
+          "src": "ef",
+          "text": "The hand control unit in the EWO's left hand. Its trigger is a modifier that changes what the other buttons do, its button changes the transmitter mode, its thumbstick changes pages and zooms.",
+          "context": "Together with the right unit it replaces a stick and throttle in the rear seat.",
+          "controls": [
+            {
+              "id": "hcu-modifier",
+              "name": "Left HCU trigger (modifier)",
+              "type": "trigger",
+              "match": [
+                "control:throttle.trigger"
+              ],
+              "text": "While held, it gives the other HCU buttons and thumbsticks their second job, like the Shift key on a keyboard.",
+              "context": "The wiki's table lists the modified jobs, such as reverse transmitter stepping and transmitter power.",
+              "src": "ef"
+            },
+            {
+              "id": "hcu-mode",
+              "name": "Left HCU button (transmitter mode)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.menu"
+              ],
+              "text": "Steps the selected jammer transmitter to its next mode.",
+              "context": "Different jamming modes suit different enemy radars.",
+              "src": "ef"
+            },
+            {
+              "id": "hcu-left-thumb",
+              "name": "Left HCU thumbstick",
+              "type": "axis",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "Left and right step to the previous or next SOI page. Up and down zoom the map or the targeting pod, or tilt the radar's search. In AA or AG mode with the modifier held, sideways changes the SOI page and up and down change the transmitter power.",
+              "context": "It lets the EWO move between pages without touching the screens.",
+              "src": "ef"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

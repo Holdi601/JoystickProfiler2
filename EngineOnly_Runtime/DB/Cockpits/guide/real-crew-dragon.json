@@ -1,0 +1,220 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-crew-dragon",
+  "title": "SpaceX Crew Dragon",
+  "variants": [
+    "crew-dragon-c2"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Dragon astronauts name their spacecraft Endeavour, complete first manual flight test (Spaceflight Now)",
+      "kind": "reference",
+      "url": "https://spaceflightnow.com/2020/05/30/dragon-astronauts-name-their-spacecraft-endeavour-complete-first-manual-flight-test/"
+    },
+    {
+      "id": "s2",
+      "title": "Space as a Service: NASA and SpaceX find a new way of putting people into orbit (Nextgov)",
+      "kind": "reference",
+      "url": "https://www.nextgov.com/digital-government/2018/08/space-service-nasa-and-spacex-find-new-way-putting-people-orbit/150617/"
+    },
+    {
+      "id": "s3",
+      "title": "SpaceX Dragon 2 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SpaceX_Dragon_2"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Crew Dragon is SpaceX's crew capsule, flying astronauts to the International Space Station since 2020. Instead of hand controllers and hundreds of switches it has three large touchscreens; the flight is automatic, and manual turning and moving commands are given with on-screen buttons. A few physical buttons below the screens back up the most critical commands. The labels of physical buttons other than the three listed are not public.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Three flight displays",
+      "text": "The touchscreens.",
+      "panels": [
+        {
+          "id": "displays",
+          "name": "Three flight displays",
+          "text": "Three large touchscreens hanging from the panel in front of the commander and the pilot.",
+          "context": "The crew works them with gloves that can touch screens; the flight itself is automatic.",
+          "controls": [
+            {
+              "id": "left",
+              "name": "Left display",
+              "type": "display",
+              "match": [
+                "item:displays:1"
+              ],
+              "text": "The left touchscreen. It shows flight, system and camera pages.",
+              "context": "The crew picks the page by touch.",
+              "src": "s3"
+            },
+            {
+              "id": "centre",
+              "name": "Centre display",
+              "type": "display",
+              "match": [
+                "item:displays:2"
+              ],
+              "text": "The middle touchscreen. It shows flight and system pages.",
+              "context": "Both crew members can see and reach it."
+            },
+            {
+              "id": "right",
+              "name": "Right display",
+              "type": "display",
+              "match": [
+                "item:displays:3"
+              ],
+              "text": "The right touchscreen. It shows system and camera pages.",
+              "context": "The pilot on the right works it while the commander watches the left one."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buttons",
+      "where": "center-pedestal",
+      "name": "Physical button panel",
+      "text": "Guarded buttons for critical commands.",
+      "panels": [
+        {
+          "id": "buttons",
+          "name": "Physical button panel",
+          "text": "A row of real, guarded buttons below the screens for the most critical commands.",
+          "context": "They work even if the touchscreens fail; covers stop them from being pressed by accident.",
+          "controls": [
+            {
+              "id": "deorbit",
+              "name": "Emergency deorbit button",
+              "type": "button",
+              "match": [
+                "item:buttons:1",
+                "control:panel.button.deorbit"
+              ],
+              "text": "Pressing this guarded button starts the emergency return to Earth: the capsule fires its engines to slow down and fall out of orbit (deorbit).",
+              "context": "It is for an emergency, for example a cabin problem that forces the crew home at once.",
+              "src": "s3"
+            },
+            {
+              "id": "fire",
+              "name": "Fire suppression button",
+              "type": "button",
+              "match": [
+                "item:buttons:2",
+                "control:panel.button.fire_suppression"
+              ],
+              "text": "Pressing this button sets off the cabin's fire suppression.",
+              "context": "A fire in a closed capsule is very dangerous, so this command has its own physical button."
+            },
+            {
+              "id": "chutes",
+              "name": "Parachute deploy button",
+              "type": "button",
+              "match": [
+                "item:buttons:3",
+                "control:panel.button.parachutes"
+              ],
+              "text": "Pressing this button lets out the parachutes.",
+              "context": "Normally the parachutes open automatically during the return; the button is the backup.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seats",
+      "where": "floor",
+      "name": "Crew seats",
+      "text": "The seats of the crew.",
+      "panels": [
+        {
+          "id": "seats",
+          "name": "Crew seats",
+          "text": "The seats of the crew, the commander and pilot in front of the screens.",
+          "context": "NASA flights carry up to four astronauts.",
+          "controls": [
+            {
+              "id": "cdr-plt",
+              "name": "Commander and pilot seats",
+              "type": "other",
+              "match": [
+                "item:seats:1"
+              ],
+              "text": "The two seats facing the screens, for the commander and the pilot.",
+              "context": "From these seats the crew monitors the flight and can take manual control on the screens."
+            },
+            {
+              "id": "ms",
+              "name": "Mission specialist seats",
+              "type": "other",
+              "match": [
+                "item:seats:2"
+              ],
+              "text": "Two further seats for mission specialists, crew members who do not fly the capsule.",
+              "context": "They work on the space station once there."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Touch flight controls",
+      "text": "The on-screen controls JoyPro lists as grips.",
+      "panels": [
+        {
+          "id": "rotation",
+          "name": "Rotation controls (touchscreen)",
+          "text": "On-screen buttons for turning the capsule.",
+          "context": "Crew Dragon has no physical hand controllers; manual commands are given on the touchscreens.",
+          "controls": [
+            {
+              "id": "rot",
+              "name": "Rotation controls (touchscreen)",
+              "type": "button",
+              "match": [
+                "control:rhc.touch.rotation",
+                "item:displays:4"
+              ],
+              "text": "On-screen buttons on the flight displays that turn the capsule: pitch, roll and yaw. Each touch fires the steering jets.",
+              "context": "On the first crewed flight in 2020, Bob Behnken and Doug Hurley flew the capsule by hand this way as a test.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "translation",
+          "name": "Translation controls (touchscreen)",
+          "text": "On-screen buttons for moving the capsule.",
+          "context": "They sit next to the docking camera picture, so the crew sees the effect at once.",
+          "controls": [
+            {
+              "id": "tra",
+              "name": "Translation controls (touchscreen)",
+              "type": "button",
+              "match": [
+                "control:thc.touch.translation"
+              ],
+              "text": "On-screen buttons next to the docking camera view that move the capsule forward, back, left, right, up and down without turning it.",
+              "context": "Docking is normally automatic; the buttons let the crew fly the approach by hand if needed.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

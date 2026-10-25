@@ -13,26 +13,26 @@
                     <PathIcon Data="{StaticResource Icon.Warning}" Width="18" Height="18" Classes="warn" IsVisible="{Binding !IsOk}" />
                 </Panel>
                 <StackPanel Grid.Column="1" Spacing="1">
-                    <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold" />
-                    <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" FontSize="12" />
+                    <TextBlock Text="{Binding Name}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
-                    <Button Content="{l:T 'Project page'}" Classes="icon" Tag="{StaticResource Icon.Link}" Command="{Binding OpenProjectCommand}" Padding="8,3" FontSize="12"
+                    <Button Content="{l:T 'Project page'}" Classes="icon" Tag="{StaticResource Icon.Link}" Command="{Binding OpenProjectCommand}" Padding="8,3" FontSize="{DynamicResource JP.FontSize.12}"
                             ToolTip.Tip="{l:T 'Opens the component\'s official release page in your browser'}" />
-                    <Button Content="{l:T 'Windows apps'}" Classes="icon" Tag="{StaticResource Icon.Cog}" Command="{Binding OpenAppsSettingsCommand}" Padding="8,3" FontSize="12"
+                    <Button Content="{l:T 'Windows apps'}" Classes="icon" Tag="{StaticResource Icon.Cog}" Command="{Binding OpenAppsSettingsCommand}" Padding="8,3" FontSize="{DynamicResource JP.FontSize.12}"
                             IsVisible="{Binding !IsMissing}"
                             ToolTip.Tip="{l:T 'Repair or uninstall: opens Windows\' Installed apps list, where the component\'s own uninstaller is'}" />
                 </StackPanel>
             </Grid>
             <TextBlock Text="{Binding WhatItIs}" TextWrapping="Wrap" />
             <TextBlock Text="{Binding WhyJoyProNeedsIt}" TextWrapping="Wrap" Opacity="0.85" />
-            <TextBlock Text="{Binding UsedBy}" TextWrapping="Wrap" FontSize="12" Opacity="0.7" />
+            <TextBlock Text="{Binding UsedBy}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.7" />
             <StackPanel Spacing="5" IsVisible="{Binding CanOffer}">
-                <TextBlock Text="{Binding SourceText}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
-                <TextBlock Text="{Binding VerificationText}" TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
+                <TextBlock Text="{Binding SourceText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" />
+                <TextBlock Text="{Binding VerificationText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" />
                 <Expander Header="{Binding LicenseHeader}" HorizontalAlignment="Stretch">
                     <StackPanel Spacing="4">
-                        <SelectableTextBlock Text="{Binding LicenseText}" TextWrapping="Wrap" FontSize="12" MaxHeight="260" />
+                        <SelectableTextBlock Text="{Binding LicenseText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" MaxHeight="260" />
                         <Button Content="{l:T 'License on the project page'}" Classes="ghost small" Command="{Binding OpenLicenseCommand}" HorizontalAlignment="Left" />
                     </StackPanel>
                 </Expander>

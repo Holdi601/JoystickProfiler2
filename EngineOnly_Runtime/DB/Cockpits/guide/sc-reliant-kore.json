@@ -1,0 +1,98 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-reliant-kore",
+  "title": "Reliant Kore (MISC, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-reliant-kore"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Reliant Kore (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Reliant_Kore"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Reliant Kore is a light two-seat transport from MISC in Star Citizen. Its cockpit can turn between flying flat and flying upright. The pilot uses the common controls.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Reliant Kore: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Reliant Kore's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "cargo",
+              "name": "Cargo (6 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Reliant Kore takes 6 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            },
+            {
+              "id": "thrusters",
+              "name": "Thrusters",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "Wings in the style of the alien Xi'an and thrusters that can push in every direction.",
+              "context": "They let the Reliant Kore move nimbly for its size; the left stick slides it in any direction.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Reliant Kore: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Reliant Kore besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "copilot",
+              "name": "Co-pilot seat",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "A second seat beside the pilot of the Reliant Kore. More people on board can share the work.",
+              "context": "A second person on board can take over jobs such as turrets, scanning or the radio, so the pilot can concentrate on flying.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

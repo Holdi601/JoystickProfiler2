@@ -1,0 +1,91 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "ed-mandalay",
+  "title": "Mandalay (Elite Dangerous)",
+  "inherits": "game-elite-dangerous",
+  "variants": [
+    "ed-mandalay"
+  ],
+  "games": [
+    "EliteDangerous"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mandalay (Coriolis ship data)",
+      "kind": "reference",
+      "url": "https://github.com/EDCD/coriolis-data/blob/master/ships/mandalay.json"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Mandalay by Zorgon Peterson is a medium explorer. Its cockpit has the pilot seat and one multicrew seat. It uses the shared cockpit system and HOTAS layout.",
+  "areas": [
+    {
+      "id": "right-panel",
+      "where": "right-side",
+      "name": "Right panel (internal)",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Mandalay: seats and hardpoints",
+          "db": "ship",
+          "src": "c1",
+          "text": "Facts about the Mandalay that set it apart from the other ships: its seats, its weapon mounts and the landing pad size it needs.",
+          "context": "Everything else in the Mandalay's cockpit works like in every other Elite Dangerous ship.",
+          "controls": [
+            {
+              "id": "pilot-seat",
+              "name": "Pilot seat (helm)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The pilot's seat of the Mandalay, the helm. Whoever sits here flies the ship and has the whole HOTAS layout of this guide.",
+              "context": "The Mandalay takes up to two people in all; the other seats are for crew who join in multicrew.",
+              "src": "c1"
+            },
+            {
+              "id": "crew-seats",
+              "name": "Multicrew seats",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The extra seats of the Mandalay, for up to two crew in all. A friend who joins can sit here as gunner, or as fighter controller when the ship carries a fighter.",
+              "context": "A gunner works the turreted weapons while the pilot flies; the roles are chosen on the role panel.",
+              "src": "c1"
+            },
+            {
+              "id": "hardpoints",
+              "name": "Hardpoints (weapon mounts)",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The weapon mounts of the Mandalay: four medium and two small hardpoints. Bigger mounts take bigger, stronger weapons.",
+              "context": "The pilot puts the Mandalay's weapons into fire groups on the right panel and fires them with the trigger and the weapon release button.",
+              "src": "w1"
+            },
+            {
+              "id": "pad",
+              "name": "Landing pad size",
+              "type": "indicator",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The Mandalay needs a medium landing pad or a bigger one. Stations have small, medium and large pads, and small outposts may not have the bigger ones.",
+              "context": "When the pilot asks a station for docking, the station gives a pad that fits the ship's size.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

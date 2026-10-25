@@ -2620,7 +2620,7 @@ public sealed class MainWindowViewModelSmokeTests
     {
         string axaml = LoadMainWindowAxaml();
 
-        Assert.Contains("Stroke=\"#01FFFFFF\"", axaml, StringComparison.Ordinal);
+        Assert.Contains("Stroke=\"{DynamicResource JP.HitTestBrush}\"", axaml, StringComparison.Ordinal);
         Assert.Contains("StrokeThickness=\"{Binding HitStrokeThickness}\"", axaml, StringComparison.Ordinal);
         Assert.Contains("PointerPressed=\"LayoutEditorConnectorPointPointerPressed\"", axaml, StringComparison.Ordinal);
         Assert.Contains("PointerMoved=\"LayoutEditorConnectorPointPointerMoved\"", axaml, StringComparison.Ordinal);

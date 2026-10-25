@@ -256,9 +256,13 @@ namespace JoyPro.Engine
             List<RefDevice> devices = catalog.Search(string.Join(" ", rest));
             List<DeviceLayoutSet> curated = DeviceLayoutSet.LoadFolder(DevicePhotoDb.LayoutFolderOf(DeviceCatalog.CatalogFolder(MainStructure.PROGPATH)), catalog.Warnings);
             int grips = devices.Count(d => d.IsGrip);
-            int withPhoto = devices.Count(d => DevicePhotoDb.OfficialPhotos(d).Count > 0);
-            int multiView = devices.Count(d => DevicePhotoDb.OfficialPhotos(d).Count > 1);
-            int withHash = devices.Count(d => DevicePhotoDb.OfficialPhotos(d).Any(p => p.Sha256.Length > 0));
+            int withPhoto = devices.Count(d => DevicePhotoDb.UsablePhotos(d).Count > 0);
+            int multiView = devices.Count(d => DevicePhotoDb.UsablePhotos(d).Count > 1);
+            int threePhotos = devices.Count(d => DevicePhotoDb.UsablePhotos(d).Count >= 3);
+            // Distinct views the photos are tagged with (an untagged shop photo "gallery-<n>" counts as no view).
+            int threeViews = devices.Count(d => DevicePhotoDb.UsablePhotos(d).Select(p => p.View).Where(v => !v.StartsWith("gallery-", StringComparison.Ordinal)).Distinct().Count() >= 3);
+            int withHash = devices.Count(d => DevicePhotoDb.UsablePhotos(d).Any(p => p.Sha256.Length > 0));
+            List<DevicePhoto> allPhotos = devices.SelectMany(d => DevicePhotoDb.UsablePhotos(d)).ToList();
             HashSet<string> curatedModels = new HashSet<string>(curated.Select(c => c.Model), StringComparer.OrdinalIgnoreCase);
             int withCurated = devices.Count(d => curatedModels.Contains(d.Id));
             int drawn = devices.Count(d =>
@@ -276,16 +280,21 @@ namespace JoyPro.Engine
             sb.AppendLine("Device photos: " + devices.Count.ToString(CultureInfo.InvariantCulture) + " models (" + grips.ToString(CultureInfo.InvariantCulture) + " grips)");
             sb.AppendLine("  with a reference photo: " + withPhoto.ToString(CultureInfo.InvariantCulture) + ", with several views: " + multiView.ToString(CultureInfo.InvariantCulture) +
                           ", with a photo hash on record: " + withHash.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine("  with at least 3 photos: " + threePhotos.ToString(CultureInfo.InvariantCulture) + ", with at least 3 views: " + threeViews.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine("  photos: " + allPhotos.Count.ToString(CultureInfo.InvariantCulture) + " (maker " + allPhotos.Count(p => !p.IsReview).ToString(CultureInfo.InvariantCulture) +
+                          ", review " + allPhotos.Count(p => p.Source == "review").ToString(CultureInfo.InvariantCulture) + ", Wikimedia Commons " + allPhotos.Count(p => p.Source == "commons").ToString(CultureInfo.InvariantCulture) +
+                          "), with a hash: " + allPhotos.Count(p => p.Sha256.Length > 0).ToString(CultureInfo.InvariantCulture) + ", with a licence note: " + allPhotos.Count(p => p.Licence.Length > 0).ToString(CultureInfo.InvariantCulture) +
+                          ", with an archive snapshot: " + allPhotos.Count(p => p.Archive.Length > 0).ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("  with curated marker positions: " + withCurated.ToString(CultureInfo.InvariantCulture) + " (" + curated.Count.ToString(CultureInfo.InvariantCulture) + " position sets)");
             sb.AppendLine("  JoyPro drawing shown (recognizable): " + drawn.ToString(CultureInfo.InvariantCulture) + ", class outline otherwise: " + (devices.Count - drawn).ToString(CultureInfo.InvariantCulture));
             if (!coverageOnly)
             {
                 foreach (RefDevice d in devices)
                 {
-                    List<DevicePhoto> photos = DevicePhotoDb.OfficialPhotos(d);
+                    List<DevicePhoto> photos = DevicePhotoDb.UsablePhotos(d);
                     sb.AppendLine("  - " + d.Id + " | " + photos.Count.ToString(CultureInfo.InvariantCulture) + " photo(s)" + (curatedModels.Contains(d.Id) ? " | curated" : string.Empty));
                     foreach (DevicePhoto p in d.Photos)
-                        sb.AppendLine("      " + p.View + " | " + p.Url + (DevicePhotoDb.IsOfficial(d, p.Url) ? string.Empty : " | NOT an official host") + (p.Sha256.Length > 0 ? " | sha256 " + p.Sha256.Substring(0, 12) : string.Empty));
+                        sb.AppendLine("      " + p.View + " | " + p.Url + (DevicePhotoDb.IsAllowed(d, p) ? (p.IsReview ? " | " + p.Source : string.Empty) : " | NOT an allowed host") + (p.Sha256.Length > 0 ? " | sha256 " + p.Sha256.Substring(0, 12) : string.Empty));
                 }
             }
             if (!textOutput && !coverageOnly)
@@ -293,7 +302,7 @@ namespace JoyPro.Engine
                 EmitPayload(EngineSerialization.ToJson(devices.Select(d => new
                 {
                     d.Id, d.Name, d.Kind, Grip = d.IsGrip,
-                    Photos = d.Photos.Select(p => new { p.View, p.Url, p.Page, p.Sha256, p.Confidence, Official = DevicePhotoDb.IsOfficial(d, p.Url), p.Shows }).ToList(),
+                    Photos = d.Photos.Select(p => new { p.View, p.Url, p.Page, p.Sha256, p.Confidence, Official = DevicePhotoDb.IsAllowed(d, p), p.Shows, p.Source, p.Site, p.Licence, p.Archive, p.Width, p.Height }).ToList(),
                     Curated = curated.Where(c => string.Equals(c.Model, d.Id, StringComparison.OrdinalIgnoreCase)).Select(c => new { c.View, c.PhotoUrl, c.PhotoSha256, Markers = c.Markers.Count }).ToList()
                 }).ToList()), outPath);
                 return 0;
@@ -304,8 +313,10 @@ namespace JoyPro.Engine
 
         // devices reference photo-add --model <id> --url <https photo> --view <front|side|back|top|base|three-quarter|sheet>
         //     [--page <product page>] [--confidence high|medium|low] [--shows a,b] [--sha256 <hex>]
+        //     [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <snapshot>] [--width n --height n]
         // Adds (or updates) a photo reference in DB\DevicePhotos\<vendor>.json next to the catalog. The address must be on
-        // one of the vendor's official hosts. The photo itself is never stored in the catalog.
+        // one of the vendor's official hosts (source maker) or on a site of DB\DevicePhotos\_sources.json (review, commons).
+        // The photo itself is never stored in the catalog.
         private static int RunDevicePhotoAdd(DeviceCatalog catalog, List<string> rest, string outPath)
         {
             string modelId = PopOptionValue(rest, "--model");
@@ -315,19 +326,33 @@ namespace JoyPro.Engine
             string confidence = PopOptionValue(rest, "--confidence") ?? "medium";
             string shows = PopOptionValue(rest, "--shows") ?? string.Empty;
             string sha = (PopOptionValue(rest, "--sha256") ?? string.Empty).Trim().ToLowerInvariant();
+            string source = (PopOptionValue(rest, "--source") ?? "maker").Trim().ToLowerInvariant();
+            string site = PopOptionValue(rest, "--site") ?? string.Empty;
+            string licence = PopOptionValue(rest, "--licence") ?? string.Empty;
+            string archive = PopOptionValue(rest, "--archive") ?? string.Empty;
+            int width, height;
+            int.TryParse(PopOptionValue(rest, "--width") ?? "0", NumberStyles.Integer, CultureInfo.InvariantCulture, out width);
+            int.TryParse(PopOptionValue(rest, "--height") ?? "0", NumberStyles.Integer, CultureInfo.InvariantCulture, out height);
             if (rest.Count > 0)
                 return Fail("Unknown devices reference photo-add argument(s): " + string.Join(" ", rest));
+            if (source != "maker" && source != "review" && source != "commons")
+                return Fail("--source must be maker, review or commons: " + source);
+            if (archive.Length > 0 && !DevicePhotoDb.IsArchiveUrl(archive))
+                return Fail("--archive must be a web.archive.org snapshot address: " + archive);
             RefDevice model = catalog.Find(modelId);
             if (model == null)
                 return Fail("Device '" + modelId + "' is not in the device catalog.");
-            if (!DevicePhotoDb.IsOfficial(model, url))
-                return Fail("The address is not on an official host of " + model.Vendor + " (" + string.Join(", ", model.OfficialHosts) + "): " + url);
+            DevicePhoto candidate = new DevicePhoto { Model = model.Id, Url = url ?? string.Empty, Source = source };
+            if (!DevicePhotoDb.IsAllowed(model, candidate))
+                return Fail(source == "maker"
+                    ? "The address is not on an official host of " + model.Vendor + " (" + string.Join(", ", model.OfficialHosts) + "): " + url
+                    : "The address is not on a " + source + " site of DB\\DevicePhotos\\" + DevicePhotoSources.FileName + ": " + url);
             string folder = DevicePhotoDb.PhotoFolderOf(DeviceCatalog.CatalogFolder(MainStructure.PROGPATH));
             Directory.CreateDirectory(folder);
             string file = Path.Combine(folder, Path.GetFileNameWithoutExtension(model.File).Length > 0 ? Path.GetFileNameWithoutExtension(model.File) + ".json" : DeviceVocabulary.Slug(model.Vendor) + ".json");
             List<DevicePhoto> photos = File.Exists(file) ? DevicePhotoDb.ParsePhotoFile(File.ReadAllText(file, Encoding.UTF8)) : new List<DevicePhoto>();
             photos.RemoveAll(p => string.Equals(p.Model, model.Id, StringComparison.OrdinalIgnoreCase) && string.Equals(p.Url, url, StringComparison.OrdinalIgnoreCase));
-            DevicePhoto photo = new DevicePhoto { Model = model.Id, Url = url, View = view, Page = page, Confidence = confidence, Sha256 = sha };
+            DevicePhoto photo = new DevicePhoto { Model = model.Id, Url = url, View = view, Page = page, Confidence = confidence, Sha256 = sha, Source = source, Site = site, Licence = licence, Archive = archive, Width = Math.Max(0, width), Height = Math.Max(0, height) };
             photo.Shows.AddRange(shows.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => s.Length > 0));
             photos.Add(photo);
             Dictionary<string, object> root = new Dictionary<string, object>(StringComparer.Ordinal)

@@ -1,0 +1,170 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="using:JoyPro.Gui.Localization"
+             xmlns:vm="using:JoyPro.Gui.ViewModels"
+             xmlns:controls="using:JoyPro.Gui.Views.Controls"
+             x:Class="JoyPro.Gui.Views.Controls.SheetStyleEditor"
+             x:DataType="vm:SheetStyleViewModel">
+    <!-- The style of the cheat sheets (ViewModels/SheetStyleViewModel.cs, docs/ui/layout-redesign.md "Sheet style"):
+         presets, the font, the label colours, page / tables / header row / lines, the markers per kind of input, the
+         modifier colours and JoyPro's drawing. The Layout page's panel can give the shown device a style of its own. -->
+    <UserControl.Styles>
+        <Style Selector="TextBlock.styleLabel">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Spacing="10">
+        <!-- This device's own style (Layout page) -->
+        <Border Classes="callout" IsVisible="{Binding ShowOwnStyleToggle}">
+            <StackPanel Spacing="4">
+                <CheckBox IsChecked="{Binding UsesOwnStyle}">
+                    <TextBlock TextWrapping="Wrap" Text="{l:T 'This device uses its own style'}" />
+                </CheckBox>
+                <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding ScopeText}" />
+            </StackPanel>
+        </Border>
+
+        <controls:SheetStylePreview Name="StylePreview" StyleValue="{Binding PreviewStyle}" Height="176" HorizontalAlignment="Stretch" />
+
+        <!-- Presets -->
+        <TextBlock Classes="h3" Text="{l:T 'Presets'}" />
+        <ComboBox ItemsSource="{Binding Presets}" SelectedItem="{Binding SelectedPreset}" HorizontalAlignment="Stretch" MinWidth="0"
+                  ToolTip.Tip="{l:T 'JoyPro default, Print, High contrast, Dark sheet or one of your own presets'}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:SheetStylePresetChoice">
+                    <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <WrapPanel ItemSpacing="6" LineSpacing="6">
+            <Button Classes="icon small accent" Tag="{StaticResource Icon.Check}" Content="{l:T 'Apply'}" Command="{Binding ApplyPresetCommand}"
+                    ToolTip.Tip="{l:T 'Takes over every colour, the font and the drawing of the preset'}" />
+            <Button Classes="icon small ghost" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Delete'}" Command="{Binding DeletePresetCommand}"
+                    IsVisible="{Binding CanDeletePreset}" ToolTip.Tip="{l:T 'Delete this preset of yours'}" />
+        </WrapPanel>
+        <TextBox Text="{Binding NewPresetName}" Watermark="{l:T 'Name of your preset'}" />
+        <Button Classes="icon small" Tag="{StaticResource Icon.Save}" Content="{l:T 'Save as preset'}" Command="{Binding SavePresetCommand}" HorizontalAlignment="Left"
+                ToolTip.Tip="{l:T 'Keeps this style under the name, to apply it again later'}" />
+        <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding Status}" IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+        <!-- Text -->
+        <TextBlock Classes="h3" Text="{l:T 'Text'}" />
+        <controls:FontPickerField Value="{Binding FontFamily}" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Size'}" />
+            <NumericUpDown Grid.Column="1" Value="{Binding FontSize}" Minimum="6" Maximum="96" Increment="1" FormatString="0" MinWidth="140"
+                           ToolTip.Tip="{l:T 'The text of the labels in points; on the tables 16 is their own size, 24 one and a half times'}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Weight'}" />
+            <ComboBox Grid.Column="1" ItemsSource="{Binding Weights}" SelectedItem="{Binding FontWeight}" MinWidth="140">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={x:Static l:TConverter.Instance}}" TextTrimming="CharacterEllipsis" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </Grid>
+
+        <!-- Labels on the picture -->
+        <TextBlock Classes="h3" Text="{l:T 'Labels on the picture'}" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Text colour'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding TextColor}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Outline (halo)'}" ToolTip.Tip="{l:T 'Fully transparent = no outline'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding OutlineColor}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Label background'}" ToolTip.Tip="{l:T 'Fully transparent = no box behind the labels'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding LabelBackground}" />
+        </Grid>
+
+        <!-- Page, tables and lines -->
+        <TextBlock Classes="h3" Text="{l:T 'Page, tables and lines'}" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Page background'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding PageBackground}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Table background'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding TableBackground}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Table border'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding TableBorder}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Header row background'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding HeaderBackground}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Header row text'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding HeaderText}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Table text'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding TableText}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Leader lines'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding LineColor}" />
+        </Grid>
+
+        <!-- Markers -->
+        <TextBlock Classes="h3" Text="{l:T 'Markers by kind of input'}" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Button'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding MarkerButton}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Axis'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding MarkerAxis}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Hat'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding MarkerHat}" />
+        </Grid>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Classes="styleLabel" Text="{l:T 'Slider'}" />
+            <controls:ColorField Grid.Column="1" Value="{Binding MarkerSlider}" />
+        </Grid>
+
+        <!-- Modifier colours -->
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Classes="h3" Text="{l:T 'Modifier colours'}" />
+                <TextBlock Classes="caption" TextWrapping="Wrap" Text="{l:T 'Markers of binds with the modifier, and the bar over its column'}" />
+            </StackPanel>
+            <Button Grid.Column="1" Classes="icon small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'Add'}" Command="{Binding AddModifierCommand}" VerticalAlignment="Center"
+                    ToolTip.Tip="{l:T 'Add a modifier and its colour'}" />
+        </Grid>
+        <ItemsControl ItemsSource="{Binding Modifiers}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Spacing="6" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SheetModifierRow">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                        <TextBox Text="{Binding Name}" Watermark="{l:T 'Modifier name'}" MinWidth="0" ToolTip.Tip="{l:T 'The modifier as your binds name it (LAlt, Shift A, ...)'}" />
+                        <controls:ColorField Grid.Column="1" Value="{Binding Color}" />
+                        <Button Grid.Column="2" Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Close}"
+                                Command="{Binding $parent[ItemsControl].((vm:SheetStyleViewModel)DataContext).RemoveModifierCommand}" CommandParameter="{Binding}"
+                                ToolTip.Tip="{l:T 'Remove this modifier colour'}" />
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding !HasModifiers}" Text="{l:T 'No modifier colours: every marker has the colour of its kind.'}" />
+
+        <!-- JoyPro's drawing on the sheet -->
+        <StackPanel Spacing="6" IsVisible="{Binding Drawing, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <TextBlock Classes="h3" Text="{l:T 'Drawing of the device'}" />
+            <controls:DrawingStyleEditor DataContext="{Binding Drawing}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

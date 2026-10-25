@@ -200,6 +200,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(WorkspaceHasUnsavedChanges));
         OnPropertyChanged(nameof(CanSaveWorkspace));
         NotifyLayoutUndoState();
+        RefreshSheetStyleScope();
     }
 
     partial void OnLayoutCalloutsEnabledChanged(bool value) => NotifyCallouts();
@@ -432,7 +433,10 @@ public sealed partial class MainWindowViewModel
     private async Task LoadCalloutTitlesAsync()
     {
         string device = ResolveLayoutEditorContextDevice();
-        if (device.Length == 0 || string.Equals(device, calloutTitlesDevice, StringComparison.OrdinalIgnoreCase) || EnginePath is not { Length: > 0 })
+        // Without a profile there are no binds and so no titles: the profile command is not run at all (it would only
+        // put "Profile path required" into the status line).
+        if (device.Length == 0 || string.Equals(device, calloutTitlesDevice, StringComparison.OrdinalIgnoreCase) || EnginePath is not { Length: > 0 } ||
+            string.IsNullOrWhiteSpace(ProfilePath))
             return;
         calloutTitlesDevice = device;
         EngineCommandResult? result = await RunEngineAsync(["layout", "titles", "--device", device], includeProfile: true, mutatesProfile: false,

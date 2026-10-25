@@ -1,0 +1,734 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-jaguar-a",
+  "title": "SEPECAT Jaguar A (French)",
+  "inherits": "real-jaguar",
+  "variants": [
+    "jaguar-a"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "a1",
+      "title": "AzurPoly SEPECAT Jaguar manual, rev. 9 (MSFS add-on, licensed by Dassault Aviation)",
+      "kind": "game-manual",
+      "url": "https://azurpolygroup.com/wp-content/uploads/package/azurpoly-jaguar-manual.pdf"
+    },
+    {
+      "id": "w1",
+      "title": "SEPECAT Jaguar (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/SEPECAT_Jaguar"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Jaguar A is the French single-seat version of the Jaguar attack jet. Its cockpit is the one modelled by the AzurPoly add-on for MSFS, after a real Jaguar A in a French museum: a crowded analogue panel with flight, engine, fuel and hydraulic instruments, the AJAX stability controls and an alarms panel. The consoles, stick and throttles are the same as in the Jaguar GR guide, which this guide follows with the French main panel instead of the RAF one. Items that are inoperative in the add-on keep their real names; a few are known only by name.",
+  "remove": [
+    "main-panel-gr"
+  ],
+  "areas": [
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main instrument panel",
+      "panels": [
+        {
+          "id": "main-panel-a",
+          "name": "Main instrument panel (Jaguar A)",
+          "src": "a1",
+          "text": "The French Jaguar A's main panel: flight instruments in the middle, engine, fuel and hydraulic gauges, the gear handles and indicators, the AJAX stability controls and the alarms panel.",
+          "context": "Everything the pilot reads while flying is here; the add-on manual is modelled on the Jaguar A of the Musee Europeen de l'Aviation de Chasse.",
+          "controls": [
+            {
+              "id": "autopilot",
+              "name": "Autopilot buttons",
+              "type": "button",
+              "match": [
+                "item:main-panel:1"
+              ],
+              "text": "Buttons that switch on the autopilot and auto-stabilisation modes. The autopilot is the system that can hold the aircraft's height, heading or path so the pilot does not have to.",
+              "context": "The pilot uses it on long transit legs to rest his hands. Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "f1-f4-valves",
+              "name": "F1 and F4 tanks valves switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:2"
+              ],
+              "text": "A switch for the valves of the fuel tanks named F1 and F4.",
+              "context": "It is part of the fuel system set-up. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "radar-cw-tws",
+              "name": "Radar CW / TWS selector",
+              "type": "selector",
+              "match": [
+                "item:main-panel:3"
+              ],
+              "text": "A selector with the positions CW and TWS that the add-on manual lists on the main panel.",
+              "context": "JoyPro's sources give only the name 'radar CW / TWS selector', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "yaw-deflection",
+              "name": "Yaw deflection switch and indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:4"
+              ],
+              "text": "A switch with an indicator for the yaw deflection (the nose's movement left and right).",
+              "context": "JoyPro's sources give only the name 'yaw deflection switch and indicator', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "radio-altimeter",
+              "name": "Radio altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:5"
+              ],
+              "text": "This gauge shows the height above the ground directly below, measured by a radio beam.",
+              "context": "At very low level it is more useful than the normal altimeter, which shows height above sea level.",
+              "src": "a1"
+            },
+            {
+              "id": "flares-light",
+              "name": "Flares light",
+              "type": "light",
+              "match": [
+                "item:main-panel:6"
+              ],
+              "text": "A light that shows the state of the flares, the hot decoys against heat-seeking missiles.",
+              "context": "JoyPro's sources give only the name 'flares light', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "fuel-jettison",
+              "name": "Fuel jettison switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:7"
+              ],
+              "text": "This switch dumps fuel overboard to make the aircraft lighter.",
+              "context": "It is used in an emergency, for example to land soon after take-off with full tanks.",
+              "src": "a1"
+            },
+            {
+              "id": "spoilers-light",
+              "name": "Spoilers extended light",
+              "type": "light",
+              "match": [
+                "item:main-panel:8"
+              ],
+              "text": "A light that shows the spoilers on top of the wings are extended.",
+              "context": "It warns the pilot that the spoilers are up and spoiling lift.",
+              "src": "a1"
+            },
+            {
+              "id": "master-alarm",
+              "name": "Master alarm light",
+              "type": "light",
+              "match": [
+                "item:main-panel:9"
+              ],
+              "text": "A big light that says 'something needs your attention' (master warning).",
+              "context": "When it comes on the pilot looks at the alarms panel to see which system it is.",
+              "src": "a1"
+            },
+            {
+              "id": "hyd-reading",
+              "name": "Hydraulic gauge reading switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:10"
+              ],
+              "text": "This switch chooses which hydraulic system the hydraulic pressure gauge shows.",
+              "context": "The Jaguar has more than one hydraulic system; the pilot checks each one in turn.",
+              "src": "a1"
+            },
+            {
+              "id": "ajax-gain",
+              "name": "AJAX gain selector",
+              "type": "selector",
+              "match": [
+                "item:main-panel:11"
+              ],
+              "text": "This selector sets the gain (strength) of the AJAX stability augmentation, the helper that keeps the aircraft steady and smooth.",
+              "context": "More gain means a stronger damping of unwanted movements. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "hyd-pressure",
+              "name": "Hydraulic pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:12"
+              ],
+              "text": "This gauge shows the pressure of the hydraulics, the oil under high pressure that moves the control surfaces, the gear and the flaps.",
+              "context": "Low pressure means the aircraft could become hard or impossible to control, so the pilot watches it.",
+              "src": "a1"
+            },
+            {
+              "id": "electro-pump",
+              "name": "Hydraulic electro-pump switch and light",
+              "type": "light",
+              "match": [
+                "item:main-panel:13"
+              ],
+              "text": "A switch and light for the electric hydraulic pump, which can make hydraulic pressure without the engines.",
+              "context": "It helps when the engine-driven pumps are not working, for example on the ground or in a failure.",
+              "src": "a1"
+            },
+            {
+              "id": "machmeter",
+              "name": "Machmeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:14"
+              ],
+              "text": "This gauge shows the Mach number, the speed as a multiple of the speed of sound.",
+              "context": "At high altitude the pilot reads his speed in Mach rather than in knots.",
+              "src": "a1"
+            },
+            {
+              "id": "diff-deflection",
+              "name": "Differential deflection handle",
+              "type": "handle",
+              "match": [
+                "item:main-panel:15"
+              ],
+              "text": "A handle for the differential deflection of the tail halves, which move in opposite directions to help roll the aircraft.",
+              "context": "The catalog describes it as a roll assist by the tailplane. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "ajax-mode",
+              "name": "AJAX mode switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:16"
+              ],
+              "text": "This switch turns the AJAX stability augmentation on or off or changes its mode.",
+              "context": "It works together with the AJAX gain selector. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "pitch-trim-ind",
+              "name": "Pitch trim indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:17"
+              ],
+              "text": "This indicator shows the position of the pitch trim (nose up or down).",
+              "context": "Before take-off the pilot sets the trim to the right mark for the load on board."
+            },
+            {
+              "id": "config-panel",
+              "name": "Flaps and landing gear state panel",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:18"
+              ],
+              "text": "Lights or flags that show whether the flaps and the wheels are up, moving or down and locked.",
+              "context": "The pilot checks it after moving the gear handle or the flaps selector, especially before landing.",
+              "src": "a1"
+            },
+            {
+              "id": "altimeter-a",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:19"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing.",
+              "src": "a1"
+            },
+            {
+              "id": "slats-mode",
+              "name": "Slats mode button and light",
+              "type": "light",
+              "match": [
+                "item:main-panel:20"
+              ],
+              "text": "A button with a light for the mode of the slats, the front edges of the wing that slide out at low speed.",
+              "context": "It works together with the slats manual mode switch on the left console. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "nws-light",
+              "name": "Nosewheel steering engaged light",
+              "type": "light",
+              "match": [
+                "item:main-panel:21"
+              ],
+              "text": "A light that shows that nosewheel steering (steering the front wheel on the ground, like a car's steering) is engaged.",
+              "context": "The pilot uses nosewheel steering while taxiing.",
+              "src": "a1"
+            },
+            {
+              "id": "emergency-release",
+              "name": "Emergency stores release button",
+              "type": "button",
+              "match": [
+                "item:main-panel:22"
+              ],
+              "text": "This button drops the weapons and tanks under the aircraft in an emergency (jettison).",
+              "context": "It makes the aircraft lighter at once, for example after an engine failure on take-off.",
+              "src": "a1"
+            },
+            {
+              "id": "emergency-gear",
+              "name": "Emergency landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:main-panel:23"
+              ],
+              "text": "This handle lowers the wheels by the emergency system when the normal gear system fails.",
+              "context": "It is a back-up for the normal gear handle.",
+              "src": "a1"
+            },
+            {
+              "id": "gear-a",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:main-panel:24"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights.",
+              "src": "a1"
+            },
+            {
+              "id": "gear-crash",
+              "name": "Landing gear crash button",
+              "type": "button",
+              "match": [
+                "item:main-panel:25"
+              ],
+              "text": "A button next to the gear handles that the add-on manual calls the landing gear crash button.",
+              "context": "JoyPro's sources give only the name 'landing gear crash button', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "alt-calibration",
+              "name": "Altitude calibration panel",
+              "type": "other",
+              "match": [
+                "item:main-panel:26"
+              ],
+              "text": "A panel for calibrating the height readings.",
+              "context": "JoyPro's sources give only the name 'altitude calibration panel', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "com-panel",
+              "name": "COM panel",
+              "type": "other",
+              "match": [
+                "item:main-panel:27"
+              ],
+              "text": "The control panel of a radio for talking to other aircraft and the tower (communication).",
+              "context": "The single switches of the COM panel are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "anti-flash-lights",
+              "name": "Anti-flash lights",
+              "type": "light",
+              "match": [
+                "item:main-panel:28",
+                "item:main-panel:63"
+              ],
+              "text": "Two lights on the main panel that the add-on manual calls anti-flash lights.",
+              "context": "JoyPro's sources give only the name 'anti-flash lights', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "sphere",
+              "name": "Attitude sphere indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:29"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon). It is the main attitude instrument.",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen.",
+              "src": "a1"
+            },
+            {
+              "id": "nav-indicator",
+              "name": "Navigation indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:30"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield.",
+              "src": "a1"
+            },
+            {
+              "id": "sphere-radionav",
+              "name": "Sphere radionav indication switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:31"
+              ],
+              "text": "This switch chooses whether the attitude sphere also shows the radio navigation needles.",
+              "context": "With the needles the pilot can follow a radio beacon or a landing beam on the main instrument. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "hook-light",
+              "name": "Tailhook extended light",
+              "type": "light",
+              "match": [
+                "item:main-panel:32"
+              ],
+              "text": "A light that shows that the tail hook is down.",
+              "context": "It reminds the pilot that the hook is lowered after using the tailhook handle.",
+              "src": "a1"
+            },
+            {
+              "id": "iff-m4-light",
+              "name": "IFF mode 4 light",
+              "type": "light",
+              "match": [
+                "item:main-panel:33"
+              ],
+              "text": "A light for the secure military mode 4 of the IFF, the box that answers 'who are you?' questions from radars.",
+              "context": "JoyPro's sources give only the name 'IFF mode 4 light', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "variometer",
+              "name": "Variometer",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:34"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing.",
+              "src": "a1"
+            },
+            {
+              "id": "secondary-adi",
+              "name": "Secondary attitude indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:35"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon). It is the backup instrument.",
+              "context": "It keeps working when the main attitude sphere fails; its power switch is on the right console.",
+              "src": "a1"
+            },
+            {
+              "id": "secondary-alt",
+              "name": "Secondary altimeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:36"
+              ],
+              "text": "A backup height gauge that works without the main instruments.",
+              "context": "The pilot compares it with the main altimeter and uses it if that one fails.",
+              "src": "a1"
+            },
+            {
+              "id": "weapons-safety",
+              "name": "Weapons safety knob",
+              "type": "knob",
+              "match": [
+                "item:main-panel:37"
+              ],
+              "text": "This knob arms the guns and weapons. In its safe position nothing fires; at FIRE the trigger and the release button work.",
+              "context": "It works like the master arm switch of other aircraft; the pilot arms only when close to the target.",
+              "src": "a1"
+            },
+            {
+              "id": "camera-obturator",
+              "name": "Camera obturator mode switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:38"
+              ],
+              "text": "A switch for the mode of a camera's shutter (obturator).",
+              "context": "JoyPro's sources give only the name 'camera obturator mode switch', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "heading-panel",
+              "name": "Heading control panel",
+              "type": "other",
+              "match": [
+                "item:main-panel:39"
+              ],
+              "text": "A panel for setting the wanted heading for the navigation instruments and the autopilot.",
+              "context": "JoyPro's sources give only the name 'heading control panel', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "fuel-flow",
+              "name": "Fuel flow indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:40"
+              ],
+              "text": "This indicator shows how much fuel the engines burn per hour.",
+              "context": "With it and the fuel left, the pilot works out how long he can still fly.",
+              "src": "a1"
+            },
+            {
+              "id": "fuel-level",
+              "name": "Fuel level indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:41"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home.",
+              "src": "a1"
+            },
+            {
+              "id": "tachometers",
+              "name": "Engine tachometers (left and right)",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:42",
+                "item:main-panel:43"
+              ],
+              "text": "Two gauges that show how fast each engine turns (RPM), the left engine on one and the right on the other.",
+              "context": "The pilot watches them during the start and to check both engines give the same power.",
+              "src": "a1",
+              "count": 2
+            },
+            {
+              "id": "thrust-increase-lights",
+              "name": "Engine thrust increase lights (left and right)",
+              "type": "light",
+              "match": [
+                "item:main-panel:44",
+                "item:main-panel:45"
+              ],
+              "text": "Two lights, one per engine, that show the engine thrust increase is active.",
+              "context": "They belong to the engine thrust increase switch. JoyPro's sources name this control but do not describe how it is used.",
+              "src": "a1"
+            },
+            {
+              "id": "egt",
+              "name": "Engine EGT indicators (left and right)",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:46",
+                "item:main-panel:47"
+              ],
+              "text": "Two gauges that show how hot the exhaust gas of each engine is (EGT).",
+              "context": "Too high a temperature can damage the engine, so the pilot watches them, especially in the start.",
+              "src": "a1",
+              "count": 2
+            },
+            {
+              "id": "fire-buttons",
+              "name": "Engine fire lights and extinguisher buttons (left and right)",
+              "type": "button",
+              "match": [
+                "item:main-panel:48",
+                "item:main-panel:49"
+              ],
+              "text": "One light and button per engine. The light shows a fire in that engine; pressing the button fires the extinguisher into it.",
+              "context": "A fire is the most urgent warning; the pilot shuts the engine down and uses the extinguisher.",
+              "src": "a1",
+              "count": 2
+            },
+            {
+              "id": "ab-fire-lights",
+              "name": "Afterburner fire alarm lights (left and right)",
+              "type": "light",
+              "match": [
+                "item:main-panel:50",
+                "item:main-panel:51"
+              ],
+              "text": "One light per engine that warns of a fire in the afterburner section at the back of the engine.",
+              "context": "The pilot then cuts the afterburner and checks the engine.",
+              "src": "a1",
+              "count": 2
+            },
+            {
+              "id": "nozzles",
+              "name": "Exhaust nozzles position indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:52"
+              ],
+              "text": "This indicator shows how far the engines' exhaust nozzles are open.",
+              "context": "The nozzles open wide when the afterburner is lit; the indicator confirms it has lit.",
+              "src": "a1"
+            },
+            {
+              "id": "totalizer",
+              "name": "Fuel totalizer",
+              "type": "other",
+              "match": [
+                "item:main-panel:53"
+              ],
+              "text": "A counter that shows the total fuel on board; the pilot can set it to the fuel loaded.",
+              "context": "It counts down as the engines burn fuel, so the pilot always knows the total left.",
+              "src": "a1"
+            },
+            {
+              "id": "fuel-control",
+              "name": "Fuel control panel",
+              "type": "other",
+              "match": [
+                "item:main-panel:54"
+              ],
+              "text": "Switches for the fuel system: the pumps that move fuel to the engines and the valves that choose which tanks are used.",
+              "context": "The pilot sets it up before the start and uses it to manage drop tanks (extra tanks under the wing that can be dropped). Its single switches are not described in the sources JoyPro uses.",
+              "src": "a1"
+            },
+            {
+              "id": "crossfeed",
+              "name": "Engines fuel crossfeed switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:55"
+              ],
+              "text": "This switch opens the crossfeed, which lets one side's tanks feed the other side's engine.",
+              "context": "It is used to balance the fuel or to keep an engine running when its own feed fails.",
+              "src": "a1"
+            },
+            {
+              "id": "alarm-sound-off",
+              "name": "Alarm sound disable switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:56"
+              ],
+              "text": "This switch turns off the warning sound of the alarms.",
+              "context": "The warning lights stay; only the noise is stopped, for example once the pilot knows the problem.",
+              "src": "a1"
+            },
+            {
+              "id": "thrust-increase",
+              "name": "Engine thrust increase switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:57"
+              ],
+              "text": "A switch that the add-on manual calls the engine thrust increase switch; the two thrust increase lights belong to it.",
+              "context": "JoyPro's sources give only the name 'engine thrust increase switch', not how the pilot uses it.",
+              "src": "a1"
+            },
+            {
+              "id": "probe-knob",
+              "name": "Refuelling probe knob",
+              "type": "knob",
+              "match": [
+                "item:main-panel:58"
+              ],
+              "text": "This knob extends the refuelling probe, the part that takes fuel from a tanker aircraft in flight, and retracts it again.",
+              "context": "The pilot extends it before joining the tanker.",
+              "src": "a1"
+            },
+            {
+              "id": "probe-lights-a",
+              "name": "Refuelling probe state lights",
+              "type": "light",
+              "match": [
+                "item:main-panel:59"
+              ],
+              "text": "Lights that show whether the refuelling probe is out or in.",
+              "context": "The pilot checks them before moving towards the tanker.",
+              "src": "a1"
+            },
+            {
+              "id": "alarm-test",
+              "name": "Alarms test / mute switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:60"
+              ],
+              "text": "This switch tests all alarm lights and sounds, or mutes the alarm.",
+              "context": "The pilot tests the alarms before the flight to make sure no lamp is broken.",
+              "src": "a1"
+            },
+            {
+              "id": "alarm-day-night",
+              "name": "Alarms day / night switch",
+              "type": "switch",
+              "match": [
+                "item:main-panel:61"
+              ],
+              "text": "This switch sets the alarm lights bright for day or dimmer for night.",
+              "context": "At night bright alarm lights would dazzle the pilot.",
+              "src": "a1"
+            },
+            {
+              "id": "alarms-panel",
+              "name": "Alarms panel",
+              "type": "display",
+              "match": [
+                "item:main-panel:62"
+              ],
+              "text": "A board of labelled lights, each saying what is wrong (for example AIR T or NAV).",
+              "context": "When the master alarm comes on, this panel tells the pilot which system has the problem.",
+              "src": "a1"
+            },
+            {
+              "id": "parking-brake",
+              "name": "Parking brake handle",
+              "type": "handle",
+              "match": [
+                "item:main-panel:64"
+              ],
+              "text": "This handle holds the wheels still while parked (parking brake).",
+              "context": "It is set when the aircraft stands, and released before taxiing.",
+              "src": "a1"
+            },
+            {
+              "id": "oxygen-ind",
+              "name": "Oxygen indicator",
+              "type": "indicator",
+              "match": [
+                "item:main-panel:65"
+              ],
+              "text": "This indicator shows the oxygen supply, the breathing gas the pilot needs at high altitude.",
+              "context": "The pilot checks it before take-off and from time to time in flight.",
+              "src": "a1"
+            },
+            {
+              "id": "voltmeter",
+              "name": "Battery voltmeter",
+              "type": "gauge",
+              "match": [
+                "item:main-panel:66"
+              ],
+              "text": "This gauge shows the voltage of the battery.",
+              "context": "Before the engines start, it tells the pilot whether the battery is strong enough.",
+              "src": "a1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

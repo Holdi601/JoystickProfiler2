@@ -24,7 +24,7 @@
 # set, planes (the game's aircraft names of the set), asset (the zip), size, sha256, version, built, picturesBuilt.
 # A set whose pictures did not change keeps its zip and version; a changed one gets the next version (the GUI updates
 # installed packs to a newer version). Default source: <data>\GameData\CockpitPictures (JOYPRO_DATA_DIR, else
-# %LOCALAPPDATA%\JoyPro); default output: <JOYPRO_RELEASE_DIR>\cockpit-packs (the environment variable). The output must be outside the
+# %LOCALAPPDATA%\JoyPro2); default output: <JOYPRO_RELEASE_DIR>\cockpit-packs (the environment variable). The output must be outside the
 # repository.
 param(
     [string]$Source = "",
@@ -84,7 +84,11 @@ $repo = (Resolve-Path (Split-Path -Parent $PSScriptRoot)).Path
 if (-not $ManifestOnly) {
     if ($Source -eq "") {
         $data = $env:JOYPRO_DATA_DIR
-        if ([string]::IsNullOrWhiteSpace($data)) { $data = Join-Path $env:LOCALAPPDATA "JoyPro" }
+        if ([string]::IsNullOrWhiteSpace($data)) {
+            # The data folder of JoyPro2 2.4 and later; an older install still has %LOCALAPPDATA%\JoyPro.
+            $data = Join-Path $env:LOCALAPPDATA "JoyPro2"
+            if (-not (Test-Path (Join-Path $data "GameData"))) { $data = Join-Path $env:LOCALAPPDATA "JoyPro" }
+        }
         $Source = Join-Path $data "GameData\CockpitPictures"
     }
     if (-not (Test-Path $Source)) { throw "No pictures folder: $Source" }

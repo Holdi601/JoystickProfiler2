@@ -1,0 +1,200 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-bsg-raptor",
+  "title": "Colonial Raptor (Battlestar Galactica, 2004)",
+  "variants": [
+    "bsg-raptor-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Battlestar Galactica (2004 TV series) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Battlestar_Galactica_(2004_TV_series)"
+    },
+    {
+      "id": "s2",
+      "title": "Battlestar Galactica (fictional spacecraft) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Battlestar_Galactica_(fictional_spacecraft)"
+    }
+  ],
+  "intro": "The Raptor is a fictional two-crew utility craft in Battlestar Galactica (2004), used for scouting, transport and rescue, with its own FTL (faster-than-light) drive. The pilot sits up front with stick and throttle; behind sits the ECO, the electronic countermeasures officer, at the sensor and jamming station. A cabin for passengers or cargo follows behind.",
+  "areas": [
+    {
+      "id": "pilot",
+      "where": "front-center",
+      "name": "Pilot's instrument panel",
+      "text": "Flight displays in front of the pilot.",
+      "panels": [
+        {
+          "id": "pilot-panel",
+          "name": "Pilot's instrument panel",
+          "db": "pilot-panel",
+          "src": "s1",
+          "text": "Screens in front of the pilot for flying and for the DRADIS.",
+          "context": "The pilot flies while the ECO handles sensors and jumps.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Flight displays",
+              "type": "display",
+              "match": [
+                "item:pilot-panel:1"
+              ],
+              "text": "Screens show the speed, the attitude (whether the nose is up or down and the wings level) and the fuel.",
+              "context": "The pilot needs them when flying through clouds or space without a horizon.",
+              "src": "s1"
+            },
+            {
+              "id": "dradis",
+              "name": "DRADIS",
+              "type": "display",
+              "match": [
+                "item:pilot-panel:2"
+              ],
+              "text": "The DRADIS, the series' word for radar, shows other ships around the Raptor.",
+              "context": "It warns of Cylon ships and shows friends.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rear",
+      "where": "rear",
+      "name": "ECO station and cabin",
+      "text": "The ECO's station behind the pilot and the cabin.",
+      "panels": [
+        {
+          "id": "eco",
+          "name": "ECO station",
+          "db": "eco",
+          "src": "s1",
+          "text": "The station of the electronic countermeasures officer behind the pilot.",
+          "context": "The ECO jams enemy sensors, watches the long-range sensors and plots the jumps.",
+          "controls": [
+            {
+              "id": "ecm",
+              "name": "ECM and sensors console",
+              "type": "other",
+              "match": [
+                "item:eco:1"
+              ],
+              "text": "A console for jamming (blinding enemy sensors with radio noise) and for long-range sensing.",
+              "context": "Raptors scout ahead of the fleet, so their sensors are important.",
+              "src": "s1"
+            },
+            {
+              "id": "ftl",
+              "name": "FTL jump controls",
+              "type": "button",
+              "match": [
+                "item:eco:2",
+                "control:panel.switch.ftl"
+              ],
+              "text": "These controls spin up the FTL drive and make the jump once the destination is plotted.",
+              "context": "FTL lets the Raptor jump far away in an instant; it is how Raptors escape or scout distant places.",
+              "src": "s1"
+            },
+            {
+              "id": "plot",
+              "name": "Jump plot",
+              "type": "display",
+              "match": [
+                "item:eco:3"
+              ],
+              "text": "A display of the coordinates worked out before a jump.",
+              "context": "The jump can only happen after the plot is done.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "cabin",
+          "name": "Passenger / cargo compartment",
+          "db": "cabin",
+          "src": "s1",
+          "text": "The bay behind the cockpit for people or cargo.",
+          "context": "Raptors carry troops, survivors or supplies.",
+          "controls": [
+            {
+              "id": "seats",
+              "name": "Seats",
+              "type": "other",
+              "match": [
+                "item:cabin:1"
+              ],
+              "text": "Seats in the cabin for troops or survivors.",
+              "context": "Rescue missions bring survivors back to the fleet in this cabin.",
+              "src": "s1"
+            },
+            {
+              "id": "hatch",
+              "name": "Side hatch",
+              "type": "other",
+              "match": [
+                "item:cabin:2"
+              ],
+              "text": "A boarding hatch on the side of the Raptor.",
+              "context": "People climb in and out through it when the Raptor has landed.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight stick",
+          "src": "s1",
+          "text": "The flight stick in front of the Raptor pilot's seat.",
+          "context": "It steers the Raptor in space and in the air.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Flight stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up; moving it left or right rolls the Raptor.",
+              "context": "The pilot flies with the right hand on the stick.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s1",
+          "text": "The throttle lever at the Raptor pilot's left hand.",
+          "context": "It sets how hard the Raptor's engines push.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "Pushing the lever forward gives more thrust, pulling it back gives less.",
+              "context": "The left hand sets the speed while the right hand steers.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

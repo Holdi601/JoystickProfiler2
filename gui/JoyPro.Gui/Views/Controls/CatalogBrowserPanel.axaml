@@ -65,7 +65,7 @@
                                     <TextBlock TextTrimming="CharacterEllipsis">
                                         <Run Text="{Binding Name}" FontWeight="Bold" />
                                         <Run Text="  " />
-                                        <Run Text="{Binding CountText}" Foreground="{DynamicResource JP.TextMutedBrush}" FontSize="12" />
+                                        <Run Text="{Binding CountText}" Foreground="{DynamicResource JP.TextMutedBrush}" FontSize="{DynamicResource JP.FontSize.12}" />
                                     </TextBlock>
                                 </Button>
                             </Grid>
@@ -93,8 +93,8 @@
                                                             <TextBlock Text="{Binding BoundText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
                                                         </Border>
                                                     </WrapPanel>
-                                                    <TextBlock Classes="warnText" FontSize="11" Text="{Binding Row.VariantText}" IsVisible="{Binding Row.HasVariant}" TextWrapping="Wrap" />
-                                                    <TextBlock Classes="caption" FontSize="11" Text="{Binding Row.Explanation}" IsVisible="{Binding Row.HasExplanation}" TextWrapping="Wrap" MaxLines="2"
+                                                    <TextBlock Classes="warnText" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Row.VariantText}" IsVisible="{Binding Row.HasVariant}" TextWrapping="Wrap" />
+                                                    <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Row.Explanation}" IsVisible="{Binding Row.HasExplanation}" TextWrapping="Wrap" MaxLines="2"
                                                                TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Row.ExplanationTip}" />
                                                 </StackPanel>
                                             </CheckBox>
@@ -104,7 +104,7 @@
                                                         ToolTip.Tip="{l:T 'Every aircraft with this id, each with its own title: tick the ones the action is for'}">
                                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
                                                         <PathIcon Data="{StaticResource Icon.Airplane}" Width="12" Height="12" VerticalAlignment="Top" Margin="0,2,0,0" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding Row.Aircraft.ExpandLabel, FallbackValue=''}" FontSize="11.5" TextWrapping="Wrap" />
+                                                        <TextBlock Grid.Column="1" Text="{Binding Row.Aircraft.ExpandLabel, FallbackValue=''}" FontSize="{DynamicResource JP.FontSize.11.5}" TextWrapping="Wrap" />
                                                     </Grid>
                                                 </Button>
                                                 <Panel IsVisible="{Binding Row.Aircraft.IsExpanded, FallbackValue=False}">

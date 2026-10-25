@@ -296,6 +296,7 @@ public sealed partial class MainWindowViewModel
     {
         if (relation == null)
             return;
+        RememberPlace();
         SelectRelationByName(relation.Name);
         _ = SuggestMissingAsync();
     }

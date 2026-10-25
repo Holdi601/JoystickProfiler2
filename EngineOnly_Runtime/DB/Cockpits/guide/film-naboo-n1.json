@@ -1,0 +1,225 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-naboo-n1",
+  "title": "Naboo N-1 starfighter (Star Wars, The Phantom Menace)",
+  "variants": [
+    "naboo-n1-starfighter"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "List of Star Wars starfighters: Naboo N-1 (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/List_of_Star_Wars_starfighters"
+    },
+    {
+      "id": "s2",
+      "title": "Naboo N-1 Starfighter (StarWars.com Databank)",
+      "kind": "reference",
+      "url": "https://www.starwars.com/databank/naboo-n-1-starfighter"
+    },
+    {
+      "id": "s3",
+      "title": "Star Wars: Episode I - The Phantom Menace (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Wars:_Episode_I_%E2%80%93_The_Phantom_Menace"
+    }
+  ],
+  "intro": "The N-1 is a fictional chrome-and-yellow fighter of the Royal Naboo Security Forces in The Phantom Menace. It has twin laser cannons, proton torpedoes, a socket for an astromech droid and an automatic pilot. The pilot sits alone under a bubble canopy at the front of the needle-shaped hull, with the droid behind.",
+  "areas": [
+    {
+      "id": "canopy",
+      "where": "glareshield",
+      "name": "Canopy",
+      "text": "The bubble canopy over the seat.",
+      "panels": [
+        {
+          "id": "canopy",
+          "name": "Canopy",
+          "db": "canopy",
+          "src": "s2",
+          "text": "The clear bubble over the N-1 pilot's seat.",
+          "context": "It gives the pilot a view all around.",
+          "controls": [
+            {
+              "id": "canopy",
+              "name": "Canopy",
+              "type": "other",
+              "match": [
+                "item:canopy:1"
+              ],
+              "text": "A clear bubble over the single seat of the N-1.",
+              "context": "The bubble shape gives a wide view, useful in a dogfight.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Displays and controls in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s3",
+          "text": "Screens, the automatic pilot control and the torpedo release in front of the pilot.",
+          "context": "In the film young Anakin is in this cockpit when the automatic pilot takes the fighter into a space battle.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Forward displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Screens in front of the pilot show the sensor and targeting pictures.",
+              "context": "They help the pilot find and aim at enemy ships.",
+              "src": "s3"
+            },
+            {
+              "id": "droid-screen",
+              "name": "Astromech message screen",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "This screen shows the droid's messages as text, so the pilot can read what the droid says.",
+              "context": "R2-D2 talks to the pilot through it in the film.",
+              "src": "s3"
+            },
+            {
+              "id": "autopilot",
+              "name": "Autopilot control",
+              "type": "switch2",
+              "match": [
+                "item:instrument-panel:3",
+                "control:panel.switch.autopilot"
+              ],
+              "positions": [
+                {
+                  "name": "AUTO",
+                  "text": "The automatic pilot flies the fighter."
+                },
+                {
+                  "name": "MANUAL",
+                  "text": "The pilot flies the fighter by hand."
+                }
+              ],
+              "text": "This control switches the automatic pilot on or off. With it on the fighter flies by itself; with it off the pilot flies by hand.",
+              "context": "In the film the automatic pilot flies the fighter into the battle until Anakin takes over the controls.",
+              "src": "s3"
+            },
+            {
+              "id": "torpedo",
+              "name": "Torpedo release",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:4",
+                "control:stick.weapon_release"
+              ],
+              "text": "This control fires the proton torpedoes, the fighter's strongest weapons.",
+              "context": "In the film the torpedoes are fired inside the droid control ship and destroy it.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "droid",
+      "where": "rear",
+      "name": "Astromech socket",
+      "text": "The droid behind the pilot.",
+      "panels": [
+        {
+          "id": "astromech",
+          "name": "Astromech socket",
+          "db": "astromech",
+          "src": "s3",
+          "text": "A socket behind the cockpit for an astromech droid.",
+          "context": "The droid helps with navigation and repairs.",
+          "controls": [
+            {
+              "id": "droid",
+              "name": "Astromech droid (R2-D2)",
+              "type": "other",
+              "match": [
+                "item:astromech:1"
+              ],
+              "text": "A small robot in the socket helps with navigation and repairs. In the film it is R2-D2.",
+              "context": "The droid fixes problems during the flight so the pilot can keep flying.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Flight controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight controls",
+          "src": "s3",
+          "text": "The hand controls in front of the pilot.",
+          "context": "They fly the fighter and fire the lasers.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Flight controls",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The flight controls tip the nose up and down and roll the fighter left and right.",
+              "context": "They work once the automatic pilot is off.",
+              "src": "s3"
+            },
+            {
+              "id": "fire",
+              "name": "Fire control",
+              "type": "button",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A control on the flight grips fires the twin laser cannons.",
+              "context": "The torpedoes have their own release; the lasers are for fighters and smaller targets.",
+              "src": "s3"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "src": "s3",
+          "text": "This stands for the control that sets the craft's speed.",
+          "context": "The Phantom Menace does not show this control clearly; the catalog adds it so a joystick set has a place for the speed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle (not clearly shown)",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis stands for the craft's speed: forward for faster, back for slower. The screen does not show where the real control sits, so its place is a guess.",
+              "context": "On a stick and throttle set this is the throttle lever; in the work itself the pilot is mostly seen with both hands on the flight controls.",
+              "src": "s3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

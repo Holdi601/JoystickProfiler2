@@ -59,6 +59,22 @@ namespace JoyPro.Engine
             sb.AppendLine("Force Feedback Devices Imported: " + result.ForceFeedbackDevicesImported);
             sb.AppendLine("Skipped Entries: " + result.SkippedEntries);
             sb.AppendLine("Backup Binds Removed In DCS (.jp, skipped): " + result.StaleBackupEntriesSkipped);
+            sb.AppendLine("Treat Same-Name Devices As One: " + result.MergeSameNameDevices);
+            sb.AppendLine("Only Connected Devices: " + result.OnlyConnected);
+            sb.AppendLine("Older Copies Of A Device Skipped: " + result.OlderDeviceCopyEntriesSkipped + " bind(s) in " + result.OlderDeviceCopyFilesSkipped + " file(s)");
+            if (result.MergedDevices != null && result.MergedDevices.Count > 0)
+            {
+                sb.AppendLine("Devices Read As One (new ID over time):");
+                foreach (string merged in result.MergedDevices)
+                    sb.AppendLine("  - " + merged);
+            }
+            if (result.TwinDevices != null && result.TwinDevices.Count > 0)
+                sb.AppendLine("Twin Devices Kept Apart: " + string.Join(", ", result.TwinDevices));
+            if (result.OnlyConnected)
+            {
+                sb.AppendLine("Not Connected Devices Skipped: " + result.NotConnectedEntriesSkipped + " bind(s) in " + result.NotConnectedFilesSkipped + " file(s)" +
+                              (result.NotConnectedDevices == null || result.NotConnectedDevices.Count == 0 ? string.Empty : " (" + string.Join(", ", result.NotConnectedDevices) + ")"));
+            }
 
             if (result.Errors != null && result.Errors.Count > 0)
             {
@@ -164,7 +180,9 @@ namespace JoyPro.Engine
                 "DCS import complete. Relations: " +
                 result.ImportedRelations.ToString() +
                 ", binds: " +
-                result.ImportedBinds.ToString() + ".");
+                result.ImportedBinds.ToString() +
+                (result.OlderDeviceCopyFilesSkipped > 0 ? ", older copies of a device skipped: " + result.OlderDeviceCopyEntriesSkipped.ToString() + " bind(s)" : string.Empty) +
+                (result.OnlyConnected ? ", not connected devices skipped: " + result.NotConnectedEntriesSkipped.ToString() + " bind(s)" : string.Empty) + ".");
             return result;
         }
 
@@ -215,11 +233,24 @@ namespace JoyPro.Engine
             RunFileCache.Prefetch(prefetch);
             HashSet<string> fileSet = new HashSet<string>(files, StringComparer.OrdinalIgnoreCase);
             Dictionary<string, FilePreParse> preParsed = PreParse(prefetch.Where(fileSet.Contains).ToList());
+            DevicePlan devicePlan = BuildDevicePlan(prefetch.Where(fileSet.Contains).ToList(), options, result);
             for (int i = 0; i < files.Length; i++)
             {
                 string file = files[i];
                 string plane = ExtractPlaneName(file);
                 string device = ExtractDeviceName(file);
+                if (devicePlan.SkippedOlderCopies.Contains(file))
+                {
+                    result.OlderDeviceCopyFilesSkipped++;
+                    result.OlderDeviceCopyEntriesSkipped += CountEntries(file, preParsed);
+                    continue;
+                }
+                if (devicePlan.SkippedNotConnected.Contains(file))
+                {
+                    result.NotConnectedFilesSkipped++;
+                    result.NotConnectedEntriesSkipped += CountEntries(file, preParsed);
+                    continue;
+                }
                 if (options != null && options.IgnoreEasyPlanes && IsEasyPlaneToken(plane))
                     continue;
                 if (options != null && !options.IncludeKeyboard && string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase))
@@ -236,9 +267,10 @@ namespace JoyPro.Engine
                 result.FilesScanned++;
                 if (isBackup)
                     result.BackupFilesScanned++;
+                string liveDevice = devicePlan.LiveName(device);
                 matchedPlanes.Add(plane);
-                matchedDevices.Add(device);
-                ParseInputFile(file, isBackup, parsed, parsedFfbByDevice, modifierLookupByPlane, ffbCorrections, result, preParsed);
+                matchedDevices.Add(liveDevice);
+                ParseInputFile(file, isBackup, parsed, parsedFfbByDevice, modifierLookupByPlane, ffbCorrections, result, preParsed, devicePlan);
 
                 int done = i + 1;
                 if (done == files.Length || done % 200 == 0)
@@ -304,6 +336,224 @@ namespace JoyPro.Engine
                 }
             }
             return list;
+        }
+
+        // One device under several instance GUIDs (Windows re-enumerated it over time: "Joystick (Razer Tartarus V2)
+        // {0CFE...}", "{29E6...}", "{4050...}"). DCS keeps a "<device> {GUID}.diff.lua" per GUID but loads only the
+        // file of the GUID that is attached; the others are dead leftovers. With MergeSameNameDevices the GUIDs of one
+        // name become one device: the connected GUID, else the GUID of the newest file. Per aircraft only one file is
+        // read (the live GUID's, else the newest of that aircraft); the other files of that aircraft are older copies
+        // and skipped. Two or more same-name devices connected at once are real twins (two identical sticks) and stay
+        // apart. OnlyConnected skips the files of devices that are not connected (after the merge).
+        internal sealed class DevicePlan
+        {
+            public readonly Dictionary<string, string> Remap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            public readonly HashSet<string> SkippedOlderCopies = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            public readonly HashSet<string> SkippedNotConnected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            private readonly Dictionary<string, Dictionary<string, string>> remappedLookups =
+                new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+
+            public bool HasRemaps
+            {
+                get { return Remap.Count > 0; }
+            }
+
+            public string LiveName(string device)
+            {
+                string live;
+                return device != null && Remap.TryGetValue(device, out live) ? live : device;
+            }
+
+            // The modifiers of an aircraft on an old GUID of a merged device move to the live GUID (once per aircraft).
+            public Dictionary<string, string> RemapModifierLookup(string plane, Dictionary<string, string> lookup)
+            {
+                if (lookup == null || lookup.Count == 0)
+                    return lookup;
+                Dictionary<string, string> cached;
+                if (remappedLookups.TryGetValue(plane ?? string.Empty, out cached))
+                    return cached;
+                Dictionary<string, string> remapped = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (KeyValuePair<string, string> entry in lookup)
+                    remapped[entry.Key] = RemapReformer(entry.Value);
+                remappedLookups[plane ?? string.Empty] = remapped;
+                return remapped;
+            }
+
+            public string RemapReformer(string reformer)
+            {
+                if (string.IsNullOrEmpty(reformer) || Remap.Count == 0)
+                    return reformer;
+                string[] parts = reformer.Split(new[] { SignatureSeparator }, StringSplitOptions.None);
+                if (parts.Length < 2)
+                    return reformer;
+                string live;
+                if (!Remap.TryGetValue(DcsDeviceNames.JoyProName(parts[1].Trim()) ?? string.Empty, out live))
+                    return reformer;
+                parts[1] = live;
+                return string.Join(SignatureSeparator, parts);
+            }
+        }
+
+        private static DevicePlan BuildDevicePlan(List<string> files, EngineDcsImportOptions options, EngineDcsImportResult result)
+        {
+            DevicePlan plan = new DevicePlan();
+            bool merge = options == null || options.MergeSameNameDevices;
+            bool onlyConnected = options != null && options.OnlyConnected;
+            result.MergeSameNameDevices = merge;
+            result.OnlyConnected = onlyConnected;
+
+            // name without GUID -> GUID -> files; GUID -> the device as JoyPro names it.
+            Dictionary<string, Dictionary<Guid, List<string>>> byName = new Dictionary<string, Dictionary<Guid, List<string>>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<Guid, string> deviceOfGuid = new Dictionary<Guid, string>();
+            foreach (string file in files)
+            {
+                string device = ExtractDeviceName(file);
+                Guid guid;
+                if (string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase) || !DcsDeviceNames.TryGetInstanceGuid(device, out guid))
+                    continue;
+                string name = StripDeviceGuidSuffix(device);
+                Dictionary<Guid, List<string>> guids;
+                if (!byName.TryGetValue(name, out guids))
+                    byName[name] = guids = new Dictionary<Guid, List<string>>();
+                List<string> list;
+                if (!guids.TryGetValue(guid, out list))
+                    guids[guid] = list = new List<string>();
+                list.Add(file);
+                if (!deviceOfGuid.ContainsKey(guid))
+                    deviceOfGuid[guid] = device;
+            }
+
+            bool severalIds = merge && byName.Values.Any(g => g.Count > 1);
+            if (!onlyConnected && !severalIds)
+                return plan;
+
+            HashSet<Guid> connected = ConnectedInstanceGuids();
+            if (severalIds)
+            {
+                foreach (KeyValuePair<string, Dictionary<Guid, List<string>>> named in byName.OrderBy(n => n.Key, StringComparer.OrdinalIgnoreCase))
+                {
+                    Dictionary<Guid, List<string>> guids = named.Value;
+                    if (guids.Count < 2)
+                        continue;
+                    List<Guid> live = guids.Keys.Where(connected.Contains).ToList();
+                    if (live.Count >= 2)
+                    {
+                        result.TwinDevices.Add(named.Key + " (" + live.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + " connected)");
+                        continue;
+                    }
+                    Guid liveGuid = live.Count == 1
+                        ? live[0]
+                        : guids.OrderByDescending(g => NewestWrite(g.Value)).ThenBy(g => g.Key.ToString(), StringComparer.Ordinal).First().Key;
+                    string liveName = deviceOfGuid[liveGuid];
+                    foreach (Guid other in guids.Keys.Where(g => g != liveGuid).OrderBy(g => g.ToString(), StringComparer.Ordinal))
+                    {
+                        plan.Remap[deviceOfGuid[other]] = liveName;
+                        result.MergedDevices.Add(deviceOfGuid[other] + " -> " + liveName + (live.Count == 1 ? " (connected)" : " (newest file)"));
+                    }
+
+                    // Per aircraft: one file set (DCS loads one); the others of that aircraft are older copies.
+                    foreach (IGrouping<string, KeyValuePair<Guid, string>> plane in guids
+                                 .SelectMany(g => g.Value.Select(f => new KeyValuePair<Guid, string>(g.Key, f)))
+                                 .GroupBy(p => ExtractPlaneName(p.Value), StringComparer.OrdinalIgnoreCase))
+                    {
+                        List<Guid> inPlane = plane.Select(p => p.Key).Distinct().ToList();
+                        if (inPlane.Count < 2)
+                            continue;
+                        Guid keep = inPlane.Contains(liveGuid)
+                            ? liveGuid
+                            : inPlane.OrderByDescending(g => NewestWrite(plane.Where(p => p.Key == g).Select(p => p.Value)))
+                                .ThenBy(g => g.ToString(), StringComparer.Ordinal).First();
+                        foreach (KeyValuePair<Guid, string> entry in plane)
+                        {
+                            if (entry.Key != keep)
+                                plan.SkippedOlderCopies.Add(entry.Value);
+                        }
+                    }
+                }
+            }
+
+            if (onlyConnected)
+            {
+                if (connected.Count == 0)
+                    result.Warnings.Add("No connected game devices were found: only the keyboard was read (Only import connected devices).");
+                HashSet<string> notConnected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (string file in files)
+                {
+                    if (plan.SkippedOlderCopies.Contains(file))
+                        continue;
+                    string device = plan.LiveName(ExtractDeviceName(file));
+                    Guid guid;
+                    if (string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase) || !DcsDeviceNames.TryGetInstanceGuid(device, out guid))
+                        continue;
+                    if (connected.Contains(guid))
+                        continue;
+                    plan.SkippedNotConnected.Add(file);
+                    notConnected.Add(device);
+                }
+                result.NotConnectedDevices = notConnected.OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList();
+            }
+            return plan;
+        }
+
+        // The instance GUIDs of the connected game devices (JOYPRO_FAKE_DEVICES in tests).
+        private static HashSet<Guid> ConnectedInstanceGuids()
+        {
+            HashSet<Guid> connected = new HashSet<Guid>();
+            try
+            {
+                JoyPro.Engine.Games.GameDeviceDirectory directory = JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>());
+                foreach (JoyPro.Engine.Games.GameDevice device in directory.Devices)
+                {
+                    if (!device.Connected)
+                        continue;
+                    Guid guid = device.InstanceGuid;
+                    if (guid == Guid.Empty)
+                        DcsDeviceNames.TryGetInstanceGuid(device.JoyProName, out guid);
+                    if (guid != Guid.Empty)
+                        connected.Add(guid);
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return connected;
+        }
+
+        private static DateTime NewestWrite(IEnumerable<string> files)
+        {
+            DateTime newest = DateTime.MinValue;
+            foreach (string file in files)
+            {
+                try
+                {
+                    DateTime written = File.GetLastWriteTimeUtc(file);
+                    if (written > newest)
+                        newest = written;
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return newest;
+        }
+
+        // The binds of a skipped file (a .jp backup only when its .diff.lua is not read either: it repeats it).
+        private static int CountEntries(string file, Dictionary<string, FilePreParse> preParsed)
+        {
+            FilePreParse pre;
+            if (preParsed == null || !preParsed.TryGetValue(file, out pre) || pre == null)
+                return 0;
+            if (IsBackupFile(file) && File.Exists(file.Substring(0, file.Length - ".jp".Length) + ".diff.lua"))
+                return 0;
+            int count = 0;
+            foreach (SectionParse section in new[] { pre.Axis, pre.Keys })
+            {
+                if (section == null || !section.Found)
+                    continue;
+                foreach (List<AddedEntry> added in section.Added)
+                    count += added.Count(a => !string.IsNullOrWhiteSpace(a.Key));
+            }
+            return count;
         }
 
         private static HashSet<string> BuildGuidlessDeviceFilterSet(IEnumerable<string> filters)
@@ -598,7 +848,8 @@ namespace JoyPro.Engine
             Dictionary<string, Dictionary<string, string>> modifierLookupByPlane,
             Dictionary<string, EngineDcsFfbPlaneCorrection> ffbCorrections,
             EngineDcsImportResult result,
-            Dictionary<string, FilePreParse> preParsed = null)
+            Dictionary<string, FilePreParse> preParsed = null,
+            DevicePlan devicePlan = null)
         {
             string text;
             try
@@ -613,13 +864,17 @@ namespace JoyPro.Engine
 
             string plane = ExtractPlaneName(filePath);
             string device = ExtractDeviceName(filePath);
+            if (devicePlan != null)
+                device = devicePlan.LiveName(device);
             Dictionary<string, string> modifierLookup = GetModifierLookupForPlane(filePath, plane, modifierLookupByPlane, result);
+            if (devicePlan != null && devicePlan.HasRemaps)
+                modifierLookup = devicePlan.RemapModifierLookup(plane, modifierLookup);
             FilePreParse pre = null;
             if (preParsed != null && preParsed.TryGetValue(filePath, out pre) && !ReferenceEquals(pre.Text, text))
                 pre = null;
             HashSet<string> backupAllowed = pre != null ? pre.BackupAllowed : isBackupFile ? BuildBackupAllowedBinds(filePath, plane) : null;
-            ParseSection(text, "axisDiffs", true, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Axis);
-            ParseSection(text, "keyDiffs", false, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Keys);
+            ParseSection(text, "axisDiffs", true, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Axis, devicePlan);
+            ParseSection(text, "keyDiffs", false, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Keys, devicePlan);
             ParseForceFeedbackSection(text, plane, device, filePath, isBackupFile, ffbCorrections, parsedFfbByDevice, result);
         }
 
@@ -693,7 +948,8 @@ namespace JoyPro.Engine
             Dictionary<string, ParsedBind> parsedBySignature,
             EngineDcsImportResult result,
             HashSet<string> backupAllowed = null,
-            SectionParse pre = null)
+            SectionParse pre = null,
+            DevicePlan devicePlan = null)
         {
             if (pre == null)
                 pre = PreParseSection(fileText, sectionName);
@@ -738,6 +994,8 @@ namespace JoyPro.Engine
                     bind.Device = string.IsNullOrWhiteSpace(device) ? "UnknownDevice" : device;
                     bind.Key = addedEntry.Key.Trim();
                     bind.Reformers = NormalizeImportedReformers(addedEntry.Reformers, modifierLookup);
+                    if (devicePlan != null && devicePlan.HasRemaps && bind.Reformers.Count > 0)
+                        bind.Reformers = bind.Reformers.Select(devicePlan.RemapReformer).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
                     bind.RelationName = NormalizeOptionalString(addedEntry.RelationName);
                     bind.Groups = NormalizeGroups(addedEntry.Groups);
                     bind.HasInverted = addedEntry.HasInverted;
@@ -976,6 +1234,10 @@ namespace JoyPro.Engine
                 : new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase);
 
             Dictionary<string, int> nextSuffix = new Dictionary<string, int>(StringComparer.Ordinal);
+            // (requested name, device, input, axis, modifiers) -> the relation that has that bind: the base relation or
+            // a "<name>__N" copy made before (earlier in this import, or by an earlier import when merging). One lookup
+            // per entry; without it every further aircraft of a bind that differs from the base made one more copy.
+            Dictionary<string, Relation> family = BuildFamilyLookup(relations, binds);
             for (int i = 0; i < parsed.Count; i++)
             {
                 ParsedBind parsedBind = parsed[i];
@@ -987,10 +1249,22 @@ namespace JoyPro.Engine
 
                 string preferredName = BuildRequestedRelationName(parsedBind);
                 string relationName = preferredName;
+                string familyKey = FamilyKey(preferredName, parsedBind.Device, parsedBind.Key, parsedBind.IsAxis, parsedBind.Reformers);
+
+                Relation familyRelation;
+                Bind familyBind;
+                if (family.TryGetValue(familyKey, out familyRelation) && familyRelation != null &&
+                    relations.TryGetValue(familyRelation.NAME ?? string.Empty, out Relation stillThere) && ReferenceEquals(stillThere, familyRelation) &&
+                    binds.TryGetValue(familyRelation.NAME, out familyBind) && familyBind != null && familyRelation.ISAXIS == parsedBind.IsAxis)
+                {
+                    MergeIntoExistingRelation(parsedBind, familyRelation, familyBind, options);
+                    continue;
+                }
 
                 if (TryGetCompatibleExistingRelation(relationName, parsedBind, relations, binds, out Relation existingRelation, out Bind existingBind))
                 {
                     MergeIntoExistingRelation(parsedBind, existingRelation, existingBind, options);
+                    family[familyKey] = existingRelation;
                     continue;
                 }
 
@@ -1003,6 +1277,7 @@ namespace JoyPro.Engine
 
                 relations[relationName] = relation;
                 binds[relationName] = bind;
+                family[familyKey] = relation;
                 result.ImportedRelations++;
                 result.ImportedBinds++;
 
@@ -1044,6 +1319,56 @@ namespace JoyPro.Engine
             InternalDataManagement.ResyncBindsToMods();
             InternalDataManagement.ResyncRelations();
             InternalDataManagement.RecalcFigures();
+        }
+
+        private static readonly Regex CopySuffixRegex = new Regex(@"^(?<base>.+?)__(?<n>\d+)$", RegexOptions.Compiled);
+
+        // "<name>__N" -> "<name>" (a copy the import made because the name was taken); other names as they are.
+        internal static string StripCopySuffix(string relationName)
+        {
+            string name = (relationName ?? string.Empty).Trim();
+            Match m = CopySuffixRegex.Match(name);
+            return m.Success ? m.Groups["base"].Value : name;
+        }
+
+        internal static bool IsCopyName(string relationName)
+        {
+            return CopySuffixRegex.IsMatch((relationName ?? string.Empty).Trim());
+        }
+
+        // A relation's bind as the import compares it: name of the relation family, device, input, axis/button and the
+        // modifier names (SameReformers compares names too).
+        internal static string FamilyKey(string requestedName, string device, string input, bool isAxis, List<string> reformers)
+        {
+            return (requestedName ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
+                   (device ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
+                   (input ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
+                   (isAxis ? "1" : "0") + SignatureSeparator +
+                   string.Join(SignatureSeparator, NormalizeReformerNames(reformers)).ToLowerInvariant();
+        }
+
+        private static Dictionary<string, Relation> BuildFamilyLookup(Dictionary<string, Relation> relations, Dictionary<string, Bind> binds)
+        {
+            Dictionary<string, Relation> family = new Dictionary<string, Relation>(StringComparer.Ordinal);
+            if (relations.Count == 0)
+                return family;
+            // Base names first, so a base relation wins over its copies; then the copies in name order.
+            foreach (KeyValuePair<string, Relation> entry in relations.OrderBy(r => IsCopyName(r.Key) ? 1 : 0).ThenBy(r => r.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                Bind bind;
+                if (entry.Value == null || !binds.TryGetValue(entry.Key, out bind) || bind == null)
+                    continue;
+                string input = entry.Value.ISAXIS ? bind.JAxis : bind.JButton;
+                if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(bind.Joystick))
+                    continue;
+                string key = FamilyKey(StripCopySuffix(entry.Key), bind.Joystick, input, entry.Value.ISAXIS, bind.AllReformers);
+                if (!family.ContainsKey(key))
+                    family[key] = entry.Value;
+                string own = FamilyKey(entry.Key, bind.Joystick, input, entry.Value.ISAXIS, bind.AllReformers);
+                if (!family.ContainsKey(own))
+                    family[own] = entry.Value;
+            }
+            return family;
         }
 
         private static bool TryGetCompatibleExistingRelation(

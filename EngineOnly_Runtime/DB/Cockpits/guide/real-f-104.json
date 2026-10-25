@@ -1,0 +1,354 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-104",
+  "title": "F-104G Starfighter",
+  "variants": [
+    "f-104g"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Lockheed F-104 Starfighter (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Lockheed_F-104_Starfighter"
+    },
+    {
+      "id": "w2",
+      "title": "HyperScale: 1/1 F-104 Starfighter control stick grip review",
+      "kind": "reference",
+      "url": "https://hyperscale.com/2010/reviews/kits/f104stickreviewme_1.htm"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The F-104 Starfighter is an American fighter from the 1950s with one big engine and tiny, very thin wings, built for Mach 2. The F-104G was the multi-role version flown by Germany and many NATO countries. The pilot sits in a narrow cockpit with a centre stick, one throttle, round instruments and the NASARR radar scope; the G has an upward-firing ejection seat. Only the trim hat and the gun trigger are confirmed on the grip; the other grip and throttle functions are inferred and marked so.",
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "Gunsight",
+      "text": "The optical sight on top of the panel.",
+      "panels": [
+        {
+          "id": "gunsight-hud",
+          "name": "Gunsight / HUD",
+          "src": "w1",
+          "text": "An optical sight above the main panel that projects an aiming mark onto a glass, for the gun, rockets, bombs and Sidewinder missiles.",
+          "context": "The pilot looks through it during an attack.",
+          "controls": [
+            {
+              "id": "sight-head",
+              "name": "Optical sight head",
+              "type": "display",
+              "match": [
+                "item:gunsight-hud:1"
+              ],
+              "text": "The sight head projects the aiming reticle onto the combining glass in front of the pilot.",
+              "context": "The pilot puts the reticle on the target before firing.",
+              "src": "w1"
+            },
+            {
+              "id": "sight-controls",
+              "name": "Sight controls",
+              "type": "knob",
+              "match": [
+                "item:gunsight-hud:2"
+              ],
+              "text": "Knobs for the brightness and the mode of the reticle.",
+              "context": "The pilot sets the mode for the weapon he is about to use."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main panel",
+      "text": "The radar scope and round instruments.",
+      "panels": [
+        {
+          "id": "radar-scope-and-flight-instruments",
+          "name": "Radar scope and flight instruments",
+          "src": "w1",
+          "text": "The NASARR radar scope in the middle with the round flight and engine instruments around it.",
+          "context": "The F-104G was a multi-role aircraft: the same radar searched for aircraft, mapped the ground and warned of terrain ahead.",
+          "controls": [
+            {
+              "id": "nasarr",
+              "name": "NASARR radar scope",
+              "type": "display",
+              "match": [
+                "item:radar-scope-and-flight-instruments:1"
+              ],
+              "text": "The screen of the NASARR radar. It shows aircraft in the air search mode, a radar map of the ground, and the terrain ahead in the terrain avoidance mode.",
+              "context": "The pilot uses it for intercepts, for finding ground targets and for flying low in bad weather.",
+              "src": "w1"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:radar-scope-and-flight-instruments:2"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:radar-scope-and-flight-instruments:3"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:radar-scope-and-flight-instruments:4"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "hsi",
+              "name": "Horizontal situation indicator",
+              "type": "gauge",
+              "match": [
+                "item:radar-scope-and-flight-instruments:5"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "engine",
+              "name": "Engine instruments",
+              "type": "gauge",
+              "match": [
+                "item:radar-scope-and-flight-instruments:6"
+              ],
+              "text": "Gauges that show the J79 engine's RPM, exhaust temperature, nozzle position and fuel flow. They tell the pilot whether the engines are working normally.",
+              "context": "The pilot checks them during the engine start, before take-off and when something feels wrong."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The throttle, flaps and gear.",
+      "panels": [
+        {
+          "id": "throttle-and-engine-controls",
+          "name": "Throttle and engine controls",
+          "src": "w1",
+          "text": "The left side with the throttle, the flap selector and the landing gear handle.",
+          "context": "The F-104's tiny wings need high speeds, so flaps and gear matter a lot for take-off and landing.",
+          "controls": [
+            {
+              "id": "flaps",
+              "name": "Flap selector",
+              "type": "switch3",
+              "match": [
+                "item:throttle-and-engine-controls:2"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Flaps up for fast flight."
+                },
+                {
+                  "name": "T.O.",
+                  "text": "Flaps partly down for take-off."
+                },
+                {
+                  "name": "LAND",
+                  "text": "Flaps fully down with air blowing over them."
+                }
+              ],
+              "text": "This selector moves the flaps, parts of the wing that give more lift at low speed. In LAND, engine air is also blown over the flaps (boundary layer control) to give even more lift.",
+              "context": "The F-104 lands fast; the blown flaps are what makes landing possible at all.",
+              "src": "w1"
+            },
+            {
+              "id": "gear",
+              "name": "Landing gear handle",
+              "type": "handle",
+              "match": [
+                "item:throttle-and-engine-controls:3"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "w2",
+          "text": "The centre stick. Only the trim hat and the gun trigger are confirmed; the other buttons follow the grip family of that time and are marked as inferred.",
+          "context": "The HyperScale review of a real grip shows its shape and buttons.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Trim hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "w2"
+            },
+            {
+              "id": "bomb-rocket",
+              "name": "Bomb-rocket button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button at the top left of the grip that releases bombs or fires rockets.",
+              "context": "The pilot selects the weapon first. This function is inferred from the grip family, not confirmed for the F-104.",
+              "src": "w2"
+            },
+            {
+              "id": "trigger",
+              "name": "Gun trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "positions": [
+                {
+                  "name": "First step",
+                  "text": "Gun camera (inferred)."
+                },
+                {
+                  "name": "Second step",
+                  "text": "Fire the M61 gun or AIM-9."
+                }
+              ],
+              "text": "The trigger at the front of the grip. The first step runs the gun camera; the second fires the M61 gun or a Sidewinder missile.",
+              "context": "The gun camera step is inferred; firing the gun and missiles is confirmed.",
+              "src": "w2"
+            },
+            {
+              "id": "nws",
+              "name": "Nosewheel steering button",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws"
+              ],
+              "text": "While held on the ground, this button lets the pedals steer the nose wheel (nosewheel steering).",
+              "context": "It is used for taxiing. This function is inferred from the grip family, not confirmed for the F-104.",
+              "src": "w2"
+            },
+            {
+              "id": "ap-disengage",
+              "name": "Autopilot disengage switch",
+              "type": "lever",
+              "match": [
+                "control:stick.pinky.lever"
+              ],
+              "text": "A lever low on the front of the grip that switches off the autopilot.",
+              "context": "It gives the pilot the controls back at once. This function is inferred from the grip family, not confirmed for the F-104.",
+              "src": "w2"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "text": "The single throttle with the speed brake switch and the microphone button.",
+          "context": "The throttle switches are inferred.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:throttle-and-engine-controls:1"
+              ],
+              "text": "The lever that makes the J79 engine stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push. Its stops are OFF, IDLE, MIL and MAX.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "Aft",
+                  "text": "The speed brakes open."
+                },
+                {
+                  "name": "Forward",
+                  "text": "The speed brakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down. Its place on the throttle is inferred.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "mic",
+              "name": "Microphone button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again. Its place is inferred.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

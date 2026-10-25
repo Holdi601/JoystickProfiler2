@@ -580,7 +580,10 @@ public sealed partial class MainWindowViewModel
             StatusText = T("New profile {0} in {1}. Rename... gives it your name.", ProfileDisplayName, Path.GetDirectoryName(ProfilePath));
     }
 
-    // Renames the profile file; its history goes along.
+    // Renames the profile file; its history goes along. A profile with the target name is replaced only after the
+    // user said yes (the question explains the backup): the replaced file is kept as "<name>.pr0file.bak" next to it,
+    // its history goes along with the .bak, and renaming the .bak back undoes it. A replaced file that another program
+    // holds open (or that is read-only) stops the rename with a clear message; nothing is changed then.
     public async Task<bool> RenameProfileAsync(string newPath)
     {
         if (!HasProfile || string.IsNullOrWhiteSpace(newPath))
@@ -591,19 +594,48 @@ public sealed partial class MainWindowViewModel
             target += ".pr0file";
         if (string.Equals(old, target, StringComparison.OrdinalIgnoreCase))
             return false;
+        string? backup = null;
         if (File.Exists(target))
         {
-            StatusText = T("There is a profile with that name already: {0}", target);
-            return false;
+            string name = Path.GetFileNameWithoutExtension(target);
+            if (!await ConfirmAsync(T("Replace the profile {0}?", name),
+                    T("There is a profile with that name already: {0}\n\nIt is replaced by {1}. JoyPro keeps the replaced file as {2} next to it, with its history; rename that file back to undo.",
+                        target, ProfileDisplayName, Path.GetFileName(BackupPathFor(target))),
+                    T("Replace"), isDanger: true))
+                return false;
+            string? locked = ReplaceBlocker(target);
+            if (locked != null)
+            {
+                StatusText = T("{0} cannot be replaced: it is open in another program or locked ({1}). Close it there and try again; nothing was changed.", Path.GetFileName(target), locked);
+                return false;
+            }
         }
         await FlushAutosaveAsync();
         try
         {
             EnsureProfileDirectoryExists(target);
-            File.Move(old, target);
+            if (File.Exists(target))
+            {
+                backup = BackupPathFor(target);
+                File.Copy(target, backup, overwrite: false);
+                if (new FileInfo(backup).Length != new FileInfo(target).Length)
+                    throw new IOException(T("The backup {0} is not complete.", backup));
+                ProfileHistory.Move(target, backup);
+                File.Move(old, target, overwrite: true);
+            }
+            else
+            {
+                File.Move(old, target);
+            }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            // The replaced profile stays as it was: its history comes back, the backup goes.
+            if (backup != null && File.Exists(target) && File.Exists(old))
+            {
+                ProfileHistory.Move(backup, target);
+                TryDeleteFile(backup);
+            }
             StatusText = T("Renaming failed: {0}", ex.Message);
             return false;
         }
@@ -612,8 +644,50 @@ public sealed partial class MainWindowViewModel
         RememberLastProfilePath(target);
         RestoreProfileDrafts();
         RefreshHistoryState();
-        StatusText = T("Renamed to {0}.", ProfileDisplayName);
+        StatusText = backup == null
+            ? T("Renamed to {0}.", ProfileDisplayName)
+            : T("Renamed to {0}; the profile it replaced is kept as {1}.", ProfileDisplayName, Path.GetFileName(backup));
         return true;
+    }
+
+    // "<name>.pr0file.bak", or "<name>.pr0file.<yyyyMMdd-HHmmss>.bak" when an older backup is there already.
+    internal static string BackupPathFor(string profilePath)
+    {
+        string plain = profilePath + ".bak";
+        if (!File.Exists(plain))
+            return plain;
+        string stamped = profilePath + "." + DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) + ".bak";
+        for (int i = 2; File.Exists(stamped); i++)
+            stamped = profilePath + "." + DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture) + "-" + i.ToString(CultureInfo.InvariantCulture) + ".bak";
+        return stamped;
+    }
+
+    // Why the file cannot be replaced (open in another program, read-only), or null.
+    internal static string? ReplaceBlocker(string path)
+    {
+        try
+        {
+            if ((File.GetAttributes(path) & FileAttributes.ReadOnly) != 0)
+                return T("read-only");
+            using FileStream probe = new(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            return null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return ex.Message;
+        }
+    }
+
+    private static void TryDeleteFile(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            JoyPro.Logging.JoyProLog.Warn("Profile", "Could not remove " + path, ex);
+        }
     }
 
     // A copy under another name; JoyPro works on the copy from now on.

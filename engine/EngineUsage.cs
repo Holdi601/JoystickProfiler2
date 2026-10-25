@@ -19,7 +19,7 @@ namespace JoyPro.Engine
     //   usage stats [--top N]                                           everything for the Statistics page
     //   usage pin|unpin|exclude|include <game> [<unit>]                 the user's choices on the ranking
     //   usage backups | usage restore <day>                             the store's daily backups
-    // The store lives in <data>\Usage (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro); recording always runs and
+    // The store lives in <data>\Usage (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2); recording always runs and
     // everything stays on this PC. JOYPRO_USAGE_ROOT=<folder> (tests) replaces every place JoyPro reads: <root>\Games\<id>
     // are the installations, <root>\Saved Games, <root>\Documents and <root>\Steam the user's folders.
     // The global option --usage-style off stops Auto Assign, Auto Group, the Setup wizard and Lay out with AI from

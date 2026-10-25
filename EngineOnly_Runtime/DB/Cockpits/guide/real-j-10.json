@@ -1,0 +1,326 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-j-10",
+  "title": "Chengdu J-10A",
+  "variants": [
+    "j-10a"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Chengdu J-10 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Chengdu_J-10"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Chengdu J-10 is a Chinese single-engine fighter with a delta wing and small front wings (canards), flown by computers (fly-by-wire). The pilot sits in a glass cockpit with a wide head-up display, a keypad below it and three colour screens, a centre stick and a throttle on the left. No public description of the grips or panels was found, so this guide names only the common functions and the published layout.",
+  "areas": [
+    {
+      "id": "front",
+      "where": "front-center",
+      "name": "Front panel",
+      "text": "The HUD, keypad and three screens.",
+      "panels": [
+        {
+          "id": "front-panel",
+          "name": "Front panel: HUD, up-front control panel and three screens",
+          "src": "w1",
+          "text": "The front of the cockpit: a wide head-up display, a keypad under it and three colour screens.",
+          "context": "The published layout shows the screens and keypad; their pages and keys are not public.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Wide-angle HUD",
+              "type": "display",
+              "match": [
+                "item:front-panel:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows speed, height, heading and the aiming marks for the weapons, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "ufcp",
+              "name": "Up-front control panel",
+              "type": "keypad",
+              "match": [
+                "item:front-panel:2"
+              ],
+              "text": "A keypad with a small text display below the HUD, where the pilot types numbers such as radio frequencies and navigation points.",
+              "context": "Because it sits high up near the HUD, the pilot can enter data without looking far down into the cockpit. Its single switches are not described in the sources JoyPro uses.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-left",
+              "name": "Left MFD",
+              "type": "display",
+              "match": [
+                "item:front-panel:3"
+              ],
+              "text": "The left colour screen (a multi-function screen with buttons around its edge). It shows pages such as the flight data, the weapons or the systems.",
+              "context": "The pilot chooses which page it shows; the same screen can show the radar, the map or the aircraft's systems.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-centre",
+              "name": "Centre MFD",
+              "type": "display",
+              "match": [
+                "item:front-panel:4"
+              ],
+              "text": "The middle colour screen (a multi-function screen with buttons around its edge). It shows pages such as the map with the route and the tactical situation.",
+              "context": "Which page sits on which screen is the pilot's choice; the exact pages are not public.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-right",
+              "name": "Right MFD",
+              "type": "display",
+              "match": [
+                "item:front-panel:5"
+              ],
+              "text": "The right colour screen (a multi-function screen with buttons around its edge). It shows pages such as the radar picture or the sensors.",
+              "context": "With three screens the pilot can keep the radar, the map and the systems in view together.",
+              "src": "w1"
+            },
+            {
+              "id": "standby",
+              "name": "Standby instruments",
+              "type": "gauge",
+              "match": [
+                "item:front-panel:6"
+              ],
+              "text": "Small backup instruments for attitude, speed and height. They keep working when the main screens or computers fail.",
+              "context": "The pilot uses them to fly safely home if the main displays are lost."
+            },
+            {
+              "id": "gear-lever",
+              "name": "Landing gear lever",
+              "type": "lever",
+              "match": [
+                "item:front-panel:7"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "The wheels fold away into the aircraft."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "The wheels come down and lock."
+                }
+              ],
+              "text": "This lever raises and lowers the landing gear, the wheels and their legs that fold away in flight.",
+              "context": "The pilot raises the gear right after take-off and lowers it before landing, then checks the gear lights."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The throttle side.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console",
+          "text": "The throttle side: engine, fuel, radio and flight control panels.",
+          "context": "These panels are known only from the general layout of the type.",
+          "controls": [
+            {
+              "id": "engine-fuel",
+              "name": "Engine and fuel panel",
+              "type": "other",
+              "match": [
+                "item:left-console:2"
+              ],
+              "text": "Switches for starting the single engine and feeding it with fuel, such as the starter, the ignition and the fuel pumps (pumps that move fuel from the tanks to the engine).",
+              "context": "The pilot uses them in the engine start and when an engine has to be restarted. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "radio",
+              "name": "Radio panel",
+              "type": "other",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "The controls of the radio the pilot talks on to other aircraft and the tower: the channel (a stored frequency, like a station button on a car radio) and the volume.",
+              "context": "The pilot sets the channel before each part of the flight; the transmit button on the throttle makes the radio send. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "fcs",
+              "name": "Flight control panel",
+              "type": "other",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "Switches for the flight control system, the computers and helpers between the stick and the control surfaces, and for the trim. The J-10 is a fly-by-wire aircraft.",
+              "context": "The pilot normally leaves them as set and uses them for tests and failures. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, lights and air.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The panels for electricity, lights and cockpit air.",
+          "context": "These switches are mostly set before take-off.",
+          "controls": [
+            {
+              "id": "electrical",
+              "name": "Electrical panel",
+              "type": "other",
+              "match": [
+                "item:right-console:1"
+              ],
+              "text": "The switches for the aircraft's electricity: the battery (stores electricity for when the engines are off) and the generators (make electricity while the engines run).",
+              "context": "It is one of the first panels the pilot uses when climbing in, because almost every other system needs electricity. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting panel",
+              "type": "other",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Knobs and switches for the lights: the lamps that light the instruments and panels inside, and on many aircraft the outside lights as well.",
+              "context": "The pilot sets them for night flying so the instruments are readable without dazzling him. Its single switches are not described in the sources JoyPro uses."
+            },
+            {
+              "id": "ecs",
+              "name": "Environmental control panel",
+              "type": "other",
+              "match": [
+                "item:right-console:3"
+              ],
+              "text": "The controls for the cockpit's heating, cooling and fresh air (environmental control), and for the cabin pressure at height.",
+              "context": "The pilot sets a comfortable temperature and keeps the canopy free of mist. Its single switches are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "The two grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The centre stick with the trigger and the weapon release button.",
+          "context": "No public description of the J-10's grip exists; only common functions are listed.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. Computers between the stick and the control surfaces (fly-by-wire) turn these movements into commands. The J-10 is a delta wing with canards (small front wings), flown by computers.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the gun.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches the selected missile or bomb.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle",
+          "text": "The single throttle lever with its grip buttons.",
+          "context": "Only the common functions are listed.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:left-console:1"
+              ],
+              "text": "The lever that makes the single engine (AL-31FN, or WS-10 in later aircraft) stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. At the front end it lights the afterburner, extra fuel burned at the back of the jet engine for much more push.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            },
+            {
+              "id": "cursor",
+              "name": "Cursor control",
+              "type": "hat",
+              "match": [
+                "control:throttle.ministick"
+              ],
+              "text": "A tiny thumb joystick on the throttle grip that moves the cursor on the screens. Pressing it designates or locks the target under it.",
+              "context": "The pilot uses it to pick targets on the radar or sensor picture without taking his hand off the throttle."
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "OUT (aft)",
+                  "text": "The speed brakes open."
+                },
+                {
+                  "name": "IN (forward)",
+                  "text": "The speed brakes close."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "transmit",
+              "name": "Radio transmit button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

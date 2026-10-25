@@ -1,0 +1,131 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "sc-constellation-andromeda",
+  "title": "Constellation Andromeda (Roberts Space Industries, Star Citizen)",
+  "inherits": "game-star-citizen",
+  "variants": [
+    "sc-constellation-andromeda"
+  ],
+  "games": [
+    "StarCitizen"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Constellation Andromeda (Star Citizen Wiki)",
+      "kind": "reference",
+      "url": "https://starcitizen.tools/Constellation_Mk_IV_Andromeda"
+    },
+    {
+      "id": "g1",
+      "title": "Star Citizen game files: defaultProfile.xml and layout_t16000m_dual.xml (Data.p4k, build 4.8)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Constellation Andromeda is a multi-crew gunship and freighter from RSI in Star Citizen for four to five people. It has a two-seat cockpit, turret seats and a small fighter docked at the back. The pilot uses the common controls.",
+  "areas": [
+    {
+      "id": "displays",
+      "where": "front-center",
+      "name": "Multi-function displays and radar",
+      "panels": [
+        {
+          "id": "loadout",
+          "name": "Constellation Andromeda: weapons and modules",
+          "db": "loadout",
+          "src": "w1",
+          "text": "This lists the Constellation Andromeda's own weapons and special equipment, as the MFD weapons page and the ship data show them.",
+          "context": "Everything else in this cockpit works as in every Star Citizen ship: the same visor HUD, screens, seat actions and two-stick layout.",
+          "controls": [
+            {
+              "id": "guns",
+              "name": "Pilot guns (four)",
+              "type": "other",
+              "match": [
+                "item:loadout:1"
+              ],
+              "text": "The Constellation Andromeda has four guns for the pilot. The pilot aims them by pointing the ship's nose.",
+              "context": "The pilot fires them with the right stick's trigger in guns mode; the MFD weapons page shows their groups and how they aim.",
+              "src": "w1"
+            },
+            {
+              "id": "missiles",
+              "name": "Missile racks (52 missiles)",
+              "type": "other",
+              "match": [
+                "item:loadout:2"
+              ],
+              "text": "The Andromeda carries 52 missiles, a very large number. A missile flies to the locked target by itself.",
+              "context": "In missile mode the trigger launches them and the thumb button on the right stick picks the type; the HUD shows how many are armed.",
+              "src": "w1"
+            },
+            {
+              "id": "cargo",
+              "name": "Cargo (96 SCU)",
+              "type": "other",
+              "match": [
+                "item:loadout:3"
+              ],
+              "text": "The Andromeda holds 96 SCU of cargo. The goods travel in standard boxes.",
+              "context": "Cargo is counted in SCU (standard cargo units, boxes of one fixed size). Traders fill the hold at stations and outposts.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crew",
+      "where": "rear",
+      "name": "Crew stations",
+      "text": "The other seats and stations of the ship besides the pilot's.",
+      "panels": [
+        {
+          "id": "crew-stations",
+          "name": "Constellation Andromeda: crew stations",
+          "db": "crew-stations",
+          "src": "w1",
+          "text": "These are the seats and stations of the Constellation Andromeda besides the pilot's seat.",
+          "context": "Each crew member sits at a station of their own; the pilot flies while the others work turrets or other equipment.",
+          "controls": [
+            {
+              "id": "copilot",
+              "name": "Co-pilot seat",
+              "type": "other",
+              "match": [
+                "item:crew-stations:1"
+              ],
+              "text": "A second seat in the Andromeda's cockpit. More people on board can share the work.",
+              "context": "A second person on board can take over jobs such as turrets, scanning or the radio, so the pilot can concentrate on flying.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turret stations (two)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:2"
+              ],
+              "text": "Two manned turrets for the crew. Each gunner sits in a turret of their own.",
+              "context": "A turret seat has its own controls: there the right stick aims the turret instead of steering the ship.",
+              "src": "w1"
+            },
+            {
+              "id": "snub",
+              "name": "Snub fighter (P-52 Merlin)",
+              "type": "other",
+              "match": [
+                "item:crew-stations:3"
+              ],
+              "text": "A P-52 Merlin, a tiny fighter, is docked at the back of the ship.",
+              "context": "A crew member can launch in it to fight next to the big ship or scout ahead.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

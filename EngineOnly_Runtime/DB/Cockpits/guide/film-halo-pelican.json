@@ -1,0 +1,189 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-halo-pelican",
+  "title": "D77-TC Pelican (Halo)",
+  "variants": [
+    "pelican-d77-tc"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "D77-TC Pelican (Halopedia)",
+      "kind": "reference",
+      "url": "https://www.halopedia.org/D77-TC_Pelican"
+    },
+    {
+      "id": "s2",
+      "title": "Halo (franchise) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Halo_(franchise)"
+    }
+  ],
+  "intro": "The Pelican is the fictional dropship of the UNSC in the Halo games and series. It can fly in space and hover like a helicopter (VTOL). Pilot and co-pilot sit in the nose cockpit, which the games show mostly in cut-scenes; behind is a troop bay with a ramp.",
+  "areas": [
+    {
+      "id": "cockpit",
+      "where": "front-center",
+      "name": "Cockpit",
+      "text": "The two-seat nose cockpit.",
+      "panels": [
+        {
+          "id": "cockpit",
+          "name": "Cockpit",
+          "db": "cockpit",
+          "src": "s1",
+          "text": "The nose cockpit with the pilot's and co-pilot's seats, screens and the chin gun.",
+          "context": "The pilot flies, the co-pilot helps; the games show it mostly in cut-scenes.",
+          "controls": [
+            {
+              "id": "pilot-seat",
+              "name": "Pilot seat",
+              "type": "other",
+              "match": [
+                "item:cockpit:1"
+              ],
+              "text": "The pilot's seat with the flight controls of the Pelican.",
+              "context": "The pilot flies the dropship in and out of the battle zone.",
+              "src": "s1"
+            },
+            {
+              "id": "copilot-seat",
+              "name": "Co-pilot seat",
+              "type": "other",
+              "match": [
+                "item:cockpit:2"
+              ],
+              "text": "The second seat beside the pilot in the Pelican's cockpit.",
+              "context": "A co-pilot can help with the systems or take over.",
+              "src": "s1"
+            },
+            {
+              "id": "displays",
+              "name": "Displays",
+              "type": "display",
+              "match": [
+                "item:cockpit:3"
+              ],
+              "text": "Screens show the flight and the weapons data.",
+              "context": "They help the pilot land in the right place and use the gun.",
+              "src": "s1"
+            },
+            {
+              "id": "chin-gun",
+              "name": "Chin gun",
+              "type": "other",
+              "match": [
+                "item:cockpit:4"
+              ],
+              "text": "An autocannon, a fast-firing gun, in the nose of the Pelican.",
+              "context": "It protects the dropship while it drops off troops.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bay",
+      "where": "rear",
+      "name": "Troop bay",
+      "text": "The rear bay with a ramp.",
+      "panels": [
+        {
+          "id": "troop-bay",
+          "name": "Troop bay",
+          "db": "troop-bay",
+          "src": "s1",
+          "text": "The bay at the back for troops, with a ramp and a clamp for a vehicle.",
+          "context": "The Pelican's job is to carry soldiers and vehicles to the fight.",
+          "controls": [
+            {
+              "id": "ramp",
+              "name": "Rear ramp",
+              "type": "other",
+              "match": [
+                "item:troop-bay:1"
+              ],
+              "text": "A ramp at the back opens for the troops to board and leave.",
+              "context": "The Pelican lands or hovers while the soldiers run out.",
+              "src": "s1"
+            },
+            {
+              "id": "clamp",
+              "name": "Vehicle clamp",
+              "type": "other",
+              "match": [
+                "item:troop-bay:2"
+              ],
+              "text": "A clamp under the tail holds a vehicle that hangs below the Pelican.",
+              "context": "This way the dropship can bring a ground vehicle to the battle.",
+              "src": "s1"
+            },
+            {
+              "id": "seats",
+              "name": "Troop seats",
+              "type": "other",
+              "match": [
+                "item:troop-bay:3"
+              ],
+              "text": "Seats along the walls of the bay for the soldiers.",
+              "context": "The soldiers ride here until the ramp opens.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Flight controls",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Flight controls",
+          "src": "s1",
+          "text": "The pilot's flight controls in the Pelican's cockpit.",
+          "context": "They steer the dropship in space and in the air.",
+          "controls": [
+            {
+              "id": "controls",
+              "name": "Flight controls",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The flight controls tip the nose up and down and roll the dropship left and right.",
+              "context": "The games show them only in cut-scenes.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Thrust",
+          "src": "s1",
+          "text": "The thrust control of the Pelican (the catalog's guess).",
+          "context": "It sets how hard the engines push.",
+          "controls": [
+            {
+              "id": "thrust",
+              "name": "Thrust",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This axis is taken as the control for the engines' thrust.",
+              "context": "The catalog guesses this control; the games do not show it clearly.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

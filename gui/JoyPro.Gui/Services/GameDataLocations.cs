@@ -6,7 +6,7 @@ using System.Linq;
 namespace JoyPro.Gui.Services;
 
 // Where the engine keeps the game lists built on this PC (the engine's GameDataPaths, docs/installs.md "Game data"):
-// <data>\GameData (data = JOYPRO_DATA_DIR like the engine, else %LOCALAPPDATA%\JoyPro) holds DB\<Game>, CleanProfile
+// <data>\GameData (data = JOYPRO_DATA_DIR like the engine, else %LOCALAPPDATA%\JoyPro2) holds DB\<Game>, CleanProfile
 // and KeyboardCleanProfile; the engine folder holds JoyPro's own data (DB\Functions, DB\Devices, DB\Llm, ...). A game
 // folder is read from <data>\GameData when it exists there, else from the engine folder (a development build's copy).
 // The GUI only reads: the engine writes and migrates.
@@ -21,10 +21,7 @@ public static class GameDataLocations
 
     public static string DataRoot()
     {
-        string? root = Environment.GetEnvironmentVariable("JOYPRO_DATA_DIR");
-        return string.IsNullOrWhiteSpace(root)
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro")
-            : root;
+        return JoyPro.Logging.JoyProDataFolder.Root();
     }
 
     // The game-data folder of a data folder (dataRoot empty: DataRoot()).

@@ -74,6 +74,33 @@ namespace JoyPro.Engine
         public bool LightStyle { get; set; }
         public int PrintWidth { get; set; }
         public bool Combine { get; set; }
+        // The sheet style of the run (--sheet-style and the single colour options; null = none given): the tables, the
+        // leader lines, the markers and the page. A device's own style (its sheet's "style", a .layout's ".style.json")
+        // replaces it for that device (WithDeviceStyle).
+        public JoyPro.DeviceReference.SheetStyle Style { get; set; }
+
+        // The options for a device with a style of its own: its colours, font and modifier colours over these.
+        public LayoutVisualOptions WithDeviceStyle(JoyPro.DeviceReference.SheetStyle style)
+        {
+            if (style == null)
+                return this;
+            LayoutVisualOptions copy = (LayoutVisualOptions)MemberwiseClone();
+            copy.Style = style;
+            if (style.FontFamily.Length > 0)
+                copy.FontFamily = style.FontFamily;
+            if (style.FontSize > 0)
+                copy.FontSize = (float)style.FontSize;
+            if (style.TextColor.Length > 0)
+                copy.TextColor = style.TextColor;
+            if (style.OutlineColor.Length > 0)
+                copy.OutlineColor = style.OutlineColor;
+            if (style.LabelBackground.Length > 0)
+                copy.LabelBackground = style.LabelBackground;
+            if (style.Modifiers.Count > 0)
+                copy.ModifierColorCsv = style.ModifierCsv;
+            copy.LightStyle = !style.IsDarkPage(!LightStyle);
+            return copy;
+        }
 
         public LayoutVisualOptions()
         {
@@ -220,6 +247,7 @@ namespace JoyPro.Engine
                     continue;
                 }
 
+                LayoutVisualOptions deviceOptions = visualOptions.WithDeviceStyle(LoadDeviceStyle(layoutPath, result.Warnings));
                 try
                 {
                     StampCredit(layout.backup, layout.Credit);
@@ -231,13 +259,13 @@ namespace JoyPro.Engine
                     string fontName = string.IsNullOrWhiteSpace(layout.Font) ? "Arial" : layout.Font.Trim();
                     float fontSize = layout.Size <= 0 ? 12f : layout.Size;
                     Color textColor = layout.ToDrawingColor();
-                    if (visualOptions != null)
+                    if (deviceOptions != null)
                     {
-                        if (!string.IsNullOrWhiteSpace(visualOptions.FontFamily))
-                            fontName = visualOptions.FontFamily.Trim();
-                        if (visualOptions.FontSize > 0f)
-                            fontSize = visualOptions.FontSize;
-                        if (TryParseColor(visualOptions.TextColor, out Color overrideColor))
+                        if (!string.IsNullOrWhiteSpace(deviceOptions.FontFamily))
+                            fontName = deviceOptions.FontFamily.Trim();
+                        if (deviceOptions.FontSize > 0f)
+                            fontSize = deviceOptions.FontSize;
+                        if (TryParseColor(deviceOptions.TextColor, out Color overrideColor))
                             textColor = overrideColor;
                     }
 
@@ -245,9 +273,9 @@ namespace JoyPro.Engine
                     result.JoystickLayouts[joystick] = NormalizePath(layoutPath);
 
                     if (includePlaneExports)
-                        RenderPlaneImages(result, layout.backup, labels, tables, connectors, fontName, fontSize, textColor, joystick, alias, planeTargets, visualOptions);
+                        RenderPlaneImages(result, layout.backup, labels, tables, connectors, fontName, fontSize, textColor, joystick, alias, planeTargets, deviceOptions);
                     if (includeOverview)
-                        RenderOverviewImage(result, layout.backup, labels, tables, connectors, fontName, fontSize, textColor, joystick, alias, visualOptions);
+                        RenderOverviewImage(result, layout.backup, labels, tables, connectors, fontName, fontSize, textColor, joystick, alias, deviceOptions);
                 }
                 finally
                 {
@@ -522,6 +550,13 @@ namespace JoyPro.Engine
             string alias = ResolveJoystickAlias(joystick);
             result.RenderedJoysticks.Add(joystick);
             result.JoystickLayouts[joystick] = NormalizePath(layoutPath);
+            // The device's own sheet style (its sheet's "style") replaces the run's; its drawing style paints the picture.
+            options = options.WithDeviceStyle(sheet.Style);
+            JoyPro.DeviceReference.DrawingStyle previousDrawing = EngineCalloutRenderer.ExportStyle;
+            if (sheet.Style != null && sheet.Style.Drawing.Length > 0)
+                EngineCalloutRenderer.ExportStyle = JoyPro.DeviceReference.DrawingStyle.Parse(sheet.Style.Drawing);
+            try
+            {
             using (Bitmap picture = EngineCalloutRenderer.LoadPicture(set, sheet, null, !options.LightStyle, result.Warnings))
             {
                 if (includePlaneExports)
@@ -550,6 +585,23 @@ namespace JoyPro.Engine
                     result.WrittenFiles.Add(file);
                 }
             }
+            }
+            finally
+            {
+                EngineCalloutRenderer.ExportStyle = previousDrawing;
+            }
+        }
+
+        // The own sheet style of a device whose cheat sheet is a .layout file: "<layout>.style.json" next to it.
+        internal static JoyPro.DeviceReference.SheetStyle LoadDeviceStyle(string layoutPath, List<string> warnings)
+        {
+            string file = NormalizePath((layoutPath ?? string.Empty) + ".style.json");
+            if (string.IsNullOrWhiteSpace(file) || !File.Exists(file))
+                return null;
+            JoyPro.DeviceReference.SheetStyle style = JoyPro.DeviceReference.SheetStyle.Parse(File.ReadAllText(file, Encoding.UTF8));
+            if (style == null && warnings != null)
+                AddUnique(warnings, "layout render: the sheet style '" + file + "' could not be read.");
+            return style;
         }
 
         // A page with several views (MultiViewLayout): one picture per game and aircraft and the overview, like a sheet.
@@ -575,6 +627,7 @@ namespace JoyPro.Engine
             string alias = ResolveJoystickAlias(joystick);
             result.RenderedJoysticks.Add(joystick);
             result.JoystickLayouts[joystick] = NormalizePath(layoutPath);
+            options = options.WithDeviceStyle(EngineMultiView.OwnStyle(layout));
             if (includePlaneExports)
             {
                 foreach (KeyValuePair<string, string> target in planeTargets)
@@ -603,6 +656,7 @@ namespace JoyPro.Engine
             return new CalloutRenderOptions
             {
                 Dark = options == null || !options.LightStyle,
+                Style = options == null ? null : options.Style,
                 PrintWidth = options == null ? 3508 : Math.Max(0, options.PrintWidth),
                 Game = game ?? string.Empty,
                 Plane = plane ?? string.Empty,
@@ -729,7 +783,7 @@ namespace JoyPro.Engine
                 string page = Path.Combine(folder.Key, CombinedPageName);
                 try
                 {
-                    using (Bitmap combined = EngineCalloutRenderer.Combine(files, !options.LightStyle))
+                    using (Bitmap combined = EngineCalloutRenderer.Combine(files, !options.LightStyle, options.Style))
                         combined.Save(page, ImageFormat.Png);
                     result.CombinedImagesWritten++;
                     result.WrittenFiles.Add(page);
@@ -756,7 +810,7 @@ namespace JoyPro.Engine
             Bitmap output = (Bitmap)source.Clone();
             using (Graphics graphics = Graphics.FromImage(output))
             using (Brush brush = new SolidBrush(textColor))
-            using (Font font = CreateFont(fontName, fontSize))
+            using (Font font = CreateFont(fontName, fontSize, options.Style != null && options.Style.IsBold))
             {
                 graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -771,7 +825,7 @@ namespace JoyPro.Engine
                     string token = (entry.Key ?? string.Empty).Trim();
                     string markerType = InferMarkerType(token);
                     string modifier = ExtractPrimaryModifier(token);
-                    Color markerColor = ResolveMarkerColor(markerType, modifier, modifierPalette);
+                    Color markerColor = ResolveMarkerColor(markerType, modifier, modifierPalette, options.Style);
                     string markerSymbol = ResolveMarkerSymbol(markerType, options);
                     legendEntries.Add(new LayoutLegendEntry
                     {
@@ -786,10 +840,10 @@ namespace JoyPro.Engine
                 }
 
                 if (tables != null && tables.Count > 0)
-                    DrawTemplatePanelTables(graphics, output.Width, output.Height, tables);
+                    DrawTemplatePanelTables(graphics, output.Width, output.Height, tables, options.Style);
 
                 if (connectors != null && connectors.Count > 0)
-                    DrawTemplateConnectors(graphics, output.Width, output.Height, connectors);
+                    DrawTemplateConnectors(graphics, output.Width, output.Height, connectors, options.Style);
 
                 for (int i = 0; i < legendEntries.Count; i++)
                 {
@@ -912,13 +966,15 @@ namespace JoyPro.Engine
             Graphics graphics,
             int imageWidth,
             int imageHeight,
-            List<LayoutTemplateTableDto> tables)
+            List<LayoutTemplateTableDto> tables,
+            JoyPro.DeviceReference.SheetStyle style = null)
         {
             if (graphics == null || tables == null || tables.Count == 0)
                 return;
 
-            // "panel" tables are backdrop helpers: light, blank table zones behind marker labels.
-            using (Pen borderPen = new Pen(Color.FromArgb(228, 74, 85, 104), 2f))
+            // "panel" tables are backdrop helpers: light, blank table zones behind marker labels (their own colour; the
+            // border in the sheet style's).
+            using (Pen borderPen = new Pen(StyleColor(style == null ? null : style.TableBorder, Color.FromArgb(228, 74, 85, 104)), 2f))
             using (Pen rowPen = new Pen(Color.FromArgb(208, 114, 129, 150), 1f))
             using (Pen columnPen = new Pen(Color.FromArgb(192, 114, 129, 150), 1f))
             {
@@ -1011,14 +1067,17 @@ namespace JoyPro.Engine
             int rowHeight = Math.Max(16, (int)Math.Round(rowFontSize + 5f, MidpointRounding.AwayFromZero));
             int headerHeight = Math.Max(24, rowHeight + 2);
 
-            using (Font headerFont = CreateFont("Segoe UI", Math.Max(10f, rowFontSize + 1f)))
-            using (Font rowFont = CreateFont("Segoe UI", Math.Max(9f, rowFontSize - 1f)))
-            using (SolidBrush panelBrush = new SolidBrush(Color.FromArgb(170, 8, 12, 18)))
-            using (SolidBrush headerBrush = new SolidBrush(Color.FromArgb(214, 101, 163, 13)))
-            using (SolidBrush headerTextBrush = new SolidBrush(Color.FromArgb(245, 248, 250)))
-            using (SolidBrush rowTextBrush = new SolidBrush(Color.FromArgb(232, 241, 245, 249)))
-            using (Pen borderPen = new Pen(Color.FromArgb(210, 132, 204, 22), 2f))
-            using (Pen dividerPen = new Pen(Color.FromArgb(122, 132, 204, 22), 1f))
+            JoyPro.DeviceReference.SheetStyle style = options == null ? null : options.Style;
+            string tableFont = style != null && style.FontFamily.Length > 0 ? style.FontFamily : "Segoe UI";
+            Color tableBorder = StyleColor(style == null ? null : style.TableBorder, Color.FromArgb(210, 132, 204, 22));
+            using (Font headerFont = CreateFont(tableFont, Math.Max(10f, rowFontSize + 1f), true))
+            using (Font rowFont = CreateFont(tableFont, Math.Max(9f, rowFontSize - 1f), style != null && style.IsBold))
+            using (SolidBrush panelBrush = new SolidBrush(StyleColor(style == null ? null : style.TableBackground, Color.FromArgb(170, 8, 12, 18))))
+            using (SolidBrush headerBrush = new SolidBrush(StyleColor(style == null ? null : style.HeaderBackground, Color.FromArgb(214, 101, 163, 13))))
+            using (SolidBrush headerTextBrush = new SolidBrush(StyleColor(style == null ? null : style.HeaderText, Color.FromArgb(245, 248, 250))))
+            using (SolidBrush rowTextBrush = new SolidBrush(StyleColor(style == null ? null : style.TableText, Color.FromArgb(232, 241, 245, 249))))
+            using (Pen borderPen = new Pen(tableBorder, 2f))
+            using (Pen dividerPen = new Pen(Color.FromArgb(122, tableBorder), 1f))
             {
                 for (int i = 0; i < tables.Count; i++)
                 {
@@ -1095,10 +1154,13 @@ namespace JoyPro.Engine
             Graphics graphics,
             int imageWidth,
             int imageHeight,
-            List<LayoutTemplateConnectorDto> connectors)
+            List<LayoutTemplateConnectorDto> connectors,
+            JoyPro.DeviceReference.SheetStyle style = null)
         {
             if (graphics == null || connectors == null || connectors.Count == 0)
                 return;
+            // Lines left at the default colour take the sheet style's line colour.
+            Color styleLine = StyleColor(style == null ? null : style.LineColor, Color.Empty);
 
             for (int i = 0; i < connectors.Count; i++)
             {
@@ -1109,6 +1171,8 @@ namespace JoyPro.Engine
                 Color strokeColor = TryParseColor(connector.Color, out Color parsed)
                     ? parsed
                     : Color.FromArgb(226, 232, 240);
+                if (!styleLine.IsEmpty && (string.IsNullOrWhiteSpace(connector.Color) || string.Equals(connector.Color.Trim(), "#E2E8F0", StringComparison.OrdinalIgnoreCase)))
+                    strokeColor = styleLine;
                 float width = ClampConnectorWidth(connector.Width);
                 using (Pen glowPen = new Pen(Color.FromArgb(120, strokeColor), width + 2f))
                 using (Pen linePen = new Pen(Color.FromArgb(220, strokeColor), width))
@@ -1225,7 +1289,7 @@ namespace JoyPro.Engine
             return map;
         }
 
-        private static Color ResolveMarkerColor(string markerType, string modifier, Dictionary<string, Color> modifierPalette)
+        private static Color ResolveMarkerColor(string markerType, string modifier, Dictionary<string, Color> modifierPalette, JoyPro.DeviceReference.SheetStyle style = null)
         {
             if (!string.IsNullOrWhiteSpace(modifier) &&
                 modifierPalette != null &&
@@ -1233,6 +1297,10 @@ namespace JoyPro.Engine
             {
                 return mapped;
             }
+            // The sheet style's colour of the input kind.
+            Color styled = StyleColor(style == null ? null : style.MarkerColor(markerType), Color.Empty);
+            if (!styled.IsEmpty)
+                return styled;
 
             string type = (markerType ?? string.Empty).Trim().ToLowerInvariant();
             if (type == "axis")
@@ -1350,11 +1418,13 @@ namespace JoyPro.Engine
             if (y + tableHeight > imageHeight - 8)
                 y = Math.Max(8, imageHeight - tableHeight - 8);
 
-            using (Brush panel = new SolidBrush(Color.FromArgb(160, 2, 6, 23)))
-            using (Pen border = new Pen(Color.FromArgb(200, 125, 211, 252), 1f))
-            using (Font headerFont = CreateFont("Segoe UI", fontSize + 1f))
-            using (Font rowFont = CreateFont("Segoe UI", fontSize))
-            using (Brush rowBrush = new SolidBrush(Color.FromArgb(240, 241, 245, 249)))
+            JoyPro.DeviceReference.SheetStyle style = options.Style;
+            string legendFont = style != null && style.FontFamily.Length > 0 ? style.FontFamily : "Segoe UI";
+            using (Brush panel = new SolidBrush(StyleColor(style == null ? null : style.TableBackground, Color.FromArgb(160, 2, 6, 23))))
+            using (Pen border = new Pen(StyleColor(style == null ? null : style.TableBorder, Color.FromArgb(200, 125, 211, 252)), 1f))
+            using (Font headerFont = CreateFont(legendFont, fontSize + 1f, true))
+            using (Font rowFont = CreateFont(legendFont, fontSize, style != null && style.IsBold))
+            using (Brush rowBrush = new SolidBrush(StyleColor(style == null ? null : style.TableText, Color.FromArgb(240, 241, 245, 249))))
             {
                 graphics.FillRectangle(panel, x, y, tableWidth, tableHeight);
                 graphics.DrawRectangle(border, x, y, tableWidth, tableHeight);
@@ -1514,18 +1584,28 @@ namespace JoyPro.Engine
             }
         }
 
-        private static Font CreateFont(string fontName, float fontSize)
+        private static Font CreateFont(string fontName, float fontSize, bool bold = false)
         {
             float size = fontSize <= 0 ? 12f : fontSize;
             string family = string.IsNullOrWhiteSpace(fontName) ? "Arial" : fontName.Trim();
+            FontStyle style = bold ? FontStyle.Bold : FontStyle.Regular;
             try
             {
-                return new Font(family, size);
+                return new Font(family, size, style);
             }
             catch
             {
-                return new Font(FontFamily.GenericSansSerif, size);
+                return new Font(FontFamily.GenericSansSerif, size, style);
             }
+        }
+
+        // A colour of the sheet style ("#AARRGGBB"), else the fallback.
+        private static Color StyleColor(string value, Color fallback)
+        {
+            uint argb;
+            return !string.IsNullOrWhiteSpace(value) && JoyPro.DeviceReference.SheetStyle.TryParse(value, out argb)
+                ? Color.FromArgb(unchecked((int)argb))
+                : fallback;
         }
 
         private static string ResolvePlaneLabel(string joystick, string alias, string token, string game, string plane)

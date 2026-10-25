@@ -1,0 +1,332 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-harrier-gr3",
+  "title": "Harrier GR.3 (first generation)",
+  "variants": [
+    "harrier-gr3"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Hawker Siddeley Harrier (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Hawker_Siddeley_Harrier"
+    },
+    {
+      "id": "m2",
+      "title": "DCS AV-8B Night Attack Harrier Manual CH 1-15 (Harrier principle)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/AV8BNA/Doc/Harrier Manual CH 1-15.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Harrier GR.3 is the first-generation British Harrier, the first jet in service that could take off and land straight up. Its cockpit has analogue instruments, a head-up display and a projected moving map; the pilot's left hand moves between the throttle and the nozzle lever, and in the hover the stick also works small air jets. The switch set is inferred from the Harrier principle and public GR.3 descriptions; the exact grip switches are not checked.",
+  "areas": [
+    {
+      "id": "hud",
+      "where": "glareshield",
+      "name": "Head-up display",
+      "text": "The HUD in front of the pilot.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "HUD",
+          "src": "w1",
+          "text": "The Smiths head-up display for navigation and weapon aiming.",
+          "context": "The pilot reads flight data and aiming marks here while looking outside.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes that shows flight numbers and aiming marks (head-up display). It shows attitude, height, speed and the weapon aiming marks, so the pilot can read them while looking outside.",
+              "context": "The pilot keeps his eyes on it during take-off, landing and every attack, instead of looking down at the instruments.",
+              "src": "w1"
+            },
+            {
+              "id": "hud-controls",
+              "name": "HUD controls",
+              "type": "knob",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "Knobs that set the brightness and the mode of the HUD.",
+              "context": "The pilot sets the mode for navigation or for the attack."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-panel",
+      "where": "front-center",
+      "name": "Main panel",
+      "text": "The moving map and the round instruments.",
+      "panels": [
+        {
+          "id": "moving-map",
+          "name": "Moving map",
+          "src": "w1",
+          "text": "The projected moving map of the FE541 inertial navigation and attack system.",
+          "context": "It lets the pilot follow a low-level route alone, without a navigator.",
+          "controls": [
+            {
+              "id": "map",
+              "name": "Projected map display",
+              "type": "display",
+              "match": [
+                "item:moving-map:1"
+              ],
+              "text": "A round screen that shows a real map on film; the film moves with the aircraft's position.",
+              "context": "The pilot compares it with the ground outside to check where he is.",
+              "src": "w1"
+            },
+            {
+              "id": "ncu",
+              "name": "Navigation control unit",
+              "type": "keypad",
+              "match": [
+                "item:moving-map:2"
+              ],
+              "text": "A keypad where the pilot enters points of the route and the aircraft's position for the inertial system (the system that always knows where the aircraft is).",
+              "context": "With correct data the map and the HUD guide the pilot to the target.",
+              "src": "w1"
+            }
+          ]
+        },
+        {
+          "id": "flight-and-engine-instruments",
+          "name": "Flight and engine instruments",
+          "src": "w1",
+          "text": "Round dials for flying, plus the special engine and nozzle gauges a vertical take-off jet needs.",
+          "context": "In the hover the pilot watches the engine limits and the nozzle angle closely.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:1"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:2"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound). On the Harrier it also reads the low speeds of the transition between hover and flight.",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:3"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "rpm-jpt",
+              "name": "Engine rpm and jet pipe temperature",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:4"
+              ],
+              "text": "Gauges that show how fast the Pegasus turns and how hot its exhaust is (jet pipe temperature). They tell the pilot whether the engines are working normally.",
+              "context": "In the hover the engine works near its limits, so the pilot watches these closely."
+            },
+            {
+              "id": "nozzle-angle",
+              "name": "Nozzle angle indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:5"
+              ],
+              "text": "This gauge shows the angle of the engine nozzles, from 0 degrees (pointing back) to 98 degrees (pointing slightly forward).",
+              "context": "The pilot checks it during a short take-off, the hover and the landing."
+            },
+            {
+              "id": "duct-pressure",
+              "name": "Duct pressure gauge",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:6"
+              ],
+              "text": "This gauge shows the air pressure in the ducts that feed the reaction control jets.",
+              "context": "Without enough pressure the jets cannot steer the aircraft in the hover."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick, throttle and nozzle lever",
+      "text": "The grips and levers the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "text": "The centre stick with the trim switch, the weapon release button and the trigger.",
+          "context": "In the hover the stick also works the reaction controls, small air jets at the nose, tail and wing tips that steer the aircraft when the wings give no lift.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side. When hovering, the same movements open the reaction control jets.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Trim switch",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again."
+            },
+            {
+              "id": "weapon-release",
+              "name": "Weapon release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches bombs or rockets.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way."
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The trigger at the front of the grip, under the index finger. Pulling it fires the Aden gun pods under the fuselage.",
+              "context": "It only fires when the weapons are armed with the master arm switch; the HUD or sight shows where the shots will go."
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle and nozzle lever",
+          "src": "m2",
+          "text": "The throttle, the nozzle lever beside it, the STO stop and the switches on the throttle grip.",
+          "context": "The left hand moves between throttle and nozzle lever; the STO stop presets the nozzle angle.",
+          "controls": [
+            {
+              "id": "throttle",
+              "name": "Throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main",
+                "item:throttle-and-nozzle-lever:1"
+              ],
+              "text": "The lever that makes the Pegasus engine stronger or weaker, like a car's gas pedal. Forward gives more thrust, back less. The Pegasus has no afterburner.",
+              "context": "The pilot sets it for take-off, climb, cruise and landing; on most bindings it is the throttle axis of the HOTAS."
+            },
+            {
+              "id": "nozzle",
+              "name": "Nozzle lever",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.nozzle",
+                "item:throttle-and-nozzle-lever:2"
+              ],
+              "text": "A smaller lever beside the throttle that turns the engine's four nozzles. Fully forward points them back for normal flight; pulled back it points them down to hover, and further to the braking stop to push the aircraft backwards.",
+              "context": "This lever is what makes the Harrier special: the left hand moves between throttle and nozzle lever for take-off, hover and landing.",
+              "src": "m2"
+            },
+            {
+              "id": "sto-stop",
+              "name": "Short take-off (STO) stop",
+              "type": "lever",
+              "match": [
+                "control:throttle.lever.sto_stop",
+                "item:throttle-and-nozzle-lever:3"
+              ],
+              "text": "An adjustable stop on the nozzle quadrant. The pilot sets it to the nozzle angle he wants for a short take-off, so the nozzle lever can be pulled back quickly to exactly that angle.",
+              "context": "In a short take-off the aircraft rolls fast, then the pilot snaps the nozzles to the STO stop and it lifts off.",
+              "src": "m2"
+            },
+            {
+              "id": "transmit",
+              "name": "Transmit button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft."
+            },
+            {
+              "id": "airbrake",
+              "name": "Airbrake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "Aft",
+                  "text": "The airbrake extends."
+                },
+                {
+                  "name": "Forward",
+                  "text": "The airbrake retracts."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again."
+            },
+            {
+              "id": "water",
+              "name": "Water injection switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.switch.water",
+                "item:throttle-and-nozzle-lever:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Water injection on: more hover thrust."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Water injection off."
+                }
+              ],
+              "text": "This switch sprays water into the engine. The water cools it, so it can give more thrust for a short time.",
+              "context": "The pilot uses it for hovering and vertical landing on hot days or when heavy."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

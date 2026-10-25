@@ -75,7 +75,7 @@ Nothing a person waits for should take more than a few seconds (interactive acti
 `powershell -File tools\quality_gate.ps1 -Profile <profile.pr0file> [-Out <folder>] [-Data user|shipped] [-Only I1,I5]`
 (opt-in, `JOYPRO_QUALITY_GATE=1`; about an hour on a big profile) runs invariant checks on real data through the real
 view model and the real engine, in `gui\JoyPro.Gui.Tests\QualityGate`: the game lists of this PC (a copy of
-`%LOCALAPPDATA%\JoyPro\GameData`) or only the shipped ones (`-Data shipped`), and always a copy of the profile. It renders
+`%LOCALAPPDATA%\JoyPro2\GameData`) or only the shipped ones (`-Data shipped`), and always a copy of the profile. It renders
 its pages in roots that are never shown (HiddenWindow: no window on the desktop, no focus taken) and writes only into `-Out`; exports run
 into copies of the game's config or as dry runs, and the real config files are fingerprinted before and after.
 
@@ -90,7 +90,7 @@ into copies of the game's config or as dry runs, and the real config files are f
 | I7 | engine server start (a fresh server after the gate's first start; the first start right after the build has its own cold-start budget), profile load, the first Lay out with AI preview after it (rules only), relation open, 200 actions at once, save, suggestions, catalog, search, export per game, the Statistics page's `usage stats` (1 s) stay within the budgets of `QualityGate\Budgets.cs` |
 | I8 | texts of the main pages have at least 3:1 contrast to their background in Light and Dark |
 | I9 | every game the UI names (games list, supported games page, badges, trailer) has an integration, catalog actions and a function map; labels are names, not abbreviations |
-| I10 | every page and the relation editor (empty, normal, large relation) at MinWidth, 1280x720 and 1920x1080, 100 % and 150 %, Light and Dark: no overlapping controls, no cut-off text, no pre-filled search that finds nothing |
+| I10 | every page and the relation editor (empty, normal, large relation) at MinWidth, 1280x720 and 1920x1080, 100 % and 150 %, Light and Dark: no overlapping controls or chips, no text drawn over a control or chip it does not belong to, no cut-off text, no pre-filled search that finds nothing; also at 150 % and 200 % text size (Settings > Appearance) and with a serif and a wide font at 150 % text, each with 150 % Windows scaling, in Dark; the Layout page also with the profile's devices as own layouts (long names, "Your layout · N markers" chips; the header names the picture in words, match at most 100 %) |
 | I11 | every phrase of `engine/tests/fixtures/phrases/phrases.json` (names, synonyms, slang, paraphrases, everyday sentences, German) finds its function offline: search box 95 %, catalog filter 90 %, JoyPro assistant 95 %, Manage / Edit with AI 90 %, By description 90 %, search top-row precision 90 %; the app's catalog filter on one phrase and one sentence per function 85 %; failures in `phrase-failures.txt` |
 
 Output: `report.md` (findings by check, rule and game; timings), `findings.json`, `timings.csv`, `engine-calls.csv` (every
@@ -103,7 +103,7 @@ refresh in a temporary JoyPro folder (`JOYPRO_DATA_DIR`, install set with `JOYPR
 that new actions come in (in `<JOYPRO_DATA_DIR>\GameData`), known titles stay and the shipped catalog and the program
 folder stay untouched (IL-2 and Elite also: a dry run and a second refresh write nothing). The whole smoke test runs
 with a temporary `JOYPRO_DATA_DIR` from its first command on: the engine copies the program folder's game lists into
-`<data>\GameData` on its first start, which must never be the user's `%LOCALAPPDATA%\JoyPro`. `gamedata.ps1` covers that
+`<data>\GameData` on its first start, which must never be the user's `%LOCALAPPDATA%\JoyPro2`. `gamedata.ps1` covers that
 migration, a refresh into the game-data folder only, a simulated rebuild with older lists (the refreshed ones stay in
 use) and a newer program-folder list replacing the game-data copy (the old one kept under `GameData\Replaced`). `legacyids.ps1` loads a profile written before MSFS and X-Plane became one game per
 version (`tests\fixtures\legacy-ids\legacy-ids.pr0file`, saved by the engine of commit 70b83ec) and checks the migration
@@ -129,14 +129,31 @@ streams its lines while the view model is watched, and an offscreen render of th
 overlaps; with `JOYPRO_BUSY_PREVIEW=<repo>\docs\ui` it also renders the whole window (Start page area and the compact
 row above the status line) into `docs\ui\busy-progress-*.png`.
 
+Themes, text size and fonts (docs/ui/themes.md): `ThemeTests`, `TextScaleLayoutTests` (`JOYPRO_TEXTSCALE_OUT`),
+`AppearanceRenderTests` (`JOYPRO_APPEARANCE_OUT`), `LayoutDeviceCardTests` (`JOYPRO_LAYOUT_CARDS_OUT`).
+
 Readable colors: `ThemeContrastTests` renders every main page, the engine output panel, every settings section open and
-the dialogs (confirm, game setup, replace device, every setup wizard step) in the light and the dark theme in a hidden
+the dialogs (confirm, game setup, replace device, every setup wizard step) in the light and the dark theme and a theme of the user's own (`ThemeTests.SampleTheme`) in a hidden
 root and measures every visible text (also inside buttons, toggle buttons, chips and key caps) against the color the
 render shows behind it: at least 4.5:1, 3:1 for large text (24 px, or 18.66 px from SemiBold up); disabled controls are
 left out. `JOYPRO_CONTRAST_OUT=<folder>` keeps the renders, `contact-light.png` / `contact-dark.png` and
 `contrast-report.txt`. Colors come from the theme tokens in `Styles/Design.axaml` (`JP.WarnTextBrush`,
 `JP.DangerTextBrush`, `JP.OkTextBrush`, ...), never as fixed colors on text; the navy banner keeps the dark theme in both
 themes (`ThemeVariantScope`).
+
+Cheat sheet style (docs/ui/layout-redesign.md "Sheet style"): `SheetStyleTests` (presets and the base palettes, JSON and
+the sheet's `"style"`, the engine options, the global style and own presets surviving a restart, a device's own style
+saved in its sheet and removed again, "Share layout..." round trip, the real engine's sheet and the panel's preview
+sampled for header row, table and marker colours, no overlap of the panel at 1280x800 and 2267x1250 in both themes with
+a big sheet font and 1.5x UI text; `JOYPRO_SHEET_STYLE_OUT` keeps the renders) and the smoke part
+`engine\tests\smoke\sheetstyle.ps1`.
+
+Back / Forward (docs/ui/navigation.md): `NavigationHistoryTests` covers the history class (push, back, forward, the cap,
+duplicates, no push while restoring), the view model (page changes and "Open both relations" push; Back puts page,
+search, open cards and relation back) and a navigation render test in a hidden root: the Check list scrolled to a card,
+"Open both relations", the list scrolled to the top while away, Back -> the same card inside the scroll viewport again.
+It also renders the header at 1280x800, 1200x760 and 2267x1250 in both themes (no overlap, every button inside the
+header). `JOYPRO_NAV_OUT=<folder>` keeps the renders.
 
 The catalog refresh (`engine <game> refresh-db`) is tested on synthetic game files, each in a temporary JoyPro folder
 so the shipped catalog stays untouched: War Thunder (`smoke\warthunder.ps1`, vromfs archives), MSFS (`smoke\msfs.ps1`,

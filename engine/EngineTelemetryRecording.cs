@@ -24,7 +24,7 @@ namespace JoyPro.Engine
     //   telemetry record --game G [--seconds N] [--folder F] [--sample-hz N] [--no-raw] [--no-game-check]
     //       records now, also when the settings say off (runs JoyPro.Ffb record; Ctrl+C ends it)
     // <session> = a path, a file name in the folder, "latest" or a number of the list (1 = newest).
-    // Settings: <data>\Telemetry\telemetry-recording.json (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro), the format
+    // Settings: <data>\Telemetry\telemetry-recording.json (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2), the format
     // gui/JoyPro.Ffb.Core/Telemetry/Recording/TelemetryRecordingConfig.cs reads. Everything stays on this PC.
     internal static partial class Program
     {

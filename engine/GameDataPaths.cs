@@ -15,7 +15,7 @@ namespace JoyPro.Engine
     // Program folder (engine.exe's folder, MainStructure.PROGPATH): JoyPro's own data, shipped with JoyPro and replaced
     //   by every update or rebuild: DB\Functions, DB\Devices, DB\Llm, DB\DevicePhotos, DB\DeviceLayouts,
     //   DB\Cockpits, TOOLS\Conversions, LayoutCatalog, Clicks.
-    // Game-data root (<data>\GameData, data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro): everything built from the
+    // Game-data root (<data>\GameData, data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2): everything built from the
     //   user's games: DB\<Game> (command lists, aircraft lists, source-version.txt), CleanProfile\<Game> and
     //   KeyboardCleanProfile\<Game>. Writable without admin rights, and no update or rebuild touches it.
     //

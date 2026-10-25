@@ -112,7 +112,7 @@ namespace JoyPro.DeviceReference
                     }
                 }
                 // A model with a reference photo is a product on sale (and easier to recognize).
-                if (DevicePhotoDb.OfficialPhotos(model).Count > 0)
+                if (DevicePhotoDb.UsablePhotos(model).Count > 0)
                     score += 3;
                 // Home-made grips are the rarest answer.
                 if (model.Id.IndexOf("custom", StringComparison.OrdinalIgnoreCase) >= 0 || model.Id.IndexOf("diy", StringComparison.OrdinalIgnoreCase) >= 0)

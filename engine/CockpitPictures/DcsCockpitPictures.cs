@@ -98,6 +98,9 @@ namespace JoyPro.CockpitPictures
                 string shape;
                 List<DcsLua.Gauge> gauges = DcsLua.Gauges(dcsRoot, cockpitPath, workDir, out shape);
                 string edm = FindEdm(moduleDir, shape);
+                // Some modules keep their models in CoreMods (the SA342 Gazelle: CoreMods/aircraft/SA342/Shapes).
+                if (edm.Length == 0)
+                    edm = FindEdm(Path.Combine(dcsRoot, "CoreMods", "aircraft", f.Module), shape);
                 if (edm.Length == 0)
                 {
                     notes.Add(f.Plane + ": no cockpit model found" + (shape.Length > 0 ? " (" + shape + ")" : string.Empty));

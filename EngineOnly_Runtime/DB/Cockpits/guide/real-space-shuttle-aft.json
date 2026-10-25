@@ -1,0 +1,257 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-space-shuttle-aft",
+  "title": "Space Shuttle (aft flight deck station)",
+  "variants": [
+    "space-shuttle-aft"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Space Shuttle Controllers Workbook CONT 21002 (NASA/USA)",
+      "kind": "manual",
+      "url": "https://ibiblio.org/apollo/Shuttle/383442main_controllers_workbook_21002.pdf"
+    },
+    {
+      "id": "s2",
+      "title": "NSTS 1988 News Reference: Rotational hand controllers (GlobalSecurity mirror)",
+      "kind": "manual",
+      "url": "https://www.globalsecurity.org/space/library/report/1988/sts-rhc.html"
+    },
+    {
+      "id": "s3",
+      "title": "Space Shuttle orbiter (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Space_Shuttle_orbiter"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "At the back of the Shuttle's flight deck was a standing station for work in orbit. From here an astronaut flew the orbiter while looking out of the windows into the payload bay or in the roof, for example to dock with a space station, and worked the robot arm. A sense switch tells the controllers which window is used, so the handles move the orbiter the way it looks. The panel contents follow the shuttle crew documents as known.",
+  "areas": [
+    {
+      "id": "aft-displays",
+      "where": "front-center",
+      "name": "Aft displays",
+      "text": "Screens and radar readouts.",
+      "panels": [
+        {
+          "id": "aft-displays",
+          "name": "Aft displays",
+          "text": "Screens and readouts at the aft station.",
+          "context": "They gave the operator the numbers needed for rendezvous and docking.",
+          "controls": [
+            {
+              "id": "aft-disp",
+              "name": "Aft display",
+              "type": "display",
+              "match": [
+                "item:aft-displays:1"
+              ],
+              "text": "A screen that repeats the attitude and the rendezvous data.",
+              "context": "The operator does not need to look at the front panels while flying from the back."
+            },
+            {
+              "id": "radar",
+              "name": "Rendezvous radar readouts",
+              "type": "display",
+              "match": [
+                "item:aft-displays:2"
+              ],
+              "text": "Readouts of the distance to the other spacecraft and how fast that distance changes, from the rendezvous radar.",
+              "context": "They show whether the approach is too fast or too slow."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aft-station",
+      "where": "rear",
+      "name": "Aft station panels",
+      "text": "Flight controls and the robot arm station.",
+      "panels": [
+        {
+          "id": "a6u",
+          "name": "Panel A6U",
+          "text": "The flight controls of the aft station: the sense switch and the autopilot buttons.",
+          "context": "From here an astronaut flew the orbiter in orbit while looking out of the back or roof windows.",
+          "controls": [
+            {
+              "id": "sense",
+              "name": "Aft sense switch",
+              "type": "switch2",
+              "match": [
+                "item:a6u:1",
+                "control:panel.switch.aft_sense"
+              ],
+              "positions": [
+                {
+                  "name": "-Z",
+                  "text": "The controls match the view out of the overhead windows."
+                },
+                {
+                  "name": "-X",
+                  "text": "The controls match the view out of the aft windows."
+                }
+              ],
+              "text": "This switch tells the hand controllers which window the astronaut looks out of: the roof windows (-Z) or the windows into the payload bay (-X). The controls then move the orbiter as it looks from there.",
+              "context": "Without it, pushing a handle would move the orbiter in a direction that looks wrong from the back of the cabin.",
+              "src": "s1"
+            },
+            {
+              "id": "dap",
+              "name": "DAP pushbuttons",
+              "type": "button",
+              "match": [
+                "item:a6u:2"
+              ],
+              "text": "Buttons for the digital autopilot (DAP) at the aft station: how the orbiter holds its attitude and how the hand controllers fire the steering jets.",
+              "context": "They are set for tasks such as docking or holding still. JoyPro's sources do not describe its single switches.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "rms",
+          "name": "Remote manipulator controls",
+          "text": "The station for the robot arm in the payload bay (RMS, remote manipulator system), not a flight control.",
+          "context": "With the arm the crew lifted satellites out of the bay, caught them and helped build the space station.",
+          "controls": [
+            {
+              "id": "rms-rhc",
+              "name": "RMS rotational hand controller",
+              "type": "other",
+              "match": [
+                "item:rms:1"
+              ],
+              "text": "A handle that turns the end of the robot arm, the gripper (end effector).",
+              "context": "The operator turns the gripper to line it up with the part it should grab.",
+              "src": "s3"
+            },
+            {
+              "id": "rms-thc",
+              "name": "RMS translational hand controller",
+              "type": "other",
+              "match": [
+                "item:rms:2"
+              ],
+              "text": "A handle that moves the gripper of the robot arm in a direction without turning it.",
+              "context": "Together with the rotation handle it lets the operator move the gripper smoothly to its target.",
+              "src": "s3"
+            },
+            {
+              "id": "rms-panel",
+              "name": "RMS display and control panel",
+              "type": "switch",
+              "match": [
+                "item:rms:3"
+              ],
+              "text": "Switches and readouts for the robot arm's modes and the angles of its joints.",
+              "context": "JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windows",
+      "where": "overhead",
+      "name": "Aft and overhead windows",
+      "text": "The windows of the aft station: two to the back, two in the roof.",
+      "panels": [
+        {
+          "id": "windows",
+          "name": "Aft and overhead windows",
+          "text": "The windows of the aft station: two to the back, two in the roof.",
+          "context": "The operator watched the payload bay, the arm and approaching spacecraft through them.",
+          "controls": [
+            {
+              "id": "aft-win",
+              "name": "Aft windows",
+              "type": "other",
+              "match": [
+                "item:windows:1"
+              ],
+              "text": "Two windows in the back wall that look into the payload bay.",
+              "context": "With the aft sense switch at -X the controls match this view."
+            },
+            {
+              "id": "ovh-win",
+              "name": "Overhead windows",
+              "type": "other",
+              "match": [
+                "item:windows:2"
+              ],
+              "text": "Two windows in the roof of the flight deck.",
+              "context": "With the aft sense switch at -Z the controls match this view; they were used for docking."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers",
+      "text": "The aft rotation and translation controllers.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "Aft rotational hand controller",
+          "text": "The hand controller at the aft station facing the windows.",
+          "context": "It works in orbit only; its trim switch is inactive and it has no backup flight system button.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Aft rotational hand controller",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving the grip turns the orbiter: pitch, roll and yaw, as they look from the window chosen with the aft sense switch.",
+              "context": "It was used for the last part of docking and for pointing the orbiter at a satellite.",
+              "src": "s2"
+            },
+            {
+              "id": "ptt",
+              "name": "Communications switch",
+              "type": "button",
+              "match": [
+                "control:rhc.button.ptt"
+              ],
+              "text": "While this switch on the grip is held, the operator's voice goes out on the radio or the intercom.",
+              "context": "It works like the button of a walkie-talkie.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "Aft translational hand controller",
+          "text": "The T-handle at the aft station, for the left hand.",
+          "context": "The operator pushes it the way the orbiter should move, as seen through the window.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Aft translational hand controller",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This handle moves the whole orbiter without turning it: toward the view, away from it, left, right, up and down, by firing the steering jets.",
+              "context": "Docking with Mir and the International Space Station was flown from here.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

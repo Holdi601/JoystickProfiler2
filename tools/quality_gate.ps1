@@ -1,7 +1,7 @@
 # The quality gate (docs/testing.md "Quality gate"): invariant checks on real data through the real view model and the
 # real engine (gui/JoyPro.Gui.Tests/QualityGate). Builds, runs the gate and prints where the report is.
 #   powershell -ExecutionPolicy Bypass -File tools\quality_gate.ps1 -Profile <copy-source.pr0file> [-Out <folder>]
-#     -Data user|shipped   user (default): a copy of the game lists of this PC (%LOCALAPPDATA%\JoyPro\GameData, or -GameData)
+#     -Data user|shipped   user (default): a copy of the game lists of this PC (%LOCALAPPDATA%\JoyPro2\GameData, or -GameData)
 #                          shipped: only what the program folder ships (a CI-like run)
 #     -Profile             the profile the checks work on (always a copy; without it the profile checks are skipped)
 #     -Only I1,I5          only these invariants (I1..I11)

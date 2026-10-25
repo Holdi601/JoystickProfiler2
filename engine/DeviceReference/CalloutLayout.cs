@@ -248,6 +248,8 @@ namespace JoyPro.DeviceReference
         public List<CalloutLine> Lines = new List<CalloutLine>();
         // Parts the user split out of their grid (each gets its own table again; arranging keeps that).
         public List<string> Ungrouped = new List<string>();
+        // The device's own sheet style ("this device uses its own style"); null = the global style (SheetStyle).
+        public SheetStyle Style;
 
         public double TitleHeight { get { return Math.Round(RowHeight * 0.72); } }
 
@@ -485,6 +487,7 @@ namespace JoyPro.DeviceReference
             copy.Lines = Lines.Select(l => l.Clone()).ToList();
             copy.Ungrouped = new List<string>(Ungrouped);
             copy.Combos = new List<string>(Combos);
+            copy.Style = Style == null ? null : Style.Clone();
             return copy;
         }
 
@@ -542,6 +545,8 @@ namespace JoyPro.DeviceReference
             if (Combos.Count > 0)
                 root["combos"] = Combos.Cast<object>().ToList();
             root["otherY"] = R(OtherY);
+            if (Style != null)
+                root["style"] = Style.ToJsonObject();
             if (Ungrouped.Count > 0)
                 root["ungrouped"] = Ungrouped.Cast<object>().ToList();
             List<object> tables = new List<object>();
@@ -695,6 +700,7 @@ namespace JoyPro.DeviceReference
                 if (l.Table.Length > 0 && l.Points.Count >= 2)
                     sheet.Lines.Add(l);
             }
+            sheet.Style = SheetStyle.FromJsonObject(DeviceCatalog.Object(root, "style"));
             return sheet;
         }
 
@@ -1018,7 +1024,10 @@ namespace JoyPro.DeviceReference
                 ApplyDefaultStyle(sheet, sheet.PictureWidth, sheet.PictureHeight);
             }
             if (previous != null)
+            {
                 sheet.Ungrouped = new List<string>(previous.Ungrouped);
+                sheet.Style = previous.Style == null ? null : previous.Style.Clone();
+            }
             foreach (CalloutTable fresh in tables)
             {
                 CalloutTable t = fresh.Clone();

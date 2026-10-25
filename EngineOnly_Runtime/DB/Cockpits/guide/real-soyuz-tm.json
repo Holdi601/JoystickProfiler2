@@ -1,0 +1,214 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-soyuz-tm",
+  "title": "Soyuz-TM",
+  "variants": [
+    "soyuz-tm"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "TORU (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/TORU"
+    },
+    {
+      "id": "s2",
+      "title": "Soyuz-TM (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Soyuz-TM"
+    },
+    {
+      "id": "s3",
+      "title": "Soyuz spacecraft manual hand controller (steve.blog)",
+      "kind": "reference",
+      "url": "https://steve.blog/2017/03/12/soyuz-spacecraft-manual-hand-controller/"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "Soyuz is the Russian crew spacecraft, flown since 1967; the Soyuz-TM version flew from 1986 to 2002 to the Mir and International space stations. Three astronauts lie in body-shaped seats in the descent capsule; the commander in the middle faces the Neptun panel, with the rotation controller at the right hand and the translation controller at the left. Docking is normally automatic; the controllers are for a manual approach. The panel contents are summarised from public sources.",
+  "areas": [
+    {
+      "id": "neptun",
+      "where": "front-center",
+      "name": "Neptun control panel",
+      "text": "The main panel in front of the commander.",
+      "panels": [
+        {
+          "id": "neptun",
+          "name": "Neptun control panel",
+          "text": "The main panel in front of the commander with screens, command keys, a navigation globe and clocks.",
+          "context": "Most of a Soyuz flight runs automatically; the crew watches it here and steps in when needed.",
+          "controls": [
+            {
+              "id": "screens",
+              "name": "Display screens",
+              "type": "display",
+              "match": [
+                "item:neptun:1"
+              ],
+              "text": "Screens that show the state of the systems and the data of the approach to the space station.",
+              "context": "The commander watches the approach on them and takes over by hand if the automatic docking fails.",
+              "src": "s2"
+            },
+            {
+              "id": "keys",
+              "name": "Command keys",
+              "type": "keypad",
+              "match": [
+                "item:neptun:2"
+              ],
+              "text": "Rows of keys that send commands to the spacecraft. The crew presses them with a pointer stick, because strapped into the seats they cannot reach the panel with their hands.",
+              "context": "The pointer stick is a simple, well-known Soyuz tool. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "globus",
+              "name": "Globus navigation globe",
+              "type": "display",
+              "match": [
+                "item:neptun:3"
+              ],
+              "text": "A small globe that turns to show where the spacecraft is over the Earth.",
+              "context": "It is an electro-mechanical instrument that gives the position without a computer screen."
+            },
+            {
+              "id": "clocks",
+              "name": "Clocks",
+              "type": "display",
+              "match": [
+                "item:neptun:4"
+              ],
+              "text": "Clocks that show the time and count down to events.",
+              "context": "Engine burns and the return are timed to the second."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seats",
+      "where": "floor",
+      "name": "Seats and sight",
+      "text": "The optical sight and the side seats.",
+      "panels": [
+        {
+          "id": "sight",
+          "name": "Periscope / optical sight (VSK)",
+          "text": "The viewing device used for the manual approach.",
+          "context": "It looks out of the spacecraft and shows the docking target or the Earth.",
+          "controls": [
+            {
+              "id": "vsk",
+              "name": "Optical sight",
+              "type": "display",
+              "match": [
+                "item:sight:1"
+              ],
+              "text": "A periscope-like sight through which the commander sees the docking target on the space station.",
+              "context": "During a manual approach the commander keeps the target centred in it while steering with the two hand controllers.",
+              "src": "s2"
+            }
+          ]
+        },
+        {
+          "id": "seats",
+          "name": "Left and right crew seats",
+          "text": "The seats of the flight engineer on the left and the third crew member on the right.",
+          "context": "Each seat is shaped to its astronaut's body to protect him during launch and landing.",
+          "controls": [
+            {
+              "id": "side-panels",
+              "name": "Side panels",
+              "type": "switch",
+              "match": [
+                "item:seats:1"
+              ],
+              "text": "Each side seat has its own small panels with switches.",
+              "context": "JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "descent",
+      "where": "right-console",
+      "name": "Descent control handle",
+      "text": "Manual control of the return.",
+      "panels": [
+        {
+          "id": "descent-handle",
+          "name": "Descent control handle",
+          "text": "A handle for steering the return by hand.",
+          "context": "It is for an emergency return when the automatic control does not work.",
+          "controls": [
+            {
+              "id": "handle",
+              "name": "Descent control handle",
+              "type": "handle",
+              "match": [
+                "item:descent-handle:1"
+              ],
+              "text": "This handle lets the commander control the lift of the descent capsule by hand during the return through the atmosphere.",
+              "context": "Normally the computer steers the return; JoyPro's catalog marks the details of this handle as uncertain.",
+              "src": "s2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Hand controllers",
+      "text": "The rotation and translation controllers.",
+      "panels": [
+        {
+          "id": "rhc",
+          "name": "RUO orientation hand controller",
+          "text": "The handle at the commander's right hand.",
+          "context": "It turns the spacecraft; the same layout is used for the manual docking controls on the space station (TORU).",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "RUO orientation hand controller",
+              "type": "axis",
+              "match": [
+                "control:rhc.gimbal"
+              ],
+              "text": "Moving this handle turns the spacecraft: pitch, roll and yaw, by firing the small rocket jets around the spacecraft (thrusters).",
+              "context": "On a joystick it is the X, Y and twist axes; the commander uses it in a manual approach.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "thc",
+          "name": "RUD motion (translation) hand controller",
+          "text": "The handle at the commander's left hand.",
+          "context": "It moves the spacecraft without turning it.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "RUD motion (translation) hand controller",
+              "type": "axis",
+              "match": [
+                "control:thc.gimbal"
+              ],
+              "text": "This handle moves the whole spacecraft forward, back, left, right, up or down (translation), by firing the steering jets.",
+              "context": "In a manual docking the commander closes in on the station with it while keeping the target centred.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

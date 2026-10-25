@@ -59,9 +59,10 @@ internal static class GateRender
         Rect r = bounds.Value.Intersect(new Rect(0, 0, width, height));
         for (Visual? v = control.GetVisualParent(); v != null && v != root && r.Width > 0 && r.Height > 0; v = v.GetVisualParent())
         {
-            if (v is ScrollContentPresenter clip)
+            // A scroll viewport, or a parent that clips what it holds (the pages' area above the bottom bar).
+            if (v is ScrollContentPresenter || v is Control { ClipToBounds: true })
             {
-                Rect? c = BoundsInWindow(clip, root);
+                Rect? c = BoundsInWindow(v, root);
                 r = c == null ? default : r.Intersect(c.Value);
             }
         }

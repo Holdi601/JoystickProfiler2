@@ -1,0 +1,114 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-su-25sm",
+  "title": "Su-25SM / SM3 Frogfoot",
+  "inherits": "dcs-fc3-su-25",
+  "variants": [
+    "su-25sm"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Sukhoi Su-25 (Wikipedia), Su-25SM / SM3",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Sukhoi_Su-25"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Su-25SM is a modernised version of the armoured Su-25 attack plane, and the SM3 is its latest step. The old ASP-17 gunsight gives way to a head-up display and a colour multifunction display, both part of the PrNK-25SM navigation and attack system; the SM3 adds the SOLO-25 targeting system. The stick and the twin throttle are those of the Su-25, so this guide follows the DCS Su-25 and adds the SM's new displays. The SM stick has one extra unlabelled button whose function is not public.",
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "ASP-17 gunsight",
+      "panels": [
+        {
+          "id": "hud-sm",
+          "name": "Head-up display of the PrNK-25SM",
+          "src": "w1",
+          "text": "The SM replaces the old ASP-17 gunsight with a real head-up display, a glass screen in front of the pilot's eyes that shows flight numbers and aiming marks.",
+          "context": "It is part of the new PrNK-25SM navigation and attack system, which works out where weapons will hit.",
+          "controls": [
+            {
+              "id": "hud",
+              "name": "Head-up display",
+              "type": "display",
+              "match": [
+                "item:hud:1"
+              ],
+              "text": "The glass screen in front of the pilot's eyes. It shows speed, height, heading and the aiming marks for the gun, rockets and bombs.",
+              "context": "The pilot looks through it during an attack run and keeps both eyes outside.",
+              "src": "w1"
+            },
+            {
+              "id": "hud-control",
+              "name": "HUD control panel",
+              "type": "other",
+              "match": [
+                "item:hud:2"
+              ],
+              "text": "A small panel with the settings of the head-up display, such as its brightness and what it shows.",
+              "context": "The exact switches of this panel are not described in the sources JoyPro uses."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "panels": [
+        {
+          "id": "mfd-sm",
+          "name": "Colour multifunction display",
+          "src": "w1",
+          "text": "A colour screen in the instrument panel with buttons around its edge. It shows navigation, weapons and, on the SM3, the SOLO-25 targeting system.",
+          "context": "It brings a map and the weapon status onto one screen, which the original Su-25 did not have.",
+          "controls": [
+            {
+              "id": "mfd",
+              "name": "Colour MFD",
+              "type": "display",
+              "match": [
+                "item:mfd:1"
+              ],
+              "text": "The colour screen itself. It can show a moving map, the route, the weapons and the targeting pictures.",
+              "context": "The pilot switches between these pages during the mission.",
+              "src": "w1"
+            },
+            {
+              "id": "mfd-keys",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:mfd:2"
+              ],
+              "text": "Buttons around the edge of the screen. Each one picks the word printed next to it on the screen.",
+              "context": "The same button does different things on different pages."
+            },
+            {
+              "id": "nav-entry",
+              "name": "Navigation data entry panel",
+              "type": "keypad",
+              "match": [
+                "item:mfd:3"
+              ],
+              "text": "A keypad where the pilot types navigation data, for example the points of the route (waypoints, points on the planned route the plane can steer to).",
+              "context": "The navigation system then guides the pilot along these points to the target and home."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

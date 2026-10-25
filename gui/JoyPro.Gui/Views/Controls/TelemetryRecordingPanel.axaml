@@ -52,7 +52,7 @@
                 <DataTemplate x:DataType="models:TelemetryRecordingGameItem">
                     <StackPanel Width="410" Spacing="0">
                         <CheckBox Content="{Binding Title}" IsChecked="{Binding Enabled}" />
-                        <TextBlock Text="{Binding Details}" Classes="caption" FontSize="11" TextWrapping="Wrap" Margin="28,-4,0,2" />
+                        <TextBlock Text="{Binding Details}" Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" Margin="28,-4,0,2" />
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -75,8 +75,8 @@
                         <TextBlock Grid.Column="2" Text="{Binding Aircraft}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Opacity="0.85" />
                         <TextBlock Grid.Column="3" Text="{Binding Duration}" VerticalAlignment="Center" HorizontalAlignment="Right" />
                         <TextBlock Grid.Column="4" Text="{Binding Size}" VerticalAlignment="Center" HorizontalAlignment="Right" Opacity="0.75" />
-                        <Border Grid.Column="5" IsVisible="{Binding HasState}" Background="#33F59E0B" CornerRadius="4" Padding="6,1">
-                            <TextBlock Text="{Binding State}" FontSize="11" />
+                        <Border Grid.Column="5" IsVisible="{Binding HasState}" Background="{DynamicResource JP.Chip.WarnBrush}" CornerRadius="4" Padding="6,1">
+                            <TextBlock Text="{Binding State}" FontSize="{DynamicResource JP.FontSize.11}" />
                         </Border>
                     </Grid>
                 </DataTemplate>

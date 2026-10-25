@@ -151,20 +151,17 @@ namespace JoyPro.DeviceReference
             return Path.Combine(engineFolder ?? string.Empty, "DB", "Devices");
         }
 
-        // The user's own device definitions: <data>\Devices (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro, as the
+        // The user's own device definitions: <data>\Devices (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2, as the
         // engine's other data).
         public static string UserFolder()
         {
             return Path.Combine(DataRoot(), "Devices");
         }
 
-        // <data>: JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro.
+        // <data>: JOYPRO_DATA_DIR, else %LOCALAPPDATA%\JoyPro2 (JoyProDataFolder).
         public static string DataRoot()
         {
-            string root = Environment.GetEnvironmentVariable(DataFolderVariable);
-            if (string.IsNullOrWhiteSpace(root))
-                root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro");
-            return root;
+            return global::JoyPro.Logging.JoyProDataFolder.Root();
         }
 
         // Cheat-sheet pictures the user received from others (community sheets) that JoyPro does not ship, e.g. because
@@ -214,13 +211,67 @@ namespace JoyPro.DeviceReference
             return catalog;
         }
 
+        // The photo folder a catalog uses instead of the shipped one (the GUI: a newer downloaded photo list,
+        // DevicePhotoList); null = the shipped folder. The engine leaves it unset.
+        public static Func<string, string> PhotoFolderResolver;
+
+        // _hosts.json in a photo list: further maker hosts per model ({ "models": { "<id>": ["host", ...] } }).
+        public const string HostsFileName = "_hosts.json";
+
+        public static Dictionary<string, List<string>> ReadHostsFile(string file, List<string> warnings)
+        {
+            Dictionary<string, List<string>> hosts = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(file) || !File.Exists(file))
+                return hosts;
+            try
+            {
+                Dictionary<string, object> models = Object(MiniJson.Parse(File.ReadAllText(file, Encoding.UTF8)) as Dictionary<string, object>, "models");
+                if (models != null)
+                {
+                    foreach (KeyValuePair<string, object> pair in models)
+                    {
+                        List<object> list = pair.Value as List<object>;
+                        if (list != null)
+                            hosts[pair.Key] = list.Select(v => Convert.ToString(v, CultureInfo.InvariantCulture) ?? string.Empty).Where(h => h.Trim().Length > 0).ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (warnings != null)
+                    warnings.Add(HostsFileName + " could not be read: " + ex.Message);
+            }
+            return hosts;
+        }
+
         // Adds the photo references of a DevicePhotos folder to the models they name.
         public void MergePhotos(string photoFolder)
         {
+            if (PhotoFolderResolver != null)
+            {
+                string other = PhotoFolderResolver(photoFolder);
+                if (!string.IsNullOrWhiteSpace(other) && Directory.Exists(other))
+                    photoFolder = other;
+            }
             if (string.IsNullOrWhiteSpace(photoFolder) || !Directory.Exists(photoFolder))
                 return;
+            DevicePhotoSources.Current = DevicePhotoSources.Load(photoFolder, Warnings);
+            foreach (KeyValuePair<string, List<string>> pair in ReadHostsFile(Path.Combine(photoFolder, HostsFileName), Warnings))
+            {
+                RefDevice device = Find(pair.Key);
+                if (device == null)
+                    continue;
+                foreach (string host in pair.Value.Select(h => h.Trim().ToLowerInvariant()))
+                {
+                    if (!device.OfficialHosts.Contains(host) && DevicePhotoDb.HostEntryProblem(host).Length == 0)
+                        device.OfficialHosts.Add(host);
+                }
+            }
             foreach (string file in Directory.GetFiles(photoFolder, "*.json").OrderBy(f => f, StringComparer.OrdinalIgnoreCase))
             {
+                // _sources.json, _hosts.json: the list's settings, not photos.
+                if (Path.GetFileName(file).StartsWith("_", StringComparison.Ordinal))
+                    continue;
                 try
                 {
                     foreach (DevicePhoto photo in DevicePhotoDb.ParsePhotoFile(File.ReadAllText(file, Encoding.UTF8)))
@@ -433,8 +484,7 @@ namespace JoyPro.DeviceReference
             Uri uri;
             if (!Uri.TryCreate(device.Image, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps)
                 return string.Empty;
-            string host = uri.Host.ToLowerInvariant();
-            return device.OfficialHosts.Any(h => host == h || host.EndsWith("." + h, StringComparison.Ordinal)) ? device.Image : string.Empty;
+            return device.OfficialHosts.Any(h => DevicePhotoDb.HostMatches(uri, h)) ? device.Image : string.Empty;
         }
 
         public static string NormalizeVidPid(string value)

@@ -1,0 +1,212 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-airwolf",
+  "title": "Airwolf (TV series)",
+  "variants": [
+    "airwolf-pilot"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Airwolf (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Airwolf"
+    }
+  ],
+  "intro": "Airwolf is the fictional supersonic armed helicopter of the TV series Airwolf (1984-1987), a modified Bell 222 with guns that fold out of the body, a missile pod and turbo thrusters. Two pilots sit in front, and a flight engineer's weapons and systems station is behind them.",
+  "areas": [
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Displays and lit switches in front of the pilots.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s1",
+          "text": "Screens, lit switch rows and the turbo control in front of the pilots.",
+          "context": "The series shows a busy, glowing panel; the turbo control gives Airwolf its famous speed.",
+          "controls": [
+            {
+              "id": "displays",
+              "name": "Displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Screens show the flight data and the targeting pictures.",
+              "context": "They help the pilot fly and aim the weapons.",
+              "src": "s1"
+            },
+            {
+              "id": "turbo",
+              "name": "Turbo thrusters",
+              "type": "switch2",
+              "match": [
+                "item:instrument-panel:2",
+                "control:panel.switch.turbo"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The turbo thrusters push the helicopter to very high speed."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Airwolf flies like a normal fast helicopter."
+                }
+              ],
+              "text": "This control switches on the turbo thrusters, jet engines that push Airwolf to very high speed, faster than sound.",
+              "context": "No normal helicopter can fly this fast; it is how Airwolf escapes or catches up. The exact control is not identified.",
+              "src": "s1"
+            },
+            {
+              "id": "switches",
+              "name": "Lit switch rows",
+              "type": "switch",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Rows of lit switches for Airwolf's systems.",
+              "context": "The series shows them glowing in the dark cockpit; each one is not explained.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot",
+      "where": "front-right",
+      "name": "Co-pilot seat",
+      "text": "The second pilot seat.",
+      "panels": [
+        {
+          "id": "copilot",
+          "name": "Co-pilot seat",
+          "db": "copilot",
+          "src": "s1",
+          "text": "The second pilot seat beside the pilot in Airwolf.",
+          "context": "In the series Dominic Santini often sits here.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Co-pilot seat",
+              "type": "other",
+              "match": [
+                "item:copilot:1"
+              ],
+              "text": "The second pilot seat, where Dominic Santini sits in the series.",
+              "context": "A second pilot can fly or help with the systems.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engineer",
+      "where": "rear",
+      "name": "Weapons and systems console",
+      "text": "The flight engineer's station behind the pilots.",
+      "panels": [
+        {
+          "id": "engineer",
+          "name": "Weapons and systems console",
+          "db": "engineer",
+          "src": "s1",
+          "text": "The flight engineer's station with the weapon selection and electronics.",
+          "context": "From here the weapons are armed and the scanners and countermeasures are run.",
+          "controls": [
+            {
+              "id": "weapon-select",
+              "name": "Weapon selection",
+              "type": "selector",
+              "match": [
+                "item:engineer:1"
+              ],
+              "text": "A selector that arms the chain guns or the missiles from this station.",
+              "context": "The pilot then fires the selected weapon with the trigger on the cyclic.",
+              "src": "s1"
+            },
+            {
+              "id": "electronics",
+              "name": "Electronics",
+              "type": "other",
+              "match": [
+                "item:engineer:2"
+              ],
+              "text": "Scanners and countermeasures, things that fool enemy missiles.",
+              "context": "The engineer watches for threats and protects the helicopter.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic and collective",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic",
+          "src": "s1",
+          "text": "The cyclic stick in front of the pilot in Airwolf.",
+          "context": "It tilts the helicopter to fly forward, back and sideways.",
+          "controls": [
+            {
+              "id": "cyclic",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the cyclic forward tips the helicopter forward so it flies forward; moving it sideways makes it fly sideways.",
+              "context": "It tilts the rotor in the direction the pilot wants to go.",
+              "src": "s1"
+            },
+            {
+              "id": "trigger",
+              "name": "Weapons trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "A trigger on the cyclic grip fires the selected weapon.",
+              "context": "The weapon is chosen at the flight engineer's station; the guns fold out of the body before firing.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "src": "s1",
+          "text": "The collective lever at the pilot's left hand.",
+          "context": "It makes the helicopter climb or sink.",
+          "controls": [
+            {
+              "id": "collective",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "Pulling the collective up makes the rotor blades bite more air so the helicopter climbs; pushing it down makes it sink.",
+              "context": "Together with the cyclic it is how every helicopter is flown.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

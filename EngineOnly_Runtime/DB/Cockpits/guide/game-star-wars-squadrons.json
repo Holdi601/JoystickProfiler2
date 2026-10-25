@@ -1,0 +1,365 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "game-star-wars-squadrons",
+  "title": "Star Wars: Squadrons: default joystick layout",
+  "variants": [
+    "star-wars-squadrons-joystick"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "q1",
+      "title": "STAR WARS: Squadrons PC text manual (EA accessibility resources)",
+      "kind": "reference",
+      "url": "https://www.ea.com/able/resources/star-wars/star-wars-squadrons/pc/text-manual"
+    },
+    {
+      "id": "q2",
+      "title": "Star Wars: Squadrons (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Star_Wars:_Squadrons"
+    }
+  ],
+  "intro": "Star Wars: Squadrons (EA, 2020) is a space combat game where the pilot flies New Republic and Imperial starfighters from inside the cockpit. All ships are flown the same way; the cockpits differ in where the instruments sit and how much the pilot can see. This guide explains the joystick defaults from EA's PC manual. Only one button changes with the side: button 7 does shield focus on New Republic ships and power conversion on Imperial ships.",
+  "areas": [
+    {
+      "id": "instruments",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The cockpit screens that every Squadrons ship has, each in its own place.",
+      "panels": [
+        {
+          "id": "cockpit-displays",
+          "name": "Cockpit displays (instruments of every ship)",
+          "db": "cockpit-displays",
+          "src": "q1",
+          "text": "Every Squadrons cockpit shows the same information on its own instruments: the target, the power sharing, the shields and hull, the sensors, the special equipment, the speed and the countermeasures.",
+          "context": "Each ship places these screens differently, so a pilot learns where they sit in each cockpit. The game can also show them as a HUD (the glass screen in front of the pilot's eyes) instead.",
+          "controls": [
+            {
+              "id": "targeting",
+              "name": "Targeting computer",
+              "type": "display",
+              "match": [
+                "item:cockpit-displays:1"
+              ],
+              "text": "This screen shows the selected target, how far away it is and how much hull and shield it has left.",
+              "context": "The thumb button and head button 5 pick the targets shown here; the pilot reads it before choosing a weapon.",
+              "src": "q1"
+            },
+            {
+              "id": "power",
+              "name": "Power management display",
+              "type": "display",
+              "match": [
+                "item:cockpit-displays:2"
+              ],
+              "text": "This display shows how the ship's power is shared between engines, weapons and, on ships with shields, the shields.",
+              "context": "The hat on the stick moves the power; the display shows the result at once.",
+              "src": "q1"
+            },
+            {
+              "id": "shields-hull",
+              "name": "Shield and hull status",
+              "type": "gauge",
+              "match": [
+                "item:cockpit-displays:3"
+              ],
+              "text": "This shows how much shield charge the ship has (front and back where fitted) and how damaged the hull, the ship's body, is.",
+              "context": "When the shields are gone, hits damage the hull; at zero hull the ship is destroyed.",
+              "src": "q1"
+            },
+            {
+              "id": "sensors",
+              "name": "Sensors",
+              "type": "display",
+              "match": [
+                "item:cockpit-displays:4"
+              ],
+              "text": "This screen shows the other ships around, friends and enemies, as marks.",
+              "context": "It helps the pilot find enemies outside the window and see who is behind.",
+              "src": "q1"
+            },
+            {
+              "id": "aux",
+              "name": "Auxiliary status",
+              "type": "indicator",
+              "match": [
+                "item:cockpit-displays:5"
+              ],
+              "text": "This shows the two auxiliary components (special equipment such as missiles or repair tools) on the left and right, and how long until each can be used again.",
+              "context": "Head button 3 uses the left one and head button 4 the right one; after use they need time to recharge (cooldown).",
+              "src": "q1"
+            },
+            {
+              "id": "speed",
+              "name": "Speed and boost",
+              "type": "gauge",
+              "match": [
+                "item:cockpit-displays:6"
+              ],
+              "text": "This shows the throttle setting, the current speed and how much boost charge is stored.",
+              "context": "Boost is a short burst of extra speed on base button 9; the gauge shows when it is ready.",
+              "src": "q1"
+            },
+            {
+              "id": "cm",
+              "name": "Countermeasures",
+              "type": "indicator",
+              "match": [
+                "item:cockpit-displays:7"
+              ],
+              "text": "This shows whether the countermeasures are ready. Countermeasures are things the ship throws out to fool enemy missiles.",
+              "context": "Head button 6 fires them; after use they need time before they are ready again.",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "menus",
+      "where": "front-center",
+      "name": "Radial menus",
+      "text": "Round menus for team messages and target filters, opened from the stick base.",
+      "panels": [
+        {
+          "id": "comms-targeting",
+          "name": "Comms and targeting menus (radial menus)",
+          "db": "comms-targeting",
+          "src": "q1",
+          "text": "These are round menus that open over the view. One sends messages and orders to the squad, one chooses which kind of target the targeting picks.",
+          "context": "They open from the stick base buttons 8 and 10, so the pilot can talk to the team and sort targets without a keyboard.",
+          "controls": [
+            {
+              "id": "comm",
+              "name": "Comm menu",
+              "type": "other",
+              "match": [
+                "item:comms-targeting:1"
+              ],
+              "text": "This round menu sends short messages and orders to the squad, the other pilots of the team.",
+              "context": "It opens when the pilot holds base button 8.",
+              "src": "q1"
+            },
+            {
+              "id": "targeting",
+              "name": "Targeting menu",
+              "type": "other",
+              "match": [
+                "item:comms-targeting:2"
+              ],
+              "text": "This round menu sets a filter for targeting, for example only mission objectives or only squadmates.",
+              "context": "It opens with base button 10; after it, the target buttons only pick from that group.",
+              "src": "q1"
+            },
+            {
+              "id": "ping",
+              "name": "Ping",
+              "type": "other",
+              "match": [
+                "item:comms-targeting:3"
+              ],
+              "text": "A ping marks the current target for the whole squad. Pressing twice quickly answers a squadmate's ping to say the pilot agrees.",
+              "context": "Pings help the team attack the same target. They sit on base button 8 (short press).",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttle",
+      "text": "One joystick with a throttle slider: it flies, fights and talks to the team.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Joystick",
+          "src": "q1",
+          "text": "The one joystick flies the ship and holds all the fighting buttons: weapons, targets, special equipment, power and boost.",
+          "context": "These are the game's joystick defaults from the EA manual. They fit a stick with a throttle slider on its base, such as the Logitech Extreme 3D Pro; other sticks may need their buttons set by hand.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Stick (pitch, yaw, roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up. Left and right turn the nose left or right (yaw). Twisting the stick rolls the ship.",
+              "context": "In this layout left and right turn the nose instead of rolling; the twist does the rolling.",
+              "src": "q1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (button 1, primary weapon)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "Pulling the trigger fires the ship's main weapon, usually its laser cannons.",
+              "context": "More power to the weapons with the hat lets the guns fire longer before they need a pause.",
+              "src": "q1"
+            },
+            {
+              "id": "thumb",
+              "name": "Thumb button (button 2, target ahead)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button selects the target closest to the middle of the view, the one straight ahead.",
+              "context": "The targeting computer then shows that target; the pilot points the nose at an enemy and presses it.",
+              "src": "q1"
+            },
+            {
+              "id": "head-3",
+              "name": "Head button 3 (left auxiliary)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "This button uses the left auxiliary component, a piece of special equipment chosen in the hangar, such as missiles or a repair tool.",
+              "context": "The auxiliary status display shows when it is ready again after use.",
+              "src": "q1"
+            },
+            {
+              "id": "head-4",
+              "name": "Head button 4 (right auxiliary)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "This button uses the right auxiliary component, the second piece of special equipment.",
+              "context": "Together with button 3 it gives the pilot two extra tools besides the main guns.",
+              "src": "q1"
+            },
+            {
+              "id": "head-5",
+              "name": "Head button 5 (cycle targets)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.4"
+              ],
+              "text": "A short press steps to the next target. Pressing it twice quickly targets the enemy that is attacking the ship.",
+              "context": "Targeting the attacker helps when someone is shooting from behind and the pilot cannot see them.",
+              "src": "q1"
+            },
+            {
+              "id": "head-6",
+              "name": "Head button 6 (countermeasures)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.5"
+              ],
+              "text": "This button fires the countermeasures, which fool or stop enemy missiles chasing the ship.",
+              "context": "The pilot presses it when the missile warning sounds; it then needs time before it can be used again.",
+              "src": "q1"
+            },
+            {
+              "id": "hat",
+              "name": "Hat (power management)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "The hat moves power between the ship's systems: left to the engines, up to the weapons, right to the shields. Down shares it evenly again.",
+              "context": "More power to engines makes the ship faster, more to weapons lets it shoot longer, more to shields recharges them faster. Ships without shields have only engines and weapons.",
+              "src": "q1"
+            },
+            {
+              "id": "base-7",
+              "name": "Base button 7 (shield focus / power conversion)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.1"
+              ],
+              "text": "On New Republic ships this button points the shields to the front or the back of the ship (shield focus). On Imperial ships it does power conversion: it moves power between the lasers and the engines.",
+              "context": "The faction of the ship decides which of the two jobs the button does; the ship's own page in this guide says which one applies.",
+              "src": "q1"
+            },
+            {
+              "id": "base-8",
+              "name": "Base button 8 (ping / comm menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.2"
+              ],
+              "text": "A short press pings the target for the squad. Pressing twice quickly answers a ping. Holding it opens the comm menu.",
+              "context": "It is the pilot's main way to work with the team without a microphone.",
+              "src": "q1"
+            },
+            {
+              "id": "base-9",
+              "name": "Base button 9 (boost / drift)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.3"
+              ],
+              "text": "A short press boosts the ship, a burst of extra speed. Holding it while boosting and turning makes the ship drift, sliding round a corner while the nose turns fast.",
+              "context": "Boost uses the stored boost charge shown on the speed gauge; drifting is a way to turn around quickly behind an enemy.",
+              "src": "q1"
+            },
+            {
+              "id": "base-10",
+              "name": "Base button 10 (targeting menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.4"
+              ],
+              "text": "This button opens the targeting menu, where the pilot chooses which kind of target to pick.",
+              "context": "Useful in big battles, for example to target only the mission objectives.",
+              "src": "q1"
+            },
+            {
+              "id": "base-11",
+              "name": "Base button 11 (menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.5"
+              ],
+              "text": "This button opens the game's main menu over the battle.",
+              "context": "From there the pilot can pause, change settings or leave the battle.",
+              "src": "q1"
+            },
+            {
+              "id": "base-12",
+              "name": "Base button 12 (free look)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "Holding this button lets the pilot look around the cockpit with the stick instead of flying.",
+              "context": "It helps to see an enemy above or behind; letting go returns to normal flying.",
+              "src": "q1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttle slider",
+          "src": "q1",
+          "text": "The throttle sets how fast the ship flies.",
+          "context": "On a single stick it is the slider on the base; on a stick-and-throttle set it is the throttle's main lever.",
+          "controls": [
+            {
+              "id": "slider",
+              "name": "Throttle slider",
+              "type": "slider",
+              "match": [
+                "control:throttle.axis.slider.1"
+              ],
+              "text": "Moving the slider up makes the ship fly faster, moving it down slows it down.",
+              "context": "Each ship turns best at a middle speed, so pilots often slow down in a dogfight; the speed gauge shows the setting.",
+              "src": "q1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

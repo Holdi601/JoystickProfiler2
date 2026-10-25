@@ -1,0 +1,179 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "film-interstellar-ranger",
+  "title": "Ranger (Interstellar)",
+  "variants": [
+    "interstellar-ranger-2"
+  ],
+  "games": [],
+  "sets": [],
+  "sources": [
+    {
+      "id": "s1",
+      "title": "Interstellar (film) (Wikipedia)",
+      "kind": "reference",
+      "url": "https://en.wikipedia.org/wiki/Interstellar_(film)"
+    }
+  ],
+  "intro": "The Ranger is a fictional winged shuttle from Christopher Nolan's film Interstellar (2014). It lands on planets and docks with the ring-shaped mothership Endurance. The two-seat flight deck has rows of switches and small screens, and the robot TARS can take over the flying.",
+  "areas": [
+    {
+      "id": "windows",
+      "where": "glareshield",
+      "name": "Windows",
+      "text": "The forward windows of the shuttle.",
+      "panels": [
+        {
+          "id": "windows",
+          "name": "Windows",
+          "db": "windows",
+          "src": "s1",
+          "text": "The small forward windows of the Ranger's flight deck.",
+          "context": "The pilot looks out through them for landing and docking.",
+          "controls": [
+            {
+              "id": "windows",
+              "name": "Forward windows",
+              "type": "other",
+              "match": [
+                "item:windows:1"
+              ],
+              "text": "Small windows at the front of the lander give the view forward.",
+              "context": "The small windows make the view narrow, so the screens help with landing and docking.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Switches and small screens in front of the pilot.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Instrument panel",
+          "db": "instrument-panel",
+          "src": "s1",
+          "text": "Rows of switches, small screens and the docking controls.",
+          "context": "The pilot flies, lands and docks with the mothership from here.",
+          "controls": [
+            {
+              "id": "switches",
+              "name": "Switch rows",
+              "type": "switch",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Rows of toggle switches that look like those of older real spacecraft.",
+              "context": "The film does not explain each switch.",
+              "src": "s1"
+            },
+            {
+              "id": "screens",
+              "name": "Small screens",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "Small screens show the flight data and the picture of a docking camera.",
+              "context": "The camera helps line up with the mothership during docking.",
+              "src": "s1"
+            },
+            {
+              "id": "docking",
+              "name": "Docking controls",
+              "type": "other",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "Controls used to match the spin of the Endurance before docking.",
+              "context": "In the film the pilot spins the shuttle to the same speed as the turning mothership to dock with it.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copilot",
+      "where": "front-right",
+      "name": "Co-pilot seat",
+      "text": "The second seat beside the pilot.",
+      "panels": [
+        {
+          "id": "copilot",
+          "name": "Co-pilot seat",
+          "db": "copilot",
+          "src": "s1",
+          "text": "The second seat on the Ranger's flight deck.",
+          "context": "A second pilot or one of the robots can sit and fly here.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Co-pilot seat",
+              "type": "other",
+              "match": [
+                "item:copilot:1"
+              ],
+              "text": "The second seat. The robots TARS and CASE can fly the Ranger as well.",
+              "context": "In the film a robot takes the controls when needed, for example during a hard manoeuvre.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and thrust control",
+      "text": "The hand controls the pilot flies with.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "s1",
+          "text": "The control stick at the pilot's seat in the Ranger.",
+          "context": "It steers the shuttle in space and in the air.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Pushing the stick forward or pulling it back tips the nose down or up; moving it left or right rolls the shuttle.",
+              "context": "The Ranger flies like an aircraft in air and with thrusters in space.",
+              "src": "s1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Thrust control",
+          "src": "s1",
+          "text": "The thrust lever at the pilot's left (the catalog's guess).",
+          "context": "It sets the main engine thrust.",
+          "controls": [
+            {
+              "id": "thrust",
+              "name": "Thrust control",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.main"
+              ],
+              "text": "This lever is taken as the control for the main engines' thrust.",
+              "context": "Its place at the pilot's left is the catalog's guess; the film does not show it clearly.",
+              "src": "s1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

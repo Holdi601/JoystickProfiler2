@@ -17,7 +17,8 @@ using Xunit;
 namespace JoyPro.Gui.Tests;
 
 // The Layout page's "Download the reference photo" (DeviceReferenceViewModel.ReferencePhoto): only for a line drawing
-// made from a maker's photo, only after the click and the device's consent, into the device picture cache, then shown
+// made from a maker's photo, only after the click and the device's consent, into the reference photos of the data
+// folder (ReferencePhotoStore: SHA-256 check, web archive fallback), then shown
 // as a picture of its own. A fake HTTP server answers; nothing goes to the internet.
 [SupportedOSPlatform("windows")]
 public sealed class ReferencePhotoDownloadTests : IDisposable
@@ -141,8 +142,10 @@ public sealed class ReferencePhotoDownloadTests : IDisposable
             vm.AnswerPhotoConsentCommand.Execute("yes");
             WaitFor(() => vm.HasReferencePhotoFile && !vm.IsDownloadingReferencePhoto && vm.PictureKind == "vendor");
             Assert.False(vm.AwaitsReferencePhotoConsent);
-            Assert.Equal(1, server.Calls);
-            Assert.StartsWith(Path.Combine(temp, "cache"), vm.ReferencePhotoFile);
+            // The fake bytes differ from the SHA-256 on record: the web archive is asked too (it has no copy here), and
+            // the photo is kept as it is now, in the reference photos of the data folder.
+            Assert.Equal(2, server.Calls);
+            Assert.StartsWith(Path.Combine(temp, "data", "DeviceReference", "ReferencePhotos"), vm.ReferencePhotoFile);
             Assert.True(File.Exists(vm.ReferencePhotoFile));
             Assert.Equal(url, vm.SelectedPicture!.Source);
             Assert.Contains(vm.Pictures, p => p.Kind == "vendor" && p.Source == url);

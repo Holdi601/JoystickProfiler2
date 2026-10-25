@@ -1,0 +1,510 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-mi-28n",
+  "title": "Mi-28N Havoc (pilot)",
+  "variants": [
+    "mi-28n"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Mil Mi-28 (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Mil_Mi-28"
+    },
+    {
+      "id": "m1",
+      "title": "DCS Mi-24P Quick Start Manual EN (Mil pilot grips used as the model)",
+      "kind": "manual",
+      "file": "Mods/aircraft/Mi-24P/Doc/Mi-24P Quick Start Manual EN.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Mi-28N Night Hunter is a Russian armoured attack helicopter with two separate cockpits one behind the other: the navigator-operator in front aims the chin cannon and the guided missiles, the pilot sits behind and higher. The N version adds a radar above the rotor and night sights. This guide covers the pilot's rear cockpit. JoyPro takes its grips as those of the Mi-24P pilot; the panels are described from public sources only.",
+  "areas": [
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Screens and backup instruments of the rear cockpit.",
+      "panels": [
+        {
+          "id": "instrument-panel",
+          "name": "Pilot instrument panel",
+          "text": "The rear cockpit's screens and the round backup instruments for flight and engines.",
+          "context": "The Mi-28N mixes screens with analogue instruments; JoyPro describes the panel from public sources only.",
+          "controls": [
+            {
+              "id": "mfd",
+              "name": "Multifunction displays",
+              "type": "display",
+              "match": [
+                "item:pilot-instrument-panel:1"
+              ],
+              "text": "The pilot's colour screens (multi-function screens with buttons around their edge). They show the flight instruments, the map, the engines and the night vision picture.",
+              "context": "Instead of dozens of round dials, the crew picks the page each screen shows; one screen can replace another that fails.",
+              "src": "w1"
+            },
+            {
+              "id": "adi",
+              "name": "Attitude director indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:2"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the helicopter leans to one side, like a picture of the horizon (artificial horizon). Director bars on it show which way to steer.",
+              "context": "It is the main instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:3"
+              ],
+              "text": "This dial shows how fast the helicopter moves through the air, in kilometres per hour.",
+              "context": "Below a certain speed a helicopter can hover and fly sideways, so the needle near zero is normal; the pilot watches it in the climb-out and when slowing down to land."
+            },
+            {
+              "id": "alt",
+              "name": "Barometric altimeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:4"
+              ],
+              "text": "The height gauge. It shows the height above sea level; the pilot sets the local air pressure on it so it reads right. It reads in metres.",
+              "context": "The pilot uses it to hold a cruising height and to follow the heights given by the tower."
+            },
+            {
+              "id": "radalt",
+              "name": "Radar altimeter",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:5"
+              ],
+              "text": "This instrument measures the height above the ground right below the helicopter with a radio beam, not the height above sea level.",
+              "context": "It matters most in the hover, in low flight and in the last part of the landing, when the ground is close."
+            },
+            {
+              "id": "vsi",
+              "name": "Vertical speed indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:6"
+              ],
+              "text": "This dial shows whether the helicopter climbs or sinks, and how fast.",
+              "context": "The pilot uses it to keep a steady, gentle descent when coming in to land and to hold level flight."
+            },
+            {
+              "id": "rpm",
+              "name": "Rotor and engine rpm indicator",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:7"
+              ],
+              "text": "This gauge shows how fast the main rotor and the turbines of both engines turn (RPM).",
+              "context": "The pilot keeps the rotor speed in its normal band; a turbine needle that drops shows a weak engine."
+            },
+            {
+              "id": "egt",
+              "name": "Engine temperature indicators",
+              "type": "gauge",
+              "match": [
+                "item:pilot-instrument-panel:8"
+              ],
+              "text": "Gauges that show how hot the gas in each of the two engines is.",
+              "context": "Too hot damages the turbine; the pilot watches them during the start and at high power."
+            },
+            {
+              "id": "mwc",
+              "name": "Master caution / warning lights",
+              "type": "light",
+              "match": [
+                "item:pilot-instrument-panel:9"
+              ],
+              "text": "Labelled warning lights for failures and fires. Each one comes on to say what is wrong.",
+              "context": "A warning light needs action at once; the pilot reads the label and follows the emergency steps for it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "weapons",
+      "where": "front-right",
+      "name": "Weapons panel",
+      "text": "The pilot's weapon switches.",
+      "panels": [
+        {
+          "id": "weapons",
+          "name": "Pilot weapons panel",
+          "text": "The pilot's switches for the cannon and the weapons on the stub wings.",
+          "context": "The navigator-operator in the front seat aims the guided missiles and the chin cannon; the pilot can fire the cannon locked straight ahead and the rockets. The panel is described from public sources.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch2",
+              "match": [
+                "item:pilot-weapons-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The weapons can fire."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Nothing can fire."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons (master arm): nothing fires while it is off.",
+              "context": "The pilot arms the weapons only when the helicopter is clear of friendly people and near the target, and makes them safe again before landing."
+            },
+            {
+              "id": "weapon-sel",
+              "name": "Weapon selector",
+              "type": "selector",
+              "match": [
+                "item:pilot-weapons-panel:2"
+              ],
+              "text": "This switch chooses which weapon the pilot's release button fires: the cannon, the rockets or the missiles.",
+              "context": "The pilot sets it before the attack. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "salvo",
+              "name": "Rocket salvo selector",
+              "type": "selector",
+              "match": [
+                "item:pilot-weapons-panel:3"
+              ],
+              "text": "This switch sets how many rockets leave with each press of the release button.",
+              "context": "A few rockets for a small target, a big salvo for an area. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "cannon-fwd",
+              "name": "Cannon fixed-forward switch",
+              "type": "switch2",
+              "match": [
+                "item:pilot-weapons-panel:4"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The cannon is locked straight ahead for the pilot."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The cannon moves with the operator's sight."
+                }
+              ],
+              "text": "This switch locks the 30 mm chin cannon straight ahead, so the pilot can aim it by pointing the helicopter.",
+              "context": "Normally the operator in front moves the cannon with his sight."
+            },
+            {
+              "id": "lights",
+              "name": "Station status lights",
+              "type": "light",
+              "match": [
+                "item:pilot-weapons-panel:5"
+              ],
+              "text": "Lights that show which weapon stations are loaded and which are selected.",
+              "context": "The pilot checks them before firing."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-side",
+      "where": "left-console",
+      "name": "Left side panel and levers",
+      "text": "Rotor brake, fuel cutoff and engine levers.",
+      "panels": [
+        {
+          "id": "levers",
+          "name": "Pilot levers and side panels",
+          "text": "The rotor brake, the fuel cutoff levers, the separate engine levers and the standby compass on the left side, as in the Mi-24.",
+          "context": "They are used for the start-up and the shutdown; in flight they stay where they were set.",
+          "controls": [
+            {
+              "id": "rotor-brake",
+              "name": "Rotor brake lever",
+              "type": "lever",
+              "match": [
+                "item:pilot-cockpit-controls:1"
+              ],
+              "text": "This lever works the rotor brake, which stops the main rotor from turning when parked.",
+              "context": "It is released before the engine start and stays off in flight."
+            },
+            {
+              "id": "fuel-cutoff",
+              "name": "Fuel cutoff levers",
+              "type": "lever",
+              "match": [
+                "item:pilot-cockpit-controls:2"
+              ],
+              "text": "Two levers, one per engine, that let fuel flow to the engine or shut it off, which stops the engine.",
+              "context": "They are opened during the start of each engine and closed for the shutdown."
+            },
+            {
+              "id": "throttles-list",
+              "name": "Individual throttle levers",
+              "type": "lever",
+              "match": [
+                "item:pilot-cockpit-controls:3"
+              ],
+              "text": "Two levers beside the collective that set the power of the left and the right engine separately.",
+              "context": "They are the same levers as listed with the collective below; normally they stay in their middle notch."
+            },
+            {
+              "id": "ki13",
+              "name": "KI-13 standby compass",
+              "type": "gauge",
+              "match": [
+                "item:pilot-cockpit-controls:4"
+              ],
+              "text": "A simple magnetic compass, like a hiking compass, that shows the heading without any electricity.",
+              "context": "It is the backup when the electric compass system or the power fails."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Cyclic, collective and pedals",
+      "text": "The flight controls the pilot holds.",
+      "panels": [
+        {
+          "id": "cyclic",
+          "name": "Cyclic grip",
+          "text": "The stick between the pilot's knees with the wheel brake, the radio trigger, the trim controls and the covered weapon release button.",
+          "context": "JoyPro takes the Mi-28N's grip as that of the Mi-24P pilot, because Mil uses the same layout and the Mi-28's own grip is not described in its sources.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Cyclic",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The cyclic is the helicopter's stick between the pilot's knees. It tilts the rotor: forward makes the helicopter fly forward, back slows it down, left and right move it sideways.",
+              "context": "It is the main flight control together with the collective and the pedals; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "brake",
+              "name": "Wheel brake lever and parking brake",
+              "type": "lever",
+              "match": [
+                "control:stick.lever.wheel_brake"
+              ],
+              "text": "Squeezing this lever on the front of the grip brakes the wheels. A latch holds it pressed as the parking brake.",
+              "context": "As in many Russian helicopters, the brakes are on the stick, not on the pedals.",
+              "src": "m1"
+            },
+            {
+              "id": "ptt",
+              "name": "SPU radio trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.switch.ics_radio"
+              ],
+              "text": "A trigger with two steps on the front of the grip. The first step talks on the intercom (the phone line between the crew members); pulled all the way it transmits on the selected radio.",
+              "context": "Like the button of a walkie-talkie: the voice goes out only while it is held. The intercom panel decides which radio the second step uses.",
+              "src": "m1"
+            },
+            {
+              "id": "trim-hat",
+              "name": "Trimmer hat",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A four-way switch on top of the grip for the trim, small adjustments so the helicopter flies steadily without the pilot holding the stick against a force. Forward trims the nose down, back up, left and right trim the roll. It nudges the trim up, down, left and right.",
+              "context": "The pilot trims after every change of speed, so the cyclic stays where it is without effort.",
+              "src": "m1"
+            },
+            {
+              "id": "trim-btn",
+              "name": "Trimmer button",
+              "type": "button",
+              "match": [
+                "control:stick.button.trim"
+              ],
+              "text": "Pressing and releasing this button makes the present stick position the new neutral, so the stick stays there without force.",
+              "context": "The pilot trims after every change of speed.",
+              "src": "m1"
+            },
+            {
+              "id": "release",
+              "name": "Weapons release button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "Pressing this button on top of the grip fires the weapon chosen on the pilot's weapons panel.",
+              "context": "It only fires with the master arm on and the flip cover open.",
+              "src": "m1"
+            },
+            {
+              "id": "cover",
+              "name": "Weapons release cover",
+              "type": "cover",
+              "match": [
+                "control:stick.guard.weapon"
+              ],
+              "text": "A flip cover over the weapons release button. It is opened before an attack and closed afterwards.",
+              "context": "It stops the button from being pressed by accident.",
+              "src": "m1"
+            },
+            {
+              "id": "ap-off",
+              "name": "AP disconnect button",
+              "type": "button",
+              "match": [
+                "control:stick.button.ap_off"
+              ],
+              "text": "Pressing this button switches off the autopilot modes that hold height, heading or speed, so the pilot has the helicopter fully in hand.",
+              "context": "The pilot uses it to take over at once, for example when the autopilot does something unexpected.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "collective",
+          "name": "Collective",
+          "text": "The lever at the left of the seat with the throttle correction grip, the free turbine switch, the light switch, the jettison button and the friction clutch, with the two engine levers beside it.",
+          "context": "The left hand holds it in flight.",
+          "controls": [
+            {
+              "id": "lever",
+              "name": "Collective",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.main"
+              ],
+              "text": "The collective is the lever at the left of the pilot's seat. Raising it makes the main rotor blades bite the air harder, so the helicopter climbs; lowering it makes the helicopter sink.",
+              "context": "More collective needs more engine power; the pilot raises it gently and watches the torque and rotor speed."
+            },
+            {
+              "id": "twist",
+              "name": "Throttle (correction twist grip)",
+              "type": "axis",
+              "match": [
+                "control:collective.axis.throttle_twist"
+              ],
+              "text": "Turning this twist grip on the collective changes the power of both engines together (power correction).",
+              "context": "For flight it is turned fully to the right; the engine governors then hold the rotor speed.",
+              "src": "m1"
+            },
+            {
+              "id": "n2",
+              "name": "Readjust free turbine RPM switch",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.n2_trim"
+              ],
+              "positions": [
+                {
+                  "name": "UP",
+                  "text": "Held up, the turbine speed rises."
+                },
+                {
+                  "name": "DOWN",
+                  "text": "Held down, it drops."
+                }
+              ],
+              "text": "This switch raises or lowers the speed of the free turbines a little. The free turbine is the part of each engine that drives the rotor. It springs back to the middle.",
+              "context": "The pilot uses it to fine-tune the rotor speed.",
+              "src": "m1"
+            },
+            {
+              "id": "light",
+              "name": "Landing-searchlight control switch",
+              "type": "switch",
+              "match": [
+                "control:collective.switch.searchlight"
+              ],
+              "text": "This switch controls the landing searchlight: up turns it on and swings it out, down turns it off and pulls it in.",
+              "context": "The pilot uses it for landings at night.",
+              "src": "m1"
+            },
+            {
+              "id": "jett",
+              "name": "Stores jettison button",
+              "type": "button",
+              "match": [
+                "control:collective.button.tactical_release"
+              ],
+              "text": "Pressing this button drops the weapons and tanks from the stub wings (jettison).",
+              "context": "It is used when the helicopter must be lighter at once, for example after an engine failure.",
+              "src": "m1"
+            },
+            {
+              "id": "clutch",
+              "name": "Collective friction clutch",
+              "type": "button",
+              "match": [
+                "control:collective.button.clutch"
+              ],
+              "text": "Holding this button frees the collective's brake so the lever moves easily.",
+              "context": "When it is let go, the lever is held where it is.",
+              "src": "m1"
+            },
+            {
+              "id": "ecl-l",
+              "name": "Left individual throttle lever",
+              "type": "lever",
+              "match": [
+                "control:collective.lever.ecl_left"
+              ],
+              "text": "This lever beside the collective sets the power of the left engine alone.",
+              "context": "It is used to set one engine differently from the other, for example when one engine fails.",
+              "src": "m1"
+            },
+            {
+              "id": "ecl-r",
+              "name": "Right individual throttle lever",
+              "type": "lever",
+              "match": [
+                "control:collective.lever.ecl_right"
+              ],
+              "text": "This lever beside the collective sets the power of the right engine alone.",
+              "context": "Both levers must stay in place during the engine start.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "pedals",
+          "name": "Anti-torque pedals",
+          "text": "The pedals at the pilot's feet that turn the nose left and right.",
+          "context": "The tail rotor stops the helicopter from spinning; the pedals change how hard it pushes.",
+          "controls": [
+            {
+              "id": "pedals",
+              "name": "Anti-torque pedals",
+              "type": "pedal",
+              "match": [
+                "control:pedals.axis.rudder"
+              ],
+              "text": "Pushing the left or right pedal changes the pitch of the tail rotor blades, which turns the helicopter's nose to the left or the right.",
+              "context": "The pedals are used all the time, most of all in the hover and every time the collective changes the engine power."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

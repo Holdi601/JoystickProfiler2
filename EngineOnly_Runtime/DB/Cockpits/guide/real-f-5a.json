@@ -1,0 +1,538 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-f-5a",
+  "title": "F-5A Freedom Fighter",
+  "variants": [
+    "f-5a"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "Northrop F-5 (Wikipedia), F-5A/B Freedom Fighter",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Northrop_F-5"
+    },
+    {
+      "id": "m1",
+      "title": "DCS F-5E-3 Flight Manual (EN) (close sibling)",
+      "kind": "game-manual",
+      "file": "Mods/aircraft/F-5E/Doc/DCS F-5E-3 Flight Manual_ENG.pdf"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The F-5A Freedom Fighter is a small, light American fighter with two engines from the 1960s, sold to many air forces. Its cockpit is simple: a centre stick, two throttles, an optical gunsight and round dials, with no radar. The grips and consoles are inferred from the later F-5E (DCS manual) and public F-5A descriptions; the A has no radar panel, no dogfight switch and no sight cage.",
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "Optical sight",
+      "text": "The aiming sight on top of the panel.",
+      "panels": [
+        {
+          "id": "optical-gunsight",
+          "name": "Optical gunsight",
+          "src": "m1",
+          "text": "An optical sight that projects an aiming mark (reticle) onto a glass in front of the pilot, for the guns, rockets, bombs and Sidewinder missiles.",
+          "context": "The F-5A has no radar, so the sight cannot measure the range to the target; the pilot judges it himself.",
+          "controls": [
+            {
+              "id": "sight-head",
+              "name": "Sight head and reflector",
+              "type": "display",
+              "match": [
+                "item:optical-gunsight:1"
+              ],
+              "text": "The sight head projects the aiming reticle onto the tilted glass (reflector) above the panel.",
+              "context": "The pilot puts the reticle on the target and fires or releases at the right moment.",
+              "src": "m1"
+            },
+            {
+              "id": "depression",
+              "name": "Reticle depression / intensity",
+              "type": "knob",
+              "match": [
+                "item:optical-gunsight:2"
+              ],
+              "text": "This control lowers the reticle by a set amount (depression) for bombs and rockets, which fall below the line of sight, and sets its brightness.",
+              "context": "The pilot sets the depression for the weapon and the attack angle he plans to fly.",
+              "src": "m1"
+            },
+            {
+              "id": "sight-mode",
+              "name": "Sight mode selector",
+              "type": "selector",
+              "match": [
+                "item:optical-gunsight:3"
+              ],
+              "text": "This selector chooses what the sight aims for: the guns, the rockets, the bombs or the missiles.",
+              "context": "Each weapon flies differently, so the sight needs to know which one is used.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "Round dials for flying and for both engines.",
+      "panels": [
+        {
+          "id": "flight-and-engine-instruments",
+          "name": "Flight and engine instruments",
+          "src": "w1",
+          "text": "Round dials for the flight instruments and for the two J85 engines.",
+          "context": "A simple first-generation fighter panel without radar screen.",
+          "controls": [
+            {
+              "id": "adi",
+              "name": "Attitude indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:1"
+              ],
+              "text": "This instrument shows whether the nose points up or down and whether the wings are level, like a picture of the horizon (artificial horizon).",
+              "context": "It is the most important instrument for flying in cloud or at night, when the real horizon cannot be seen."
+            },
+            {
+              "id": "asi",
+              "name": "Airspeed / Mach indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:2"
+              ],
+              "text": "This dial shows how fast the aircraft moves through the air, and also the Mach number (the speed as a multiple of the speed of sound).",
+              "context": "The pilot watches it on take-off and landing, where the right speed matters most."
+            },
+            {
+              "id": "alt",
+              "name": "Altimeter",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:3"
+              ],
+              "text": "The height gauge. It shows how high the aircraft is; the pilot sets the local air pressure on it so it reads right.",
+              "context": "The pilot uses it to hold a height and to know how far above the ground he is when landing."
+            },
+            {
+              "id": "vvi",
+              "name": "Vertical velocity indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:4"
+              ],
+              "text": "This dial shows whether the aircraft climbs or sinks, and how fast.",
+              "context": "The pilot uses it to hold level flight and to make a smooth, steady descent for landing."
+            },
+            {
+              "id": "heading",
+              "name": "Heading indicator",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:5"
+              ],
+              "text": "A compass picture that shows where the nose points (heading) and the way to the next navigation point. It can also show the bearing to a radio beacon.",
+              "context": "The pilot follows it to fly the planned route and to find the way back to the airfield."
+            },
+            {
+              "id": "tachometers",
+              "name": "Engine tachometers",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:6"
+              ],
+              "text": "Gauges that show how fast the left and the right engine turn (RPM).",
+              "context": "The pilot checks that both engines give the same power, for example before take-off."
+            },
+            {
+              "id": "egt",
+              "name": "Exhaust gas temperature",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:7"
+              ],
+              "text": "Gauges that show how hot the exhaust gas of each engine is (EGT).",
+              "context": "Too hot means danger for the engine; the pilot watches it in the start and at full power."
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel quantity",
+              "type": "gauge",
+              "match": [
+                "item:flight-and-engine-instruments:8"
+              ],
+              "text": "This gauge shows how much fuel is left in the tanks.",
+              "context": "The pilot checks it often to know when it is time to fly home."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "armament",
+      "where": "front-left",
+      "name": "Armament panel",
+      "text": "Weapon and station selection on the left of the main panel.",
+      "panels": [
+        {
+          "id": "armament-panel",
+          "name": "Armament panel",
+          "src": "m1",
+          "text": "The panel for the weapons: the master arm switch, the weapon selector, the station switches and the jettison button.",
+          "context": "The pilot sets it up before the attack; the stick buttons then fire.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch2",
+              "match": [
+                "item:armament-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The weapons are safe; nothing fires."
+                },
+                {
+                  "name": "ON",
+                  "text": "The weapon circuits are armed."
+                }
+              ],
+              "text": "The main safety switch for the weapons (master arm): nothing fires while it is off.",
+              "context": "The pilot arms only when he is close to the target and safes again afterwards.",
+              "src": "m1"
+            },
+            {
+              "id": "weapon-selector",
+              "name": "Weapon selector",
+              "type": "selector",
+              "match": [
+                "item:armament-panel:2"
+              ],
+              "text": "This selector chooses the type of weapon: guns, missiles, rockets or bombs.",
+              "context": "It decides what the trigger and the bomb-rocket button will fire.",
+              "src": "m1"
+            },
+            {
+              "id": "station-select",
+              "name": "Station select switches",
+              "type": "switch",
+              "match": [
+                "item:armament-panel:3"
+              ],
+              "text": "Switches that choose the pylons (stations) under the wings and fuselage from which stores are released.",
+              "context": "Only the selected stations release when the pilot presses the button.",
+              "src": "m1"
+            },
+            {
+              "id": "jettison",
+              "name": "Jettison button",
+              "type": "button",
+              "match": [
+                "item:armament-panel:4"
+              ],
+              "text": "This button drops the external stores, the tanks and weapons under the aircraft, in an emergency.",
+              "context": "Dropping them makes the aircraft lighter and faster at once.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "Throttles, fuel, flaps and engine start.",
+      "panels": [
+        {
+          "id": "left-console",
+          "name": "Left console",
+          "text": "The left side with the two throttles, the fuel switches, the flap lever and the engine start.",
+          "context": "The left hand works the throttles and reaches the switches around them.",
+          "controls": [
+            {
+              "id": "fuel-switches",
+              "name": "Fuel shutoff / boost pump switches",
+              "type": "switch2",
+              "match": [
+                "item:left-console:2"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "Fuel flows and the boost pumps run."
+                },
+                {
+                  "name": "OFF",
+                  "text": "Fuel supply shut off."
+                }
+              ],
+              "text": "Switches that open the fuel supply to both engines and run the boost pumps (pumps that push fuel to the engines).",
+              "context": "They are switched on before the engine start.",
+              "src": "m1"
+            },
+            {
+              "id": "flap-lever",
+              "name": "Flap lever",
+              "type": "lever",
+              "match": [
+                "item:left-console:3"
+              ],
+              "text": "This control moves the flaps, parts of the wing that slide out to give more lift at low speed.",
+              "context": "The pilot lowers the flaps for take-off and landing and raises them once the aircraft is fast enough."
+            },
+            {
+              "id": "engine-start",
+              "name": "Engine start / ignition",
+              "type": "button",
+              "match": [
+                "item:left-console:4"
+              ],
+              "text": "Controls for starting the engines and making the sparks that light them (ignition).",
+              "context": "The pilot starts one engine after the other and watches the RPM and EGT gauges.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-console",
+      "where": "right-console",
+      "name": "Right console",
+      "text": "Electricity, lights, oxygen and radio.",
+      "panels": [
+        {
+          "id": "right-console",
+          "name": "Right console",
+          "text": "The right side with electrical power, lighting, oxygen and the UHF radio.",
+          "context": "These are set before the flight.",
+          "controls": [
+            {
+              "id": "battery-gen",
+              "name": "Battery and generator switches",
+              "type": "switch2",
+              "match": [
+                "item:right-console:1"
+              ],
+              "positions": [
+                {
+                  "name": "ON",
+                  "text": "The source is connected."
+                },
+                {
+                  "name": "OFF",
+                  "text": "The source is disconnected."
+                }
+              ],
+              "text": "Switches for the battery (stores electricity) and the generators (make electricity while the engines run).",
+              "context": "The battery comes first in the start-up; the generators take over once the engines run.",
+              "src": "m1"
+            },
+            {
+              "id": "lighting",
+              "name": "Lighting controls",
+              "type": "knob",
+              "match": [
+                "item:right-console:2"
+              ],
+              "text": "Knobs for the instrument and console lights.",
+              "context": "The pilot sets them for night flying so the instruments are readable.",
+              "src": "m1"
+            },
+            {
+              "id": "oxygen",
+              "name": "Oxygen regulator",
+              "type": "switch3",
+              "match": [
+                "item:right-console:3"
+              ],
+              "positions": [
+                {
+                  "name": "NORMAL",
+                  "text": "Oxygen mixed with cabin air as needed."
+                },
+                {
+                  "name": "100 %",
+                  "text": "Pure oxygen."
+                },
+                {
+                  "name": "EMERGENCY",
+                  "text": "Oxygen under pressure, for example with smoke in the cockpit."
+                }
+              ],
+              "text": "The regulator for the breathing oxygen the pilot needs at height, with a setting for emergencies.",
+              "context": "The pilot checks it before take-off.",
+              "src": "m1"
+            },
+            {
+              "id": "uhf",
+              "name": "UHF radio panel",
+              "type": "selector",
+              "match": [
+                "item:right-console:4"
+              ],
+              "text": "The controls of the UHF radio: the channel (a stored frequency) or a manual frequency.",
+              "context": "The pilot sets the channel for the tower, the controllers and the formation.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Stick and throttles",
+      "text": "The grips the pilot holds.",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Control stick",
+          "src": "m1",
+          "text": "The centre stick with the trim button, the bomb-rocket button, the nosewheel steering button and the trigger.",
+          "context": "The layout is inferred from the F-5E family; the A has no radar, so it has no dogfight switch.",
+          "controls": [
+            {
+              "id": "stick",
+              "name": "Control stick",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "The stick the pilot holds in his right hand. Pushing it forward lowers the nose, pulling it back raises the nose, and moving it left or right rolls the aircraft to that side.",
+              "context": "It is the main flight control; on most bindings it is the joystick's X and Y axes."
+            },
+            {
+              "id": "trim",
+              "name": "Pitch and aileron trim button",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.trim"
+              ],
+              "text": "A small switch on top of the grip for the trim, small adjustments so the aircraft flies straight without the pilot holding the stick. Forward trims the nose down, back trims it up, left and right trim the roll.",
+              "context": "The pilot trims after every change of speed or configuration, so the stick feels light again.",
+              "src": "m1"
+            },
+            {
+              "id": "bomb-rocket",
+              "name": "Bomb-rocket button",
+              "type": "button",
+              "match": [
+                "control:stick.weapon_release"
+              ],
+              "text": "A button on top of the grip under the thumb. Pressing it releases or launches bombs or rockets.",
+              "context": "The pilot chooses the weapon first on the armament panel; this button then sends it on its way.",
+              "src": "m1"
+            },
+            {
+              "id": "nws",
+              "name": "Nosewheel steering button",
+              "type": "button",
+              "match": [
+                "control:stick.button.nws"
+              ],
+              "text": "While this button is held on the ground, the pedals steer the nose wheel (nosewheel steering, like a car's steering).",
+              "context": "The pilot uses it while taxiing.",
+              "src": "m1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "positions": [
+                {
+                  "name": "First detent",
+                  "text": "The gun camera films."
+                },
+                {
+                  "name": "Second detent",
+                  "text": "Guns or AIM-9 fire."
+                }
+              ],
+              "text": "A two-step trigger at the front of the grip. The first step runs the gun camera; the second fires the guns or a Sidewinder missile, as chosen on the armament panel.",
+              "context": "It only fires with the master arm switch on.",
+              "src": "m1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Throttles",
+          "src": "m1",
+          "text": "The two throttles for the two J85 engines, with the microphone button and the speed brake switch.",
+          "context": "Both levers are normally moved together.",
+          "controls": [
+            {
+              "id": "throttle-left",
+              "name": "Left throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.left",
+                "item:left-console:1"
+              ],
+              "text": "The left lever of the pair of throttles. It makes the left J85 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push. Its stops are OFF, IDLE, MIL (full power without afterburner) and MAX.",
+              "context": "Both levers are normally moved together with one hand; they are split so each engine can be set alone, for example when one engine fails."
+            },
+            {
+              "id": "throttle-right",
+              "name": "Right throttle",
+              "type": "axis",
+              "match": [
+                "control:throttle.axis.right"
+              ],
+              "text": "The right lever of the pair of throttles. It makes the right J85 engine stronger or weaker, like a car's gas pedal. Pushed fully forward it adds the afterburner for much more push.",
+              "context": "The pilot moves it together with the left lever; on a HOTAS with one throttle axis both engines can share the same axis."
+            },
+            {
+              "id": "mic",
+              "name": "Microphone button",
+              "type": "button",
+              "match": [
+                "control:throttle.hat.mic"
+              ],
+              "text": "While this button is held, the radio sends the pilot's voice; when it is released, the radio listens again.",
+              "context": "It works like the button of a walkie-talkie; the pilot uses it to talk to the tower and to other aircraft.",
+              "src": "m1"
+            },
+            {
+              "id": "speedbrake",
+              "name": "Speed brake switch",
+              "type": "switch2",
+              "match": [
+                "control:throttle.speedbrake"
+              ],
+              "positions": [
+                {
+                  "name": "Forward",
+                  "text": "The speed brakes close."
+                },
+                {
+                  "name": "Aft",
+                  "text": "The speed brakes open."
+                }
+              ],
+              "text": "This switch opens and closes the airbrakes, panels that open into the wind to slow the aircraft down.",
+              "context": "The pilot opens them to lose speed quickly, for example before landing or to avoid flying past a target, and closes them to speed up again.",
+              "src": "m1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

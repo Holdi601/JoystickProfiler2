@@ -1,0 +1,324 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "x4-raptor",
+  "title": "Raptor (X4: Foundations)",
+  "inherits": "game-x4",
+  "remove": [
+    "stick",
+    "throttle"
+  ],
+  "variants": [
+    "x4-raptor"
+  ],
+  "games": [
+    "X4"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w1",
+      "title": "XL - Extra Large Ships (X Community Wiki)",
+      "kind": "reference",
+      "url": "https://wiki.egosoft.com/X4%20Foundations%20Wiki/Manual%20and%20Guides/Objects%20in%20the%20Game%20Universe/Ships/XL%20-%20Extra%20Large%20Ships/"
+    },
+    {
+      "id": "x1",
+      "title": "X4 preset libraries/inputmap_defaults_t16000m_fcs_spacesimduo.xml (catalog 08)",
+      "kind": "game-files",
+      "file": "X4 Foundations/08.cat (libraries/inputmap_defaults_t16000m_fcs_spacesimduo.xml)"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (space-games.json)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The Raptor is an extra-large Split carrier from the Split Vendetta expansion, flown from the captain's chair. It has no forward guns: the pilot only flies it, while its turrets and the fighters it carries do the fighting. So the trigger charges the scan pulse instead of firing.",
+  "areas": [
+    {
+      "id": "monitors",
+      "where": "front-left",
+      "name": "Cockpit monitors",
+      "panels": [
+        {
+          "id": "ship",
+          "name": "Raptor: seat and weapons",
+          "db": "ship",
+          "src": "w1",
+          "text": "Facts about the Raptor that set it apart from other X4 ships: where the pilot sits and which guns, turrets and docking it has.",
+          "context": "All other controls of the Raptor are the shared X4 controls of this guide.",
+          "controls": [
+            {
+              "id": "seat",
+              "name": "Captain's chair (bridge)",
+              "type": "other",
+              "match": [
+                "item:ship:1"
+              ],
+              "text": "The Raptor is a big ship, so the pilot flies it from the captain's chair on the bridge instead of a small cockpit. The stick controls are the same as in a fighter.",
+              "context": "A big ship like the Raptor turns and speeds up slowly; the pilot plans moves earlier than in a fighter.",
+              "src": "c1"
+            },
+            {
+              "id": "no-guns",
+              "name": "No forward guns",
+              "type": "other",
+              "match": [
+                "item:ship:2"
+              ],
+              "text": "The Raptor has no guns that point forward, so the pilot has nothing to fire with the trigger.",
+              "context": "Its fighting is done by the turrets and the docked fighters while the pilot steers.",
+              "src": "w1"
+            },
+            {
+              "id": "turrets",
+              "name": "Turrets",
+              "type": "other",
+              "match": [
+                "item:ship:3"
+              ],
+              "text": "The Raptor carries turrets, gun mounts that turn and fire on their own without the pilot.",
+              "context": "Their behaviour is set in the menus; JoyPro has not checked how many the ship has.",
+              "src": "w1"
+            },
+            {
+              "id": "hangar",
+              "name": "Hangar",
+              "type": "other",
+              "match": [
+                "item:ship:4"
+              ],
+              "text": "The Raptor can dock and store a whole wing of fighters, which launch to fight for it.",
+              "context": "The fighters get their orders from the menus and the map, not from the sticks.",
+              "src": "w1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hotas",
+      "where": "hotas",
+      "name": "Right and left stick",
+      "panels": [
+        {
+          "id": "stick",
+          "name": "Right stick (steering and weapons)",
+          "src": "x1",
+          "text": "The right-hand stick turns the ship, fires the weapons and selects targets. Its base buttons hold menus, docking and the container magnet.",
+          "context": "In the preset for two T.16000M sticks the right stick steers like a plane's stick, while the left stick moves the ship.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Right stick (pitch, yaw, roll)",
+              "type": "axis",
+              "match": [
+                "control:stick.gimbal"
+              ],
+              "text": "Forward and back point the nose down and up. Left and right turn the nose left and right (yaw), the main way to steer in X4. Twisting the stick rolls the ship.",
+              "context": "Because left and right turn rather than roll, the ship turns flat like a car; roll is used to line up with stations and docks.",
+              "src": "x1"
+            },
+            {
+              "id": "trigger",
+              "name": "Trigger (scan pulse)",
+              "type": "trigger",
+              "match": [
+                "control:stick.trigger"
+              ],
+              "text": "The Raptor has no forward guns, so the trigger does not fire. Holding it charges the long-range scan pulse; letting go sends the pulse out to find hidden objects.",
+              "context": "The finds appear on the radar and the HUD.",
+              "src": "c1"
+            },
+            {
+              "id": "thumb",
+              "name": "Thumb button (secondary weapons)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.1"
+              ],
+              "text": "This button fires the secondary weapon group, usually the missiles.",
+              "context": "Missiles that need a lock fire at the selected target.",
+              "src": "x1"
+            },
+            {
+              "id": "head-left",
+              "name": "Head button left (deselect target)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.2"
+              ],
+              "text": "This button clears the current target, so nothing is selected any more.",
+              "context": "Useful to stop the aiming marks pointing at something the pilot no longer cares about.",
+              "src": "x1"
+            },
+            {
+              "id": "head-right",
+              "name": "Head button right (radial menu)",
+              "type": "button",
+              "match": [
+                "control:stick.button.thumb.3"
+              ],
+              "text": "This button opens the radial menu, the round menu with modes, maps and deployables.",
+              "context": "From the radial menu the pilot reaches most menus without the keyboard.",
+              "src": "x1"
+            },
+            {
+              "id": "hat",
+              "name": "Hat (targets)",
+              "type": "hat",
+              "match": [
+                "control:stick.hat.1"
+              ],
+              "text": "Up targets the object straight ahead, down targets the closest enemy, left and right step to the previous or next target.",
+              "context": "In a fight down is the fastest way to find the nearest threat.",
+              "src": "x1"
+            },
+            {
+              "id": "base-6",
+              "name": "Base button 6 (interaction menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.2"
+              ],
+              "text": "Opens the interaction menu of the target, a list of things the pilot can do with it, or opens the latest notification.",
+              "context": "Through it the pilot can, for example, ask a station to dock or talk to another pilot.",
+              "src": "x1"
+            },
+            {
+              "id": "base-10",
+              "name": "Base button 10 (options menu)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.6"
+              ],
+              "text": "Opens the game's options menu, where it can also be paused, saved or quit.",
+              "context": "The same menu the Escape key opens.",
+              "src": "x1"
+            },
+            {
+              "id": "base-11",
+              "name": "Base button 11 (container magnet)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.7"
+              ],
+              "text": "Switches on the container magnet, which pulls floating crates and wares near the ship into the hold. It can also be held.",
+              "context": "Drops from destroyed ships and mined pieces are collected this way.",
+              "src": "x1"
+            },
+            {
+              "id": "base-13",
+              "name": "Base button 13 (get up)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.9"
+              ],
+              "text": "Makes the pilot get up from the seat to walk around inside the ship or a station.",
+              "context": "X4 lets the player leave the seat once the ship is docked or safe.",
+              "src": "x1"
+            },
+            {
+              "id": "base-14",
+              "name": "Base button 14 (dock / undock)",
+              "type": "button",
+              "match": [
+                "control:stick.base.button.10"
+              ],
+              "text": "Asks the targeted station or ship for docking, or undocks when the ship is already docked.",
+              "context": "The docking computer can then fly the ship in; the pilot can also dock by hand.",
+              "src": "x1"
+            }
+          ]
+        },
+        {
+          "id": "throttle",
+          "name": "Left stick (thrust and drive modes)",
+          "src": "x1",
+          "text": "The left-hand stick moves the ship: forward and back set the speed, sideways and twist slide the ship. Its buttons hold boost, stop, flight assist and the drive modes.",
+          "context": "With two sticks the pilot can steer with one hand and slide or brake with the other, like in a space fighter game.",
+          "controls": [
+            {
+              "id": "gimbal",
+              "name": "Left stick (thrust and strafe)",
+              "type": "axis",
+              "match": [
+                "control:throttle.gimbal"
+              ],
+              "text": "Forward makes the ship go faster, back slows it and then flies backwards. Left and right slide the ship sideways; twisting slides it up and down.",
+              "context": "Sliding without turning (strafing) is used to dodge and to line up with a dock.",
+              "src": "x1"
+            },
+            {
+              "id": "trigger",
+              "name": "Left trigger (boost)",
+              "type": "trigger",
+              "match": [
+                "control:throttle.trigger"
+              ],
+              "text": "Pressing or holding the left trigger gives a short burst of extra speed, the boost.",
+              "context": "Boost helps to escape or to close in quickly; it cannot be used all the time.",
+              "src": "x1"
+            },
+            {
+              "id": "thumb",
+              "name": "Left thumb button (stop engines)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.thumb.1"
+              ],
+              "text": "This button sets the speed to zero so the ship comes to a stop.",
+              "context": "Handy when parking next to something or before docking by hand.",
+              "src": "x1"
+            },
+            {
+              "id": "head-3",
+              "name": "Left head button 3 (flight assist)",
+              "type": "button",
+              "match": [
+                "control:throttle.button.thumb.2"
+              ],
+              "text": "Switches flight assist on or off. With flight assist off the ship keeps drifting in the direction it moved, like a puck on ice.",
+              "context": "Experienced pilots switch it off to fly backwards while shooting; with it on, the ship flies where it points.",
+              "src": "x1"
+            },
+            {
+              "id": "hat",
+              "name": "Left hat (drive modes)",
+              "type": "hat",
+              "match": [
+                "control:throttle.hat.1"
+              ],
+              "text": "Up switches travel mode, a fast drive for long distances. Right switches scan mode and left long-range scan mode. Down switches SETA, which makes time run faster.",
+              "context": "In travel mode the weapons do not fire. Scan mode reveals details of stations and objects; the long-range scan finds hidden things far away.",
+              "src": "x1"
+            },
+            {
+              "id": "base-5",
+              "name": "Left base button 5 (container magnet)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.1"
+              ],
+              "text": "A second button for the container magnet, which collects crates and wares near the ship. It can also be held.",
+              "context": "The preset puts the magnet on both sticks' bases so either hand can reach it.",
+              "src": "x1"
+            },
+            {
+              "id": "base-14",
+              "name": "Left base button 14 (dock / undock)",
+              "type": "button",
+              "match": [
+                "control:throttle.base.button.10"
+              ],
+              "text": "A second button that asks for docking, or undocks when docked.",
+              "context": "The same command as base button 14 of the right stick.",
+              "src": "x1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

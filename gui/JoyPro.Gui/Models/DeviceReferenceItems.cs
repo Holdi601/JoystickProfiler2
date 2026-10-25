@@ -180,6 +180,8 @@ public sealed class ReferencePictureOption
     public string View { get; init; } = string.Empty;
     // The photo's catalog entry (its SHA-256 on record, the parts it shows); null for drawings and the user's photo.
     public JoyPro.DeviceReference.DevicePhoto? Photo { get; init; }
+    // Where a photo comes from and its licence note ("SimFlight · (c) SimFlight; review photo, linked only, ...").
+    public string Credit { get; init; } = string.Empty;
     // The key the picture's marker positions are kept under: the photo's SHA-256 once it is known, "schematic" or
     // "class" for the drawings.
     public string Key { get; set; } = string.Empty;

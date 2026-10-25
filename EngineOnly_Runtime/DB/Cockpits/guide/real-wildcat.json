@@ -1,0 +1,206 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-wildcat",
+  "title": "AW159 Wildcat AH1 / HMA2",
+  "inherits": "real-lynx-ah",
+  "variants": [
+    "wildcat"
+  ],
+  "games": [
+    "WarThunder",
+    "Arma3"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w2",
+      "title": "AgustaWestland AW159 Wildcat (Wikipedia)",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/AgustaWestland_AW159_Wildcat"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The AW159 Wildcat is the modern successor of the Lynx (from 2014), for the British Army (AH1) and the Royal Navy (HMA2). It keeps the Lynx's shape and agility but has new CTS800 engines run by FADEC computers and a glass cockpit with four screens. Its grips are taken as those of the Lynx, so this guide builds on the Lynx guide; without engine speed select levers, the overhead panel and the other panels are described anew in general terms.",
+  "remove": [
+    "overhead-panel",
+    "instrument-panel",
+    "center-console"
+  ],
+  "areas": [
+    {
+      "id": "overhead",
+      "where": "overhead",
+      "name": "Overhead panel",
+      "text": "Engine computers, fuel, electrics, fire bottles and lights.",
+      "panels": [
+        {
+          "id": "overhead-panel-w",
+          "name": "Overhead panel",
+          "text": "The roof panel with the engine, fuel, electrical, fire and lighting controls.",
+          "context": "The CTS800 engines are run by FADEC computers, so the Wildcat has no engine speed select levers.",
+          "controls": [
+            {
+              "id": "engines",
+              "name": "Engine control switches",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:1"
+              ],
+              "text": "Switches for the FADEC computers (which run each engine by themselves) and the start of the two CTS800 engines.",
+              "context": "Once started, the computers hold the rotor speed without the pilot touching the engines. JoyPro's sources do not describe its single switches.",
+              "src": "w2"
+            },
+            {
+              "id": "fuel",
+              "name": "Fuel control panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:2"
+              ],
+              "text": "Switches for the pumps and the crossfeed (lets one side's tank feed the other side's engine): pumps move fuel from the tanks to the engines, valves open or close the fuel lines.",
+              "context": "The pilot sets them up before the engine start and uses them when a tank or a pump has a problem. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "elec",
+              "name": "Electrical panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:3"
+              ],
+              "text": "Switches for the helicopter's electricity: the battery and the generators. The battery stores electricity for when the engines are off; generators make electricity while the engines run.",
+              "context": "They are among the first switches the pilot uses when climbing in, because almost every other system needs electricity. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "fire",
+              "name": "Fire extinguisher controls",
+              "type": "button",
+              "match": [
+                "item:overhead-panel:4"
+              ],
+              "text": "Controls that empty a fire extinguisher bottle into an engine compartment when a fire is detected there.",
+              "context": "A fire warning light tells the crew which engine burns; the engine is shut down first, then a bottle is fired into it. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "lights",
+              "name": "Lighting panel",
+              "type": "switch",
+              "match": [
+                "item:overhead-panel:5"
+              ],
+              "text": "Switches and knobs for the lights: the outside lights that show other aircraft where the helicopter is, and the lamps that light the instruments inside. The cockpit lights are made to work with night vision goggles.",
+              "context": "The pilot sets them before a night flight so the instruments are readable without dazzling the eyes. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "instrument-panel",
+      "where": "front-center",
+      "name": "Instrument panel",
+      "text": "The four screens and the standby instrument.",
+      "panels": [
+        {
+          "id": "instrument-panel-w",
+          "name": "Instrument panel (glass cockpit)",
+          "text": "Four large colour screens across the panel with a standby instrument and the master warning lights.",
+          "context": "The Wildcat replaced the Lynx's round dials with screens; flight, engine and mission data are pages on them.",
+          "controls": [
+            {
+              "id": "mfd",
+              "name": "Multifunction displays",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:1"
+              ],
+              "text": "Four colour screens (multi-function screens with buttons around their edge). They show the flight instruments, the map, the engines and the mission pages.",
+              "context": "Instead of dozens of round dials, the crew picks the page each screen shows; one screen can replace another that fails.",
+              "src": "w2"
+            },
+            {
+              "id": "bezel",
+              "name": "MFD bezel keys",
+              "type": "button",
+              "match": [
+                "item:instrument-panel:2"
+              ],
+              "text": "Buttons around the edge of each screen. Each one picks the word printed next to it on the screen, so the same button does different things on different pages.",
+              "context": "The crew uses them to change pages and options; the page layout is not described in the sources JoyPro uses."
+            },
+            {
+              "id": "standby",
+              "name": "Standby flight instrument",
+              "type": "display",
+              "match": [
+                "item:instrument-panel:3"
+              ],
+              "text": "A small separate instrument that shows the attitude (nose up or down, leaning left or right), the speed and the height. It keeps working when the big screens fail.",
+              "context": "It is the backup that lets the pilot fly safely to a landing if the main displays go dark."
+            },
+            {
+              "id": "mwc",
+              "name": "Master warning / caution lights",
+              "type": "light",
+              "match": [
+                "item:instrument-panel:4"
+              ],
+              "text": "Two big lights: master warning means \"danger now\", master caution means \"something needs your attention\". The message on the display says what is wrong.",
+              "context": "Pressing the light usually acknowledges it, so it is ready to show the next problem."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "center-console",
+      "where": "center-pedestal",
+      "name": "Centre console",
+      "text": "Keypads, autopilot and audio panels.",
+      "panels": [
+        {
+          "id": "center-console-w",
+          "name": "Centre console",
+          "text": "The keypads, the autopilot panel and the audio panels between the seats.",
+          "context": "With the glass cockpit, radios and navigation are set through the keypads instead of separate boxes.",
+          "controls": [
+            {
+              "id": "cdu",
+              "name": "Control display units",
+              "type": "keypad",
+              "match": [
+                "item:center-console:1"
+              ],
+              "text": "A keypad with a small screen where the crew types navigation points, radio frequencies and system data, like a small computer keyboard.",
+              "context": "The crew sets up the route and the radios with it before the flight and changes them in flight. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "ap",
+              "name": "Autopilot / flight director panel",
+              "type": "button",
+              "match": [
+                "item:center-console:2"
+              ],
+              "text": "Buttons that switch on and off the autopilot's upper modes: hold the height, the heading, a hover or fly an approach. Stability helpers keep the helicopter steady and smooth; the autopilot can hold height, heading or speed so the pilot does not have to.",
+              "context": "The helpers stay on for almost the whole flight; the pilot switches them off only for tests or when one fails. JoyPro's sources do not describe its single switches."
+            },
+            {
+              "id": "audio",
+              "name": "Audio control panels",
+              "type": "knob",
+              "match": [
+                "item:center-console:3"
+              ],
+              "text": "One panel per seat with knobs that choose which radios and the intercom are heard, and how loud.",
+              "context": "Each pilot sets his own panel. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "format": "joypro-cockpit-guide",
+  "version": 1,
+  "id": "real-ah-1f-s",
+  "title": "AH-1F / AH-1S Cobra (pilot)",
+  "inherits": "real-ah-1g",
+  "variants": [
+    "ah-1f-s"
+  ],
+  "games": [
+    "WarThunder"
+  ],
+  "sets": [],
+  "sources": [
+    {
+      "id": "w2",
+      "title": "Bell AH-1 Cobra (Wikipedia), AH-1S/F",
+      "kind": "wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Bell_AH-1_Cobra"
+    },
+    {
+      "id": "c1",
+      "title": "JoyPro cockpit catalog (panels, items and grip functions of the variant)",
+      "kind": "reference"
+    }
+  ],
+  "intro": "The AH-1S and its final form, the AH-1F, are the single-engine Cobras of the US Army from the late 1970s, built to fight tanks with TOW missiles that the gunner guides. The modernised F has a head-up display for the pilot instead of the reflex sight and a rocket management system instead of the simple rocket pair selector. The grips and the round-dial instrument panel are taken as those of the AH-1G, so this guide builds on the AH-1G guide.",
+  "remove": [
+    "reflex-sight",
+    "armament"
+  ],
+  "areas": [
+    {
+      "id": "sight",
+      "where": "glareshield",
+      "name": "Head-up display",
+      "text": "The pilot's head-up display.",
+      "panels": [
+        {
+          "id": "hud",
+          "name": "Pilot head-up display",
+          "text": "The modernised AH-1F has a head-up display in place of the reflex sight: the glass screen in front of the pilot's eyes that shows aiming marks and flight numbers (HUD).",
+          "context": "The pilot aims the rockets and the stowed turret with its symbols while looking outside. JoyPro's sources do not describe its single switches.",
+          "controls": [
+            {
+              "id": "glass",
+              "name": "Combining glass",
+              "type": "display",
+              "match": [
+                "item:pilot-hud:1"
+              ],
+              "text": "The clear glass plate on which the aiming marks for the rockets and the gun appear, seemingly far out in front of the helicopter.",
+              "context": "The pilot lines the mark up with the target by pointing the helicopter.",
+              "src": "w2"
+            },
+            {
+              "id": "brt",
+              "name": "Brightness control",
+              "type": "knob",
+              "match": [
+                "item:pilot-hud:2"
+              ],
+              "text": "This knob makes the symbols on the glass brighter or dimmer.",
+              "context": "The pilot sets it bright for sunlight and dim for night flying."
+            },
+            {
+              "id": "mode",
+              "name": "Mode / test switch",
+              "type": "switch",
+              "match": [
+                "item:pilot-hud:3"
+              ],
+              "text": "This switch chooses what the display shows and starts its self test.",
+              "context": "The test proves the display works before an attack. JoyPro's sources do not describe its single switches."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "left-console",
+      "where": "left-console",
+      "name": "Left console",
+      "text": "The pilot's armament panel.",
+      "panels": [
+        {
+          "id": "armament-f",
+          "name": "Pilot armament panel (AH-1F)",
+          "text": "The pilot's master arm and the rocket management system of the modernised Cobra.",
+          "context": "The gunner aims the TOW missiles and the turret; the pilot fires the rockets with the settings made here.",
+          "controls": [
+            {
+              "id": "master-arm",
+              "name": "Master arm switch",
+              "type": "switch3",
+              "match": [
+                "item:armament-panel:1"
+              ],
+              "positions": [
+                {
+                  "name": "OFF",
+                  "text": "The weapons have no power."
+                },
+                {
+                  "name": "STBY",
+                  "text": "Powered, but nothing can fire."
+                },
+                {
+                  "name": "ARM",
+                  "text": "The weapons can fire."
+                }
+              ],
+              "text": "This is the main safety switch for the weapons (master arm): nothing fires while it is off.",
+              "context": "The pilot arms the weapons only when the helicopter is clear of friendly people and near the target, and makes them safe again before landing."
+            },
+            {
+              "id": "rms",
+              "name": "Rocket management subsystem panel",
+              "type": "keypad",
+              "match": [
+                "item:armament-panel:2"
+              ],
+              "text": "A small panel where the pilot chooses the rocket type, the fuze time (when the warhead goes off) and how many rockets leave with each press of the fire button.",
+              "context": "It replaced the simple pair selector of the AH-1G, because the F carries several kinds of rockets. JoyPro's sources do not describe its single switches.",
+              "src": "w2"
+            },
+            {
+              "id": "jett",
+              "name": "Wing stores emergency jettison",
+              "type": "switch",
+              "match": [
+                "item:armament-panel:3"
+              ],
+              "text": "A guarded switch that drops the wing stores in an emergency (jettison), to make the helicopter lighter. A cover over it has to be lifted first.",
+              "context": "It is used when the helicopter has an engine problem and must lose weight at once."
+            },
+            {
+              "id": "status",
+              "name": "TOW / turret status lights",
+              "type": "light",
+              "match": [
+                "item:armament-panel:4"
+              ],
+              "text": "Lights that show what the gunner has selected, such as the TOW missiles, and whether the turret is stowed straight ahead.",
+              "context": "TOW is the wire-guided anti-tank missile the gunner guides with his sight; the lights keep the pilot informed.",
+              "src": "w2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

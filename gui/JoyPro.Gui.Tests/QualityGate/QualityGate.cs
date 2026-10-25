@@ -17,7 +17,7 @@ namespace JoyPro.Gui.Tests.QualityGate;
 // The quality gate (docs/testing.md "Quality gate"): invariant checks on REAL data through the real view model and the
 // real engine - every game JoyPro lists, every DCS aircraft, every relation of a real profile, budgets for the common
 // operations, theme contrast. Opt-in (it takes a while): JOYPRO_QUALITY_GATE=1. tools/quality_gate.ps1 runs it.
-//   JOYPRO_QUALITY_GATE_DATA      user (default: a copy of the game lists in %LOCALAPPDATA%\JoyPro\GameData, or the
+//   JOYPRO_QUALITY_GATE_DATA      user (default: a copy of the game lists in %LOCALAPPDATA%\JoyPro2\GameData, or the
 //                                 folder JOYPRO_QUALITY_GATE_GAMEDATA names) | shipped (only what the program folder has)
 //   JOYPRO_QUALITY_GATE_PROFILE   a .pr0file; the gate works on a copy (without it the profile checks are skipped)
 //   JOYPRO_QUALITY_GATE_OUT       output folder (report.md, findings.json, timings.csv, engine-calls.csv, renders)
@@ -32,6 +32,15 @@ internal static class Gate
     public static bool Enabled => Environment.GetEnvironmentVariable("JOYPRO_QUALITY_GATE") is "1" or "true" or "yes";
 
     public static string DataMode => (Environment.GetEnvironmentVariable("JOYPRO_QUALITY_GATE_DATA") ?? "user").Trim().ToLowerInvariant() == "shipped" ? "shipped" : "user";
+
+    // This PC's game lists (read only): %LOCALAPPDATA%\JoyPro2\GameData, or %LOCALAPPDATA%\JoyPro\GameData of an
+    // install older than 2.4 (the data folder was moved into JoyPro2 then). Never moves anything itself.
+    public static string UserGameData()
+    {
+        string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string current = Path.Combine(local, "JoyPro2", "GameData");
+        return Directory.Exists(current) ? current : Path.Combine(local, "JoyPro", "GameData");
+    }
 
     private static readonly Lazy<string> OutDirLazy = new(() =>
     {
@@ -102,7 +111,7 @@ internal static class Gate
                 {
                     string source = Environment.GetEnvironmentVariable("JOYPRO_QUALITY_GATE_GAMEDATA") is { Length: > 0 } configured
                         ? configured
-                        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "JoyPro", "GameData");
+                        : UserGameData();
                     // The game lists and DCS clean profiles; not the cockpit pictures (gigabytes, no part of a check).
                     foreach (string part in new[] { "DB", "CleanProfile", "KeyboardCleanProfile" })
                     {

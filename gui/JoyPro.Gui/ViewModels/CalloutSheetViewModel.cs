@@ -591,7 +591,7 @@ public sealed partial class CalloutSheetViewModel : ObservableObject
         if (Sheet == null || schematic == null)
             return;
         Push("reset tables");
-        CalloutSheet look = new() { Modifier = Sheet.Modifier, ComboMode = Sheet.ComboMode, MaxColumns = Sheet.MaxColumns, Combos = new List<string>(Sheet.Combos) };
+        CalloutSheet look = new() { Modifier = Sheet.Modifier, ComboMode = Sheet.ComboMode, MaxColumns = Sheet.MaxColumns, Combos = new List<string>(Sheet.Combos), Style = Sheet.Style?.Clone() };
         CalloutLayouter.ApplyDefaultStyle(look, Sheet.PictureWidth, Sheet.PictureHeight);
         look.RowHeight = Sheet.RowHeight;
         look.MainWidth = Sheet.MainWidth;
@@ -630,7 +630,10 @@ public sealed partial class CalloutSheetViewModel : ObservableObject
         (string description, string json) = undo[^1];
         undo.RemoveAt(undo.Count - 1);
         redo.Add((description, Sheet.ToJson()));
+        // The sheet style is not part of the undo history (it is saved at once).
+        SheetStyle? keptStyle = Sheet.Style;
         Sheet = CalloutSheet.Parse(json);
+        Sheet.Style = keptStyle;
         HasUnsavedChanges = true;
         SelectedLine = null;
         SelectedTable = Sheet.Table(SelectedTable?.Id ?? string.Empty);
@@ -644,7 +647,9 @@ public sealed partial class CalloutSheetViewModel : ObservableObject
         (string description, string json) = redo[^1];
         redo.RemoveAt(redo.Count - 1);
         undo.Add((description, Sheet.ToJson()));
+        SheetStyle? keptStyle = Sheet.Style;
         Sheet = CalloutSheet.Parse(json);
+        Sheet.Style = keptStyle;
         HasUnsavedChanges = true;
         SelectedLine = null;
         SelectedTable = Sheet.Table(SelectedTable?.Id ?? string.Empty);
