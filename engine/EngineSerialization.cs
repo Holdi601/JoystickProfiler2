@@ -281,6 +281,7 @@ namespace JoyPro.Engine
         {
             if (doc == null || doc.Relations == null)
                 return;
+            Dictionary<string, Games.GameCatalog> catalogs = new Dictionary<string, Games.GameCatalog>(StringComparer.OrdinalIgnoreCase);
             foreach (EngineRelationDto relationDto in doc.Relations)
             {
                 if (relationDto == null)
@@ -290,7 +291,13 @@ namespace JoyPro.Engine
                 List<string> titles = new List<string>();
                 foreach (EngineRelationItemDto node in relationDto.Nodes ?? new List<EngineRelationItemDto>())
                 {
-                    foreach (string title in (node.StoredTitles ?? new Dictionary<string, string>()).Values)
+                    IEnumerable<string> nodeTitles = (node.StoredTitles ?? new Dictionary<string, string>()).Values.ToList();
+                    // Nothing stored with the node (the titles come with the game lists on a load with corrections; an
+                    // imported or taken-over action, and every action of a registry game such as MSFS, has none): the
+                    // title from the game's list, so "Name + actions" finds it (tester report on 2.4.1: "Master").
+                    if (!nodeTitles.Any(t => OneLine(t).Length > 0))
+                        nodeTitles = ListTitles(node, catalogs);
+                    foreach (string title in nodeTitles)
                     {
                         string clean = OneLine(title);
                         if (clean.Length > 0 && seen.Add(clean))
@@ -302,6 +309,50 @@ namespace JoyPro.Engine
                 }
                 relationDto.Titles = titles;
             }
+        }
+
+        // The titles of a node from the game lists: DCS per active aircraft (the DB's title, never a raw id), a registry
+        // game from its action catalog (loaded once per game).
+        private static List<string> ListTitles(EngineRelationItemDto node, Dictionary<string, Games.GameCatalog> catalogs)
+        {
+            List<string> result = new List<string>();
+            string id = (node == null ? null : node.Id ?? string.Empty).Trim();
+            if (id.Length == 0)
+                return result;
+            string game = string.IsNullOrWhiteSpace(node.Game) ? "DCS" : node.Game.Trim();
+            if (string.Equals(game, "DCS", StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (KeyValuePair<string, bool> plane in node.Aircraft ?? new Dictionary<string, bool>())
+                {
+                    if (!plane.Value || string.IsNullOrWhiteSpace(plane.Key))
+                        continue;
+                    string title = InternalDataManagement.DcsTitleOrEmpty(id, plane.Key);
+                    if (title.Length > 0)
+                        result.Add(title);
+                }
+                return result;
+            }
+            Games.IGameIntegration integration;
+            if (!Games.GameRegistry.TryResolve(game, out integration) || integration == null)
+                return result;
+            Games.GameCatalog catalog;
+            if (!catalogs.TryGetValue(integration.GameId, out catalog))
+            {
+                try { catalog = Games.GameCatalogStore.Load(integration, null); }
+                catch (Exception) { catalog = null; }
+                catalogs[integration.GameId] = catalog;
+            }
+            Games.GameAction action = catalog == null ? null : catalog.Find(id);
+            if (action != null && !string.IsNullOrWhiteSpace(action.Title) && !string.Equals(action.Title.Trim(), id, StringComparison.OrdinalIgnoreCase))
+                result.Add(action.Title.Trim());
+            else
+            {
+                // Not in this PC's list (yet): the id read as words ("KEY_TOGGLE_COCKPIT_CAMERA" -> "Key Toggle Cockpit Camera").
+                string readable = EngineReadableNames.Title(integration.GameId, id);
+                if (!string.Equals(readable, id, StringComparison.Ordinal))
+                    result.Add(readable);
+            }
+            return result;
         }
 
         // The stored title and category of every active aircraft of a node; DCS localization keys become DCS's English

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -1825,10 +1825,18 @@ namespace JoyPro.Engine
             List<string> sameInput = profile.Where(e => e.Signature == signature && e.IsAxis == change.IsAxis).Select(e => e.Relation).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             List<string> holders = profile.Where(e => e.ActionKey == change.ActionKey && (game.Kind != "dcs" || e.Plane.Equals(change.Plane, StringComparison.OrdinalIgnoreCase)))
                 .Select(e => e.Relation).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-            change.Candidates = change.Relations.Concat(sameInput).Concat(holders).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            // A new bind joins the relation of the profile that already uses the input (any game, any aircraft) when the
+            // aircraft is not bound there to another action, chosen as the DCS import's "add to my profile" chooses. Up to
+            // 2.4.1 only this game's relations of the aircraft whose files changed counted, so a bind on a button that
+            // other aircraft use became a relation of its own (tester report on 2.4.1).
+            string join = change.Kind == "removed" ? null : EngineDcsImport.RelationToJoin(InternalDataManagement.AllRelations, InternalDataManagement.AllBinds, null,
+                change.Device, change.IsAxis, change.Input, ProfileModifiers(change.Modifiers), game.Id, new[] { change.Plane }, id => ActionKey(game, id) == change.ActionKey,
+                change.ActionTitle);
+            List<string> join1 = join == null ? new List<string>() : new List<string> { join };
+            change.Candidates = change.Relations.Concat(join1).Concat(sameInput).Concat(holders).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
             if (change.Kind == "added")
-                change.Suggested = sameInput.Count > 0 ? sameInput[0] : "new";
+                change.Suggested = join ?? "new";
             else if (change.Kind == "removed")
                 change.Suggested = change.Relations.Count > 0 ? change.Relations[0] : "ignore";
             else

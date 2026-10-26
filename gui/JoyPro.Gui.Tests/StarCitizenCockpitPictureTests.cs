@@ -374,6 +374,91 @@ public sealed class StarCitizenCockpitPictureTests
         Assert.Equal("objects/spaceships/ships/test/test_int.cga", list[0].Children[0].Descendants("Geometry").First().Get("path"));
     }
 
+    // A .soc with a brush chunk (0x0010 version 1): two models, one material, one tint palette, two brushes.
+    [Fact]
+    public void SocBrushesArePlacedFromTheBrushChunk()
+    {
+        byte[] Name(string s)
+        {
+            byte[] b = new byte[256];
+            Encoding.UTF8.GetBytes(s).CopyTo(b, 0);
+            return b;
+        }
+        byte[] Brush(int model, int material, double[] rows, double x0, double x1)
+        {
+            using MemoryStream ms = new MemoryStream();
+            using BinaryWriter w = new BinaryWriter(ms);
+            w.Write(1);
+            foreach (double v in new[] { x0, 0.0, 0.0, x1, 1.0, 1.0 })
+                w.Write(v);
+            w.Write(0);
+            w.Write(0x20b83008u);
+            w.Write((ushort)model);
+            w.Write((ushort)0x6464);
+            foreach (double v in rows)
+                w.Write(v);
+            w.Write(new byte[8]);
+            w.Write((ushort)8);
+            w.Write((ushort)material);
+            w.Write((ushort)0);
+            w.Write((byte)1);
+            w.Write((byte)0xff);
+            w.Write(new byte[32]);
+            return ms.ToArray();
+        }
+        double[] turned = { 0, -1, 0, 1.5, 1, 0, 0, 2.5, 0, 0, 1, -0.5 };
+        double[] plain = { 1, 0, 0, 0, 0, 1, 0, 4, 0, 0, 1, 0 };
+        byte[] records = Brush(1, 0, turned, -1, 1).Concat(Brush(0, 0xffff, plain, 0, 2)).ToArray();
+        Assert.Equal(StarCitizenCockpitPictures.SocBrushRecord, records.Length / 2);
+        byte[] chunk;
+        using (MemoryStream ms = new MemoryStream())
+        using (BinaryWriter w = new BinaryWriter(ms))
+        {
+            w.Write(0);
+            w.Write(2);
+            w.Write(Name("objects/ships/test/wall.cgf"));
+            w.Write(Name("objects/ships/test/console.cga"));
+            w.Write((ushort)1);
+            w.Write((ushort)1);
+            w.Write(Name("objects/ships/test/test_int"));
+            w.Write(Name("Libs/Foundry/Records/TintPalettes/default"));
+            w.Write(15);
+            w.Write(new byte[24]);
+            w.Write(records.Length);
+            w.Write(records);
+            chunk = ms.ToArray();
+        }
+        byte[] soc;
+        using (MemoryStream ms = new MemoryStream())
+        using (BinaryWriter w = new BinaryWriter(ms))
+        {
+            w.Write(Encoding.ASCII.GetBytes("CrCh"));
+            w.Write(0x746);
+            w.Write(1);
+            w.Write(16);
+            w.Write((ushort)0x0010);
+            w.Write((ushort)1);
+            w.Write(1);
+            w.Write(chunk.Length);
+            w.Write(32);
+            w.Write(chunk);
+            soc = ms.ToArray();
+        }
+        List<StarCitizenCockpitPictures.SocBrush> list = StarCitizenCockpitPictures.SocBrushes(soc);
+        Assert.Equal(2, list.Count);
+        Assert.Equal("objects/ships/test/console.cga", list[0].Model);
+        Assert.Equal("objects/ships/test/test_int", list[0].Material);
+        // (rows: x' = -y + 1.5, y' = x + 2.5, z' = z - 0.5)
+        Vec3 p = Mat4.Point(list[0].Matrix, 1, 0, 0);
+        Assert.Equal(1.5, p.X, 6);
+        Assert.Equal(3.5, p.Y, 6);
+        Assert.Equal(-0.5, p.Z, 6);
+        Assert.Equal(Math.Sqrt(4 + 1 + 1), list[0].Size, 6);
+        Assert.Equal("objects/ships/test/wall.cgf", list[1].Model);
+        Assert.Equal(string.Empty, list[1].Material);
+        Assert.Equal(4, Mat4.Point(list[1].Matrix, 0, 0, 0).Y, 6);
+    }
+
     // ------------------------------------------------------------------ DataForge
 
     // A version 8 database: struct Ship { string Name; int32 Crew; Child Box (inline); string[] Tags } and Child

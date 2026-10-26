@@ -7340,11 +7340,13 @@ namespace JoyPro.Engine
         {
             List<string> args = command.Skip(1).ToList();
             if (args.Count < 2)
-                return Fail("relations item requires: add|remove|enable|disable|move <relation-name> [--node ... | --id ...] [--to <position>|--up|--down].");
+                return Fail("relations item requires: add|remove|enable|disable|move|move-to-input <relation-name> [--node ... | --id ...] [--to <position>|--up|--down].");
 
             string operation = args[0].ToLowerInvariant();
             string relationQuery = args[1];
             List<string> options = args.Skip(2).ToList();
+            if (operation == "move-to-input")
+                return MoveRelationItemToInput(relationQuery, options, outPath, textOutput);
 
             List<string> nodeSpecs = PopOptionValues(options, "--node");
             string idOption = PopOptionValue(options, "--id");
@@ -14584,6 +14586,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]");
             Console.WriteLine("  engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]");
             Console.WriteLine("  engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)");
+            Console.WriteLine("  engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--dry-run]  (one action to another button: joins the relation on that input, else a new one)");
             Console.WriteLine("  engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
             Console.WriteLine("  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]");
             Console.WriteLine("  engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]");

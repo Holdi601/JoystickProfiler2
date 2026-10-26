@@ -199,7 +199,9 @@ namespace JoyPro.CockpitPictures
             }
             double s = 100;
             bool grip = kind == "device";
-            double structure = Math.Max(0, 0.35 - m.Structure) * 180;
+            // A grip on its own is smooth plastic or metal seen big: little texture grain is normal there (a clean Star
+            // Citizen or MSFS throttle measured 0..20 and was left out); only a nearly featureless blob counts.
+            double structure = Math.Max(0, (grip ? 0.1 : 0.35) - m.Structure) * 180;
             if (structure > 12)
                 m.Problems.Add("little detail");
             s -= structure;
@@ -220,7 +222,8 @@ namespace JoyPro.CockpitPictures
             if (flatShapes > 12)
                 m.Problems.Add("flat shapes");
             s -= flatShapes;
-            double textured = Math.Max(0, 0.6 - m.Textured) * 80;
+            // (A grip's plain coloured materials are not a problem: many games give a grip no texture at all.)
+            double textured = grip ? 0 : Math.Max(0, 0.6 - m.Textured) * 80;
             if (textured > 12)
                 m.Problems.Add("untextured");
             s -= textured;

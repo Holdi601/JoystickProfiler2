@@ -448,14 +448,22 @@ namespace JoyPro.CockpitPictures
 
             Vec3 mn, mx;
             scene.Bounds(Enumerable.Range(0, scene.Meshes.Count), out mn, out mx);
+            Vec3 head = headBone.HasValue ? headBone.Value : new Vec3((mn.X + mx.X) / 2, mn.Y + (mx.Y - mn.Y) * 0.7, 0);
             // Grips: the model's stick and throttle nodes with everything under them.
             List<CockpitGrip> grips = new List<CockpitGrip>();
             if (skel != null)
             {
-                AddGrip(scene, skel, dm, nodeMeshes, "stick", n => Regex.IsMatch(n, "^(stick|cyclic)(_|$)", RegexOptions.IgnoreCase) && !Regex.IsMatch(n, "hand|_base", RegexOptions.IgnoreCase), grips);
-                AddGrip(scene, skel, dm, nodeMeshes, "throttle", n => Regex.IsMatch(n, "^(throttle|collective)(_?\\d+)?$", RegexOptions.IgnoreCase), grips);
+                List<string> debug = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_DEBUG") == "1" ? r.Notes : null;
+                // The yoke of a bomber is its stick too (the Ki-49's shturval, the He 177's column); the wires and
+                // cables to the stick and its base are not.
+                AddGrip(scene, skel, dm, nodeMeshes, "stick", n => Regex.IsMatch(n, "^(stick|cyclic|shturval|column|yoke)(_|\\d|$)", RegexOptions.IgnoreCase) && !Regex.IsMatch(n, "hand|_base|cable|wire", RegexOptions.IgnoreCase), grips, head, debug);
+                AddGrip(scene, skel, dm, nodeMeshes, "throttle", n => Regex.IsMatch(n, "^(throttle|collective)(_?\\d+)*$", RegexOptions.IgnoreCase), grips, head, debug);
+                // Models that name the grips by the pilot's hand on them (the Ki-96's stick_rhand_1, throttle_lhand_1).
+                if (!grips.Any(g => g.Device == "stick"))
+                    AddGrip(scene, skel, dm, nodeMeshes, "stick", n => Regex.IsMatch(n, "^(stick|cyclic)_rhand(_?\\d+)?$", RegexOptions.IgnoreCase), grips, head, debug);
+                if (!grips.Any(g => g.Device == "throttle"))
+                    AddGrip(scene, skel, dm, nodeMeshes, "throttle", n => Regex.IsMatch(n, "^throttle_lhand(_?\\d+)?$", RegexOptions.IgnoreCase), grips, head, debug);
             }
-            Vec3 head = headBone.HasValue ? headBone.Value : new Vec3((mn.X + mx.X) / 2, mn.Y + (mx.Y - mn.Y) * 0.7, 0);
             if (eyeNote != null)
                 r.Notes.Add(eyeNote);
             else if (!headBone.HasValue)
@@ -814,7 +822,7 @@ namespace JoyPro.CockpitPictures
 
         // ------------------------------------------------------------------ grips and callouts
 
-        private static void AddGrip(CockpitScene scene, WarThunderSkeleton skel, WarThunderDynModel dm, Dictionary<int, List<int>> nodeMeshes, string device, Func<string, bool> isGrip, List<CockpitGrip> grips)
+        private static void AddGrip(CockpitScene scene, WarThunderSkeleton skel, WarThunderDynModel dm, Dictionary<int, List<int>> nodeMeshes, string device, Func<string, bool> isGrip, List<CockpitGrip> grips, Vec3 head, List<string> debug = null)
         {
             List<int> roots = new List<int>();
             foreach (string n in dm.NodeNames.Values)
@@ -825,15 +833,47 @@ namespace JoyPro.CockpitPictures
             }
             // The topmost of them (stick_ailerons under stick_elevator is one grip).
             roots = roots.Where(x => !roots.Any(o => o != x && skel.IsUnder(x, o))).Distinct().ToList();
+            // First the grips; a thin lever that looks like a rod only where there is no other grip of the kind.
+            for (int pass = 0; pass < 2; pass++)
             foreach (int root in roots)
             {
+                if (pass == 1 && grips.Any(x => x.Device == device))
+                    break;
                 List<int> meshes = nodeMeshes.Where(x => skel.IsUnder(x.Key, root)).SelectMany(x => x.Value).Distinct().ToList();
+                if (debug != null && pass == 0)
+                {
+                    Vec3 da = new Vec3(0, 0, 0), db = new Vec3(0, 0, 0);
+                    if (meshes.Count > 0)
+                        scene.Bounds(meshes, out da, out db);
+                    debug.Add("debug grip " + device + " " + skel.Names[root] + ": " + meshes.Count + " meshes, size " + (db - da).Length.ToString("0.00", CultureInfo.InvariantCulture) + " at " + ((da + db) * 0.5) + (meshes.Count > 0 && meshes.All(k => Il2CockpitPictures.IsRod(scene.Meshes[k])) ? " (rod)" : ""));
+                }
                 if (meshes.Count == 0)
                     continue;
                 Vec3 a, b;
                 scene.Bounds(meshes, out a, out b);
-                // A linkage rod (a second engine's lever rod under the floor) is not a grip.
-                if ((b - a).Length > 1.5 || (b - a).Length < 0.05 || meshes.All(k => Il2CockpitPictures.IsRod(scene.Meshes[k])))
+                // A stick with its control rods and cables (the Re.2000, the Fokker D.VII, the J20): the rods left out,
+                // the parts nearest the pilot kept.
+                if ((b - a).Length > 1.5)
+                {
+                    List<int> noRods = meshes.Where(k => !Il2CockpitPictures.IsRod(scene.Meshes[k])).ToList();
+                    List<int> small = noRods.Where(k =>
+                    {
+                        Vec3 k0, k1;
+                        scene.Bounds(new[] { k }, out k0, out k1);
+                        return (k1 - k0).Length <= 0.9;
+                    }).ToList();
+                    if (small.Count > 0)
+                        noRods = small;
+                    if (noRods.Count > 0)
+                    {
+                        meshes = CockpitViews.NearestCluster(scene, noRods, head);
+                        scene.Bounds(meshes, out a, out b);
+                    }
+                }
+                // A linkage rod (a second engine's lever rod under the floor) is not a grip; a thin throttle lever is
+                // (the C.202's).
+                bool rod = meshes.All(k => Il2CockpitPictures.IsRod(scene.Meshes[k]));
+                if ((b - a).Length > 1.5 || (b - a).Length < 0.05 || rod && (pass == 0 || (b - a).Length > 0.6) || !rod && pass == 1)
                     continue;
                 CockpitGrip g = grips.FirstOrDefault(x => x.Device == device && (x.Pivot - (a + b) * 0.5).Length < 0.35);
                 if (g != null)

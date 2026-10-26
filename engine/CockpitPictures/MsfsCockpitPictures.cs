@@ -560,7 +560,25 @@ namespace JoyPro.CockpitPictures
                 // The pilot's eye: the cockpit camera of cameras.cfg (eyepoint from the reference datum plus the
                 // camera's offset); else behind and above the yoke.
                 Vec3 head;
-                if (!EyePoint(a.Folder, out head))
+                bool eyeFound = EyePoint(a.Folder, out head);
+                // Grips the standard names did not give: any part named as the stick, yoke, throttle or collective
+                // (the pilot's: the one nearest the eye), without its rods, cables and base.
+                if (yoke == null || throttle == null)
+                {
+                    Vec3 near = head;
+                    if (!eyeFound)
+                    {
+                        Vec3 mn, mx;
+                        scene.Bounds(Enumerable.Range(0, scene.Meshes.Count), out mn, out mx);
+                        near = new Vec3(mn.X + (mx.X - mn.X) * 0.4, mn.Y + (mx.Y - mn.Y) * 0.6, (mn.Z + mx.Z) * 0.5);
+                    }
+                    // The yoke is no control of a panel (the throttle stays one, as with the standard names).
+                    if (yoke == null && (yoke = FindGrip(g, scene, parent, meshesOfNode, behaviours, world.Keys, "stick", near)) != null)
+                        callouts.RemoveAll(c => c.Id == yoke.Animation.Name);
+                    if (throttle == null)
+                        throttle = FindGrip(g, scene, parent, meshesOfNode, behaviours, world.Keys, "throttle", near);
+                }
+                if (!eyeFound)
                 {
                     if (yoke != null)
                         head = new Vec3(yoke.Pivot.X - 0.6, yoke.Pivot.Y + 0.4, yoke.Pivot.Z);
@@ -634,6 +652,103 @@ namespace JoyPro.CockpitPictures
                     return i;
             }
             return -1;
+        }
+
+        // The words of a node name (HANDLING_YOKE_Lever_StickLR_1 -> handling yoke lever stick lr; Yoke1 -> yoke).
+        internal static List<string> NameWords(string name)
+        {
+            string s = Regex.Replace(name ?? string.Empty, "([a-z])([A-Z])", "$1 $2");
+            return Regex.Split(s.ToLowerInvariant(), "[^a-z]+").Where(w => w.Length > 0).ToList();
+        }
+
+        private static readonly HashSet<string> StickWords = new HashSet<string> { "yoke", "stick", "joystick", "cyclic", "column", "sticklr", "stickforeaft" };
+        private static readonly HashSet<string> ThrottleWords = new HashSet<string> { "throttle", "collective", "thrust" };
+        // Words of parts that are on or beside a grip but are not the grip: its buttons, boot, base, rods, the panel's
+        // knobs (an avionics joystick, a friction knob), the quadrant's box, decals and helpers.
+        private static readonly HashSet<string> GripNotWords = new HashSet<string>
+        {
+            "decal", "decals", "collision", "colision", "collider", "cable", "cables", "skin", "base", "ring", "pylon", "push", "btn", "button",
+            "switch", "trim", "sleeve", "boot", "shifter", "helper", "visibility", "text", "structure", "support", "hood", "range", "knob",
+            "cursor", "axes", "mark", "highlight", "lock", "rod", "autopilot", "mic", "audio", "clickspot", "click", "spot", "casing", "static",
+            "centering", "ann", "hider", "hideable", "hide", "pfd", "mfd", "box", "friction", "pulley", "pulleys", "transfer", "cutoff",
+            "reverser", "reverse", "indicator", "needle", "placard", "screw", "weld", "seams", "shock", "wire", "cover", "guard", "dummy", "shadow"
+        };
+        private static readonly HashSet<string> OtherPilotWords = new HashSet<string> { "copilot", "co" };
+        // Words of parts under a grip node that are not drawn with the grip (they reach far beyond it).
+        private static readonly HashSet<string> GripDropWords = new HashSet<string> { "rod", "cable", "cables", "collision", "colision", "collider", "base", "pylon", "support", "structure", "helper", "pulley", "pulleys" };
+
+        // The pilot's stick/yoke or throttle/collective by its name where the standard names (HANDLING_Yoke_1,
+        // ENGINE_Lever_Throttle_1) are not used: COCKPIT_yoke_pilot, Yoke1, joystick_l, ENGINE_Lever_Throttle_1_Visual,
+        // throttle_01, collective_grip_pilot, or the node of a throttle behaviour (the PC-6's Prop_Lever). Of the parts so
+        // named the one nearest the eye, then its outermost ancestor that is still so named (the whole yoke rather than its
+        // wheel), without its rods and base.
+        private static CockpitGrip FindGrip(Gltf g, CockpitScene scene, Dictionary<int, int> parent, Dictionary<int, List<int>> meshesOfNode, Behaviours behaviours, IEnumerable<int> nodes, string device, Vec3 eye)
+        {
+            bool stick = device == "stick";
+            double limit = stick ? 1.0 : 0.6;
+            Dictionary<int, List<int>> found = new Dictionary<int, List<int>>();
+            Dictionary<int, Vec3> centre = new Dictionary<int, Vec3>();
+            foreach (int n in nodes)
+            {
+                string name = Str(g.Nodes[n], "name");
+                List<string> words = NameWords(name);
+                // The behaviour that drives the part says it too (the PC-6's Prop_Lever: ASOBO_ENGINE_Lever_Throttle_Template).
+                string template;
+                if (behaviours.Nodes.TryGetValue(name, out template) || behaviours.LinkedGrips.TryGetValue(name, out template))
+                    words.AddRange(NameWords(template).Where(w => w != "asobo" && w != "template" && !w.StartsWith("hid", StringComparison.Ordinal)));
+                bool isThrottle = words.Any(ThrottleWords.Contains);
+                bool isStick = !isThrottle && words.Any(StickWords.Contains);
+                if ((stick ? !isStick : !isThrottle) || words.Any(GripNotWords.Contains) || Hidden(g.Nodes, parent, n))
+                    continue;
+                List<int> all;
+                if (!meshesOfNode.TryGetValue(n, out all) || all.Count == 0)
+                    continue;
+                bool otherSide = NameWords(name).Any(OtherPilotWords.Contains);
+                List<int> ms = all.Where(m => !UnderDropped(g, parent, scene.Meshes[m].Node, n, !otherSide)).ToList();
+                if (ms.Count == 0)
+                    continue;
+                Vec3 mn, mx;
+                scene.Bounds(ms, out mn, out mx);
+                double size = (mx - mn).Length;
+                if (size < 0.04 || size > limit)
+                    continue;
+                found[n] = ms;
+                centre[n] = (mn + mx) * 0.5;
+            }
+            if (found.Count == 0)
+                return null;
+            // The other pilot's grip is named so where both are modelled.
+            Func<int, bool> other = n => NameWords(Str(g.Nodes[n], "name")).Any(OtherPilotWords.Contains);
+            int best = found.Keys.OrderBy(n => other(n) ? 1 : 0).ThenBy(n => (centre[n] - eye).Length).First();
+            for (int k = best, guard = 0; guard < 64; guard++)
+            {
+                int p;
+                if (!parent.TryGetValue(k, out p))
+                    break;
+                // Only an ancestor that keeps what was found (the Spirit of St. Louis hangs its stick under a
+                // "Yoke_Base_Visibility" switch, which a grip leaves out with the base).
+                if (found.ContainsKey(p) && found[best].All(found[p].Contains))
+                    best = p;
+                k = p;
+            }
+            return new CockpitGrip { Device = device, Meshes = found[best], Pivot = centre[best], Animation = new ControlAnimation { Source = "model node", Name = Str(g.Nodes[best], "name") } };
+        }
+
+        // Whether a mesh of node `owner` hangs under a part (between it and `top`) that is not drawn with the grip (the
+        // other pilot's grip too where both hang on one linkage, the Bell 407's collectives).
+        private static bool UnderDropped(Gltf g, Dictionary<int, int> parent, int owner, int top, bool dropOther)
+        {
+            for (int k = owner, guard = 0; k != top && guard < 64; guard++)
+            {
+                List<string> w = NameWords(Str(g.Nodes[k], "name"));
+                if (w.Any(GripDropWords.Contains) || dropOther && w.Any(OtherPilotWords.Contains))
+                    return true;
+                int p;
+                if (!parent.TryGetValue(k, out p))
+                    break;
+                k = p;
+            }
+            return false;
         }
 
         private static bool IsGripName(string name)
@@ -881,6 +996,48 @@ namespace JoyPro.CockpitPictures
             public Dictionary<string, string> Nodes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             // Node -> the sim events its template block names (K: events, B: input events).
             public Dictionary<string, List<string>> Events = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            // Node -> a grip template (throttle, collective, yoke) of the files the interior builds on: its IncludeBase and
+            // the studio's own template files (Include RelativeFile). Only for finding the grips (the PC-6 G950 and the
+            // skis variant name their throttle there).
+            public Dictionary<string, string> LinkedGrips = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            private static readonly Regex GripTemplate = new Regex("Throttle|Collective|Yoke|Stick|Cyclic", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            // The grip templates with their nodes in the files an interior xml includes by a relative path (read only).
+            private static void ReadLinked(string xml, string text, Behaviours b, HashSet<string> seen)
+            {
+                string dir = Path.GetDirectoryName(xml) ?? string.Empty;
+                foreach (Match m in Regex.Matches(text, "<(?:Include|IncludeBase)\\s+RelativeFile\\s*=\\s*\"(?<f>[^\"]+)\""))
+                {
+                    if (seen.Count > 40)
+                        return;
+                    string file, t;
+                    try
+                    {
+                        file = Path.GetFullPath(Path.Combine(dir, m.Groups["f"].Value.Replace('\\', Path.DirectorySeparatorChar)));
+                        if (!seen.Add(file) || !File.Exists(file))
+                            continue;
+                        t = Regex.Replace(File.ReadAllText(file), "<!--.*?-->", string.Empty, RegexOptions.Singleline);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                    foreach (Match u in Regex.Matches(t, "<UseTemplate\\s+Name\\s*=\\s*\"(?<name>[^\"]+)\"\\s*>(?<body>.*?)</UseTemplate>", RegexOptions.Singleline))
+                    {
+                        string template = u.Groups["name"].Value;
+                        if (!GripTemplate.IsMatch(template) || NotInteractive.IsMatch(template))
+                            continue;
+                        foreach (Match n in Regex.Matches(u.Groups["body"].Value, "<NODE_ID>\\s*([^<\\s]+)\\s*</"))
+                        {
+                            string node = n.Groups[1].Value;
+                            if (!b.Nodes.ContainsKey(node) && !b.LinkedGrips.ContainsKey(node))
+                                b.LinkedGrips[node] = template;
+                        }
+                    }
+                    ReadLinked(file, t, b, seen);
+                }
+            }
 
             private static readonly Regex TemplateKind = new Regex("_(Switch|Knob|Lever|Push|Button|Handle|Wheel|Toggle|Selector|Pull|Rocker|Slider|Key|Guard|Cover|Crank|Plunger|Yoke|Stick|Pedal|Pedals|Collective|Cyclic)s?(_|$)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             private static readonly Regex NotInteractive = new Regex("^ASOBO_(GT_|INSTRUMENT_Needle|.*_Emissive|.*_Needle|.*Indicator_)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -931,6 +1088,7 @@ namespace JoyPro.CockpitPictures
                         }
                     }
                 }
+                ReadLinked(xml, text, b, new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Path.GetFullPath(xml) });
                 return b;
             }
         }

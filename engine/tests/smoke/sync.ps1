@@ -1,4 +1,4 @@
-# Game config watcher (engine sync, docs/sync-watcher.md). Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*,
+﻿# Game config watcher (engine sync, docs/sync-watcher.md). Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*,
 # $tempDir, $engineDir, $starCitizenDbCatalogPath; the main script restores the Star Citizen DB catalog afterwards).
 # Every game file is a temp copy; the fingerprints go into a temporary JoyPro folder (JOYPRO_DATA_DIR).
 # Per game: export -> status unchanged -> change the file as the game would (a bind on an input two relations share,
@@ -120,6 +120,63 @@ try {
     $syncAccept = Run-Engine @("sync", "accept", "--game", "DCS", "--path", $syncDcsRoot)
     Assert-True ($syncAccept.ExitCode -eq 0) ("sync accept failed: " + $syncAccept.Output)
     Assert-True ((SyncJson (Run-Engine @("sync", "status", "--game", "DCS", "--path", $syncDcsRoot)).Output).Games[0].State -eq "unchanged") "sync accept should mark the config as known."
+
+    # ---- DCS: a new bind on a button other aircraft use joins that button's relation (tester report on 2.4.1) -------
+    # Only the Hornet's file changes; "Shared Btn" binds JOY_BTN5 for the F-16 only. Up to 2.4.1 the take-over only
+    # looked at relations of the changed aircraft and made a relation of its own; the DCS import "add to my profile"
+    # did the same. A bind on a button no relation uses still gets a new relation. Then relations item move-to-input.
+    $joinProfile = Join-Path $syncRoot "join.pr0file"
+    $joinRoot = Join-Path $syncRoot "join-saved-games"
+    Run-Engine @("--profile", $joinProfile, "relations", "add", "Shared Btn", "--button", "--node", "DCS:d3001pnilunilcd2vd1vpnilvunil:F-16C_50", "--device", $syncStick, "--input", "JOY_BTN5", "--text") | Out-Null
+    Run-Engine @("--profile", $joinProfile, "relations", "add", "Hornet Other", "--button", "--node", "DCS:d3002pnilunilcd2vd1vpnilvunil:FA-18C_hornet", "--device", $syncStick, "--input", "JOY_BTN6", "--text") | Out-Null
+    $joinExport = Run-Engine @("--profile", $joinProfile, "dcs", "export", $joinRoot, "--planes", "F-16C_50,FA-18C_hornet", "--text")
+    Assert-True ($joinExport.ExitCode -eq 0) ("dcs export for the join test failed: " + $joinExport.Output)
+    $joinFile = @(Get-ChildItem -Path (Join-Path $joinRoot "Config\Input\FA-18C_hornet\joystick") -Filter "*.diff.lua")[0].FullName
+    $joinText = [System.IO.File]::ReadAllText($joinFile).Replace("`r`n", "`n")
+    $joinText = $joinText.Replace("  [""keyDiffs""] = {`n", "  [""keyDiffs""] = {`n    [""d3005pnilunilcd2vd1vpnilvunil""] = {`n      [""name""] = ""Game Join"",`n      [""added""] = {`n        [1] = {`n          [""key""] = ""JOY_BTN5"",`n        },`n      },`n    },`n    [""d3006pnilunilcd2vd1vpnilvunil""] = {`n      [""name""] = ""Game Fresh"",`n      [""added""] = {`n        [1] = {`n          [""key""] = ""JOY_BTN7"",`n        },`n      },`n    },`n")
+    [System.IO.File]::WriteAllText($joinFile, $joinText.Replace("`n", "`r`n"), $syncUtf8)
+    Copy-Item -Path $joinProfile -Destination (Join-Path $syncRoot "join-import.pr0file") -Force
+
+    $joinDiffRun = Run-Engine @("--profile", $joinProfile, "sync", "diff", "--game", "DCS", "--path", $joinRoot)
+    Assert-True ($joinDiffRun.ExitCode -eq 0) ("sync diff (join) failed: " + $joinDiffRun.Output)
+    $joinDiff = SyncJson $joinDiffRun.Output
+    Assert-True (@($joinDiff.Planes) -contains "FA-18C_hornet" -and -not (@($joinDiff.Planes) -contains "F-16C_50")) ("only the Hornet's file changed: " + (@($joinDiff.Planes) -join ", "))
+    $joinUsed = @($joinDiff.Changes | Where-Object { $_.ActionId -eq "d3005pnilunilcd2vd1vpnilvunil" })[0]
+    $joinFresh = @($joinDiff.Changes | Where-Object { $_.ActionId -eq "d3006pnilunilcd2vd1vpnilvunil" })[0]
+    Assert-True ($joinUsed.Suggested -eq "Shared Btn") ("a new bind on a button another aircraft uses should join that relation: " + $joinUsed.Suggested)
+    Assert-True ($joinFresh.Suggested -eq "new") ("a new bind on a button no relation uses should get a new relation: " + $joinFresh.Suggested)
+    $joinChoices = Join-Path $syncRoot "join-choices.json"
+    SyncChoices $joinChoices @(@{ Id = $joinUsed.Id; Target = $joinUsed.Suggested }, @{ Id = $joinFresh.Id; Target = "new"; Name = $joinFresh.NewRelationName })
+    $joinApply = SyncJson (Run-Engine @("--profile", $joinProfile, "sync", "apply", "--game", "DCS", "--path", $joinRoot, "--choices", $joinChoices)).Output
+    # The new relation is named after the action's title in the DCS list.
+    $joinFreshName = $joinFresh.NewRelationName
+    Assert-True (@($joinApply.ChangedRelations) -contains "Shared Btn" -and @($joinApply.NewRelations) -contains $joinFreshName) ("sync apply (join) should change Shared Btn and make " + $joinFreshName + ": " + ($joinApply | ConvertTo-Json -Depth 3))
+    Assert-Match (Run-Engine @("--profile", $joinProfile, "relations", "show", "Shared Btn", "--text")).Output "id=d3005pnilunilcd2vd1vpnilvunil, aircraft=FA-18C_hornet" "the joined bind should be in Shared Btn for the Hornet."
+
+    # The DCS import "add to my profile": the same bind joins Shared Btn instead of a generated relation of its own.
+    $joinImport = Run-Engine @("--profile", (Join-Path $syncRoot "join-import.pr0file"), "dcs", "import", "--path", $joinRoot, "--merge", "--include-keyboard", "false", "--text")
+    Assert-True ($joinImport.ExitCode -eq 0) ("dcs import --merge (join) failed: " + $joinImport.Output)
+    Assert-Match $joinImport.Output "Joined Relations On The Same Input: 1" "dcs import --merge should join the bind on the used button."
+    Assert-Match (Run-Engine @("--profile", (Join-Path $syncRoot "join-import.pr0file"), "relations", "show", "Shared Btn", "--text")).Output "id=d3005pnilunilcd2vd1vpnilvunil, aircraft=FA-18C_hornet" "the imported bind should be in Shared Btn."
+    Assert-NotMatch (Run-Engine @("--profile", (Join-Path $syncRoot "join-import.pr0file"), "relations", "list", "--text")).Output "Game_Join__" "the import must not make a relation of its own for a bind on a used button."
+
+    # Move one action to another button: the F-16's action goes to JOY_BTN7, where Game Fresh binds only the Hornet.
+    $moveDry = SyncJson (Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3001pnilunilcd2vd1vpnilvunil:F-16C_50", "--device", $syncStick, "--input", "JOY_BTN7", "--dry-run")).Output
+    Assert-True ($moveDry.Joined -and $moveDry.To -eq $joinFreshName -and $moveDry.DryRun) ("move-to-input --dry-run should say it joins Game Fresh: " + ($moveDry | ConvertTo-Json))
+    Assert-Match (Run-Engine @("--profile", $joinProfile, "relations", "show", "Shared Btn", "--text")).Output "d3001pnilunilcd2vd1vpnilvunil" "--dry-run must not change the profile."
+    $moveRun = Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3001pnilunilcd2vd1vpnilvunil:F-16C_50", "--device", $syncStick, "--input", "JOY_BTN7")
+    Assert-Match $moveRun.Output "Auto-saved profile" "move-to-input should save the profile."
+    $moveDone = SyncJson $moveRun.Output
+    Assert-True ($moveDone.Joined -and -not $moveDone.FromRemoved) ("the F-16 action should join Game Fresh and Shared Btn keep the Hornet's: " + ($moveDone | ConvertTo-Json))
+    Assert-Match (Run-Engine @("--profile", $joinProfile, "relations", "show", $joinFreshName, "--text")).Output "id=d3001pnilunilcd2vd1vpnilvunil, aircraft=F-16C_50" "the moved action should be in Game Fresh."
+    Assert-NotMatch (Run-Engine @("--profile", $joinProfile, "relations", "show", "Shared Btn", "--text")).Output "d3001pnilunilcd2vd1vpnilvunil" "the moved action must leave Shared Btn."
+    # The Hornet is bound on JOY_BTN6 already (Hornet Other): its action gets a relation of its own there; Shared Btn,
+    # empty now, goes away with its bind.
+    $moveOwn = SyncJson (Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3005pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN6")).Output
+    Assert-True ($moveOwn.Created -and $moveOwn.FromRemoved -and $moveOwn.To -ne "Hornet Other") ("an aircraft bound on the button already gets a new relation: " + ($moveOwn | ConvertTo-Json))
+    Assert-NotMatch (Run-Engine @("--profile", $joinProfile, "relations", "list", "--text")).Output "(?m)^Shared Btn \|" "an empty relation goes away after the move."
+    $moveSame = Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", $joinFreshName, "--node", "DCS:d3006pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN7")
+    Assert-True ($moveSame.ExitCode -ne 0) "move-to-input onto the relation's own input should fail."
 
     # ---- War Thunder (registry game, machine.blk) -----------------------------------------------------------------
     $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\warthunder\devices.tsv"

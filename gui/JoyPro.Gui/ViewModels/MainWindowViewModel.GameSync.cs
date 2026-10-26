@@ -391,6 +391,8 @@ public sealed partial class MainWindowViewModel
         }
         string choicesFile = Path.Combine(Path.GetTempPath(), "joypro-sync-" + Guid.NewGuid().ToString("N") + ".json");
         HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
+        List<string> joined = [];
+        List<string> created = [];
         try
         {
             File.WriteAllText(choicesFile, JsonSerializer.Serialize(new Dictionary<string, object> { ["Choices"] = choices }));
@@ -400,6 +402,15 @@ public sealed partial class MainWindowViewModel
             {
                 GameSyncStatus = result == null ? T("The engine could not be started.") : BuildFailureStatus(result);
                 return;
+            }
+            try
+            {
+                using JsonDocument applied = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
+                joined = ReadStringArray(applied.RootElement, "ChangedRelations").ToList();
+                created = ReadStringArray(applied.RootElement, "NewRelations").ToList();
+            }
+            catch (JsonException)
+            {
             }
         }
         finally
@@ -411,7 +422,13 @@ public sealed partial class MainWindowViewModel
         await ReportNewDuplicatesAsync(duplicatesBefore, T("Taking over the game's changes"));
         await RefreshRelationsAsync();
         await RefreshBindsAsync();
-        StatusText = T("Took over the game's changes.");
+        // Which relation each change went into: a new bind on a button joins the relation on that button (2.4.2).
+        List<string> parts = [];
+        if (joined.Count > 0)
+            parts.Add(T("added to {0}", string.Join(", ", joined.Select(n => "'" + n + "'"))));
+        if (created.Count > 0)
+            parts.Add(T("new relation {0}", string.Join(", ", created.Select(n => "'" + n + "'"))));
+        StatusText = parts.Count == 0 ? T("Took over the game's changes.") : T("Took over the game's changes: {0}.", string.Join("; ", parts));
         _ = ProcessGameSyncQueueAsync();
     }
 

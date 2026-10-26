@@ -81,6 +81,22 @@ public sealed class CockpitPictureQualityTests
         // A grip far too small in its frame (transparent around it is fine for a grip, a speck is not).
         PictureMetrics speck = PictureQuality.Measure(Picture(400, 400, (x, y) => x is > 180 and < 222 && y is > 180 and < 222 ? ((byte)(x * 9), (byte)(y * 7), (byte)90, (byte)255) : ((byte)0, (byte)0, (byte)0, (byte)0)), 400, 400, 4);
         Assert.Contains("too small in the frame", Rated(speck, "device"));
+
+        // A clean untextured grip: smooth shaded plastic with a few dark buttons fills its frame. A grip is kept (a
+        // Star Citizen throttle like this was rated 0 and left out); the same pixels as a panel are poor.
+        byte[] gripPixels = Picture(400, 400, (x, y) =>
+        {
+            if (x is < 60 or > 340 || y is < 40 or > 360)
+                return (0, 0, 0, 0);
+            bool button = (x - 200) * (x - 200) + (y - 100) * (y - 100) < 300 || (x - 120) * (x - 120) + (y - 150) * (y - 150) < 200;
+            byte v = (byte)(button ? 30 : 90 + (x + y) / 8);
+            return (v, v, v, 255);
+        });
+        PictureMetrics smooth = PictureQuality.Measure(gripPixels, 400, 400, 4);
+        smooth.Textured = 0;
+        Assert.True(PictureQuality.Rate(smooth, "device") >= PictureQuality.Good, "grip score " + smooth.Score + " " + string.Join(", ", smooth.Problems));
+        Assert.DoesNotContain("untextured", smooth.Problems);
+        Assert.True(PictureQuality.Rate(smooth, "panel") < PictureQuality.Keep, "panel score " + smooth.Score);
     }
 
     private static List<string> Rated(PictureMetrics m, string kind)

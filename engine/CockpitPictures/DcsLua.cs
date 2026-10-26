@@ -165,8 +165,13 @@ env = sandbox({
   CreateGauge = function() return newgauge() end,
   CreateGaugeLocal = function(a, i, o, c) local g = newgauge(); g.arg_number = a; g.controller = c; return g end,
   CreateSimpleConnectedGauge = function(a, b) local g = newgauge(); g.args = { a, b }; return g end,
-  LockOn_Options = { script_path = scriptPath, common_script_path = dcsPath .. 'Scripts/Aircrafts/_Common/Cockpit/', cockpit_language = 'english',
+  -- The user's options are not known: not set (the MiG-19P hides its stick when difficulty.hideStick is set).
+  get_option_value = function() return nil end,
+  -- Options the harness does not know (LockOn_Options.cockpit.mirrors) read as the dummy: the P-51D's script stopped
+  -- after its first gauge, before the stick's.
+  LockOn_Options = setmetatable({ script_path = scriptPath, common_script_path = dcsPath .. 'Scripts/Aircrafts/_Common/Cockpit/', cockpit_language = 'english',
                      screen = { width = 1920, height = 1080, aspect = 16 / 9 }, init_conditions = {}, flight = {}, measurement_system = 'imperial', date = {} },
+                     { __index = function() return dummy end }),
   require = require,
 })
 env.dofile = function(p) local f = loadfile(p); if f then setfenv(f, env); pcall(f) end end

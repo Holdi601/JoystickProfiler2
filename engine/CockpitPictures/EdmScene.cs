@@ -213,6 +213,23 @@ namespace JoyPro.CockpitPictures
             return scene;
         }
 
+        // Where every node's origin is in the resting pose (the grips' handle nodes have no meshes of their own).
+        public static Vec3[] NodePositions(EdmFile edm, Options o)
+        {
+            o = o ?? new Options();
+            int n = edm.Nodes.Count;
+            double[][] world = new double[n][];
+            bool[] hidden = new bool[n];
+            bool[] done = new bool[n];
+            Dictionary<int, int> firstLodChild = new Dictionary<int, int>();
+            for (int i = 0; i < n; i++)
+                Resolve(edm, i, o, world, hidden, done, firstLodChild, 0);
+            Vec3[] at = new Vec3[n];
+            for (int i = 0; i < n; i++)
+                at[i] = Mat4.Point(world[i], 0, 0, 0);
+            return at;
+        }
+
         private static bool Drawn(EdmMaterial m, Options o)
         {
             string name = (m.Name ?? string.Empty).ToLowerInvariant();
@@ -224,11 +241,14 @@ namespace JoyPro.CockpitPictures
                 return false;
             foreach (string skip in o.SkipMaterials)
             {
-                if (name.Contains(skip))
+                // The pilot's grips are no part of the pilot's body (the F-4E's stick: HB_F-4E_INT_PilotStick).
+                if (name.Contains(skip) && !(skip == "pilot" && PilotGripMaterial.IsMatch(name)))
                     return false;
             }
             return true;
         }
+
+        private static readonly System.Text.RegularExpressions.Regex PilotGripMaterial = new System.Text.RegularExpressions.Regex("pilot_?(stick|throttle|grip|yoke|cyclic|collective)", System.Text.RegularExpressions.RegexOptions.Compiled);
 
         private static void Resolve(EdmFile edm, int i, Options o, double[][] world, bool[] hidden, bool[] done, Dictionary<int, int> firstLodChild, int depth)
         {

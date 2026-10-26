@@ -238,6 +238,8 @@ namespace JoyPro.Engine
         public int GenericJoystickDefaultsSkipped { get; set; }
         public int ImportedRelations { get; set; }
         public int ImportedBinds { get; set; }
+        // Binds that joined a relation of the profile on the same input (adding to the profile).
+        public int JoinedExistingRelations { get; set; }
         public int ForceFeedbackDevicesImported { get; set; }
         public int SkippedEntries { get; set; }
         // .jp binds dropped because the .diff.lua no longer has them (removed in DCS).

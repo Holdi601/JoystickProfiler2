@@ -55,8 +55,11 @@ namespace JoyPro.Engine
                     foreach (string dir in Directory.GetDirectories(moduleDir))
                         lib.AddFolder(dir, true);
                     lib.AddFolder(Path.Combine(install.InstallPath, "Bazar", "World", "textures"), false);
-                    CockpitScene scene = EdmScene.Build(edm, new EdmScene.Options { Texture = lib.Get });
-                    List<CockpitGrip> grips = DcsCockpitPictures.Grips(edm, scene, cockpit.Gauges).Where(g => g.Device == gripKind).ToList();
+                    EdmScene.Options options = new EdmScene.Options { Texture = lib.Get };
+                    CockpitScene scene = EdmScene.Build(edm, options);
+                    List<CockpitGrip> all = DcsCockpitPictures.Grips(edm, scene, cockpit.Gauges, options);
+                    DcsCockpitPictures.ShowHiddenGrips(edm, ref scene, ref options, ref all, cockpit.Gauges);
+                    List<CockpitGrip> grips = all.Where(g => g.Device == gripKind).ToList();
                     if (grips.Count <= gripIndex)
                         return Fail("The " + aircraft + " cockpit has no " + gripKind + " grip the reader finds (" + grips.Count + ").");
                     CockpitGrip grip = grips[gripIndex];

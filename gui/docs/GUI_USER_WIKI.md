@@ -236,6 +236,16 @@ a cockpit switch id is another switch in every module. JoyPro never assumes the 
   removes it (below).
 - `Delete` (trash icon) deletes the relation (asks first). Ctrl+Z undoes any change.
 
+### Move one action to another button
+A relation is one input: changing its input moves all of its actions. To move only one action (for example the MSFS
+`Toggle Master Warning` that shares a button with your DCS actions):
+1. Right-click the action in `Its actions` → `Move to another button...` (on the Binds page: right-click the bind row
+   → `Move an action to another button...`, or `Move...` next to an action under `What it does`).
+2. Press `Press the new button` and press it on your device, or pick the device and type the input (`JOY_BTN3`).
+3. The window says where it goes: into the relation that already uses that button, or into a new relation named after
+   the action when no relation uses it (or when that aircraft is bound there to something else already).
+4. `Move`. The other actions stay on the old button; a relation left without actions goes away. One Ctrl+Z undoes it.
+
 ### Suggested for this relation
 What means the same in your other games and aircraft, from JoyPro's function catalog (checked against the manuals),
 no AI:
@@ -319,6 +329,9 @@ This is where you assign real joystick/keyboard inputs to relations.
 3. Apply axis options if needed (invert, deadzone, curvature, saturation).
 4. Add/remove modifiers for that bind.
 5. Nothing to save: every change is saved by itself (`Saved ✓` in the top bar), `Undo` takes it back.
+
+To put only one of the relation's actions on another button, see "Move one action to another button" on the
+Relations page (also on the bind row's right-click menu and `Move...` under `What it does`).
 
 ### Put relations on my buttons automatically (Auto Assign)
 `Put relations on my buttons automatically...` (Binds page toolbar; the Start page's `Auto Assign` step opens it) binds the relations to the best controls of your devices (`engine relations auto-assign`):

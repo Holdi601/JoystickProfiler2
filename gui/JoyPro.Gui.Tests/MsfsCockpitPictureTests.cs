@@ -193,6 +193,42 @@ public sealed class MsfsCockpitPictureTests : IDisposable
     }
 
     [Fact]
+    public void Build_FindsGripsByOtherNames_AndByAThrottleBehaviourOfAnIncludedFile()
+    {
+        // The yoke named as many studios do (COCKPIT_yoke_pilot), the second part the PC-6's way: Prop_Lever, made the
+        // throttle by ASOBO_ENGINE_Lever_Throttle_Template in the studio's own template file.
+        string folder = MakePackages();
+        string model = Path.Combine(folder, "model");
+        string gltf = Path.Combine(model, "Trainer_interior_LOD00.gltf");
+        File.WriteAllText(gltf, File.ReadAllText(gltf).Replace("\"HANDLING_Yoke_1\"", "\"COCKPIT_yoke_pilot\"").Replace("\"ELECTRICAL_Switch_Battery_Master\"", "\"Prop_Lever\""));
+        File.WriteAllText(Path.Combine(model, "Trainer_interior.xml"),
+            "<ModelInfo><LODS><LOD minSize=\"100\" ModelFile=\"Trainer_interior_LOD00.gltf\"/></LODS><Behaviors>" +
+            "<Include ModelBehaviorFile=\"Asobo\\Common.xml\"/><Include RelativeFile=\"..\\Templates.xml\"/></Behaviors></ModelInfo>");
+        File.WriteAllText(Path.Combine(folder, "Templates.xml"),
+            "<ModelBehaviors><Template Name=\"Trainer_Levers\"><Component ID=\"Throttle_Lever\"><UseTemplate Name=\"ASOBO_ENGINE_Lever_Throttle_Template\">" +
+            "<NODE_ID>Prop_Lever</NODE_ID></UseTemplate></Component></Template></ModelBehaviors>");
+        MsfsCockpitPictures.Behaviours b = MsfsCockpitPictures.Behaviours.Read(Path.Combine(model, "Trainer_interior.xml"));
+        Assert.Equal("ASOBO_ENGINE_Lever_Throttle_Template", b.LinkedGrips["Prop_Lever"]);
+        Assert.False(b.Nodes.ContainsKey("Prop_Lever"));
+        string outRoot = Path.Combine(root, "out", "MSFS2020");
+        MsfsCockpitPictures.Job job = new MsfsCockpitPictures.Job { OutRoot = outRoot, Width = 320, Force = true };
+        job.PackageRoots.Add(root);
+        MsfsCockpitPictures.SetResult r = Assert.Single(MsfsCockpitPictures.Build(job));
+        Assert.True(string.IsNullOrEmpty(r.Error), r.Error);
+        string json = File.ReadAllText(Path.Combine(r.Folder, "pictures.json"));
+        Assert.Contains("\"id\":\"device:stick\"", json);
+        Assert.Contains("\"id\":\"device:throttle\"", json);
+    }
+
+    [Fact]
+    public void NameWords_SplitTheModellersNames()
+    {
+        Assert.Equal(new[] { "handling", "yoke", "lever", "stick", "lr" }, MsfsCockpitPictures.NameWords("HANDLING_YOKE_Lever_StickLR_1"));
+        Assert.Equal(new[] { "yoke" }, MsfsCockpitPictures.NameWords("Yoke1"));
+        Assert.Equal(new[] { "engine", "lever", "throttle", "visual" }, MsfsCockpitPictures.NameWords("ENGINE_Lever_Throttle_1_Visual"));
+    }
+
+    [Fact]
     public void Behaviours_NameTheNodesByNodeIdOrByTheTemplate_AndTheirEvents()
     {
         string xml = Path.Combine(root, "b.xml");

@@ -388,10 +388,19 @@ namespace JoyPro.CockpitPictures
         // draw, skip (no-draw, glass, decals, holograms), screen (a display)
         public string Kind = "draw";
         public double[] Diffuse = { 0.5, 0.5, 0.5 };   // linear
+        public double[] Specular = { 0.04, 0.04, 0.04 };   // linear (a metal: its colour, the diffuse is black)
         public string Texture = string.Empty;          // the diffuse texture (TexSlot1)
         public string LayerPath = string.Empty;        // HardSurface: the first layer's material
         public double[] LayerTint;                     // linear
+        public double LayerUvTiling = 1;               // HardSurface: the first layer's UVTiling
+        public double Tiling = 1;                      // a layer material: its LayerTiling
         public bool AlphaTest;
+
+        // A metal (CryEngine's PBR: a black diffuse and a bright specular colour).
+        public bool Metal
+        {
+            get { return 0.299 * Specular[0] + 0.587 * Specular[1] + 0.114 * Specular[2] >= 0.12; }
+        }
 
         public static List<StarCitizenMaterial> Parse(CryXmlNode root)
         {
@@ -416,6 +425,13 @@ namespace JoyPro.CockpitPictures
             double[] diff = CryXml.Numbers(m.Get("Diffuse"));
             if (diff.Length >= 3)
                 s.Diffuse = new[] { diff[0], diff[1], diff[2] };
+            double[] spec = CryXml.Numbers(m.Get("Specular"));
+            if (spec.Length >= 3)
+                s.Specular = new[] { spec[0], spec[1], spec[2] };
+            double tiling;
+            CryXmlNode pub = m.Child("PublicParams");
+            if (pub != null && double.TryParse(pub.Get("LayerTiling"), NumberStyles.Float, CultureInfo.InvariantCulture, out tiling) && tiling > 0.01 && tiling < 100)
+                s.Tiling = tiling;
             double opacity;
             if (!double.TryParse(m.Get("Opacity"), NumberStyles.Float, CultureInfo.InvariantCulture, out opacity))
                 opacity = 1;
@@ -442,6 +458,9 @@ namespace JoyPro.CockpitPictures
                     double[] tint = CryXml.Numbers(first.Get("TintColor"));
                     if (tint.Length >= 3)
                         s.LayerTint = new[] { tint[0], tint[1], tint[2] };
+                    double uvTiling;
+                    if (double.TryParse(first.Get("UVTiling"), NumberStyles.Float, CultureInfo.InvariantCulture, out uvTiling) && uvTiling > 0.01 && uvTiling < 100)
+                        s.LayerUvTiling = uvTiling;
                 }
             }
             bool screen = shader == "displayscreen" || shader.Contains("monitor") || (mask.Contains("MONITOREFFECTS") && shader != "uiplane");

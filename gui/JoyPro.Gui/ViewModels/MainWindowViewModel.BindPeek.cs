@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -98,7 +98,7 @@ public sealed partial class MainWindowViewModel
             string title = ResolveNodeTitle(game, planes.Count > 0 ? planes[0] : "Default", id, StoredNodeTitle(storedTitles, id, firstPlane));
             if (string.Equals(title, id, StringComparison.OrdinalIgnoreCase) && gameTitles.TryGetValue(game + "|" + id, out string? gameTitle) && gameTitle.Length > 0)
                 title = gameTitle;
-            actions.Add(new BindPeekAction(game, title.Length > 0 ? title : T("Command not in this aircraft's current list"), axis, planes));
+            actions.Add(new BindPeekAction(game, title.Length > 0 ? title : T("Command not in this aircraft's current list"), axis, planes, id));
         }
         SetBindPeek(relation, actions);
     }
@@ -177,8 +177,9 @@ public sealed class BindPeekGroup
 // One action of the peek: its title, axis / button, its aircraft ("12 aircraft", the names on a click).
 public sealed partial class BindPeekAction : ObservableObject
 {
-    public BindPeekAction(string game, string title, bool isAxis, IReadOnlyList<string> planes)
+    public BindPeekAction(string game, string title, bool isAxis, IReadOnlyList<string> planes, string id = "")
     {
+        Id = id ?? string.Empty;
         Game = game;
         Title = title;
         IsAxis = isAxis;
@@ -186,6 +187,9 @@ public sealed partial class BindPeekAction : ObservableObject
     }
 
     public string Game { get; }
+
+    // The action's id in its game ("Move to another button..." moves it by game:id).
+    public string Id { get; }
 
     public string Title { get; }
 

@@ -484,7 +484,11 @@ namespace JoyPro.CockpitPictures
             if (e.Packed > int.MaxValue || e.Size > int.MaxValue)
                 throw new InvalidDataException(NameOf(i) + " is too large");
             byte[] head = ReadAt(e.Offset, 30);
-            if (BitConverter.ToUInt32(head, 0) != 0x04034b50)
+            // (CIG writes PK 3 4 or PK 3 20 as the local header's mark; whether an entry is encrypted is told by the
+            // central directory only, checked above. Until 2026-10-26 the second kind was not read: textures such as
+            // the RSI ships' metals were drawn in a flat colour.)
+            uint mark = BitConverter.ToUInt32(head, 0);
+            if (mark != 0x04034b50 && mark != 0x14034b50)
                 throw new InvalidDataException(NameOf(i) + ": bad local header");
             int skip = 30 + BitConverter.ToUInt16(head, 26) + BitConverter.ToUInt16(head, 28);
             byte[] data = ReadAt(e.Offset + skip, (int)e.Packed);

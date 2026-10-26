@@ -429,6 +429,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)
+  engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--dry-run]  (one action to another button: joins the relation on that input, else a new one)
   engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]
   engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
@@ -5388,6 +5389,28 @@ Arguments and example values:
 - `<position>`: Command argument. See examples for typical values.
 - `--up`: Command argument. See examples for typical values.
 - `--down`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--dry-run]  (one action to another button: joins the relation on that input, else a new one)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `<relation-name>`: Name of target relation. Example: Gear Toggle.
+- `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `<device>`: Command argument. See examples for typical values.
+- `--input`: Input token. Example: --input JOY_BTN1 or --input joy0_b0.
+- `<input>`: Command argument. See examples for typical values.
+- `--modifier`: Modifier key token. Example: --modifier LShift.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--keep-modifiers`: Command argument. See examples for typical values.
+- `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
+- `<new relation>`: Command argument. See examples for typical values.
+- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
 
 Examples:
 ```powershell

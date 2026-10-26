@@ -241,8 +241,12 @@ engine --profile <p> sync apply --game <id> --choices <file.json> [--path <confi
   NewTuning, Relations, Candidates, Suggested, NewRelationName, SettingKey, SettingLabel, OldValue, NewValue,
   Description }], Warnings, Errors }` (OldValue / NewValue only for `changed-setting`). Without `--path` and `--game`
   status may list a game more than once, one entry per config. `Candidates`: the
-  relations that hold the bind (removed / changed), then those that bind the device + input + modifiers in this game,
-  then those that hold the action. `Suggested`: the relation to preselect, `new` or `ignore`. The ids are stable as
+  relations that hold the bind (removed / changed), the relation an added bind joins, then those that bind the device +
+  input + modifiers in this game, then those that hold the action. `Suggested`: the relation to preselect, `new` or
+  `ignore`. An added bind joins the relation of any game or aircraft that uses exactly that input with those modifiers,
+  unless the aircraft is bound there to another action (`EngineDcsImport.RelationToJoin`, the same rule as the DCS
+  import's "add to my profile" and `relations item move-to-input`); `new` only when no relation can take it (2.4.2;
+  up to 2.4.1 only this game's relations of the aircraft whose files changed counted). The ids are stable as
   long as the file and the profile do not change.
 - `apply --choices`: `{ "Choices": [ { "Id": "c...", "Target": "<relation>" | "new" | "apply" (settings) | "ignore", "Name": "<new
   relation name>" } ] }` (or the bare list). Changes not listed are ignored. Afterwards the config counts as known, so

@@ -1929,6 +1929,9 @@
                                                                     <MenuItem Header="{l:T 'Move to the top'}" Command="{Binding #RootWindow.DataContext.MoveRelationNodeToTopCommand}" CommandParameter="{Binding}" />
                                                                     <MenuItem Header="{l:T 'Move to the bottom'}" Command="{Binding #RootWindow.DataContext.MoveRelationNodeToBottomCommand}" CommandParameter="{Binding}" />
                                                                     <Separator />
+                                                                    <MenuItem Header="{l:T 'Move to another button...'}" Command="{Binding #RootWindow.DataContext.OpenMoveActionForNodeCommand}" CommandParameter="{Binding}"
+                                                                              ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
+                                                                    <Separator />
                                                                     <MenuItem Header="{l:T 'Remove from the relation'}" Command="{Binding #RootWindow.DataContext.RemoveNodeCommand}" CommandParameter="{Binding}" />
                                                                 </ContextMenu>
                                                             </Grid.ContextMenu>
@@ -2557,6 +2560,12 @@
                                             <DataTemplate x:DataType="models:BindListItem">
                                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" ToolTip.Tip="{Binding BindTooltip}" Background="Transparent"
                                                       PointerPressed="BindRowPointerPressed" PointerMoved="CalloutRelationPointerMoved">
+                                                    <Grid.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="{l:T 'Move an action to another button...'}" Command="{Binding #RootWindow.DataContext.OpenMoveActionForBindCommand}" CommandParameter="{Binding}"
+                                                                      ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
+                                                        </ContextMenu>
+                                                    </Grid.ContextMenu>
                                                     <Panel VerticalAlignment="Center">
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusOkBrush}" IsVisible="{Binding HasBind}" ToolTip.Tip="{l:T 'Bound'}" />
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusWarnBrush}" IsVisible="{Binding IsUnbound}" ToolTip.Tip="{l:T 'Not bound yet'}" />
@@ -3198,11 +3207,14 @@
                                                                     <ItemsControl.ItemTemplate>
                                                                         <DataTemplate x:DataType="vm:BindPeekAction">
                                                                             <StackPanel Spacing="1" Margin="0,1">
-                                                                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                                                                                     <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Title}" />
                                                                                     <Button Grid.Column="1" Classes="small ghost" Padding="4,0" Content="{Binding PlanesText}" IsVisible="{Binding HasPlanes}"
                                                                                             Command="{Binding ToggleExpandedCommand}" ToolTip.Tip="{l:T 'Show the aircraft'}" />
                                                                                     <Border Grid.Column="2" Classes="chip" VerticalAlignment="Center"><TextBlock Text="{Binding KindText}" /></Border>
+                                                                                    <Button Grid.Column="3" Classes="small ghost" Padding="4,0" Content="{l:T 'Move...'}"
+                                                                                            Command="{Binding #RootWindow.DataContext.OpenMoveActionForPeekCommand}" CommandParameter="{Binding}"
+                                                                                            ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
                                                                                 </Grid>
                                                                                 <TextBlock Classes="caption" Text="{Binding PlaneNames}" TextWrapping="Wrap" IsVisible="{Binding IsExpanded}" />
                                                                             </StackPanel>
@@ -7486,6 +7498,42 @@
                                     ToolTip.Tip="{l:T 'The profile stays as it is; the next export writes it over the game\'s changes'}" />
                         </WrapPanel>
                     </Grid>
+                </Border>
+
+                <!-- Move to another button (MainWindowViewModel.MoveAction.cs): one action of a relation goes to another input. -->
+                <Border IsVisible="{Binding IsMoveActionOpen}" ZIndex="104" Background="{DynamicResource JP.OverlayDimBrush}" />
+                <Border x:Name="MoveActionPanel" IsVisible="{Binding IsMoveActionOpen}" ZIndex="105" HorizontalAlignment="Center" VerticalAlignment="Center"
+                        MaxWidth="620" Margin="24" Padding="18" CornerRadius="14" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="2"
+                        Background="{DynamicResource JP.SurfaceBrush}" BoxShadow="0 8 32 0 #80000000">
+                    <StackPanel Spacing="10">
+                        <TextBlock Text="{Binding MoveActionTitle}" FontSize="{DynamicResource JP.FontSize.18}" FontWeight="Bold" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding MoveActionIntro}" TextWrapping="Wrap" Opacity="0.85" />
+                        <StackPanel Spacing="4" IsVisible="{Binding ShowMoveActionPicker}">
+                            <TextBlock Classes="label" Text="{l:T 'Action'}" />
+                            <ComboBox ItemsSource="{Binding MoveActionChoices}" SelectedItem="{Binding SelectedMoveAction}" HorizontalAlignment="Stretch"
+                                      DisplayMemberBinding="{Binding Label, x:DataType=vm:MoveActionChoice}" />
+                        </StackPanel>
+                        <Button Classes="icon accent" Tag="{StaticResource Icon.Record}" Content="{Binding MoveActionRecordLabel}" Command="{Binding RecordMoveActionInputCommand}"
+                                ToolTip.Tip="{l:T 'Press it, then press the button (or move the axis) on your device'}" />
+                        <TextBlock Classes="caption" Text="{l:T 'Or pick the device and type the input:'}" />
+                        <Grid ColumnDefinitions="Auto,*,Auto,140" ColumnSpacing="8">
+                            <TextBlock Classes="label" Text="{l:T 'Device'}" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding QuickBindDeviceOptions}" SelectedItem="{Binding MoveActionDevice}"
+                                      Text="{Binding MoveActionDevice}" IsEditable="True" />
+                            <TextBlock Grid.Column="2" Classes="label" Text="{l:T 'Input'}" VerticalAlignment="Center" />
+                            <TextBox Grid.Column="3" Text="{Binding MoveActionInput}" Watermark="{l:T 'e.g. JOY_BTN3'}" />
+                        </Grid>
+                        <CheckBox Content="{Binding MoveActionKeepModifiersText}" IsChecked="{Binding MoveActionKeepModifiers}" IsVisible="{Binding HasMoveActionModifiers}" />
+                        <Border Classes="callout" Padding="10,6" IsVisible="{Binding HasMoveActionPreview}">
+                            <TextBlock Text="{Binding MoveActionPreview}" TextWrapping="Wrap" />
+                        </Border>
+                        <TextBlock Text="{Binding MoveActionStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" IsVisible="{Binding HasMoveActionStatus}" />
+                        <WrapPanel HorizontalAlignment="Right" ItemSpacing="8" LineSpacing="6">
+                            <Button Content="{l:T 'Cancel'}" Command="{Binding CancelMoveActionCommand}" />
+                            <Button Classes="accent" Content="{l:T 'Move'}" Command="{Binding ApplyMoveActionCommand}" IsEnabled="{Binding CanApplyMoveAction}"
+                                    ToolTip.Tip="{l:T 'Moves the action (Ctrl+Z undoes it)'}" />
+                        </WrapPanel>
+                    </StackPanel>
                 </Border>
 
                 <!-- Updates (MainWindowViewModel.Updates.cs, docs/updates.md): a newer version with what changed and Update now /

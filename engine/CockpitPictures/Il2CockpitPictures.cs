@@ -372,8 +372,13 @@ namespace JoyPro.CockpitPictures
             // Grips: the stick (pitch and roll) and the throttle levers of the engines, each with what hangs on it.
             List<CockpitGrip> grips = new List<CockpitGrip>();
             Dictionary<Il2Mgm.Node, CockpitGrip> gripRoots = new Dictionary<Il2Mgm.Node, CockpitGrip>();
-            AddGrip(model, scene, nodeMeshes, hidden, pose, "stick", new[] { 406, 407 }, grips, gripRoots);
-            AddGrip(model, scene, nodeMeshes, hidden, pose, "throttle", ThrottleArgs(model), grips, gripRoots);
+            AddGrip(model, scene, nodeMeshes, hidden, pose, "stick", new[] { 406, 407 }, grips, gripRoots, head);
+            // Engines without a throttle (the Gnome Monosoupape rotaries of the D.H.2 and the Nieuport 28 run on the fuel
+            // lever and the blip switch): the fuel lever (the mixture argument) is the lever of the throttle hand.
+            int[] throttleArgs = ThrottleArgs(model);
+            if (throttleArgs.Length == 0)
+                throttleArgs = Enumerable.Range(1, 4).Select(e => 1011 + 100 * e).Where(a => model.Animations.Any(x => x.Arg == a)).ToArray();
+            AddGrip(model, scene, nodeMeshes, hidden, pose, "throttle", throttleArgs, grips, gripRoots, head);
 
             // Callouts: one per control argument the cockpit animates.
             List<CockpitCallout> callouts = new List<CockpitCallout>();
@@ -459,38 +464,34 @@ namespace JoyPro.CockpitPictures
         }
 
         // A grip: the topmost nodes the grip's arguments move (with everything under them), the ones near the biggest.
-        private static void AddGrip(Il2Mgm model, CockpitScene scene, Dictionary<Il2Mgm.Node, List<int>> nodeMeshes, HashSet<Il2Mgm.Node> hidden, Dictionary<Il2Mgm.Node, double[]> pose, string device, int[] args, List<CockpitGrip> grips, Dictionary<Il2Mgm.Node, CockpitGrip> roots)
+        private static void AddGrip(Il2Mgm model, CockpitScene scene, Dictionary<Il2Mgm.Node, List<int>> nodeMeshes, HashSet<Il2Mgm.Node> hidden, Dictionary<Il2Mgm.Node, double[]> pose, string device, int[] args, List<CockpitGrip> grips, Dictionary<Il2Mgm.Node, CockpitGrip> roots, Vec3 eye)
         {
             List<Il2Mgm.Node> moved = args.SelectMany(a => model.NodesOf(a)).Where(n => !hidden.Contains(n)).Distinct().ToList();
             List<Il2Mgm.Node> tops = moved.Where(n => !moved.Any(o => o != n && Il2Mgm.IsUnder(n, o))).ToList();
             List<Tuple<Il2Mgm.Node, List<int>, Vec3, double>> parts = new List<Tuple<Il2Mgm.Node, List<int>, Vec3, double>>();
+            List<Il2Mgm.Node> tooBig = new List<Il2Mgm.Node>();
             foreach (Il2Mgm.Node t in tops)
+                GripPart(scene, nodeMeshes, pose, t, parts, tooBig);
+            // Nothing of grip size: the moved node is the frame the grip sits on (the WWI sticks on their torque tube, the
+            // Ju 52's column with the cross bar to both wheels): the parts under the frame, without the frame, near their
+            // own pivots (a few levels down).
+            bool under = false;
+            for (int level = 0; level < 3 && parts.Count == 0 && tooBig.Count > 0; level++)
             {
-                HashSet<Il2Mgm.Node> sub = new HashSet<Il2Mgm.Node>();
-                Il2Mgm.AddSubtree(t, sub);
-                List<int> meshes = sub.Where(nodeMeshes.ContainsKey).SelectMany(n => nodeMeshes[n]).ToList();
-                if (meshes.Count == 0)
-                    continue;
-                // The linkage rods under a lever (to the engine, to the tail) are not the grip: only the parts near the
-                // lever's pivot and not long.
-                double[] pv = Il2Mgm.Pivot(t, pose);
-                Vec3 own = new Vec3(pv[12], pv[13], pv[14]);
-                HashSet<int> ownMeshes = new HashSet<int>(nodeMeshes.ContainsKey(t) ? nodeMeshes[t] : new List<int>());
-                meshes = meshes.Where(k =>
-                {
-                    if (ownMeshes.Contains(k))
-                        return true;
-                    Vec3 k0, k1;
-                    scene.Bounds(new[] { k }, out k0, out k1);
-                    return ((k0 + k1) * 0.5 - own).Length < 0.7 && (k1 - k0).Length < 0.9 && !IsRod(scene.Meshes[k]);
-                }).ToList();
-                if (meshes.Count == 0)
-                    continue;
-                Vec3 mn, mx;
-                scene.Bounds(meshes, out mn, out mx);
-                if ((mx - mn).Length > 1.2)
-                    continue;
-                parts.Add(Tuple.Create(t, meshes, (mn + mx) * 0.5, (mx - mn).Length));
+                List<Il2Mgm.Node> next = new List<Il2Mgm.Node>();
+                foreach (Il2Mgm.Node c in tooBig.SelectMany(x => x.Children).Where(c => !hidden.Contains(c)).Distinct().ToList())
+                    GripPart(scene, nodeMeshes, pose, c, parts, next);
+                tooBig = next;
+                under = true;
+            }
+            if (under)
+            {
+                // Big enough to be the grip (not a bolt of the frame); of two (both wheels of the Ju 52, the DFW's second
+                // stick) the one with the buttons, else the one nearest the pilot's eye.
+                double biggest = parts.Count > 0 ? parts.Max(x => x.Item4) : 0;
+                HashSet<Il2Mgm.Node> pressed = new HashSet<Il2Mgm.Node>(new[] { 9000, 9001, 9002, 9003, 1106, 1108 }.SelectMany(a => model.NodesOf(a)));
+                parts = parts.Where(x => x.Item4 >= 0.12 && x.Item4 >= biggest * 0.5)
+                    .OrderByDescending(x => pressed.Any(b => Il2Mgm.IsUnder(b, x.Item1)) ? 1 : 0).ThenBy(x => (x.Item3 - eye).Length).Take(1).ToList();
             }
             if (parts.Count == 0)
                 return;
@@ -510,6 +511,38 @@ namespace JoyPro.CockpitPictures
             grips.Add(g);
             foreach (Tuple<Il2Mgm.Node, List<int>, Vec3, double> x in near)
                 roots[x.Item1] = g;
+        }
+
+        // The grip part of a node: its subtree near its pivot (the linkage rods under a lever, to the engine or the tail,
+        // are not the grip: only the parts near the lever's pivot and not long). A part too big for a grip goes to `tooBig`.
+        private static void GripPart(CockpitScene scene, Dictionary<Il2Mgm.Node, List<int>> nodeMeshes, Dictionary<Il2Mgm.Node, double[]> pose, Il2Mgm.Node t, List<Tuple<Il2Mgm.Node, List<int>, Vec3, double>> parts, List<Il2Mgm.Node> tooBig)
+        {
+            HashSet<Il2Mgm.Node> sub = new HashSet<Il2Mgm.Node>();
+            Il2Mgm.AddSubtree(t, sub);
+            List<int> meshes = sub.Where(nodeMeshes.ContainsKey).SelectMany(n => nodeMeshes[n]).ToList();
+            if (meshes.Count == 0)
+                return;
+            double[] pv = Il2Mgm.Pivot(t, pose);
+            Vec3 own = new Vec3(pv[12], pv[13], pv[14]);
+            HashSet<int> ownMeshes = new HashSet<int>(nodeMeshes.ContainsKey(t) ? nodeMeshes[t] : new List<int>());
+            meshes = meshes.Where(k =>
+            {
+                if (ownMeshes.Contains(k))
+                    return true;
+                Vec3 k0, k1;
+                scene.Bounds(new[] { k }, out k0, out k1);
+                return ((k0 + k1) * 0.5 - own).Length < 0.7 && (k1 - k0).Length < 0.9 && !IsRod(scene.Meshes[k]);
+            }).ToList();
+            if (meshes.Count == 0)
+                return;
+            Vec3 mn, mx;
+            scene.Bounds(meshes, out mn, out mx);
+            if ((mx - mn).Length > 1.2)
+            {
+                tooBig.Add(t);
+                return;
+            }
+            parts.Add(Tuple.Create(t, meshes, (mn + mx) * 0.5, (mx - mn).Length));
         }
 
         // The model keeps each node's box in the cockpit as the game places it (max corner, min corner). A part far from

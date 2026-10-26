@@ -227,6 +227,7 @@ namespace JoyPro.CockpitPictures
             Dictionary<string, List<int>> grips = new Dictionary<string, List<int>>();
             Dictionary<string, int> materials = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             Dictionary<CockpitCallout, string> gripParts = new Dictionary<CockpitCallout, string>();
+            bool helicopter = D(p, "acf/_is_helicopter") > 0;
             using (TextureLibrary lib = new TextureLibrary())
             {
                 lib.AddFolder(acfDir, true);
@@ -303,7 +304,7 @@ namespace JoyPro.CockpitPictures
                                 sum = sum + World(run.Matrix, obj.Vertices, c, ox, oy, oz);
                             Vec3 at = sum * (1.0 / corners.Distinct().Count());
                             CockpitCallout added = AddCallout(callouts, run.Manip, at);
-                            string onGrip = GripOf(run.Datarefs);
+                            string onGrip = GripOf(run.Datarefs, helicopter);
                             if (added != null && onGrip != null)
                                 gripParts[added] = onGrip;
                         }
@@ -336,7 +337,7 @@ namespace JoyPro.CockpitPictures
                         }
                         int mesh = scene.Meshes.Count;
                         scene.Meshes.Add(new SceneMesh { Name = Path.GetFileName(file), Node = k, Material = material, Part = part, Positions = pos.ToArray(), Normals = nor.ToArray(), Uvs = uv.ToArray(), Indices = idx.ToArray() });
-                        string grip = GripOf(run.Datarefs);
+                        string grip = GripOf(run.Datarefs, helicopter);
                         if (grip != null)
                         {
                             List<int> list;
@@ -357,11 +358,34 @@ namespace JoyPro.CockpitPictures
                 List<CockpitGrip> gripList = new List<CockpitGrip>();
                 foreach (KeyValuePair<string, List<int>> g in grips)
                 {
+                    // The pilot's own grip: two yokes or sidesticks (the A330, the 737), the front and rear throttles
+                    // (the L-5) moved by one dataref made a group too big for a grip.
+                    List<int> own = CockpitViews.NearestCluster(scene, g.Value, head);
                     Vec3 mn, mx;
-                    scene.Bounds(g.Value, out mn, out mx);
+                    scene.Bounds(own, out mn, out mx);
+                    // One triangle run with both yokes (the MD-82) or the front and rear throttles and their rod (the
+                    // L-5): split into its connected parts first.
+                    if ((mx - mn).Length > 1.5)
+                    {
+                        List<int> parts = g.Value.SelectMany(m => SplitParts(scene, m)).ToList();
+                        own = CockpitViews.NearestCluster(scene, parts, head);
+                        scene.Bounds(own, out mn, out mx);
+                        // Still too big: the rod between the two throttles joins them.
+                        if ((mx - mn).Length > 1.5)
+                        {
+                            List<int> noRods = parts.Where(m => !Il2CockpitPictures.IsRod(scene.Meshes[m])).ToList();
+                            if (noRods.Count > 0)
+                            {
+                                own = CockpitViews.NearestCluster(scene, noRods, head);
+                                scene.Bounds(own, out mn, out mx);
+                            }
+                        }
+                    }
+                    if (Environment.GetEnvironmentVariable("JOYPRO_PICTURE_DEBUG") == "1")
+                        r.Notes.Add("debug grip " + g.Key + ": " + g.Value.Count + " meshes, nearest " + own.Count + " size " + (mx - mn).Length.ToString("0.00", CultureInfo.InvariantCulture) + " at " + ((mn + mx) * 0.5) + " (" + string.Join(", ", own.Select(m => scene.Meshes[m].Name).Distinct()) + ")");
                     if ((mx - mn).Length > 1.5)
                         continue;
-                    CockpitGrip cg = new CockpitGrip { Device = g.Key, Meshes = g.Value, Pivot = (mn + mx) * 0.5, Animation = new ControlAnimation { Source = "dataref", Name = g.Key == "stick" ? "sim/cockpit2/controls/yoke_pitch_ratio, yoke_roll_ratio" : "sim/cockpit2/engine/actuators/throttle_ratio" } };
+                    CockpitGrip cg = new CockpitGrip { Device = g.Key, Meshes = own, Pivot = (mn + mx) * 0.5, Animation = new ControlAnimation { Source = "dataref", Name = g.Key == "stick" ? "sim/cockpit2/controls/yoke_pitch_ratio, yoke_roll_ratio" : "sim/cockpit2/engine/actuators/throttle_ratio" } };
                     gripList.Add(cg);
                 }
                 // The grip nearest to the pilot of each kind (both yokes move together).
@@ -401,6 +425,65 @@ namespace JoyPro.CockpitPictures
             }
         }
 
+        // Splits a mesh into its connected parts (triangles sharing vertices): the mesh keeps the first part, the others
+        // are added to the scene with the same material and part id (the picture is unchanged). Returns the meshes.
+        private static List<int> SplitParts(CockpitScene scene, int mesh)
+        {
+            SceneMesh m = scene.Meshes[mesh];
+            int vc = m.Positions.Length / 3;
+            int[] root = Enumerable.Range(0, vc).ToArray();
+            Func<int, int> find = null;
+            find = i => root[i] == i ? i : (root[i] = find(root[i]));
+            for (int t = 0; t + 2 < m.Indices.Length; t += 3)
+            {
+                root[find(m.Indices[t])] = find(m.Indices[t + 1]);
+                root[find(m.Indices[t + 1])] = find(m.Indices[t + 2]);
+            }
+            List<IGrouping<int, int>> parts = Enumerable.Range(0, m.Indices.Length / 3).GroupBy(t => find(m.Indices[3 * t])).ToList();
+            List<int> result = new List<int> { mesh };
+            if (parts.Count < 2 || parts.Count > 2000)
+                return result;
+            bool first = true;
+            foreach (IGrouping<int, int> part in parts)
+            {
+                Dictionary<int, int> remap = new Dictionary<int, int>();
+                List<int> idx = new List<int>();
+                foreach (int t in part)
+                {
+                    for (int k = 0; k < 3; k++)
+                    {
+                        int v = m.Indices[3 * t + k], nv;
+                        if (!remap.TryGetValue(v, out nv))
+                            remap[v] = nv = remap.Count;
+                        idx.Add(nv);
+                    }
+                }
+                int[] order = remap.OrderBy(x => x.Value).Select(x => x.Key).ToArray();
+                SceneMesh piece = new SceneMesh
+                {
+                    Name = m.Name,
+                    Node = m.Node,
+                    Material = m.Material,
+                    Part = m.Part,
+                    Positions = order.SelectMany(v => new[] { m.Positions[3 * v], m.Positions[3 * v + 1], m.Positions[3 * v + 2] }).ToArray(),
+                    Normals = m.Normals == null ? null : order.SelectMany(v => new[] { m.Normals[3 * v], m.Normals[3 * v + 1], m.Normals[3 * v + 2] }).ToArray(),
+                    Uvs = m.Uvs == null ? null : order.SelectMany(v => new[] { m.Uvs[2 * v], m.Uvs[2 * v + 1] }).ToArray(),
+                    Indices = idx.ToArray()
+                };
+                if (first)
+                {
+                    scene.Meshes[mesh] = piece;
+                    first = false;
+                }
+                else
+                {
+                    result.Add(scene.Meshes.Count);
+                    scene.Meshes.Add(piece);
+                }
+            }
+            return result;
+        }
+
         private static bool Inside(Vec3 p, Vec3 mn, Vec3 mx, double margin)
         {
             return p.X >= mn.X - margin && p.Y >= mn.Y - margin && p.Z >= mn.Z - margin && p.X <= mx.X + margin && p.Y <= mx.Y + margin && p.Z <= mx.Z + margin;
@@ -413,14 +496,25 @@ namespace JoyPro.CockpitPictures
             return new Vec3(-(l.Z + oz), l.Y + oy, l.X + ox);
         }
 
-        private static string GripOf(List<string> datarefs)
+        // The aircraft's own throttle datarefs (laminar/md82/engine/throttle_left, laminar/CitX/throttle/ratio_L, the
+        // airliners' throttle_jet_rev_ratio), not the switches, lamps and stops around the throttles.
+        private static readonly Regex OwnThrottleRx = new Regex("throttle", RegexOptions.Compiled);
+        private static readonly Regex NotThrottleRx = new Regex("auto|switch|annun|light|lamp|disc|toga|stow|detent|mixture|friction|lock|cutoff|warn|fuel|_ind|indicator", RegexOptions.Compiled);
+
+        private static string GripOf(List<string> datarefs, bool helicopter = false)
         {
             foreach (string d in datarefs)
             {
                 string s = d.ToLowerInvariant();
                 if (s.Contains("yoke_pitch") || s.Contains("yoke_roll") || s.Contains("total_pitch_ratio") || s.Contains("total_roll_ratio") || s.Contains("yoke_heading") && false)
                     return "stick";
-                if (s.Contains("throttle_ratio") || s.Contains("throttle_beta") || s.Contains("thro_use") || s.Contains("collective"))
+                // The rotor head's collective (Main_Rotor.obj) is no grip.
+                if (s.Contains("rotor"))
+                    continue;
+                if (s.Contains("throttle_ratio") || s.Contains("throttle_beta") || s.Contains("thro_use") || s.Contains("collective") || OwnThrottleRx.IsMatch(s) && !NotThrottleRx.IsMatch(s))
+                    return "throttle";
+                // A helicopter's collective lever is X-Plane's prop (pitch) control (the R22's prop_ratio).
+                if (helicopter && s.Contains("actuators/prop_ratio"))
                     return "throttle";
             }
             return null;

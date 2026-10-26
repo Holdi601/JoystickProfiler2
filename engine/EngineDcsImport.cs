@@ -65,6 +65,8 @@ namespace JoyPro.Engine
             }
             sb.AppendLine("Imported Relations: " + result.ImportedRelations);
             sb.AppendLine("Imported Binds: " + result.ImportedBinds);
+            if (result.JoinedExistingRelations > 0)
+                sb.AppendLine("Joined Relations On The Same Input: " + result.JoinedExistingRelations);
             sb.AppendLine("Force Feedback Devices Imported: " + result.ForceFeedbackDevicesImported);
             sb.AppendLine("Skipped Entries: " + result.SkippedEntries);
             sb.AppendLine("Backup Binds Removed In DCS (.jp, skipped): " + result.StaleBackupEntriesSkipped);
@@ -1312,6 +1314,8 @@ namespace JoyPro.Engine
                 ? new Dictionary<string, Bind>(InternalDataManagement.AllBinds, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase);
 
+            // The profile's relations before this import (merge): the ones a bind on the same input joins.
+            HashSet<string> preexisting = merge ? new HashSet<string>(relations.Keys, StringComparer.OrdinalIgnoreCase) : null;
             Dictionary<string, int> nextSuffix = new Dictionary<string, int>(StringComparer.Ordinal);
             // (requested name, device, input, axis, modifiers) -> the relation that has that bind: the base relation or
             // a "<name>__N" copy made before (earlier in this import, or by an earlier import when merging). One lookup
@@ -1366,6 +1370,25 @@ namespace JoyPro.Engine
                     if (titleKey != null && !byTitle.ContainsKey(titleKey))
                         byTitle[titleKey] = existingRelation;
                     continue;
+                }
+
+                // Adding to the profile: a bind on an input one of the profile's relations already uses joins that
+                // relation (also when it holds the bind already) instead of becoming a second relation on the input.
+                if (preexisting != null && !parsedBind.IsDefault)
+                {
+                    string joinName = RelationToJoin(relations, binds, preexisting, parsedBind.Device, parsedBind.IsAxis, parsedBind.Key, parsedBind.Reformers,
+                        "DCS", new[] { parsedBind.Plane }, id => string.Equals(id, (parsedBind.Id ?? string.Empty).Trim(), StringComparison.Ordinal), parsedBind.Name);
+                    Relation joined;
+                    Bind joinedBind;
+                    if (joinName != null && relations.TryGetValue(joinName, out joined) && joined != null && binds.TryGetValue(joinName, out joinedBind) && joinedBind != null)
+                    {
+                        MergeIntoExistingRelation(parsedBind, joined, joinedBind, options, addGroups: false);
+                        family[familyKey] = joined;
+                        if (titleKey != null && !byTitle.ContainsKey(titleKey))
+                            byTitle[titleKey] = joined;
+                        result.JoinedExistingRelations++;
+                        continue;
+                    }
                 }
 
                 if (relations.ContainsKey(relationName))
@@ -1506,7 +1529,112 @@ namespace JoyPro.Engine
             return SameReformers(bind.AllReformers, parsedBind.Reformers);
         }
 
-        private static void MergeIntoExistingRelation(ParsedBind parsedBind, Relation relation, Bind bind, EngineDcsImportOptions options)
+        // The relation a bind added to the profile joins (DCS import "add to my profile", taking over a game's change, moving
+        // an action to another button): a relation that already uses exactly this input with these modifiers, unless the
+        // aircraft is bound there to another action of the game already. Of several, the one that holds the action (for
+        // other aircraft or this one) or is named like it, else the one with the most aircraft. In JoyPro a relation is one
+        // input, so a new bind on a used button belongs to that button's relation (tester report on 2.4.1). null: none.
+        internal static string RelationToJoin(
+            Dictionary<string, Relation> relations,
+            Dictionary<string, Bind> binds,
+            ICollection<string> onlyThese,
+            string device,
+            bool isAxis,
+            string input,
+            IEnumerable<string> reformers,
+            string gameId,
+            IEnumerable<string> planes,
+            Func<string, bool> isThisAction,
+            string title,
+            string except = null)
+        {
+            if (relations == null || string.IsNullOrWhiteSpace(device) || string.IsNullOrWhiteSpace(input) || isThisAction == null)
+                return null;
+            string signature = Games.GameProfileBridge.BuildSignature(device, isAxis, input, reformers);
+            string game = string.IsNullOrWhiteSpace(gameId) ? "DCS" : gameId.Trim();
+            bool dcs = string.Equals(game, "DCS", StringComparison.OrdinalIgnoreCase);
+            string cleanTitle = (title ?? string.Empty).Trim();
+            List<string> forPlanes = (planes ?? Enumerable.Empty<string>()).Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.Trim()).ToList();
+            if (forPlanes.Count == 0)
+                forPlanes.Add(game);
+            string best = null;
+            int bestRank = -1;
+            int bestPlanes = -1;
+            foreach (KeyValuePair<string, Relation> entry in relations.OrderBy(r => r.Key, StringComparer.OrdinalIgnoreCase))
+            {
+                Relation relation = entry.Value;
+                if (relation == null || relation.ISAXIS != isAxis || (onlyThese != null && !onlyThese.Contains(entry.Key)) ||
+                    (except != null && string.Equals(entry.Key, except, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                Bind bind = relation.bind;
+                if ((bind == null || string.IsNullOrWhiteSpace(bind.Joystick)) && binds != null)
+                    binds.TryGetValue(entry.Key, out bind);
+                string bound = bind == null ? null : (isAxis ? bind.JAxis : bind.JButton);
+                if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick) || string.IsNullOrWhiteSpace(bound) ||
+                    !string.Equals(Games.GameProfileBridge.BuildSignature(bind.Joystick, isAxis, bound, bind.AllReformers), signature, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                bool holdsHere = false, holdsElsewhere = false, blocked = false;
+                HashSet<string> relationPlanes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
+                {
+                    if (node == null || string.IsNullOrWhiteSpace(node.ID))
+                        continue;
+                    foreach (KeyValuePair<string, bool> p in node.AIRCRAFT ?? new Dictionary<string, bool>())
+                        if (p.Value && !string.IsNullOrWhiteSpace(p.Key))
+                            relationPlanes.Add(p.Key.Trim());
+                    if (!SameGame(node.Game, game))
+                        continue;
+                    bool active = forPlanes.Any(plane => NodeActiveFor(node, game, plane, dcs));
+                    bool same = isThisAction(node.ID.Trim());
+                    if (same && active)
+                        holdsHere = true;
+                    else if (same)
+                        holdsElsewhere = true;
+                    else if (active)
+                        blocked = true;
+                }
+                if (blocked && !holdsHere)
+                    continue;
+                bool named = cleanTitle.Length > 0 &&
+                             (string.Equals(StripCopySuffix(entry.Key), cleanTitle, StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals((bind.AdditionalImportInfo ?? string.Empty).Trim(), cleanTitle, StringComparison.OrdinalIgnoreCase));
+                int rank = holdsHere ? 3 : holdsElsewhere ? 2 : named ? 1 : 0;
+                if (rank > bestRank || (rank == bestRank && relationPlanes.Count > bestPlanes))
+                {
+                    best = entry.Key;
+                    bestRank = rank;
+                    bestPlanes = relationPlanes.Count;
+                }
+            }
+            return best;
+        }
+
+        private static bool SameGame(string nodeGame, string gameId)
+        {
+            string value = string.IsNullOrWhiteSpace(nodeGame) ? "DCS" : nodeGame.Trim();
+            if (string.Equals(value, gameId, StringComparison.OrdinalIgnoreCase))
+                return true;
+            string resolved = GameInstalls.Resolve(value);
+            return resolved.Length > 0 && string.Equals(resolved, gameId, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // DCS: switched on for the aircraft; other games: for the game (no list = all aircraft).
+        private static bool NodeActiveFor(RelationItem node, string gameId, string plane, bool dcs)
+        {
+            bool value;
+            if (dcs)
+                return node.AIRCRAFT != null && !string.IsNullOrWhiteSpace(plane) && node.AIRCRAFT.TryGetValue(plane.Trim(), out value) && value;
+            if (node.AIRCRAFT == null || node.AIRCRAFT.Count == 0)
+                return true;
+            if (!string.IsNullOrWhiteSpace(plane) && node.AIRCRAFT.TryGetValue(plane.Trim(), out value))
+                return value;
+            if (node.AIRCRAFT.TryGetValue(gameId, out value))
+                return value;
+            return node.AIRCRAFT.Values.Any(v => v);
+        }
+
+        private static void MergeIntoExistingRelation(ParsedBind parsedBind, Relation relation, Bind bind, EngineDcsImportOptions options, bool addGroups = true)
         {
             relation.AddNode(parsedBind.Id, "DCS", parsedBind.IsAxis, parsedBind.Plane, false);
 
@@ -1522,10 +1650,13 @@ namespace JoyPro.Engine
             }
 
             List<string> groups = NormalizeGroups(parsedBind.Groups);
-            // A relation JoyPro exported without groups (its .jp names it) stays without; others get "DCS".
-            if (groups.Count == 0 && string.IsNullOrWhiteSpace(parsedBind.RelationName))
+            // A relation JoyPro exported without groups (its .jp names it) stays without; others get "DCS". A relation of
+            // the user's that the bind joined because it uses the same input keeps its groups.
+            if (!addGroups)
+                groups.Clear();
+            else if (groups.Count == 0 && string.IsNullOrWhiteSpace(parsedBind.RelationName))
                 AddUniqueGroup(relation.Groups, "DCS");
-            else
+            if (groups.Count > 0)
             {
                 for (int i = 0; i < groups.Count; i++)
                     AddUniqueGroup(relation.Groups, groups[i]);

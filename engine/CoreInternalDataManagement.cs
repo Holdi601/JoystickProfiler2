@@ -3444,6 +3444,32 @@ namespace JoyPro
             return "Command not in this aircraft's current list";
         }
 
+        // The DB's readable title of a DCS command of one aircraft, or empty (no list, or the command is not in it).
+        internal static string DcsTitleOrEmpty(string id, string plane)
+        {
+            string key = (id ?? string.Empty).Trim();
+            if (key.Length == 0)
+                return string.Empty;
+            DCSInput fromDb = null;
+            try
+            {
+                if (planeLookupIndex == null)
+                    planeLookupIndex = BuildDbCorrectionIndex();
+                List<DCSInput> bucket;
+                if (planeLookupIndex.DcsById.TryGetValue(key, out bucket))
+                    fromDb = bucket.FirstOrDefault(i => string.Equals((i.Plane ?? string.Empty).Trim(), (plane ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                fromDb = null;
+            }
+            if (fromDb == null || string.IsNullOrWhiteSpace(fromDb.Title))
+                return string.Empty;
+            IDictionary<string, string> english = DcsCommandNames.IsRawTitle(fromDb.Title, key) ? DcsEnglishNames() : null;
+            string resolved = DcsCommandNames.Resolve(fromDb.Title, key, english);
+            return string.IsNullOrWhiteSpace(resolved) || DcsCommandNames.IsRawTitle(resolved, key) ? string.Empty : resolved.Trim();
+        }
+
         // The category to show for a DCS command (see DcsDisplayTitle).
         internal static string DcsDisplayCategory(string id, string plane, string storedCategory)
         {

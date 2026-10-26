@@ -353,7 +353,8 @@ namespace JoyPro.CockpitPictures
                 }
                 lib.AddFolder(Path.Combine(job.DcsRoot, "Bazar", "World", "textures"), false);
                 lib.AddFolder(Path.Combine(job.DcsRoot, "Bazar", "Textures"), false);
-                CockpitScene scene = EdmScene.Build(edm, new EdmScene.Options { Texture = lib.Get });
+                EdmScene.Options options = new EdmScene.Options { Texture = lib.Get };
+                CockpitScene scene = EdmScene.Build(edm, options);
                 int missing = scene.Warnings.Count(w => w.StartsWith("texture not found", StringComparison.Ordinal));
                 if (missing > 0)
                     r.Notes.Add(missing + " textures not found (drawn in a flat colour)");
@@ -408,7 +409,9 @@ namespace JoyPro.CockpitPictures
                 ScenePoint headPoint;
                 if (heads.Count == 0 && scene.Points.TryGetValue("head_cpt", out headPoint))
                     heads.Add(headPoint.Position);
-                List<CockpitGrip> grips = Grips(edm, scene, c.Gauges);
+                List<CockpitGrip> grips = Grips(edm, scene, c.Gauges, options);
+                if (ShowHiddenGrips(edm, ref scene, ref options, ref grips, c.Gauges))
+                    r.Notes.Add("grips hidden in the resting pose shown (arguments " + string.Join(", ", options.Args.Keys) + ")");
                 // The parts checked against the module's manual (GripParts: names fixed, non-parts left out).
                 foreach (CockpitGrip g in grips)
                     GripParts.Apply("DCS", c.Module, g);
@@ -713,7 +716,128 @@ namespace JoyPro.CockpitPictures
         private static readonly Regex ThrottleNodeRx = new Regex("^(pilot_)?(throttle|trottle|trtl|collective|power_?lever)([-_ ]?(l|r|left|right|\\d+|dummy\\d*|normal|handle|axis|lever|root|base|assembly|quadrant))?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex NotGripNodeRx = new Regex("ghost|missile|hide|visib|dimmer|helper|cover|emerg|friction|rubber|finger|bone|wire", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        internal static List<CockpitGrip> Grips(EdmFile edm, CockpitScene scene, List<DcsLua.Gauge> gauges)
+        // The scene again with the grips the resting pose hides, for the kinds without a grip: the JF-17's stick shows
+        // at argument 970 >= 0.5 (its show / hide switch), the F-4E's stick is in the pilot's LOD (argument 3048).
+        // Returns false when nothing was hidden.
+        internal static bool ShowHiddenGrips(EdmFile edm, ref CockpitScene scene, ref EdmScene.Options options, ref List<CockpitGrip> grips, List<DcsLua.Gauge> gauges)
+        {
+            // Missing: no grip of the kind, or none in the seat of the other kind's grips (the F-4E's WSO stick is
+            // shown, the pilot's is in the hidden pilot LOD).
+            Func<List<CockpitGrip>, string, bool> has = (list, k) => list.Any(g => g.Device == k && (!list.Any(o => o.Device != k) || list.Any(o => o.Device != k && Math.Abs(o.Pivot.X - g.Pivot.X) < 0.8)));
+            List<CockpitGrip> before = grips;
+            string[] missing = new[] { "stick", "throttle" }.Where(k => !has(before, k)).ToArray();
+            if (missing.Length == 0)
+                return false;
+            Dictionary<int, double> args = HiddenGripArgs(edm, options.Args, missing);
+            if (args.Count == options.Args.Count)
+                return false;
+            EdmScene.Options again = new EdmScene.Options { Texture = options.Texture, Args = args };
+            CockpitScene shown = EdmScene.Build(edm, again);
+            List<CockpitGrip> found = Grips(edm, shown, gauges, again);
+            if (!missing.Any(k => has(found, k)))
+                return false;
+            scene = shown;
+            options = again;
+            grips = found;
+            return true;
+        }
+
+        // A grip the resting pose hides: its visibility arguments set to show it, unless it is a hidden copy (ghost)
+        // or showing it hides another grip.
+        private static Dictionary<int, double> HiddenGripArgs(EdmFile edm, Dictionary<int, double> start, string[] kinds)
+        {
+            Dictionary<int, double> args = new Dictionary<int, double>(start);
+            HashSet<int> moving = new HashSet<int>(edm.Nodes.SelectMany(x => x.RotationKeys.Concat(x.PositionKeys).Concat(x.ScaleKeys)).Select(k => k.Arg));
+            Regex kindRx = new Regex(string.Join("|", kinds.Select(k => (k == "stick" ? StickTokenRx : ThrottleTokenRx).ToString())), RegexOptions.Compiled);
+            int n = edm.Nodes.Count;
+            List<int>[] children = new List<int>[n];
+            for (int i = 0; i < n; i++)
+            {
+                int p = edm.Nodes[i].Parent;
+                if (p >= 0 && p < n && p != i)
+                    (children[p] = children[p] ?? new List<int>()).Add(i);
+            }
+            Dictionary<int, List<string>> meshNames = new Dictionary<int, List<string>>();
+            foreach (EdmRenderNode rn in edm.RenderNodes)
+            {
+                foreach (int p in rn.Parents.Where(p => p >= 0 && p < n).Distinct())
+                {
+                    List<string> l;
+                    if (!meshNames.TryGetValue(p, out l))
+                        meshNames[p] = l = new List<string>();
+                    l.Add(rn.Name);
+                }
+            }
+            Func<int, List<string>> namesUnder = v =>
+            {
+                List<string> names = new List<string>();
+                Stack<int> todo = new Stack<int>();
+                todo.Push(v);
+                for (int guard = 0; todo.Count > 0 && guard < 100000; guard++)
+                {
+                    int i = todo.Pop();
+                    names.Add(edm.Nodes[i].Name);
+                    List<string> mn;
+                    if (meshNames.TryGetValue(i, out mn))
+                        names.AddRange(mn);
+                    if (children[i] != null)
+                        foreach (int c in children[i])
+                            todo.Push(c);
+                }
+                return names;
+            };
+            Func<int, Dictionary<int, double>, bool> visible = (i, values) => edm.Nodes[i].Visibility.All(v =>
+            {
+                double x;
+                if (!values.TryGetValue(v.Arg, out x))
+                    x = 0;
+                return v.Ranges.Any(r => x >= r[0] && x <= r[1]);
+            });
+            List<int> visNodes = Enumerable.Range(0, n).Where(i => edm.Nodes[i].Kind == EdmNodeKind.Visibility && edm.Nodes[i].Visibility.Count > 0).ToList();
+            foreach (int v in visNodes)
+            {
+                if (visible(v, args))
+                    continue;
+                if (HasToken(edm.Nodes[v].Name, NotShownTokenRx) || !namesUnder(v).Any(x => HasToken(x, kindRx) && !HasToken(x, NotShownTokenRx)))
+                    continue;
+                Dictionary<int, double> tryArgs = new Dictionary<int, double>(args);
+                bool ok = true;
+                foreach (EdmVisibility vis in edm.Nodes[v].Visibility)
+                {
+                    double cur;
+                    if (!tryArgs.TryGetValue(vis.Arg, out cur))
+                        cur = 0;
+                    if (vis.Ranges.Any(r => cur >= r[0] && cur <= r[1]))
+                        continue;
+                    if (moving.Contains(vis.Arg) || vis.Ranges.Count == 0)
+                    {
+                        ok = false;
+                        break;
+                    }
+                    double[] r0 = vis.Ranges[0];
+                    tryArgs[vis.Arg] = r0[0] <= 1 && r0[1] >= 1 ? 1 : r0[1] < 1e10 ? (r0[0] + r0[1]) * 0.5 : r0[0] + 0.01;
+                }
+                // Showing it must not hide another grip.
+                if (ok && visNodes.Any(o => o != v && visible(o, args) && !visible(o, tryArgs) && namesUnder(o).Any(x => HasToken(x, StickTokenRx) || HasToken(x, ThrottleTokenRx))))
+                    ok = false;
+                if (ok)
+                    args = tryArgs;
+            }
+            return args;
+        }
+
+        private static readonly Regex NotShownTokenRx = new Regex("^(ghost|hide|hidden|shadow|light|lights|lamp|omni|spot|glow|lit|damage|dmg|broken)$", RegexOptions.Compiled);
+
+        private static readonly Regex BaseTokenRx = new Regex("^(base|basamento|mount|bracket|quadrant|console)$", RegexOptions.Compiled);
+
+        private static bool HasToken(string name, Regex rx)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+            return Regex.Split(Regex.Replace(Regex.Replace(name, "(?<=[a-z])(?=[A-Z])", " ").ToLowerInvariant(), "(?<=[a-z])(?=\\d)|(?<=\\d)(?=[a-z])", " "), "[^a-z0-9]+").Any(t => t.Length > 0 && rx.IsMatch(t));
+        }
+
+        internal static List<CockpitGrip> Grips(EdmFile edm, CockpitScene scene, List<DcsLua.Gauge> gauges, EdmScene.Options options = null)
         {
             // Animation arguments per grip kind.
             Dictionary<int, string> argKind = new Dictionary<int, string>();
@@ -784,6 +908,212 @@ namespace JoyPro.CockpitPictures
                         nodeKind[i] = kind;
                 }
             }
+            DumpNodes(edm, scene, gauges, argKind, nodeKind);
+            List<CockpitGrip> grips = BuildGrips(edm, scene, nodeKind);
+            // A kind still without a grip: the handle nodes the VR hands use (STICK_HANDLE1, THROTTLE_L_HANDLE1, the
+            // La-7's pilot_hand_throttle) often carry no meshes: their arguments move the meshes of the grip next to
+            // them (the F-15E, the OH-58D, the C-101). Then the model's names in any of the usual forms
+            // (ENG_Lever_Throttle, PNT_254_Throttle, ruchka_rud02, RUD_DER, Baston_Palo, P_YOKE).
+            Vec3[] at = null;
+            foreach (string kind in new[] { "stick", "throttle" })
+            {
+                if (grips.Any(g => g.Device == kind))
+                    continue;
+                if (at == null)
+                    at = EdmScene.NodePositions(edm, options);
+                string[] more = new string[n];
+                MarkByHandleArgs(edm, scene, nodeKind, kind, at, more);
+                List<CockpitGrip> found = BuildGrips(edm, scene, more).Where(g => g.Device == kind).ToList();
+                if (found.Count == 0)
+                {
+                    more = new string[n];
+                    for (int i = 0; i < n; i++)
+                    {
+                        if (NameKind(edm.Nodes[i].Name, false) == kind && !HasToken(edm.Nodes[i].Name, BaseTokenRx))
+                            more[i] = kind;
+                    }
+                    // Meshes named for the grip ("Stick_B") mark the node they hang on.
+                    foreach (EdmRenderNode rn in edm.RenderNodes)
+                    {
+                        if (!rn.Skin && rn.Parents.Count == 1 && rn.Parents[0] > 0 && rn.Parents[0] < n && NameKind(rn.Name, false) == kind && more[rn.Parents[0]] == null)
+                            more[rn.Parents[0]] = kind;
+                    }
+                    found = BuildGrips(edm, scene, more).Where(g => g.Device == kind).ToList();
+                }
+                if (found.Count == 0)
+                {
+                    more = new string[n];
+                    MarkByGripConnectors(edm, scene, kind, more);
+                    found = BuildGrips(edm, scene, more).Where(g => g.Device == kind).ToList();
+                }
+                // A long rod on the lever (the Mosquito's throttle linkage) is left out of the picture.
+                foreach (CockpitGrip g in found)
+                {
+                    List<int> kept = g.Meshes.Where(m =>
+                    {
+                        Vec3 a0, a1;
+                        scene.Bounds(new[] { m }, out a0, out a1);
+                        return (a1 - a0).Length < 0.5 || !Il2CockpitPictures.IsRod(scene.Meshes[m]);
+                    }).ToList();
+                    if (kept.Count > 0 && kept.Count < g.Meshes.Count)
+                    {
+                        Vec3 a, b;
+                        scene.Bounds(kept, out a, out b);
+                        if ((b - a).Length >= 0.05)
+                        {
+                            g.Meshes = kept;
+                            g.Pivot = (a + b) * 0.5;
+                        }
+                    }
+                }
+                grips.AddRange(found);
+            }
+            return grips;
+        }
+
+        // Tokens of a node or connector name that say "this is the stick / the throttle" ...
+        private static readonly Regex StickTokenRx = new Regex("^(stick|joystick|sidestick|cyclic|yoke|baston|manche)$", RegexOptions.Compiled);
+        private static readonly Regex ThrottleTokenRx = new Regex("^(throttle|throttles|throt|trottle|trtl|rud|collective|collectif|manette|manetta)$", RegexOptions.Compiled);
+        // ... the words that may stand beside them (side, seat, which part of the grip, a module's prefix) ...
+        private static readonly Regex GripModifierRx = new Regex("^(\\d+|[a-d]|l|r|lh|rh|left|right|der|izq|dx|sx|p|cp|plt|cpt|fo|pilot|copilot|main|handle|lever|grip|root|base|assembly|aasembly|normal|axis|pnt|eng|ruchka|flcs|fwd|aft|fore|front|rear|back|pitch|roll|bank|palo|mesh|control|controle|ptr|al|ar|as|shaft)$", RegexOptions.Compiled);
+        // ... and the words of a part that is not the grip (a button on it, its lock, a hidden copy, the hand on it).
+        private static readonly Regex NotGripTokenRx = new Regex("^(ghost|hide|hidden|visib|show|friction|cut|cutoff|lock|button|btn|switch|sw|knob|cover|emerg|emergency|light|lamp|indicator|finger|bone|wire|link|linkage|rod|cable|trim|rubber|boot|helper|dummy|shadow|missile|dimmer|pivot|point|stop|detent|trigger|triger|arm|hand|empty)$", RegexOptions.Compiled);
+
+        // "stick", "throttle" or null by the words of a name; handles allows the VR hands' names (pilot_hand_throttle).
+        internal static string NameKind(string name, bool hands)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+            string[] tokens = Regex.Split(Regex.Replace(Regex.Replace(name, "(?<=[a-z])(?=[A-Z])", " ").ToLowerInvariant(), "(?<=[a-z])(?=\\d)|(?<=\\d)(?=[a-z])", " "), "[^a-z0-9]+").Where(t => t.Length > 0).ToArray();
+            string kind = null;
+            bool hand = false;
+            foreach (string t in tokens)
+            {
+                if (hands && t == "hand")
+                {
+                    hand = true;
+                    continue;
+                }
+                string k = StickTokenRx.IsMatch(t) ? "stick" : ThrottleTokenRx.IsMatch(t) ? "throttle" : null;
+                if (hand && k == null && Regex.IsMatch(t, "^(bank|roll|pitch)$"))
+                    k = "stick";
+                if (k != null)
+                {
+                    if (kind != null && kind != k)
+                        return null;
+                    kind = k;
+                    continue;
+                }
+                if (NotGripTokenRx.IsMatch(t) || !GripModifierRx.IsMatch(t))
+                    return null;
+            }
+            return kind;
+        }
+
+        // Marks the animated nodes with meshes that the arguments of a grip's handle nodes move, near those handles.
+        private static void MarkByHandleArgs(EdmFile edm, CockpitScene scene, string[] nodeKind, string kind, Vec3[] at, string[] more)
+        {
+            int n = edm.Nodes.Count;
+            List<int> handles = new List<int>();
+            // Marked nodes of this kind without meshes (the first pass found them, but nothing to draw).
+            for (int i = 0; i < n; i++)
+            {
+                List<int> m;
+                if (nodeKind[i] == kind && !(scene.NodeMeshes.TryGetValue(i, out m) && m.Count > 0))
+                    handles.Add(i);
+            }
+            // Connectors named for the grip (THROTTLE_CONTROLE_L, pilot_hand_throttle_1): their animated ancestor.
+            foreach (EdmConnector cn in edm.Connectors)
+            {
+                if (cn.Parent < 0 || cn.Parent >= n || NameKind(cn.Name, true) != kind)
+                    continue;
+                int a = cn.Parent;
+                for (int guard = 0; a >= 0 && a < n && guard < 64 && edm.Nodes[a].Kind != EdmNodeKind.Animation; guard++)
+                    a = edm.Nodes[a].Parent;
+                if (a >= 0 && a < n && !handles.Contains(a))
+                    handles.Add(a);
+            }
+            foreach (int h in handles)
+            {
+                EdmNode hn = edm.Nodes[h];
+                HashSet<int> args = new HashSet<int>(hn.RotationKeys.Concat(hn.PositionKeys).Select(k => k.Arg));
+                if (args.Count == 0)
+                    continue;
+                for (int i = 0; i < n; i++)
+                {
+                    EdmNode node = edm.Nodes[i];
+                    List<int> meshes;
+                    if (node.Kind != EdmNodeKind.Animation || NotGripNodeRx.IsMatch(node.Name) || !scene.NodeMeshes.TryGetValue(i, out meshes) || meshes.Count == 0)
+                        continue;
+                    if (!node.RotationKeys.Concat(node.PositionKeys).Any(k => args.Contains(k.Arg)))
+                        continue;
+                    // Near the handle: the box of the node's meshes within 25 cm of the handle node, and no linkage
+                    // reaching far away (the La-7's throttle rod to the engine).
+                    Vec3 mn, mx;
+                    scene.Bounds(meshes, out mn, out mx);
+                    Vec3 p = at[h];
+                    Vec3 d = Vec3.Max(Vec3.Max(mn - p, p - mx), new Vec3(0, 0, 0));
+                    if (d.Length < 0.25 && ((mx - mn).Length < 1.0 || i == h && (mx - mn).Length < 1.5))
+                        more[i] = kind;
+                }
+            }
+        }
+
+        // The clickable buttons on a grip name it (the Gazelle's PILOT-STICK-PA-PTR, its COLLECTIVE-PTR): the highest
+        // moving part above such a connector that is the size of a grip (12 cm to 1 m); a connector on no moving part
+        // that names only the grip marks the moving part it sits on.
+        private static void MarkByGripConnectors(EdmFile edm, CockpitScene scene, string kind, string[] more)
+        {
+            int n = edm.Nodes.Count;
+            Regex kindRx = kind == "stick" ? StickTokenRx : ThrottleTokenRx;
+            Func<int, double> size = i =>
+            {
+                List<int> m;
+                if (!scene.NodeMeshes.TryGetValue(i, out m) || m.Count == 0)
+                    return 0;
+                Vec3 a, b;
+                scene.Bounds(m, out a, out b);
+                return (b - a).Length;
+            };
+            foreach (EdmConnector cn in edm.Connectors)
+            {
+                if (cn.Parent <= 0 || cn.Parent >= n || !HasToken(cn.Name, kindRx) || HasToken(cn.Name, NotShownTokenRx))
+                    continue;
+                int best = -1;
+                for (int a = cn.Parent, guard = 0; a > 0 && a < n && guard < 64; a = edm.Nodes[a].Parent, guard++)
+                {
+                    double s = size(a);
+                    if (edm.Nodes[a].Kind == EdmNodeKind.Animation && s >= 0.12 && s <= 1.0 && !HasToken(edm.Nodes[a].Name, NotShownTokenRx))
+                        best = a;
+                }
+                ScenePoint sp;
+                if (best < 0 && NameKind(cn.Name, false) == kind && scene.Points.TryGetValue(cn.Name, out sp))
+                {
+                    double bd = 0.05;
+                    for (int i = 1; i < n; i++)
+                    {
+                        List<int> m;
+                        double s = size(i);
+                        if (edm.Nodes[i].Kind != EdmNodeKind.Animation || s < 0.12 || s > 1.0 || !scene.NodeMeshes.TryGetValue(i, out m))
+                            continue;
+                        Vec3 mn, mx;
+                        scene.Bounds(m, out mn, out mx);
+                        double d = Vec3.Max(Vec3.Max(mn - sp.Position, sp.Position - mx), new Vec3(0, 0, 0)).Length;
+                        if (d < bd)
+                        {
+                            bd = d;
+                            best = i;
+                        }
+                    }
+                }
+                if (best > 0)
+                    more[best] = kind;
+            }
+        }
+
+        private static List<CockpitGrip> BuildGrips(EdmFile edm, CockpitScene scene, string[] nodeKind)
+        {
+            int n = edm.Nodes.Count;
             // Topmost marked node of each chain, extended over visibility and marked parents.
             List<int> roots = new List<int>();
             for (int i = 0; i < n; i++)
@@ -804,6 +1134,15 @@ namespace JoyPro.CockpitPictures
                 }
                 if (inside)
                     continue;
+                // A part of the grip (the P-51D's throttle twist grip) climbs to the node its name says is the grip
+                // (ruchka_rud02, the whole throttle lever); not to its base with the quadrant (the MB-339's base_manetta).
+                int up = edm.Nodes[top].Parent;
+                for (int guard = 0; up > 0 && up < n && guard < 16; guard++)
+                {
+                    if (NameKind(edm.Nodes[up].Name, false) == nodeKind[i] && !HasToken(edm.Nodes[up].Name, BaseTokenRx))
+                        top = up;
+                    up = edm.Nodes[up].Parent;
+                }
                 // Climb over visibility nodes and transform nodes that hold only this grip.
                 int q = edm.Nodes[top].Parent;
                 while (q > 0 && q < n && (edm.Nodes[q].Kind == EdmNodeKind.Visibility) && edm.Nodes[q].Parent >= 0)
@@ -824,6 +1163,22 @@ namespace JoyPro.CockpitPictures
                 Vec3 mn, mx;
                 scene.Bounds(meshes, out mn, out mx);
                 Vec3 size = mx - mn;
+                // A grip with its linkage (the F4U's stick with the elevator rod and the cables under the floor): the
+                // long single parts left out, then the group of parts that reaches highest (the handle is on top).
+                if (size.Length > 1.2)
+                {
+                    List<int> small = meshes.Where(m =>
+                    {
+                        Vec3 a0, a1;
+                        scene.Bounds(new[] { m }, out a0, out a1);
+                        return (a1 - a0).Length <= 0.9;
+                    }).ToList();
+                    meshes = small.Count == 0 ? small : CockpitViews.NearestCluster(scene, small, new Vec3((mn.X + mx.X) * 0.5, mx.Y + 100, (mn.Z + mx.Z) * 0.5));
+                    if (meshes.Count == 0)
+                        continue;
+                    scene.Bounds(meshes, out mn, out mx);
+                    size = mx - mn;
+                }
                 if (size.Length > 1.2 || size.Length < 0.02)
                     continue;
                 Vec3 centre = (mn + mx) * 0.5;
@@ -889,6 +1244,47 @@ namespace JoyPro.CockpitPictures
                 }
             }
             return grips;
+        }
+
+        // JOYPRO_PICTURE_DEBUG_GRIPS=<folder>: also every node (name, kind, arguments, place), connector and gauge of the
+        // model, to see why a grip is not found.
+        private static void DumpNodes(EdmFile edm, CockpitScene scene, List<DcsLua.Gauge> gauges, Dictionary<int, string> argKind, string[] nodeKind)
+        {
+            string dump = Environment.GetEnvironmentVariable("JOYPRO_PICTURE_DEBUG_GRIPS");
+            if (string.IsNullOrEmpty(dump))
+                return;
+            try
+            {
+                Directory.CreateDirectory(dump);
+                List<string> lines = new List<string>();
+                for (int i = 0; i < edm.Nodes.Count; i++)
+                {
+                    EdmNode node = edm.Nodes[i];
+                    List<int> cm;
+                    string place = "";
+                    if (scene.NodeMeshes.TryGetValue(i, out cm) && cm.Count > 0)
+                    {
+                        Vec3 q0, q1;
+                        scene.Bounds(cm, out q0, out q1);
+                        place = cm.Count + " meshes " + ((q0 + q1) * 0.5) + " size " + (q1 - q0).Length.ToString("0.000", CultureInfo.InvariantCulture);
+                    }
+                    string args = string.Join(",", node.RotationKeys.Select(k => "r" + k.Arg).Concat(node.PositionKeys.Select(k => "p" + k.Arg)).Concat(node.Visibility.Select(k => "v" + k.Arg)));
+                    lines.Add("N\t" + i + "\t" + node.Name + "\t" + node.Kind + "\tparent " + node.Parent + "\t" + args + "\t" + (nodeKind[i] ?? "") + "\t" + place);
+                }
+                foreach (EdmConnector cn in edm.Connectors)
+                {
+                    ScenePoint sp;
+                    lines.Add("C\t" + cn.Name + "\tparent " + cn.Parent + "\t" + (scene.Points.TryGetValue(cn.Name, out sp) ? sp.Position.ToString() : ""));
+                }
+                foreach (EdmRenderNode rn in edm.RenderNodes)
+                    lines.Add("R\t" + rn.Name + "\t" + (rn.Skin ? "skin" : "") + "\tparents " + string.Join(",", rn.Parents) + "\t" + (rn.Vertices == null ? 0 : rn.Vertices.Length / Math.Max(1, rn.Stride)));
+                foreach (DcsLua.Gauge g in gauges)
+                    lines.Add("G\t" + g.Name + "\t" + g.Controller + "\t" + string.Join(",", g.Args) + "\t" + string.Join(",", g.Args.Select(a => argKind.ContainsKey(a) ? argKind[a] : "")));
+                File.WriteAllLines(Path.Combine(dump, "_nodes.tsv"), lines);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         private static string KindOf(EdmFile edm, int root, string[] nodeKind)

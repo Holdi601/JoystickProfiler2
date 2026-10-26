@@ -199,7 +199,7 @@ namespace JoyPro.CockpitPictures
             public Dictionary<string, IvoModel> Models = new Dictionary<string, IvoModel>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, List<StarCitizenMaterial>> Mtls = new Dictionary<string, List<StarCitizenMaterial>>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, TextureImage> Textures = new Dictionary<string, TextureImage>(StringComparer.OrdinalIgnoreCase);
-            public Dictionary<string, byte[]> LayerColors = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+            public Dictionary<string, LayerLook> Layers = new Dictionary<string, LayerLook>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, Dictionary<string, object>> Items = new Dictionary<string, Dictionary<string, object>>(StringComparer.OrdinalIgnoreCase);
             public HashSet<string> Encrypted = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             public HashSet<string> Unread = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -508,10 +508,28 @@ namespace JoyPro.CockpitPictures
                 }
                 return null;
             };
-            // The model named like the ship next to its physics grid model (or in its exterior folder).
-            IvoModel hull = first(folders.SelectMany(folder => stems.Select(stem => Path.Combine(folder, stem + ".cga"))));
-            // Else a model of that name anywhere in the maker's folder (Objects\Spaceships\Ships\DRAK\...).
             Match maker = Regex.Match(proxy, "^(?:data\\\\)?objects\\\\spaceships\\\\ships\\\\[^\\\\]+", RegexOptions.IgnoreCase);
+            // A variant's own hull first, wherever it is in the maker's folder: the variants share the base ship's
+            // physics grid model, but AEGS_Sabre_Raven has aegs_sabre_raven.cga (and the Firebird firebird\
+            // aegs_sabre_firebird.cga) with its seat elsewhere; on the base hull the variant's cabin did not fit.
+            IvoModel hull = null;
+            string gridStem = stems.Count > 0 && proxy.Length > 0 ? stems[0] : string.Empty;
+            List<string> specific = stems.Skip(proxy.Length > 0 ? 1 : 0)
+                .Where(st => gridStem.Length > 0 && st.Length > gridStem.Length && st.StartsWith(gridStem, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (specific.Count > 0 && maker.Success)
+            {
+                List<string> inMaker = cx.P4k.List(maker.Value).Where(n => n.EndsWith(".cga", StringComparison.OrdinalIgnoreCase)).ToList();
+                foreach (string st in specific)
+                {
+                    hull = first(inMaker.Where(n => string.Equals(Path.GetFileName(n), st + ".cga", StringComparison.OrdinalIgnoreCase)));
+                    if (hull != null)
+                        break;
+                }
+            }
+            // The model named like the ship next to its physics grid model (or in its exterior folder).
+            if (hull == null)
+                hull = first(folders.SelectMany(folder => stems.Select(stem => Path.Combine(folder, stem + ".cga"))));
+            // Else a model of that name anywhere in the maker's folder (Objects\Spaceships\Ships\DRAK\...).
             if (hull == null && maker.Success)
             {
                 HashSet<string> wanted = new HashSet<string>(stems.Select(x => x + ".cga"), StringComparer.OrdinalIgnoreCase);
@@ -683,6 +701,8 @@ namespace JoyPro.CockpitPictures
             CockpitScene scene = new CockpitScene();
             Dictionary<string, int> materialIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int part = 0, missingTextures = 0;
+            List<string> missingNames = new List<string>();
+            List<double> materialTiling = new List<double>();
             string onlyRoles = Environment.GetEnvironmentVariable("JOYPRO_SC_DEBUG_ROLES") ?? string.Empty;
             foreach (Placed p in placed)
             {
@@ -709,15 +729,27 @@ namespace JoyPro.CockpitPictures
                     int mi;
                     if (!materialIndex.TryGetValue(mkey, out mi))
                     {
-                        bool missing;
-                        SceneMaterial scm = SceneMaterialOf(cx, mat, out missing);
-                        if (missing)
+                        string missing;
+                        double tiling;
+                        SceneMaterial scm = SceneMaterialOf(cx, mat, out missing, out tiling);
+                        if (missing.Length > 0)
+                        {
                             missingTextures++;
+                            if (missingNames.Count < 4 && !missingNames.Contains(missing))
+                                missingNames.Add(missing);
+                        }
                         mi = scene.Materials.Count;
                         scene.Materials.Add(scm);
+                        materialTiling.Add(tiling);
                         materialIndex[mkey] = mi;
                     }
                     sm.Material = mi;
+                    // A tileable layer texture repeats over the mesh's coordinates (the layer's UV tiling).
+                    if (sm.Uvs != null && Math.Abs(materialTiling[mi] - 1) > 1e-6)
+                    {
+                        for (int k = 0; k < sm.Uvs.Length; k++)
+                            sm.Uvs[k] = (float)(sm.Uvs[k] * materialTiling[mi]);
+                    }
                     IvoModel.Node node = p.Model.NodeOfObject(s.Object);
                     sm.Name = (p.Class.Length > 0 ? p.Class : Path.GetFileNameWithoutExtension(p.Path)) + "/" + (node == null ? s.Object.ToString(CultureInfo.InvariantCulture) : node.Name);
                     sm.Part = ++part;
@@ -735,9 +767,15 @@ namespace JoyPro.CockpitPictures
             Func<Placed, IvoModel.Node, Vec3> nodeAt = (p, n) => ToScene(Mat4.Point(Mat4.Multiply(Mat4.Multiply(toPilot, p.Matrix), n.World), 0, 0, 0));
             // Grips: the stick and the throttle of the dashboard, the seat and the other cockpit items.
             List<CockpitGrip> grips = new List<CockpitGrip>();
-            foreach (Placed p in placed.Where(x => x.Role != "hull" && x.Role != "interior"))
+            bool debugGrips = Environment.GetEnvironmentVariable("JOYPRO_SC_DEBUG_GRIPS") == "1";
+            // The items first (dashboard, seat), then the hull and the cabin models (a small ship's sticks can be part of
+            // its hull): those only right in front of the pilot.
+            foreach (Placed p in placed.OrderBy(x => x.Role == "hull" || x.Role == "interior" ? 1 : 0))
             {
-                foreach (IvoModel.Node g in GripNodes(p.Model))
+                bool shell = p.Role == "hull" || p.Role == "interior";
+                // Every grip-named node, the topmost first: a child is tried when its ancestor is not a grip (a stick
+                // support carrying both sticks, a yoke arm with the whole column).
+                foreach (IvoModel.Node g in GripNodes(p.Model, true))
                 {
                     List<int> meshes = new List<int>();
                     for (int k = 0; k < p.Meshes.Count; k++)
@@ -752,11 +790,30 @@ namespace JoyPro.CockpitPictures
                     scene.Bounds(meshes, out mn, out mx);
                     double size = (mx - mn).Length;
                     Vec3 centre = (mn + mx) * 0.5;
-                    if (size < 0.04 || size > 1.2 || (centre - head).Length > 2.0)
+                    // (The pilot's own seat and dashboard may be far from the first guess of the eye, which is placed behind
+                    // the grips afterwards: the Crusader yokes were 3 m away and left out.)
+                    double far = shell ? 1.3 : p.Role == "seat" || p.Role == "dashboard" ? Reach : 2.0;
+                    if (size < 0.04 || size > 1.2 || (centre - head).Length > far)
+                    {
+                        if (debugGrips)
+                            r.Notes.Add("grip candidate " + p.Role + "/" + g.Name + " left out: size " + size.ToString("0.00", CultureInfo.InvariantCulture) + " m, " + (centre - head).Length.ToString("0.00", CultureInfo.InvariantCulture) + " m from the eye");
                         continue;
+                    }
                     string device = Regex.IsMatch(g.Name, "throttle|thrust", RegexOptions.IgnoreCase) ? "throttle" : Regex.IsMatch(g.Name, "yoke", RegexOptions.IgnoreCase) ? "yoke" : "stick";
                     if (grips.Any(x => x.Meshes.Intersect(meshes).Any()))
                         continue;
+                    // The parts of one grip named one by one (a bike's handle: its main part, ball and base) are one grip.
+                    CockpitGrip same = grips.FirstOrDefault(x => x.Device == device && (x.Pivot - centre).Length < 0.25);
+                    if (same != null)
+                    {
+                        same.Meshes.AddRange(meshes);
+                        Vec3 smn, smx;
+                        scene.Bounds(same.Meshes, out smn, out smx);
+                        same.Pivot = (smn + smx) * 0.5;
+                        foreach (CockpitCallout c in GripParts(p, g, nodeAt))
+                            same.Parts.Add(c);
+                        continue;
+                    }
                     CockpitGrip cg = new CockpitGrip { Device = device, Meshes = meshes, Pivot = centre, Animation = new ControlAnimation { Source = "model node", Name = g.Name } };
                     foreach (CockpitCallout c in GripParts(p, g, nodeAt))
                         cg.Parts.Add(c);
@@ -824,8 +881,10 @@ namespace JoyPro.CockpitPictures
             List<CockpitCallout> screens = callouts.Where(c => c.Kind == "display").ToList();
             List<CockpitViewPlan> views = CockpitViews.Plan(scene, head, callouts.Where(c => c.Kind != "display").ToList(), grips, job.Width);
             CockpitViewPlan overview = views.FirstOrDefault(v => v.Kind == "overview");
-            // The pilot's own seat is left out of the overview (its back and head rest would hide the cockpit).
-            // (of a seat that is the dashboard as well only its parts beside and behind the eye: back, head rest, cushion)
+            // The pilot's own seat: what reaches up to the eye (back, head rest, a chest pad) or lies behind it is left
+            // out of the overview, it would hide the cockpit; the arm rests, the cushion and the side consoles below and
+            // in front of the eye stay (without them the pilot seemed to sit on nothing). Of a seat that is the
+            // dashboard as well only its parts beside and behind the eye go.
             HashSet<int> seatMeshes = new HashSet<int>();
             foreach (Placed p in placed.Where(x => x.Role == "seat"))
             {
@@ -834,7 +893,7 @@ namespace JoyPro.CockpitPictures
                 {
                     Vec3 mn, mx;
                     scene.Bounds(new[] { m }, out mn, out mx);
-                    if (!seatDash || (mn.X + mx.X) / 2 < head.X + 0.2)
+                    if (seatDash ? (mn.X + mx.X) / 2 < head.X + 0.2 : mx.X < head.X + 0.25 || mx.Y > head.Y - 0.35)
                         seatMeshes.Add(m);
                 }
             }
@@ -878,6 +937,18 @@ namespace JoyPro.CockpitPictures
                 }
                 if (frame.Count >= 2 && overview.Camera.FovY > 72)
                     NuclearOptionCockpitPictures.Refit(overview.Camera, frame, head);
+                // Neither grips nor a dashboard (a bridge whose dashboard is not read): the pilot's view ahead, not the
+                // few interaction points beside the seat (the camera looked sideways at the co-pilot's seat).
+                if (frame.Count < 2)
+                {
+                    List<Vec3> view = new List<Vec3>();
+                    foreach (double side in new[] { -0.8, 0.8 })
+                    {
+                        view.Add(head + new Vec3(1.6, -0.7, side));
+                        view.Add(head + new Vec3(1.6, 0.15, side));
+                    }
+                    NuclearOptionCockpitPictures.Refit(overview.Camera, view, head);
+                }
             }
             if (overview != null && screens.Count > 0)
             {
@@ -897,14 +968,14 @@ namespace JoyPro.CockpitPictures
             if (interiorModels == 0 && ship.Containers.Count > 0)
                 r.Notes.Add("no interior models in the object containers near the seat");
             if (brushCount > 0)
-                r.Notes.Add(brushCount.ToString(CultureInfo.InvariantCulture) + " brush models of the object containers (cockpit walls of bigger ships) are not drawn: their placement is not readable");
+                r.Notes.Add(brushCount.ToString(CultureInfo.InvariantCulture) + " brushes of the object containers near the seat are not drawn: their model could not be read");
             if (ship.Definition.Length > 0 && cx.P4k.IsEncrypted(ship.Definition))
             {
                 cx.Encrypted.Add(StarCitizenP4k.Normalize(ship.Definition));
                 r.Notes.Add("the vehicle definition " + Path.GetFileName(ship.Definition) + " is encrypted (not read): the hull model is found by its name");
             }
             if (missingTextures > 0)
-                r.Notes.Add(missingTextures.ToString(CultureInfo.InvariantCulture) + " materials without a readable texture (drawn in their colour)");
+                r.Notes.Add(missingTextures.ToString(CultureInfo.InvariantCulture) + " materials without a readable texture (drawn in their colour): " + string.Join(", ", missingNames));
             List<string> unread;
             lock (cx.Unread)
                 unread = cx.Unread.ToList();
@@ -919,9 +990,9 @@ namespace JoyPro.CockpitPictures
                 Source = "Data.p4k: " + Path.GetFileName(hullPath) + (dash != null ? ", " + Path.GetFileName(dash.Path) : string.Empty) + (seat != null ? ", " + Path.GetFileName(seat.Path) : string.Empty),
                 GameVersion = version,
                 Notes = r.Notes,
-                // Interaction points on bare walls make poor panel pictures: only clear ones stay (the overview and the
-                // grips carry the ship).
-                PanelKeep = 70
+                // Interaction points on bare walls make poor panel pictures: only good ones stay (60; with the cabin textures
+                // since 2026-10-26 a clear Star Citizen panel rates 60 to 100, a bare wall below).
+                PanelKeep = PictureQuality.Good
             };
             PictureWriter.Write(scene, views, folder, info, (cur, total, title) =>
             {
@@ -1009,7 +1080,7 @@ namespace JoyPro.CockpitPictures
                 {
                     SceneMaterial mat = m.Material >= 0 && m.Material < scene.Materials.Count ? scene.Materials[m.Material] : null;
                     byte[] c = mat == null ? new byte[] { 128, 128, 128 } : mat.Color;
-                    w.WriteLine("g " + m.Name.Replace(' ', '_') + " " + c[0] + " " + c[1] + " " + c[2]);
+                    w.WriteLine("g " + m.Name.Replace(' ', '_') + " " + c[0] + " " + c[1] + " " + c[2] + " " + (mat == null ? "-" : mat.Name.Replace(' ', '_')) + " " + (mat != null && mat.Albedo != null ? "tex" : "flat"));
                     for (int i = 0; i + 2 < m.Positions.Length; i += 3)
                         w.WriteLine("v " + m.Positions[i].ToString("0.####", CultureInfo.InvariantCulture) + " " + m.Positions[i + 1].ToString("0.####", CultureInfo.InvariantCulture) + " " + m.Positions[i + 2].ToString("0.####", CultureInfo.InvariantCulture));
                     for (int t = 0; t + 2 < m.Indices.Length; t += 3)
@@ -1103,8 +1174,21 @@ namespace JoyPro.CockpitPictures
             int n = 0;
             foreach (KeyValuePair<string, byte[]> f in files.Where(x => x.Key.EndsWith(".soc", StringComparison.OrdinalIgnoreCase)))
             {
-                // (The container's brush models, SocBrushModels, are not drawn: their placement is not in the file.)
-                brushCount += SocBrushModels(f.Value).Count;
+                // The container's brushes: the walls, floors, consoles and frames of the cabin.
+                foreach (SocBrush b in SocBrushes(f.Value))
+                {
+                    double[] m = Mat4.Multiply(oc.Matrix, b.Matrix);
+                    Vec3 at = Mat4.Point(m, 0, 0, 0);                    if ((at - seatAt).Length - b.Size > 3.2)
+                        continue;
+                    IvoModel model = Model(cx, b.Model);
+                    if (model == null || model.Positions == null || model.Indices == null)
+                    {
+                        brushCount++;
+                        continue;
+                    }
+                    placed.Add(new Placed { Path = b.Model, Model = model, Matrix = m, Material = b.Material.Length > 0 ? b.Material : model.Material, Role = "interior" });
+                    n++;
+                }
                 foreach (CryXmlNode entities in SocEntities(f.Value))
                 {
                     foreach (CryXmlNode e in entities.Children.Where(x => string.Equals(x.Tag, "Entity", StringComparison.OrdinalIgnoreCase)))
@@ -1144,28 +1228,95 @@ namespace JoyPro.CockpitPictures
             return n;
         }
 
-        // The brush model names of a .soc (chunk 0x0010: a count at byte 4, then 256-byte names).
-        public static List<string> SocBrushModels(byte[] soc)
+        // One brush of an object container: a model placed in the container (the walls, floors and consoles of the
+        // bigger ships' interiors), with the material the container gives it (empty: the model's own).
+        public sealed class SocBrush
         {
-            List<string> list = new List<string>();
+            public string Model = string.Empty;
+            public string Material = string.Empty;
+            public double[] Matrix = Mat4.Identity();   // in the container
+            public double Size;                         // the diagonal of its box (metres)
+        }
+
+        public const int SocBrushRecord = 208;
+
+        // The brushes of a .soc (chunk 0x0010, version 1): a word, the model count and the 256-byte model names; two
+        // 16-bit counts (materials, tint palettes) and their 256-byte names; a word, a float box, the byte size of the
+        // brush records, then the records (208 bytes each): a word, the brush's box in the ship (6 doubles), flags at 56,
+        // the model index (16 bit) at 60, the placement in the container at 64 (3 rows of 4 doubles: rotation and
+        // scale, the translation last), the material index (16 bit) at 170 (0xffff or beyond the list: the model's own).
+        public static List<SocBrush> SocBrushes(byte[] soc)
+        {
+            List<SocBrush> list = new List<SocBrush>();
             if (soc == null || soc.Length < 16 || soc[0] != 'C' || soc[1] != 'r' || soc[2] != 'C' || soc[3] != 'h')
                 return list;
             int n = BitConverter.ToInt32(soc, 8), table = BitConverter.ToInt32(soc, 12);
-            for (int i = 0; i < n && table + 16 * (i + 1) <= soc.Length; i++)
+            for (int i = 0; i < n && table >= 0 && table + 16 * (i + 1) <= soc.Length; i++)
             {
                 int p = table + 16 * i;
-                int type = BitConverter.ToUInt16(soc, p), size = BitConverter.ToInt32(soc, p + 8), off = BitConverter.ToInt32(soc, p + 12);
-                if (type != 0x0010 || off < 0 || size < 8 || off + size > soc.Length)
+                int type = BitConverter.ToUInt16(soc, p), version = BitConverter.ToUInt16(soc, p + 2), size = BitConverter.ToInt32(soc, p + 8), off = BitConverter.ToInt32(soc, p + 12);
+                if (type != 0x0010 || version != 1 || off < 0 || size < 8 || off + (long)size > soc.Length)
                     continue;
-                int count = BitConverter.ToInt32(soc, off + 4);
-                for (int k = 0; k < count && off + 8 + 256 * (k + 1) <= off + size; k++)
+                int end = off + size, at = off + 4;
+                Func<int, string> name = s =>
                 {
-                    int s = off + 8 + 256 * k, e = s;
+                    int e = s;
                     while (e < s + 256 && soc[e] != 0)
                         e++;
-                    string name = System.Text.Encoding.UTF8.GetString(soc, s, e - s);
-                    if (Regex.IsMatch(name, "\\.(cgf|cga)$", RegexOptions.IgnoreCase))
-                        list.Add(name);
+                    return System.Text.Encoding.UTF8.GetString(soc, s, e - s);
+                };
+                int models = BitConverter.ToInt32(soc, at);
+                at += 4;
+                if (models < 0 || at + 256L * models + 4 > end)
+                    continue;
+                List<string> names = new List<string>();
+                for (int k = 0; k < models; k++, at += 256)
+                    names.Add(name(at));
+                int materialCount = BitConverter.ToUInt16(soc, at), tintCount = BitConverter.ToUInt16(soc, at + 2);
+                at += 4;
+                if (at + 256L * (materialCount + tintCount) + 32 > end)
+                    continue;
+                List<string> materials = new List<string>();
+                for (int k = 0; k < materialCount; k++, at += 256)
+                    materials.Add(name(at));
+                at += 256 * tintCount;
+                at += 4 + 24;
+                int bytes = BitConverter.ToInt32(soc, at);
+                at += 4;
+                if (bytes < 0 || bytes % SocBrushRecord != 0 || at + (long)bytes > end)
+                    continue;
+                for (int r = at; r + SocBrushRecord <= at + bytes; r += SocBrushRecord)
+                {
+                    int model = BitConverter.ToUInt16(soc, r + 60);
+                    if (model >= names.Count || !Regex.IsMatch(names[model], "\\.(cgf|cga)$", RegexOptions.IgnoreCase))
+                        continue;
+                    double[] f = new double[12];
+                    bool finite = true;
+                    for (int k = 0; k < 12; k++)
+                    {
+                        f[k] = BitConverter.ToDouble(soc, r + 64 + 8 * k);
+                        finite &= !double.IsNaN(f[k]) && !double.IsInfinity(f[k]) && Math.Abs(f[k]) < 1e5;
+                    }
+                    if (!finite)
+                        continue;
+                    double[] m = Mat4.Identity();
+                    for (int row = 0; row < 3; row++)
+                    {
+                        for (int col = 0; col < 4; col++)
+                            m[col * 4 + row] = f[row * 4 + col];
+                    }
+                    double dx = BitConverter.ToDouble(soc, r + 28) - BitConverter.ToDouble(soc, r + 4);
+                    double dy = BitConverter.ToDouble(soc, r + 36) - BitConverter.ToDouble(soc, r + 12);
+                    double dz = BitConverter.ToDouble(soc, r + 44) - BitConverter.ToDouble(soc, r + 20);
+                    double diag = Math.Sqrt(dx * dx + dy * dy + dz * dz);
+                    int mat = BitConverter.ToUInt16(soc, r + 170);
+                    list.Add(new SocBrush
+                    {
+                        Model = names[model],
+                        Material = mat < materials.Count ? materials[mat] : string.Empty,
+                        Matrix = m,
+                        Size = double.IsNaN(diag) || diag > 1e5 ? 1e5 : diag
+                    });
                 }
             }
             return list;
@@ -1333,9 +1484,10 @@ namespace JoyPro.CockpitPictures
 
         private static readonly byte[] ScreenColour = { 22, 30, 38 };
 
-        private static SceneMaterial SceneMaterialOf(Context cx, StarCitizenMaterial mat, out bool missing)
+        private static SceneMaterial SceneMaterialOf(Context cx, StarCitizenMaterial mat, out string missing, out double tiling)
         {
-            missing = false;
+            missing = string.Empty;
+            tiling = 1;
             SceneMaterial sm = new SceneMaterial { Name = mat == null ? string.Empty : mat.Name };
             if (mat == null)
             {
@@ -1348,38 +1500,144 @@ namespace JoyPro.CockpitPictures
                 sm.SelfIllumination = true;
                 return sm;
             }
-            byte[] colour = null;
-            if (mat.LayerPath.Length > 0)
-                colour = LayerColour(cx, mat);
+            LayerLook look = mat.LayerPath.Length > 0 ? Layer(cx, mat) : null;
             if (mat.Texture.Length > 0)
             {
                 TextureImage img = Texture(cx, mat.Texture, 512);
                 // A texture that is nearly all white is a mask or a tint map the game colours at run time (drawn as it
-                // is, the cockpit was blown-out white): the layer's colour or a neutral grey instead.
+                // is, the cockpit was blown-out white): the layer, else the material's own colour.
                 if (img != null && 0.299 * img.Mean[0] + 0.587 * img.Mean[1] + 0.114 * img.Mean[2] >= 225)
-                {
-                    sm.Color = Tame(colour ?? new byte[] { 150, 152, 156 });
-                    return sm;
-                }
-                if (img != null)
+                    img = null;
+                else if (img != null)
                 {
                     sm.Albedo = img;
                     sm.AlphaTest = mat.AlphaTest;
                     sm.Color = new[] { img.Mean[0], img.Mean[1], img.Mean[2] };
                     return sm;
                 }
-                missing = true;
+                else
+                    missing = Regex.Replace(StarCitizenTextures.DdsName(mat.Texture), "^data\\\\", string.Empty, RegexOptions.IgnoreCase);
             }
-            if (colour == null)
+            if (look != null)
             {
-                colour = new[] { StarCitizenMaterial.Srgb(mat.Diffuse[0]), StarCitizenMaterial.Srgb(mat.Diffuse[1]), StarCitizenMaterial.Srgb(mat.Diffuse[2]) };
-                // A white diffuse is a multiplier for a texture the file does not give (or an encrypted one): a neutral
-                // grey, not the blown-out white surfaces of the first pictures.
-                if (colour.All(x => x >= 230))
-                    colour = new byte[] { 150, 152, 156 };
+                sm.Color = (byte[])look.Colour.Clone();
+                if (look.Texture != null)
+                {
+                    sm.Albedo = look.Texture;
+                    tiling = look.Tiling;
+                }
+                return sm;
             }
-            sm.Color = Tame(colour);
+            sm.Color = Tame(Colour(mat.Diffuse, mat, null));
             return sm;
+        }
+
+        // How bright a metal's reflection is drawn (the renderer has no reflections: the metal's specular colour,
+        // dimmed, stands for what it reflects).
+        private const double MetalShine = 0.25;
+
+        // A material's linear colour as the game shades it, flat: the diffuse times the tint, plus a metal's specular
+        // colour (a metal has a black diffuse; drawn by the diffuse alone it was pure black). A white diffuse without a
+        // tint is a multiplier for a texture the file does not give: a neutral grey, not blown-out white.
+        private static byte[] Colour(double[] diffuse, StarCitizenMaterial m, double[] tint)
+        {
+            double[] lin = Linear(diffuse, m, tint);
+            if (tint == null && !m.Metal && diffuse.All(x => x >= 0.8))
+                return new byte[] { 150, 152, 156 };
+            return new[] { StarCitizenMaterial.Srgb(lin[0]), StarCitizenMaterial.Srgb(lin[1]), StarCitizenMaterial.Srgb(lin[2]) };
+        }
+
+        private static double[] Linear(double[] diffuse, StarCitizenMaterial m, double[] tint)
+        {
+            double[] lin = new double[3];
+            double mx = tint == null ? 1 : Math.Max(tint[0], Math.Max(tint[1], tint[2]));
+            for (int k = 0; k < 3; k++)
+            {
+                double t = tint == null ? 1 : tint[k];
+                lin[k] = diffuse[k] * t;
+                // (a tinted metal keeps the tint's hue, not its darkness: a black tint on a metal layer is bare metal)
+                if (m.Metal)
+                    lin[k] += m.Specular[k] * MetalShine * (mx > 0.02 ? t / mx : 1);
+            }
+            return lin;
+        }
+
+        // A layered (HardSurface) material's look: its first layer's diffuse texture, tinted with the layer's tint,
+        // repeated with the layer's UV tiling (the game's tileable surfaces: painted panels, bare metal, carbon fibre),
+        // and its mean colour. Without a readable texture the layer's colour alone.
+        internal sealed class LayerLook
+        {
+            public byte[] Colour;
+            public TextureImage Texture;
+            public double Tiling = 1;
+        }
+
+        private static LayerLook Layer(Context cx, StarCitizenMaterial mat)
+        {
+            string key = mat.LayerPath + "|" + (mat.LayerTint == null ? "-" : string.Join(",", mat.LayerTint.Select(x => x.ToString("0.####", CultureInfo.InvariantCulture)))) + "|" + mat.LayerUvTiling.ToString("0.###", CultureInfo.InvariantCulture);
+            LayerLook look;
+            if (cx.Layers.TryGetValue(key, out look))
+                return look;
+            if (cx.Layers.Count > 600)
+                cx.Layers.Clear();
+            look = new LayerLook();
+            double[] tint = mat.LayerTint ?? new[] { 1.0, 1, 1 };
+            StarCitizenMaterial lm = Materials(cx, mat.LayerPath).FirstOrDefault();
+            if (lm == null)
+            {
+                look.Colour = Tame(new[] { StarCitizenMaterial.Srgb(0.5 * tint[0]), StarCitizenMaterial.Srgb(0.5 * tint[1]), StarCitizenMaterial.Srgb(0.5 * tint[2]) });
+                cx.Layers[key] = look;
+                return look;
+            }
+            TextureImage img = lm.Texture.Length > 0 ? Texture(cx, lm.Texture, 256) : null;
+            if (img == null || img.Rgba == null)
+            {
+                double[] lin = Linear(lm.Diffuse, lm, tint);
+                look.Colour = Tame(new[] { StarCitizenMaterial.Srgb(lin[0]), StarCitizenMaterial.Srgb(lin[1]), StarCitizenMaterial.Srgb(lin[2]) });
+                cx.Layers[key] = look;
+                return look;
+            }
+            // Each channel through a table: the texel's linear value times diffuse and tint, plus the metal's colour
+            // (varied by the texture as well: a black-tinted metal layer is bare metal with its scratches).
+            byte[][] lut = new byte[3][];
+            double[] add = Linear(new double[3], lm, tint);
+            for (int k = 0; k < 3; k++)
+            {
+                lut[k] = new byte[256];
+                double kd = lm.Diffuse[k] * tint[k] + add[k] / Math.Max(0.05, StarCitizenMaterial.Linear(img.Mean[k]));
+                for (int v = 0; v < 256; v++)
+                    lut[k][v] = StarCitizenMaterial.Srgb(StarCitizenMaterial.Linear((byte)v) * kd);
+            }
+            byte[] o = new byte[img.Rgba.Length];
+            long[] sum = new long[3];
+            for (int i = 0; i + 3 < o.Length; i += 4)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    o[i + k] = lut[k][img.Rgba[i + k]];
+                    sum[k] += o[i + k];
+                }
+                o[i + 3] = 255;
+            }
+            int n = Math.Max(1, o.Length / 4);
+            byte[] mean = { (byte)(sum[0] / n), (byte)(sum[1] / n), (byte)(sum[2] / n) };
+            // Not brighter than an untextured light grey (see Tame).
+            double y = 0.299 * mean[0] + 0.587 * mean[1] + 0.114 * mean[2];
+            if (y > 185)
+            {
+                double f = 185 / y;
+                for (int i = 0; i + 3 < o.Length; i += 4)
+                {
+                    for (int k = 0; k < 3; k++)
+                        o[i + k] = (byte)(o[i + k] * f);
+                }
+                mean = Tame(mean);
+            }
+            look.Colour = mean;
+            look.Texture = new TextureImage { Width = img.Width, Height = img.Height, Rgba = o, Mean = new byte[] { mean[0], mean[1], mean[2], 255 } };
+            look.Tiling = mat.LayerUvTiling * lm.Tiling;
+            cx.Layers[key] = look;
+            return look;
         }
 
         // An untextured colour at most as bright as a light grey panel (lit from the camera it was drawn pure white).
@@ -1392,36 +1650,6 @@ namespace JoyPro.CockpitPictures
             return new[] { (byte)(c[0] * k), (byte)(c[1] * k), (byte)(c[2] * k) };
         }
 
-        // A layered (HardSurface) material's colour: its first layer's texture colour times the layer tint.
-        private static byte[] LayerColour(Context cx, StarCitizenMaterial mat)
-        {
-            string key = mat.LayerPath + "|" + (mat.LayerTint == null ? "-" : string.Join(",", mat.LayerTint.Select(x => x.ToString("0.###", CultureInfo.InvariantCulture))));
-            byte[] c;
-            if (cx.LayerColors.TryGetValue(key, out c))
-                return c;
-            double[] lin = { 0.5, 0.5, 0.5 };
-            List<StarCitizenMaterial> layer = Materials(cx, mat.LayerPath);
-            StarCitizenMaterial lm = layer.FirstOrDefault();
-            if (lm != null)
-            {
-                lin = (double[])lm.Diffuse.Clone();
-                if (lm.Texture.Length > 0)
-                {
-                    TextureImage img = Texture(cx, lm.Texture, 32);
-                    if (img != null)
-                        lin = new[] { StarCitizenMaterial.Linear(img.Mean[0]) * lm.Diffuse[0], StarCitizenMaterial.Linear(img.Mean[1]) * lm.Diffuse[1], StarCitizenMaterial.Linear(img.Mean[2]) * lm.Diffuse[2] };
-                }
-            }
-            if (mat.LayerTint != null)
-            {
-                for (int k = 0; k < 3; k++)
-                    lin[k] *= mat.LayerTint[k];
-            }
-            c = Tame(new[] { StarCitizenMaterial.Srgb(lin[0]), StarCitizenMaterial.Srgb(lin[1]), StarCitizenMaterial.Srgb(lin[2]) });
-            cx.LayerColors[key] = c;
-            return c;
-        }
-
         private static TextureImage Texture(Context cx, string path, int maxSize)
         {
             string key = path + "@" + maxSize.ToString(CultureInfo.InvariantCulture);
@@ -1430,8 +1658,7 @@ namespace JoyPro.CockpitPictures
                 return t;
             try
             {
-                t = StarCitizenTextures.Load(cx.P4k, path, maxSize);
-            }
+                t = StarCitizenTextures.Load(cx.P4k, path, maxSize);            }
             catch (StarCitizenP4k.EncryptedEntryException ex)
             {
                 cx.Encrypted.Add(ex.Entry);
@@ -1448,15 +1675,33 @@ namespace JoyPro.CockpitPictures
         // ------------------------------------------------------------------ grips and callouts
 
         private static readonly Regex NotAGrip = new Regex("^(btn|ip|\\$|led|ik|ui|screen|hud|light|lgt|decal|glow|helper|hardpoint|anim|socket|cam|rtt)|_ik_|ik_attach|_ip$|button|trigger|_hat|_geo$|_mesh$|_lod|proxy|shadow", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static readonly Regex GripName = new Regex("joystick|flight_?stick|(^|_)stick(_|$)|yoke|throttle|thrust_?lever|(^|_)thruster_control", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex GripName = new Regex("joystick|flight_?stick|(^|_)stick(_|$)|yoke|throttle|thrust_?lever|(^|_)thruster_control|(^|_)controller_(left|right)|(left|right)_controller|(^|_)handle_?bar_(left|right)(_|$)|(^|_)(ctrl|control)_(thrust|throttle)(_|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        // What carries a grip, not the grip: a stick support with both sticks, a yoke arm or base, a mount.
+        private static readonly Regex GripCarrier = new Regex("(^|_)(support|base|arm|mount|bracket|housing|rail|holder)(_|\\d|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static readonly Regex ButtonName = new Regex("button|btn|trigger|hat|thumb|switch|pinky|ring|toggle|wheel|rocker|slider", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        // The grips of an item: nodes named like a stick or a throttle (the topmost of a chain of such names).
-        public static List<IvoModel.Node> GripNodes(IvoModel model)
+        // The grips of an item: nodes named like a stick or a throttle (the topmost of a chain of such names). all: every
+        // such node, the topmost first, carriers (a stick support, a yoke arm) left out; the caller takes a child where
+        // its ancestor is not a grip.
+        public static List<IvoModel.Node> GripNodes(IvoModel model, bool all = false)
         {
             List<IvoModel.Node> list = new List<IvoModel.Node>();
             if (model == null)
                 return list;
+            if (all)
+            {
+                Func<IvoModel.Node, int> depth = n =>
+                {
+                    int d = 0, p = n.Parent;
+                    while (p >= 0 && p < model.Nodes.Count && d < 256)
+                    {
+                        d++;
+                        p = model.Nodes[p].Parent;
+                    }
+                    return d;
+                };
+                return model.Nodes.Where(n => GripName.IsMatch(n.Name) && !NotAGrip.IsMatch(n.Name) && !GripCarrier.IsMatch(n.Name)).OrderBy(depth).ToList();
+            }
             foreach (IvoModel.Node n in model.Nodes)
             {
                 if (!GripName.IsMatch(n.Name) || NotAGrip.IsMatch(n.Name))
