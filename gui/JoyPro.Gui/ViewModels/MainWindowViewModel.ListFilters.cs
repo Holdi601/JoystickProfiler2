@@ -247,6 +247,7 @@ public sealed partial class MainWindowViewModel
             .Where(r => RelationFilter.Matches(relationSubjects.GetValueOrDefault(r.Name)))
             .OrderBy(v => v.Name, StringComparer.OrdinalIgnoreCase), r => relationSubjects.GetValueOrDefault(r.Name), rows => RelationSort.Sort(rows, SortRowOf))
             .ToList();
+        UpdateRelationSearchHits(shown);
         FillRelationList(shown);
         watch.Stop();
         RelationFilterMilliseconds = watch.Elapsed.TotalMilliseconds;

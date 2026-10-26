@@ -362,6 +362,9 @@ public sealed partial class MainWindowViewModel
             args.Add("--include-keyboard");
         AddDisconnectedDevicesOption(args);
 
+        // Changes made in JoyPro and not exported yet would come back from the game: ask first (MainWindowViewModel.ImportGuard.cs).
+        if (!await GuardUnexportedChangesAsync(SelectedRegistryGame!.GameId, SelectedRegistryGame.DisplayName))
+            return;
         HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         string importedGame = SelectedRegistryGame!.DisplayName;
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: "Importing from " + importedGame + "...");

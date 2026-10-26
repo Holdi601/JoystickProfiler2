@@ -15,7 +15,8 @@ public sealed class FilterSubject
     {
         string titles = string.Join("\u0001", (actionTitles ?? []).Where(t => !string.IsNullOrWhiteSpace(t)));
         NameText = (name ?? string.Empty).Trim().ToLowerInvariant();
-        ActionsText = titles.Length == 0 ? NameText : NameText + "\u0001" + titles.ToLowerInvariant();
+        TitlesText = titles.ToLowerInvariant();
+        ActionsText = titles.Length == 0 ? NameText : NameText + "\u0001" + TitlesText;
         Name = name ?? string.Empty;
         Groups = new HashSet<string>((groups ?? []).Where(g => g.Length > 0), StringComparer.OrdinalIgnoreCase);
         if (Groups.Count == 0)
@@ -33,6 +34,9 @@ public sealed class FilterSubject
 
     // Lower case: the name and the titles of its actions (search scope "Name + actions", the default).
     public string ActionsText { get; }
+
+    // Lower case: only the titles of its actions (a title with the whole search ranks first).
+    public string TitlesText { get; }
 
     // The engine's name for relations without a group.
     public const string NoGroup = "<none>";

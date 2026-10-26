@@ -145,6 +145,12 @@ $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("engine-smoke-" + [Guid]
 New-Item -Path $tempDir -ItemType Directory | Out-Null
 $previousSmokeDataDir = $env:JOYPRO_DATA_DIR
 $env:JOYPRO_DATA_DIR = Join-Path $tempDir "joypro-data"
+# The test sandbox (docs/testing.md "Test sandbox"): every engine below refuses writes outside temp, its data folder and
+# this root (exit code 77, stderr, <root>\sandbox-violations.log), so no part can reach a real game or user folder.
+$previousSandbox = $env:JOYPRO_TEST_SANDBOX
+$smokeSandbox = Join-Path ([System.IO.Path]::GetTempPath()) ("engine-smoke-sandbox-" + [Guid]::NewGuid().ToString("N"))
+New-Item -Path $smokeSandbox -ItemType Directory | Out-Null
+$env:JOYPRO_TEST_SANDBOX = $smokeSandbox
 
 Write-Host "Running CLI smoke tests..."
 
@@ -3519,7 +3525,14 @@ finally {
     }
     $env:JOYPRO_LOG_DIR = $previousSmokeLogDir
     $env:JOYPRO_NO_INTERNET_PICTURES = $previousNoInternetPictures
+    $env:JOYPRO_TEST_SANDBOX = $previousSandbox
 }
+
+# No engine of the run tried to write outside the sandbox (a part that swallowed the exit code is caught here).
+$sandboxViolations = Join-Path $smokeSandbox "sandbox-violations.log"
+Assert-True (-not (Test-Path $sandboxViolations)) ("An engine run tried to write outside the test sandbox (refused):" + [Environment]::NewLine +
+    ((Get-Content -Path $sandboxViolations -TotalCount 60 -ErrorAction SilentlyContinue) -join [Environment]::NewLine))
+Remove-Item -Path $smokeSandbox -Recurse -Force -ErrorAction SilentlyContinue
 
 # Every run wrote its background log (header, command, exit code) into the smoke log folder.
 $smokeLogs = @(Get-ChildItem -Path $smokeLogDir -Filter "engine-*.log" -ErrorAction SilentlyContinue)

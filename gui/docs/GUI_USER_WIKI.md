@@ -165,6 +165,14 @@ Nothing changes in your profile before `Apply to my profile`. Closing the window
 
 No profile open? The import makes one for you.
 
+Changed something in JoyPro and not exported it yet (for example moved an action to another button)? An import brings
+back what the game still has, so JoyPro says what would be lost first: "You changed 2 binds for DCS that are not in DCS
+yet (e.g. moved 'Master Warning Button')". `Import (drop my changes for DCS)` imports (use it on purpose to get the
+game's binds back; Undo or History brings your changes back), `Export first` puts your changes into the game (your
+profile wins there) and imports nothing, `Cancel` changes nothing. `Do not ask again` switches the question off;
+Settings > Confirmations switches it on again. Nothing unexported: no question. When a game changed its controls, the
+take-over ("A game changed its controls") offers only what the game changed, never to undo what you changed in JoyPro.
+
 ### Expert import
 `Expert import: paths, device filters and game values` (collapsed) is the full form for experienced users: your own
 paths (portable installs, a second Saved Games folder), only some devices or ignore devices, values set in the game
@@ -191,6 +199,14 @@ The page works like JoyPro 1: pick a relation on the left, search on the right, 
 The page: the relation list on the left (search, group chips, Ctrl/Shift for several); on the right the open relation
 (its name, edited in place, and its actions) and three panels: `Add actions`, `Suggested for this relation` and
 `JoyPro assistant`. Every button has a tooltip.
+
+### Find a relation by what it does
+Type in the search box of the relation list (or of the Binds page), e.g. `master`. With `Name + actions` (the
+default) it finds relations by their name and by the titles of their actions. Under each card found by its actions
+JoyPro shows the matching actions with the word marked, the game and the aircraft (`Master Caution Button · DCS World ·
+AH-64D BLK.II (2)`): up to three lines, then `+N more`. Relations whose action has the whole search (`master
+caution`) come first. Click a line: the relation opens with that action selected (on the Binds page the row is
+selected and `What it does` marks the action).
 
 ### Make a relation
 1. `New relation` (Ctrl+N): type its name, e.g. `Throttle ALL` (empty: it is named after its first action).
@@ -243,8 +259,14 @@ A relation is one input: changing its input moves all of its actions. To move on
    → `Move an action to another button...`, or `Move...` next to an action under `What it does`).
 2. Press `Press the new button` and press it on your device, or pick the device and type the input (`JOY_BTN3`).
 3. The window says where it goes: into the relation that already uses that button, or into a new relation named after
-   the action when no relation uses it (or when that aircraft is bound there to something else already).
-4. `Move`. The other actions stay on the old button; a relation left without actions goes away. One Ctrl+Z undoes it.
+   the action when no relation uses it.
+4. That aircraft already has another action on the new button (in a relation an aircraft has one action): the window
+   names the relation and the action there and asks what should happen. `Swap`: that action goes to the old button
+   (the two swap places). `Replace`: that action leaves the button and is not bound then. `Keep both`: the moved
+   action gets its own relation on the same button, and both fire when you press it.
+5. `Move`. The other actions stay on the old button; a relation left without actions goes away. One Ctrl+Z undoes it.
+   Export to the game afterwards: until then the game still has the old button, and an import from the game brings
+   it back.
 
 ### Suggested for this relation
 What means the same in your other games and aircraft, from JoyPro's function catalog (checked against the manuals),
@@ -655,7 +677,7 @@ picker, the font and the font of key caps, weight, line spacing and heading size
 in. Details: [docs/ui/themes.md](../../docs/ui/themes.md).
 
 `Confirmations`: the questions JoyPro asks before it changes something hard to take back, with a switch for each
-question that can be turned off.
+question that can be turned off (removing an action from a relation; an import that drops changes not exported yet).
 
 `About JoyPro and updates`: the version, build date and commit, the license and third-party notices, the project and
 release pages, `Check for updates` and `Check for updates at start`. A newer version opens a dialog with what changed:
@@ -743,20 +765,24 @@ JoyPro runs only once: starting it again while it is already running brings the 
 - `Manual single-device (advanced)` for a device name typed by hand.
 
 ### Report a Problem
-Something went wrong? Three steps, nothing is sent by itself:
+Something went wrong? Four steps, nothing is sent by itself:
 1. Write into `What happened?` what you did, what you expected and what happened instead.
-2. Press `Create Report`. JoyPro saves one zip (in `Documents\JoyPro2 Problem Reports`) and shows it in Explorer. It
-   holds your text, the JoyPro and Windows versions, your device list, the background logs of the last 3 days, crash
-   reports and the engine output of this session. Tick `Attach my profile` first if the problem is about your binds
-   (the profile is added unchanged).
-3. Press `Open GitHub Issue Page` (a prefilled issue opens in your browser) and drag the zip into the text box, or send
+2. Leave `Include my open profile and its history (your binds and device names)` ticked (on by default, remembered)
+   unless you do not want to send your binds.
+3. Press `Create Report`. JoyPro shows what goes in, then saves one zip (in `Documents\JoyPro2 Problem Reports`) and
+   shows it in Explorer. It holds your text, the JoyPro and Windows versions, JoyPro's logs of at least the last 14
+   days, errors and crash reports, JoyPro's settings and versions, your devices with vJoy and HidHide, and per game its
+   folders and JoyPro's backups; with the box ticked also the open profile, its saved versions and the games' current
+   bind files. It stays on your PC until you send it.
+4. Press `Open GitHub Issue Page` (a prefilled issue opens in your browser) and drag the zip into the text box, or send
    the zip to the developer another way. `Show Report` shows the zip in Explorer again.
 
 Your Windows user name, the path of your user folder, the PC name, e-mail addresses, passwords/tokens and Steam ids
-are removed from all text files in the zip. You can open the zip and read everything before sending it.
+are removed from all text files in the zip, also inside the copy of the profile. You can open the zip and read
+everything before sending it. Details: [docs/logging.md](../../docs/logging.md#problem-report).
 
-`Keep background logs for N days` (default 7) sets how long JoyPro keeps its logs; older ones are deleted
-automatically. `Open Log Folder` opens `%LOCALAPPDATA%\JoyPro2\Logs`. Details: [docs/logging.md](../../docs/logging.md).
+`Keep background logs for N days` (default 30; at most 200 MB together, the oldest go first) sets how long JoyPro
+keeps its logs; older ones are deleted automatically. `Open Log Folder` opens `%LOCALAPPDATA%\JoyPro2\Logs`. Details: [docs/logging.md](../../docs/logging.md).
 
 ### Updates and components
 - `Updates of JoyPro`: version, `Check for Updates`, `Install Update`.

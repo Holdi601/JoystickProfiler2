@@ -81,17 +81,78 @@ public sealed partial class MainWindowViewModel
 
     public string MoveActionRecordLabel => IsMoveActionRecording ? T("Press the new button now.") : T("Press the new button");
 
-    public bool CanApplyMoveAction => SelectedMoveAction != null && MoveActionDevice.Trim().Length > 0 && MoveActionInput.Trim().Length > 0;
+    private bool HasMoveActionTarget => SelectedMoveAction != null && MoveActionDevice.Trim().Length > 0 && MoveActionInput.Trim().Length > 0;
+
+    // On a taken button (the aircraft has another action there) Move waits for a choice: swap, replace or keep both.
+    public bool CanApplyMoveAction => HasMoveActionTarget && (!MoveActionTaken || MoveActionIfTaken.Length > 0);
+
+    // ---- The button is taken: the relation on it has another action for these aircraft (tester report on 2.4.2: the
+    // panel said "No relation uses that button yet" although "Button CP2 B3" was on it with the AH-64D's Master Caution).
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanApplyMoveAction))]
+    private bool moveActionTaken;
+
+    [ObservableProperty]
+    private string moveActionTakenText = string.Empty;
+
+    [ObservableProperty]
+    private string moveActionSwapText = string.Empty;
+
+    [ObservableProperty]
+    private string moveActionReplaceText = string.Empty;
+
+    [ObservableProperty]
+    private string moveActionKeepBothText = string.Empty;
+
+    // "", "swap", "replace" or "keep-both" (engine --if-taken).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanApplyMoveAction))]
+    [NotifyPropertyChangedFor(nameof(IsMoveActionSwap))]
+    [NotifyPropertyChangedFor(nameof(IsMoveActionReplace))]
+    [NotifyPropertyChangedFor(nameof(IsMoveActionKeepBoth))]
+    private string moveActionIfTaken = string.Empty;
+
+    public bool IsMoveActionSwap
+    {
+        get => MoveActionIfTaken == "swap";
+        set { if (value) MoveActionIfTaken = "swap"; }
+    }
+
+    public bool IsMoveActionReplace
+    {
+        get => MoveActionIfTaken == "replace";
+        set { if (value) MoveActionIfTaken = "replace"; }
+    }
+
+    public bool IsMoveActionKeepBoth
+    {
+        get => MoveActionIfTaken == "keep-both";
+        set { if (value) MoveActionIfTaken = "keep-both"; }
+    }
+
+    partial void OnMoveActionIfTakenChanged(string value) => _ = PreviewMoveActionAsync();
 
     partial void OnMoveActionPreviewChanged(string value) => OnPropertyChanged(nameof(HasMoveActionPreview));
 
     partial void OnMoveActionStatusChanged(string value) => OnPropertyChanged(nameof(HasMoveActionStatus));
 
-    partial void OnSelectedMoveActionChanged(MoveActionChoice? value) => _ = PreviewMoveActionAsync();
+    partial void OnSelectedMoveActionChanged(MoveActionChoice? value) => ResetMoveActionTaken();
 
-    partial void OnMoveActionDeviceChanged(string value) => _ = PreviewMoveActionAsync();
+    partial void OnMoveActionDeviceChanged(string value) => ResetMoveActionTaken();
 
-    partial void OnMoveActionInputChanged(string value) => _ = PreviewMoveActionAsync();
+    partial void OnMoveActionInputChanged(string value) => ResetMoveActionTaken();
+
+    // Another action or button: the choice for the old button does not carry over; the preview asks again.
+    private void ResetMoveActionTaken()
+    {
+        MoveActionTaken = false;
+        if (MoveActionIfTaken.Length > 0)
+            MoveActionIfTaken = string.Empty;
+        else
+            _ = PreviewMoveActionAsync();
+        OnPropertyChanged(nameof(CanApplyMoveAction));
+    }
 
     partial void OnMoveActionKeepModifiersChanged(bool value) => _ = PreviewMoveActionAsync();
 
@@ -198,16 +259,21 @@ public sealed partial class MainWindowViewModel
             "--device", MoveActionDevice.Trim(), "--input", MoveActionInput.Trim()];
         if (MoveActionKeepModifiers && HasMoveActionModifiers)
             args.Add("--keep-modifiers");
+        if (MoveActionTaken && MoveActionIfTaken.Length > 0)
+        {
+            args.Add("--if-taken");
+            args.Add(MoveActionIfTaken);
+        }
         if (dryRun)
             args.Add("--dry-run");
         return args;
     }
 
-    // Where the action would go (engine --dry-run), told before Move is pressed.
+    // Where the action would go (engine --dry-run), told before Move is pressed. A taken button shows the choices.
     private async Task PreviewMoveActionAsync()
     {
         int version = ++moveActionPreviewVersion;
-        if (!IsMoveActionOpen || !CanApplyMoveAction)
+        if (!IsMoveActionOpen || !HasMoveActionTarget)
         {
             MoveActionPreview = string.Empty;
             return;
@@ -221,7 +287,39 @@ public sealed partial class MainWindowViewModel
             MoveActionPreview = result == null ? string.Empty : BuildFailureStatus(result);
             return;
         }
-        MoveActionPreview = DescribeMove(result.StandardOutput, done: false);
+        ReadMoveActionTaken(result.StandardOutput);
+        MoveActionPreview = MoveActionTaken && MoveActionIfTaken.Length == 0 ? string.Empty : DescribeMove(result.StandardOutput, done: false);
+    }
+
+    // The engine says the button is taken: what is there and the three ways out, in words.
+    private void ReadMoveActionTaken(string output)
+    {
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
+            JsonElement root = doc.RootElement;
+            if (!ReadJsonBool(root, "Taken"))
+            {
+                MoveActionTaken = false;
+                return;
+            }
+            string relation = ReadJsonString(root, "TakenRelation");
+            string game = ReadJsonString(root, "Game");
+            List<string> actions = ReadJsonStrings(root, "TakenActions");
+            List<string> planes = ReadJsonStrings(root, "TakenPlanes");
+            string taken = string.Join(", ", actions.Select(a => "'" + a + "'"));
+            string title = SelectedMoveAction?.Title ?? ReadJsonString(root, "Action");
+            MoveActionTakenText = T("'{0}' is on that button and has {1} there for {2}. In a relation an aircraft has only one action, so '{3}' cannot simply join it. What should happen?",
+                relation, taken, AircraftWords(game.Length > 0 ? game : "DCS", planes), title);
+            MoveActionSwapText = T("Swap: {0} goes to '{1}', where '{2}' was", taken, moveActionRelation, title);
+            MoveActionReplaceText = T("Replace: {0} leaves that button and is not bound then", taken);
+            MoveActionKeepBothText = T("Keep both: '{0}' gets its own relation on the same button; both fire when you press it", title);
+            MoveActionTaken = true;
+        }
+        catch (JsonException)
+        {
+            MoveActionTaken = false;
+        }
     }
 
     private string DescribeMove(string output, bool done)
@@ -232,9 +330,22 @@ public sealed partial class MainWindowViewModel
             JsonElement root = doc.RootElement;
             string to = ReadJsonString(root, "To");
             string from = ReadJsonString(root, "From");
-            string text = ReadJsonBool(root, "Joined")
-                ? (done ? T("Moved: it is in '{0}' now, the relation on that button.", to) : T("It joins '{0}', the relation that already uses that button.", to))
-                : (done ? T("Moved: it has its own relation '{0}' on that button now.", to) : T("No relation uses that button yet: it gets its own relation '{0}'.", to));
+            List<string> displaced = ReadJsonStrings(root, "Displaced");
+            string displacedText = string.Join(", ", displaced.Select(a => "'" + a + "'"));
+            string text;
+            if (displaced.Count > 0 && ReadJsonString(root, "IfTaken") == "swap")
+                text = done ? T("Moved: it is in '{0}' now; {1} went to '{2}'.", to, displacedText, ReadJsonString(root, "DisplacedTo"))
+                    : T("It joins '{0}'; {1} goes to '{2}' (the two swap buttons).", to, displacedText, ReadJsonString(root, "DisplacedTo"));
+            else if (displaced.Count > 0)
+                text = done ? T("Moved: it is in '{0}' now; {1} is not bound any more.", to, displacedText)
+                    : T("It joins '{0}'; {1} leaves that button and is not bound then.", to, displacedText);
+            else if (ReadJsonBool(root, "BothFire"))
+                text = done ? T("Moved: it has its own relation '{0}' on the same button as '{1}' now; both fire when you press it.", to, ReadJsonString(root, "TakenRelation"))
+                    : T("It gets its own relation '{0}' on the same button as '{1}': both fire when you press it.", to, ReadJsonString(root, "TakenRelation"));
+            else
+                text = ReadJsonBool(root, "Joined")
+                    ? (done ? T("Moved: it is in '{0}' now, the relation on that button.", to) : T("It joins '{0}', the relation that already uses that button.", to))
+                    : (done ? T("Moved: it has its own relation '{0}' on that button now.", to) : T("No relation uses that button yet: it gets its own relation '{0}'.", to));
             if (ReadJsonBool(root, "FromRemoved"))
                 text += " " + T("'{0}' has no other action and goes away.", from);
             return text;
@@ -243,6 +354,16 @@ public sealed partial class MainWindowViewModel
         {
             return string.Empty;
         }
+    }
+
+    // A pressed button comes with the device as this PC names it: the device list's spelling of the same device (same
+    // GUID, any case), so the list shows it and the engine finds the relations on it.
+    private string MoveActionDeviceSpelling(string device)
+    {
+        string wanted = (device ?? string.Empty).Trim();
+        string? known = QuickBindDeviceOptions.FirstOrDefault(o => string.Equals(o, wanted, StringComparison.OrdinalIgnoreCase))
+                        ?? QuickBindDeviceOptions.FirstOrDefault(o => OverlayResolver.SameDevice(o, wanted) && SameDeviceName(o, wanted));
+        return known ?? wanted;
     }
 
     // Press the new button: the Binds page's record (same capture, same options).
@@ -260,6 +381,7 @@ public sealed partial class MainWindowViewModel
         {
             AxisMode = axis,
             IgnoreAxesOf = AxisIgnorePredicate(),
+            PreferredDevice = MoveActionDevice,
             TimeoutMs = timeoutMs,
             WarmupMs = ParseOrDefault(RecordWarmupMs, 300, 0, 5000),
             AxisThresholdPercent = ParseOrDefault(RecordAxisThresholdPercent, 30, 1, 100),
@@ -278,7 +400,10 @@ public sealed partial class MainWindowViewModel
                 return;
             }
             MoveActionStatus = string.Empty;
-            MoveActionDevice = capture.Device;
+            string device = MoveActionDeviceSpelling(capture.Device);
+            EnsureQuickBindOptionContains(device, capture.Input);
+            JoyProLog.Info("MoveAction", "Captured " + capture.Device + " :: " + capture.Input + (device == capture.Device ? string.Empty : " (as " + device + ")"));
+            MoveActionDevice = device;
             MoveActionInput = capture.Input;
         }
         catch (OperationCanceledException)
@@ -298,7 +423,9 @@ public sealed partial class MainWindowViewModel
     {
         if (!CanApplyMoveAction || SelectedMoveAction == null)
         {
-            MoveActionStatus = T("Press the new button or pick a device and an input first.");
+            MoveActionStatus = HasMoveActionTarget && MoveActionTaken
+                ? T("Pick what happens with the action that is on that button first.")
+                : T("Press the new button or pick a device and an input first.");
             return;
         }
         string title = SelectedMoveAction.Title;
@@ -331,7 +458,9 @@ public sealed partial class MainWindowViewModel
             await OpenBuilderRelationAsync(fromRemoved || to.Length == 0 ? (to.Length > 0 ? to : from) : from, seedSearch: false);
         else if (SelectedBind != null)
             _ = LoadBindPeekAsync(SelectedBind.RelationName);
-        StatusText = "'" + title + "': " + message;
+        // The game still has the old button until the export: an import before it brought the old bind back (tester's
+        // log on 2.4.2: Import from DCS right after the move joined the action into its old relation again).
+        StatusText = "'" + title + "': " + message + " " + T("Export to the game so it uses the new button; an import from the game before that brings the old button back.");
     }
 
     [RelayCommand]
@@ -346,6 +475,8 @@ public sealed partial class MainWindowViewModel
         IsMoveActionOpen = false;
         MoveActionChoices.Clear();
         SelectedMoveAction = null;
+        MoveActionTaken = false;
+        MoveActionIfTaken = string.Empty;
         MoveActionPreview = string.Empty;
         MoveActionStatus = string.Empty;
     }

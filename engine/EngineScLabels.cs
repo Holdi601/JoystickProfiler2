@@ -128,7 +128,7 @@ namespace JoyPro.Engine
             }
             result.File = GameDataPaths.WritableDbFile("StarCitizen", FileName);
             if (!dryRun)
-                System.IO.File.WriteAllText(result.File, sb.ToString(), new UTF8Encoding(false));
+                File.WriteAllText(result.File, sb.ToString(), new UTF8Encoding(false));
             return result;
         }
 

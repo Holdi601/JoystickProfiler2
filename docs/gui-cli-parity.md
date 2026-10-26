@@ -103,7 +103,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `relations list/show/add` | Relations page (list, the relation editor, New relation / Start relation from a search hit, Press a button) | FULL | |
 | `relations group list/add/remove/rename` | Relations: Group Management, group chips | FULL | |
 | `relations item add/remove/enable/disable` | Relations: the editor's actions (remove); adds go through `suggest apply` | FULL | enable/disable: "dismissed" is the switched-off state. |
-| `relations item move-to-input` (`--dry-run`, `--keep-modifiers`) | Relations: an action's context menu "Move to another button..."; Binds: the bind row's context menu and "Move..." under What it does (press the new button or pick device + input; the dry run tells where it goes) | FULL | `--name` (the new relation's name) and `--modifier` are CLI-only. |
+| `relations item move-to-input` (`--dry-run`, `--keep-modifiers`, `--if-taken` swap, replace or keep-both: the Move window's choices when the aircraft has another action on that button) | Relations: an action's context menu "Move to another button..."; Binds: the bind row's context menu and "Move..." under What it does (press the new button or pick device + input; the dry run tells where it goes) | FULL | `--name` (the new relation's name) and `--modifier` are CLI-only. |
 | `relations search` (`--plane`, `--axis/--button`, `--limit`) | Relations: Add actions (search as you type, tick rows, Add selected / Create relation; game chips, Axes/Buttons, aircraft) | FULL | `--game` and `--category` are CLI-only: the page filters the games of the result with its chips. |
 | `relations assistant` (`--relation`, `--llm`, `--max-steps`, `--show-prompt`) | Relations: JoyPro assistant, Expand with AI (applies at once, one Undo per answer) | FULL | `--show-prompt` and `--max-steps` are CLI-only (for experts). |
 | `relations rename` | Relations: the open relation's name, edited in place | FULL | |
@@ -174,7 +174,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 
 | Feature | GUI place | Rating |
 |---|---|---|
-| Problem report (zip with versions, devices, output, crash reports) | Settings: "Report a problem" | FULL |
+| Problem report (`engine support bundle`: logs, errors, settings and state, devices, games; with the box the open profile, its history and the games' bind files; plus the description and diagnostics) | Settings: "Report a problem" > "Create Report", box "Include my open profile and its history" (`--include-profile`); `engine support unpack` is for maintainers | FULL |
 | Crash notice | Start page notice: Report It / Dismiss | FULL |
 | Updates of JoyPro (docs/updates.md) | Settings: "About JoyPro and updates"; More menu: Check for updates; the update dialog; the version in the corner | FULL |
 | Required components | Settings: "Components" > "Needed by JoyPro"; Start notice | FULL |

@@ -2642,6 +2642,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (ImportSaturationY)
             args.Add("--import-saturation-y");
 
+        // Changes made in JoyPro and not exported yet would come back from the game: ask first (MainWindowViewModel.ImportGuard.cs).
+        if (!await GuardUnexportedChangesAsync("DCS", "DCS", ImportDcsPath ?? string.Empty))
+            return;
         HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Importing from DCS..."));
         if (result?.ExitCode == 0)
@@ -2691,6 +2694,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (ImportDeadzone)
             args.Add("--import-deadzone");
 
+        // Changes made in JoyPro and not exported yet would come back from the game: ask first (MainWindowViewModel.ImportGuard.cs).
+        if (!await GuardUnexportedChangesAsync("IL2Game", "IL-2"))
+            return;
         HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Importing from IL-2..."));
         if (result?.ExitCode == 0)
@@ -2736,6 +2742,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--ignore-device", ignored]);
         args.AddRange(["--include-keyboard", ImportStarCitizenIncludeKeyboard ? "true" : "false"]);
 
+        // Changes made in JoyPro and not exported yet would come back from the game: ask first (MainWindowViewModel.ImportGuard.cs).
+        if (!await GuardUnexportedChangesAsync("StarCitizen", "Star Citizen"))
+            return;
         HashSet<string>? duplicatesBefore = await DuplicateKeysAsync();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Importing from Star Citizen..."));
         await AfterCommandListBuiltAsync(result, "StarCitizen");
@@ -3848,7 +3857,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     ActiveGamePlanes = activeGamePlanes,
                     ActionTitles = relationEl.TryGetProperty("Titles", out JsonElement titlesEl) && titlesEl.ValueKind == JsonValueKind.Array
                         ? titlesEl.EnumerateArray().Where(t => t.ValueKind == JsonValueKind.String).Select(t => (t.GetString() ?? string.Empty).Trim()).Where(t => t.Length > 0).ToList()
-                        : []
+                        : [],
+                    ActionTitleEntries = ParseTitleEntries(relationEl)
                 });
             }
 
@@ -3858,6 +3868,28 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             return false;
         }
+    }
+
+    // "relations list --titles" TitleList: each title with its action, game and aircraft (the search's match lines).
+    private static IReadOnlyList<ActionTitleEntry> ParseTitleEntries(JsonElement relationEl)
+    {
+        if (!relationEl.TryGetProperty("TitleList", out JsonElement listEl) || listEl.ValueKind != JsonValueKind.Array)
+            return [];
+        List<ActionTitleEntry> entries = [];
+        foreach (JsonElement entryEl in listEl.EnumerateArray())
+        {
+            if (entryEl.ValueKind != JsonValueKind.Object)
+                continue;
+            string title = GetJsonString(entryEl, "Title").Trim();
+            if (title.Length == 0)
+                continue;
+            int node = entryEl.TryGetProperty("Node", out JsonElement nodeEl) && nodeEl.ValueKind == JsonValueKind.Number && nodeEl.TryGetInt32(out int n) ? n : -1;
+            List<string> planes = entryEl.TryGetProperty("Planes", out JsonElement planesEl) && planesEl.ValueKind == JsonValueKind.Array
+                ? planesEl.EnumerateArray().Where(p => p.ValueKind == JsonValueKind.String).Select(p => (p.GetString() ?? string.Empty).Trim()).Where(p => p.Length > 0).ToList()
+                : [];
+            entries.Add(new ActionTitleEntry(title, GetJsonString(entryEl, "Game").Trim(), node, GetJsonString(entryEl, "Id").Trim(), planes));
+        }
+        return entries;
     }
 
     private static bool JsonElementTruthy(JsonElement element)
@@ -4560,7 +4592,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(outputDirectory))
         {
             outputDirectory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                UserFolders.Get(Environment.SpecialFolder.MyDocuments),
                 "JoyPro2",
                 "layouts");
         }
@@ -9176,7 +9208,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(DcsPreviewImagePath))
         {
             string docsCandidate = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                UserFolders.Get(Environment.SpecialFolder.MyDocuments),
                 "JoyPro2",
                 "dcs-click-preview.png");
             if (File.Exists(docsCandidate))
@@ -10829,6 +10861,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 bind.DeviceIcon = DeviceIconFor(bind.Device);
                 shownBinds.Add(bind);
             }
+            UpdateBindSearchHits(shownBinds);
             Binds.ReplaceAll(shownBinds);
 
             if (!string.IsNullOrWhiteSpace(selectedRelationName))
@@ -12192,6 +12225,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             ApplyNavPageLayout(state.NavPageOrder, state.HiddenNavPages);
             ShowStatisticsPage = state.ShowStatisticsPage;
             UseUsageStyle = state.UsageStyle ?? true;
+            SupportIncludeProfile = state.SupportIncludeProfile ?? true;
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
             {
                 if (!OverlayPlaneOptions.Contains(state.OverlayPlaneChoice))
@@ -12266,7 +12300,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 NavPageOrder = NavPageOrderForSave(),
                 HiddenNavPages = HiddenNavPagesForSave(),
                 ShowStatisticsPage = ShowStatisticsPage,
-                UsageStyle = UseUsageStyle
+                UsageStyle = UseUsageStyle,
+                SupportIncludeProfile = SupportIncludeProfile
             };
 
             string json = JsonSerializer.Serialize(state, UiSettingsJsonOptions);
@@ -12337,7 +12372,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private static string GuessSavedGamesDcsPath()
     {
-        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string home = UserFolders.Get(Environment.SpecialFolder.UserProfile);
         string stable = Path.Combine(home, "Saved Games", "DCS");
         string openBeta = Path.Combine(home, "Saved Games", "DCS.openbeta");
         if (Directory.Exists(stable))
@@ -12349,7 +12384,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private static string GuessDcsInstallPath()
     {
-        string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        string programFiles = UserFolders.Get(Environment.SpecialFolder.ProgramFiles);
         string[] candidates =
         [
             Path.Combine(programFiles, "Eagle Dynamics", "DCS World"),
@@ -12357,13 +12392,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             @"G:\Program Files\Eagle Dynamics\DCS World",
             @"G:\Program Files\Eagle Dynamics\DCS World OpenBeta"
         ];
-        return candidates.FirstOrDefault(Directory.Exists) ?? string.Empty;
+        // The test sandbox: only its own stand-in Program Files.
+        return candidates.Where(UserFolders.InSandbox).FirstOrDefault(Directory.Exists) ?? string.Empty;
     }
 
     private static string GuessStarCitizenProfilePath()
     {
-        string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+        string programFiles = UserFolders.Get(Environment.SpecialFolder.ProgramFiles);
+        string programFilesX86 = UserFolders.Get(Environment.SpecialFolder.ProgramFilesX86);
         string[] candidates =
         [
             Path.Combine(programFiles, "Roberts Space Industries", "StarCitizen", "LIVE", "USER", "Client", "0", "Profiles"),
@@ -12390,7 +12426,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     {
         string? overrideDir = Environment.GetEnvironmentVariable("JOYPRO_PROFILES_DIR");
         return string.IsNullOrWhiteSpace(overrideDir)
-            ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro2", "profiles")
+            ? Path.Combine(UserFolders.Get(Environment.SpecialFolder.MyDocuments), "JoyPro2", "profiles")
             : overrideDir;
     }
 
@@ -12533,6 +12569,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public bool ShowStatisticsPage { get; set; }
 
         public bool? UsageStyle { get; set; }
+
+        // Settings > Report a problem: the support file holds the open profile, its history and the games' bind files
+        // (null: on).
+        public bool? SupportIncludeProfile { get; set; }
     }
 
     private sealed class LayoutTemplateInspectDocument

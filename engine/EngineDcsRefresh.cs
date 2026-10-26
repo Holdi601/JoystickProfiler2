@@ -4713,7 +4713,7 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
                 string parent = Path.GetDirectoryName(previewImagePath);
                 if (!string.IsNullOrWhiteSpace(parent))
                     Directory.CreateDirectory(parent);
-                screenshot.Save(previewImagePath, ImageFormat.Png);
+                screenshot.Save(JoyPro.Engine.TestSandbox.EnsureWritable(previewImagePath, "Image save"), ImageFormat.Png);
                 return true;
             }
             catch (Exception ex)

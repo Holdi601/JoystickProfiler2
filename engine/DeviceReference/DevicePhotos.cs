@@ -305,7 +305,7 @@ namespace JoyPro.DeviceReference
         {
             try
             {
-                using (FileStream stream = System.IO.File.OpenRead(file))
+                using (Stream stream = System.IO.File.OpenRead(file))
                 using (SHA256 sha = SHA256.Create())
                     return string.Concat(sha.ComputeHash(stream).Select(b => b.ToString("x2", CultureInfo.InvariantCulture)));
             }

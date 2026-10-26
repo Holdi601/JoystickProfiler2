@@ -484,7 +484,7 @@ namespace JoyPro.Engine
                     string full = Path.GetFullPath(png);
                     Directory.CreateDirectory(Path.GetDirectoryName(full));
                     using (System.Drawing.Bitmap picture = EngineLineArtBitmap.Render(art, (int)Math.Max(64, Math.Min(4000, art.Width * 2)), colors))
-                        picture.Save(full, System.Drawing.Imaging.ImageFormat.Png);
+                        picture.Save(JoyPro.Engine.TestSandbox.EnsureWritable(full, "Image save"), System.Drawing.Imaging.ImageFormat.Png);
                 }
                 EmitPayload(art.Model + " | " + art.View + " | " + art.Paths.Count.ToString(CultureInfo.InvariantCulture) + " paths | " +
                             art.Fills.Count.ToString(CultureInfo.InvariantCulture) + " fills | " + DeviceSchematic.F(art.Width) + " x " + DeviceSchematic.F(art.Height) +

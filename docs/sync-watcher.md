@@ -164,6 +164,16 @@ Measured 2026-10-11, Release build of `JoyPro.Tray.exe --tray` with its own `JOY
 A process standing in for the GUI (its mutex, pid file and event): the tray host's handles 354 -> 349 while it ran
 (watchers released), 357 after it ended (watching again); with Close to tray off the tray host ended itself.
 
+## Changes made in JoyPro that the game does not have yet
+
+Every export (and the first import of a game) also stores the profile's binds of that game that really reached the game
+(`ProfileKeys` in `<data>\Sync\<game>.json`; an export that kept the game's bind on a conflict leaves the other one
+out). `engine sync pending --game <id>` compares the profile with it and with the game as it is now: a bind added in
+JoyPro that the game lacks, or removed in JoyPro that the game still has, is pending (grouped per action: moved, added,
+removed). Before an import the GUI asks when something is pending (Export first / Import anyway / Cancel), and
+`sync diff` never offers such a bind as a game change (no take-over that undoes the user's own edit). Records written
+before 2.4.3 have no `ProfileKeys`: nothing is known until the next export (`Known` false).
+
 ## What counts as a change
 
 Only binds and axis tuning JoyPro manages:
@@ -225,7 +235,11 @@ engine sync status [--game <id>] [--path <config>]
 engine sync accept --game <id> [--path <config>]
 engine --profile <p> sync diff --game <id> [--path <config>]
 engine --profile <p> sync apply --game <id> --choices <file.json> [--path <config>]
+engine --profile <p> sync pending --game <id> [--path <config>]
 ```
+
+- `pending` JSON: `{ Game, DisplayName, Known, Binds, Count, Actions: [{ ActionId, Title, Kind (moved|added|removed),
+  Planes }], Message, Warnings }`.
 
 - `status` JSON: `{ DataFolder, Games: [{ Game, DisplayName, Installed, ConfigPath, Kind (files|registry), State
   (unchanged|changed|untracked|missing|not-installed|disabled), Disabled, Tracked, Changed, RecordedUtc, Reason (export|accept|apply),

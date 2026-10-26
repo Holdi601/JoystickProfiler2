@@ -2139,7 +2139,7 @@ namespace JoyPro.Engine
             };
         }
 
-        private static string StatusText(Dictionary<string, object> status)
+        internal static string StatusText(Dictionary<string, object> status)
         {
             StringBuilder sb = new StringBuilder();
             Dictionary<string, object> vjoy = (Dictionary<string, object>)status["VJoy"];

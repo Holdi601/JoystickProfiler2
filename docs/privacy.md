@@ -1,8 +1,9 @@
 # Privacy
 
 JoyPro has no account, no telemetry and no analytics. Your profiles, game configurations, logs and crash reports stay
-on your PC. A problem report is a zip file that JoyPro only creates when you press "Create Report"; you decide whether
-to send it. User name, e-mail addresses and passwords are removed from it.
+on your PC. A problem report is a zip file that JoyPro only creates when you press "Create Report"; it stays on your
+PC and you decide whether to send it (see "Problem report" below). User name, e-mail addresses and passwords are
+removed from it.
 
 **Telemetry recording** (Settings > Telemetry recording, off by default; [telemetry-recording.md](telemetry-recording.md))
 records your games' telemetry into files in a folder you pick. It connects to nothing on the internet: it only listens
@@ -33,6 +34,27 @@ site it contacts (as any browser visit does). The site's own privacy policy appl
 | Optional drivers (vJoy, HidHide, ViGEmBus) | only after you tick "I have read ..." and press Install on a Components card (Settings > Components, Virtual Joystick page; docs/components.md) | GitHub release downloads (`github.com`: jshafer817/vJoy, nefarius/HidHide, nefarius/ViGEmBus) | IP address, user agent `JoyPro2/<version>` |
 | .NET Framework 4.8 installer | only when it is missing and you press Install | Microsoft (`go.microsoft.com`) | IP address |
 | Report a problem | only when you press "Open GitHub Issue Page" | GitHub, in your browser | what you type there |
+
+### Problem report (Settings > Report a problem)
+
+"Create Report" saves one zip on your PC with your description and what the developer needs to find a problem, so you
+are not asked for a second file. It is made only when you press the button, it lists what goes in before it is saved, and **it stays
+on your PC until you send it** yourself. JoyPro uploads nothing. It holds:
+
+- JoyPro's logs (at least the last 14 days, back to the oldest saved version of your open profile, at most 100 MB),
+  errors and crash reports;
+- JoyPro's settings and state (app settings, the game lists and installed packs with their versions, update records);
+- your devices (names, VID:PID, GUIDs) and the vJoy / HidHide state;
+- per installed game: the folders JoyPro uses (drive, free space), JoyPro's backups (the list and the newest one), for
+  MSFS the input profiles JoyPro reads;
+- with the box **Include my open profile and its history (your binds and device names)** (on by default, remembered):
+  the open profile (only that one), its saved versions (history) and each game's current bind files with JoyPro's
+  files next to them. Untick it to leave these out.
+
+Your user folder becomes `%USERPROFILE%`, your Windows user name `<user>` and the PC name `<pc>`; e-mail addresses,
+passwords and tokens are removed and Steam ids replaced by a hash, in every text and also inside the copies of the
+profile and its history. Only the copies in the zip are changed, never your files. Your usage statistics are not in it.
+You can open the zip and look at everything before you send it. Details: [logging.md](logging.md#support-file).
 
 ### Device photos (asked per device)
 

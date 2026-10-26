@@ -83,6 +83,11 @@ namespace JoyPro.Engine
             public List<string> BaselineStates { get; set; }
             // Hashes of key=value of the game-wide settings (device *) the config held.
             public List<string> BaselineSettings { get; set; }
+            // The profile's binds of the game when JoyPro last exported it (or first imported it), one "hash<TAB>plane<TAB>
+            // action id" per bind: what the user changed in JoyPro since then and has not exported (sync pending), so an
+            // import or a take-over does not silently undo it (tester log on 2.4.2: a moved action came back with Import).
+            // null in records written before 2.4.3 (nothing known until the next export).
+            public List<string> ProfileKeys { get; set; }
         }
 
         private sealed class SyncDocument
@@ -192,7 +197,7 @@ namespace JoyPro.Engine
 
         // ---- CLI ---------------------------------------------------------------------------------------------------
 
-        public static readonly string[] Actions = { "status", "accept", "diff", "apply" };
+        public static readonly string[] Actions = { "status", "accept", "diff", "apply", "pending" };
 
         public static bool IsMutating(List<string> command)
         {
@@ -228,6 +233,8 @@ namespace JoyPro.Engine
                     return RunAccept(game, path, textOutput, out payload);
                 case "diff":
                     return RunDiff(game, path, textOutput, out payload);
+                case "pending":
+                    return RunPending(game, path, textOutput, out payload);
                 case "apply":
                     if (string.IsNullOrWhiteSpace(choicesPath))
                         return Fail("engine sync apply needs --choices <json file>.");
@@ -660,6 +667,63 @@ namespace JoyPro.Engine
                 paths.Add(location.ConfigPath);
             paths.AddRange(location.Watch.Select(w => w.Directory).Where(d => !string.IsNullOrWhiteSpace(d)));
             return paths.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // The game's current bind files as the watcher reads them (the files JoyPro imports from and exports to) plus
+        // JoyPro's own files next to them (.jp, .joypro-meta.json, .joypro.json: the re-import metadata), for the support
+        // bundle. Read only. registryKey: the HKCU key of a game that keeps its binds in the registry (no files then).
+        public static List<string> StateFilesOf(string gameId, out string registryKey)
+        {
+            registryKey = string.Empty;
+            List<string> files = new List<string>();
+            SyncGame game;
+            if (!TryResolveGame(gameId, out game))
+                return files;
+            SyncLocation location = ResolveLocation(game, null, new List<string>());
+            if (location.RegistryKey.Length > 0)
+            {
+                registryKey = location.RegistryKey;
+                return files;
+            }
+            files.AddRange(ManagedFiles(game, location));
+            foreach (SyncWatch watch in location.Watch)
+            {
+                if (string.IsNullOrWhiteSpace(watch.Directory) || !Directory.Exists(watch.Directory))
+                    continue;
+                SearchOption option = watch.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                foreach (string filter in new[] { "*.jp", "*" + GameMetadataStore.Suffix, "*.joypro.json" })
+                {
+                    foreach (string file in Directory.EnumerateFiles(watch.Directory, filter, option))
+                    {
+                        if (!files.Contains(file, StringComparer.OrdinalIgnoreCase))
+                            files.Add(file);
+                    }
+                }
+            }
+            return files.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // The values JoyPro owns in a game's registry key as text (name = value; binary as hex, at most 4 KB each).
+        public static string RegistryStateText(string gameId, string registryKey)
+        {
+            StringBuilder sb = new StringBuilder();
+            string prefix = OwnedRegistryPrefix(gameId);
+            sb.AppendLine("Registry key " + registryKey + (prefix.Length > 0 ? " (values starting with " + prefix + ")" : string.Empty));
+            using (RegistryKey key = OpenRegistryKey(registryKey))
+            {
+                if (key == null)
+                    return sb.AppendLine("(not found)").ToString();
+                foreach (string name in key.GetValueNames().OrderBy(n => n, StringComparer.Ordinal))
+                {
+                    if (prefix.Length > 0 && !name.StartsWith(prefix, StringComparison.Ordinal))
+                        continue;
+                    object value = key.GetValue(name, null, RegistryValueOptions.DoNotExpandEnvironmentNames);
+                    byte[] data = value as byte[];
+                    string text = data == null ? Convert.ToString(value, CultureInfo.InvariantCulture) : Hex(data.Take(4096).ToArray()) + (data.Length > 4096 ? "... (" + data.Length.ToString(CultureInfo.InvariantCulture) + " bytes)" : string.Empty);
+                    sb.AppendLine(name + " = " + text);
+                }
+            }
+            return sb.ToString();
         }
 
         public static List<string> AllGameIds()
@@ -1234,7 +1298,12 @@ namespace JoyPro.Engine
                 RecordedUtc = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture),
                 Reason = reason,
                 Fingerprint = CombinedFingerprint(stamps),
-                Items = stamps
+                Items = stamps,
+                // An export writes the profile into the game, a first import takes the game into the profile: both are
+                // "in step" from here on. Accept and apply keep what was in step (the user's own edits stay pending).
+                ProfileKeys = reason == "export" || reason == "import" || previous == null
+                    ? ProfileKeysOf(game)
+                    : previous.ProfileKeys
             };
             List<string> readWarnings = new List<string>();
             List<string> readErrors = new List<string>();
@@ -1244,6 +1313,13 @@ namespace JoyPro.Engine
             {
                 record.BaselineKeys = entries.Select(e => ShortHash(e.Key)).Distinct().OrderBy(h => h, StringComparer.Ordinal).ToList();
                 record.BaselineStates = entries.Where(e => e.IsAxis).Select(e => ShortHash(e.Key + Sep + e.TuningText)).Distinct().OrderBy(h => h, StringComparer.Ordinal).ToList();
+                // Only what really reached the game counts as in step: an export that kept the game's bind on a conflict
+                // ("keep the game's binds") leaves the profile's other button pending.
+                if (record.ProfileKeys != null && (reason == "export" || reason == "import" || previous == null))
+                {
+                    HashSet<string> inGame = new HashSet<string>(record.BaselineKeys, StringComparer.Ordinal);
+                    record.ProfileKeys = record.ProfileKeys.Where(k => inGame.Contains(k.Split('\t')[0])).ToList();
+                }
             }
             else
                 warnings.Add("The config could not be read for the baseline (" + string.Join(" | ", readErrors) + "); a diff compares with the profile only.");
@@ -1577,6 +1653,133 @@ namespace JoyPro.Engine
             return bar > 0 ? key.Substring(0, bar) : string.Empty;
         }
 
+        // ---- Pending: the user's own changes in JoyPro the game does not have yet ------------------------------------
+
+        // The profile's binds of the game as the record keeps them.
+        private static List<string> ProfileKeysOf(SyncGame game)
+        {
+            if (InternalDataManagement.AllRelations == null)
+                return new List<string>();
+            return Collect(game, InternalDataManagement.AllRelations, InternalDataManagement.AllBinds, null)
+                .Select(e => ShortHash(e.Key) + "\t" + e.Plane + "\t" + e.ActionId)
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(k => k, StringComparer.Ordinal)
+                .ToList();
+        }
+
+        private sealed class PendingAction
+        {
+            public string ActionId { get; set; }
+            public string Title { get; set; }
+            // moved (the action left one input and is on another now), added, removed.
+            public string Kind { get; set; }
+            public List<string> Planes { get; set; }
+        }
+
+        // What the user changed in JoyPro since the last export of the game and the game does not have: a bind added in
+        // JoyPro that the game lacks, a bind removed in JoyPro that the game still has. Changes the game has itself (a
+        // take-over brought them in) are not pending. Known=false: no record with the profile's state (before 2.4.3, or
+        // never exported) - nothing can be said.
+        private static int RunPending(SyncGame game, string explicitPath, bool textOutput, out string payload)
+        {
+            List<string> warnings = new List<string>();
+            SyncLocation location = ResolveLocation(game, explicitPath, warnings);
+            SyncRecord record = location.Exists ? FindRecord(game.Id, location.ConfigPath) : null;
+            List<PendingAction> actions = new List<PendingAction>();
+            int binds = 0;
+            bool known = record != null && record.ProfileKeys != null;
+            if (known)
+            {
+                Dictionary<string, string[]> exported = new Dictionary<string, string[]>(StringComparer.Ordinal);
+                foreach (string line in record.ProfileKeys)
+                {
+                    string[] parts = line.Split('\t');
+                    if (parts.Length >= 3)
+                        exported[parts[0]] = parts;
+                }
+                List<SyncEntry> profile = Collect(game, InternalDataManagement.AllRelations, InternalDataManagement.AllBinds, null);
+                HashSet<string> now = new HashSet<string>(profile.Select(e => ShortHash(e.Key)), StringComparer.Ordinal);
+                // The game as it is now (all aircraft); unreadable: the state JoyPro recorded.
+                List<string> readErrors = new List<string>();
+                Dictionary<string, Relation> scratch;
+                List<SyncEntry> file = ReadCurrent(game, location, null, warnings, readErrors, out scratch);
+                HashSet<string> game_ = readErrors.Count == 0
+                    ? new HashSet<string>(file.Select(e => ShortHash(e.Key)), StringComparer.Ordinal)
+                    : new HashSet<string>(record.BaselineKeys ?? new List<string>(), StringComparer.Ordinal);
+                Dictionary<string, PendingAction> byAction = new Dictionary<string, PendingAction>(StringComparer.OrdinalIgnoreCase);
+                Action<string, string, string, string> note = (kind, actionId, plane, title) =>
+                {
+                    binds++;
+                    PendingAction action;
+                    if (!byAction.TryGetValue(actionId, out action))
+                    {
+                        action = new PendingAction { ActionId = actionId, Title = title, Kind = kind, Planes = new List<string>() };
+                        byAction[actionId] = action;
+                        actions.Add(action);
+                    }
+                    else if (action.Kind != kind)
+                        action.Kind = "moved";
+                    if (plane.Length > 0 && !action.Planes.Contains(plane, StringComparer.OrdinalIgnoreCase))
+                        action.Planes.Add(plane);
+                };
+                // Aircraft the game has a config for (an aircraft never exported is no pending change of the user's).
+                HashSet<string> gamePlanes = readErrors.Count == 0
+                    ? new HashSet<string>(file.Select(e => e.Plane), StringComparer.OrdinalIgnoreCase)
+                    : null;
+                foreach (SyncEntry entry in profile)
+                {
+                    string hash = ShortHash(entry.Key);
+                    if (gamePlanes != null && !gamePlanes.Contains(entry.Plane))
+                        continue;
+                    if (!exported.ContainsKey(hash) && !game_.Contains(hash))
+                        note("added", entry.ActionId, entry.Plane, PendingTitle(game, entry.ActionId, entry.Plane));
+                }
+                foreach (KeyValuePair<string, string[]> pair in exported)
+                {
+                    if (!now.Contains(pair.Key) && game_.Contains(pair.Key))
+                        note("removed", pair.Value[2], pair.Value[1], PendingTitle(game, pair.Value[2], pair.Value[1]));
+                }
+            }
+            string message = !known
+                ? game.DisplayName + ": JoyPro does not know yet what the game got at the last export (it knows after the next export)."
+                : actions.Count == 0
+                    ? game.DisplayName + ": every change of the profile is in the game."
+                    : game.DisplayName + ": " + binds.ToString(CultureInfo.InvariantCulture) + " bind(s) changed in JoyPro are not in the game yet: " +
+                      string.Join(", ", actions.Take(5).Select(a => a.Kind + " '" + a.Title + "'")) + (actions.Count > 5 ? ", ..." : string.Empty) +
+                      ". Importing now brings back what the game still has.";
+            payload = textOutput
+                ? message + Environment.NewLine + string.Concat(actions.Select(a => "  " + a.Kind + ": " + a.Title + " (" + a.ActionId + ")" +
+                      (a.Planes.Count > 0 && game.Kind == "dcs" ? " " + string.Join(", ", a.Planes) : string.Empty) + Environment.NewLine))
+                : EngineSerialization.ToJson(new
+                {
+                    Game = game.Id,
+                    game.DisplayName,
+                    Known = known,
+                    Binds = binds,
+                    Count = actions.Count,
+                    Actions = actions,
+                    Message = message,
+                    Warnings = warnings
+                });
+            return 0;
+        }
+
+        private static string PendingTitle(SyncGame game, string actionId, string plane)
+        {
+            if (game.Kind == "dcs")
+            {
+                string title = InternalDataManagement.DcsDisplayTitle(actionId, plane, string.Empty);
+                return string.IsNullOrWhiteSpace(title) ? actionId : title;
+            }
+            if (game.Kind == "registry" && game.Registry != null)
+            {
+                GameAction action = GameCatalogStore.Load(game.Registry, new List<string>()).Find(actionId);
+                if (action != null && !string.IsNullOrWhiteSpace(action.Title))
+                    return action.Title.Trim();
+            }
+            return actionId;
+        }
+
         // ---- Diff ---------------------------------------------------------------------------------------------------
 
         private static SyncDiff ComputeDiff(SyncGame game, string explicitPath)
@@ -1634,6 +1837,11 @@ namespace JoyPro.Engine
 
             HashSet<string> baseKeys = diff.HasBaseline ? new HashSet<string>(record.BaselineKeys, StringComparer.Ordinal) : null;
             HashSet<string> baseStates = diff.HasBaseline ? new HashSet<string>(record.BaselineStates ?? new List<string>(), StringComparer.Ordinal) : null;
+            // What the profile held at the last export: a bind the user removed or moved in JoyPro since is no game-side
+            // "added", one the user added in JoyPro is no game-side "removed" (only real game changes are offered).
+            HashSet<string> exported = record != null && record.ProfileKeys != null
+                ? new HashSet<string>(record.ProfileKeys.Select(k => k.Split('\t')[0]), StringComparer.Ordinal)
+                : null;
             Dictionary<string, List<SyncEntry>> profileByKey = profile.GroupBy(e => e.Key).ToDictionary(g => g.Key, g => g.ToList());
             Dictionary<string, SyncEntry> fileByKey = file.GroupBy(e => e.Key).ToDictionary(g => g.Key, g => g.First());
 
@@ -1645,7 +1853,7 @@ namespace JoyPro.Engine
                 if (!profileByKey.TryGetValue(entry.Key, out held))
                 {
                     // In the file but not in the profile: new, unless the file had it already when JoyPro recorded it.
-                    if (baseKeys == null || !baseKeys.Contains(ShortHash(entry.Key)))
+                    if ((baseKeys == null || !baseKeys.Contains(ShortHash(entry.Key))) && (exported == null || !exported.Contains(ShortHash(entry.Key))))
                         added.Add(NewChange(game, "added", entry, null));
                     continue;
                 }
@@ -1665,6 +1873,8 @@ namespace JoyPro.Engine
                 // In the profile but no longer in the file: only when the file had it when JoyPro recorded it (the game
                 // removed it), not when the export could not write it or the user added it in JoyPro since.
                 if (baseKeys != null && !baseKeys.Contains(ShortHash(pair.Key)))
+                    continue;
+                if (exported != null && !exported.Contains(ShortHash(pair.Key)))
                     continue;
                 removed.Add(NewChange(game, "removed", pair.Value[0], pair.Value));
             }

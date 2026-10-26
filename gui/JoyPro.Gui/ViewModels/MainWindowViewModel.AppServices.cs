@@ -26,8 +26,13 @@ public sealed partial class MainWindowViewModel
     [ObservableProperty]
     private string problemDescription = string.Empty;
 
+    // Settings > Report a problem, "Include my open profile and its history" (ui-settings.json supportIncludeProfile,
+    // null: on): the report then also holds the open profile, its history and the games' current bind files. It replaced
+    // the report's "Attach my profile" (never saved, off at every start), so there is nothing to carry over.
     [ObservableProperty]
-    private bool problemIncludeProfile;
+    private bool supportIncludeProfile = true;
+
+    partial void OnSupportIncludeProfileChanged(bool value) => SaveUiSettings();
 
     [ObservableProperty]
     private string problemReportStatus = string.Empty;
@@ -131,6 +136,8 @@ public sealed partial class MainWindowViewModel
             if (settings.RetentionDays == days)
                 return;
             settings.RetentionDays = days;
+            // The user's own choice stays (an older file with the old default 7 reads as the new default 30).
+            settings.RetentionChosen = true;
             settings.Write(AppInfo.LogFolder);
             JoyProLog.Info("Settings", "Logs are kept " + days.ToString(System.Globalization.CultureInfo.InvariantCulture) + " day(s) from now on");
         }
@@ -140,22 +147,78 @@ public sealed partial class MainWindowViewModel
         }
     }
 
+    // Settings > Report a problem > "Create Report" (docs/logging.md "Problem report"): the one way to send a problem.
+    // The engine's support file (engine support bundle: logs, errors, JoyPro's settings and state, devices, the games'
+    // folders and backups; with the box "Include my open profile and its history" also the open profile, its history and
+    // the games' current bind files) gets report.txt with the description and the diagnostics and this session's engine
+    // output. The user sees what goes in first; nothing is sent. The engine runs off the UI thread and reports its
+    // progress in the busy area. When the engine cannot run, the GUI's own smaller zip is made instead (without the
+    // profile).
     [RelayCommand]
     private async Task CreateProblemReportAsync()
     {
         ProblemReportStatus = T("Collecting information...");
-        JoyProLog.Info("Report", "Creating a problem report (profile " + (ProblemIncludeProfile ? "attached" : "not attached") + ")");
+        if (NeedsAutosaveFlush)
+            await FlushAutosaveAsync();
+        bool withProfile = SupportIncludeProfile && !string.IsNullOrWhiteSpace(ProfilePath);
+        JoyProLog.Info("Report", "Creating a problem report (profile " + (withProfile ? "included" : "not included") + ")");
+        EngineCommandResult? list = await RunEngineAsync(SupportBundleArguments(true, null), includeProfile: withProfile, mutatesProfile: false, busyLabel: T("Checking the support file..."));
+        if (list == null || list.ExitCode != 0)
+        {
+            await CreateFallbackReportAsync(list);
+            return;
+        }
+        List<string> parts = SupportFileEntries(list.StandardOutput);
+        string message = T("JoyPro saves one zip on this PC; nothing is sent. Your user folder and user name are replaced (%USERPROFILE%), e-mail addresses and passwords are removed. It holds:") +
+                         "\n" + string.Join("\n", parts.Take(40)) + (parts.Count > 40 ? "\n" + T("... and {0} more", parts.Count - 40) : string.Empty);
+        if (!await ConfirmAsync(T("Create Report"), message, T("Create Report")))
+        {
+            ProblemReportStatus = string.Empty;
+            return;
+        }
+        string diagnostics = await BuildDiagnosticsAsync();
+        string folder = ProblemReporter.FolderOverride ?? ProblemReporter.DefaultFolder;
+        string zip = Path.Combine(folder, "JoyPro2-report-" + DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture) + ".zip");
+        try
+        {
+            Directory.CreateDirectory(folder);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            ProblemReportStatus = T("The report could not be created: {0}", ex.Message);
+            return;
+        }
+        EngineCommandResult? made = await RunEngineAsync(SupportBundleArguments(false, zip), includeProfile: withProfile, mutatesProfile: false, busyLabel: T("Saving the support file..."));
+        if (made == null || made.ExitCode != 0 || !File.Exists(zip))
+        {
+            await CreateFallbackReportAsync(made);
+            return;
+        }
+        try
+        {
+            string description = ProblemDescription;
+            string session = SessionLogPath;
+            ProblemReport report = await Task.Run(() => ProblemReporter.AddReport(zip, description, diagnostics, [session], parts));
+            FinishProblemReport(report);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            JoyProLog.Error("Report", "The problem report could not be created", ex);
+            ProblemReportStatus = T("The report could not be created: {0}", ex.Message);
+        }
+    }
+
+    // The engine did not run: the GUI's own zip (description, diagnostics, logs, crash reports, engine output; without
+    // the profile, which only the engine can clean).
+    private async Task CreateFallbackReportAsync(EngineCommandResult? failed)
+    {
+        JoyProLog.Warn("Report", "The support file could not be made (" + (failed == null ? "the engine did not run" : "exit code " + failed.ExitCode.ToString(System.Globalization.CultureInfo.InvariantCulture)) + "); making the GUI's own report");
         string diagnostics = await BuildDiagnosticsAsync();
         try
         {
-            ProblemReport report = ProblemReporter.Create(ProblemDescription, diagnostics, ProfilePath, ProblemIncludeProfile, CrashReporter.AllReports(),
+            ProblemReport report = ProblemReporter.Create(ProblemDescription, diagnostics, ProfilePath, includeProfile: false, CrashReporter.AllReports(),
                 logFolder: AppInfo.LogFolder, extraFiles: [SessionLogPath]);
-            CrashReporter.MarkSeen();
-            HasCrashReports = false;
-            LastProblemReportPath = report.ZipPath;
-            lastProblemIssueUrl = report.IssueUrl;
-            ProblemReportStatus = T("Done. The report is saved as {0} in {1} (Explorer shows it). Nothing was sent. To send it: press 'Open GitHub Issue Page', and drag the zip into the issue text box (or attach it to your message to the developer). You can open the zip first to see what is in it.", Path.GetFileName(report.ZipPath), Path.GetDirectoryName(report.ZipPath));
-            OpenExternal("explorer.exe", "/select,\"" + report.ZipPath + "\"");
+            FinishProblemReport(report);
         }
         catch (Exception ex)
         {
@@ -164,53 +227,49 @@ public sealed partial class MainWindowViewModel
         }
     }
 
-    // "Create support file" (docs/logging.md "Support file"): the engine's support bundle, a zip with the logs of the
-    // last days, the environment of the games and JoyPro's copies of their small config files. The user sees what it
-    // holds before it is saved; nothing is sent.
-    [RelayCommand]
-    private async Task CreateSupportFileAsync()
+    private void FinishProblemReport(ProblemReport report)
     {
-        ProblemReportStatus = T("Collecting what the support file holds...");
-        EngineCommandResult? list = await RunEngineAsync(["support", "bundle", "--list"], includeProfile: false, mutatesProfile: false, busyLabel: T("Checking the support file..."));
-        if (list == null || list.ExitCode != 0)
-        {
-            ProblemReportStatus = T("The support file could not be made: {0}", list == null ? T("the engine did not run") : BuildFailureStatus(list));
-            return;
-        }
-        List<string> entries = SupportFileEntries(list.StandardOutput);
-        string message = T("JoyPro saves one zip on this PC; nothing is sent. Your user folder and user name are replaced (%USERPROFILE%), e-mail addresses and passwords are removed. It holds:") +
-                         "\n" + string.Join("\n", entries.Take(40)) + (entries.Count > 40 ? "\n" + T("... and {0} more", entries.Count - 40) : string.Empty);
-        if (!await ConfirmAsync(T("Create support file?"), message, T("Save support file")))
-        {
-            ProblemReportStatus = string.Empty;
-            return;
-        }
-        string folder = ProblemReporter.FolderOverride ?? ProblemReporter.DefaultFolder;
-        string zip = Path.Combine(folder, "JoyPro2-support-" + DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture) + ".zip");
-        try
-        {
-            Directory.CreateDirectory(folder);
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            ProblemReportStatus = T("The support file could not be made: {0}", ex.Message);
-            return;
-        }
-        EngineCommandResult? made = await RunEngineAsync(["--out", zip, "support", "bundle"], includeProfile: false, mutatesProfile: false, busyLabel: T("Saving the support file..."));
-        if (made == null || made.ExitCode != 0 || !File.Exists(zip))
-        {
-            ProblemReportStatus = T("The support file could not be made: {0}", made == null ? T("the engine did not run") : BuildFailureStatus(made));
-            return;
-        }
-        JoyProLog.Info("Report", "Support file saved: " + zip + " (" + entries.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + " entries)");
-        LastProblemReportPath = zip;
-        ProblemReportStatus = T("Done. The support file is saved as {0} in {1} (Explorer shows it). Nothing was sent. Attach it to a GitHub issue or send it to the developer.", Path.GetFileName(zip), folder);
-        OpenExternal("explorer.exe", "/select,\"" + zip + "\"");
+        CrashReporter.MarkSeen();
+        HasCrashReports = false;
+        LastProblemReportPath = report.ZipPath;
+        lastProblemIssueUrl = report.IssueUrl;
+        ProblemReportStatus = T("Done. The report is saved as {0} in {1} (Explorer shows it). Nothing was sent. To send it: press 'Open GitHub Issue Page', and drag the zip into the issue text box (or attach it to your message to the developer). You can open the zip first to see what is in it.", Path.GetFileName(report.ZipPath), Path.GetDirectoryName(report.ZipPath));
+        OpenExternal("explorer.exe", "/select,\"" + report.ZipPath + "\"");
     }
 
-    // The entries of "engine support bundle --list --text" ("  - logs/engine.log | JoyPro log | 1234 bytes"), as
-    // "logs/engine.log (JoyPro log)".
+    // engine support bundle with the box "Include my open profile and its history": --list (what it would hold) or
+    // --out <zip>. The box off: --include-profile false (the engine then leaves out the profile, its history and the
+    // games' bind files).
+    internal List<string> SupportBundleArguments(bool listOnly, string? zip)
+    {
+        List<string> args = listOnly ? ["support", "bundle", "--list"] : ["--out", zip ?? string.Empty, "support", "bundle"];
+        args.Add("--include-profile");
+        args.Add(SupportIncludeProfile ? "true" : "false");
+        return args;
+    }
+
+    // What "engine support bundle --list --text" lists: its parts ("  + logs | JoyPro's logs | 15 file(s) | 19.7 MB", as
+    // "- JoyPro's logs: 15 file(s), 19.7 MB") and what is trimmed ("  ! ..."); an engine without parts: its entries
+    // ("  - logs/engine.log | JoyPro log | 1234 bytes", as "logs/engine.log (JoyPro log)").
     internal static List<string> SupportFileEntries(string? output)
+    {
+        List<string> parts = [];
+        foreach (string line in (output ?? string.Empty).Split('\n'))
+        {
+            string trimmed = line.TrimEnd('\r');
+            if (trimmed.StartsWith("  + ", StringComparison.Ordinal))
+            {
+                string[] cells = trimmed.Substring(4).Split(" | ");
+                parts.Add(cells.Length >= 4 ? "- " + cells[1] + ": " + cells[2] + ", " + cells[3] : "- " + cells[0]); // nonloc
+            }
+            else if (trimmed.StartsWith("  ! ", StringComparison.Ordinal))
+                parts.Add("  " + trimmed.Substring(4)); // nonloc
+        }
+        return parts.Count > 0 ? parts : SupportFileEntryNames(output);
+    }
+
+    // Every entry of the list ("logs/engine.log (JoyPro log)").
+    internal static List<string> SupportFileEntryNames(string? output)
     {
         List<string> entries = [];
         foreach (string line in (output ?? string.Empty).Split('\n'))
@@ -218,8 +277,8 @@ public sealed partial class MainWindowViewModel
             string trimmed = line.TrimEnd('\r');
             if (!trimmed.StartsWith("  - ", StringComparison.Ordinal))
                 continue;
-            string[] parts = trimmed.Substring(4).Split(" | ");
-            entries.Add(parts.Length >= 2 ? parts[0] + " (" + parts[1] + ")" : parts[0]); // nonloc
+            string[] cells = trimmed.Substring(4).Split(" | ");
+            entries.Add(cells.Length >= 2 ? cells[0] + " (" + cells[1] + ")" : cells[0]); // nonloc
         }
         return entries;
     }
@@ -275,7 +334,7 @@ public sealed partial class MainWindowViewModel
                 sb.AppendLine("  " + message);
         }
         sb.AppendLine();
-        sb.AppendLine(T("Profile: {0}{1}", (string.IsNullOrWhiteSpace(ProfilePath) ? "(none)" : Path.GetFileName(ProfilePath)), (ProblemIncludeProfile ? " (attached)" : " (not attached)")));
+        sb.AppendLine(T("Profile: {0}{1}", (string.IsNullOrWhiteSpace(ProfilePath) ? "(none)" : Path.GetFileName(ProfilePath)), (SupportIncludeProfile && !string.IsNullOrWhiteSpace(ProfilePath) ? " (attached)" : " (not attached)")));
         sb.AppendLine();
         sb.AppendLine(T("Recent engine activity:"));
         sb.AppendLine(RecentActivityText);

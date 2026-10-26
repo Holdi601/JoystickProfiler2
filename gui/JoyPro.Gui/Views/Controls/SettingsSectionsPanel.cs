@@ -177,7 +177,9 @@ public sealed class SettingsSectionsPanel : Panel
             y += child.DesiredSize.Height;
         }
         ArrangeDropLine(finalSize.Width);
-        return new Size(finalSize.Width, Math.Max(y, 0));
+        // The whole slot: a smaller size makes the layout center the panel in the scroll viewer (a search that leaves one
+        // short section showed it hundreds of pixels under the tabs).
+        return new Size(finalSize.Width, Math.Max(y, finalSize.Height));
     }
 
     private void ArrangeDropLine(double width)

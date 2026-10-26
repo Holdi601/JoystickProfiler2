@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JoyPro.Gui.Models;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -206,6 +207,9 @@ public sealed partial class MainWindowViewModel
     // linked a folder or a config location, or where the default folder does not exist (portable installs, other drives).
     private void AdoptEngineGamePaths()
     {
+        // The test sandbox (UserFolders): the engine finds the real games of the PC; their folders are never taken over.
+        if (UserFolders.IsSandboxed)
+            return;
         GameInstallItem? dcs = GameInstalls.FirstOrDefault(g => g.GameId == "DCS");
         if (dcs != null && !dcs.Disabled)
         {

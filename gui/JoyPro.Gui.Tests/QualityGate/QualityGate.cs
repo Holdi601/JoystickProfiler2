@@ -49,6 +49,10 @@ internal static class Gate
             ? Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "quality-gate-" + DateTime.Now.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture))
             : configured.Trim();
         Directory.CreateDirectory(dir);
+        // The test sandbox (TestEnvironment, docs/testing.md "Test sandbox"): the gate's engines may write into its output
+        // (the export copies, its data folder) and temp, nowhere else; an export into a real game folder is refused.
+        string? allowed = Environment.GetEnvironmentVariable("JOYPRO_TEST_SANDBOX_ALLOW");
+        Environment.SetEnvironmentVariable("JOYPRO_TEST_SANDBOX_ALLOW", string.IsNullOrWhiteSpace(allowed) ? dir : allowed + ";" + dir);
         return dir;
     });
 

@@ -7,6 +7,10 @@ namespace JoyPro.Gui.Models;
 
 public sealed partial class RelationNodeItem : ObservableObject
 {
+    // The search's match line under the relation's card was clicked for this action: its card is marked.
+    [ObservableProperty]
+    private bool isSearchHit;
+
     public string Id { get; set; } = string.Empty;
 
     public string Game { get; set; } = string.Empty;

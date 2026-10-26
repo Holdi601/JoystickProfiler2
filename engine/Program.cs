@@ -50,6 +50,9 @@ namespace JoyPro.Engine
 
         private static int Main(string[] args)
         {
+            // Tests, the quality gate and the smoke test (JOYPRO_TEST_SANDBOX): writes only into the sandbox, temp and the
+            // data folder (docs/testing.md "Test sandbox"); before anything reads the data folder.
+            TestSandbox.Initialize();
             args = ExpandArgsFile(args);
             EngineSampler.StartIfAsked();
             // The engine uses the static Regex methods with many patterns (lua field lookups, cockpit guide templates):
@@ -88,9 +91,18 @@ namespace JoyPro.Engine
         {
             Stopwatch runClock = Stopwatch.StartNew();
             int exitCode = 1;
+            TestSandbox.ResetRun();
             try
             {
                 exitCode = Run(args ?? new string[0]);
+                // A write the test sandbox refused fails the command, also when a catch on the way swallowed it.
+                exitCode = TestSandbox.AdjustExitCode(exitCode);
+                return exitCode;
+            }
+            catch (TestSandboxViolationException ex)
+            {
+                Console.Error.WriteLine("engine error: " + ex.Message);
+                exitCode = TestSandbox.ViolationExitCode;
                 return exitCode;
             }
             catch (EngineCancelledException ex)
@@ -408,7 +420,7 @@ namespace JoyPro.Engine
                 case "sync":
                     exitCode = Measure("command.execute", () => RunSync(command, outPath, textOutput));
                     break;
-                // engine support bundle [--game <id>] [--days N] [--list] --out <zip>: the support file (EngineSupportBundle).
+                // engine support bundle [--game <id>] [--days N] [--include-profile true|false] [--list] --out <zip> | unpack <zip> --to <folder>: the support file (EngineSupportBundle).
                 case "support":
                     exitCode = Measure("command.execute", () =>
                     {
@@ -14506,7 +14518,9 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine sync accept --game <id> [--path <config>]   (the current config counts as known; nothing is imported)");
             Console.WriteLine("  engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)");
             Console.WriteLine("  engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, \"new\" (+ Name) or \"ignore\"; then the config counts as known)");
-            Console.WriteLine("  engine support bundle [--game <id>] [--days <n>] [--list] --out <file.zip>   (the support file: logs of the last days, the games' environment and devices, JoyPro's copies of their small config files, MSFS profiles read; user folder replaced, nothing uploaded; --list only shows the contents)");
+            Console.WriteLine("  engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)");
+            Console.WriteLine("  engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history and the games' current bind files; user folder replaced, nothing uploaded; --list only shows the contents)");
+            Console.WriteLine("  engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\\data)");
             Console.WriteLine("  engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)");
             Console.WriteLine("  engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))");
             Console.WriteLine("  engine vjoy plan [--reset] [--prune]   (the mapping table and the vJoy configuration it needs; nothing is saved)");
@@ -14586,7 +14600,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]");
             Console.WriteLine("  engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]");
             Console.WriteLine("  engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)");
-            Console.WriteLine("  engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--dry-run]  (one action to another button: joins the relation on that input, else a new one)");
+            Console.WriteLine("  engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--if-taken ask|swap|replace|keep-both] [--dry-run]  (one action to another button: joins the relation on that input, else a new one; --if-taken: when the aircraft has another action there)");
             Console.WriteLine("  engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]");
             Console.WriteLine("  engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]");
             Console.WriteLine("  engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]");

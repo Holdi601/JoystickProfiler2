@@ -400,6 +400,35 @@
         </Setter>
     </Style>
 
+    <!-- What the search found in a card's actions (MainWindowViewModel.SearchMatches.cs): one compact line per action,
+         the searched word in the accent; a click opens the action. The action it opened is tinted. -->
+    <Style Selector="Button.searchHit">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4,1" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Foreground" Value="{DynamicResource JP.TextBrush}" />
+        <Setter Property="FontSize" Value="{DynamicResource JP.FontSize.11.5}" />
+    </Style>
+    <Style Selector="Button.searchHit /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.searchHit:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.AccentSoftBrush}" />
+    </Style>
+    <Style Selector="Border.searchHits">
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
+        <Setter Property="BorderThickness" Value="2,0,0,0" />
+        <Setter Property="Padding" Value="2,0,0,0" />
+    </Style>
+    <Style Selector="StackPanel.searchHit">
+        <Setter Property="Background" Value="{DynamicResource JP.AccentSoftBrush}" />
+    </Style>
+
     <!-- Lists of cards: rounded rows, the selected one tinted with the accent -->
     <Style Selector="ListBox.cards">
         <Setter Property="Background" Value="Transparent" />

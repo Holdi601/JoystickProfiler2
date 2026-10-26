@@ -151,6 +151,37 @@ public sealed class FollowInputTests
         Assert.False(vm.IsLiveInputMonitoring);
     }
 
+    // Tester report on 2.4.2: "JP always jumps to the button pressed in the Move dialogue box". While the Move panel is
+    // open (pressing its new button, or any button), neither page's selection nor the open relation changes.
+    [Fact]
+    public async Task Follow_NeverJumps_WhileTheMovePanelIsOpen_OnBindsAndRelations()
+    {
+        (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
+        vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
+        int jumps = 0;
+        vm.FollowInputJumped += (_, _) => jumps++;
+        vm.IsMoveActionOpen = true;
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+        Assert.Equal("Fire", vm.SelectedBind?.RelationName);
+
+        vm.CurrentStage = UiStage.Relations;
+        vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Fire");
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", false));
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0, 0, 0, 0, 0, 0]));
+        vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0.9, 0, 0, 0, 0, 0]));
+        Assert.Equal("Fire", vm.SelectedRelation?.Name);
+        Assert.Equal(0, jumps);
+
+        // Closed again: following works as before.
+        vm.IsMoveActionOpen = false;
+        await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
+        vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
+        Assert.Equal("Gear", vm.SelectedRelation?.Name);
+    }
+
     // ---- The Relations page (same switch, same rules) ----
 
     [Fact]

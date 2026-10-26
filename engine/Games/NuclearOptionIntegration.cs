@@ -306,7 +306,7 @@ namespace JoyPro.Engine.Games
 
         public static bool RegistryKeyExists(string subKey)
         {
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(subKey, false))
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(TestSandbox.RegistrySubKeyForRead(subKey), false))
                 return key != null;
         }
 
@@ -373,7 +373,7 @@ namespace JoyPro.Engine.Games
                 errors.Add("'" + path + "' is not " + game + "'s registry key (HKCU\\" + subKey + ").");
                 return false;
             }
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(subKey, false))
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(TestSandbox.RegistrySubKeyForRead(subKey), false))
             {
                 if (key == null)
                 {
@@ -464,7 +464,7 @@ namespace JoyPro.Engine.Games
                     SafeFileIo.CopyOverAndDelete(temp, fakePath);
                     return true;
                 }
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(subKey, true))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(TestSandbox.RegistrySubKeyForWrite(subKey, "Registry write"), true))
                 {
                     if (key == null)
                     {

@@ -11,6 +11,8 @@
                    Text="{l:T 'Questions JoyPro asks before a change. \'Do not ask again\' in a question switches it off; tick it here to be asked again.'}" />
         <CheckBox Content="{l:T 'Ask before removing an action from a relation (the x on the Relations page)'}" IsChecked="{Binding AskBeforeRemovingAction}"
                   ToolTip.Tip="{l:T 'On: the x of an action asks \'Remove this action?\' first. Off: it is removed at once (Ctrl+Z undoes it).'}" />
+        <CheckBox Content="{l:T 'Ask before an import drops changes I made in JoyPro and did not export yet'}" IsChecked="{Binding AskBeforeImportDropsChanges}"
+                  ToolTip.Tip="{l:T 'On: Import on a game card asks first when the profile has changes for that game that are not in the game yet (Export first, Import, Cancel). Off: it imports at once (History brings the changes back).'}" />
         <Button Classes="small" Content="{l:T 'Ask everything again'}" Command="{Binding AskAllConfirmationsAgainCommand}" HorizontalAlignment="Left"
                 IsEnabled="{Binding HasSwitchedOffConfirmations}" ToolTip.Tip="{l:T 'Every question you switched off is asked again'}" />
     </StackPanel>

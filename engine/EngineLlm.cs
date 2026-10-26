@@ -1235,7 +1235,7 @@ namespace JoyPro.Engine
                         continue;
                     }
                     Directory.CreateDirectory(Path.GetDirectoryName(destination));
-                    entry.ExtractToFile(destination, true);
+                    entry.ExtractToFile(JoyPro.Engine.TestSandbox.EnsureWritable(destination, "Zip extract"), true);
                 }
             }
             File.Delete(zip);

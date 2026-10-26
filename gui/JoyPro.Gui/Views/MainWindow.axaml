@@ -1287,7 +1287,8 @@
                                                     </WrapPanel>
                                                     <!-- Type, games and the aircraft chip wrap (a relation of many games kept the aircraft chip, and its
                                                          tooltip, out of reach). -->
-                                                    <WrapPanel Grid.Row="2" ItemSpacing="4" LineSpacing="4">
+                                                    <StackPanel Grid.Row="2" Spacing="5">
+                                                    <WrapPanel ItemSpacing="4" LineSpacing="4">
                                                         <Border Classes="chip axis" IsVisible="{Binding IsAxis}"><TextBlock Text="{l:T 'Axis'}" /></Border>
                                                         <ItemsControl ItemsSource="{Binding GameList}">
                                                             <ItemsControl.ItemsPanel>
@@ -1306,6 +1307,25 @@
                                                             <TextBlock Text="{Binding PlanesText}" />
                                                         </Border>
                                                     </WrapPanel>
+                                                    <!-- What the search found in its actions: the action, the word marked, its game and aircraft; a click opens it -->
+                                                    <Border Classes="searchHits" IsVisible="{Binding SearchHits.HasLines}">
+                                                        <StackPanel>
+                                                            <ItemsControl ItemsSource="{Binding SearchHits.Lines}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate x:DataType="models:SearchMatchLine">
+                                                                        <Button Classes="searchHit" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).OpenSearchMatchCommand}" CommandParameter="{Binding}"
+                                                                                ToolTip.Tip="{Binding Tooltip}">
+                                                                            <TextBlock TextWrapping="Wrap">
+                                                                                <Run Text="{Binding Before}" /><Run Text="{Binding Hit}" FontWeight="Bold" Foreground="{DynamicResource JP.AccentTextBrush}" /><Run Text="{Binding After}" /><Run Text="{Binding WhereText}" Foreground="{DynamicResource JP.TextMutedBrush}" />
+                                                                            </TextBlock>
+                                                                        </Button>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                            <TextBlock Classes="caption" Margin="4,0,0,0" Text="{Binding SearchHits.MoreText}" IsVisible="{Binding SearchHits.HasMore}" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                    </StackPanel>
                                                 </Grid>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
@@ -1919,7 +1939,7 @@
                                                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate x:DataType="models:RelationNodeItem">
-                                                      <StackPanel Spacing="4">
+                                                      <StackPanel Spacing="4" Classes.searchHit="{Binding IsSearchHit}">
                                                         <!-- A click on the action opens (or closes) its aircraft: what the id means in each, a tick each -->
                                                         <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="8" Background="Transparent" Tapped="RelationNodeHeaderTapped">
                                                             <Grid.ContextMenu>
@@ -2598,6 +2618,24 @@
                                                                 </ItemsControl.ItemTemplate>
                                                             </ItemsControl>
                                                         </StackPanel>
+                                                        <!-- What the search found in its actions: the action, the word marked, its game and aircraft; a click shows it -->
+                                                        <Border Classes="searchHits" IsVisible="{Binding SearchHits.HasLines}">
+                                                            <StackPanel>
+                                                                <ItemsControl ItemsSource="{Binding SearchHits.Lines}">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="models:SearchMatchLine">
+                                                                            <Button Classes="searchHit" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).OpenSearchMatchCommand}" CommandParameter="{Binding}"
+                                                                                    ToolTip.Tip="{Binding Tooltip}">
+                                                                                <TextBlock TextWrapping="Wrap">
+                                                                                    <Run Text="{Binding Before}" /><Run Text="{Binding Hit}" FontWeight="Bold" Foreground="{DynamicResource JP.AccentTextBrush}" /><Run Text="{Binding After}" /><Run Text="{Binding WhereText}" Foreground="{DynamicResource JP.TextMutedBrush}" />
+                                                                                </TextBlock>
+                                                                            </Button>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                                <TextBlock Classes="caption" Margin="4,0,0,0" Text="{Binding SearchHits.MoreText}" IsVisible="{Binding SearchHits.HasMore}" />
+                                                            </StackPanel>
+                                                        </Border>
                                                     </StackPanel>
                                                     <Panel Grid.Column="2" VerticalAlignment="Center">
                                                         <Border Classes="keycap" IsVisible="{Binding HasInput}"><TextBlock Text="{Binding InputShort}" /></Border>
@@ -3206,7 +3244,7 @@
                                                                 <ItemsControl ItemsSource="{Binding Actions}" Margin="26,0,0,0" MaxWidth="720" HorizontalAlignment="Left">
                                                                     <ItemsControl.ItemTemplate>
                                                                         <DataTemplate x:DataType="vm:BindPeekAction">
-                                                                            <StackPanel Spacing="1" Margin="0,1">
+                                                                            <StackPanel Spacing="1" Margin="0,1" Classes.searchHit="{Binding IsSearchHit}">
                                                                                 <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="6">
                                                                                     <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Title}" />
                                                                                     <Button Grid.Column="1" Classes="small ghost" Padding="4,0" Content="{Binding PlanesText}" IsVisible="{Binding HasPlanes}"
@@ -6765,24 +6803,23 @@
 
                             <controls:SettingsSection SectionId="report" Title="{l:T 'Report a problem'}" Icon="{StaticResource Icon.Bug}">
                                 <StackPanel Spacing="6">
-                                    <TextBlock Text="{l:T '1. Write below what happened.  2. Press \'Create Report\': JoyPro saves one zip with your text, versions, your device list, the logs of the last 3 days and crash reports, and shows it in Explorer.  3. Attach the zip to a GitHub issue (\'Open GitHub Issue Page\') or send it to the developer. Nothing is sent by itself; your user name, e-mail addresses and passwords are removed from the files, and you can open the zip first to look.'}" TextWrapping="Wrap" Opacity="0.85" />
+                                    <!-- One flow (docs/logging.md "Problem report"): the text, one box for the personal parts (remembered:
+                                         ui-settings.json supportIncludeProfile), Create Report = the engine's support file plus report.txt -->
+                                    <TextBlock Text="{l:T '1. Write below what happened.  2. Press \'Create Report\': JoyPro shows what goes in, then saves one zip with your text and what is needed to find the problem (JoyPro\'s logs of at least the last 14 days, errors and crash reports, JoyPro\'s settings and versions, your devices with vJoy and HidHide, and per game its folders and JoyPro\'s backups; with the box on also your open profile, its history and the games\' current bind files) and shows it in Explorer.  3. Attach the zip to a GitHub issue (\'Open GitHub Issue Page\') or send it to the developer. Nothing is sent by itself; your user name, e-mail addresses and passwords are removed, and you can open the zip first to look.'}" TextWrapping="Wrap" Opacity="0.85" />
                                     <TextBlock Text="{l:T 'What happened?'}" />
                                     <TextBox Text="{Binding ProblemDescription}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="90" Watermark="{l:T 'What did you do, what did you expect, what happened instead?'}" />
+                                    <CheckBox Content="{l:T 'Include my open profile and its history (your binds and device names)'}" IsChecked="{Binding SupportIncludeProfile}" />
                                     <WrapPanel>
-                                        <CheckBox Content="{l:T 'Attach my profile'}" IsChecked="{Binding ProblemIncludeProfile}" Margin="0,0,10,0" />
                                         <Button Command="{Binding CreateProblemReportCommand}" Content="{l:T 'Create Report'}" Classes="icon accent" Tag="{StaticResource Icon.Send}" Margin="0,0,8,0" />
                                         <Button Command="{Binding ShowProblemReportCommand}" Content="{l:T 'Show Report'}" IsEnabled="{Binding HasProblemReport}" Margin="0,0,8,0" />
                                         <Button Command="{Binding OpenProblemIssuePageCommand}" Content="{l:T 'Open GitHub Issue Page'}" IsEnabled="{Binding HasProblemReport}" />
-                                    </WrapPanel>
-                                    <WrapPanel>
-                                        <Button Command="{Binding CreateSupportFileCommand}" Content="{l:T 'Create support file'}" Classes="icon" Tag="{StaticResource Icon.Bug}" Margin="0,0,8,0"
-                                                ToolTip.Tip="{l:T 'One zip with the logs of the last 3 days, the environment of your games (install, folders, drives, devices) and JoyPro\'s copies of the small config files it read or wrote. Shows what is in it first; nothing is sent.'}" />
                                     </WrapPanel>
                                     <TextBlock Text="{Binding ProblemReportStatus}" TextWrapping="Wrap" />
                                     <WrapPanel>
                                         <TextBlock Text="{l:T 'Keep background logs for'}" VerticalAlignment="Center" Margin="0,0,8,0" />
                                         <NumericUpDown Value="{Binding LogRetentionDays}" Minimum="1" Maximum="365" Increment="1" FormatString="0" Width="130" Margin="0,0,8,0" />
-                                        <TextBlock Text="{l:T 'days'}" VerticalAlignment="Center" Margin="0,0,12,0" />
+                                        <TextBlock Text="{l:T 'days'}" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock Classes="caption" Text="{l:T '(default 30; at most 200 MB together, the oldest go first)'}" VerticalAlignment="Center" Margin="0,0,12,0" />
                                         <Button Command="{Binding OpenLogFolderCommand}" Content="{l:T 'Open Log Folder'}" />
                                     </WrapPanel>
                                     <TextBlock Text="{Binding LogFolderText}" Opacity="0.75" TextWrapping="Wrap" />
@@ -7524,6 +7561,21 @@
                             <TextBox Grid.Column="3" Text="{Binding MoveActionInput}" Watermark="{l:T 'e.g. JOY_BTN3'}" />
                         </Grid>
                         <CheckBox Content="{Binding MoveActionKeepModifiersText}" IsChecked="{Binding MoveActionKeepModifiers}" IsVisible="{Binding HasMoveActionModifiers}" />
+                        <!-- The button is taken for these aircraft (another action of theirs is on it): swap, replace or keep both. -->
+                        <Border x:Name="MoveActionTakenBox" Classes="callout warn" Padding="10,8" IsVisible="{Binding MoveActionTaken}">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="{Binding MoveActionTakenText}" TextWrapping="Wrap" />
+                                <RadioButton GroupName="MoveActionTaken" IsChecked="{Binding IsMoveActionSwap}">
+                                    <TextBlock Text="{Binding MoveActionSwapText}" TextWrapping="Wrap" />
+                                </RadioButton>
+                                <RadioButton GroupName="MoveActionTaken" IsChecked="{Binding IsMoveActionReplace}">
+                                    <TextBlock Text="{Binding MoveActionReplaceText}" TextWrapping="Wrap" />
+                                </RadioButton>
+                                <RadioButton GroupName="MoveActionTaken" IsChecked="{Binding IsMoveActionKeepBoth}">
+                                    <TextBlock Text="{Binding MoveActionKeepBothText}" TextWrapping="Wrap" />
+                                </RadioButton>
+                            </StackPanel>
+                        </Border>
                         <Border Classes="callout" Padding="10,6" IsVisible="{Binding HasMoveActionPreview}">
                             <TextBlock Text="{Binding MoveActionPreview}" TextWrapping="Wrap" />
                         </Border>

@@ -158,6 +158,12 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
     // The titles of its actions ("relations list --titles"), for the search.
     public IReadOnlyList<string> ActionTitles { get; set; } = [];
 
+    // Each title with its action, game and aircraft ("relations list --titles" TitleList): the search's match lines.
+    public IReadOnlyList<ActionTitleEntry> ActionTitleEntries { get; set; } = [];
+
+    // What the Relations page's search found in its actions (set by the list's filter; empty without a search).
+    public SearchMatchInfo SearchHits { get; set; } = new();
+
     // ---- For the relation list's cards (chips and the input key cap) ----
 
     public bool IsAxis => Type.Equals("axis", StringComparison.OrdinalIgnoreCase);

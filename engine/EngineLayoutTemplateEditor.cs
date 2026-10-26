@@ -462,7 +462,7 @@ namespace JoyPro.Engine
                 string hash = Math.Abs((sourcePath + "|" + File.GetLastWriteTimeUtc(sourcePath).Ticks.ToString(CultureInfo.InvariantCulture)).GetHashCode())
                     .ToString("X8", CultureInfo.InvariantCulture);
                 string path = Path.Combine(dir, "preview_" + hash + ".png");
-                image.Save(path, System.Drawing.Imaging.ImageFormat.Png);
+                image.Save(JoyPro.Engine.TestSandbox.EnsureWritable(path, "Image save"), System.Drawing.Imaging.ImageFormat.Png);
                 RemoveOldPreviews(dir, path);
                 return path;
             }

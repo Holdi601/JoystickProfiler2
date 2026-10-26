@@ -19,7 +19,8 @@ public sealed class ProblemReport
 }
 
 // Bundles a user's problem description with diagnostics into one zip the user can look into before sending it
-// (docs/logging.md): report.txt (description, versions, system, diagnostics, list of contents), the background logs of
+// (docs/logging.md "Problem report"). Settings > Report a problem adds report.txt to the engine's support file
+// (AddReport); Create is the GUI's own zip when the engine cannot run (then without the profile): report.txt (description, versions, system, diagnostics, list of contents), the background logs of
 // the last days (logs/), crash reports (crash-reports/), the engine output of this session (engine-output.log) and,
 // only when the user ticks it, the profile (profile/, unchanged). Every text file goes through LogScrubber (user folder,
 // user name, PC name, e-mail, passwords/tokens, Steam ids). Nothing is uploaded: the GUI shows the zip in Explorer and
@@ -34,7 +35,7 @@ public static class ProblemReporter
     // temp folder.
     public static string? FolderOverride { get; set; }
 
-    public static string DefaultFolder => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro2 Problem Reports");
+    public static string DefaultFolder => Path.Combine(UserFolders.Get(Environment.SpecialFolder.MyDocuments), "JoyPro2 Problem Reports");
 
     public static ProblemReport Create(
         string description,
@@ -106,13 +107,62 @@ public static class ProblemReporter
 
         JoyProLog.Info("Report", "Problem report created: " + zipPath + " (" + entries.Count.ToString(CultureInfo.InvariantCulture) + " entries, profile " +
                                  (attachProfile ? "attached" : "not attached") + ")");
+        return new ProblemReport { ZipPath = zipPath, IssueUrl = IssueUrl(description, zipPath), Entries = entries };
+    }
 
+    // The one "Create Report" of Settings > Report a problem: the engine's support file (engine support bundle, with the
+    // logs, errors, settings, devices, games and, with the box, the profile and its history) gets report.txt (the
+    // description, versions and diagnostics) and the extra files (this session's engine output). A report.txt already
+    // in the zip is replaced. Returns the issue link.
+    public static ProblemReport AddReport(string zipPath, string description, string diagnostics, IEnumerable<string>? extraFiles, IEnumerable<string> contents, DateTime? now = null)
+    {
+        JoyProLog.Flush();
+        DateTime time = now ?? DateTime.Now;
+        List<string> extras = (extraFiles ?? []).Where(f => !string.IsNullOrWhiteSpace(f) && File.Exists(f)).ToList();
+        StringBuilder report = new();
+        report.AppendLine(T("JoyPro2 problem report"));
+        report.AppendLine(T("Time: {0} (local), UTC offset {1}", time.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture), TimeZoneInfo.Local.GetUtcOffset(time).ToString(@"hh\:mm", CultureInfo.InvariantCulture)));
+        report.AppendLine(T("Version: {0}", AppInfo.Version));
+        report.AppendLine(T("OS: {0}", AppInfo.OsDescription));
+        report.AppendLine(T("System: {0}", JoyProLog.SystemDescription()));
+        report.AppendLine();
+        report.AppendLine(T("What happened:"));
+        report.AppendLine(string.IsNullOrWhiteSpace(description) ? T("(no description)") : description.Trim());
+        report.AppendLine();
+        report.AppendLine(T("Diagnostics:"));
+        report.AppendLine(diagnostics);
+        report.AppendLine();
+        report.AppendLine(T("Contents of this zip:"));
+        foreach (string line in contents)
+            report.AppendLine("  " + line);
+        foreach (string extra in extras)
+            report.AppendLine("  " + Path.GetFileName(extra));
+        report.AppendLine();
+        report.AppendLine(T("Personal data is replaced in all text files: the user folder by %USERPROFILE%, the Windows user name by <user>,"));
+        report.AppendLine(T("the PC name by <pc>, e-mail addresses by <email>, passwords and tokens by <redacted>, Steam ids by steam#<hash>."));
+
+        List<string> entries;
+        using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Update))
+        {
+            foreach (ZipArchiveEntry old in zip.Entries.Where(e => e.FullName == "report.txt" || extras.Any(x => Path.GetFileName(x) == e.FullName)).ToList())
+                old.Delete();
+            AddText(zip, "report.txt", LogScrubber.Scrub(report.ToString()));
+            foreach (string extra in extras)
+                AddScrubbedFile(zip, Path.GetFileName(extra), extra);
+            entries = zip.Entries.Select(e => e.FullName).ToList();
+        }
+        JoyProLog.Info("Report", "Problem report added to " + zipPath + " (" + entries.Count.ToString(CultureInfo.InvariantCulture) + " entries)");
+        return new ProblemReport { ZipPath = zipPath, IssueUrl = IssueUrl(description, zipPath), Entries = entries };
+    }
+
+    // The prefilled GitHub issue (title and description, scrubbed); the zip is attached by the user.
+    private static string IssueUrl(string? description, string zipPath)
+    {
         string title = T("Problem: {0}", FirstLine(LogScrubber.Scrub(description ?? string.Empty)));
         string body = "**What happened**\n" + (string.IsNullOrWhiteSpace(description) ? T("(please describe)") : LogScrubber.Scrub(description.Trim())) +
                       "\n\n**Version:** " + AppInfo.Version + "\n**OS:** " + AppInfo.OsDescription +
                       "\n\nPlease attach `" + Path.GetFileName(zipPath) + "` (in Documents\\JoyPro2 Problem Reports).";
-        string url = AppInfo.IssuesUrl + "?title=" + Uri.EscapeDataString(title) + "&body=" + Uri.EscapeDataString(body);
-        return new ProblemReport { ZipPath = zipPath, IssueUrl = url, Entries = entries };
+        return AppInfo.IssuesUrl + "?title=" + Uri.EscapeDataString(title) + "&body=" + Uri.EscapeDataString(body);
     }
 
     // The *.log files of the folder written in the last `days` days, newest first, together at most MaxLogBytes.

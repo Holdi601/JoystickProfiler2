@@ -482,7 +482,7 @@ namespace JoyPro.Engine
                     token => ResolvePlaneLabel(joystick, alias, token, game, plane),
                     visualOptions))
                 {
-                    rendered.Save(outputFile, ImageFormat.Png);
+                    rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(outputFile, "Image save"), ImageFormat.Png);
                 }
                 result.PlaneImagesWritten++;
                 result.WrittenFiles.Add(outputFile);
@@ -514,7 +514,7 @@ namespace JoyPro.Engine
                 token => ResolveOverviewLabel(joystick, alias, token),
                 visualOptions))
             {
-                rendered.Save(outputFile, ImageFormat.Png);
+                rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(outputFile, "Image save"), ImageFormat.Png);
             }
             result.OverviewImagesWritten++;
             result.WrittenFiles.Add(outputFile);
@@ -569,7 +569,7 @@ namespace JoyPro.Engine
                         CalloutRenderOptions planeOptions = CalloutOptions(options, target.Key, target.Value, alias);
                         EngineCalloutRenderer.ApplyStyle(planeOptions, set);
                         using (Bitmap rendered = EngineCalloutRenderer.Render(sheet, picture, CalloutText(joystick, sheet, target.Key, target.Value), planeOptions))
-                            rendered.Save(file, ImageFormat.Png);
+                            rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(file, "Image save"), ImageFormat.Png);
                         result.PlaneImagesWritten++;
                         result.WrittenFiles.Add(file);
                     }
@@ -580,7 +580,7 @@ namespace JoyPro.Engine
                     CalloutRenderOptions overviewOptions = CalloutOptions(options, "All games", "Relation names", alias);
                     EngineCalloutRenderer.ApplyStyle(overviewOptions, set);
                     using (Bitmap rendered = EngineCalloutRenderer.Render(sheet, picture, CalloutText(joystick, sheet, null, null), overviewOptions))
-                        rendered.Save(file, ImageFormat.Png);
+                        rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(file, "Image save"), ImageFormat.Png);
                     result.OverviewImagesWritten++;
                     result.WrittenFiles.Add(file);
                 }
@@ -636,7 +636,7 @@ namespace JoyPro.Engine
                     Directory.CreateDirectory(planeDir);
                     string file = Path.Combine(planeDir, BuildSafeFileName(alias) + ".png");
                     using (Bitmap rendered = EngineMultiView.RenderPage(layout, joystick, target.Key, target.Value, CalloutOptions(options, target.Key, target.Value, alias), result.Warnings))
-                        rendered.Save(file, ImageFormat.Png);
+                        rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(file, "Image save"), ImageFormat.Png);
                     result.PlaneImagesWritten++;
                     result.WrittenFiles.Add(file);
                 }
@@ -645,7 +645,7 @@ namespace JoyPro.Engine
             {
                 string file = Path.Combine(result.ExportPath, BuildSafeFileName(alias) + ".png");
                 using (Bitmap rendered = EngineMultiView.RenderPage(layout, joystick, null, null, CalloutOptions(options, "All games", "Relation names", alias), result.Warnings))
-                    rendered.Save(file, ImageFormat.Png);
+                    rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(file, "Image save"), ImageFormat.Png);
                 result.OverviewImagesWritten++;
                 result.WrittenFiles.Add(file);
             }
@@ -784,7 +784,7 @@ namespace JoyPro.Engine
                 try
                 {
                     using (Bitmap combined = EngineCalloutRenderer.Combine(files, !options.LightStyle, options.Style))
-                        combined.Save(page, ImageFormat.Png);
+                        combined.Save(JoyPro.Engine.TestSandbox.EnsureWritable(page, "Image save"), ImageFormat.Png);
                     result.CombinedImagesWritten++;
                     result.WrittenFiles.Add(page);
                 }

@@ -25,7 +25,8 @@ using System.Threading;
 // Writing never blocks the caller on disk: lines are queued and written at most twice a second (warnings and errors
 // at once), files are opened per write under a named mutex (several engine processes can append to one file),
 // rolled at MaxFileBytes and capped at MaxRollsPerDay files per component and day. Files older than the retention
-// (default 7 days, <Logs>\log-settings.txt, set in the GUI) are deleted at most once an hour, at a process start.
+// (default 30 days, <Logs>\log-settings.txt, set in the GUI) and the oldest files over 200 MB together are deleted at
+// most once an hour, at a process start.
 // Nothing is written before Start, so library code (and tests that never call Start) logs nothing.
 namespace JoyPro.Logging
 {
@@ -49,13 +50,15 @@ namespace JoyPro.Logging
         public const string FolderName = "Logs";
         public const string SettingsFileName = "log-settings.txt";
         public const string CleanupMarkerName = ".last-cleanup";
-        public const int DefaultRetentionDays = 7;
+        public const int DefaultRetentionDays = 30;
+        // The default up to 2.4.2: a log-settings.txt with it and without retention-chosen=true gets the new default.
+        public const int LegacyDefaultRetentionDays = 7;
         public const int MinRetentionDays = 1;
         public const int MaxRetentionDays = 365;
         public const int CrashReportMinRetentionDays = 30;
         public const long DefaultMaxFileBytes = 10L * 1024 * 1024;
         public const int MaxRollsPerDay = 5;
-        public const long DefaultMaxTotalBytes = 300L * 1024 * 1024;
+        public const long DefaultMaxTotalBytes = 200L * 1024 * 1024;
 
         private static readonly object Gate = new object();
         private static readonly object WriteGate = new object();
@@ -645,11 +648,16 @@ namespace JoyPro.Logging
         }
     }
 
-    // <Logs>\log-settings.txt ("retention-days=7", "level=debug"), written by the GUI's settings page and read by every
-    // component at start. JOYPRO_LOG_RETENTION_DAYS / JOYPRO_LOG_LEVEL override it.
+    // <Logs>\log-settings.txt ("retention-days=30", "retention-chosen=true", "level=debug"), written by the GUI's settings
+    // page and read by every component at start. JOYPRO_LOG_RETENTION_DAYS / JOYPRO_LOG_LEVEL override it.
+    // retention-chosen: the user set the days (2.4.3 and later). A file of an older version with the old default
+    // (retention-days=7, not chosen) reads as the new default, so the support file can go back 30 days.
     public sealed class JoyProLogSettings
     {
         public int RetentionDays { get; set; } = JoyProLog.DefaultRetentionDays;
+
+        // The user chose RetentionDays (the GUI's "Keep background logs for"); false: JoyPro's default.
+        public bool RetentionChosen { get; set; }
 
         public JoyProLogLevel Level { get; set; } = JoyProLogLevel.Debug;
 
@@ -674,6 +682,8 @@ namespace JoyPro.Logging
             catch (Exception)
             {
             }
+            if (!settings.RetentionChosen && settings.RetentionDays == JoyProLog.LegacyDefaultRetentionDays)
+                settings.RetentionDays = JoyProLog.DefaultRetentionDays;
             string days = Environment.GetEnvironmentVariable(JoyProLog.RetentionVariable);
             if (!string.IsNullOrWhiteSpace(days))
                 settings.Apply("retention-days", days);
@@ -689,6 +699,7 @@ namespace JoyPro.Logging
             File.WriteAllText(Path.Combine(logFolder, JoyProLog.SettingsFileName),
                 "# JoyPro log settings (docs/logging.md); the GUI's Settings page changes them." + Environment.NewLine +
                 "retention-days=" + JoyProLog.ClampDays(RetentionDays).ToString(CultureInfo.InvariantCulture) + Environment.NewLine +
+                (RetentionChosen ? "retention-chosen=true" + Environment.NewLine : string.Empty) +
                 "level=" + Level.ToString().ToLowerInvariant() + Environment.NewLine,
                 new UTF8Encoding(false));
         }
@@ -701,6 +712,9 @@ namespace JoyPro.Logging
                     int days;
                     if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out days))
                         RetentionDays = JoyProLog.ClampDays(days);
+                    break;
+                case "retention-chosen":
+                    RetentionChosen = string.Equals(value, "true", StringComparison.OrdinalIgnoreCase) || value == "1";
                     break;
                 case "level":
                     JoyProLogLevel level;

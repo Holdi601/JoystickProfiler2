@@ -231,7 +231,8 @@ function Get-CommandSummaryForDocs {
         "binds edit" { return "Opens binds JSON in an external editor for round-trip editing." }
         "sync status" { return "Per game the config files (or registry values) JoyPro manages, their fingerprint and whether the game changed them since JoyPro's last export, accept or apply (docs/sync-watcher.md)." }
         "sync accept" { return "Marks the game's current config as known without importing anything." }
-        "support bundle" { return "Writes the support file (docs/logging.md ""Support file""): summary with versions, system, the games' environment (install, config folders, drive, file system, attributes such as EFS) and the connected devices; JoyPro's logs and crash reports of the last days; per game the watcher's record and JoyPro's copies of the small config files its newest export changed; for MSFS the profiles JoyPro reads, its package, the import files and the sim's records. Every text is scrubbed (user folder -> %USERPROFILE%); nothing is uploaded. --list only prints the contents." }
+        "support bundle" { return "Writes the support file (docs/logging.md ""Support file""), everything a maintainer needs in one zip: summary with versions, system, the games' environment, the devices, every part with its size and what was trimmed; JoyPro's logs (GUI, engine, tray and watcher, force feedback) of at least 14 days and back to the oldest history version of the open profile, at most 100 MB, the oldest trimmed first; crash reports and the last errors with stack traces; JoyPro's settings and state files, the versions of the game lists and installed packs; devices and the vJoy / HidHide state; per game the watcher's record, the list of JoyPro's backups and the newest set, for MSFS the profiles JoyPro reads. With --profile and --include-profile true (the default when --profile is given) also the open profile, its history (the newest versions up to --history-cap-mb, default 50, plus the whole index) and the games' current bind files with JoyPro's .jp / .joypro-meta.json files. Every text is scrubbed (user folder -> %USERPROFILE%), the profile copies inside their strings; originals are only read; nothing is uploaded. --list only prints the parts and entries." }
+        "support unpack" { return "For maintainers: unpacks a support file to <folder>\support, the profile to <folder>\profile and its history to <folder>\data\ProfileHistory\<id of that path>, so engine profile history list / show / restore work on the copy with JOYPRO_DATA_DIR=<folder>\data (docs/logging.md ""Restoring a version from a support file""). Nothing of this PC's JoyPro is touched." }
         "sync diff" { return "Reads the game's config with its own import into a scratch profile and lists what changed that JoyPro manages (added, removed, changed-tuning, changed-modifiers) with the candidate relations." }
         "sync apply" { return "Applies the user's choice per change (a relation, a new relation or ignore) to the profile; then the config counts as known." }
         "vjoy status" { return "Virtual joystick mode (docs/virtual-joystick.md): vJoy and HidHide installed, the vJoy devices (configuration and DirectInput name), HidHide's state, JoyPro's HidHide session (stale when its owner is gone), the games native/virtual, the mapping table and what vJoy must offer. Read-only." }
@@ -450,7 +451,11 @@ function Get-ArgumentDocLine {
         "<file.json>" { return "Path to a JSON file. Example: C:\JoyPro\sync-choices.json." }
         "<file.zip>" { return "Path of the zip to write. Example: C:\JoyPro\JoyPro2-support.zip." }
         "--list" { return "For support bundle: only print what the zip would hold; nothing is written." }
-        "--days" { return "For support bundle: logs and crash reports of the last N days (default 3)." }
+        "--days" { return "For support bundle: logs and crash reports of at least the last N days (default 14; older ones when the open profile's history goes further back)." }
+        "--include-profile" { return "For support bundle: true puts the open profile (--profile), its history and the games' current bind files in; false leaves them out. Default: true when --profile is given." }
+        "--history-cap-mb" { return "For support bundle: the most megabytes of stored history copies (default 50); the newest versions go in, summary.txt names the ones left out. Example: 50." }
+        "--to" { return "The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1." }
+        "<folder>" { return "Folder path. Example: C:\Cases\case1." }
         default { return "Command argument. See examples for typical values." }
     }
 }
@@ -733,7 +738,8 @@ function Get-ExampleCommand {
         "binds edit" { return @("engine --editor 'code --wait {file}' binds edit") }
         "sync status" { return @("engine sync status --text", "engine sync status --game DCS") }
         "sync accept" { return @("engine sync accept --game WarThunder") }
-        "support bundle" { return @("engine support bundle --list --text", "engine support bundle --game MSFS2024 --out 'C:\JoyPro\JoyPro2-support.zip'") }
+        "support bundle" { return @("engine support bundle --list --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --out 'C:\JoyPro\JoyPro2-support.zip' support bundle --text", "engine support bundle --game MSFS2024 --include-profile false --out 'C:\JoyPro\JoyPro2-support.zip'") }
+        "support unpack" { return @("engine support unpack 'C:\Cases\JoyPro2-support-20261026-170635.zip' --to 'C:\Cases\case1' --text") }
         "sync diff" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' sync diff --game DCS --text") }
         "sync apply" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' sync apply --game DCS --choices 'C:\JoyPro\sync-choices.json'") }
         "vjoy status" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy status --text") }

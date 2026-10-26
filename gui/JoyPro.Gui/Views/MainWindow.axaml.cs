@@ -96,6 +96,10 @@ public partial class MainWindow : Window
 
     internal TooltipHold TooltipHold => tooltipHold;
 
+    // A search match line was clicked: the relation editor's action list shows that action.
+    private void OnRelationNodeScrollRequested(object? sender, JoyPro.Gui.Models.RelationNodeItem node) =>
+        Dispatcher.UIThread.Post(() => this.FindControl<ListBox>("RelationNodeList")?.ScrollIntoView(node), DispatcherPriority.Background);
+
     private void OnFollowInputActivity(object? sender, EventArgs e) => tooltipHold.Hold();
 
     private void UpdateTextInputFocus()
@@ -554,6 +558,7 @@ public partial class MainWindow : Window
             observedViewModel.AssistantMessages.CollectionChanged -= OnAssistantMessagesChanged;
             observedViewModel.FollowInputActivity -= OnFollowInputActivity;
             observedViewModel.FollowInputJumped -= OnFollowInputActivity;
+            observedViewModel.RelationNodeScrollRequested -= OnRelationNodeScrollRequested;
             observedViewModel.MultiViewRedraw -= OnMultiViewRedraw;
             observedViewModel.NavBarChanged -= OnNavBarChanged;
             observedViewModel.RelationFilter.PropertyChanged -= OnRelationSearchChanged;
@@ -589,6 +594,7 @@ public partial class MainWindow : Window
             observedViewModel.FollowInputActivity += OnFollowInputActivity;
             // Every jump arms the tooltip hold (again), whatever input caused it.
             observedViewModel.FollowInputJumped += OnFollowInputActivity;
+            observedViewModel.RelationNodeScrollRequested += OnRelationNodeScrollRequested;
             observedViewModel.TextInputFocusProbe = TextBoxHasFocus;
             observedViewModel.ConfirmHandler = AskConfirmationAsync;
             // Back / Forward keep the scroll positions of the page's lists.
@@ -655,6 +661,39 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (e.PropertyName == nameof(MainWindowViewModel.SettingsSearchText) && sender is MainWindowViewModel vm)
+            OnSettingsSearchChanged(vm.SettingsSearchText);
+    }
+
+    // The Settings search: the result starts at the top of the page (the long page's offset before left a short result
+    // scrolled away); clearing the search goes back to where the page was before it.
+    private string settingsSearchShown = string.Empty;
+    private double? settingsOffsetBeforeSearch;
+
+    private void OnSettingsSearchChanged(string? text)
+    {
+        string now = (text ?? string.Empty).Trim();
+        string before = settingsSearchShown;
+        settingsSearchShown = now;
+        if (string.Equals(now, before, StringComparison.Ordinal) || this.FindControl<ScrollViewer>("SettingsScrollViewer") is not { } scroller)
+            return;
+        double target = 0;
+        if (before.Length == 0)
+            settingsOffsetBeforeSearch = scroller.Offset.Y;
+        else if (now.Length == 0)
+        {
+            target = settingsOffsetBeforeSearch ?? 0;
+            settingsOffsetBeforeSearch = null;
+        }
+        scroller.Offset = new Vector(scroller.Offset.X, 0);
+        if (target <= 0)
+            return;
+        // After the sections are back (the page is long again).
+        Dispatcher.UIThread.Post(() =>
+        {
+            double max = Math.Max(0, scroller.Extent.Height - scroller.Viewport.Height);
+            scroller.Offset = new Vector(scroller.Offset.X, Math.Min(target, max));
+        }, DispatcherPriority.Background);
     }
 
     private void ScrollEngineOutputToBottom()

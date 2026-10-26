@@ -168,7 +168,7 @@ namespace JoyPro.Engine
                         if (view == null)
                             continue;
                         string target = Path.Combine(folder, "view-" + i.ToString(CultureInfo.InvariantCulture) + ".png");
-                        view.Save(target, ImageFormat.Png);
+                        view.Save(JoyPro.Engine.TestSandbox.EnsureWritable(target, "Image save"), ImageFormat.Png);
                         written.Add(new Dictionary<string, object> { { "Index", i }, { "File", target }, { "Width", view.Width }, { "Height", view.Height } });
                     }
                 }
@@ -185,7 +185,7 @@ namespace JoyPro.Engine
                 if (!string.IsNullOrEmpty(directory))
                     Directory.CreateDirectory(directory);
                 using (Bitmap page = EngineMultiView.RenderPage(layout, device, game.Length > 0 ? game : null, plane, options, warnings))
-                    page.Save(target, ImageFormat.Png);
+                    page.Save(JoyPro.Engine.TestSandbox.EnsureWritable(target, "Image save"), ImageFormat.Png);
             }
             EmitPayload(EngineSerialization.ToJson(new Dictionary<string, object>
             {

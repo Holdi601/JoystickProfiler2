@@ -15,7 +15,16 @@ public sealed partial class MainWindowViewModel
         set => SetConfirmationAsked(ConfirmRemoveActionKey, value);
     }
 
-    public bool HasSwitchedOffConfirmations => !AskBeforeRemovingAction;
+    // An import while the profile has changes for the game that were never exported (MainWindowViewModel.ImportGuard.cs).
+    public const string ConfirmImportUnexportedKey = "games.import-unexported-changes";
+
+    public bool AskBeforeImportDropsChanges
+    {
+        get => ListPrefs.ShouldAsk(ConfirmImportUnexportedKey);
+        set => SetConfirmationAsked(ConfirmImportUnexportedKey, value);
+    }
+
+    public bool HasSwitchedOffConfirmations => !AskBeforeRemovingAction || !AskBeforeImportDropsChanges;
 
     internal void SetConfirmationAsked(string key, bool ask)
     {
@@ -24,6 +33,7 @@ public sealed partial class MainWindowViewModel
         ListPrefs.Confirmations[key] = ask;
         SaveListPreferences();
         OnPropertyChanged(nameof(AskBeforeRemovingAction));
+        OnPropertyChanged(nameof(AskBeforeImportDropsChanges));
         OnPropertyChanged(nameof(HasSwitchedOffConfirmations));
     }
 
@@ -32,6 +42,7 @@ public sealed partial class MainWindowViewModel
     private void AskAllConfirmationsAgain()
     {
         SetConfirmationAsked(ConfirmRemoveActionKey, true);
-        StatusText = T("JoyPro asks again before removing an action from a relation.");
+        SetConfirmationAsked(ConfirmImportUnexportedKey, true);
+        StatusText = T("JoyPro asks every question again.");
     }
 }

@@ -100,7 +100,8 @@ public sealed partial class ListFilterViewModel : ObservableObject
     };
 
     // How well a shown relation fits the typed search (lower first): 0 its name is the search, 1 its name starts with
-    // it, 2 its name has every word, 3 it was found by its actions or other parts. 0 without a search.
+    // it, 2 its name has every word, 3 an action's title has the whole search ("master caution" in "Master Caution
+    // Button", tester report on 2.4.2), 4 it was found by its actions or other parts. 0 without a search.
     public int SearchRank(FilterSubject? s)
     {
         if (s == null || searchWords.Length == 0)
@@ -113,12 +114,18 @@ public sealed partial class ListFilterViewModel : ObservableObject
         foreach (string word in searchWords)
         {
             if (!s.NameText.Contains(word, StringComparison.Ordinal))
-                return 3;
+                return SearchesActions && s.TitlesText.Contains(whole, StringComparison.Ordinal) ? 3 : 4;
         }
         return 2;
     }
 
     public bool HasSearch => searchWords.Length > 0;
+
+    // The typed words in lower case (the match lines under a card mark them).
+    public IReadOnlyList<string> SearchWords => searchWords;
+
+    // The search looks at the titles of the actions (scope "Name + actions" or "Everything").
+    public bool SearchesActions => searchScope != ListSearchScope.Name;
 
     // ---- bound / not bound, axis / button ----
 

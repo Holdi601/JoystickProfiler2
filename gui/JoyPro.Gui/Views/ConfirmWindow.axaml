@@ -24,13 +24,16 @@
                 </StackPanel>
             </Grid>
         </ScrollViewer>
-        <Grid x:Name="ConfirmFooter" Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+        <Grid x:Name="ConfirmFooter" Grid.Row="1" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
         <CheckBox x:Name="DontAskAgainBox" Content="{l:T 'Do not ask again'}" IsVisible="False" VerticalAlignment="Center"
                   ToolTip.Tip="{l:T 'JoyPro does this without asking from now on. Settings > Confirmations asks again.'}" />
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+        <!-- Three answers: the buttons go below the box, on their own line (they wrap when the text is big) -->
+        <WrapPanel x:Name="ConfirmButtons" Grid.Column="1" HorizontalAlignment="Right" ItemSpacing="10" LineSpacing="8">
             <Button x:Name="ConfirmButton" Classes="icon accent" Tag="{StaticResource Icon.Check}" Click="ConfirmClicked" />
+            <!-- A third answer ("Export first"): another way, a plain button -->
+            <Button x:Name="SecondaryButton" Classes="icon accent" Tag="{StaticResource Icon.Check}" Click="SecondaryClicked" IsVisible="False" />
             <Button x:Name="CancelButton" Classes="icon" Tag="{StaticResource Icon.Close}" Content="{l:T 'Cancel'}" Click="CancelClicked" IsCancel="True" />
-        </StackPanel>
+        </WrapPanel>
         </Grid>
     </Grid>
 </Window>

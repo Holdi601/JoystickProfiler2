@@ -162,6 +162,9 @@ public sealed partial class MainWindowViewModel
         RelationListItem.AircraftNames = new Dictionary<string, string>(index.AircraftNames, StringComparer.OrdinalIgnoreCase);
         foreach (RelationListItem relation in allRelations)
             relation.RefreshAircraftNames();
+        // The search's match lines name the aircraft too ("AH-64D BLK.II", not "AH-64D_BLK_II"): again with the names.
+        UpdateRelationSearchHits(Relations.ToList());
+        UpdateBindSearchHits(Binds.ToList());
     }
 
     // The aircraft's name as the module calls it ("F/A-18C Hornet" for FA-18C_hornet), or the DB name.

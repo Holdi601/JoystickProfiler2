@@ -29,6 +29,45 @@ HiddenWindow; a UI-thread probe fails any block over 400 ms; `JOYPRO_CHECK_REPLA
 `JOYPRO_CHECK_REPORT=<file>` writes the timings). DCS import with "include defaults": the smoke part
 `engine\tests\smoke\dcsincludedefaults.ps1`.
 
+## Test sandbox
+
+No test, gate run or smoke run may write into a real game folder, Saved Games, Documents or JoyPro's own folders of
+the PC (2.4.3: a test view model's export path defaulted to the real `Saved Games\DCS`, and "Export first" wrote into
+the user's `Config\Input`).
+
+- **Engine.** `JOYPRO_TEST_SANDBOX=<root>` makes the engine refuse every write outside `<root>`, the temp folder,
+  `JOYPRO_DATA_DIR` and the folders listed in `JOYPRO_TEST_SANDBOX_ALLOW` (`;`-separated). Without its own
+  `JOYPRO_DATA_DIR` or `JOYPRO_LOCALAPPDATA` the stand-in `%LOCALAPPDATA%` is `<root>\LocalAppData` (data folder
+  `<root>\LocalAppData\JoyPro2`). A
+  refused write throws before anything is touched, prints `[test-sandbox] JOYPRO_TEST_SANDBOX refused ...` on stderr,
+  is appended to `<root>\sandbox-violations.log` (with the stack) and ends the command with exit code 77, also when a
+  catch on the way swallowed the exception. The chokepoint is `engine\SandboxedIo.cs`: it declares `File`,
+  `Directory`, `FileStream` and `StreamWriter` in the root namespace `JoyPro`, so C#'s name lookup takes them instead
+  of System.IO's for every file write of the engine (all namespaces under `JoyPro`: exports of every game, backups,
+  restore and undo export, strip-defaults and device-luas, sync apply, imports, settings, the support bundle, logs);
+  reads pass straight through (`engine\TestSandbox.cs`). Picture renders (`Image.Save`) and zip extraction call the
+  guard themselves. Game settings in the registry (Nuclear Option and Tiny Combat Arena's Unity PlayerPrefs, the
+  registry restore of backups) are never written under the sandbox; `JOYPRO_TEST_REGISTRY_ROOT=<key under HKCU>`
+  redirects them instead (tests use the fake-registry `.json` files). A new write in the engine needs nothing extra;
+  only code that spells out `System.IO.File` / `System.IO.Directory` bypasses the guard, which only reads may do.
+- **GUI tests.** `TestEnvironment` (the module initializer) sets `JOYPRO_TEST_SANDBOX` to a fresh temp folder for every
+  engine a test starts. The app's default game paths come from `Services\UserFolders.cs`, which under the sandbox
+  returns stand-in folders inside it (`<root>\UserFolders\UserProfile\Saved Games\DCS`, Documents, Program Files), and
+  the app does not take over game folders the engine finds on the PC (`AdoptEngineGamePaths`). Before the first test
+  `RealFolderGuard` fingerprints (file list, size, time stamp; registry values hashed) `%USERPROFILE%\Saved Games`,
+  `%LOCALAPPDATA%\JoyPro2`, `%APPDATA%\JoyPro2`, `%LOCALAPPDATA%\JoyPro` and every config location `engine games
+  installs` finds on this PC; logs, tracks, screenshots and caches are left out. `RealFolderGuardTests` runs last
+  (`RealFolderGuardLastOrderer`) and fails the run with the list of changed files, and when any engine of the run
+  logged a refused write. While a JoyPro of the user runs, changes in the JoyPro folders are printed as warnings only.
+  A filtered run without that test checks at process exit and writes the result to stderr and
+  `%TEMP%\JoyPro2.Gui.Tests\real-folder-guard-*.txt`. `SandboxGuardTests` proves the refusal: a DCS export into a
+  stand-in folder outside the sandbox and then into the real `Saved Games\DCS` ends with exit code 77 and changes no
+  file.
+- **Smoke test and gate.** `engine_smoke_test.ps1` runs every engine with its own sandbox and fails when the run's
+  `sandbox-violations.log` exists. The quality gate runs inside the GUI tests (same sandbox) and allows only its `-Out`
+  folder besides temp (`JOYPRO_TEST_SANDBOX_ALLOW`), so its exports can reach only the copies in
+  `<Out>\export-copies`.
+
 ## Speed
 
 Nothing a person waits for should take more than a few seconds (interactive actions ≤ 2 s); the budgets are in

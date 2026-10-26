@@ -83,6 +83,28 @@ internal static class TestEnvironment
         string vjoyFake = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "vjoy-fake-" + System.Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(vjoyFake);
         System.Environment.SetEnvironmentVariable("JOYPRO_VJOY_FAKE", vjoyFake);
+        // The test sandbox (docs/testing.md "Test sandbox"): every engine a test starts refuses writes outside the sandbox,
+        // temp and its data folder, and the app's default game paths (Saved Games\DCS, Star Citizen, Documents, Program
+        // Files) are stand-in folders inside it (UserFolders). A stand-in DCS Saved Games exists, so the app keeps it
+        // instead of looking for the real one. The real game and JoyPro folders are fingerprinted now and checked after
+        // the last test (RealFolderGuardTests).
+        Directory.CreateDirectory(SandboxRoot);
+        System.Environment.SetEnvironmentVariable(UserFolders.SandboxVariable, SandboxRoot);
+        Directory.CreateDirectory(Path.Combine(UserFolders.Get(System.Environment.SpecialFolder.UserProfile), "Saved Games", "DCS", "Config", "Input"));
+        RealFolderGuard.Start(EnginePath());
+    }
+
+    // The sandbox root of this run (JOYPRO_TEST_SANDBOX).
+    public static string SandboxRoot { get; } = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "sandbox-" + System.Guid.NewGuid().ToString("N"));
+
+    // The engine build of this configuration, or null.
+    public static string? EnginePath()
+    {
+        DirectoryInfo? dir = new(System.AppContext.BaseDirectory);
+        while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "engine", "bin")))
+            dir = dir.Parent;
+        string? engine = dir == null ? null : Path.Combine(dir.FullName, "engine", "bin", "x64", TestEngine.Configuration, "engine.exe");
+        return engine != null && File.Exists(engine) ? engine : null;
     }
 
     private sealed class NoFfbHostLauncher : IFfbHostLauncher

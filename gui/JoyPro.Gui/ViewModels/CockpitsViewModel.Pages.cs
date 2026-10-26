@@ -93,7 +93,7 @@ public sealed partial class CockpitsViewModel
     public static bool ThemeIsDark => Avalonia.Threading.Dispatcher.UIThread.CheckAccess() && Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
 
     // Where exports go (Documents\JoyPro2\Cockpits); tests set it.
-    public string ExportFolder { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro2", "Cockpits");
+    public string ExportFolder { get; set; } = Path.Combine(UserFolders.Get(Environment.SpecialFolder.MyDocuments), "JoyPro2", "Cockpits");
 
     private bool syncingPages;
 

@@ -66,4 +66,7 @@ public sealed class BindListItem
     public Avalonia.Media.IImage? DeviceIcon { get; set; }
 
     public bool HasDeviceIcon => DeviceIcon != null && HasBind;
+
+    // What the Binds page's search found in the relation's actions (set by the list's filter before the row shows).
+    public SearchMatchInfo SearchHits { get; set; } = new();
 }

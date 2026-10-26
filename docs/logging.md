@@ -92,24 +92,65 @@ fed by `GameBackups.Begin` / `GameBackups.Protect` and the game integrations):
   was asked (notice / notification) or the state was accepted without asking.
 
 ### Support file
-Settings > Report a problem > **Create support file** (engine: `engine support bundle [--game <id>] [--days N] [--list]
---out <zip>`, `engine\EngineSupportBundle.cs`). The GUI first lists what the zip will hold (`--list`, nothing is
-written), the user confirms, then it is saved as `Documents\JoyPro2 Problem Reports\JoyPro2-support-<time>.zip` and
-shown in Explorer. Nothing is uploaded. Every text goes through `LogScrubber` (the user folder becomes `%USERPROFILE%`);
-binary files are left out.
+The engine's part of Settings > Report a problem > **Create Report** (see "Problem report" below; engine: `engine
+support bundle [--game <id>] [--days N] [--include-profile true|false] [--history-cap-mb N] [--list] --out <zip>`,
+`engine\EngineSupportBundle.cs` and `EngineSupportBundle.Profile.cs`). It holds everything a maintainer needs, so a
+tester never has to send a second file. The GUI first lists what the zip will hold (`--list`, nothing is written: every
+part with its size and what is trimmed), the user confirms, then the engine saves it as `Documents\JoyPro2 Problem
+Reports\JoyPro2-report-<time>.zip`, the GUI adds `report.txt` and shows it in Explorer. The engine makes it in its own process (the GUI stays usable) and reports its progress in the busy
+area; a typical file of 40 MB takes about 5 seconds. Nothing is uploaded.
+
+The one box of the section, **Include my open profile and its history (your binds and device names)**, on by default
+and remembered (`ui-settings.json` `supportIncludeProfile`), decides the personal parts: the GUI passes `--profile <open
+profile> --include-profile true`, or `--include-profile false`. On the command line `--include-profile` defaults to true
+when `--profile` is given, else false.
 
 | Entry | Content |
 |---|---|
-| `summary.txt` | versions, system, JoyPro's folders, per installed game (or `--game`) the environment as above, the connected devices |
-| `logs/*.log`, `crash-reports/*.txt` | JoyPro's logs of the last 3 days (at most 60 MB) and crash reports |
-| `games/<id>/sync-record.json` | the watcher's record of the game's state |
-| `games/<id>/backup-<set>/` | the newest backup set: JoyPro's own copies of the small text config files (at most 512 KB each) an export changed, and its manifest |
+| `summary.txt` | versions, system, JoyPro's folders, the log window, the open profile (file name, size, number of history versions, which were left out), per installed game (or `--game`) the environment as above, the connected devices, then every part with its number of files and size and **what was trimmed or left out** |
+| `logs/*.log` | all of JoyPro's logs (GUI, engine, tray and watcher, force feedback) of at least the last 14 days (`--days`) and back to the oldest history version of the open profile, at most 100 MB; the oldest are left out first (named in summary.txt) |
+| `crash-reports/`, `errors/last-errors.txt` | the crash reports of that time (the newest 40) and the last 50 warnings and errors with a stack trace from the logs |
+| `state/settings/` | the app's settings folder (`ui-settings.json`, `ui-layout.json`, `hud.json`, `export-settings.json`, ...; a long text log only its last 512 KB) |
+| `state/data/` | the data folder's state files (`data-migration.json`, `game-installs.json`, `games-disabled.json`, ...), `Logs\log-settings.txt`, the update records, device reference, local AI, force feedback, theme and watcher settings, which game files JoyPro owns (`Ownership`) |
+| `state/versions.txt` | the game lists in use (`GameData\DB\<game>\source-version.txt`, the record of `engine db check-updates`) and every installed cockpit, photo and 3D pack (`pack.json`) |
+| `state/data-folder.txt` | files and size per folder of the data folder |
+| `devices/devices.txt`, `devices/vjoy-hidhide.txt` | the devices (VID:PID, instance GUIDs, HID names) and `engine vjoy status` (vJoy, ViGEm and HidHide installed, their devices and state, JoyPro's HidHide session) |
+| `profile/<file>.pr0file` | personal: the open profile (only that one) |
+| `profile/history/` | personal: its history as `engine profile history` reads it: `history.json` (the whole index), `drafts.json`, `blobs/<hash>.gz` and `.items.gz` of the newest versions up to 50 MB of stored copies (`--history-cap-mb`); the versions left out are named in summary.txt |
+| `games/<id>/sync-record.json`, `backups.txt`, `backup-<set>/` | the watcher's record, the list of JoyPro's backups (set, time, command, files) and the newest set: JoyPro's own copies of the small text config files (at most 512 KB each) an export changed, and its manifest |
+| `games/<id>/current/`, `current-files.txt` | personal: the game's bind files as they are now, the files JoyPro imports from and exports to (DCS `Config\Input\<aircraft>\{joystick,keyboard,mouse}\*.diff.lua` and `modifiers.lua`, IL-2's `input` files and `startup.cfg`, Star Citizen's actionmaps, the other games' files, a registry game's values as text) and JoyPro's files next to them (`.jp`, `.joypro-meta.json`, `.joypro.json`); text up to 4 MB each, at most 50 MB per game (newest first), and the list of all of them with size, time and whether copied. A file that changes while it is read is not copied |
 | `games/MSFS2024/profiles/` | the input profiles JoyPro reads (Steam remote folder, Microsoft Store save; decoded text, a header line with the source path, size and time) |
 | `games/MSFS2024/package/`, `import-files/` | JoyPro's preset package and the import files |
 | `games/MSFS2024/sim-records.txt` | the sim's device records as JoyPro reads them (not the save file) |
 
-**Ask a tester for the support file first** (it answers which install, which folders, which files and what the sim's
-records say), then for the problem report with a description.
+Every text goes through `LogScrubber` (the user folder becomes `%USERPROFILE%`, see below); other binary files are left
+out. JoyPro keeps no export or import reports of its own: the logs hold what every export and import did. The profile
+and its history are binary: the copies get the same cleaning on the strings inside them (a picture path, a DCS folder:
+each string record is rewritten with its new length) and are read back with the profile's own reader before they go
+in; a copy that does not read back is left out and summary.txt says so. A cleaned version gets the hash of its new
+content (its blob, its items and `history.json` follow), so the history in the zip still restores. Only copies are
+changed; the originals and the game files are only read.
+
+**Ask a tester for the support file first**; it holds the logs, the profile with its history and the games' files, so
+no second request is needed.
+
+#### Restoring a version from a support file (maintainers)
+
+The history folder's name comes from the profile's full path, so `engine support unpack` puts both where `engine
+profile history` finds them, in an isolated data folder (nothing of this PC's JoyPro is touched):
+
+```powershell
+engine support unpack 'C:\Cases\JoyPro2-support-20261026-170635.zip' --to 'C:\Cases\case1' --text
+$env:JOYPRO_DATA_DIR = 'C:\Cases\case1\data'
+engine --profile 'C:\Cases\case1\profile\<file>.pr0file' profile history list --text
+engine --profile 'C:\Cases\case1\profile\<file>.pr0file' profile history show 12 --text
+engine --profile 'C:\Cases\case1\profile\<file>.pr0file' profile history restore 12 --text
+```
+
+`unpack` writes the whole zip to `<folder>\support\`, the profile to `<folder>\profile\` and its history to
+`<folder>\data\ProfileHistory\<id of that path>\` (`history.json` then names the copy). After `restore` the copy is
+that version; `undo` goes back. A version left out by the size cap is listed but says "The stored copy of this version
+is missing." Keep `JOYPRO_DATA_DIR` set for every command on the copy.
 
 Never per frame or per tick: the force loop and the watcher's idle time log nothing. JoyPro.Ffb writes a one-line
 summary once a minute (state, frames, memory, GC, handles, updates); repeated warnings use `JoyProLog.ShouldLog(key,
@@ -121,12 +162,14 @@ interval)`.
   opened per write under a named mutex, so several engine processes can append to one file.
 - A file is rolled at 10 MB (`engine-20261011-1.log`, ...); at most 5 files per program and day (50 MB). The rest of
   such a day is dropped, so a runaway loop cannot fill the disk.
-- Logs older than the retention are deleted: default **7 days**, 1-365, set in the GUI (Settings > Report a Problem >
-  `Keep background logs for N days`). The value is stored in `<Logs>\log-settings.txt` (`retention-days=7`,
-  `level=debug`), which all three programs read at start. `JOYPRO_LOG_RETENTION_DAYS` and `JOYPRO_LOG_LEVEL`
+- Logs older than the retention are deleted: default **30 days** (up to 2.4.2: 7), 1-365, set in the GUI (Settings >
+  Report a Problem > `Keep background logs for N days`), so the report can go back to the oldest saved version of a
+  profile. The value is stored in `<Logs>\log-settings.txt` (`retention-days=30`, `retention-chosen=true` once the user
+  set it, `level=debug`), which all three programs read at start. A file of an older version with the old default
+  (`retention-days=7` without `retention-chosen`) reads as 30; any other value, and 7 chosen in 2.4.3 or later, stays. `JOYPRO_LOG_RETENTION_DAYS` and `JOYPRO_LOG_LEVEL`
   (`debug`, `info`, `warn`, `error`, `off`) override it.
 - The cleanup runs at a program start at most once an hour (`<Logs>\.last-cleanup`), costs one file time read
-  otherwise, and also removes logs over 300 MB in total (oldest first). Crash reports in the `CrashReports` folder are
+  otherwise, and also removes logs over 200 MB in total (oldest first). Crash reports in the `CrashReports` folder are
   kept at least 30 days (the GUI shows unseen ones at its next start).
 
 ## Privacy
@@ -147,29 +190,34 @@ text file of a problem report goes through `LogScrubber.Scrub`:
 The hash is SHA-256 over the id and a salt made of the PC and user name (which never reach a log): the same id gives
 the same hash on one PC, so lines stay comparable, and it cannot be looked up. JoyPro does not read e-mail addresses,
 passwords or tokens itself; the rules are a safety net for text that passes through (engine output, game files,
-exception messages). The profile attached to a report on request is added unchanged (binary profiles cannot be
-scrubbed; they hold binds, device names and file paths).
+exception messages). The copies of the profile and its history in a report are cleaned inside their strings as well
+(see "Support file" above); only the GUI's own report (when the engine cannot run) has no profile.
 
 ## Problem report
 
-Settings > Report a Problem, for users without technical knowledge:
+Settings > Report a Problem, for users without technical knowledge, one flow (`MainWindowViewModel.AppServices.cs`
+`CreateProblemReportAsync`, `Services\ProblemReporter.cs`):
 
 1. `What happened?`: the user describes the problem.
-2. `Create Report`: JoyPro collects diagnostics (engine version, `engine games devices`, requirements, DB notices, the
-   current page, recent engine output), writes the zip to `Documents\JoyPro2 Problem Reports\JoyPro2-problem-<time>.zip`
-   and shows it in Explorer. The status line says what to do next.
-3. `Open GitHub Issue Page` opens a prefilled issue (title and description, scrubbed) in the browser, where the user
+2. The box `Include my open profile and its history (your binds and device names)` (on by default, remembered; it
+   replaced the report's `Attach my profile` of 2.4.2, which was never saved, so there was nothing to carry over).
+3. `Create Report`: JoyPro lists what goes in (`engine support bundle --list`), the user confirms, the engine writes the
+   support file (above) to `Documents\JoyPro2 Problem Reports\JoyPro2-report-<time>.zip`, and the GUI adds
+   `report.txt` and `engine-output.log` (`ProblemReporter.AddReport`) and shows the zip in Explorer. The status line
+   says what to do next.
+4. `Open GitHub Issue Page` opens a prefilled issue (title and description, scrubbed) in the browser, where the user
    drags the zip in; `Show Report` shows the zip again.
 
-Nothing is uploaded automatically and JoyPro has no upload endpoint. The zip contains:
+Nothing is uploaded automatically and JoyPro has no upload endpoint. The zip is the support file (table above) plus:
 
 | Entry | Content |
 |---|---|
-| `report.txt` | the description, time and UTC offset, version, OS, system and .NET, log session, diagnostics, the list of entries |
-| `logs/*.log` | the logs of the last 3 days (at most 60 MB, newest first), all programs |
-| `crash-reports/*.txt` | up to 10 crash reports of the GUI and the engine |
+| `report.txt` | the description, time and UTC offset, version, OS, system and .NET, diagnostics (engine version, `engine games devices`, requirements, DB notices, the current page, recent engine output), the parts of the zip |
 | `engine-output.log` | the full engine output of this GUI session |
-| `profile/<name>` | the current profile, only when `Attach my profile` is ticked (unchanged) |
+
+When the engine cannot run, the GUI makes its own smaller zip instead (`ProblemReporter.Create`,
+`JoyPro2-problem-<time>.zip`): `report.txt`, the logs of the last 3 days (at most 60 MB), up to 10 crash reports and
+`engine-output.log`, without the profile.
 
 All text entries are scrubbed. Reading a report: start with `report.txt` (what the user saw), then the GUI log around
 the report time, follow `Call gui-N` into the engine log (`c:gui-N`), and check `WARN`/`ERROR` lines and the

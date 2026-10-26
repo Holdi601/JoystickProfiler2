@@ -208,6 +208,10 @@ public sealed partial class BindPeekAction : ObservableObject
     [ObservableProperty]
     private bool isExpanded;
 
+    // The search's match line under the bind row was clicked for this action: it is marked.
+    [ObservableProperty]
+    private bool isSearchHit;
+
     [RelayCommand]
     private void ToggleExpanded() => IsExpanded = !IsExpanded;
 }

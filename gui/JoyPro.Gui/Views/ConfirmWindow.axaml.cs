@@ -25,6 +25,17 @@ public partial class ConfirmWindow : Window
         MessageText.Text = request.Message;
         ConfirmButton.Content = request.ConfirmLabel;
         ConfirmButton.IsDefault = !request.IsDanger;
+        if (request.SecondaryLabel.Length > 0)
+        {
+            // The action stays the accent (and default) button; the other way is a plain one.
+            SecondaryButton.Content = request.SecondaryLabel;
+            SecondaryButton.IsVisible = true;
+            SecondaryButton.Classes.Remove("accent");
+            Grid.SetRow(ConfirmButtons, 1);
+            Grid.SetColumn(ConfirmButtons, 0);
+            Grid.SetColumnSpan(ConfirmButtons, 2);
+            Width = 600;
+        }
         if (request.IsDanger && this.TryFindResource("Icon.Warning", out object? warning) && warning is Geometry geometry)
         {
             QuestionIcon.Data = geometry;
@@ -37,6 +48,13 @@ public partial class ConfirmWindow : Window
     {
         if (request != null)
             request.DontAskAgain = DontAskAgainBox.IsChecked == true;
+        Close(true);
+    }
+
+    private void SecondaryClicked(object? sender, RoutedEventArgs e)
+    {
+        if (request != null)
+            request.SecondaryChosen = true;
         Close(true);
     }
 

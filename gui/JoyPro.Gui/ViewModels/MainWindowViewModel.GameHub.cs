@@ -227,6 +227,9 @@ public sealed partial class MainWindowViewModel
         GameCardItem? game = ImportWizardGame;
         if (game == null)
             return;
+        // Changes made in JoyPro and not exported yet would come back from the game: asked once, before anything else.
+        if (await AskAboutUnexportedChangesAsync(game.GameId, game.Name, game.Kind == "dcs" ? ImportDcsPath ?? string.Empty : string.Empty) != ImportGuardChoice.Import)
+            return;
         if (!ImportWizardAddToProfile && HasProfile && Relations.Count > 0 &&
             !await ConfirmAsync(T("Start over from {0}?", game.Name),
                 T("The relations of {0} are replaced by what {1} has. A copy of your profile is kept next to it first.", ProfileDisplayName, game.Name),
@@ -239,6 +242,7 @@ public sealed partial class MainWindowViewModel
         UiStage stageBefore = CurrentStage;
         LastExitCode = "n/a";
         string? crash = null;
+        importGuardAsked = true;
         try
         {
             switch (game.Kind)
@@ -264,6 +268,10 @@ public sealed partial class MainWindowViewModel
             JoyPro.Logging.JoyProLog.Warn("ImportWizard", "Import of " + game.GameId + " failed", ex);
             crash = ex.Message;
             LastExitCode = "n/a";
+        }
+        finally
+        {
+            importGuardAsked = false;
         }
 
         bool ok = LastExitCode == "0" && crash == null;

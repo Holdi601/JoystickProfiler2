@@ -495,7 +495,7 @@ namespace JoyPro.Engine
         public static RegistrySnapshot Read(string key, string ownedPrefix)
         {
             RegistrySnapshot snapshot = new RegistrySnapshot { Key = key, OwnedPrefix = ownedPrefix ?? string.Empty };
-            using (Microsoft.Win32.RegistryKey registry = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(SubKeyOf(key), false))
+            using (Microsoft.Win32.RegistryKey registry = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(TestSandbox.RegistrySubKeyForRead(SubKeyOf(key)), false))
             {
                 if (registry == null)
                     return snapshot;
@@ -515,7 +515,7 @@ namespace JoyPro.Engine
         public int Apply()
         {
             int changed = 0;
-            using (Microsoft.Win32.RegistryKey registry = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(SubKeyOf(Key)))
+            using (Microsoft.Win32.RegistryKey registry = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(TestSandbox.RegistrySubKeyForWrite(SubKeyOf(Key), "Registry restore")))
             {
                 foreach (string name in registry.GetValueNames().Where(n => n.StartsWith(OwnedPrefix ?? string.Empty, StringComparison.Ordinal) && !Values.ContainsKey(n)).ToList())
                 {

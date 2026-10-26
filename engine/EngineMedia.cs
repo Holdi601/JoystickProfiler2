@@ -333,7 +333,7 @@ namespace JoyPro.Engine
                 {
                     if (bitmap == null)
                         return string.Empty;
-                    bitmap.Save(target, ImageFormat.Png);
+                    bitmap.Save(JoyPro.Engine.TestSandbox.EnsureWritable(target, "Image save"), ImageFormat.Png);
                 }
                 return target;
             }

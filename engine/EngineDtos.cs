@@ -42,11 +42,29 @@ namespace JoyPro.Engine
         public EngineBindDto Bind { get; set; }
         // "relations list --titles" only: the distinct titles of the relation's actions (every switched-on aircraft).
         public List<string> Titles { get; set; }
+        // "relations list --titles" only: each title with its action (index in Nodes, id), game and aircraft, so the
+        // search can show what matched.
+        public List<EngineTitleEntryDto> TitleList { get; set; }
 
         public EngineRelationDto()
         {
             Groups = new List<string>();
             Nodes = new List<EngineRelationItemDto>();
+        }
+    }
+
+    public sealed class EngineTitleEntryDto
+    {
+        public string Title { get; set; }
+        public string Game { get; set; }
+        public int Node { get; set; }
+        public string Id { get; set; }
+        // DCS: the aircraft that have this title for the action; other games: empty.
+        public List<string> Planes { get; set; }
+
+        public EngineTitleEntryDto()
+        {
+            Planes = new List<string>();
         }
     }
 

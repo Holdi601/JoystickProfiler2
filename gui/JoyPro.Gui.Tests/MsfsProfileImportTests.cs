@@ -747,7 +747,8 @@ public sealed partial class MsfsProfileImportTests : IDisposable
         (int listCode, string list) = Engine(home, "support", "bundle", "--list", "--text");
         Assert.True(listCode == 0, list);
         Assert.Contains("Support file contents (not written)", list);
-        List<string> entries = MainWindowViewModel.SupportFileEntries(list);
+        List<string> entries = MainWindowViewModel.SupportFileEntryNames(list);
+        Assert.Contains(MainWindowViewModel.SupportFileEntries(list), p => p.StartsWith("- per game: the watcher's record", StringComparison.Ordinal));
         Assert.Contains(entries, e => e.StartsWith("summary.txt (", StringComparison.Ordinal));
         Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/profiles/001-store-", StringComparison.Ordinal));
         Assert.Contains(entries, e => e.StartsWith("games/MSFS2024/package/InputProfiles/Categories/Airplane/JoyPro_VPC_VMAX_Prime_Throttle_0000cccc_2024_Planes.xml", StringComparison.Ordinal));

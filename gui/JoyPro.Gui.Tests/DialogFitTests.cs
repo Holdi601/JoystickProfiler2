@@ -52,6 +52,9 @@ public sealed class DialogFitTests
                     ["ConfirmButton", "CancelButton"], "MessageScroll", mustScroll: true, problems, outDir);
                 Check(() => new ConfirmWindow(new ConfirmRequest("Remove Old Pedals from your profile?", "Every bind of this device is removed.", "Remove device", true) { DontAskKey = "remove-device" }),
                     "confirm-short", ["ConfirmButton", "CancelButton"], "MessageScroll", mustScroll: false, problems, outDir);
+                // Three answers (an import with changes not exported yet, MainWindowViewModel.ImportGuard.cs).
+                Check(() => new ConfirmWindow(new ConfirmRequest("Changes not in DCS yet", "You changed 2 binds for DCS that are not in DCS yet (e.g. moved 'Master Warning Button'). Importing now brings back what DCS still has.", "Import (drop my changes for DCS)", false) { SecondaryLabel = "Export first", DontAskKey = "games.import-unexported-changes" }),
+                    "confirm-three", ["ConfirmButton", "SecondaryButton", "CancelButton"], "MessageScroll", mustScroll: false, problems, outDir);
                 Check(() => new GameSetupWindow { DataContext = vm }, "game-setup", ["SetupFooter"], "SetupScroll", mustScroll: false, problems, outDir);
                 Check(() => new ReplaceDeviceWindow { DataContext = vm }, "replace-device", ["ReplaceFooter"], "ReplaceScroll", mustScroll: false, problems, outDir);
                 SetupWizardViewModel wizard = vm.CreateSetupWizard();

@@ -459,7 +459,7 @@ namespace JoyPro.Engine
                     for (int i = 0; i < pages.Count; i++)
                     {
                         string file = pages.Count == 1 ? full : Path.Combine(Path.GetDirectoryName(full), Path.GetFileNameWithoutExtension(full) + "." + CockpitCatalog.Slug(pages[i].Id) + ".png");
-                        bitmaps[i].Save(file, ImageFormat.Png);
+                        bitmaps[i].Save(JoyPro.Engine.TestSandbox.EnsureWritable(file, "Image save"), ImageFormat.Png);
                         files.Add(file);
                     }
                 }
@@ -566,7 +566,7 @@ namespace JoyPro.Engine
                 if (!string.IsNullOrEmpty(dir))
                     Directory.CreateDirectory(dir);
                 using (Bitmap page = SideBySide(pages, dark))
-                    page.Save(full, ImageFormat.Png);
+                    page.Save(JoyPro.Engine.TestSandbox.EnsureWritable(full, "Image save"), ImageFormat.Png);
                 if (textOutput)
                 {
                     Console.WriteLine("Rendered: " + full);

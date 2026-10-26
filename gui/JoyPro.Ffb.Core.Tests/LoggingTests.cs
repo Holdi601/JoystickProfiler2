@@ -145,6 +145,25 @@ public sealed class LoggingTests : IDisposable
         Assert.Equal(2, JoyProLogSettings.Read(folder).RetentionDays);
     }
 
+    // The default went from 7 to 30 days (2.4.3): a file of an older version with the old default reads as 30, the
+    // same 7 chosen by the user (retention-chosen=true) and any other value stay.
+    [Fact]
+    public void Settings_OldDefaultBecomesTheNewDefault_AChosenValueStays()
+    {
+        var folder = Path.Combine(_temp, "settings-migration");
+        Directory.CreateDirectory(folder);
+        Assert.Equal(30, JoyProLog.DefaultRetentionDays);
+        Assert.Equal(200L * 1024 * 1024, JoyProLog.DefaultMaxTotalBytes);
+        File.WriteAllText(Path.Combine(folder, JoyProLog.SettingsFileName), "# old\r\nretention-days=7\r\nlevel=debug\r\n");
+        Assert.Equal(30, JoyProLogSettings.Read(folder).RetentionDays);
+        File.WriteAllText(Path.Combine(folder, JoyProLog.SettingsFileName), "retention-days=10\r\n");
+        Assert.Equal(10, JoyProLogSettings.Read(folder).RetentionDays);
+        new JoyProLogSettings { RetentionDays = 7, RetentionChosen = true }.Write(folder);
+        JoyProLogSettings chosen = JoyProLogSettings.Read(folder);
+        Assert.Equal(7, chosen.RetentionDays);
+        Assert.True(chosen.RetentionChosen);
+    }
+
     [Fact]
     public void Start_WritesHeaderAndCorrelatedLinesIntoTheDailyFile()
     {

@@ -182,7 +182,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine sync accept --game <id> [--path <config>]   (the current config counts as known; nothing is imported)
   engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)
   engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, "new" (+ Name) or "ignore"; then the config counts as known)
-  engine support bundle [--game <id>] [--days <n>] [--list] --out <file.zip>   (the support file: logs of the last days, the games' environment and devices, JoyPro's copies of their small config files, MSFS profiles read; user folder replaced, nothing uploaded; --list only shows the contents)
+  engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)
+  engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history and the games' current bind files; user folder replaced, nothing uploaded; --list only shows the contents)
+  engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)
   engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)
   engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))
   engine vjoy plan [--reset] [--prune]   (the mapping table and the vJoy configuration it needs; nothing is saved)
@@ -429,7 +431,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)
-  engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--dry-run]  (one action to another button: joins the relation on that input, else a new one)
+  engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--if-taken ask|swap|replace|keep-both] [--dry-run]  (one action to another button: joins the relation on that input, else a new one; --if-taken: when the aircraft has another action there)
   engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass duplicate [--relation <name>] [--relations <csv>] [--query <text>] [--all] [--no-bind]
   engine relations mass merge <name> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
@@ -1618,7 +1620,7 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
 - `--db-path`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
 
 Examples:
@@ -1664,7 +1666,7 @@ What it does: Runs this command operation.
 
 Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 
 Examples:
 ```powershell
@@ -1889,22 +1891,53 @@ Examples:
 engine --help
 ```
 
-### `engine support bundle [--game <id>] [--days <n>] [--list] --out <file.zip>   (the support file: logs of the last days, the games' environment and devices, JoyPro's copies of their small config files, MSFS profiles read; user folder replaced, nothing uploaded; --list only shows the contents)`
-What it does: Writes the support file (docs/logging.md "Support file"): summary with versions, system, the games' environment (install, config folders, drive, file system, attributes such as EFS) and the connected devices; JoyPro's logs and crash reports of the last days; per game the watcher's record and JoyPro's copies of the small config files its newest export changed; for MSFS the profiles JoyPro reads, its package, the import files and the sim's records. Every text is scrubbed (user folder -> %USERPROFILE%); nothing is uploaded. --list only prints the contents.
+### `engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)`
+What it does: Runs this command operation.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `<id>`: Command argument. See examples for typical values.
-- `--days`: For support bundle: logs and crash reports of the last N days (default 3).
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `<config>`: The game's config (file, folder or HKCU registry key) as engine sync status lists it; default: the one the export uses.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history and the games' current bind files; user folder replaced, nothing uploaded; --list only shows the contents)`
+What it does: Writes the support file (docs/logging.md "Support file"), everything a maintainer needs in one zip: summary with versions, system, the games' environment, the devices, every part with its size and what was trimmed; JoyPro's logs (GUI, engine, tray and watcher, force feedback) of at least 14 days and back to the oldest history version of the open profile, at most 100 MB, the oldest trimmed first; crash reports and the last errors with stack traces; JoyPro's settings and state files, the versions of the game lists and installed packs; devices and the vJoy / HidHide state; per game the watcher's record, the list of JoyPro's backups and the newest set, for MSFS the profiles JoyPro reads. With --profile and --include-profile true (the default when --profile is given) also the open profile, its history (the newest versions up to --history-cap-mb, default 50, plus the whole index) and the games' current bind files with JoyPro's .jp / .joypro-meta.json files. Every text is scrubbed (user folder -> %USERPROFILE%), the profile copies inside their strings; originals are only read; nothing is uploaded. --list only prints the parts and entries.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+- `--days`: For support bundle: logs and crash reports of at least the last N days (default 14; older ones when the open profile's history goes further back).
 - `<n>`: Integer numeric value. Example: 45.
+- `--include-profile`: For support bundle: true puts the open profile (--profile), its history and the games' current bind files in; false leaves them out. Default: true when --profile is given.
+- `--history-cap-mb`: For support bundle: the most megabytes of stored history copies (default 50); the newest versions go in, summary.txt names the ones left out. Example: 50.
 - `--list`: For support bundle: only print what the zip would hold; nothing is written.
 - `--out`: Global option: write result output to file path instead of terminal.
 - `<file.zip>`: Path of the zip to write. Example: C:\JoyPro\JoyPro2-support.zip.
+- `--profile`: Global option: load this .pr0file before running the command.
 
 Examples:
 ```powershell
 engine support bundle --list --text
-engine support bundle --game MSFS2024 --out 'C:\JoyPro\JoyPro2-support.zip'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --out 'C:\JoyPro\JoyPro2-support.zip' support bundle --text
+engine support bundle --game MSFS2024 --include-profile false --out 'C:\JoyPro\JoyPro2-support.zip'
+```
+
+### `engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)`
+What it does: For maintainers: unpacks a support file to <folder>\support, the profile to <folder>\profile and its history to <folder>\data\ProfileHistory\<id of that path>, so engine profile history list / show / restore work on the copy with JOYPRO_DATA_DIR=<folder>\data (docs/logging.md "Restoring a version from a support file"). Nothing of this PC's JoyPro is touched.
+
+Arguments and example values:
+- `<file.zip>`: Path of the zip to write. Example: C:\JoyPro\JoyPro2-support.zip.
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
+
+Examples:
+```powershell
+engine support unpack 'C:\Cases\JoyPro2-support-20261026-170635.zip' --to 'C:\Cases\case1' --text
 ```
 
 ### `engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)`
@@ -4969,7 +5002,7 @@ What it does: Runs this command operation.
 Arguments and example values:
 - `<file.json>`: Path to a JSON file. Example: C:\JoyPro\sync-choices.json.
 - `--views`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--png`: Command argument. See examples for typical values.
 - `<file>`: Command argument. See examples for typical values.
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
@@ -5385,7 +5418,7 @@ What it does: Runs this command operation.
 Arguments and example values:
 - `<relation-name>`: Name of target relation. Example: Gear Toggle.
 - `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
-- `--to`: Command argument. See examples for typical values.
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
 - `<position>`: Command argument. See examples for typical values.
 - `--up`: Command argument. See examples for typical values.
 - `--down`: Command argument. See examples for typical values.
@@ -5395,7 +5428,7 @@ Examples:
 engine --help
 ```
 
-### `engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--dry-run]  (one action to another button: joins the relation on that input, else a new one)`
+### `engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--if-taken ask|swap|replace|keep-both] [--dry-run]  (one action to another button: joins the relation on that input, else a new one; --if-taken: when the aircraft has another action there)`
 What it does: Runs this command operation.
 
 Arguments and example values:
@@ -5410,6 +5443,7 @@ Arguments and example values:
 - `--keep-modifiers`: Command argument. See examples for typical values.
 - `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
 - `<new relation>`: Command argument. See examples for typical values.
+- `--if-taken`: Command argument. See examples for typical values.
 - `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
 
 Examples:
@@ -6073,7 +6107,7 @@ What it does: Runs this command operation.
 
 Arguments and example values:
 - `--root`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 
 Examples:
 ```powershell
@@ -6130,7 +6164,7 @@ Arguments and example values:
 - `--response`: Command argument. See examples for typical values.
 - `<file>`: Command argument. See examples for typical values.
 - `--serve`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--log`: Command argument. See examples for typical values.
 - `--lifetime`: Command argument. See examples for typical values.
 - `<s>`: Command argument. See examples for typical values.
@@ -6268,7 +6302,7 @@ Arguments and example values:
 - `--plan`: Command argument. See examples for typical values.
 - `<plan.json>`: Command argument. See examples for typical values.
 - `--out-dir`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--light`: Command argument. See examples for typical values.
@@ -6415,7 +6449,7 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--force`: Command argument. See examples for typical values.
 - `--out`: Global option: write result output to file path instead of terminal.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--write`: Command argument. See examples for typical values.
 - `--drop`: Command argument. See examples for typical values.
 
@@ -6750,7 +6784,7 @@ Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `<game>`: Command argument. See examples for typical values.
 - `--folder`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 
 Examples:
 ```powershell
@@ -6763,7 +6797,7 @@ What it does: Runs this command operation.
 Arguments and example values:
 - `<session>`: Command argument. See examples for typical values.
 - `--folder`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 
 Examples:
 ```powershell
@@ -6776,7 +6810,7 @@ What it does: Writes the profile's binds for this game. Only the flight actions 
 Arguments and example values:
 - `<session>`: Command argument. See examples for typical values.
 - `--format`: Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export.
-- `--to`: Command argument. See examples for typical values.
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
 - `<file or folder>`: Command argument. See examples for typical values.
 - `--max-hz`: Command argument. See examples for typical values.
 - `<n>`: Integer numeric value. Example: 45.
@@ -6833,7 +6867,7 @@ Arguments and example values:
 - `--seconds`: Command argument. See examples for typical values.
 - `<n>`: Integer numeric value. Example: 45.
 - `--folder`: Command argument. See examples for typical values.
-- `<folder>`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--sample-hz`: Command argument. See examples for typical values.
 - `--no-raw`: Command argument. See examples for typical values.
 - `--no-game-check`: Command argument. See examples for typical values.

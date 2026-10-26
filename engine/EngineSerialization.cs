@@ -289,33 +289,61 @@ namespace JoyPro.Engine
                 AddStoredTitles(relationDto);
                 HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 List<string> titles = new List<string>();
-                foreach (EngineRelationItemDto node in relationDto.Nodes ?? new List<EngineRelationItemDto>())
+                List<EngineTitleEntryDto> entries = new List<EngineTitleEntryDto>();
+                List<EngineRelationItemDto> nodes = relationDto.Nodes ?? new List<EngineRelationItemDto>();
+                for (int index = 0; index < nodes.Count; index++)
                 {
-                    IEnumerable<string> nodeTitles = (node.StoredTitles ?? new Dictionary<string, string>()).Values.ToList();
+                    EngineRelationItemDto node = nodes[index];
+                    if (node == null)
+                        continue;
+                    List<KeyValuePair<string, string>> nodeTitles = (node.StoredTitles ?? new Dictionary<string, string>()).ToList();
                     // Nothing stored with the node (the titles come with the game lists on a load with corrections; an
                     // imported or taken-over action, and every action of a registry game such as MSFS, has none): the
                     // title from the game's list, so "Name + actions" finds it (tester report on 2.4.1: "Master").
-                    if (!nodeTitles.Any(t => OneLine(t).Length > 0))
+                    bool dcs = string.IsNullOrWhiteSpace(node.Game) || string.Equals(node.Game.Trim(), "DCS", StringComparison.OrdinalIgnoreCase);
+                    if (!nodeTitles.Any(t => OneLine(t.Value).Length > 0))
                         nodeTitles = ListTitles(node, catalogs);
-                    foreach (string title in nodeTitles)
+                    else if (dcs && (node.Aircraft ?? new Dictionary<string, bool>()).Any(p => p.Value && !string.IsNullOrWhiteSpace(p.Key) && !node.StoredTitles.ContainsKey(p.Key)))
                     {
-                        string clean = OneLine(title);
-                        if (clean.Length > 0 && seen.Add(clean))
+                        // Some aircraft have a stored title, others not: theirs from the DCS lists (the aircraft count stays right).
+                        HashSet<string> stored = new HashSet<string>(node.StoredTitles.Keys, StringComparer.OrdinalIgnoreCase);
+                        nodeTitles.AddRange(ListTitles(node, catalogs).Where(t => !stored.Contains(t.Key)));
+                    }
+                    // Per title of the node the aircraft it has it for (the search shows what matched: "Master Caution
+                    // Button - DCS AH-64D (2)", tester report on 2.4.2).
+                    Dictionary<string, EngineTitleEntryDto> byTitle = new Dictionary<string, EngineTitleEntryDto>(StringComparer.OrdinalIgnoreCase);
+                    foreach (KeyValuePair<string, string> pair in nodeTitles)
+                    {
+                        string clean = OneLine(pair.Value);
+                        if (clean.Length == 0)
+                            continue;
+                        if (seen.Add(clean))
                             titles.Add(clean);
+                        EngineTitleEntryDto entry;
+                        if (!byTitle.TryGetValue(clean, out entry))
+                        {
+                            entry = new EngineTitleEntryDto { Title = clean, Game = dcs ? "DCS" : node.Game.Trim(), Node = index, Id = node.Id ?? string.Empty };
+                            byTitle[clean] = entry;
+                            entries.Add(entry);
+                        }
+                        if (dcs && !string.IsNullOrWhiteSpace(pair.Key) && !entry.Planes.Contains(pair.Key.Trim()))
+                            entry.Planes.Add(pair.Key.Trim());
                     }
                     // The titles are in Titles now; the per-aircraft copies would only make the list big.
                     node.StoredTitles = new Dictionary<string, string>();
                     node.StoredCategories = new Dictionary<string, string>();
                 }
                 relationDto.Titles = titles;
+                relationDto.TitleList = entries;
             }
         }
 
         // The titles of a node from the game lists: DCS per active aircraft (the DB's title, never a raw id), a registry
         // game from its action catalog (loaded once per game).
-        private static List<string> ListTitles(EngineRelationItemDto node, Dictionary<string, Games.GameCatalog> catalogs)
+        // Each title with the aircraft it is for (DCS; other games: no aircraft).
+        private static List<KeyValuePair<string, string>> ListTitles(EngineRelationItemDto node, Dictionary<string, Games.GameCatalog> catalogs)
         {
-            List<string> result = new List<string>();
+            List<KeyValuePair<string, string>> result = new List<KeyValuePair<string, string>>();
             string id = (node == null ? null : node.Id ?? string.Empty).Trim();
             if (id.Length == 0)
                 return result;
@@ -328,7 +356,7 @@ namespace JoyPro.Engine
                         continue;
                     string title = InternalDataManagement.DcsTitleOrEmpty(id, plane.Key);
                     if (title.Length > 0)
-                        result.Add(title);
+                        result.Add(new KeyValuePair<string, string>(plane.Key, title));
                 }
                 return result;
             }
@@ -344,13 +372,13 @@ namespace JoyPro.Engine
             }
             Games.GameAction action = catalog == null ? null : catalog.Find(id);
             if (action != null && !string.IsNullOrWhiteSpace(action.Title) && !string.Equals(action.Title.Trim(), id, StringComparison.OrdinalIgnoreCase))
-                result.Add(action.Title.Trim());
+                result.Add(new KeyValuePair<string, string>(string.Empty, action.Title.Trim()));
             else
             {
                 // Not in this PC's list (yet): the id read as words ("KEY_TOGGLE_COCKPIT_CAMERA" -> "Key Toggle Cockpit Camera").
                 string readable = EngineReadableNames.Title(integration.GameId, id);
                 if (!string.Equals(readable, id, StringComparison.Ordinal))
-                    result.Add(readable);
+                    result.Add(new KeyValuePair<string, string>(string.Empty, readable));
             }
             return result;
         }

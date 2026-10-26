@@ -968,7 +968,7 @@ namespace JoyPro.Engine
                         string directory = Path.GetDirectoryName(targetPath);
                         if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
                             Directory.CreateDirectory(directory);
-                        image.Save(targetPath, System.Drawing.Imaging.ImageFormat.Png);
+                        image.Save(JoyPro.Engine.TestSandbox.EnsureWritable(targetPath, "Image save"), System.Drawing.Imaging.ImageFormat.Png);
                         return File.Exists(targetPath);
                     }
                 }
@@ -1021,7 +1021,7 @@ namespace JoyPro.Engine
                 int width, height;
                 using (Bitmap image = EngineSchematicBitmap.Render(schematic, 1400, dark: true))
                 {
-                    image.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
+                    image.Save(JoyPro.Engine.TestSandbox.EnsureWritable(outputPath, "Image save"), System.Drawing.Imaging.ImageFormat.Png);
                     width = image.Width;
                     height = image.Height;
                 }
@@ -1132,7 +1132,7 @@ namespace JoyPro.Engine
                         g.DrawPath(legendPen, legendPath);
                     }
 
-                    image.Save(outputPath, System.Drawing.Imaging.ImageFormat.Png);
+                    image.Save(JoyPro.Engine.TestSandbox.EnsureWritable(outputPath, "Image save"), System.Drawing.Imaging.ImageFormat.Png);
                 }
                 backdropPath = outputPath;
                 return true;

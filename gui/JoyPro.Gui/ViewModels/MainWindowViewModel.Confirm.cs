@@ -15,6 +15,19 @@ public sealed record ConfirmRequest(string Title, string Message, string Confirm
 
     // Set by the dialog: "Do not ask again" was ticked.
     public bool DontAskAgain { get; set; }
+
+    // A third answer between the confirm button and Cancel ("Export first"); it is the default button then.
+    public string SecondaryLabel { get; init; } = string.Empty;
+
+    // Set by the dialog: the third answer was picked (the handler returns true then).
+    public bool SecondaryChosen { get; set; }
+}
+
+public enum ConfirmChoice
+{
+    Confirm,
+    Secondary,
+    Cancel
 }
 
 public sealed partial class MainWindowViewModel
@@ -38,5 +51,26 @@ public sealed partial class MainWindowViewModel
         else if (dontAskKey.Length > 0 && request.DontAskAgain)
             SetConfirmationAsked(dontAskKey, false);
         return ok;
+    }
+
+    // Three answers: the confirm button (the action), the secondary one (another way, e.g. "Export first") and Cancel.
+    // Without a window (tests, headless) the action runs, as on the command line.
+    internal async Task<ConfirmChoice> ConfirmChoiceAsync(string title, string message, string confirmLabel, string secondaryLabel, string dontAskKey = "")
+    {
+        if (dontAskKey.Length > 0 && !ListPrefs.ShouldAsk(dontAskKey))
+            return ConfirmChoice.Confirm;
+        ConfirmRequest request = new(title, message, confirmLabel, IsDanger: false) { SecondaryLabel = secondaryLabel, DontAskKey = dontAskKey };
+        AskedConfirmations.Add(request);
+        if (ConfirmHandler == null)
+            return ConfirmChoice.Confirm;
+        bool ok = await ConfirmHandler(request);
+        if (!ok)
+            return ConfirmChoice.Cancel;
+        if (request.SecondaryChosen)
+            return ConfirmChoice.Secondary;
+        // "Do not ask again" counts for the action itself (the confirm button), as in every other question.
+        if (dontAskKey.Length > 0 && request.DontAskAgain)
+            SetConfirmationAsked(dontAskKey, false);
+        return ConfirmChoice.Confirm;
     }
 }

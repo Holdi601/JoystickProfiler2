@@ -203,7 +203,7 @@ namespace JoyPro.Engine
                     if (!string.IsNullOrEmpty(directory))
                         Directory.CreateDirectory(directory);
                     using (Bitmap rendered = EngineCalloutRenderer.Render(sheet, picture, text, options))
-                        rendered.Save(target, ImageFormat.Png);
+                        rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(target, "Image save"), ImageFormat.Png);
                 }
                 if (save.Length > 0)
                 {

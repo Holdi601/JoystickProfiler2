@@ -663,7 +663,7 @@ namespace JoyPro.Engine
                     EngineCalloutRenderer.ApplyStyle(options, set);
                     string file = Path.Combine(outDir, index.ToString("D2", CultureInfo.InvariantCulture) + "-" + Safe(SetupRoles.Short(device)) + (string.IsNullOrEmpty(aircraft) ? string.Empty : "-" + Safe(aircraft)) + ".png");
                     using (Bitmap rendered = EngineCalloutRenderer.Render(sheet, picture, text, options))
-                        rendered.Save(file, ImageFormat.Png);
+                        rendered.Save(JoyPro.Engine.TestSandbox.EnsureWritable(file, "Image save"), ImageFormat.Png);
                     files.Add(new KeyValuePair<string, string>(device.Device, file));
                 }
                 catch (Exception ex)

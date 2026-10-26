@@ -170,13 +170,30 @@ try {
     Assert-True ($moveDone.Joined -and -not $moveDone.FromRemoved) ("the F-16 action should join Game Fresh and Shared Btn keep the Hornet's: " + ($moveDone | ConvertTo-Json))
     Assert-Match (Run-Engine @("--profile", $joinProfile, "relations", "show", $joinFreshName, "--text")).Output "id=d3001pnilunilcd2vd1vpnilvunil, aircraft=F-16C_50" "the moved action should be in Game Fresh."
     Assert-NotMatch (Run-Engine @("--profile", $joinProfile, "relations", "show", "Shared Btn", "--text")).Output "d3001pnilunilcd2vd1vpnilvunil" "the moved action must leave Shared Btn."
-    # The Hornet is bound on JOY_BTN6 already (Hornet Other): its action gets a relation of its own there; Shared Btn,
-    # empty now, goes away with its bind.
-    $moveOwn = SyncJson (Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3005pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN6")).Output
-    Assert-True ($moveOwn.Created -and $moveOwn.FromRemoved -and $moveOwn.To -ne "Hornet Other") ("an aircraft bound on the button already gets a new relation: " + ($moveOwn | ConvertTo-Json))
+    # The Hornet is bound on JOY_BTN6 already (Hornet Other): the button is taken for it (tester report on 2.4.2: the
+    # preview said no relation used the button). The dry run names Hornet Other, a move without --if-taken changes
+    # nothing; keep-both gives the action a relation of its own there, and Shared Btn, empty now, goes away.
+    $moveTaken = SyncJson (Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3005pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN6", "--dry-run")).Output
+    Assert-True ($moveTaken.Taken -and $moveTaken.TakenRelation -eq "Hornet Other" -and -not $moveTaken.Created) ("a taken button should name its relation: " + ($moveTaken | ConvertTo-Json))
+    $moveAsk = Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3005pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN6")
+    Assert-True ($moveAsk.ExitCode -ne 0) "a move onto a taken button without --if-taken should change nothing."
+    $moveOwn = SyncJson (Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", "Shared Btn", "--node", "DCS:d3005pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN6", "--if-taken", "keep-both")).Output
+    Assert-True ($moveOwn.Created -and $moveOwn.BothFire -and $moveOwn.FromRemoved -and $moveOwn.To -ne "Hornet Other") ("keep-both gives it a new relation on the button: " + ($moveOwn | ConvertTo-Json))
     Assert-NotMatch (Run-Engine @("--profile", $joinProfile, "relations", "list", "--text")).Output "(?m)^Shared Btn \|" "an empty relation goes away after the move."
     $moveSame = Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", $joinFreshName, "--node", "DCS:d3006pnilunilcd2vd1vpnilvunil", "--device", $syncStick, "--input", "JOY_BTN7")
     Assert-True ($moveSame.ExitCode -ne 0) "move-to-input onto the relation's own input should fail."
+
+    # sync pending (2.4.3, tester log on 2.4.2: Import before the export brought a moved action back): after an export
+    # nothing is pending; a move in JoyPro is pending until the next export.
+    $pendExport = Run-Engine @("--profile", $joinProfile, "dcs", "export", $joinRoot, "--planes", "F-16C_50,FA-18C_hornet", "--text")
+    Assert-True ($pendExport.ExitCode -eq 0) ("dcs export for the pending test failed: " + $pendExport.Output)
+    $pend0 = SyncJson (Run-Engine @("--profile", $joinProfile, "sync", "pending", "--game", "DCS", "--path", $joinRoot)).Output
+    Assert-True ($pend0.Known -and $pend0.Count -eq 0) ("nothing is pending right after an export: " + ($pend0 | ConvertTo-Json -Depth 4))
+    Run-Engine @("--profile", $joinProfile, "relations", "item", "move-to-input", $joinFreshName, "--node", "DCS:d3001pnilunilcd2vd1vpnilvunil:F-16C_50", "--device", $syncStick, "--input", "JOY_BTN9") | Out-Null
+    $pend1 = SyncJson (Run-Engine @("--profile", $joinProfile, "sync", "pending", "--game", "DCS", "--path", $joinRoot)).Output
+    Assert-True ($pend1.Count -eq 1 -and @($pend1.Actions)[0].Kind -eq "moved" -and @($pend1.Actions)[0].ActionId -eq "d3001pnilunilcd2vd1vpnilvunil") ("the move is pending: " + ($pend1 | ConvertTo-Json -Depth 4))
+    $pendDiff = Run-Engine @("--profile", $joinProfile, "sync", "diff", "--game", "DCS", "--path", $joinRoot, "--text")
+    Assert-NotMatch $pendDiff.Output "d3001pnilunilcd2vd1vpnilvunil" "the take-over must not offer to revert the user's unexported move."
 
     # ---- War Thunder (registry game, machine.blk) -----------------------------------------------------------------
     $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\warthunder\devices.tsv"
