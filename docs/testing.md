@@ -24,6 +24,11 @@ run, tray host, the engine's usage commands in a process and the server, the Sta
 Light and Dark with `JOYPRO_USAGE_RENDER_OUT`), `UsageSettingsTests` and the smoke part `engine\tests\smoke\usage.ps1`.
 The GUI tests point `JOYPRO_USAGE_ROOT` at an empty folder, so no test reads this PC's games.
 
+Check page with thousands of findings: `CheckResponsivenessTests` (5000 relations, 3000 errors, 900 duplicate cards in a
+HiddenWindow; a UI-thread probe fails any block over 400 ms; `JOYPRO_CHECK_REPLAY=<folder>` replays real engine outputs,
+`JOYPRO_CHECK_REPORT=<file>` writes the timings). DCS import with "include defaults": the smoke part
+`engine\tests\smoke\dcsincludedefaults.ps1`.
+
 ## Speed
 
 Nothing a person waits for should take more than a few seconds (interactive actions ≤ 2 s); the budgets are in

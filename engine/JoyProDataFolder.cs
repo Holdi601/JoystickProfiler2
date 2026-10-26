@@ -25,9 +25,10 @@ namespace JoyPro.Logging
     //    (MOVED-TO-JoyPro2.txt) and the next start moves the rest;
     //  - a file that is in both folders: the same content goes once; different content: JoyPro2's copy stays and the
     //    old one is kept under <data>\MigrationConflicts\ (nothing is ever deleted that is not in the new place);
-    //  - only when the old folder is empty, it is removed and a junction %LOCALAPPDATA%\JoyPro -> JoyPro2 takes its
-    //    place, so an older JoyPro2 that starts afterwards (another install, a portable copy not updated yet) finds
-    //    all its data where it always looked;
+    //  - only when the old folder is empty, it is removed, so only JoyPro2 is left (2.4.0 put a junction
+    //    %LOCALAPPDATA%\JoyPro -> JoyPro2 in its place, which looked like a second data folder: the next start removes
+    //    that junction as a link, only when it points to JoyPro2; once the old folder is gone a start checks only that
+    //    it does not exist and logs nothing);
     //  - a copy is made (and checked: size and SHA-256) only when a rename is impossible (another drive).
     // <data>\data-migration.json records what happened (shown in the support file's environment).
     public static class JoyProDataFolder
@@ -46,9 +47,6 @@ namespace JoyPro.Logging
 
         // JOYPRO_NO_DATA_MIGRATION=1 (the GUI tests): nothing is moved, whatever the other variables say.
         public const string NoMigrationVariable = "JOYPRO_NO_DATA_MIGRATION";
-
-        // Tests: no junction (the old folder is only removed).
-        public static bool CreateJunction = true;
 
         private static readonly object Gate = new object();
         private static string checkedFor;
@@ -155,9 +153,20 @@ namespace JoyPro.Logging
             string target = Path.Combine(localAppData, FolderName);
             result.From = legacy;
             result.To = target;
-            if (!Directory.Exists(legacy) || IsJunction(legacy))
+            // The usual start once the move is done: one check, nothing logged.
+            if (!Directory.Exists(legacy))
+                return result;
+            if (IsJunction(legacy))
             {
-                result.Status = Directory.Exists(legacy) ? "done" : "none";
+                // 2.4.0 left a junction JoyPro -> JoyPro2 (it looked like a second data folder): removed as a link,
+                // its files stay in JoyPro2. A link that points anywhere else is the user's and stays.
+                if (PointsTo(legacy, target) && TryRemoveLink(legacy))
+                {
+                    result.Status = "done";
+                    result.OldFolderRemoved = true;
+                    WriteState(target, result.Status, result);
+                    JoyProLog.Info("Data", Describe(result));
+                }
                 return result;
             }
             using (Mutex mutex = new Mutex(false, @"Local\JoyPro2.DataMigration." + ShortHash(target.ToUpperInvariant())))
@@ -191,7 +200,8 @@ namespace JoyPro.Logging
                         .Any(f => !string.Equals(Path.GetFileName(f), MovedNoteName, StringComparison.OrdinalIgnoreCase));
                     if (empty && DeleteEmptyTree(legacy))
                     {
-                        result.Junction = CreateJunction && TryCreateJunction(legacy, target);
+                        // Only JoyPro2 is left (no junction any more: it looked like a second data folder).
+                        result.OldFolderRemoved = true;
                         result.Status = "done";
                     }
                     else
@@ -321,7 +331,7 @@ namespace JoyPro.Logging
                    result.Moved.ToString(CultureInfo.InvariantCulture) + " moved, " +
                    result.Left.Count.ToString(CultureInfo.InvariantCulture) + " still in use, " +
                    result.Conflicts.Count.ToString(CultureInfo.InvariantCulture) + " kept as conflicts" +
-                   (result.Status == "done" ? ", junction " + (result.Junction ? "made" : "not made") : string.Empty);
+                   (result.OldFolderRemoved ? ", old folder removed" : string.Empty);
         }
 
         private static bool SameVolume(string a, string b)
@@ -400,32 +410,52 @@ namespace JoyPro.Logging
             }
         }
 
-        // mklink /J needs no administrator rights (a junction, unlike a symbolic link). No window is shown.
-        private static bool TryCreateJunction(string link, string target)
+        // True when the link shows JoyPro2 itself: the same entries, and its data-migration.json is the very file of
+        // JoyPro2 (same size and time stamp to the tick). A link to anywhere else never matches.
+        private static bool PointsTo(string link, string target)
         {
             try
             {
-                ProcessStartInfo info = new ProcessStartInfo("cmd.exe", "/c mklink /J \"" + link + "\" \"" + target + "\"")
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                };
-                using (Process process = Process.Start(info))
-                {
-                    if (process == null)
-                        return false;
-                    process.StandardOutput.ReadToEnd();
-                    process.StandardError.ReadToEnd();
-                    if (!process.WaitForExit(10000))
-                        return false;
-                }
-                return IsJunction(link);
+                string linkState = Path.Combine(link, StateFileName);
+                string targetState = Path.Combine(target, StateFileName);
+                if (!Directory.Exists(target) || !File.Exists(linkState) || !File.Exists(targetState))
+                    return false;
+                FileInfo a = new FileInfo(linkState);
+                FileInfo b = new FileInfo(targetState);
+                if (a.Length != b.Length || a.LastWriteTimeUtc.Ticks != b.LastWriteTimeUtc.Ticks)
+                    return false;
+                HashSet<string> left = new HashSet<string>(Directory.GetFileSystemEntries(link).Select(Path.GetFileName), StringComparer.OrdinalIgnoreCase);
+                HashSet<string> right = new HashSet<string>(Directory.GetFileSystemEntries(target).Select(Path.GetFileName), StringComparer.OrdinalIgnoreCase);
+                return left.SetEquals(right);
             }
-            catch (Exception ex)
+            catch (IOException)
             {
-                JoyProLog.Warn("Data", "Could not link " + link + " to " + target, ex);
+                return false;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
+        // Removes a junction as a link (RemoveDirectory on the reparse point): the files it shows are not touched.
+        private static bool TryRemoveLink(string link)
+        {
+            try
+            {
+                if (!IsJunction(link))
+                    return false;
+                Directory.Delete(link, false);
+                return !Directory.Exists(link);
+            }
+            catch (IOException ex)
+            {
+                JoyProLog.Warn("Data", "Could not remove the old link " + link, ex);
+                return false;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                JoyProLog.Warn("Data", "Could not remove the old link " + link, ex);
                 return false;
             }
         }
@@ -441,7 +471,7 @@ namespace JoyPro.Logging
                 json.Append("  \"to\": \"").Append(Escape(result.To)).Append("\",\n");
                 json.Append("  \"utc\": \"").Append(DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture)).Append("\",\n");
                 json.Append("  \"moved\": ").Append(result.Moved.ToString(CultureInfo.InvariantCulture)).Append(",\n");
-                json.Append("  \"junction\": ").Append(result.Junction ? "true" : "false").Append(",\n");
+                json.Append("  \"oldFolderRemoved\": ").Append(result.OldFolderRemoved ? "true" : "false").Append(",\n");
                 json.Append("  \"inUse\": [").Append(string.Join(", ", result.Left.Take(200).Select(l => "\"" + Escape(l) + "\""))).Append("],\n");
                 json.Append("  \"conflicts\": [").Append(string.Join(", ", result.Conflicts.Take(200).Select(l => "\"" + Escape(l) + "\""))).Append("]\n");
                 json.Append("}\n");
@@ -485,7 +515,14 @@ namespace JoyPro.Logging
         public string From = string.Empty;
         public string To = string.Empty;
         public int Moved;
-        public bool Junction;
+        // The old folder (or the junction 2.4.0 left in its place) was removed by this run.
+        public bool OldFolderRemoved;
+
+        // Worth a log line: something was moved or removed, or files are still waiting.
+        public bool IsNews
+        {
+            get { return Moved > 0 || OldFolderRemoved || Status == "partial" || Status == "busy" || Left.Count > 0 || Conflicts.Count > 0; }
+        }
         public List<string> Left = new List<string>();
         public List<string> Conflicts = new List<string>();
     }

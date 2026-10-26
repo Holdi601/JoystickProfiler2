@@ -54,6 +54,15 @@ namespace JoyPro.Engine
             sb.AppendLine("Entries Parsed: " + result.EntriesParsed);
             sb.AppendLine("Force Feedback Entries Parsed: " + result.ForceFeedbackEntriesParsed);
             sb.AppendLine("Default Entries Parsed: " + result.DefaultEntriesParsed);
+            if (result.IncludeDefaults)
+            {
+                sb.AppendLine("Defaults Removed In DCS (skipped): " + result.DefaultEntriesRemovedByUser);
+                sb.AppendLine("Defaults Replaced By Own Binds (skipped): " + result.DefaultEntriesReplacedByOwnBinds);
+                sb.AppendLine("Defaults On Inputs With Own Binds (skipped): " + result.DefaultEntriesOnOwnInputs);
+                sb.AppendLine("Defaults Of An Action Another Device Has (skipped): " + result.DefaultEntriesOnOtherDevice);
+                sb.AppendLine("Defaults On An Input DCS Gives Two Actions (skipped): " + result.DefaultEntriesOnSharedInputs);
+                sb.AppendLine("Generic Joystick Defaults (skipped): " + result.GenericJoystickDefaultsSkipped);
+            }
             sb.AppendLine("Imported Relations: " + result.ImportedRelations);
             sb.AppendLine("Imported Binds: " + result.ImportedBinds);
             sb.AppendLine("Force Feedback Devices Imported: " + result.ForceFeedbackDevicesImported);
@@ -152,7 +161,8 @@ namespace JoyPro.Engine
 
             Dictionary<string, ParsedFfbSetting> parsedFfb;
             ReportStatus(effectiveOptions, "Parsing DCS input files...");
-            List<ParsedBind> parsed = ParseAllInputFiles(inputPath, effectiveOptions, result, out parsedFfb);
+            DefaultsBasis defaultsBasis = new DefaultsBasis();
+            List<ParsedBind> parsed = ParseAllInputFiles(inputPath, effectiveOptions, result, out parsedFfb, defaultsBasis);
             ReportStatus(
                 effectiveOptions,
                 "Parsed " +
@@ -164,7 +174,7 @@ namespace JoyPro.Engine
             if (effectiveOptions.IncludeDefaults)
             {
                 ReportStatus(effectiveOptions, "Appending defaults from clean profile database.");
-                parsed = AppendDefaultsFromCleanProfiles(parsed, effectiveOptions, result);
+                parsed = AppendDefaultsFromCleanProfiles(parsed, effectiveOptions, result, defaultsBasis);
                 ReportStatus(
                     effectiveOptions,
                     "Default entries appended: " + result.DefaultEntriesParsed.ToString() + ".");
@@ -190,12 +200,15 @@ namespace JoyPro.Engine
             string inputPath,
             EngineDcsImportOptions options,
             EngineDcsImportResult result,
-            out Dictionary<string, ParsedFfbSetting> parsedFfbByDevice)
+            out Dictionary<string, ParsedFfbSetting> parsedFfbByDevice,
+            DefaultsBasis defaultsBasis = null)
         {
             Dictionary<string, ParsedBind> parsed = new Dictionary<string, ParsedBind>(StringComparer.OrdinalIgnoreCase);
             parsedFfbByDevice = new Dictionary<string, ParsedFfbSetting>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, Dictionary<string, string>> modifierLookupByPlane =
                 new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+            if (defaultsBasis != null)
+                defaultsBasis.ModifierLookupByPlane = modifierLookupByPlane;
             Dictionary<string, EngineDcsFfbPlaneCorrection> ffbCorrections =
                 EngineDcsFfbCorrectionCatalog.Load(result.Warnings);
             HashSet<string> matchedPlanes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -270,7 +283,7 @@ namespace JoyPro.Engine
                 string liveDevice = devicePlan.LiveName(device);
                 matchedPlanes.Add(plane);
                 matchedDevices.Add(liveDevice);
-                ParseInputFile(file, isBackup, parsed, parsedFfbByDevice, modifierLookupByPlane, ffbCorrections, result, preParsed, devicePlan);
+                ParseInputFile(file, isBackup, parsed, parsedFfbByDevice, modifierLookupByPlane, ffbCorrections, result, preParsed, devicePlan, defaultsBasis);
 
                 int done = i + 1;
                 if (done == files.Length || done % 200 == 0)
@@ -604,112 +617,121 @@ namespace JoyPro.Engine
             return token.EndsWith("_easy", StringComparison.OrdinalIgnoreCase);
         }
 
+        // "Include defaults": the binds DCS gives a device by default and the user kept, as DCS really uses them.
+        // For every aircraft and device the user has an input file for (so only devices that passed the import's device
+        // filters, --only-connected and the same-name merge), the defaults DCS applies to that device are added (the
+        // keyboard's, and the ones DCS ships for the device's model), all keys of an action with their modifiers, except:
+        // - defaults the user's file removes (DCS writes a "removed" entry when a default is cleared or rebound);
+        // - actions the user bound himself in that aircraft, on any device (his binds replace the defaults);
+        // - defaults on an input (key and modifiers) the user uses for another action of that aircraft: the user's bind
+        //   wins, so no input gets two relations because of a default;
+        // - a default of an action another device already got in that aircraft (model defaults before the keyboard), and
+        //   the second action of an input DCS ships for two: one input per action and one action per input, as in a
+        //   profile;
+        // - DCS's generic joystick defaults (default.lua): DCS puts them on every device without defaults of its own,
+        //   button boxes included, so they would put one action on every device.
+        // Defaults of aircraft or devices without a file of the user are not added (nothing says he flies or has them).
         private static List<ParsedBind> AppendDefaultsFromCleanProfiles(
             List<ParsedBind> parsed,
             EngineDcsImportOptions options,
-            EngineDcsImportResult result)
+            EngineDcsImportResult result,
+            DefaultsBasis basis)
         {
             Dictionary<string, ParsedBind> merged = new Dictionary<string, ParsedBind>(StringComparer.OrdinalIgnoreCase);
-            HashSet<string> addedIdsByPlaneDevice = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
+            HashSet<string> ownActions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> ownInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             for (int i = 0; i < parsed.Count; i++)
             {
                 ParsedBind bind = parsed[i];
                 UpsertParsedBind(merged, bind);
-                addedIdsByPlaneDevice.Add(BuildPlaneDeviceIdKey(bind.Plane, bind.Device, bind.Id, bind.IsAxis));
-            }
-
-            string cleanProfileRoot = GameDataPaths.CleanProfileFolder("DCS", false);
-            string keyboardCleanRoot = GameDataPaths.CleanProfileFolder("DCS", true);
-            List<string> planes = options.PlaneFilter == null || options.PlaneFilter.Count == 0
-                ? CollectCleanProfilePlanes(cleanProfileRoot, keyboardCleanRoot)
-                : new List<string>(options.PlaneFilter);
-            if (options.IgnoreEasyPlanes)
-            {
-                planes = planes
-                    .Where(p => !IsEasyPlaneToken(p))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(p => p, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-            }
-
-            List<string> joystickTargets;
-            bool includeKeyboardDefaults;
-            if (options.DeviceFilter != null && options.DeviceFilter.Count > 0)
-            {
-                List<string> matchedJoystickTargets = (result.MatchedDevices ?? new List<string>())
-                    .Where(d => !string.IsNullOrWhiteSpace(d) && !string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-                joystickTargets = matchedJoystickTargets.Count > 0
-                    ? matchedJoystickTargets
-                    : options.DeviceFilter
-                        .Where(d => !string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase))
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToList();
-                includeKeyboardDefaults =
-                    options.IncludeKeyboard &&
-                    options.DeviceFilter.Any(d => string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase));
-            }
-            else
-            {
-                joystickTargets = parsed
-                    .Select(p => p.Device ?? string.Empty)
-                    .Where(d => !string.IsNullOrWhiteSpace(d) && !string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-                includeKeyboardDefaults = options.IncludeKeyboard;
-            }
-
-            if (options.IgnoreDeviceFilter != null && options.IgnoreDeviceFilter.Count > 0)
-            {
-                HashSet<string> ignoredSet = new HashSet<string>(options.IgnoreDeviceFilter, StringComparer.OrdinalIgnoreCase);
-                HashSet<string> ignoredByNameSet = BuildGuidlessDeviceFilterSet(ignoredSet);
-                joystickTargets = joystickTargets
-                    .Where(d => !MatchesDeviceFilter(d, ignoredSet, ignoredByNameSet))
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(d => d, StringComparer.OrdinalIgnoreCase)
-                    .ToList();
-
-                if (includeKeyboardDefaults && ignoredSet.Contains("Keyboard"))
-                    includeKeyboardDefaults = false;
+                ownActions.Add(BuildPlaneDeviceIdKey(bind.Plane, string.Empty, bind.Id, bind.IsAxis));
+                ownInputs.Add(DefaultInputKey(bind.Plane, bind.Device, bind.Key, bind.Reformers));
             }
 
             HashSet<string> matchedPlanes = new HashSet<string>(result.MatchedPlanes ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
             HashSet<string> matchedDevices = new HashSet<string>(result.MatchedDevices ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-
-            for (int i = 0; i < planes.Count; i++)
+            Dictionary<string, List<DefaultBind>> defaultFiles = new Dictionary<string, List<DefaultBind>>(StringComparer.OrdinalIgnoreCase);
+            // plane|id|axis -> the device whose default has the action: one device per action and aircraft.
+            Dictionary<string, string> defaultActionDevice = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            // plane|device|input of the defaults added so far.
+            HashSet<string> defaultOnInput = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // Per aircraft the devices with defaults made for their model first, the keyboard after them.
+            foreach (DefaultsPair pair in (basis == null ? new List<DefaultsPair>() : basis.Pairs.Values.ToList())
+                .OrderBy(p => p.Plane, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(p => string.Equals(p.Device, "Keyboard", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
+                .ThenBy(p => p.Device, StringComparer.OrdinalIgnoreCase))
             {
-                string plane = planes[i];
-                if (string.IsNullOrWhiteSpace(plane))
+                bool keyboard = string.Equals(pair.Device, "Keyboard", StringComparison.OrdinalIgnoreCase);
+                if (keyboard && !options.IncludeKeyboard)
                     continue;
-
-                string joystickDefaultFile = Path.Combine(cleanProfileRoot, plane + ".cf");
-                List<ParsedBind> joystickDefaults = ParseDefaultFile(joystickDefaultFile, plane, joystickTargets, result);
-                for (int d = 0; d < joystickDefaults.Count; d++)
+                string defaultsFile = DefaultsProfilePath(pair.SourceFile, pair.Plane, keyboard);
+                List<DefaultBind> defaults;
+                if (!defaultFiles.TryGetValue(defaultsFile, out defaults))
                 {
-                    ParsedBind bind = joystickDefaults[d];
-                    string idKey = BuildPlaneDeviceIdKey(bind.Plane, bind.Device, bind.Id, bind.IsAxis);
-                    if (addedIdsByPlaneDevice.Contains(idKey))
-                        continue;
-                    UpsertParsedBind(merged, bind);
-                    matchedPlanes.Add(bind.Plane);
-                    matchedDevices.Add(bind.Device);
+                    defaults = ParseDefaultFile(defaultsFile, result);
+                    defaultFiles[defaultsFile] = defaults;
+                }
+                // DCS's generic joystick defaults (default.lua) are meant for an unknown stick and land on every device
+                // without defaults of its own, button boxes included (one action on every device): not imported.
+                if (!keyboard && string.Equals(Path.GetFullPath(defaultsFile), Path.GetFullPath(Path.Combine(GameDataPaths.CleanProfileFolder("DCS", false), pair.Plane + ".cf")), StringComparison.OrdinalIgnoreCase))
+                {
+                    result.GenericJoystickDefaultsSkipped += defaults.Count;
+                    continue;
                 }
 
-                if (!includeKeyboardDefaults)
-                    continue;
-
-                string keyboardDefaultFile = Path.Combine(keyboardCleanRoot, plane + ".cf");
-                List<ParsedBind> keyboardDefaults = ParseDefaultFile(keyboardDefaultFile, plane, new List<string> { "Keyboard" }, result);
-                for (int k = 0; k < keyboardDefaults.Count; k++)
+                Dictionary<string, string> modifierLookup = null;
+                if (basis.ModifierLookupByPlane != null)
+                    basis.ModifierLookupByPlane.TryGetValue(pair.Plane, out modifierLookup);
+                foreach (DefaultBind entry in defaults)
                 {
-                    ParsedBind bind = keyboardDefaults[k];
-                    string idKey = BuildPlaneDeviceIdKey(bind.Plane, bind.Device, bind.Id, bind.IsAxis);
-                    if (addedIdsByPlaneDevice.Contains(idKey))
+                    if (pair.RemovesDefault(entry.Id, entry.IsAxis, entry.Key, entry.Reformers))
+                    {
+                        result.DefaultEntriesRemovedByUser++;
                         continue;
+                    }
+                    string actionKey = BuildPlaneDeviceIdKey(pair.Plane, string.Empty, entry.Id, entry.IsAxis);
+                    if (ownActions.Contains(actionKey))
+                    {
+                        result.DefaultEntriesReplacedByOwnBinds++;
+                        continue;
+                    }
+                    string actionDevice;
+                    if (defaultActionDevice.TryGetValue(actionKey, out actionDevice) && !string.Equals(actionDevice, pair.Device, StringComparison.OrdinalIgnoreCase))
+                    {
+                        result.DefaultEntriesOnOtherDevice++;
+                        continue;
+                    }
+                    List<string> reformers = NormalizeImportedReformers(entry.Reformers, modifierLookup);
+                    string inputKey = DefaultInputKey(pair.Plane, pair.Device, entry.Key, reformers);
+                    if (ownInputs.Contains(inputKey))
+                    {
+                        result.DefaultEntriesOnOwnInputs++;
+                        continue;
+                    }
+                    // DCS ships a few inputs for two actions of one aircraft; a profile has one action per input and
+                    // aircraft, so the first default keeps the input.
+                    if (defaultOnInput.Contains(inputKey))
+                    {
+                        result.DefaultEntriesOnSharedInputs++;
+                        continue;
+                    }
+                    defaultOnInput.Add(inputKey);
+                    defaultActionDevice[actionKey] = pair.Device;
+
+                    ParsedBind bind = new ParsedBind();
+                    bind.Id = entry.Id;
+                    bind.Name = entry.Name;
+                    bind.IsAxis = entry.IsAxis;
+                    bind.Plane = pair.Plane;
+                    bind.Device = pair.Device;
+                    bind.Key = entry.Key;
+                    bind.Reformers = reformers;
+                    bind.RelationName = null;
+                    bind.Groups = new List<string> { "DCS" };
+                    bind.MetadataPriority = 0;
+                    bind.SourceFile = string.Empty;
+                    bind.IsDefault = true;
+                    result.DefaultEntriesParsed++;
                     UpsertParsedBind(merged, bind);
                     matchedPlanes.Add(bind.Plane);
                     matchedDevices.Add(bind.Device);
@@ -728,42 +750,115 @@ namespace JoyPro.Engine
                 .ToList();
         }
 
-        private static List<string> CollectCleanProfilePlanes(string cleanProfileRoot, string keyboardCleanRoot)
+        // An input of an aircraft and device as DCS tells inputs apart: key and the physical modifier keys (a modifier is
+        // compared by its device and key, so "LCtrl" and a modifiers.lua "KeyboardLeftControl" on LCtrl are the same).
+        private static string DefaultInputKey(string plane, string device, string key, List<string> reformers)
         {
-            HashSet<string> planes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (Directory.Exists(cleanProfileRoot))
+            List<string> mods = new List<string>();
+            foreach (string reformer in reformers ?? new List<string>())
             {
-                string[] files = Directory.GetFiles(cleanProfileRoot, "*.cf", SearchOption.TopDirectoryOnly);
-                for (int i = 0; i < files.Length; i++)
-                {
-                    string plane = Path.GetFileNameWithoutExtension(files[i]);
-                    if (!string.IsNullOrWhiteSpace(plane))
-                        planes.Add(plane.Trim());
-                }
+                if (string.IsNullOrWhiteSpace(reformer))
+                    continue;
+                string[] parts = reformer.Split('§');
+                mods.Add((parts.Length >= 3 ? parts[1].Trim() + SignatureSeparator + parts[2].Trim() : "Keyboard" + SignatureSeparator + parts[0].Trim()).ToLowerInvariant());
             }
-
-            if (Directory.Exists(keyboardCleanRoot))
-            {
-                string[] files = Directory.GetFiles(keyboardCleanRoot, "*.cf", SearchOption.TopDirectoryOnly);
-                for (int i = 0; i < files.Length; i++)
-                {
-                    string plane = Path.GetFileNameWithoutExtension(files[i]);
-                    if (!string.IsNullOrWhiteSpace(plane))
-                        planes.Add(plane.Trim());
-                }
-            }
-
-            return planes.OrderBy(v => v, StringComparer.OrdinalIgnoreCase).ToList();
+            mods = mods.Distinct(StringComparer.Ordinal).OrderBy(m => m, StringComparer.Ordinal).ToList();
+            return (plane ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
+                   (device ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
+                   (key ?? string.Empty).Trim().ToLowerInvariant() + SignatureSeparator +
+                   string.Join("+", mods);
         }
 
-        private static List<ParsedBind> ParseDefaultFile(
-            string filePath,
-            string plane,
-            List<string> devices,
-            EngineDcsImportResult result)
+        // One default bind of a clean profile file (the file "removes" every default of DCS; each removed key is one).
+        private sealed class DefaultBind
         {
-            List<ParsedBind> output = new List<ParsedBind>();
-            if (!File.Exists(filePath) || devices == null || devices.Count == 0)
+            public string Id;
+            public string Name;
+            public bool IsAxis;
+            public string Key;
+            public List<string> Reformers;
+        }
+
+        // An aircraft and device the user has an input file for, and the defaults that file removes.
+        private sealed class DefaultsPair
+        {
+            public string Plane;
+            public string Device;
+            public string SourceFile;
+            // "axis§id§key" -> the modifier sets of the removed entries (an empty set matches any).
+            public Dictionary<string, List<List<string>>> Removed = new Dictionary<string, List<List<string>>>(StringComparer.OrdinalIgnoreCase);
+
+            public bool RemovesDefault(string id, bool isAxis, string key, List<string> reformers)
+            {
+                List<List<string>> sets;
+                if (!Removed.TryGetValue(RemovedKey(id, isAxis, key), out sets))
+                    return false;
+                List<string> wanted = NormalizeReformerNames(reformers);
+                foreach (List<string> set in sets)
+                {
+                    if (set.Count == 0 || set.SequenceEqual(wanted, StringComparer.OrdinalIgnoreCase))
+                        return true;
+                }
+                return false;
+            }
+
+            public static string RemovedKey(string id, bool isAxis, string key)
+            {
+                return (isAxis ? "1" : "0") + SignatureSeparator + (id ?? string.Empty).Trim() + SignatureSeparator + (key ?? string.Empty).Trim();
+            }
+        }
+
+        // What "include defaults" needs from the parse: the aircraft/device pairs and their removed defaults.
+        private sealed class DefaultsBasis
+        {
+            public Dictionary<string, DefaultsPair> Pairs = new Dictionary<string, DefaultsPair>(StringComparer.OrdinalIgnoreCase);
+            public Dictionary<string, Dictionary<string, string>> ModifierLookupByPlane;
+
+            public void Record(string plane, string device, string file, bool isBackup, SectionParse axis, SectionParse keys)
+            {
+                if (string.IsNullOrWhiteSpace(plane) || string.IsNullOrWhiteSpace(device))
+                    return;
+                string pairKey = plane.Trim().ToLowerInvariant() + SignatureSeparator + device.Trim().ToLowerInvariant();
+                DefaultsPair pair;
+                if (!Pairs.TryGetValue(pairKey, out pair))
+                {
+                    pair = new DefaultsPair { Plane = plane.Trim(), Device = device.Trim(), SourceFile = file };
+                    Pairs[pairKey] = pair;
+                }
+                // DCS's own .diff.lua says what was removed; JoyPro's .jp copy does not count for that.
+                if (isBackup)
+                    return;
+                if (IsBackupFile(pair.SourceFile ?? string.Empty))
+                    pair.SourceFile = file;
+                AddRemoved(pair, axis, true);
+                AddRemoved(pair, keys, false);
+            }
+
+            private static void AddRemoved(DefaultsPair pair, SectionParse section, bool isAxis)
+            {
+                if (section == null || !section.Found)
+                    return;
+                for (int i = 0; i < section.Entries.Count && i < section.Removed.Count; i++)
+                {
+                    foreach (AddedEntry removed in section.Removed[i])
+                    {
+                        string key = DefaultsPair.RemovedKey(section.Entries[i].Id, isAxis, removed.Key);
+                        List<List<string>> sets;
+                        if (!pair.Removed.TryGetValue(key, out sets))
+                        {
+                            sets = new List<List<string>>();
+                            pair.Removed[key] = sets;
+                        }
+                        sets.Add(NormalizeReformerNames(removed.Reformers));
+                    }
+                }
+            }
+        }
+
+        private static List<DefaultBind> ParseDefaultFile(string filePath, EngineDcsImportResult result)
+        {
+            List<DefaultBind> output = new List<DefaultBind>();
+            if (!File.Exists(filePath))
                 return output;
 
             string text;
@@ -777,57 +872,36 @@ namespace JoyPro.Engine
                 return output;
             }
 
-            ParseDefaultSection(text, "axisDiffs", true, plane, devices, output, result);
-            ParseDefaultSection(text, "keyDiffs", false, plane, devices, output, result);
+            ParseDefaultSection(text, "axisDiffs", true, output);
+            ParseDefaultSection(text, "keyDiffs", false, output);
             return output;
         }
 
-        private static void ParseDefaultSection(
-            string fileText,
-            string sectionName,
-            bool isAxis,
-            string plane,
-            List<string> devices,
-            List<ParsedBind> output,
-            EngineDcsImportResult result)
+        private static void ParseDefaultSection(string fileText, string sectionName, bool isAxis, List<DefaultBind> output)
         {
             string sectionBlock;
             if (!TryExtractNamedBlock(fileText, sectionName, out sectionBlock))
                 return;
 
-            List<SectionEntry> entries = ParseTopLevelEntries(sectionBlock);
-            for (int i = 0; i < entries.Count; i++)
+            foreach (SectionEntry entry in ParseTopLevelEntries(sectionBlock))
             {
-                SectionEntry entry = entries[i];
-                List<AddedEntry> removed = ExtractRemovedEntries(entry.Block);
-                if (removed.Count == 0)
-                    continue;
-
-                AddedEntry first = removed[0];
-                if (string.IsNullOrWhiteSpace(first.Key))
-                    continue;
-
                 string displayName = ExtractEntryName(entry.Block);
-                for (int d = 0; d < devices.Count; d++)
+                HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (AddedEntry removed in ExtractRemovedEntries(entry.Block))
                 {
-                    string device = devices[d];
-                    if (string.IsNullOrWhiteSpace(device))
+                    if (string.IsNullOrWhiteSpace(removed.Key))
                         continue;
-
-                    ParsedBind bind = new ParsedBind();
-                    bind.Id = entry.Id;
-                    bind.Name = string.IsNullOrWhiteSpace(displayName) ? entry.Id : displayName;
-                    bind.IsAxis = isAxis;
-                    bind.Plane = string.IsNullOrWhiteSpace(plane) ? "UnknownPlane" : plane;
-                    bind.Device = device.Trim();
-                    bind.Key = first.Key.Trim();
-                    bind.Reformers = new List<string>();
-                    bind.RelationName = null;
-                    bind.Groups = new List<string> { "DCS" };
-                    bind.MetadataPriority = 0;
-                    bind.SourceFile = string.Empty;
-                    result.DefaultEntriesParsed++;
-                    output.Add(bind);
+                    List<string> reformers = (removed.Reformers ?? new List<string>()).Where(r => !string.IsNullOrWhiteSpace(r)).Select(r => r.Trim()).ToList();
+                    if (!seen.Add(removed.Key.Trim() + SignatureSeparator + string.Join("+", NormalizeReformerNames(reformers))))
+                        continue;
+                    output.Add(new DefaultBind
+                    {
+                        Id = entry.Id,
+                        Name = string.IsNullOrWhiteSpace(displayName) ? entry.Id : displayName,
+                        IsAxis = isAxis,
+                        Key = removed.Key.Trim(),
+                        Reformers = reformers
+                    });
                 }
             }
         }
@@ -849,7 +923,8 @@ namespace JoyPro.Engine
             Dictionary<string, EngineDcsFfbPlaneCorrection> ffbCorrections,
             EngineDcsImportResult result,
             Dictionary<string, FilePreParse> preParsed = null,
-            DevicePlan devicePlan = null)
+            DevicePlan devicePlan = null,
+            DefaultsBasis defaultsBasis = null)
         {
             string text;
             try
@@ -876,6 +951,8 @@ namespace JoyPro.Engine
             ParseSection(text, "axisDiffs", true, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Axis, devicePlan);
             ParseSection(text, "keyDiffs", false, plane, device, filePath, isBackupFile, modifierLookup, parsedBySignature, result, backupAllowed, pre?.Keys, devicePlan);
             ParseForceFeedbackSection(text, plane, device, filePath, isBackupFile, ffbCorrections, parsedFfbByDevice, result);
+            if (defaultsBasis != null)
+                defaultsBasis.Record(plane, device, filePath, isBackupFile, pre?.Axis ?? PreParseSection(text, "axisDiffs"), pre?.Keys ?? PreParseSection(text, "keyDiffs"));
         }
 
         // The text work of one input file (sections, entries, binds, a backup's allowed binds), done for many files at
@@ -894,6 +971,7 @@ namespace JoyPro.Engine
             public List<SectionEntry> Entries = new List<SectionEntry>();
             public List<List<AddedEntry>> Added = new List<List<AddedEntry>>();
             public List<string> Names = new List<string>();
+            public List<List<AddedEntry>> Removed = new List<List<AddedEntry>>();
         }
 
         private static SectionParse PreParseSection(string fileText, string sectionName)
@@ -908,6 +986,7 @@ namespace JoyPro.Engine
             {
                 parse.Added.Add(ExtractAddedEntries(entry.Block));
                 parse.Names.Add(ExtractEntryName(entry.Block));
+                parse.Removed.Add(ExtractRemovedEntries(entry.Block));
             }
             return parse;
         }
@@ -1238,6 +1317,10 @@ namespace JoyPro.Engine
             // a "<name>__N" copy made before (earlier in this import, or by an earlier import when merging). One lookup
             // per entry; without it every further aircraft of a bind that differs from the base made one more copy.
             Dictionary<string, Relation> family = BuildFamilyLookup(relations, binds);
+            // (action title, device, input, modifiers, axis) -> a relation of this import with it: a default joins the
+            // relation of the same function and input of another aircraft (the user's or another default's), like the
+            // user's own relations hold one function across aircraft, instead of one relation per aircraft's action id.
+            Dictionary<string, Relation> byTitle = new Dictionary<string, Relation>(StringComparer.OrdinalIgnoreCase);
             for (int i = 0; i < parsed.Count; i++)
             {
                 ParsedBind parsedBind = parsed[i];
@@ -1247,7 +1330,20 @@ namespace JoyPro.Engine
                     continue;
                 }
 
-                string preferredName = BuildRequestedRelationName(parsedBind);
+                string titleKey = string.IsNullOrWhiteSpace(parsedBind.Name)
+                    ? null
+                    : FamilyKey(parsedBind.Name.Trim(), parsedBind.Device, parsedBind.Key, parsedBind.IsAxis, parsedBind.Reformers);
+                Relation sameFunction;
+                Bind sameFunctionBind;
+                if (parsedBind.IsDefault && parsedBind.RelationName == null && titleKey != null && byTitle.TryGetValue(titleKey, out sameFunction) &&
+                    relations.TryGetValue(sameFunction.NAME ?? string.Empty, out Relation sameStillThere) && ReferenceEquals(sameStillThere, sameFunction) &&
+                    binds.TryGetValue(sameFunction.NAME, out sameFunctionBind) && sameFunctionBind != null && sameFunction.ISAXIS == parsedBind.IsAxis)
+                {
+                    MergeIntoExistingRelation(parsedBind, sameFunction, sameFunctionBind, options);
+                    continue;
+                }
+
+                string preferredName = parsedBind.IsDefault && parsedBind.RelationName == null ? BuildDefaultRelationName(parsedBind) : BuildRequestedRelationName(parsedBind);
                 string relationName = preferredName;
                 string familyKey = FamilyKey(preferredName, parsedBind.Device, parsedBind.Key, parsedBind.IsAxis, parsedBind.Reformers);
 
@@ -1258,6 +1354,8 @@ namespace JoyPro.Engine
                     binds.TryGetValue(familyRelation.NAME, out familyBind) && familyBind != null && familyRelation.ISAXIS == parsedBind.IsAxis)
                 {
                     MergeIntoExistingRelation(parsedBind, familyRelation, familyBind, options);
+                    if (titleKey != null && !byTitle.ContainsKey(titleKey))
+                        byTitle[titleKey] = familyRelation;
                     continue;
                 }
 
@@ -1265,6 +1363,8 @@ namespace JoyPro.Engine
                 {
                     MergeIntoExistingRelation(parsedBind, existingRelation, existingBind, options);
                     family[familyKey] = existingRelation;
+                    if (titleKey != null && !byTitle.ContainsKey(titleKey))
+                        byTitle[titleKey] = existingRelation;
                     continue;
                 }
 
@@ -1278,6 +1378,8 @@ namespace JoyPro.Engine
                 relations[relationName] = relation;
                 binds[relationName] = bind;
                 family[familyKey] = relation;
+                if (titleKey != null && !byTitle.ContainsKey(titleKey))
+                    byTitle[titleKey] = relation;
                 result.ImportedRelations++;
                 result.ImportedBinds++;
 
@@ -1954,6 +2056,7 @@ namespace JoyPro.Engine
 
                 AddedEntry entry = new AddedEntry();
                 entry.Key = key.Trim();
+                entry.Reformers = ExtractNamedStringArray(item.Block, "reformers");
                 result.Add(entry);
             }
 
@@ -2205,6 +2308,17 @@ namespace JoyPro.Engine
             return baseName + "__" + device + "__" + key + "__" + id + "__" + isAxis;
         }
 
+        // A default's relation: title, device, modifiers and input, without the action id (the relation holds the same
+        // function of several aircraft, each with its own id).
+        private static string BuildDefaultRelationName(ParsedBind bind)
+        {
+            string baseName = SanitizeName(string.IsNullOrWhiteSpace(bind.Name) ? bind.Id : bind.Name);
+            string device = SanitizeName(bind.Device);
+            List<string> mods = NormalizeReformerNames(bind.Reformers);
+            string key = SanitizeName((mods.Count > 0 ? string.Join("+", mods) + "+" : string.Empty) + bind.Key);
+            return baseName + "__" + device + "__" + key + "__default__" + (bind.IsAxis ? "axis" : "button");
+        }
+
         // The first free "<base>__<n>" (n from 1). The import only adds relations, so the search for a name goes on where
         // the last one for the same base stopped (nextSuffix); a case-insensitive dictionary answers with one lookup.
         // (Was a scan of every key for every candidate: minutes on a big Saved Games folder.)
@@ -2434,6 +2548,8 @@ namespace JoyPro.Engine
             public List<string> Groups { get; set; }
             public string SourceFile { get; set; }
             public int MetadataPriority { get; set; }
+            // A DCS default added by "include defaults" (not in the user's files).
+            public bool IsDefault { get; set; }
             // The filter came from the .diff.lua (DCS's own state), not from a .jp backup or the clean defaults.
             public bool FilterFromDiff { get; set; }
             public bool HasInverted { get; set; }

@@ -34,6 +34,9 @@ namespace JoyPro.Engine
 
             result.Mode = ExportModeToString(mode);
             result.KeepKeyboardDefaults = effectiveOptions.KeepKeyboardDefaults;
+            result.ClearKeyboardDefaults = effectiveOptions.ClearKeyboardDefaults;
+            if (effectiveOptions.ClearKeyboardDefaults && effectiveOptions.KeepKeyboardDefaults)
+                result.Warnings.Add("--clear-keyboard-defaults has no effect while --keep-keyboard-defaults is true: the keyboard files are not written.");
             result.NukeUntouchedDevices = effectiveOptions.NukeUntouchedDevices;
             result.SavedGamesPath = Normalize(savedGamesPath);
             result.InputPath = ResolveOutputInputPath(result.SavedGamesPath);
@@ -102,8 +105,16 @@ namespace JoyPro.Engine
 
                     DiffPayload clean = LoadCleanProfile(planeName, keyboard, files.DcsDevice, cleanProfiles, result);
                     DiffPayload existing = LoadExistingPayload(files.ExistingDiff, files.ExistingBackup, result, clean);
+                    // The keyboard is never taken over as a whole (docs/games/dcs.md "Keyboard"): DCS's default keys
+                    // stay, only the keys the profile binds lose their default use. All of them go only on request.
+                    bool keepOtherKeyboardDefaults = keyboard && !effectiveOptions.ClearKeyboardDefaults;
+                    if (keepOtherKeyboardDefaults)
+                        DropFormerKeyboardClear(existing, clean, planeName, result);
                     DiffPayload merged = MergePayloads(mode, existing, generated, result);
-                    AddCleanProfileRemovals(merged, clean);
+                    if (keepOtherKeyboardDefaults)
+                        AddKeyboardConflictRemovals(merged, generated, clean, result);
+                    else
+                        AddCleanProfileRemovals(merged, clean);
                     DropRemovalsOfAddedBinds(merged);
 
                     WritePayloadFile(planeDir, files.Diff, merged, false, result);
@@ -116,6 +127,12 @@ namespace JoyPro.Engine
                     generatedPlaneModifiers = CreateDefaultModifierMap();
                 MergeAndWriteModifiers(mode, planeRootDir, generatedPlaneModifiers, result);
             }
+
+            if (!effectiveOptions.ClearKeyboardDefaults)
+                RepairFormerKeyboardClears(result.InputPath, effectiveOptions.Planes, generatedPayloads, cleanProfiles, result);
+            if (result.KeyboardRestoredPlanes.Count > 0)
+                result.Warnings.Add("The DCS default keys are back on the keyboard of " + string.Join(", ", result.KeyboardRestoredPlanes) +
+                                    ": an older JoyPro export had removed all of them. Only keys your profile binds replace a default now.");
 
             // JoyPro takes over whole devices (docs/games/README.md, rule 5): the written devices also lose their DCS
             // defaults in every other installed aircraft. Clean also clears their binds there; the other modes keep
@@ -158,6 +175,7 @@ namespace JoyPro.Engine
             sb.AppendLine("Input Path: " + Safe(result.InputPath));
             sb.AppendLine("Mode: " + Safe(result.Mode));
             sb.AppendLine("Keep Keyboard Defaults: " + result.KeepKeyboardDefaults);
+            sb.AppendLine("Clear Keyboard Defaults: " + result.ClearKeyboardDefaults);
             sb.AppendLine("Nuke Untouched Devices: " + result.NukeUntouchedDevices);
             sb.AppendLine("Relations Scanned: " + result.RelationsScanned);
             sb.AppendLine("Entries Written: " + result.EntriesWritten);
@@ -178,6 +196,8 @@ namespace JoyPro.Engine
             sb.AppendLine("Devices: " + result.DeviceCount);
             sb.AppendLine("Skipped Relations: " + result.SkippedRelations);
             sb.AppendLine("Skipped Keyboard Entries: " + result.SkippedKeyboardEntries);
+            sb.AppendLine("Keyboard Default Keys Removed: " + result.KeyboardDefaultsRemoved);
+            sb.AppendLine("Keyboard Default Keys Restored: " + result.KeyboardDefaultsRestored);
 
             if (result.Errors != null && result.Errors.Count > 0)
             {
@@ -204,6 +224,7 @@ namespace JoyPro.Engine
                 ? "merge-overwrite"
                 : effective.Mode.Trim();
             normalized.KeepKeyboardDefaults = effective.KeepKeyboardDefaults;
+            normalized.ClearKeyboardDefaults = effective.ClearKeyboardDefaults;
             normalized.NukeUntouchedDevices = effective.NukeUntouchedDevices;
             normalized.CleanAllAircraft = effective.CleanAllAircraft;
             normalized.Planes = (effective.Planes ?? new List<string>())
@@ -2064,6 +2085,171 @@ namespace JoyPro.Engine
             }
         }
 
+        // The keyboard without --clear-keyboard-defaults: a DCS default key the profile binds to another action loses
+        // that default use (else one key would fire both); every other default key of the aircraft stays.
+        private static void AddKeyboardConflictRemovals(DiffPayload target, DiffPayload generated, DiffPayload clean, EngineDcsExportResult result)
+        {
+            if (target == null || generated == null || clean == null)
+                return;
+            HashSet<string> taken = new HashSet<string>(
+                generated.Keys.Values.Concat(generated.Axis.Values)
+                    .Where(e => e != null)
+                    .SelectMany(e => e.Added)
+                    .Select(a => RemovedSignature(a.Key, a.Reformers)),
+                StringComparer.Ordinal);
+            if (taken.Count == 0)
+                return;
+            foreach (KeyValuePair<Dictionary<string, DiffEntry>, Dictionary<string, DiffEntry>> pair in new[]
+                     {
+                         new KeyValuePair<Dictionary<string, DiffEntry>, Dictionary<string, DiffEntry>>(target.Keys, clean.Keys),
+                         new KeyValuePair<Dictionary<string, DiffEntry>, Dictionary<string, DiffEntry>>(target.Axis, clean.Axis)
+                     })
+            {
+                foreach (KeyValuePair<string, DiffEntry> cleanEntry in pair.Value)
+                {
+                    if (cleanEntry.Value == null)
+                        continue;
+                    foreach (DiffRemoved removed in cleanEntry.Value.Removed)
+                    {
+                        string signature = RemovedSignature(removed.Key, removed.Reformers);
+                        if (!taken.Contains(signature))
+                            continue;
+                        DiffEntry entry;
+                        pair.Key.TryGetValue(cleanEntry.Key, out entry);
+                        // The profile binds this very key to this action (its own default): nothing to remove.
+                        if (entry != null && entry.Added.Any(a => RemovedSignature(a.Key, a.Reformers) == signature))
+                            continue;
+                        if (entry == null)
+                        {
+                            entry = new DiffEntry();
+                            entry.Name = cleanEntry.Value.Name;
+                            pair.Key.Add(cleanEntry.Key, entry);
+                        }
+                        int before = entry.Removed.Count;
+                        AddRemoved(entry, removed);
+                        if (entry.Removed.Count > before)
+                            result.KeyboardDefaultsRemoved++;
+                    }
+                }
+            }
+        }
+
+        // A keyboard file that removes every DCS default key of the aircraft was written by JoyPro up to 2.4.0 (the
+        // keyboard was taken over like a stick) or with --clear-keyboard-defaults: without that option the default keys
+        // come back. A file that removes only some defaults is the user's own choice and stays as it is.
+        private static bool DropFormerKeyboardClear(DiffPayload existing, DiffPayload clean, string plane, EngineDcsExportResult result)
+        {
+            if (existing == null || clean == null || !HasRemovals(clean) || !ContainsAllRemovals(existing, clean))
+                return false;
+            int restored = 0;
+            foreach (KeyValuePair<Dictionary<string, DiffEntry>, Dictionary<string, DiffEntry>> pair in new[]
+                     {
+                         new KeyValuePair<Dictionary<string, DiffEntry>, Dictionary<string, DiffEntry>>(existing.Keys, clean.Keys),
+                         new KeyValuePair<Dictionary<string, DiffEntry>, Dictionary<string, DiffEntry>>(existing.Axis, clean.Axis)
+                     })
+            {
+                foreach (KeyValuePair<string, DiffEntry> cleanEntry in pair.Value)
+                {
+                    DiffEntry entry;
+                    if (cleanEntry.Value == null || !pair.Key.TryGetValue(cleanEntry.Key, out entry) || entry == null)
+                        continue;
+                    HashSet<string> defaults = new HashSet<string>(cleanEntry.Value.Removed.Select(r => RemovedSignature(r.Key, r.Reformers)), StringComparer.Ordinal);
+                    restored += entry.Removed.RemoveAll(r => defaults.Contains(RemovedSignature(r.Key, r.Reformers)));
+                }
+            }
+            if (restored == 0)
+                return false;
+            result.KeyboardDefaultsRestored += restored;
+            if (!result.KeyboardRestoredPlanes.Contains(plane))
+                result.KeyboardRestoredPlanes.Add(plane);
+            return true;
+        }
+
+        // The keyboard files of the aircraft in this export that JoyPro wrote (a .jp next to them) and that remove every
+        // DCS default key, also where this export writes no keyboard binds (--keep-keyboard-defaults true): their
+        // default keys come back. Nothing else in the files changes.
+        private static void RepairFormerKeyboardClears(
+            string inputPath,
+            List<string> planeFilter,
+            Dictionary<string, Dictionary<string, DiffPayload>> generatedPayloads,
+            Dictionary<string, DiffPayload> cleanProfiles,
+            EngineDcsExportResult result)
+        {
+            List<string> planes;
+            try
+            {
+                planes = planeFilter != null && planeFilter.Count > 0
+                    ? planeFilter.ToList()
+                    : Directory.GetDirectories(inputPath).Select(Path.GetFileName).ToList();
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                return;
+            }
+            foreach (string plane in planes.OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
+            {
+                Dictionary<string, DiffPayload> written;
+                if (generatedPayloads.TryGetValue(plane, out written) && written.Keys.Any(d => string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                string keyboardDir = Path.Combine(inputPath, plane, "keyboard");
+                DeviceFiles files = ResolveDeviceFiles(keyboardDir, "Keyboard", true);
+                if (!File.Exists(files.Backup) || !File.Exists(files.Diff))
+                    continue;
+                // A file that removed every default key holds at least as many removals as the default profile has; the
+                // default profile is only parsed for files that could be one (keeps the export as fast as before).
+                if (!MayBeFormerKeyboardClear(files.Diff, plane))
+                    continue;
+                DiffPayload clean = LoadCleanProfile(plane, true, "Keyboard", cleanProfiles, result);
+                if (clean == null)
+                    continue;
+                DiffPayload existing = LoadExistingPayload(files.Diff, files.Backup, result, clean);
+                if (!DropFormerKeyboardClear(existing, clean, plane, result))
+                    continue;
+                // The keys the file binds itself still replace their default use.
+                AddKeyboardConflictRemovals(existing, ClonePayload(existing), clean, result);
+                DropRemovalsOfAddedBinds(existing);
+                WritePayloadFile(keyboardDir, files.Diff, existing, false, result);
+                WritePayloadFile(keyboardDir, files.Backup, existing, true, result);
+            }
+        }
+
+        private static bool MayBeFormerKeyboardClear(string diffFile, string plane)
+        {
+            int inFile = CountRemovedBlocks(diffFile);
+            if (inFile == 0)
+                return false;
+            string cleanPath;
+            try
+            {
+                cleanPath = Path.Combine(GameDataPaths.CleanProfileFolder("DCS", true), plane + ".cf");
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+            int inDefaults = CountRemovedBlocks(cleanPath);
+            return inDefaults > 0 && inFile >= inDefaults;
+        }
+
+        private static int CountRemovedBlocks(string file)
+        {
+            string text;
+            try
+            {
+                if (!File.Exists(file))
+                    return 0;
+                text = File.ReadAllText(file);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                return 0;
+            }
+            int count = 0;
+            for (int at = text.IndexOf("[\"removed\"]", StringComparison.Ordinal); at >= 0; at = text.IndexOf("[\"removed\"]", at + 1, StringComparison.Ordinal))
+                count++;
+            return count;
+        }
+
         private static bool HasRemovals(DiffPayload clean)
         {
             return clean != null &&
@@ -2883,6 +3069,9 @@ namespace JoyPro.Engine
     {
         public string Mode { get; set; }
         public bool KeepKeyboardDefaults { get; set; }
+        // With KeepKeyboardDefaults false: also every other DCS default key of the written aircraft is removed (the user
+        // asked for it). Off: only the default keys the profile binds to another action are removed.
+        public bool ClearKeyboardDefaults { get; set; }
         public bool NukeUntouchedDevices { get; set; }
         // Clean mode: the written joystick devices also lose their binds and DCS defaults in every other aircraft
         // (only when no aircraft filter is given).
@@ -2910,6 +3099,7 @@ namespace JoyPro.Engine
         public string InputPath { get; set; }
         public string Mode { get; set; }
         public bool KeepKeyboardDefaults { get; set; }
+        public bool ClearKeyboardDefaults { get; set; }
         public bool NukeUntouchedDevices { get; set; }
         public int RelationsScanned { get; set; }
         public int EntriesWritten { get; set; }
@@ -2929,6 +3119,11 @@ namespace JoyPro.Engine
         public int DeviceCount { get; set; }
         public int SkippedRelations { get; set; }
         public int SkippedKeyboardEntries { get; set; }
+        // DCS default keys the keyboard files remove because the profile binds the key to another action.
+        public int KeyboardDefaultsRemoved { get; set; }
+        // DCS default keys an older export had removed from a keyboard file and this one put back.
+        public int KeyboardDefaultsRestored { get; set; }
+        public List<string> KeyboardRestoredPlanes { get; set; } = new List<string>();
         public List<string> WrittenFiles { get; set; }
         public List<string> ClearedFiles { get; set; }
         public List<string> Errors { get; set; }

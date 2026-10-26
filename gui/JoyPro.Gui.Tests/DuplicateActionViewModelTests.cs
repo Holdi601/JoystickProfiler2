@@ -37,7 +37,7 @@ public sealed class DuplicateActionViewModelTests
 
         CheckIssueSection duplicates = Assert.Single(vm.CheckSections, s => s.Kind == "duplicates");
         Assert.True(duplicates.IsSerious);
-        Assert.Equal("Actions in several relations (1)", duplicates.CountText);
+        Assert.Equal("Actions in several relations (actions: 2, cards: 1)", duplicates.CountText);
         Assert.StartsWith("Two inputs do the same thing in the game", duplicates.Severity);
         CheckIssueCard card = Assert.Single(duplicates.Cards);
         Assert.Equal("AH-64D Block II (CPG and Pilot): 'Force Trim/Hold Mode Switch - AL/Right'", card.Headline);
@@ -136,8 +136,12 @@ public sealed class DuplicateActionViewModelTests
         fake.Resolved = false;
         await vm.ReportNewDuplicatesAsync(before, "The DCS import");
         Assert.True(vm.HasDuplicateImportNotice);
-        Assert.StartsWith("The DCS import put 2 actions into a second relation", vm.DuplicateImportNotice);
+        Assert.StartsWith("The DCS import: 2 actions are now in several relations (each action of an aircraft counts once)", vm.DuplicateImportNotice);
         Assert.DoesNotContain(fake.Calls, c => c.Contains("--apply"));
+        // The same number as the check on the Export page.
+        await vm.ValidateProfileCommand.ExecuteAsync(null);
+        Assert.Equal(2, vm.DuplicateActionCount);
+        Assert.Equal("Actions in several relations (actions: 2, cards: 1)", vm.CheckSections.Single(s => s.Kind == "duplicates").CountText);
 
         vm.AutoFixDuplicatesAfterImport = true;
         fake.Resolved = true;
@@ -146,6 +150,17 @@ public sealed class DuplicateActionViewModelTests
         await vm.ReportNewDuplicatesAsync(before, "Taking over the game's changes");
         Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "--rule", "suggested", "--min-confidence", "90") && c.Contains("--apply"));
         Assert.Contains("were fixed at once", vm.DuplicateImportNotice);
+        Assert.Contains("actions in several relations are left on the Export page", vm.DuplicateImportNotice);
+    }
+
+    // The notice of an import into a profile that had some already: the new ones and all of them, as the check counts.
+    [Fact]
+    public void DuplicateNotice_NamesTheNewOnesAndAllOfThem()
+    {
+        Assert.Equal("The DCS import: 3 more actions are now in several relations, 10 in all (each action of an aircraft counts once). Review them on the Export page under 'Problems found by the check'.",
+            MainWindowViewModel.DuplicateNoticeText("The DCS import", 3, 10, 0, 90));
+        Assert.StartsWith("The DCS import: 10 actions were in several relations; 4 of them were fixed at once (90% or more sure). 6 actions in several relations are left",
+            MainWindowViewModel.DuplicateNoticeText("The DCS import", 10, 10, 4, 90));
     }
 
     // The check's "one input in several relations" line (engine: "Button Item key found in multiple Relation: DCS:plane§

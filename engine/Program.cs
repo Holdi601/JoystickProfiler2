@@ -3838,6 +3838,7 @@ namespace JoyPro.Engine
                 ignoreEasyPlanesProvided = true;
             }
             bool keepKeyboardDefaults = PopOptionBoolean(args, "--keep-keyboard-defaults", true, out bool keepKeyboardDefaultsProvided);
+            bool clearKeyboardDefaults = PopOptionBoolean(args, "--clear-keyboard-defaults", false, out bool clearKeyboardDefaultsProvided);
             bool nukeUntouchedDevices = PopOptionBoolean(args, "--nuke-untouched-devices", false, out bool nukeUntouchedDevicesProvided);
             bool cleanAllAircraft = PopOptionBoolean(args, "--clean-all-aircraft", true, out bool cleanAllAircraftProvided);
             bool includeDefaults = PopFlag(args, "--include-defaults");
@@ -3882,6 +3883,7 @@ namespace JoyPro.Engine
             bool hasExportOnlyOptions =
                 !string.IsNullOrWhiteSpace(mode) ||
                 keepKeyboardDefaultsProvided ||
+                clearKeyboardDefaultsProvided ||
                 nukeUntouchedDevicesProvided ||
                 cleanAllAircraftProvided;
 
@@ -3907,7 +3909,7 @@ namespace JoyPro.Engine
             if (action != "import" && (saveLast || !string.IsNullOrWhiteSpace(saveProfile)))
                 return Fail("save options are only valid with 'dcs import'.");
             if (action != "export" && hasExportOnlyOptions)
-                return Fail("--mode, --keep-keyboard-defaults, --nuke-untouched-devices and --clean-all-aircraft are only valid with 'dcs export'.");
+                return Fail("--mode, --keep-keyboard-defaults, --clear-keyboard-defaults, --nuke-untouched-devices and --clean-all-aircraft are only valid with 'dcs export'.");
             if (action == "export" && hasImportOnlyOptions)
                 return Fail("DCS import filter/settings options are only valid with 'dcs scan' or 'dcs import'.");
             if (action == "export" && confirmProvided)
@@ -3981,11 +3983,13 @@ namespace JoyPro.Engine
                         EngineDcsExportOptions exportOptions = new EngineDcsExportOptions();
                         exportOptions.Mode = string.IsNullOrWhiteSpace(mode) ? "merge-overwrite" : mode;
                         exportOptions.KeepKeyboardDefaults = keepKeyboardDefaults;
+                        exportOptions.ClearKeyboardDefaults = clearKeyboardDefaults;
                         exportOptions.NukeUntouchedDevices = nukeUntouchedDevices;
                         exportOptions.CleanAllAircraft = cleanAllAircraft;
                         exportOptions.Planes = ParseDelimitedOptionValues(planeOptions);
                         exportOptions.StatusSink = BuildStatusSink("dcs export");
                         JoyPro.Logging.JoyProLog.Info("Export", "DCS export to " + path + ": mode=" + exportOptions.Mode + ", keep-keyboard-defaults=" + keepKeyboardDefaults +
+                                                                ", clear-keyboard-defaults=" + clearKeyboardDefaults +
                                                                 ", nuke-untouched-devices=" + nukeUntouchedDevices + ", clean-all-aircraft=" + cleanAllAircraft +
                                                                 ", planes=" + (exportOptions.Planes == null || exportOptions.Planes.Count == 0 ? "(all)" : string.Join(",", exportOptions.Planes)));
                         EngineDcsExportResult export = EngineDcsExport.ExportToSavedGames(path, exportOptions);
@@ -14450,7 +14454,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine profile history prune [--all] [--dry-run] | usage [--all]   (clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total)");
             Console.WriteLine("  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]");
             Console.WriteLine("  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]");
-            Console.WriteLine("  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included)");
+            Console.WriteLine("  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included; the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)");
             Console.WriteLine("  engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)");
             Console.WriteLine("  engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)");
             Console.WriteLine("  engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore puts the originals back; auto re-applies after a DCS update; patched files fail server integrity checks)");

@@ -81,6 +81,7 @@ public sealed partial class MainWindowViewModel
                 OpenAllCommand = new RelayCommand(() => OpenRelations(names))
             });
         }
+        checkDataVersion++;
         BuildCheckSections();
     }
 

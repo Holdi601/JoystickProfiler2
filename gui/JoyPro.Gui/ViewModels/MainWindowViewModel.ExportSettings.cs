@@ -35,10 +35,15 @@ public sealed partial class MainWindowViewModel
     {
         PropertyChanged += OnExportSettingChanged;
         if (!persisted)
+        {
+            InitializeImportSettings(persisted: false);
             return;
+        }
         exportSettings = ExportSettingsStore.Load(ExportSettingsPath);
         ApplyRememberedExportSettings();
         exportSettingsReady = true;
+        // The import options are kept in the same file (MainWindowViewModel.ImportSettings.cs).
+        InitializeImportSettings(persisted: true);
     }
 
     private void ApplyRememberedExportSettings()

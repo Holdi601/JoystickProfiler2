@@ -31,6 +31,9 @@ public sealed class ExportSettings
     public bool MsfsWriteUserProfiles { get; set; } = true;
     public bool MsfsAlwaysImportFiles { get; set; }
 
+    // The import choices of the Start page's import and the expert import (docs/reimport.md "Remembered import options").
+    public ImportSettings Import { get; set; } = new();
+
     // The check list's filters (Show Errors / Show Warnings).
     public bool ValidationShowErrors { get; set; } = true;
     public bool ValidationShowWarnings { get; set; }
@@ -43,6 +46,36 @@ public sealed class ExportSettings
 
     // Full profile path (lower case) -> the user's own ticks.
     public Dictionary<string, ProfileExportTicks> Profiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+}
+
+// The import options the user chose last, for every profile alike; the defaults are JoyPro's (include defaults off).
+public sealed class ImportSettings
+{
+    // Start page import: add to the profile (on) or start over from the game.
+    public bool AddToProfile { get; set; } = true;
+    // Expert import: merge into the profile.
+    public bool Merge { get; set; }
+    public bool IncludeDefaults { get; set; }
+    public bool DcsKeyboard { get; set; } = true;
+    public bool StarCitizenKeyboard { get; set; }
+    // The games JoyPro reads through its game list: game id -> take the keyboard keys.
+    public Dictionary<string, bool> RegistryKeyboard { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public bool IgnoreEasyPlanes { get; set; }
+    public bool Inverted { get; set; }
+    public bool Slider { get; set; }
+    public bool Curvature { get; set; }
+    public bool Deadzone { get; set; }
+    public bool SaturationX { get; set; }
+    public bool SaturationY { get; set; }
+    public bool AllDcsPlanes { get; set; } = true;
+    public bool UseSelectedDevices { get; set; }
+    public string PlanesCsv { get; set; } = string.Empty;
+    public string DevicesCsv { get; set; } = string.Empty;
+    public string IgnoreDevicesCsv { get; set; } = string.Empty;
+    // The ticked aircraft, devices and ignored devices of the lists (kept also while one is not shown).
+    public List<string> SelectedPlanes { get; set; } = [];
+    public List<string> SelectedDevices { get; set; } = [];
+    public List<string> IgnoredDevices { get; set; } = [];
 }
 
 public sealed class ProfileExportTicks
@@ -90,6 +123,15 @@ public static class ExportSettingsStore
                 };
             }
             settings.Profiles = profiles;
+            ImportSettings import = settings.Import ?? new ImportSettings();
+            import.RegistryKeyboard = new Dictionary<string, bool>(import.RegistryKeyboard ?? [], StringComparer.OrdinalIgnoreCase);
+            import.PlanesCsv ??= string.Empty;
+            import.DevicesCsv ??= string.Empty;
+            import.IgnoreDevicesCsv ??= string.Empty;
+            import.SelectedPlanes ??= [];
+            import.SelectedDevices ??= [];
+            import.IgnoredDevices ??= [];
+            settings.Import = import;
             if (string.IsNullOrWhiteSpace(settings.Mode))
                 settings.Mode = "merge";
             return settings;

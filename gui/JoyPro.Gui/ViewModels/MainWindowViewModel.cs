@@ -957,7 +957,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<string> RelationNodeGameOptions { get; } = [];
     public ObservableCollection<SelectableTagItem> RelationNodePlaneOptions { get; } = [];
     public ObservableCollection<DbNodeSearchResultItem> RelationNodeSearchResults { get; } = [];
-    public ObservableCollection<BindListItem> Binds { get; } = [];
+    public RangeObservableCollection<BindListItem> Binds { get; } = [];
     public ObservableCollection<string> QuickBindDeviceOptions { get; } = [];
     public ObservableCollection<string> QuickBindInputOptions { get; } = [];
     public ObservableCollection<ModifierListItem> ModifierItems { get; } = [];
@@ -2382,6 +2382,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         allRelations.Clear();
         allBinds.Clear();
         allValidationIssues.Clear();
+        plainCheckCards.Clear();
+        checkShownCards.Clear();
+        checkSortedCards.Clear();
+        checkPresortedCards.Clear();
+        checkDataVersion++;
         DeviceAliases.Replace(new Dictionary<string, string>());
         editingRelationNode = null;
 
@@ -2835,16 +2840,23 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task RefreshRelationsAsync()
+    private Task RefreshRelationsAsync() => RefreshRelationsCoreAsync(rebuildBindRows: true);
+
+    // rebuildBindRows false: the caller reads the binds right after (they rebuild the Binds page's rows).
+    private async Task<bool> RefreshRelationsCoreAsync(bool rebuildBindRows)
     {
         // JSON: every action's game and switched-on aircraft (the filters), the bind's modifiers (the bind label) and
         // the titles of the actions (the search).
         EngineCommandResult? result = await RunEngineAsync(["relations", "list", "--titles"], includeProfile: true, mutatesProfile: false, busyLabel: N("Loading relations..."),
             forceText: false);
         if (result == null || result.ExitCode != 0)
-            return;
+            return false;
 
-        ParseRelations(result.StandardOutput);
+        // A big profile's list is megabytes (3.9 MB for 5005 relations): read off the UI thread.
+        string output = result.StandardOutput;
+        List<RelationListItem>? parsed = await Task.Run(() => TryParseRelationsFromJson(output, out List<RelationListItem> list) ? list : null);
+        ParseRelations(output, parsed, rebuildBindRows);
+        return true;
     }
 
     [RelayCommand]
@@ -3483,8 +3495,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     private async Task RefreshBindsPageAsync()
     {
-        await RefreshRelationsAsync();
+        // The binds rebuild the page's rows; the relations alone would build them once more before (5005 relations: ~0.1 s).
+        bool relations = await RefreshRelationsCoreAsync(rebuildBindRows: false);
         await RefreshBindsAsync();
+        if (relations && bindRowsStale)
+            RebuildVisibleBinds();
     }
 
     [RelayCommand]
@@ -3502,7 +3517,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (result == null || result.ExitCode != 0)
             return;
 
-        ParseBinds(result.StandardOutput);
+        // The JSON of 5000 binds is read off the UI thread (half a second on the UI thread froze the Binds page).
+        string output = result.StandardOutput;
+        (bool parsedJson, List<BindListItem> jsonBinds, List<(string Relation, string Reformer)> reformers) = await Task.Run(() =>
+        {
+            List<(string Relation, string Reformer)> sink = [];
+            bool ok = TryParseBindsFromJson(output, out List<BindListItem> list, sink);
+            return (ok, list, sink);
+        });
+        if (parsedJson)
+            ApplyParsedBinds(jsonBinds, reformers);
+        else
+            ParseBinds(output);
         OnBindsReloadedForPictures();
     }
 
@@ -3528,12 +3554,16 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         await RunEngineAsync(["binds", "show", bindOrRelation], includeProfile: true, mutatesProfile: false, busyLabel: N("Loading bind details..."));
     }
 
-    private void ParseRelations(string output)
+    private void ParseRelations(string output) => ParseRelations(output, null, rebuildBindRows: true);
+
+    // preParsed: the JSON list already read (off the UI thread); null: read it here.
+    private void ParseRelations(string output, List<RelationListItem>? preParsed, bool rebuildBindRows)
     {
         allRelations.Clear();
         HashSet<string> groups = new(StringComparer.OrdinalIgnoreCase);
 
-        if (TryParseRelationsFromJson(output, out List<RelationListItem> jsonRelations))
+        List<RelationListItem> jsonRelations = preParsed ?? [];
+        if (preParsed != null || TryParseRelationsFromJson(output, out jsonRelations))
         {
             for (int i = 0; i < jsonRelations.Count; i++)
             {
@@ -3547,12 +3577,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             RebuildVisibleRelations();
             RebuildQuickBindOptions();
             RebuildModifierTargetRelationOptions();
-            relationMassSelectedNames.RemoveWhere(name => !allRelations.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase)));
+            if (relationMassSelectedNames.Count > 0)
+            {
+                HashSet<string> names = new(allRelations.Select(r => r.Name), StringComparer.OrdinalIgnoreCase);
+                relationMassSelectedNames.RemoveWhere(name => !names.Contains(name));
+            }
             UpdateRelationMassSelectionSummary();
             UpdateRecordTargetContext();
             RefreshRelationValidationState();
             // The Binds page lists every relation (bound or not): keep it in step with the relation list.
-            RebuildVisibleBinds();
+            if (rebuildBindRows)
+                RebuildVisibleBinds();
+            else
+                bindRowsStale = true;
             // The aircraft chips' tooltips name the aircraft as the modules do.
             _ = LoadRelationAircraftNamesAsync();
             return;
@@ -3974,6 +4011,17 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         return false;
     }
 
+    // The binds read off the UI thread (TryParseBindsFromJson with a reformer sink) become the page's binds.
+    private void ApplyParsedBinds(List<BindListItem> binds, List<(string Relation, string Reformer)> reformers)
+    {
+        allBinds.Clear();
+        modifierReformerCacheByName.Clear();
+        foreach ((string relation, string reformer) in reformers)
+            RegisterModifierReformer(relation, reformer);
+        allBinds.AddRange(binds);
+        AfterBindsParsed();
+    }
+
     private void AfterBindsParsed()
     {
         // After Set Bind, Record, Clear or Unbind the relations' bind column (read before) follows the bind list.
@@ -3990,7 +4038,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             RebuildDashboard();
     }
 
-    private bool TryParseBindsFromJson(string output, out List<BindListItem> parsedBinds)
+    // reformerSink: off the UI thread the modifiers are collected here and registered on the UI thread afterwards.
+    private bool TryParseBindsFromJson(string output, out List<BindListItem> parsedBinds, List<(string Relation, string Reformer)>? reformerSink = null)
     {
         parsedBinds = [];
         if (string.IsNullOrWhiteSpace(output))
@@ -4040,7 +4089,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                         if (reformer.Length == 0)
                             continue;
                         reformers.Add(reformer);
-                        RegisterModifierReformer(relationName, reformer);
+                        if (reformerSink != null)
+                            reformerSink.Add((relationName, reformer));
+                        else
+                            RegisterModifierReformer(relationName, reformer);
                     }
                 }
 
@@ -4771,13 +4823,33 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             relationName ?? string.Empty,
             reformer);
 
-        bool duplicate = existing.Any(match =>
-            NormalizeDeviceToken(match.Device) == NormalizeDeviceToken(candidate.Device) &&
-            NormalizeInputToken(match.Input) == NormalizeInputToken(candidate.Input) &&
-            string.Equals(match.Relation, candidate.Relation, StringComparison.OrdinalIgnoreCase));
-        if (!duplicate)
+        // A set of the matches' keys instead of comparing with every match: a modifier on a thousand binds (LCtrl of the
+        // DCS keyboard defaults) made this quadratic, half a second on the UI thread when the Binds page loaded.
+        ReformerKeySet set = modifierReformerKeys.GetOrCreateValue(existing);
+        if (set.Count != existing.Count)
+        {
+            set.Keys.Clear();
+            foreach (ModifierReformerMatch match in existing)
+                set.Keys.Add(ReformerMatchKey(match));
+            set.Count = existing.Count;
+        }
+        if (set.Keys.Add(ReformerMatchKey(candidate)))
+        {
             existing.Add(candidate);
+            set.Count = existing.Count;
+        }
     }
+
+    private sealed class ReformerKeySet
+    {
+        public readonly HashSet<string> Keys = new(StringComparer.Ordinal);
+        public int Count;
+    }
+
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<List<ModifierReformerMatch>, ReformerKeySet> modifierReformerKeys = new();
+
+    private static string ReformerMatchKey(ModifierReformerMatch match) =>
+        NormalizeDeviceToken(match.Device) + "§" + NormalizeInputToken(match.Input) + "§" + (match.Relation ?? string.Empty).ToUpperInvariant();
 
     private void RegisterModifierReformersFromText(string relationName, string rawModifiers)
     {
@@ -6878,14 +6950,29 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (result == null || result.StandardOutput.IndexOf("Profile Validation", StringComparison.OrdinalIgnoreCase) < 0)
             return;
 
-        ParseValidation(result.StandardOutput);
-        // Actions on in several relations: cards with the action titles, aircraft and fixes instead of the plain lines.
-        if (allValidationIssues.Any(i => i.Kind == "Warning"))
-            await LoadDuplicateIssuesAsync();
-        else
-            ApplyDuplicates("{\"Duplicates\":[],\"Groups\":[]}");
-        // Relations an import copied with the same input ("<name>__N"): cards that merge them back into one.
-        await LoadMergeCopiesIssuesAsync();
+        // Thousands of findings (a DCS import with defaults: 3365 errors) are read and made into cards off the UI thread;
+        // the page then builds only a page of cards per section (CheckIssueSection.PageSize, "Show more").
+        string output = result.StandardOutput;
+        HashSet<string> knownRelations = KnownRelationNames();
+        string sort = CheckSortRule;
+        ValidationData data = await Task.Run(() => ParseValidationData(output, knownRelations, sort));
+        deferCheckSections = true;
+        try
+        {
+            ApplyValidation(data);
+            // Actions on in several relations: cards with the action titles, aircraft and fixes instead of the plain lines.
+            if (allValidationIssues.Any(i => i.Kind == "Warning"))
+                await LoadDuplicateIssuesAsync();
+            else
+                ApplyDuplicates("{\"Duplicates\":[],\"Groups\":[]}");
+            // Relations an import copied with the same input ("<name>__N"): cards that merge them back into one.
+            await LoadMergeCopiesIssuesAsync();
+        }
+        finally
+        {
+            deferCheckSections = false;
+        }
+        BuildCheckSections();
         if (result.ExitCode != 0)
             StatusText = T("Validation found errors. See the issue list.");
     }
@@ -7024,9 +7111,25 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         return await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Exporting Star Citizen..."));
     }
 
-    private void ParseValidation(string output)
+    // The check's lines, counts and plain cards (built here, off the UI thread when called from the check).
+    private sealed class ValidationData
     {
-        List<ValidationIssueItem> all = [];
+        public List<ValidationIssueItem> Issues { get; } = [];
+        public Dictionary<ValidationIssueItem, CheckIssueCard> Cards { get; } = new(ReferenceEqualityComparer.Instance);
+        public int ErrorCount { get; set; }
+        public int WarningCount { get; set; }
+        public string Sort { get; set; } = string.Empty;
+        public List<CheckIssueCard> SortedErrors { get; set; } = [];
+        public List<CheckIssueCard> SortedNotes { get; set; } = [];
+    }
+
+    private HashSet<string> KnownRelationNames() =>
+        new(allRelations.Select(r => r.Name).Where(n => !string.IsNullOrEmpty(n)), StringComparer.OrdinalIgnoreCase);
+
+    private ValidationData ParseValidationData(string output, HashSet<string> knownRelations, string sort)
+    {
+        ValidationData data = new();
+        List<ValidationIssueItem> all = data.Issues;
         int errorCount = 0, warningCount = 0;
         string currentKind = "Warning";
 
@@ -7076,11 +7179,30 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             }
         }
 
+        data.ErrorCount = errorCount;
+        data.WarningCount = warningCount;
+        foreach (ValidationIssueItem issue in all)
+            data.Cards[issue] = PlainCard(issue, knownRelations);
+        data.Sort = sort;
+        data.SortedErrors = SortCheckCards(all.Where(i => i.Kind == "Error").Select(i => data.Cards[i]), sort);
+        data.SortedNotes = SortCheckCards(all.Where(i => i.Kind != "Error").Select(i => data.Cards[i]), sort);
+        return data;
+    }
+
+    private void ApplyValidation(ValidationData data)
+    {
+        int errorCount = data.ErrorCount, warningCount = data.WarningCount;
         ValidationSummary = errorCount == 0 && warningCount == 0
             ? T("Check done: no problems found.")
             : T("Check done: {0} errors, {1} warnings.", errorCount, warningCount);
         allValidationIssues.Clear();
-        allValidationIssues.AddRange(all);
+        allValidationIssues.AddRange(data.Issues);
+        plainCheckCards.Clear();
+        foreach (KeyValuePair<ValidationIssueItem, CheckIssueCard> card in data.Cards)
+            plainCheckCards[card.Key] = card.Value;
+        checkPresortedCards["errors"] = (data.Sort, data.SortedErrors);
+        checkPresortedCards["notes"] = (data.Sort, data.SortedNotes);
+        checkDataVersion++;
         RebuildValidationFilter();
 
         ConflictSummary = T("Conflicts are resolved during profile merge operations (mode right or left).");
@@ -8061,7 +8183,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             lastEngineFailureReason = result.ExitCode == 0 ? string.Empty : EngineFailureReason(result, 0);
             LastRunDuration = result.Duration.ToString(@"mm\:ss\.fff", CultureInfo.InvariantCulture);
 
-            OutputText = BuildOutputText(result, thresholdNote);
+            OutputText = LimitOutputPane(BuildOutputText(result, thresholdNote));
             // The session log (engine-output.log) keeps the progress too, thinned to a few lines per step.
             if (persistUiFiles)
                 AppendSessionLog(BuildOutputText(new EngineCommandResult
@@ -10064,24 +10186,52 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    // The session log is written in order on a pool thread: an engine answer can be megabytes (the check of a big profile
+    // wrote 10 MB at once on the UI thread).
+    private Task sessionLogTail = Task.CompletedTask;
+    private readonly object sessionLogLock = new();
+
     private void AppendSessionLog(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        try
+        string path = SessionLogPath;
+        DateTime now = DateTime.Now;
+        lock (sessionLogLock)
         {
-            string stamped = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]"
-                             + Environment.NewLine
-                             + text.TrimEnd()
-                             + Environment.NewLine
-                             + Environment.NewLine;
-            File.AppendAllText(SessionLogPath, stamped);
+            sessionLogTail = sessionLogTail.ContinueWith(_ =>
+            {
+                try
+                {
+                    using StreamWriter writer = new(path, append: true);
+                    writer.Write("[" + now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + "]");
+                    writer.Write(Environment.NewLine);
+                    writer.Write(text.TrimEnd());
+                    writer.Write(Environment.NewLine);
+                    writer.Write(Environment.NewLine);
+                }
+                catch
+                {
+                    // Ignore logging issues so UI flow never breaks.
+                }
+            }, TaskScheduler.Default);
         }
-        catch
-        {
-            // Ignore logging issues so UI flow never breaks.
-        }
+    }
+
+    // The output pane shows at most this much of an answer (a wrapped text box with megabytes of text blocks the page
+    // for seconds); the session log keeps all of it.
+    internal const int OutputPaneMaxChars = 100_000;
+
+    internal static string LimitOutputPane(string text)
+    {
+        if (string.IsNullOrEmpty(text) || text.Length <= OutputPaneMaxChars)
+            return text ?? string.Empty;
+        int cut = text.LastIndexOf('\n', OutputPaneMaxChars);
+        if (cut < OutputPaneMaxChars / 2)
+            cut = OutputPaneMaxChars;
+        return text[..cut].TrimEnd() + Environment.NewLine + Environment.NewLine +
+               T("... {0} more characters are not shown here; the whole answer is in the session log (Support file).", (text.Length - cut).ToString("N0", CultureInfo.CurrentCulture));
     }
 
     // The one title resolver of the GUI (DcsCommandNames): the aircraft's DB title (a localization key there becomes
@@ -10632,8 +10782,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private List<BindListItem> bindRows = [];
     private List<FilterSubject> bindSubjects = [];
 
+    // The relations changed and the Binds page's rows were not built for them yet (RefreshBindsPageAsync).
+    private bool bindRowsStale;
+
     private void RebuildVisibleBinds()
     {
+        bindRowsStale = false;
         EnsureListFilters();
         bindRows = BuildBindRows();
         bindSubjects = BuildBindSubjects(bindRows);
@@ -10668,12 +10822,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         restoringBindSelection = true;
         try
         {
-            Binds.Clear();
+            // One change for the whole list: 5000 binds added one by one each ran the list control and every handler.
+            List<BindListItem> shownBinds = [];
             foreach (BindListItem bind in query)
             {
                 bind.DeviceIcon = DeviceIconFor(bind.Device);
-                Binds.Add(bind);
+                shownBinds.Add(bind);
             }
+            Binds.ReplaceAll(shownBinds);
 
             if (!string.IsNullOrWhiteSpace(selectedRelationName))
             {

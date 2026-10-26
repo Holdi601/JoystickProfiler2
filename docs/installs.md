@@ -56,9 +56,11 @@ feedback process and the support file (`engine/JoyProDataFolder.cs`).
   start moves the rest.
 - A file that is in both folders: the same content is kept once; different content: JoyPro2's copy stays and the old
   one is kept in `%LOCALAPPDATA%\JoyPro2\MigrationConflicts`. Nothing is deleted that is not in the new place.
-- When the old folder is empty it is replaced by a junction `%LOCALAPPDATA%\JoyPro` -> `%LOCALAPPDATA%\JoyPro2`, so an
-  older JoyPro2 (another install, a portable copy not yet updated) still finds and writes its data there. Delete the
-  junction once no JoyPro2 older than 2.4 is left on the PC; it holds no files of its own.
+- When the old folder is empty it is removed: only `%LOCALAPPDATA%\JoyPro2` is left. (2.4.0 put a junction
+  `%LOCALAPPDATA%\JoyPro` -> `JoyPro2` in its place, which looked like a second data folder; since 2.4.1 the next start
+  removes that junction as a link, only when it shows JoyPro2 itself, so no file is touched. A junction to any other
+  folder stays.)
+- Once the old folder is gone, a start only checks that it does not exist: no other file access and no log line.
 - `%LOCALAPPDATA%\JoyPro2\data-migration.json` records what happened (status, files moved, files still in use,
   conflicts).
 

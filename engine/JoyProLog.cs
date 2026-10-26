@@ -175,7 +175,7 @@ namespace JoyPro.Logging
                         ", session " + sessionId + (parentId.Length > 0 ? ", started by " + parentId : string.Empty) + ") ===");
             Info("Log", "System: " + SystemDescription());
             DataMigrationResult moved = JoyProDataFolder.LastResult;
-            if (moved != null && moved.Status != "none")
+            if (moved != null && moved.IsNews)
                 Info("Data", JoyProDataFolder.Describe(moved));
             TimeSpan offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.Now);
             Info("Log", "Culture: " + CultureName(CultureInfo.CurrentCulture) + " / UI " + CultureName(CultureInfo.CurrentUICulture) +

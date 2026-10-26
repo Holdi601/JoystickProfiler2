@@ -8,7 +8,7 @@ namespace JoyPro.Gui.Tests;
 
 // The one data folder (engine/JoyProDataFolder.cs, docs/installs.md "Data folder"): an old %LOCALAPPDATA%\JoyPro is
 // moved into %LOCALAPPDATA%\JoyPro2 without losing a file: a fresh move, a move that stopped in the middle, a file in
-// use, a second start after the move (and an older JoyPro2 reading through the junction), and a portable setup
+// use, a second start after the move (nothing to do, nothing to log), the junction 2.4.0 left, and a portable setup
 // (JOYPRO_DATA_DIR) that never touches %LOCALAPPDATA%. Every case runs in a temp folder standing in for %LOCALAPPDATA%.
 [Collection("JoyProDataDir")]
 public sealed class DataFolderMigrationTests : IDisposable
@@ -74,7 +74,7 @@ public sealed class DataFolderMigrationTests : IDisposable
     }
 
     [Fact]
-    public void FreshMove_PutsEverythingIntoJoyPro2_AndOldInstallsStillFindTheirData()
+    public void FreshMove_PutsEverythingIntoJoyPro2_AndOnlyJoyPro2IsLeft()
     {
         OldLayout();
 
@@ -83,17 +83,15 @@ public sealed class DataFolderMigrationTests : IDisposable
         Assert.Equal("done", result.Status);
         AssertAllMoved();
         Assert.Contains("\"status\": \"done\"", Read(Target, JoyProDataFolder.StateFileName));
-        // An older JoyPro2 reads and writes %LOCALAPPDATA%\JoyPro as before: it lands in JoyPro2 (the junction).
-        Assert.True(result.Junction);
-        Assert.True(JoyProDataFolder.IsJunction(Legacy));
-        Assert.Contains("\"junction\": true", Read(Target, JoyProDataFolder.StateFileName));
-        Assert.Equal("hornet", Read(Legacy, @"GameData\DB\DCS\FA-18C_hornet.lua"));
-        Write(Legacy, @"GameBackups\old-install.txt", "written by 2.3");
-        Assert.Equal("written by 2.3", Read(Target, @"GameBackups\old-install.txt"));
+        // No junction any more (it looked like a second data folder): the old folder is simply gone.
+        Assert.True(result.OldFolderRemoved);
+        Assert.True(result.IsNews);
+        Assert.False(Directory.Exists(Legacy));
+        Assert.Contains("\"oldFolderRemoved\": true", Read(Target, JoyProDataFolder.StateFileName));
     }
 
     [Fact]
-    public void AlreadyMoved_ChangesNothing()
+    public void AlreadyMoved_ChangesNothing_AndIsNoNews()
     {
         OldLayout();
         Assert.Equal("done", JoyProDataFolder.Migrate(local).Status);
@@ -101,10 +99,71 @@ public sealed class DataFolderMigrationTests : IDisposable
 
         DataMigrationResult again = JoyProDataFolder.Migrate(local);
 
-        Assert.Equal(Directory.Exists(Legacy) ? "done" : "none", again.Status);
+        Assert.Equal("none", again.Status);
         Assert.Equal(0, again.Moved);
+        Assert.False(again.IsNews);
         AssertAllMoved();
         Assert.Equal(stamp, File.GetLastWriteTimeUtc(Path.Combine(Target, JoyProDataFolder.StateFileName)));
+    }
+
+    // 2.4.0 put a junction JoyPro -> JoyPro2 in place of the old folder: the next start removes it as a link (JoyPro2's
+    // files stay); a junction to any other folder is the user's and stays.
+    [Fact]
+    public void JunctionFrom240_IsRemoved_ButAForeignJunctionStays()
+    {
+        OldLayout();
+        Assert.Equal("done", JoyProDataFolder.Migrate(local).Status);
+        Assert.True(MakeJunction(Legacy, Target));
+        Assert.True(File.Exists(Path.Combine(Legacy, "game-installs.json")));
+
+        DataMigrationResult removed = JoyProDataFolder.Migrate(local);
+
+        Assert.True(removed.OldFolderRemoved);
+        Assert.False(Directory.Exists(Legacy));
+        AssertAllMoved();
+        Assert.Equal("none", JoyProDataFolder.Migrate(local).Status);
+
+        string other = Path.Combine(local, "Other");
+        Write(other, "mine.txt", "mine");
+        Assert.True(MakeJunction(Legacy, other));
+
+        DataMigrationResult kept = JoyProDataFolder.Migrate(local);
+
+        Assert.False(kept.OldFolderRemoved);
+        Assert.False(kept.IsNews);
+        Assert.True(JoyProDataFolder.IsJunction(Legacy));
+        Assert.Equal("mine", Read(Legacy, "mine.txt"));
+    }
+
+    [Fact]
+    public void EmptyOldFolder_IsRemoved()
+    {
+        Write(Target, @"Logs\gui.log", "log");
+        Directory.CreateDirectory(Path.Combine(Legacy, "GameData"));
+
+        DataMigrationResult result = JoyProDataFolder.Migrate(local);
+
+        Assert.True(result.OldFolderRemoved);
+        Assert.False(Directory.Exists(Legacy));
+        Assert.Equal("log", Read(Target, @"Logs\gui.log"));
+    }
+
+    private static bool MakeJunction(string link, string target)
+    {
+        System.Diagnostics.ProcessStartInfo info = new("cmd.exe", "/c mklink /J \"" + link + "\" \"" + target + "\"")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        using System.Diagnostics.Process? process = System.Diagnostics.Process.Start(info);
+        if (process == null)
+            return false;
+        process.StandardOutput.ReadToEnd();
+        process.StandardError.ReadToEnd();
+        process.WaitForExit(10000);
+        return JoyProDataFolder.IsJunction(link);
     }
 
     [Fact]

@@ -29,3 +29,16 @@ Rules:
   `--merge`). Profile-level data (layouts, pictures, plane aliases) lives in the `.pr0file` only.
 - IL-2 hats: IL-2 numbers hats from 0 (`pov0` = first hat), JoyPro like DCS from 1 (`JOY_BTN_POV1_*`). The export
   wrote `POV1` as `pov1` (the second hat) and the import read `pov1` as buttons 80+; both fixed 2026-10-05.
+
+## Remembered import options
+
+Every import option is remembered in `export-settings.json` (`import`, the GUI's settings folder) and comes back at
+the next start (`MainWindowViewModel.ImportSettings.cs`; up to 2.4.0 they had to be ticked again every time): on the
+Start page "Add to my profile" / "Start over" and the keyboard box per game (DCS, Star Citizen and each game of the game
+list on its own, also when you go back without importing); in the expert import merge, include defaults (off until you
+tick it), DCS keyboard commands, Star Citizen keyboard, ignore `*_easy` aircraft, the inverted/slider/curvature/
+deadzone/saturation boxes, all DCS aircraft or the ticked ones, selected devices only, the ticked aircraft, devices and
+ignored devices (also while one is not listed) and the additional CSV boxes. The DCS device options (only connected,
+same name as one) stay in `ui-settings.json`, the MSFS ones (devices not connected, sim presets) with the export
+settings. The paths are not remembered here: JoyPro finds them (Settings > Games). Test:
+`gui\JoyPro.Gui.Tests\ImportSettingsPersistTests.cs`.

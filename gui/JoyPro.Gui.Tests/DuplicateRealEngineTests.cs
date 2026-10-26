@@ -63,6 +63,20 @@ public sealed class DuplicateRealEngineTests
                         Assert.False(RawId.IsMatch(text), "a raw id in the panel: " + text);
                 }
                 Assert.Equal("Fix the sure ones (7 of 7 at 90% or more)", vm.FixSureOnesText);
+
+                // The import's notice and the check count the same unit for the same profile: actions in several
+                // relations, an action of one aircraft once (a tester saw 206 after the import and 103 in the check:
+                // actions there, cards here). The check's header names both.
+                vm.AutoFixDuplicatesAfterImport = false;
+                AvaloniaRenderThread.Wait(vm.ReportNewDuplicatesAsync(new HashSet<string>(StringComparer.OrdinalIgnoreCase), "The DCS import"));
+                Match notice = Regex.Match(vm.DuplicateImportNotice, @"^The DCS import: (\d+) actions are now in several relations \(each action of an aircraft counts once\)");
+                Assert.True(notice.Success, vm.DuplicateImportNotice);
+                int noticeCount = int.Parse(notice.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+                Assert.Equal(7, noticeCount);
+                Assert.Equal(vm.DuplicateActionCount, noticeCount);
+                Assert.Equal("Actions in several relations (actions: " + noticeCount + ", cards: 4)", section.CountText);
+                Assert.StartsWith(noticeCount + " actions in several relations (4 cards)", vm.CheckSummaryText);
+                vm.DismissDuplicateImportNoticeCommand.Execute(null);
                 if (!string.IsNullOrWhiteSpace(render))
                     RenderPanel(vm, render, "cards");
 

@@ -225,6 +225,17 @@ namespace JoyPro.Engine
         public int EntriesParsed { get; set; }
         public int ForceFeedbackEntriesParsed { get; set; }
         public int DefaultEntriesParsed { get; set; }
+        // Include defaults: defaults not added because the user's file removes them, he bound the action on that device
+        // himself, or he uses the input (key and modifiers) for another action of that aircraft.
+        public int DefaultEntriesRemovedByUser { get; set; }
+        public int DefaultEntriesReplacedByOwnBinds { get; set; }
+        public int DefaultEntriesOnOwnInputs { get; set; }
+        // Defaults of an action another device already has a default for in that aircraft (one device per action).
+        public int DefaultEntriesOnOtherDevice { get; set; }
+        // Defaults on an input DCS gives to two actions of an aircraft: the first one keeps it.
+        public int DefaultEntriesOnSharedInputs { get; set; }
+        // DCS's generic joystick defaults (default.lua) of devices without defaults of their own: not imported.
+        public int GenericJoystickDefaultsSkipped { get; set; }
         public int ImportedRelations { get; set; }
         public int ImportedBinds { get; set; }
         public int ForceFeedbackDevicesImported { get; set; }

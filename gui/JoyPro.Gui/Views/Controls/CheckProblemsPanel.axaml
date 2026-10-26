@@ -133,10 +133,25 @@
                                     <TextBlock Text="{Binding CountText}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
                                 </StackPanel>
                                 <TextBlock Classes="hint" Text="{Binding Severity}" TextWrapping="Wrap" />
+                                <TextBlock Classes="hint" Text="{Binding Breakdown}" TextWrapping="Wrap" IsVisible="{Binding HasBreakdown}" />
                             </StackPanel>
                         </Expander.Header>
+                        <!-- A page of cards at a time: thousands of findings never build thousands of cards at once. -->
+                        <StackPanel Spacing="0">
                         <ItemsControl ItemsSource="{Binding Cards}">
-                            <ItemsControl.ItemTemplate>
+                            <ItemsControl.DataTemplates>
+                                <!-- The check's own lines (errors, notes): a light card; thousands of them can come. -->
+                                <DataTemplate x:DataType="models:PlainCheckIssueCard">
+                                    <Border Classes="card" Padding="10,8" Margin="0,0,0,6">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Headline}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <StackPanel Spacing="4" IsVisible="{Binding IsExpanded}">
+                                                <TextBlock Text="{Binding Details}" TextWrapping="Wrap" IsVisible="{Binding Details, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                <Button Classes="small ghost" Content="{l:T 'Open Issue Context'}" Command="{Binding OpenContextCommand}" IsVisible="{Binding HasOpenContext}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
                                 <DataTemplate x:DataType="models:CheckIssueCard">
                                     <Border Classes="card" Padding="10,8" Margin="0,0,0,6">
                                         <StackPanel Spacing="4">
@@ -198,8 +213,13 @@
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>
-                            </ItemsControl.ItemTemplate>
+                            </ItemsControl.DataTemplates>
                         </ItemsControl>
+                        <Button Classes="small" HorizontalAlignment="Left" Command="{Binding ShowMoreCommand}" IsVisible="{Binding HasMore}"
+                                ToolTip.Tip="{l:T 'Shows the next cards of this kind; the search finds any of them'}">
+                            <TextBlock Text="{Binding ShowMoreText}" TextWrapping="Wrap" />
+                        </Button>
+                        </StackPanel>
                     </Expander>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

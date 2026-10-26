@@ -307,6 +307,9 @@ namespace JoyPro.Engine
                     }
                     foreach (string sub in subs)
                     {
+                        // The keyboard's default files are never patched or moved: nothing below a "keyboard" folder.
+                        if (string.Equals(Path.GetFileName(sub), "keyboard", StringComparison.OrdinalIgnoreCase))
+                            continue;
                         if (string.Equals(Path.GetFileName(sub), "joystick", StringComparison.OrdinalIgnoreCase))
                         {
                             if (seen.Add(Path.GetFullPath(sub)))

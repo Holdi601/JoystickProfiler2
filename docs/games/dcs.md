@@ -66,7 +66,7 @@ writes. The removals come from clean profiles in the game-data folder, built on 
   aircraft, or that has a default file in the aircraft's folder.
 - `CleanProfile\DCS\device-types.txt`: the device types the clean profiles were built for. A listed type without a
   `.cf` of its own has exactly the generic stick's defaults there.
-- `KeyboardCleanProfile\DCS\<profile>.cf`: the keyboard. Refreshed 2026-10-10 by the headless Lua refresh (118 profiles; the March 2025 set differed in 70: common keys such as F9/\ missing, MiG-21 Num+/Num- with the old signs, MiG-29/Su-25 commands moved to other device ids, 4 new profiles). Check: a clean export with `--keep-keyboard-defaults false` into a temporary Saved Games for all 118 profiles, every written file loads in DCS's luae.exe.
+- `KeyboardCleanProfile\DCS\<profile>.cf`: the keyboard. Refreshed 2026-10-10 by the headless Lua refresh (118 profiles; the March 2025 set differed in 70: common keys such as F9/\ missing, MiG-21 Num+/Num- with the old signs, MiG-29/Su-25 commands moved to other device ids, 4 new profiles). Check: a clean export with `--keep-keyboard-defaults false --clear-keyboard-defaults true` into a temporary Saved Games for all 118 profiles, every written file loads in DCS's luae.exe.
 
 The export picks `<profile>\<device type>.cf` for the device (also for a device that is not connected, whose JoyPro
 name has no spaces at the ends), else `<profile>.cf`. It warns when a written device's type has defaults of its own
@@ -155,7 +155,9 @@ integrity check of multiplayer servers that enforce it. The GUI shows that warni
   and a UTF-8 BOM stay. After patching, DCS's own loader (`Input.Data.loadDeviceProfileFromFile` in luae.exe) reads
   every patched file and its original: same commands, no combos left; a file that fails is put back at once. On a copy
   of a test PC's install: 218 files, all compared, 2525 default binds switched off; restore byte-identical (8231
-  files). `--skip-ui-layer` keeps `Config\Input\UiLayer`. The user's `Saved Games\DCS\Config\Input` is never touched.
+  files). `--skip-ui-layer` keeps `Config\Input\UiLayer`. The user's `Saved Games\DCS\Config\Input` is never touched,
+  and nothing below a folder named `keyboard` (the keyboard's defaults) is ever patched or moved, also by the device
+  files switch below.
 - **Device files** (`engine dcs device-luas [list|remove|restore]`): the device-specific default files of the
   joystick folders (`<device type>.lua` and template diffs `<device type>.diff.lua`, not `default.lua`) move into
   `<data>\DcsDefaults\DeviceLuas` (with `manifest.json`), so DCS uses `default.lua` for every device (JoyPro 1's way).
@@ -181,6 +183,22 @@ integrity check of multiplayer servers that enforce it. The GUI shows that warni
 - `--nuke-untouched-devices true`: in the exported aircraft, devices the profile does not use there lose all binds
   and their DCS defaults.
 - Force feedback settings (`ffDiffs`) of a file that is emptied stay.
+
+### Keyboard
+The keyboard is never taken over like a stick, in any mode; clean, nuke and "every other aircraft" never touch it.
+- `--keep-keyboard-defaults true` (the default, GUI "DCS: keep keyboard defaults"): the profile's keyboard binds are
+  not exported; no keyboard file is written.
+- `--keep-keyboard-defaults false`: the profile's keyboard binds are written into `keyboard\Keyboard.diff.lua` of their
+  aircraft. A DCS default key the profile binds to another action loses that default use (one `removed` entry); every
+  other DCS default key of the aircraft stays. An aircraft without keyboard binds in the profile gets no keyboard file.
+- `--clear-keyboard-defaults true` (with keep false, command line only): also every other DCS default key of the
+  written aircraft is removed (`KeyboardCleanProfile`).
+- Up to 2.4.0, keep false removed every DCS default key of each aircraft the profile had a keyboard bind for, so DCS
+  showed (almost) no keyboard binds there. A keyboard file JoyPro wrote (a `Keyboard.jp` next to it) that still removes
+  every default key gets them back at the next DCS export, also with keep on; a file that removes only some defaults is
+  the user's own and stays. The export reports `Keyboard Default Keys Removed` / `Restored`.
+- Checked by `engine\tests\smoke\dcskeyboard.ps1` (every mode, repair, undo, strip/device files, DCS's luae.exe) and on
+  the real F/A-18C keyboard profile: one rebound key removes 1 default instead of all 292.
 
 ## Verification
 - Engine smoke (`engine\tests\engine_smoke_test.ps1`): default removals, kept removals, nuke, clean of the other

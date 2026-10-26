@@ -178,7 +178,9 @@ public sealed partial class MainWindowViewModel
         {
             "dcs" => ImportKeyboardCommands,
             "starcitizen" => ImportStarCitizenIncludeKeyboard,
-            _ => RegistryGameIncludeKeyboard
+            "il2" => false,
+            // Remembered per game (MainWindowViewModel.ImportSettings.cs).
+            _ => RememberedRegistryKeyboard(game.GameId)
         };
         ImportWizardStep = 2;
     }
