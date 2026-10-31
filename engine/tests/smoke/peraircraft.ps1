@@ -82,11 +82,12 @@ try {
     Assert-True ($paSet.Changed -eq 2) ("relations aircraft set changed " + $paSet.Changed + " instead of 2.")
     Assert-True ($paSet.Nodes[0].Mixed -eq $true -and $paSet.Nodes[0].Differs -eq 1) "a node with the helicopter switched on must be flagged as mixed."
     Run-Engine @("--profile", $paProfile, "relations", "aircraft", "set", "Pitch", "--node", "DCS:a2001cdnil", "--off", "UH-1H") | Out-Null
-    $paBind = Run-Engine @("--profile", $paProfile, "binds", "set", "Pitch", "--device", "Smoke Stick {00000000-0000-0000-0000-0000000000C2}", "--input", "JOY_Y", "--text")
+    $paBind = Run-Engine @("--profile", $paProfile, "binds", "set", "Pitch", "--device", "Smoke Stick {00000000-0000-0000-0000-0000000000C2}", "--input", "JOY_RX", "--text")
     Assert-True ($paBind.ExitCode -eq 0) ("binds set for the export failed: " + $paBind.Output)
     $paRoot = Join-Path $paDir "saved-games"
     New-Item -ItemType Directory -Force -Path $paRoot | Out-Null
-    # Without the DCS-default removals in the other aircraft, which write removal-only files there.
+    # Without the DCS-default removals in the other aircraft, which write removal-only files there. (JOY_RX: pitch on JOY_Y is
+    # DCS's default, which the diff would not write since 2.5.0.)
     $paExport = Run-Engine @("--profile", $paProfile, "dcs", "export", $paRoot, "--clean-all-aircraft", "false", "--text")
     Assert-True ($paExport.ExitCode -eq 0) ("dcs export failed: " + $paExport.Output)
     Assert-True (Test-Path (Join-Path $paRoot "Config\Input\F-15C\joystick")) "the export did not write a selected aircraft."

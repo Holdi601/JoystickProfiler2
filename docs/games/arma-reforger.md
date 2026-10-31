@@ -165,6 +165,12 @@ itself.
   shipped catalog: HelicopterFire ("Fire"; no keybind entry, mouse button 0 / gamepad shoulder with
   `InputFilterPressed`), HelicopterSightZeroing.Up / .Down ("Sight range up / down", `InputFilterRepeat`),
   HelicopterSightDeploy ("Toggle sights", `InputFilterClick`). Not checked in game yet.
+- **Export modes** (only the flight Action blocks; infantry / vehicle blocks never change; keyboard, mouse and gamepad
+  sources and joysticks that are not connected always stay): `add` keeps every source and skips a bind whose joystick
+  input another flight action uses (listed as a skipped multi-bind); `merge` adds the profile's sources and removes the
+  source of another flight action on the same input (conflict), the action's old sources stay; `merge-overwrite` =
+  merge + the action loses its other joystick sources of connected devices; `clean` also drops the flight sources of
+  the devices the export writes, nuke those of connected devices without binds. A block left without sources is removed.
 
 ## Pitfalls
 The game writes InputUserSettings.conf on every rebind and its settings files on changes: export only while it is

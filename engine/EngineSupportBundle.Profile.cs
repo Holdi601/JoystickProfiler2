@@ -158,6 +158,80 @@ namespace JoyPro.Engine
             });
         }
 
+        // ---- JoyPro 1's profiles ------------------------------------------------------------------------------------
+        // A tester who comes from JoyPro 1 has his old profiles in Documents\JoyPro (*.pr0file, with last.pr0file, the one
+        // JoyPro 1 opened last): they go into joypro1/ (personal: only with --include-profile), cleaned like the open
+        // profile, newest first up to JoyPro1CapBytes (summary.txt names the ones left out). The originals are only read.
+
+        internal const long JoyPro1CapBytes = 50L * 1024 * 1024;
+
+        // JOYPRO_JOYPRO1_DIR (tests), under the test sandbox <root>\Documents\JoyPro, else Documents\JoyPro.
+        internal static string JoyPro1Folder()
+        {
+            string overridden = Environment.GetEnvironmentVariable("JOYPRO_JOYPRO1_DIR");
+            if (!string.IsNullOrWhiteSpace(overridden))
+                return overridden;
+            if (TestSandbox.IsActive)
+                return Path.Combine(TestSandbox.Root, "Documents", "JoyPro");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "JoyPro");
+        }
+
+        private static void AddJoyPro1Profiles(Bundle bundle)
+        {
+            string folder = JoyPro1Folder();
+            List<FileInfo> files;
+            try
+            {
+                if (!Directory.Exists(folder))
+                    return;
+                files = new DirectoryInfo(folder).GetFiles("*.pr0file", SearchOption.TopDirectoryOnly).OrderByDescending(f => f.LastWriteTimeUtc).ToList();
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                bundle.Notes.Add("JoyPro 1 profiles: not read: " + ex.Message);
+                return;
+            }
+            string open = bundle.Profile == null ? string.Empty : bundle.Profile.Path;
+            long total = 0;
+            int added = 0;
+            List<string> leftOut = new List<string>();
+            foreach (FileInfo file in files)
+            {
+                // The open profile is in profile/ already.
+                if (open.Length > 0 && string.Equals(Path.GetFullPath(file.FullName), open, StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (added > 0 && total + file.Length > JoyPro1CapBytes)
+                {
+                    leftOut.Add(file.Name);
+                    continue;
+                }
+                total += file.Length;
+                added++;
+                string source = file.FullName;
+                string name = "joypro1/" + SafeZipPath(file.Name);
+                bundle.Entries.Add(new Entry
+                {
+                    Name = name,
+                    Part = "joypro1",
+                    Size = file.Length,
+                    What = file.Name.Equals("last.pr0file", StringComparison.OrdinalIgnoreCase)
+                        ? "JoyPro 1's last opened profile (user folder and name replaced inside)"
+                        : "a JoyPro 1 profile (user folder and name replaced inside)",
+                    Writer = (zip, b) =>
+                    {
+                        ScrubResult result = ScrubProfile(SafeFileIo.ReadAllBytes(source));
+                        if (result.Failed)
+                            b.Notes.Add("JoyPro 1 profile " + Path.GetFileName(source) + ": left out, its copy could not be cleaned (" + result.Note + ")");
+                        else
+                            PutBytes(zip, b, "joypro1", name, result.Bytes, true);
+                    }
+                });
+            }
+            if (leftOut.Count > 0)
+                bundle.Notes.Add("JoyPro 1 profiles: " + leftOut.Count.ToString(CultureInfo.InvariantCulture) + " older one(s) left out (cap " + FormatBytes(JoyPro1CapBytes) + "): " +
+                                 string.Join(", ", leftOut.Take(20)) + (leftOut.Count > 20 ? ", ..." : string.Empty));
+        }
+
         private static void WriteHistory(ZipArchive zip, Bundle bundle)
         {
             ProfileSource source = bundle.Profile;

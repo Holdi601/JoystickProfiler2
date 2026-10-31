@@ -48,6 +48,7 @@ namespace JoyPro.Engine
             new[] { "state", "JoyPro's settings and state (game list and pack versions, updates, data folder)" },
             new[] { "devices", "devices, vJoy and HidHide" },
             new[] { "profile", "the open profile and its history (your binds and device names)" },
+            new[] { "joypro1", "JoyPro 1's profiles from Documents\\JoyPro (your old binds and device names)" },
             new[] { "games", "per game: the watcher's record, JoyPro's backups, MSFS profiles read" },
             new[] { "game-binds", "per game: the game's current bind files (your binds and device names)" }
         };
@@ -229,6 +230,8 @@ namespace JoyPro.Engine
             bundle.Entries.Add(new Entry { Name = "devices/vjoy-hidhide.txt", Part = "devices", What = "vJoy, ViGEm and HidHide: installed, devices, state, JoyPro's session", Writer = (zip, b) => Put(zip, b, "devices", "devices/vjoy-hidhide.txt", VJoyText()) });
             if (bundle.Profile != null)
                 AddProfile(bundle);
+            if (options.IncludePersonal)
+                AddJoyPro1Profiles(bundle);
             foreach (string id in bundle.Games)
                 AddGame(bundle, id);
             bundle.Entries.Add(new Entry { Name = "errors/last-errors.txt", Part = "errors", What = "the last warnings and errors with a stack trace from the logs", Writer = WriteErrors });

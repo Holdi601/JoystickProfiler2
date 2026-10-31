@@ -228,6 +228,9 @@ public sealed partial class MainWindowViewModel
             .OrderBy(p => p.Key == "DCS" ? 0 : p.Key == "IL2Game" ? 1 : p.Key == "StarCitizen" ? 2 : 3);
         foreach (KeyValuePair<string, List<string>> game in ordered)
         {
+            // A hidden game (Settings > Games) is not looked for: the HUD header never names it.
+            if (IsGameHidden(game.Key))
+                continue;
             foreach (string name in game.Value)
             {
                 if (GameProcessLookup.IsRunning(name))

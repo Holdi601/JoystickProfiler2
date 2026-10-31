@@ -32,14 +32,11 @@ try {
     Assert-True ($sdExport.ExitCode -eq 0) ("dcs export for the defaults sync test failed: " + $sdExport.Output)
     $sdDiffFile = @(Get-ChildItem -Path (Join-Path $sdSaved "Config\Input\F-16C_50\joystick") -Filter "Sync Pedals*.diff.lua")[0].FullName
     $sdText = [System.IO.File]::ReadAllText($sdDiffFile).Replace("`r`n", "`n")
-    Assert-Match $sdText '(?s)\["a2003cdnil"\] = \{.*?\["added"\]' "the export should write the rudder bind (equal to the device default) into the diff."
+    # 2.5.0: the diff holds only differences from the defaults, as DCS saves it: the rudder equals the device default
+    # and is neither written nor removed (it stays active).
+    Assert-NotMatch $sdText 'a2003cdnil' "the export must not write the rudder bind (equal to the device default) into the diff."
     Assert-True ((SdJson (Run-Engine @("sync", "status", "--game", "DCS", "--path", $sdSaved)).Output).Games[0].State -eq "unchanged") "sync status right after the export should be unchanged."
-
-    # DCS saves the diff against the device defaults: the rudder equals the default and leaves the diff.
-    $sdDropped = [regex]::Replace($sdText, '(?s)\n(\s*)\["a2003cdnil"\] = \{.*?\n\1\},', '')
-    Assert-NotMatch $sdDropped 'a2003cdnil' "the fixture should drop the rudder entry as DCS does."
-    [System.IO.File]::WriteAllText($sdDiffFile, $sdDropped.Replace("`n", "`r`n"), $sdUtf8)
-    Assert-True ((SdJson (Run-Engine @("sync", "status", "--game", "DCS", "--path", $sdSaved)).Output).Games[0].State -eq "changed") "the rewritten diff.lua is changed."
+    $sdDropped = $sdText
     $sdQuiet = Run-Engine @("--profile", $sdProfile, "sync", "diff", "--game", "DCS", "--path", $sdSaved)
     Assert-True ($sdQuiet.ExitCode -eq 0) ("sync diff (DCS defaults) failed: " + $sdQuiet.Output)
     Assert-True (@((SdJson $sdQuiet.Output).Changes).Count -eq 0) ("a bind DCS dropped because it equals the device default must not count as removed: " + $sdQuiet.Output)

@@ -43,6 +43,10 @@ internal static class Budgets
         // An export of one game as a dry run (registry games) or into a copy of its config folder (DCS, IL-2, Star Citizen).
         // (registry games ~1 s; DCS ~4 s: 2000 files written, then the whole folder read back for the sync record)
         ["export dry-run"] = 5000,
+        // The DCS export into a copy of Config\Input in JoyPro's default mode since 2.5.0 ("Replace on my devices" + "Also
+        // clear my other devices", as in JoyPro 1): every exported aircraft's files are rewritten from the defaults.
+        // (~5.6 s on the gate profile; 2.4.3 needed ~6.9 s for the same mode, the old merge default ~4 s)
+        ["dcs export dry-run"] = 7500,
         // The Start page's games (games installs + integrations). (~0.7 s)
         ["games list"] = 1500,
         // The engine server starting and reading the game lists (once, in the background while the app starts). (~4 s;

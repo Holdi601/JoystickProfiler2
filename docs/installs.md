@@ -127,8 +127,11 @@ binds for it stay in the profile. The GUI leaves it out of:
 - the DB games list (Settings) and the game choices of the layout picture,
 - the Axis Tuning scopes and the force feedback game list,
 - the backup list and its game filter,
-- the "not installed" hints; the Start page lists it under "Hidden games (n)" below the cards and Settings > Games
-  under "Hidden games", each with **Show again**.
+- (2.5.0) the game chips of the Relations and Binds pages' filters (a tick on a hidden game is dropped), the catalog's
+  games, the action search's results and game chips, the suggestions for a relation, and the HUD (a running hidden
+  game is not looked for, the header never names it),
+- the "not installed" hints. **Settings > Games is the one place that shows them again**: its "Hidden games" list has
+  **Show again** for each. The Start page only says how many are hidden, with a button to that list.
 
 Your link and config location are kept; **Show again** (or `engine games install enable <game>`) brings the game back. If you install such a game later, press **Show again**: detection alone does not bring it back.
 

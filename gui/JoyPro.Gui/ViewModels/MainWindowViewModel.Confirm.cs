@@ -16,8 +16,13 @@ public sealed record ConfirmRequest(string Title, string Message, string Confirm
     // Set by the dialog: "Do not ask again" was ticked.
     public bool DontAskAgain { get; set; }
 
-    // A third answer between the confirm button and Cancel ("Export first"); it is the default button then.
+    // A third answer between the confirm button and Cancel ("Export first").
     public string SecondaryLabel { get; init; } = string.Empty;
+
+    // The third answer is the safe way the dialog recommends ("Import first" before a first export): it is the accent
+    // and default button (Enter) and comes first; the confirm button is a plain one. "Do not ask again" still counts for
+    // the confirm button's action only.
+    public bool SecondaryIsPrimary { get; init; }
 
     // Set by the dialog: the third answer was picked (the handler returns true then).
     public bool SecondaryChosen { get; set; }
@@ -55,11 +60,11 @@ public sealed partial class MainWindowViewModel
 
     // Three answers: the confirm button (the action), the secondary one (another way, e.g. "Export first") and Cancel.
     // Without a window (tests, headless) the action runs, as on the command line.
-    internal async Task<ConfirmChoice> ConfirmChoiceAsync(string title, string message, string confirmLabel, string secondaryLabel, string dontAskKey = "")
+    internal async Task<ConfirmChoice> ConfirmChoiceAsync(string title, string message, string confirmLabel, string secondaryLabel, string dontAskKey = "", bool secondaryIsPrimary = false)
     {
         if (dontAskKey.Length > 0 && !ListPrefs.ShouldAsk(dontAskKey))
             return ConfirmChoice.Confirm;
-        ConfirmRequest request = new(title, message, confirmLabel, IsDanger: false) { SecondaryLabel = secondaryLabel, DontAskKey = dontAskKey };
+        ConfirmRequest request = new(title, message, confirmLabel, IsDanger: false) { SecondaryLabel = secondaryLabel, DontAskKey = dontAskKey, SecondaryIsPrimary = secondaryIsPrimary };
         AskedConfirmations.Add(request);
         if (ConfirmHandler == null)
             return ConfirmChoice.Confirm;

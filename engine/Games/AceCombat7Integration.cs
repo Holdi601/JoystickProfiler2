@@ -229,8 +229,14 @@ namespace JoyPro.Engine.Games
             Ac7Ini ini;
             if (!Ac7Ini.TryLoad(request.ConfigPath, result.Errors, out ini))
                 return result;
-            bool overwrite = request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean;
             List<Ac7Section> deviceSections = ini.Sections.Where(s => s.Name.StartsWith(SectionPrefix, StringComparison.OrdinalIgnoreCase)).ToList();
+            // The sections JoyPro may release values in: those of connected devices (the import reads them). A section of a
+            // device that is not connected is never touched.
+            HashSet<string> connected = new HashSet<string>(deviceSections.Where(s =>
+            {
+                Guid product;
+                return Guid.TryParse(s.Name.Substring(SectionPrefix.Length), out product) && request.Devices.Devices.Any(d => d.ProductGuid == product && !string.IsNullOrEmpty(d.JoyProName));
+            }).Select(s => s.Name), StringComparer.OrdinalIgnoreCase);
 
             // The binds per section (one section per device model).
             Dictionary<string, List<GameInputBinding>> bySection = new Dictionary<string, List<GameInputBinding>>(StringComparer.OrdinalIgnoreCase);
@@ -259,22 +265,12 @@ namespace JoyPro.Engine.Games
                 list.Add(binding);
             }
 
-            if (request.Mode == GameExportMode.Clean)
-            {
-                // Clean: the flight actions of the sections JoyPro writes start empty.
-                foreach (string name in bySection.Keys)
-                {
-                    Ac7Section section = ini.Find(name);
-                    foreach (GameAction action in request.Catalog.Actions)
-                        if (section.Has(action.Id))
-                            section.Set(action.Id, string.Empty);
-                }
-            }
-
-            HashSet<string> written = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // What the profile wants: section -> action -> (value, binding); one input per action and device.
+            Dictionary<string, Dictionary<string, KeyValuePair<string, GameInputBinding>>> wanted = new Dictionary<string, Dictionary<string, KeyValuePair<string, GameInputBinding>>>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, List<GameInputBinding>> entry in bySection)
             {
-                Ac7Section section = ini.Find(entry.Key);
+                Dictionary<string, KeyValuePair<string, GameInputBinding>> mine = new Dictionary<string, KeyValuePair<string, GameInputBinding>>(StringComparer.OrdinalIgnoreCase);
+                wanted[entry.Key] = mine;
                 foreach (GameInputBinding binding in entry.Value)
                 {
                     if (binding.Reformers != null && binding.Reformers.Count > 0)
@@ -302,34 +298,129 @@ namespace JoyPro.Engine.Games
                         Skip(result, binding, "the game reads buttons 1-32, hats 1-4 and only the four main hat directions.");
                         continue;
                     }
-                    string key = entry.Key + "|" + action.Id;
-                    string existing = section.Get(action.Id);
-                    if (!written.Contains(key) && !overwrite && !string.IsNullOrWhiteSpace(existing) && !string.Equals(existing.Trim(), value, StringComparison.OrdinalIgnoreCase))
-                    {
-                        result.ConflictsKept++;
-                        Skip(result, binding, "the game already has " + action.Id + "=" + existing + " on this device (merge keeps it).");
-                        continue;
-                    }
-                    if (written.Contains(key))
+                    if (mine.ContainsKey(action.Id))
                     {
                         Skip(result, binding, action.Id + " is already written for this device; one input per action and device.");
                         continue;
                     }
-                    section.Set(action.Id, value);
-                    written.Add(key);
-                    result.BindingsWritten++;
-                    // The game averages one axis over all devices: the other sections give it up.
-                    if (overwrite && action.IsAxis)
+                    mine[action.Id] = new KeyValuePair<string, GameInputBinding>(value, binding);
+                }
+            }
+
+            // The new values: section -> action -> value ("" releases it). Only readable values of flight actions in
+            // connected sections are released; combinations and half axes the import cannot read stay.
+            Dictionary<string, Dictionary<string, string>> plan = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+            Func<Ac7Section, string, bool> readable = (section, actionId) =>
+            {
+                string token;
+                bool inverted;
+                return connected.Contains(section.Name) && TryDecode(section.Get(actionId), out token, out inverted);
+            };
+            Action<Ac7Section, string, string> setValue = (section, actionId, value) =>
+            {
+                Dictionary<string, string> values;
+                if (!plan.TryGetValue(section.Name, out values))
+                    plan[section.Name] = values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                values[actionId] = value;
+            };
+            Func<string, string> tokenOf = value =>
+            {
+                string token;
+                bool inverted;
+                return TryDecode(value, out token, out inverted) ? token : string.Empty;
+            };
+
+            foreach (KeyValuePair<string, Dictionary<string, KeyValuePair<string, GameInputBinding>>> entry in wanted)
+            {
+                Ac7Section section = ini.Find(entry.Key);
+                foreach (KeyValuePair<string, KeyValuePair<string, GameInputBinding>> want in entry.Value)
+                {
+                    string actionId = want.Key;
+                    string value = want.Value.Key;
+                    GameInputBinding binding = want.Value.Value;
+                    string token = tokenOf(value);
+                    string existing = section.Get(actionId);
+                    string existingToken;
+                    bool existingInverted;
+                    bool existingReadable = TryDecode(existing, out existingToken, out existingInverted);
+                    if (existingReadable && existingToken == token && (existingInverted == binding.Inverted || !AxisActions.Contains(actionId)))
                     {
-                        foreach (Ac7Section other in deviceSections.Where(s => !string.Equals(s.Name, entry.Key, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            if (!string.IsNullOrWhiteSpace(other.Get(action.Id)) && !bySection.ContainsKey(other.Name))
-                            {
-                                result.Steps.Add(action.Id + " cleared on [" + other.Name + "] (" + other.ProductName() + "): the game would average it with " + binding.Device + ".");
-                                other.Set(action.Id, string.Empty);
-                            }
-                        }
+                        result.BindingsWritten++;
+                        continue;
                     }
+                    // The action holds another input (or the same with another invert) on this device: one slot per
+                    // device, so "Only add" keeps the game's and the update modes write the profile's.
+                    // A combination the import cannot read stays in merge; "my profile wins" and clean replace it.
+                    if (!string.IsNullOrWhiteSpace(existing) && (request.Mode == GameExportMode.Add || (!existingReadable && request.Mode == GameExportMode.Merge)))
+                    {
+                        result.ConflictsKept++;
+                        Skip(result, binding, "the game already has " + actionId + "=" + existing + " on this device (" + (request.Mode == GameExportMode.Add ? "add" : "merge") + " keeps it).");
+                        continue;
+                    }
+                    // A conflict: another flight action of this device on the same input that the profile does not put there.
+                    List<GameAction> conflicts = request.Catalog.Actions.Where(a => !string.Equals(a.Id, actionId, StringComparison.OrdinalIgnoreCase) &&
+                                                                                    tokenOf(section.Get(a.Id)) == token &&
+                                                                                    !(entry.Value.ContainsKey(a.Id) && tokenOf(entry.Value[a.Id].Key) == token)).ToList();
+                    if (conflicts.Count > 0 && request.Mode == GameExportMode.Add)
+                    {
+                        result.BindingsSkipped++;
+                        result.SkippedTakenInputs.Add(new ExportSkippedBind
+                        {
+                            Game = GameId,
+                            Device = binding.Device ?? string.Empty,
+                            Input = binding.Input ?? string.Empty,
+                            Relation = binding.RelationName ?? string.Empty,
+                            Action = actionId,
+                            GameAction = conflicts[0].Id
+                        });
+                        continue;
+                    }
+                    foreach (GameAction conflict in conflicts.Where(c => !entry.Value.ContainsKey(c.Id)))
+                    {
+                        setValue(section, conflict.Id, string.Empty);
+                        result.Steps.Add(conflict.Id + "=" + section.Get(conflict.Id) + " released on [" + section.Name + "]: the profile puts " + actionId + " on that input.");
+                    }
+                    if (!string.IsNullOrWhiteSpace(existing))
+                        result.Steps.Add(actionId + " on [" + section.Name + "]: " + existing + " -> " + value + " (one input per action and device).");
+                    setValue(section, actionId, value);
+                    result.BindingsWritten++;
+                }
+            }
+
+            HashSet<string> boundActions = new HashSet<string>(wanted.Values.SelectMany(w => w.Keys), StringComparer.OrdinalIgnoreCase);
+            foreach (Ac7Section section in deviceSections.Where(s => connected.Contains(s.Name)))
+            {
+                Dictionary<string, KeyValuePair<string, GameInputBinding>> mine;
+                bool written = wanted.TryGetValue(section.Name, out mine);
+                mine = mine ?? new Dictionary<string, KeyValuePair<string, GameInputBinding>>(StringComparer.OrdinalIgnoreCase);
+                foreach (GameAction action in request.Catalog.Actions.Where(a => !mine.ContainsKey(a.Id) && readable(section, a.Id)))
+                {
+                    // Clean: the sections JoyPro writes keep only the profile's values; nuke: the other connected sections
+                    // lose theirs.
+                    bool release = (written && request.Mode == GameExportMode.Clean) || (!written && request.NukeUnusedDevices);
+                    // "My profile wins" (and clean, for axes: the game averages one axis over all devices): an action the
+                    // profile binds on another device gives up this device's input.
+                    bool moved = boundActions.Contains(action.Id) &&
+                                 (request.Mode == GameExportMode.MergeOverwrite || (request.Mode == GameExportMode.Clean && action.IsAxis));
+                    if (!release && !moved)
+                    {
+                        if (request.Mode == GameExportMode.Merge && action.IsAxis && boundActions.Contains(action.Id))
+                            result.Warnings.Add(action.Id + " stays on [" + section.Name + "] (" + section.ProductName() + "): the game averages it with the profile's axis (merge keeps the game's binds).");
+                        continue;
+                    }
+                    if (moved && !release)
+                        result.Steps.Add(action.Id + " cleared on [" + section.Name + "] (" + section.ProductName() + "): the profile binds it on another device.");
+                    setValue(section, action.Id, string.Empty);
+                }
+            }
+
+            foreach (KeyValuePair<string, Dictionary<string, string>> sectionPlan in plan)
+            {
+                Ac7Section section = ini.Find(sectionPlan.Key);
+                foreach (KeyValuePair<string, string> value in sectionPlan.Value)
+                {
+                    if (!string.Equals(section.Get(value.Key), value.Value, StringComparison.Ordinal))
+                        section.Set(value.Key, value.Value);
                 }
             }
 

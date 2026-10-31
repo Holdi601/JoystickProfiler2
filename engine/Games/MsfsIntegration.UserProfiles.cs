@@ -219,6 +219,7 @@ namespace JoyPro.Engine.Games
             }
 
             List<UserProfileTarget> targets = new List<UserProfileTarget>();
+            bool replace = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
             List<string> sourceNotes = new List<string>();
             List<KeyValuePair<MsfsProfileSourceKind, string>> sources = new List<KeyValuePair<MsfsProfileSourceKind, string>>();
             foreach (string remote in MsfsUserProfiles.SteamRemoteFolders(sim, new List<string>()))
@@ -276,7 +277,9 @@ namespace JoyPro.Engine.Games
                             string active = entry.Key;
                             string file;
                             files.TryGetValue(active, out file);
-                            if (!exported && !OwnsBinds(source.Key == MsfsProfileSourceKind.Store ? Path.Combine(source.Value, active) : file ?? string.Empty))
+                            // A device without binds of the export: only for "my profile wins" / clean, and only when it is
+                            // connected (checked below once the profile is read: it must hold an action the export binds).
+                            if (!exported && !(replace && OwnsDevice(request, device)))
                                 continue;
                             string used = " (used by " + AircraftNames(entry.Value, aircraftTitles) + ")";
                             if (file == null)
@@ -298,6 +301,8 @@ namespace JoyPro.Engine.Games
                                              "}, category " + (profile.CategoryKey.Length == 0 ? "none" : profile.CategoryKey) + ")");
                                 continue;
                             }
+                            if (!exported && !HoldsProfileAction(profile, ProfileActions(wantedByDevice, entry.Value)))
+                                continue;
                             profile.Source = source.Key;
                             foreach (string aircraft in entry.Value.Where(a => a.Length > 0 && !aircraftTitles.ContainsKey(a)))
                                 unknownAircraft.Add(aircraft);
@@ -399,8 +404,9 @@ namespace JoyPro.Engine.Games
                 AddUpdate(result, DeviceLabel(request, device), Label(general), string.Empty, "import-file", reason, 0, new List<string>(), string.Empty);
                 result.Steps.Add("MSFS 2024 '" + DeviceLabel(request, device) + "' (" + Label(general) + "): not written into your profiles: " + reason + "; the binds are in the import file.");
             }
-            // Also a profile without binds of the export: JoyPro's earlier binds there go (merge-overwrite).
-            targets.AddRange(chosen.Values.SelectMany(t => t).Where(t => t.Wanted.Count > 0 || OwnsBinds(StableProfilePath(t))));
+            // Also a profile without binds of the export that holds an action the export binds (on another input or
+            // device): "my profile wins" takes it away there (connected devices only).
+            targets.AddRange(chosen.Values.SelectMany(t => t).Where(t => t.Wanted.Count > 0 || (replace && OwnsDevice(request, t.Device) && HoldsProfileAction(t.Profile, ProfileActions(wantedByDevice, t.Aircraft)))));
             if (targets.Count == 0)
                 return fallback;
 
@@ -415,7 +421,13 @@ namespace JoyPro.Engine.Games
             {
                 string ownershipKey = OwnershipKey(StableProfilePath(target));
                 Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipKey, result.Warnings);
-                ApplyToProfile(target.Profile, userRequest, target.Wanted, owned, new Dictionary<string, string>(StringComparer.Ordinal), new HashSet<string>(StringComparer.Ordinal), target.Scratch);
+                // "My profile wins" and conflicts per aircraft: the actions the export binds for this profile's aircraft.
+                if (target.Profile.RecordAircraft == null)
+                    target.Profile.RecordAircraft = target.AircraftText.Length == 0 ? new List<string>() : target.Aircraft;
+                ApplyToProfile(target.Profile, userRequest, target.Wanted, ProfileActions(wantedByDevice, target.Aircraft), owned, new Dictionary<string, string>(StringComparer.Ordinal), new HashSet<string>(StringComparer.Ordinal), target.Scratch);
+                // "Only add": the binds not written because the profile uses the input for another action.
+                result.SkippedTakenInputs.AddRange(target.Scratch.SkippedTakenInputs);
+                result.BindingsSkipped += target.Scratch.SkippedTakenInputs.Count;
                 target.NewBytes = target.Profile.ToBytes();
                 if (!request.DryRun)
                     GameOwnershipStore.Save(ownershipKey, GameId, owned);
@@ -585,13 +597,10 @@ namespace JoyPro.Engine.Games
             }
         }
 
-        // JoyPro has written binds into this profile before (its ownership record is not empty).
-        private static bool OwnsBinds(string stablePath)
+        // The profile binds an action of the export in the sim's flight contexts.
+        private static bool HoldsProfileAction(MsfsProfileFile profile, HashSet<string> actions)
         {
-            if (string.IsNullOrEmpty(stablePath))
-                return false;
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(OwnershipKey(stablePath), new List<string>());
-            return owned.Values.Any(v => v.Count > 0);
+            return profile.Actions.Any(a => a.Combos.Count > 0 && IsManagedContext(a.Context) && actions.Contains(a.Name));
         }
 
         // A key for ownership that stays when the Store gives the profile a new blob name.

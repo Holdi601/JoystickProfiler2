@@ -452,7 +452,7 @@ function Get-ArgumentDocLine {
         "<file.zip>" { return "Path of the zip to write. Example: C:\JoyPro\JoyPro2-support.zip." }
         "--list" { return "For support bundle: only print what the zip would hold; nothing is written." }
         "--days" { return "For support bundle: logs and crash reports of at least the last N days (default 14; older ones when the open profile's history goes further back)." }
-        "--include-profile" { return "For support bundle: true puts the open profile (--profile), its history and the games' current bind files in; false leaves them out. Default: true when --profile is given." }
+        "--include-profile" { return "For support bundle: true puts the open profile (--profile), its history, the games' current bind files and JoyPro 1's profiles (Documents\JoyPro\*.pr0file) in; false leaves them out. Default: true when --profile is given." }
         "--history-cap-mb" { return "For support bundle: the most megabytes of stored history copies (default 50); the newest versions go in, summary.txt names the ones left out. Example: 50." }
         "--to" { return "The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1." }
         "<folder>" { return "Folder path. Example: C:\Cases\case1." }

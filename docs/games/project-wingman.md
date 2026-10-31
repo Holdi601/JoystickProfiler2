@@ -58,9 +58,12 @@ Installed on a test PC (Steam 895870, Anniversary Edition 2.1.1208); everything 
   curve and dead zone of the axis action come along as the game's tuning (model `projectwingman`: `curve` in menu
   units, `deadZone` 0..1).
 - `engine pw export`:
-  - merge-overwrite: the action's mappings on the same device are replaced, other devices, keyboard, gamepad and
-    mouse stay; merge keeps a joystick mapping the game already has on that device; add only adds; clean drops every
-    joystick mapping of the exported devices first (a flight-only game); nuke also those of other devices;
+  - add only adds: a bind on an input the game uses for another flight action is not written (listed as a skipped
+    multi bind), the game's own form of a bind (Invert) stays; merge also removes the game's mapping on an input the
+    profile gives another action and keeps the action's other mappings; merge-overwrite also removes the other
+    joystick mappings of every action the profile binds (a move fully moves); clean drops the other joystick mappings
+    of the exported devices (a flight-only game); nuke also those of the other connected devices. Only mappings the
+    import reads are removed: keyboard, gamepad, mouse, hats, menu rows and devices that are not connected stay;
   - hats are refused with the game's own way (Hat Function), modifiers too (the game has none);
   - savegame.sav: `<Axis>Curve` / `<Axis>Deadzone` edited in place or added before the closing `None`; every other
     byte stays. The tuning model's formula (rescaled dead zone, curve as exponent) is a working hypothesis;

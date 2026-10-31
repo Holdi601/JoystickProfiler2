@@ -74,6 +74,9 @@ namespace JoyPro.Engine.Games
             return MapCategories.TryGetValue(actionCategory ?? string.Empty, out map) ? map : -1;
         }
 
+        // Unknown joysticks get no default binds here: an empty map for an unused device changes nothing.
+        protected override bool EmptyMapsOnNuke { get { return true; } }
+
         // A flight-only game: clean and nuke release every assignable action.
         protected override bool IsCleanCategory(string category)
         {

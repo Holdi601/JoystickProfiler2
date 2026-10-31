@@ -55,6 +55,9 @@ public sealed class DialogFitTests
                 // Three answers (an import with changes not exported yet, MainWindowViewModel.ImportGuard.cs).
                 Check(() => new ConfirmWindow(new ConfirmRequest("Changes not in DCS yet", "You changed 2 binds for DCS that are not in DCS yet (e.g. moved 'Master Warning Button'). Importing now brings back what DCS still has.", "Import (drop my changes for DCS)", false) { SecondaryLabel = "Export first", DontAskKey = "games.import-unexported-changes" }),
                     "confirm-three", ["ConfirmButton", "SecondaryButton", "CancelButton"], "MessageScroll", mustScroll: false, problems, outDir);
+                // The first export of a game this profile never imported from (MainWindowViewModel.ExportDefaults.cs).
+                Check(() => new ConfirmWindow(new ConfirmRequest("First export to Microsoft Flight Simulator 2024", "Export replaces the binds in Microsoft Flight Simulator 2024 with your profile (a backup is made, Undo export brings them back). Import first?", "Export anyway", false) { SecondaryLabel = "Import first", DontAskKey = "games.first-export-replaces" }),
+                    "confirm-first-export", ["ConfirmButton", "SecondaryButton", "CancelButton"], "MessageScroll", mustScroll: false, problems, outDir);
                 Check(() => new GameSetupWindow { DataContext = vm }, "game-setup", ["SetupFooter"], "SetupScroll", mustScroll: false, problems, outDir);
                 Check(() => new ReplaceDeviceWindow { DataContext = vm }, "replace-device", ["ReplaceFooter"], "ReplaceScroll", mustScroll: false, problems, outDir);
                 SetupWizardViewModel wizard = vm.CreateSetupWizard();

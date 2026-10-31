@@ -3,9 +3,10 @@
 # development PC; the fixture follows the published samples (one section per device model, Flight_* keys).
 #  1. ac7 refresh-db: the Flight_* names from the file, axes and buttons.
 #  2. scan: simple values ("Y:R", "Button1", "POV_U1") per device; a combination is reported, not read.
-#  3. export: values per device section, Invert as ":R", a hat direction as POV_<dir><n>; the axis is cleared on the
-#     other device sections (the game averages), comments and CRLF line ends stay; a second export changes nothing;
-#     merge keeps a value the game already has.
+#  3. export: values per device section, Invert as ":R", a hat direction as POV_<dir><n>; add skips and reports a bind on
+#     an input the game uses for another action; merge releases that conflict and keeps the old inputs (an axis the game
+#     averages is reported); merge-overwrite also clears a moved action on the other connected devices; clean + nuke
+#     release only what the import reads; a device that is not connected is never touched; comments and CRLF stay.
 $a7Dir = Join-Path $tempDir "acecombat7"
 New-Item -ItemType Directory -Force -Path $a7Dir | Out-Null
 # refresh-db writes into the game-data folder (<data>\GameData), never into the program folder.
@@ -57,6 +58,31 @@ try {
     Run-Engine @("--profile", $a7Profile, "relations", "add", "Yaw", "--axis", "--node", "AceCombat7:Flight_Yaw", "--device", $a7Throttle, "--input", "JOY_RZ", "--text") | Out-Null
     Run-Engine @("--profile", $a7Profile, "relations", "add", "Missile", "--button", "--node", "AceCombat7:Flight_Missile", "--device", $a7Throttle, "--input", "JOY_BTN5", "--text") | Out-Null
     Run-Engine @("--profile", $a7Profile, "relations", "add", "Flare", "--button", "--node", "AceCombat7:Flight_Flare", "--device", $a7Stick, "--input", "JOY_BTN_POV1_D", "--text") | Out-Null
+    # Roll moves from the stick (the game's) to the throttle; the target goes on stick button 1, where the game has the gun.
+    Run-Engine @("--profile", $a7Profile, "relations", "add", "Roll", "--axis", "--node", "AceCombat7:Flight_Roll", "--device", $a7Throttle, "--input", "JOY_X", "--text") | Out-Null
+    Run-Engine @("--profile", $a7Profile, "relations", "add", "Target", "--button", "--node", "AceCombat7:Flight_Target", "--device", $a7Stick, "--input", "JOY_BTN1", "--text") | Out-Null
+
+    # Only add: nothing is removed or overwritten; the target on the gun's button is skipped and reported.
+    $a7Add = Run-Engine @("--profile", $a7Profile, "ac7", "export", $a7Ini, "--mode", "add")
+    Assert-True ($a7Add.ExitCode -eq 0) "ac7 add export failed. Output: $($a7Add.Output)"
+    $a7AddResult = $a7Add.Output.Substring($a7Add.Output.IndexOf('{')) | ConvertFrom-Json
+    Assert-True (@($a7AddResult.SkippedTakenInputs | Where-Object { $_.Action -eq "Flight_Target" -and $_.GameAction -eq "Flight_Gun" -and $_.Input -eq "JOY_BTN1" }).Count -eq 1) ("Add must report the target on the gun's button: " + $a7Add.Output)
+    $a7Text = [System.IO.File]::ReadAllText($a7Ini)
+    Assert-Match $a7Text "(?s)\[Joystick-80CB3344[^\[]*\r\nFlight_Gun=Button1\r\n[^\[]*\r\nFlight_Target=\r\n[^\[]*\r\nFlight_Roll=X\r\n" "Add must keep the gun and the stick's roll and not write the target."
+    Assert-Match $a7Text "(?s)\[Joystick-205403EB[^\[]*\r\nFlight_Missile=Button5\r\n[^\[]*\r\nFlight_Yaw=Button4 \+ Button6:R\r\n" "Add writes free slots and keeps the game's value of yaw."
+
+    # Merge: the conflicting gun goes, the stick keeps its roll (the game averages it, reported).
+    Copy-Item (Join-Path $engineDir "tests\fixtures\acecombat7\Input.ini") $a7Ini -Force
+    $a7Merge = Run-Engine @("--profile", $a7Profile, "ac7", "export", $a7Ini, "--mode", "merge", "--text")
+    Assert-Match $a7Merge.Output "already has Flight_Yaw=Button4 \+ Button6:R on this device \(merge keeps it\)" "Merge must keep the game's combination."
+    Assert-Match $a7Merge.Output "Flight_Roll stays on \[Joystick-80CB3344" "Merge must report the axis the game averages."
+    $a7Text = [System.IO.File]::ReadAllText($a7Ini)
+    Assert-Match $a7Text "(?s)\[Joystick-80CB3344[^\[]*\r\nFlight_Gun=\r\n[^\[]*\r\nFlight_Target=Button1\r\n[^\[]*\r\nFlight_Roll=X\r\n" "Merge must release the gun on the target's button and keep the stick's roll."
+    Assert-Match $a7Text "(?s)\[Joystick-80CB3344[^\[]*\r\nUI_A=Button1\r\n" "Merge must keep menu keys."
+    Assert-Match $a7Text "(?s)\[Joystick-0402044F[^\[]*Flight_Pitch=Y:R" "Merge must not clear other devices."
+
+    # Merge-overwrite (default).
+    Copy-Item (Join-Path $engineDir "tests\fixtures\acecombat7\Input.ini") $a7Ini -Force
     $a7Export = Run-Engine @("--profile", $a7Profile, "ac7", "export", $a7Ini, "--text")
     Assert-True ($a7Export.ExitCode -eq 0) "ac7 export failed. Output: $($a7Export.Output)"
     $a7Text = [System.IO.File]::ReadAllText($a7Ini)
@@ -67,18 +93,29 @@ try {
     Assert-Match $a7Stick7 "\r\nFlight_Flare=POV_D1\r\n" "The flare must be hat 1 down."
     Assert-Match $a7Thr7 "\r\nFlight_Yaw=Rz\r\n" "Yaw must replace the combination with Rz (overwrite)."
     Assert-Match $a7Thr7 "\r\nFlight_Missile=Button5\r\n" "The missile must be Button5."
-    Assert-Match $a7Hog "\r\nFlight_Pitch=\r\n" "The pitch axis must be cleared on the other device (the game averages)."
-    Assert-Match $a7Hog "\r\nFlight_Roll=X\r\n" "Axes JoyPro does not write stay on the other device."
+    Assert-Match $a7Hog "\r\nFlight_Pitch=Y:R\r\n" "A device that is not connected must keep its values."
+    Assert-Match $a7Hog "\r\nFlight_Roll=X\r\n" "A device that is not connected must keep its values."
+    Assert-Match $a7Stick7 "\r\nFlight_Roll=\r\n" "Roll must leave the stick (the profile moved it to the throttle)."
+    Assert-Match $a7Thr7 "\r\nFlight_Roll=X\r\n" "Roll must be on the throttle."
+    Assert-Match $a7Stick7 "\r\nFlight_Gun=\r\n" "The gun must leave the target's button."
+    Assert-Match $a7Stick7 "\r\nFlight_Target=Button1\r\n" "The target must be on button 1."
     Assert-Match $a7Text "^; Synthetic Input.ini" "Comments must stay."
     Assert-Match $a7Text "EnableJoystick=True\r\n" "The JoystickSetting section must stay (CRLF kept)."
-    Assert-Match $a7Export.Output "Flight_Pitch cleared on \[Joystick-0402044F" "The cleared axis must be reported."
+    Assert-Match $a7Export.Output "Flight_Roll cleared on \[Joystick-80CB3344" "The cleared axis must be reported."
     $a7Again = Run-Engine @("--profile", $a7Profile, "ac7", "export", $a7Ini, "--text")
     Assert-Match $a7Again.Output "already up to date" "A second export must change nothing."
 
+    # Clean + nuke with a stick-only profile: the throttle (connected, unused) loses what the import reads, its
+    # combination stays; the missing Warthog stays.
     Copy-Item (Join-Path $engineDir "tests\fixtures\acecombat7\Input.ini") $a7Ini -Force
-    $a7Merge = Run-Engine @("--profile", $a7Profile, "ac7", "export", $a7Ini, "--mode", "merge", "--text")
-    Assert-Match $a7Merge.Output "already has Flight_Yaw=Button4 \+ Button6:R on this device \(merge keeps it\)" "Merge must keep the game's own value."
-    Assert-Match ([System.IO.File]::ReadAllText($a7Ini)) "(?s)\[Joystick-0402044F[^\[]*Flight_Pitch=Y:R" "Merge must not clear other devices."
+    $a7NukeProfile = Join-Path $a7Dir "ac7-nuke.pr0file"
+    Run-Engine @("--profile", $a7NukeProfile, "relations", "add", "Pitch", "--axis", "--node", "AceCombat7:Flight_Pitch", "--device", $a7Stick, "--input", "JOY_Y", "--text") | Out-Null
+    $a7Nuke = Run-Engine @("--profile", $a7NukeProfile, "ac7", "export", $a7Ini, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($a7Nuke.ExitCode -eq 0) "ac7 clean + nuke export failed. Output: $($a7Nuke.Output)"
+    $a7Text = [System.IO.File]::ReadAllText($a7Ini)
+    Assert-Match $a7Text "(?s)\[Joystick-205403EB[^\[]*\r\nFlight_Yaw=Button4 \+ Button6:R\r\nFlight_Throttle=\r\n" "Nuke must clear the unused throttle's readable values and keep its combination."
+    Assert-Match $a7Text "(?s)\[Joystick-80CB3344[^\[]*\r\nFlight_Gun=\r\n[^\[]*\r\nFlight_Pitch=Y\r\nFlight_Roll=\r\n[^\[]*\r\nUI_A=Button1\r\n" "Clean must keep only the profile's flight values on the stick (menu keys stay)."
+    Assert-Match $a7Text "(?s)\[Joystick-0402044F[^\[]*Flight_Pitch=Y:R\r\nFlight_Roll=X\r\n" "Clean and nuke must not touch a device that is not connected."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $a7Previous.Devices

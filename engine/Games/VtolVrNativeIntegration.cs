@@ -140,6 +140,8 @@ namespace JoyPro.Engine.Games
             Dictionary<string, string> hardwareNames = new Dictionary<string, string>(StringComparer.Ordinal);
             HashSet<int> boundActions = new HashSet<int>();
             Dictionary<string, int> actionIds = ActionIdsOf(request.Catalog);
+            // The profile's bind behind each wanted element map (for the "Only add" report).
+            Dictionary<RewiredElementMap, GameInputBinding> sources = new Dictionary<RewiredElementMap, GameInputBinding>();
             foreach (GameInputBinding binding in request.Bindings)
             {
                 int actionId;
@@ -184,26 +186,80 @@ namespace JoyPro.Engine.Games
                 if (!wanted.TryGetValue(key, out list))
                     wanted[key] = list = new List<RewiredElementMap>();
                 int axisRange = AxisRangeFor(binding, actionId, key, result);
-                list.Add(new RewiredElementMap { ActionId = actionId, ElementType = 0, ElementId = element, AxisRange = axisRange, Invert = binding.Inverted });
+                RewiredElementMap elementMap = new RewiredElementMap { ActionId = actionId, ElementType = 0, ElementId = element, AxisRange = axisRange, Invert = binding.Inverted };
+                list.Add(elementMap);
+                sources[elementMap] = binding;
                 hardwareNames[key] = string.IsNullOrWhiteSpace(device.HidProductString) ? name : device.HidProductString.Trim();
                 boundActions.Add(actionId);
                 result.BindingsWritten++;
             }
 
-            // Every joystick map of Player0: JoyPro's devices get exactly the wanted actions; with clean / nuke the three
-            // actions leave every other device (the game uses every bound device at once).
+            // Every joystick map of Player0 (the game uses every bound device at once). JoyPro releases only what the
+            // import reads: axis element maps of connected devices; button maps and devices that are not connected stay.
             HashSet<int> managed = new HashSet<int>(actionIds.Values);
-            bool clearOthers = request.Mode == GameExportMode.Clean || request.NukeUnusedDevices;
+            bool overwrite = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
             int changed = 0;
             foreach (ConfigNodeFile.Entry entry in file.Entries.Where(e => e.Key.StartsWith(MapPrefix, StringComparison.Ordinal)).ToList())
             {
                 List<RewiredElementMap> mine;
                 bool joyPro = wanted.TryGetValue(entry.Key, out mine);
-                if (!joyPro && !clearOthers)
+                mine = mine ?? new List<RewiredElementMap>();
+                string identifier = KeyPart(entry.Key, "hardwareIdentifier");
+                bool connected = request.Devices != null && request.Devices.Devices.Any(d => HardwareIdentifier(d) == identifier);
+                List<RewiredElementMap> existing;
+                if (!RewiredJoystickMap.TryRead(entry.Value, out existing))
+                {
+                    if (joyPro || overwrite || request.NukeUnusedDevices)
+                        result.Warnings.Add("Unreadable joystick map left as it is: " + KeyPart(entry.Key, "hardwareIdentifier"));
+                    wanted.Remove(entry.Key);
                     continue;
-                HashSet<int> replace = joyPro ? (request.Mode == GameExportMode.Merge ? new HashSet<int>(mine.Select(m => m.ActionId)) : managed) : managed;
+                }
+                Func<RewiredElementMap, RewiredElementMap, bool> sameInput = (a, b) => a.ElementType == b.ElementType && a.ElementId == b.ElementId;
+                List<RewiredElementMap> add;
+                Func<RewiredElementMap, bool> remove;
+                if (request.Mode == GameExportMode.Add)
+                {
+                    // "Only add" never changes or removes an element map: the action already on its axis is nothing to
+                    // do, another action there keeps the axis and the profile's bind is reported (no multi-bind).
+                    add = new List<RewiredElementMap>();
+                    foreach (RewiredElementMap want in mine)
+                    {
+                        if (existing.Any(m => m.ActionId == want.ActionId && sameInput(m, want)))
+                            continue;
+                        RewiredElementMap taken = existing.FirstOrDefault(m => m.ActionId != want.ActionId && sameInput(m, want));
+                        GameInputBinding source;
+                        if (taken != null)
+                        {
+                            result.BindingsSkipped++;
+                            if (sources.TryGetValue(want, out source))
+                                result.SkippedTakenInputs.Add(SkippedMultiBind(source, ActionName(actionIds, taken.ActionId)));
+                            continue;
+                        }
+                        add.Add(want);
+                    }
+                    remove = m => false;
+                }
+                else
+                {
+                    // An element map the profile has as it is stays as it is (no rewrite, the line keeps its bytes).
+                    add = mine.Where(w => !existing.Any(m => m.SameBind(w))).ToList();
+                    remove = m =>
+                    {
+                        if (mine.Any(w => w.SameBind(m)))
+                            return false;
+                        // The profile's action on its axis is rewritten; another action there is a conflict and goes.
+                        if (mine.Any(w => sameInput(w, m)))
+                            return true;
+                        bool owns = connected && m.ElementType == 0 && managed.Contains(m.ActionId);
+                        // Clean: the devices JoyPro writes keep only the profile's actions; nuke: connected devices
+                        // without binds in the export lose theirs; "my profile wins": the profile's actions leave their
+                        // other axes.
+                        return owns && ((request.Mode == GameExportMode.Clean && joyPro) || (request.NukeUnusedDevices && !joyPro) ||
+                                        (overwrite && boundActions.Contains(m.ActionId)));
+                    };
+                }
                 string updated;
-                if (!RewiredJoystickMap.TrySetActions(entry.Value, replace, joyPro ? mine : new List<RewiredElementMap>(), out updated))
+                if (!RewiredJoystickMap.TryEdit(entry.Value, remove, add, out updated))
                 {
                     result.Warnings.Add("Unreadable joystick map left as it is: " + KeyPart(entry.Key, "hardwareIdentifier"));
                     continue;
@@ -214,8 +270,7 @@ namespace JoyPro.Engine.Games
                     changed++;
                 }
                 wanted.Remove(entry.Key);
-            }
-            // Devices the game listed but never saved a map for: a new blank map with the wanted actions.
+            }            // Devices the game listed but never saved a map for: a new blank map with the wanted actions.
             foreach (KeyValuePair<string, List<RewiredElementMap>> map in wanted)
             {
                 string guid = KeyPart(map.Key, "hardwareGuid");
@@ -243,6 +298,29 @@ namespace JoyPro.Engine.Games
             else if (settings["HARDWARE_RUDDER"] == 0)
                 result.Warnings.Add("Hardware Control Rudder is off in the profile's VTOL VR settings: the game ignores these axes until it is on.");
             return result;
+        }
+
+        private static string ActionName(Dictionary<string, int> actionIds, int actionId)
+        {
+            foreach (KeyValuePair<string, int> action in actionIds)
+            {
+                if (action.Value == actionId)
+                    return action.Key;
+            }
+            return "action " + actionId.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private ExportSkippedBind SkippedMultiBind(GameInputBinding binding, string gameAction)
+        {
+            return new ExportSkippedBind
+            {
+                Game = GameId,
+                Device = binding.Device ?? string.Empty,
+                Input = binding.Input ?? string.Empty,
+                Relation = binding.RelationName ?? string.Empty,
+                Action = binding.ActionId ?? string.Empty,
+                GameAction = gameAction ?? string.Empty
+            };
         }
 
         public string SettingsGame { get { return VtolVrGameSettings.Game; } }

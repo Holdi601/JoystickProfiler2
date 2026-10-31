@@ -704,6 +704,10 @@ public sealed partial class AircraftChoiceItem : ObservableObject
     [ObservableProperty]
     private bool isChecked;
 
+    // Opened from a card of the check: this aircraft is one the card is about (tinted).
+    [ObservableProperty]
+    private bool isHighlighted;
+
     public bool IsSame => Match == "same";
 
     public bool IsNear => Match == "near";

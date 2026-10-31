@@ -77,6 +77,14 @@ public sealed partial class RelationNodeItem : ObservableObject
 
     public bool HasExcluded => Excluded > 0;
 
+    // "Only add" did not write it into the game (the game uses the button for another function): the warning chip of
+    // the row, per game and aircraft (engine export-marks). Empty: written.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasExportSkip))]
+    private string exportSkipText = string.Empty;
+
+    public bool HasExportSkip => ExportSkipText.Length > 0;
+
     // The game's own title of the action (engine relations aircraft), for the games whose node id is no title
     // ("KEY_AXIS_ELEVATOR_SET" -> "Elevator Axis", "elevator" -> "Pitch axis"); explanation: what it does (the cockpit
     // guide or the game's own description), in the tooltip.

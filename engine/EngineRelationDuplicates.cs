@@ -68,6 +68,15 @@ namespace JoyPro.Engine
         public bool Kept { get; set; }
         public string GroupKey { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
+        // The game's current list of the aircraft has no such action (an old or renamed one); Title is then the name
+        // the relation stored for it (empty: none).
+        public bool Unknown { get; set; }
+        // The profile history's version that put it into a second relation ("Manage with AI", "366 relation changes",
+        // local time); empty when the history does not tell.
+        public string CausedBy { get; set; } = string.Empty;
+        public string CausedSummary { get; set; } = string.Empty;
+        public string CausedAt { get; set; } = string.Empty;
+        public int CausedVersion { get; set; }
     }
 
     // An aircraft as people call it: the cockpit catalog's name of the game's aircraft and its seat.
@@ -87,6 +96,8 @@ namespace JoyPro.Engine
         public List<string> Keys { get; set; } = new List<string>();
         // "AH-64D_BLK_II (CPG and Pilot)"
         public string Aircraft { get; set; } = string.Empty;
+        // Not in the game's current list of these aircraft: Title is the name the relation stored (empty: none).
+        public bool Unknown { get; set; }
     }
 
     // The duplicates of one relation pair (or set) in one game: one card.
@@ -106,6 +117,11 @@ namespace JoyPro.Engine
         public List<EngineDuplicateReason> Reasons { get; set; } = new List<EngineDuplicateReason>();
         public bool Kept { get; set; }
         public string Message { get; set; } = string.Empty;
+        // The history version that brought most of its actions into the second relation (see EngineDuplicateAction).
+        public string CausedBy { get; set; } = string.Empty;
+        public string CausedSummary { get; set; } = string.Empty;
+        public string CausedAt { get; set; } = string.Empty;
+        public int CausedVersion { get; set; }
     }
 
     // One change a fix makes: the action of the aircraft stays on only in Keep (Off: in none).
@@ -235,7 +251,7 @@ namespace JoyPro.Engine
             }
 
             HashSet<string> kept = new HashSet<string>(InternalDataManagement.KeptDuplicates ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-            HashSet<string> keptPairs = new HashSet<string>(kept.Select(RelationSet), StringComparer.OrdinalIgnoreCase);
+            HashSet<string> keptPairs = new HashSet<string>(kept.Where(k => !EngineCheckConflicts.IsConflictEntry(k)).Select(RelationSet), StringComparer.OrdinalIgnoreCase);
             Context context = new Context();
             List<EngineDuplicateAction> result = new List<EngineDuplicateAction>();
             foreach (KeyValuePair<string, List<KeyValuePair<Relation, RelationItem>>> entry in owners.Where(o => o.Value.Count > 1))
@@ -245,7 +261,9 @@ namespace JoyPro.Engine
                 duplicate.Kept = kept.Contains(KeptEntry(entry.Key, entry.Value.Select(o => o.Key.NAME ?? string.Empty)));
                 if (duplicate.Kept && !includeKept)
                     continue;
-                duplicate.Title = TitleOf(p[0], p[1], p[2], entry.Value.Select(o => o.Value));
+                bool unknown;
+                duplicate.Title = TitleOf(p[0], p[1], p[2], entry.Value.Select(o => o.Value), out unknown);
+                duplicate.Unknown = unknown;
                 foreach (KeyValuePair<Relation, RelationItem> owner in entry.Value)
                 {
                     Bind bind = owner.Key.bind;
@@ -414,14 +432,17 @@ namespace JoyPro.Engine
             return kind.Length > 0 ? kind.ToLowerInvariant() : "other";
         }
 
-        // The aircraft's own title of the action: the game's list, else the title the node keeps, else a readable id.
-        private static string TitleOf(string game, string id, string plane, IEnumerable<RelationItem> nodes)
+        // The aircraft's own title of the action: the game's list, else the title the node keeps (unknown: the game's
+        // list has no such action of the aircraft), else empty.
+        internal static string TitleOf(string game, string id, string plane, IEnumerable<RelationItem> nodes, out bool unknown)
         {
+            unknown = false;
             try
             {
                 EngineRelationSuggest.Command command = EngineIdMeanings.Find(game, id, plane);
                 if (command != null && !string.IsNullOrWhiteSpace(command.Title))
                     return EngineReadableNames.Title(game, command.Title);
+                unknown = command == null;
             }
             catch (Exception)
             {
@@ -435,7 +456,7 @@ namespace JoyPro.Engine
                 if (other != null)
                     return EngineReadableNames.Title(game, other.Title);
             }
-            return "an action without a title in the game's list";
+            return string.Empty;
         }
 
         // The evidence that the action of the aircraft belongs in this relation.
@@ -663,6 +684,16 @@ namespace JoyPro.Engine
                     if (had.Count >= 2)
                         continue;
                     pending.Remove(duplicate);
+                    // The version after this one (newer) put it into the second relation - unless its change names other
+                    // relations only (the history thins out old versions: a version taken out between them did it).
+                    List<string> gainedThen = duplicate.Places.Select(p => p.Relation).Where(r => !had.Contains(r, StringComparer.OrdinalIgnoreCase)).ToList();
+                    if (newer != null && CouldHaveCaused(newer, gainedThen))
+                    {
+                        duplicate.CausedBy = newer.Label ?? string.Empty;
+                        duplicate.CausedSummary = newer.Summary ?? string.Empty;
+                        duplicate.CausedAt = JoyPro.History.ProfileHistory.FormatLocal(newer.Utc);
+                        duplicate.CausedVersion = newer.Id;
+                    }
                     HashSet<string> nodesOf;
                     bool allHadNode = duplicate.Places.All(p => nodes.TryGetValue(p.Relation, out nodesOf) && nodesOf.Contains(duplicate.Game + "|" + duplicate.Id));
                     if (had.Count == 0 && !allHadNode)
@@ -695,6 +726,16 @@ namespace JoyPro.Engine
                 }
                 newer = version;
             }
+        }
+
+        // A version whose change names its relations ("Relation 'Rudder': 1 action added", "Adding 1 actions to 'Pitch'")
+        // can only have brought the action into one of them; a bulk change ("366 relation changes", an import) any.
+        private static bool CouldHaveCaused(JoyPro.History.ProfileVersion version, List<string> gained)
+        {
+            string text = (version.Label ?? string.Empty) + "\n" + (version.Summary ?? string.Empty);
+            if (System.Text.RegularExpressions.Regex.Matches(version.Summary ?? string.Empty, "Relation '").Count == 0)
+                return true;
+            return gained.Any(r => text.IndexOf("'" + r + "'", StringComparison.OrdinalIgnoreCase) >= 0);
         }
 
         private static readonly string[] BulkLabels = { "import", "taking over", "before", "open", "auto ", "restore", "undo", "redo", "lay out", "setup", "resolving" };
@@ -740,7 +781,7 @@ namespace JoyPro.Engine
                     Relation = p.Relation, Device = p.Device, Input = p.Input, DeviceClass = p.DeviceClass, Position = p.Position,
                     FunctionMatch = members.Select(m => m.Places.First(x => x.Relation == p.Relation).FunctionMatch).GroupBy(x => x).OrderByDescending(x => x.Count()).First().Key
                 }).ToList();
-                foreach (IGrouping<string, EngineDuplicateAction> action in members.GroupBy(m => m.Id + "\n" + m.Title, StringComparer.OrdinalIgnoreCase))
+                foreach (IGrouping<string, EngineDuplicateAction> action in members.GroupBy(m => m.Id + "\n" + m.Title + "\n" + (m.Unknown ? "?" : string.Empty), StringComparer.OrdinalIgnoreCase))
                 {
                     List<string> planes = action.Select(a => a.Plane).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
                     group.Actions.Add(new EngineDuplicateGroupAction
@@ -749,8 +790,19 @@ namespace JoyPro.Engine
                         Title = action.First().Title,
                         Planes = planes,
                         Keys = action.Select(a => a.Key).ToList(),
-                        Aircraft = AircraftLabel(first.Game, planes)
+                        Aircraft = AircraftLabel(first.Game, planes),
+                        Unknown = action.First().Unknown
                     });
+                }
+                // The history entry that brought most of them into the second relation.
+                EngineDuplicateAction cause = members.Where(m => m.CausedVersion > 0).GroupBy(m => m.CausedVersion)
+                    .OrderByDescending(c => c.Count()).ThenByDescending(c => c.Key).Select(c => c.First()).FirstOrDefault();
+                if (cause != null)
+                {
+                    group.CausedBy = cause.CausedBy;
+                    group.CausedSummary = cause.CausedSummary;
+                    group.CausedAt = cause.CausedAt;
+                    group.CausedVersion = cause.CausedVersion;
                 }
                 bool sameKeep = members.All(m => m.Suggested.Length > 0 && string.Equals(m.Suggested, first.Suggested, StringComparison.OrdinalIgnoreCase));
                 bool allOff = members.All(m => m.SuggestOff);
@@ -801,6 +853,13 @@ namespace JoyPro.Engine
                         else if (name.Seat.Length == 0 || name.Name == split.Key)
                         {
                             name.Seat = split.Value;
+                        }
+                        // "F-15E Strike Eagle (pilot)" with the seat "Pilot": the seat is said once, after the name.
+                        if (name.Seat.Length > 0)
+                        {
+                            string said = " (" + name.Seat + ")";
+                            if (name.Name.EndsWith(said, StringComparison.OrdinalIgnoreCase))
+                                name.Name = name.Name.Substring(0, name.Name.Length - said.Length).Trim();
                         }
                     }
                 }
@@ -888,12 +947,12 @@ namespace JoyPro.Engine
             if (group.Actions.Count == 1)
             {
                 EngineDuplicateGroupAction action = group.Actions[0];
-                sb.Append(action.Aircraft).Append(": '").Append(action.Title).Append("' is in ").Append(group.Relations.Count.ToString(CultureInfo.InvariantCulture)).Append(" relations: ").Append(where).Append(".");
+                sb.Append(action.Aircraft).Append(": '").Append(ShownTitle(action.Title, action.Id)).Append("' is in ").Append(group.Relations.Count.ToString(CultureInfo.InvariantCulture)).Append(" relations: ").Append(where).Append(".");
             }
             else
             {
                 sb.Append(group.Actions.Count.ToString(CultureInfo.InvariantCulture)).Append(" actions are in ").Append(group.Relations.Count.ToString(CultureInfo.InvariantCulture)).Append(" relations: ").Append(where).Append(": ");
-                sb.Append(string.Join("; ", group.Actions.Select(a => a.Aircraft + " '" + a.Title + "'"))).Append(".");
+                sb.Append(string.Join("; ", group.Actions.Select(a => a.Aircraft + " '" + ShownTitle(a.Title, a.Id) + "'"))).Append(".");
             }
             sb.Append(" ").Append(GameShort(group.Game)).Append(" gets ").Append(group.Relations.Count == 2 ? "two binds" : group.Relations.Count.ToString(CultureInfo.InvariantCulture) + " binds").Append(" for it.");
             if (group.Suggested.Length > 0)
@@ -906,7 +965,7 @@ namespace JoyPro.Engine
         internal static string Message(EngineDuplicateAction duplicate)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("'").Append(duplicate.Title).Append("' of ").Append(duplicate.Plane).Append(" is on in ")
+            sb.Append("'").Append(ShownTitle(duplicate.Title, duplicate.Id)).Append("' of ").Append(duplicate.Plane).Append(" is on in ")
               .Append(duplicate.Places.Count.ToString(CultureInfo.InvariantCulture)).Append(" relations: ");
             sb.Append(string.Join(", ", duplicate.Places.Select(p => p.Relation + (p.Input.Length > 0 ? " (" + ShortDevice(p.Device) + " \u00B7 " + ShortInput(p.Input) + ")" : " (unbound)"))));
             sb.Append(". The game gets it on each of these inputs; keep it in one relation");
@@ -918,6 +977,13 @@ namespace JoyPro.Engine
                   .Append(duplicate.SuggestionSource == "history" ? ": none of them had it on " + duplicate.SuggestionVersion : string.Empty).Append(")");
             sb.Append(".");
             return sb.ToString();
+        }
+
+        // The title in a message: an action the game's list does not have and the relation has no name for is named by
+        // its id there (the app's card shows it as an unknown command).
+        private static string ShownTitle(string title, string id)
+        {
+            return string.IsNullOrWhiteSpace(title) ? "unknown action " + (id ?? string.Empty) : title;
         }
 
         internal static string ShortDevice(string device)

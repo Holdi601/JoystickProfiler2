@@ -264,10 +264,12 @@ public sealed class NoviceGuiTests
         await vm.RefreshGameCardsCommand.ExecuteAsync(null);
         await vm.RefreshExportGamesCommand.ExecuteAsync(null);
 
-        // Every engine mode has a described choice; the default is the safe one.
-        Assert.Equal(["merge", "merge-overwrite", "add", "clean"], vm.ExportModeOptions.Select(o => o.Key).ToArray());
-        Assert.Equal("merge", vm.SelectedExportModeOption?.Key);
-        Assert.False(vm.ExportIsRisky);
+        // Every engine mode has a described choice; the default (2.5.0) is clean + nuke, as in JoyPro 1.
+        Assert.Equal(["clean", "merge", "merge-overwrite", "add"], vm.ExportModeOptions.Select(o => o.Key).ToArray());
+        Assert.Equal("clean", vm.SelectedExportModeOption?.Key);
+        Assert.True(vm.ExportNukeUntouchedDevices);
+        Assert.False(vm.ExportDcsCleanAllAircraft);
+        Assert.True(vm.ExportIsRisky);
 
         vm.SelectedExportModeOption = vm.ExportModeOptions.Single(o => o.Key == "clean");
         Assert.Equal("clean", vm.ExportMode);
@@ -294,6 +296,7 @@ public sealed class NoviceGuiTests
 
         // A safe mode does not ask.
         vm.SelectedExportModeOption = vm.ExportModeOptions.Single(o => o.Key == "merge");
+        vm.ExportNukeUntouchedDevices = false;
         int asked = vm.AskedConfirmations.Count;
         await vm.ExportGameNowCommand.ExecuteAsync(warThunder);
         Assert.Equal(asked, vm.AskedConfirmations.Count);

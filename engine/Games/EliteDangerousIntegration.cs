@@ -292,43 +292,90 @@ namespace JoyPro.Engine.Games
             HashSet<string> managed = new HashSet<string>(request.Catalog.Actions.Select(a => a.Id), StringComparer.Ordinal);
             int released = 0;
             int written = 0;
-            foreach (EliteElement element in file.Elements.Where(e => managed.Contains(e.Name)))
+            bool add = request.Mode == GameExportMode.Add;
+            bool nuke = request.NukeUnusedDevices && !add;
+            List<EliteWanted> allWants = wanted.Values.SelectMany(l => l).ToList();
+            List<EliteElement> elements = file.Elements.Where(e => managed.Contains(e.Name)).ToList();
+            // A joystick slot is JoyPro's when its device (and every joystick modifier) is connected: the import reads
+            // only those. Keyboard slots only count with --include-keyboard; mouse and pad slots never.
+            Func<EliteSlot, bool> joystickOwned = slot => !NonJoystickDevices.Contains(slot.Device) && map.Resolve(slot.Device) != null &&
+                                                          slot.Modifiers.All(m => NonJoystickDevices.Contains(m.Key) || map.Resolve(m.Key) != null);
+            foreach (EliteElement element in elements)
             {
                 List<EliteWanted> wants;
                 wanted.TryGetValue(element.Name, out wants);
                 wants = wants ?? new List<EliteWanted>();
 
-                // Clean (devices the export writes) and nuke (joysticks it does not use) release ship flight slots
-                // that are not part of the profile. Keyboard, mouse and pad slots are never released.
+                // Clean (devices the export writes) and nuke (connected joysticks it does not use) release ship flight
+                // slots that are not part of the profile. Merge and merge-overwrite release a slot on an input the
+                // profile gives another action (conflict); merge-overwrite also the other slots of an action the
+                // profile binds. Add releases nothing.
                 foreach (EliteSlot slot in element.Slots)
                 {
-                    if (NonJoystickDevices.Contains(slot.Device) || wants.Any(w => w.Matches(slot)))
+                    if (slot.Device == NoDevice || slot.Device.Length == 0 || wants.Any(w => w.Matches(slot)))
                         continue;
-                    bool used = usedDevices.Contains(slot.Device);
-                    // Half-axis binds and modifiers cannot live in a JoyPro profile, so clean would delete them for
-                    // good; they stay (nuke, which the user picks for unused devices, still clears them).
-                    if (used && request.Mode == GameExportMode.Clean && IsHalfAxis(slot))
+                    bool keyboard = string.Equals(slot.Device, "Keyboard", StringComparison.OrdinalIgnoreCase);
+                    bool conflict = !add && allWants.Any(w => w.Matches(slot));
+                    bool moved = request.Mode == GameExportMode.MergeOverwrite && wants.Count > 0;
+                    bool releasing;
+                    if (keyboard)
+                        releasing = request.IncludeKeyboard && (conflict || moved);
+                    else if (NonJoystickDevices.Contains(slot.Device) || !joystickOwned(slot))
+                        releasing = false; // mouse, pad, a device that is not connected: not JoyPro's to clear
+                    else
+                    {
+                        bool used = usedDevices.Contains(slot.Device);
+                        releasing = conflict || moved || (used && request.Mode == GameExportMode.Clean) || (!used && nuke);
+                    }
+                    if (!releasing)
+                        continue;
+                    // Half-axis binds and modifiers cannot live in a JoyPro profile, so releasing would delete them for
+                    // good; they stay.
+                    if (IsHalfAxis(slot))
                     {
                         result.Warnings.Add(element.Name + ": kept " + slot.Device + " " + slot.Key + " (half-axis binds and modifiers cannot be represented in JoyPro).");
                         continue;
                     }
-                    if ((used && request.Mode == GameExportMode.Clean) || (!used && request.NukeUnusedDevices))
-                    {
-                        slot.Clear(element);
-                        released++;
-                    }
+                    slot.Clear(element);
+                    released++;
                 }
+            }
 
+            foreach (EliteElement element in elements)
+            {
+                List<EliteWanted> wants;
+                wanted.TryGetValue(element.Name, out wants);
+                wants = wants ?? new List<EliteWanted>();
                 foreach (EliteWanted want in wants)
                 {
                     bool fileInverted = want.Inverted != NaturalInvert(element.Name);
                     if (element.Slots.Any(s => want.Matches(s)))
                     {
-                        if (want.IsAxis && element.SetAxisOptions(fileInverted, want.DeadzoneText))
+                        if (want.IsAxis && !add && element.SetAxisOptions(fileInverted, want.DeadzoneText))
                             written++;
                         continue;
                     }
-                    EliteSlot target = PickSlot(element, want, request.Mode, usedDevices, result);
+                    if (add)
+                    {
+                        // Only add: an input another action uses stays that action's (no multi-bind); reported.
+                        EliteElement other = elements.FirstOrDefault(e => e != element && e.Slots.Any(s => want.Matches(s)));
+                        if (other != null)
+                        {
+                            result.ConflictsKept++;
+                            result.SkippedTakenInputs.Add(new ExportSkippedBind
+                            {
+                                Game = GameId_,
+                                Device = want.Binding == null ? want.Device : want.Binding.Device,
+                                Input = want.Binding == null ? want.Key : want.Binding.Input,
+                                ModifiersText = want.Binding == null ? string.Empty : string.Join("+", want.Binding.Reformers ?? new List<string>()),
+                                Relation = want.RelationName,
+                                Action = element.Name,
+                                GameAction = other.Name
+                            });
+                            continue;
+                        }
+                    }
+                    EliteSlot target = PickSlot(element, want, request.Mode, joystickOwned, result);
                     if (target == null)
                         continue;
                     target.Set(want);
@@ -469,9 +516,11 @@ namespace JoyPro.Engine.Games
             return result;
         }
 
-        // Buttons have two slots: an identical bind wins, then (overwrite modes) a slot of a joystick the export writes,
-        // then the first free slot. Keyboard, mouse and other devices' slots are never overwritten.
-        private static EliteSlot PickSlot(EliteElement element, EliteWanted want, GameExportMode mode, HashSet<string> usedDevices, GameIoResult result)
+        // Buttons have two slots. Add takes only a free slot; merge a free slot first and the slot of the same joystick
+        // only when both are taken (the action keeps its other input where it can); merge-overwrite and clean the slot of
+        // the same joystick first. An axis has one slot: written when free or (not add) when it holds a joystick. Keyboard,
+        // mouse and pad slots are never overwritten, nor button slots of devices that are not connected.
+        private static EliteSlot PickSlot(EliteElement element, EliteWanted want, GameExportMode mode, Func<EliteSlot, bool> joystickOwned, GameIoResult result)
         {
             if (want.IsAxis)
             {
@@ -482,8 +531,9 @@ namespace JoyPro.Engine.Games
                     return null;
                 }
                 bool free = binding.Device == NoDevice || binding.Device.Length == 0;
-                bool joystick = !NonJoystickDevices.Contains(binding.Device);
-                if (free || (joystick && (mode == GameExportMode.Clean || mode == GameExportMode.MergeOverwrite)))
+                // The element has one axis slot: the profile's axis takes it from any joystick (also one that is not
+                // connected; the profile binds this axis explicitly), never from the keyboard, mouse or a half axis.
+                if (free || (mode != GameExportMode.Add && !NonJoystickDevices.Contains(binding.Device) && !IsHalfAxis(binding)))
                     return binding;
                 result.ConflictsKept++;
                 result.Warnings.Add(element.Name + ": kept the game's axis " + binding.Device + " " + binding.Key + " (" + ModeName(mode) + ").");
@@ -491,25 +541,20 @@ namespace JoyPro.Engine.Games
             }
 
             List<EliteSlot> slots = element.Slots.Where(s => s.Kind != "Binding").ToList();
-            // A conflict is the same action on the same device: merge keeps the game's bind of that device.
-            if (mode == GameExportMode.Merge && want.Device != "Keyboard" && slots.Any(s => s.Device == want.Device))
+            EliteSlot freeSlot = slots.FirstOrDefault(s => s.Device == NoDevice || s.Device.Length == 0);
+            EliteSlot sameDevice = want.Device == "Keyboard" ? null : slots.FirstOrDefault(s => s.Device == want.Device && !IsHalfAxis(s));
+            EliteSlot target = mode == GameExportMode.Add ? freeSlot : mode == GameExportMode.Merge ? freeSlot ?? sameDevice : sameDevice ?? freeSlot;
+            if (target == null)
             {
                 result.ConflictsKept++;
-                result.Warnings.Add(element.Name + ": kept the game's " + want.Device + " bind (merge mode).");
-                return null;
-            }
-            EliteSlot target = null;
-            if (want.Device != "Keyboard" && (mode == GameExportMode.Clean || mode == GameExportMode.MergeOverwrite))
-                target = slots.FirstOrDefault(s => s.Device == want.Device);
-            target = target ?? slots.FirstOrDefault(s => s.Device == NoDevice || s.Device.Length == 0);
-            if (target == null)
                 result.Warnings.Add(element.Name + ": both slots are taken by other devices or keys; " + want.Device + " " + want.Key + " skipped.");
+            }
             return target;
         }
 
         private static string ModeName(GameExportMode mode)
         {
-            return mode == GameExportMode.Merge ? "merge mode" : mode == GameExportMode.Add ? "add mode" : "not a joystick";
+            return mode == GameExportMode.Add ? "add mode" : "not a connected joystick";
         }
 
         private static string Encode(GameInputBinding binding, EliteDevices map, Dictionary<string, string> keys, out EliteWanted want)
@@ -518,6 +563,7 @@ namespace JoyPro.Engine.Games
             bool platform = tuning != null && tuning.NativeOr("platformDeadzone", 0) >= 0.5;
             want = new EliteWanted
             {
+                Binding = binding,
                 IsAxis = binding.IsAxis,
                 Inverted = binding.Inverted,
                 DeadzoneText = platform ? PlatformDeadzone : Math.Max(0.0, Math.Min(1.0, binding.Deadzone)).ToString("0.00000000", CultureInfo.InvariantCulture),
@@ -611,7 +657,7 @@ namespace JoyPro.Engine.Games
             {
                 if (map.Resolve(id) == null && !map.IsAmbiguous(id))
                     warnings.Add("The preset uses device " + id + ", which is not connected: Elite ignores a preset with a missing device. " +
-                                 "Connect it, exchange it in JoyPro (devices exchange) or export with --nuke-untouched-devices to clear its flight binds.");
+                                 "Connect it, exchange it in JoyPro (devices exchange) or clear its binds in the game's controls (JoyPro's exports leave the binds of a device that is not connected alone).");
             }
         }
 
@@ -837,6 +883,8 @@ namespace JoyPro.Engine.Games
             public bool Slider;
             public string RelationName = string.Empty;
             public List<KeyValuePair<string, string>> Modifiers = new List<KeyValuePair<string, string>>();
+            // The profile's bind (JoyPro's device and input names, for reports).
+            public GameInputBinding Binding;
 
             public bool SameInput(EliteWanted other)
             {

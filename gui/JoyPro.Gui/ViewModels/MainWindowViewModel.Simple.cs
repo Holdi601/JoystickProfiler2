@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using JoyPro.Gui.Models;
+using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -34,23 +35,27 @@ public sealed partial class MainWindowViewModel
 
     // ---- Export mode ----
 
+    // Since 2.5.0 (user decision): "Replace on my devices" + "Also clear my other devices" is the default (as in JoyPro 1);
+    // every mode touches only the exported aircraft. The merge modes no longer clear DCS's own defaults on the devices
+    // (docs/export.md, docs/games/dcs.md "Export modes").
     public IReadOnlyList<ChoiceOption> ExportModeOptions { get; } =
     [
-        // DCS in every mode: JoyPro takes over the devices it writes, so DCS's own default binds on them are cleared
-        // (docs/games/dcs.md, export modes; docs/games/README.md rule 5). The texts say so.
+        new("clean", N("Replace on my devices"),
+            N("The devices of your profile get exactly your binds in the exported aircraft: every other bind on them, the game's defaults too, is removed. Other aircraft and the keyboard stay. A backup is made first; Undo export brings it back."),
+            "Icon.Delete", isRecommended: true),
         new("merge", N("Update, keep the game's binds"),
-            N("Your binds go into the game. Where the game already uses the same command on that device, the game's bind stays; your other binds in the game stay too. DCS: the game's default binds on the devices JoyPro writes are cleared. The safe default."),
-            "Icon.Shield", isRecommended: true),
+            N("Your binds go into the game and the game's other binds stay. Only a game bind on the same button (same device, input and modifiers, same aircraft) that does another function is removed. An action you moved keeps its old button in the game too."),
+            "Icon.Shield"),
         new("merge-overwrite", N("Update, my profile wins"),
-            N("Your binds go into the game. Where the game uses the same command on that device, your bind replaces it. Other binds of the game stay. DCS: the game's default binds on the devices JoyPro writes are cleared."),
+            N("Like 'keep the game's binds', and every action your profile binds loses its other buttons in the game (in that aircraft), so a moved action really moves. Other binds of the game stay."),
             "Icon.Sync"),
         new("add", N("Only add"),
-            N("Adds your binds next to what the game has, so a command can end up on two buttons. Nothing else is replaced or removed, except in DCS: the game's default binds on the devices JoyPro writes are cleared."),
+            N("Adds your binds next to what the game has and never removes anything. A bind whose button the game already uses for another function is not written; JoyPro marks it in your profile and in the Check."),
             "Icon.Plus"),
-        new("clean", N("Replace on my devices"),
-            N("The devices of your profile get exactly your binds: every other bind on them, the game's defaults too, is removed. Other devices and the keyboard stay. A backup is made first."),
-            "Icon.Delete", isRisky: true),
     ];
+
+    // The mode the engine gets (an empty box: JoyPro's default).
+    internal string EffectiveExportMode => string.IsNullOrWhiteSpace(ExportMode) ? ExportSettings.DefaultMode : ExportMode.Trim();
 
     public ChoiceOption? SelectedExportModeOption
     {
@@ -69,6 +74,8 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(SelectedExportModeOption));
         OnPropertyChanged(nameof(ExportModeExplanation));
         OnPropertyChanged(nameof(ExportIsRisky));
+        OnPropertyChanged(nameof(MoveActionGameNote));
+        OnPropertyChanged(nameof(HasMoveActionGameNote));
     }
 
     // Clean mode or "nuke" removes binds from the game: the export asks first.
@@ -86,9 +93,10 @@ public sealed partial class MainWindowViewModel
             removes.Add(T("every bind on the devices of your profile that is not in your profile (the game's defaults too)"));
         if (ExportNukeUntouchedDevices)
             removes.Add(T("all binds of the devices your profile does not use"));
+        // The default since 2.5.0 (clean + nuke): asked until "Do not ask again" (Settings > Confirmations).
         return await ConfirmAsync(T("Remove binds in {0}?", what),
-            T("This export removes {0}. JoyPro backs up the game files first; \"Undo last export\" on the game's tile puts them back.", string.Join(" and ", removes)),
-            T("Export and remove"), isDanger: true);
+            T("This export removes {0}, only in the aircraft you export. JoyPro backs up the game files first; \"Undo last export\" on the game's tile puts them back.", string.Join(" and ", removes)),
+            T("Export and remove"), isDanger: true, dontAskKey: ConfirmExportRemovesKey);
     }
 
     // ---- Profile merge ----

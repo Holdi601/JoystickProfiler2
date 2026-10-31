@@ -331,7 +331,7 @@ public sealed partial class MsfsProfileImportTests
         Assert.True(JoyPro.Gui.Services.ExportSettingsStore.Load(settings).MsfsAlwaysImportFiles);
     }
 
-    // A relation deleted in JoyPro takes its bind out of the profile again (merge-overwrite); a dry run writes nothing.
+    // A relation deleted in JoyPro takes its bind out of the profile again with "Replace on my devices"; a dry run writes nothing.
     [Fact]
     public void Store2024_Export_RelationDeletedInJoyPro_LeavesTheProfile_DryRunWritesNothing()
     {
@@ -348,8 +348,12 @@ public sealed partial class MsfsProfileImportTests
         Assert.Equal(0, Engine(home, "--profile", profile, "msfs2024", "export", community, "--text").Code);
         Assert.Contains("Joystick Button 5", ReadSave(user)["inputprofile_0000000101"].Text);
 
-        // The relation deleted (the profile without it): JoyPro's gear bind leaves the sim's profile, the flaps stay.
+        // The relation deleted (the profile without it): "my profile wins" only moves what the profile binds, so the old
+        // gear bind stays (2.5.0: no ownership); "Replace on my devices" takes it out of the sim's profile, the flaps stay.
         (int code, string export) = Engine(home, "--profile", other, "msfs2024", "export", community, "--text");
+        Assert.True(code == 0, export);
+        Assert.Contains("Joystick Button 5", ReadSave(user)["inputprofile_0000000101"].Text);
+        (code, export) = Engine(home, "--profile", other, "msfs2024", "export", community, "--mode", "clean", "--text");
         Assert.True(code == 0, export);
         string planes = ReadSave(user)["inputprofile_0000000101"].Text;
         Assert.DoesNotContain("Joystick Button 5", planes);

@@ -47,8 +47,16 @@ Flight_HatSwitchUp=POV_U1
   - writes into the section of each device;
   - an axis as `X`/`Y:R` (Invert = `:R`), buttons as `ButtonN`, hat directions as `POV_<U|D|L|R><n>`;
   - only one input per action and device;
-  - merge-overwrite / clean: the axis JoyPro writes is cleared on the other device sections, because the game would
-    average it (listed in the steps); merge keeps every value the game has;
+  - add never removes or overwrites: an action that already has a value on that device keeps it, and a bind on an
+    input the game uses for another action is not written (listed as a skipped multi bind);
+  - merge writes the profile's value (one slot per action and device; a combination JoyPro does not read stays),
+    releases another action on the same input and keeps the action's values on other devices (an axis the game
+    averages is reported);
+  - merge-overwrite also clears every action the profile binds on the other connected devices (the game would average
+    an axis; listed in the steps); clean keeps only the profile's readable values in the sections it writes (and still
+    clears a written axis on the other connected devices); nuke clears the readable values of the other connected
+    devices. A section of a device that is not connected, menu keys (`UI_*`) and combinations JoyPro does not read
+    are never cleared;
   - a device without a section is skipped with "start the game once with this device connected";
   - comments, order, encoding and line ends stay.
 - Read: simple values per device (by product GUID). Combinations and half axes are reported, not read.

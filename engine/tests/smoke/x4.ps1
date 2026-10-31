@@ -167,3 +167,60 @@ finally {
     $env:JOYPRO_DATA_DIR = $xcPreviousData
     $env:JOYPRO_INSTALL_DETECTION = $xcPreviousDetection
 }
+
+# ---- export modes on the synthetic inputmap.xml of tests\fixtures\x4\1234 (Smoke Stick = slot 2, Smoke Throttle =
+# slot 3, slot 1 unpinned). Only the flight ids change; a conflict is another flight action on the profile's input:
+#   add       never removes; a bind on an input another flight action has is skipped and reported
+#   merge     removes the conflict (not the action's map twins), keeps the action's other inputs
+#   merge-overwrite  merge + the action loses its other inputs on owned (pinned + connected) slots
+$x4mDir = Join-Path $tempDir "x4-modes\1234"
+New-Item -Path $x4mDir -ItemType Directory -Force | Out-Null
+Copy-Item -Path (Join-Path $engineDir "tests\fixtures\x4\1234\*") -Destination $x4mDir -Force
+$x4mMap = Join-Path $x4mDir "inputmap.xml"
+$x4mProfile = Join-Path $tempDir "x4-modes.pr0file"
+function Get-X4mNonFlight([string]$Path) { return (([IO.File]::ReadAllText($Path) -split "`n") | Where-Object { $_ -match 'INPUT_ACTION_WIDGET_|INPUT_STATE_FP_|<config>|<param ' }) -join "`n" }
+$x4mNonFlight = Get-X4mNonFlight $x4mMap
+$x4mPreviousDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\bms\devices.tsv"
+try {
+    # Moved: primary fire from the stick's right shoulder to button 1 (XBUTTON_A). Conflict: boost on throttle button 2
+    # (XBUTTON_B on slot 3, the game's travel mode; its detail-monitor twin there is another context and stays).
+    Run-Engine @("--profile", $x4mProfile, "relations", "add", "X4M Fire", "--button", "--node", "X4:INPUT_STATE_FIRE_PRIMARY_WEAPON", "--device", "Smoke Stick {11111111-2222-3333-4444-555555555555}", "--input", "JOY_BTN1", "--text") | Out-Null
+    Run-Engine @("--profile", $x4mProfile, "relations", "add", "X4M Boost", "--button", "--node", "X4:INPUT_STATE_BOOST", "--device", "Smoke Throttle {66666666-7777-8888-9999-000000000000}", "--input", "JOY_BTN2", "--text") | Out-Null
+
+    $x4mAdd = Run-Engine @("--profile", $x4mProfile, "x4", "export", "--path", $x4mMap, "--mode", "add")
+    Assert-True ($x4mAdd.ExitCode -eq 0) ("x4 add export failed: " + $x4mAdd.Output)
+    $x4mAddJson = ($x4mAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($x4mAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "INPUT_STATE_BOOST" -and $_.GameAction -eq "INPUT_ACTION_TOGGLE_TRAVEL_MODE" }).Count -eq 1) ("x4 add should report boost on travel mode's button: " + $x4mAdd.Output)
+    $x4mText = [IO.File]::ReadAllText($x4mMap)
+    Assert-Match $x4mText 'INPUT_ACTION_TOGGLE_TRAVEL_MODE" source="INPUT_SOURCE_JOYBUTTONS_3" code="INPUT_XBUTTON_B"' "x4 add must keep travel mode."
+    Assert-NotMatch $x4mText 'INPUT_STATE_BOOST" source="INPUT_SOURCE_JOYBUTTONS_3"' "x4 add must not write boost on travel mode's button."
+    Assert-Match $x4mText 'INPUT_STATE_FIRE_PRIMARY_WEAPON" source="INPUT_SOURCE_JOYBUTTONS_2" code="INPUT_XBUTTON_RIGHT_SHOULDER"' "x4 add must keep fire's old button."
+    Assert-Match $x4mText 'INPUT_STATE_FIRE_PRIMARY_WEAPON" source="INPUT_SOURCE_JOYBUTTONS_2" code="INPUT_XBUTTON_A"' "x4 add should add fire's new button."
+    Assert-True ((Get-X4mNonFlight $x4mMap) -eq $x4mNonFlight) "x4 add must leave the menu and on-foot lines identical."
+
+    $x4mMerge = Run-Engine @("--profile", $x4mProfile, "x4", "export", "--path", $x4mMap, "--mode", "merge", "--text")
+    Assert-True ($x4mMerge.ExitCode -eq 0) ("x4 merge export failed: " + $x4mMerge.Output)
+    $x4mText = [IO.File]::ReadAllText($x4mMap)
+    Assert-NotMatch $x4mText 'INPUT_ACTION_TOGGLE_TRAVEL_MODE" source="INPUT_SOURCE_JOYBUTTONS_3"' "x4 merge should remove travel mode from boost's button (conflict)."
+    Assert-Match $x4mText 'INPUT_ACTION_ADDON_DETAILMONITOR_TRAVELMODE" source="INPUT_SOURCE_JOYBUTTONS_3" code="INPUT_XBUTTON_B"' "x4 merge must keep the detail-monitor twin (another context)."
+    Assert-Match $x4mText 'INPUT_STATE_BOOST" source="INPUT_SOURCE_JOYBUTTONS_3" code="INPUT_XBUTTON_B"' "x4 merge should write boost."
+    Assert-Match $x4mText 'INPUT_STATE_BOOST" source="INPUT_SOURCE_KEYBOARD" code="INPUT_KEYCODE_TAB"' "x4 merge must keep boost's keyboard key."
+    Assert-Match $x4mText 'INPUT_STATE_FIRE_PRIMARY_WEAPON" source="INPUT_SOURCE_JOYBUTTONS_2" code="INPUT_XBUTTON_RIGHT_SHOULDER"' "x4 merge must keep fire's old button."
+    Assert-True ((Get-X4mNonFlight $x4mMap) -eq $x4mNonFlight) "x4 merge must leave the menu and on-foot lines identical."
+
+    $x4mOverwrite = Run-Engine @("--profile", $x4mProfile, "x4", "export", "--path", $x4mMap, "--mode", "merge-overwrite", "--text")
+    Assert-True ($x4mOverwrite.ExitCode -eq 0) ("x4 merge-overwrite export failed: " + $x4mOverwrite.Output)
+    $x4mText = [IO.File]::ReadAllText($x4mMap)
+    Assert-NotMatch $x4mText 'INPUT_XBUTTON_RIGHT_SHOULDER' "x4 merge-overwrite should remove fire's old button."
+    Assert-Match $x4mText 'INPUT_STATE_FIRE_PRIMARY_WEAPON" source="INPUT_SOURCE_JOYAXES" code="INPUT_JOYAXIS_RZ"' "x4 merge-overwrite must keep fire on the unpinned slot 1."
+    Assert-Match $x4mText 'INPUT_STATE_BOOST" source="INPUT_SOURCE_KEYBOARD"' "x4 merge-overwrite must keep the keyboard without --include-keyboard."
+    Assert-True ((Get-X4mNonFlight $x4mMap) -eq $x4mNonFlight) "x4 merge-overwrite must leave the menu and on-foot lines identical."
+
+    $x4mClean = Run-Engine @("--profile", $x4mProfile, "x4", "export", "--path", $x4mMap, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($x4mClean.ExitCode -eq 0) ("x4 clean + nuke export failed: " + $x4mClean.Output)
+    Assert-True ((Get-X4mNonFlight $x4mMap) -eq $x4mNonFlight) "x4 clean + nuke must leave the menu and on-foot lines identical."
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $x4mPreviousDevices
+}

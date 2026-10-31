@@ -316,3 +316,65 @@ finally {
     $env:JOYPRO_INSTALL_DETECTION = $arpPreviousDetection
     $env:JOYPRO_FAKE_DEVICES = $arpPreviousFakeDevices
 }
+
+# Arma Reforger export modes (only helicopter Action blocks; infantry and vehicle blocks never change):
+#   add       keeps every source; a bind on a joystick input another helicopter action uses is skipped and reported
+#   merge     removes the other action's source on the profile's input (conflict), keeps the action's old source
+#   merge-overwrite  merge + the action loses its other joystick sources of connected devices (keyboard stays)
+$armDir = Join-Path $tempDir "reforger-modes"
+New-Item -Path $armDir -ItemType Directory -Force | Out-Null
+$armPreset = Join-Path $armDir "Modes.conf"
+$armText = [System.IO.File]::ReadAllText((Join-Path $engineDir "tests\fixtures\reforger\Smoke.conf"))
+$armText = $armText.Replace("      Input `"joystick0:button1`"`n     }", "      Input `"joystick0:button1`"`n     }`n     InputSourceValue `"{0000000000040001}`" {`n      FilterPreset `"click`"`n      Input `"keyboard:KC_H`"`n     }")
+[System.IO.File]::WriteAllText($armPreset, $armText)
+$armProfile = Join-Path $armDir "modes.pr0file"
+function Get-ArmNonFlight([string]$Text) { return [regex]::Match($Text, '(?s)  Action CharacterFire \{.*?\n  \}').Value }
+$armNonFlight = Get-ArmNonFlight $armText
+$armPreviousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\wardogs\devices.tsv"
+try {
+    Assert-True ($armText.Contains("keyboard:KC_H") -and $armNonFlight.Length -gt 0) "the reforger mode fixture should have the keyboard source and the infantry block."
+    $armStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
+    $armThrottle = "Smoke Throttle {66666666-7777-8888-9999-000000000000}"
+    # Moved: autohover from stick button 2 to button 4 (it also has keyboard H). Conflict: landing light on throttle
+    # button 18 (engine start's). Wheel brake on stick button 1: the infantry fire (not a helicopter action).
+    Run-Engine @("--profile", $armProfile, "relations", "add", "ARM Hover", "--button", "--node", "ArmaReforger:HelicopterAutohoverToggle", "--device", $armStick, "--input", "JOY_BTN4", "--text") | Out-Null
+    Run-Engine @("--profile", $armProfile, "relations", "add", "ARM Light", "--button", "--node", "ArmaReforger:HelicopterLightsLandingToggle", "--device", $armThrottle, "--input", "JOY_BTN18", "--text") | Out-Null
+    Run-Engine @("--profile", $armProfile, "relations", "add", "ARM Brake", "--button", "--node", "ArmaReforger:HelicopterWheelBrake", "--device", $armStick, "--input", "JOY_BTN1", "--text") | Out-Null
+
+    $armAdd = Run-Engine @("--profile", $armProfile, "reforger", "export", $armPreset, "--mode", "add")
+    Assert-True ($armAdd.ExitCode -eq 0) ("reforger add export failed: " + $armAdd.Output)
+    $armAddJson = ($armAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($armAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "HelicopterLightsLandingToggle" -and $_.GameAction -eq "HelicopterEngineStart" }).Count -eq 1) ("reforger add should report the landing light on engine start's button: " + $armAdd.Output)
+    $armAfter = [System.IO.File]::ReadAllText($armPreset)
+    Assert-Match $armAfter '(?s)Action HelicopterAutohoverToggle \{.*joystick0:button1".*keyboard:KC_H".*joystick0:button3".*Action HelicopterEngineStart' "reforger add should keep autohover's sources and add the new one."
+    Assert-Match $armAfter '"\{0000000000050000\}"' "reforger add must keep engine start."
+    Assert-NotMatch $armAfter "Action HelicopterLightsLandingToggle" "reforger add must not write the landing light on engine start's button."
+    Assert-Match $armAfter '(?s)Action HelicopterWheelBrake \{.*Input "joystick0:button0"' "reforger add should write the wheel brake beside the infantry fire."
+    Assert-True ((Get-ArmNonFlight $armAfter) -eq $armNonFlight) "reforger add must leave the infantry block identical."
+
+    $armMerge = Run-Engine @("--profile", $armProfile, "reforger", "export", $armPreset, "--mode", "merge", "--text")
+    Assert-True ($armMerge.ExitCode -eq 0) ("reforger merge export failed: " + $armMerge.Output)
+    $armAfter = [System.IO.File]::ReadAllText($armPreset)
+    Assert-NotMatch $armAfter "Action HelicopterEngineStart" "reforger merge should remove engine start's source on the landing light's button (conflict)."
+    Assert-Match $armAfter '(?s)Action HelicopterLightsLandingToggle \{.*Input "joystick1:button17"' "reforger merge should write the landing light."
+    Assert-Match $armAfter '(?s)Action HelicopterAutohoverToggle \{.*joystick0:button1".*keyboard:KC_H".*joystick0:button3"' "reforger merge must keep autohover's old source."
+    Assert-True ((Get-ArmNonFlight $armAfter) -eq $armNonFlight) "reforger merge must leave the infantry block identical."
+
+    $armOverwrite = Run-Engine @("--profile", $armProfile, "reforger", "export", $armPreset, "--mode", "merge-overwrite", "--text")
+    Assert-True ($armOverwrite.ExitCode -eq 0) ("reforger merge-overwrite export failed: " + $armOverwrite.Output)
+    $armAfter = [System.IO.File]::ReadAllText($armPreset)
+    Assert-NotMatch $armAfter 'joystick0:button1"' "reforger merge-overwrite should remove autohover's old source."
+    Assert-Match $armAfter '(?s)Action HelicopterAutohoverToggle \{.*keyboard:KC_H".*joystick0:button3"' "reforger merge-overwrite must keep the keyboard source."
+    Assert-Match $armAfter 'joystick0:axis1-"' "reforger merge-overwrite must keep actions the profile does not bind."
+    Assert-True ((Get-ArmNonFlight $armAfter) -eq $armNonFlight) "reforger merge-overwrite must leave the infantry block identical."
+
+    $armClean = Run-Engine @("--profile", $armProfile, "reforger", "export", $armPreset, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($armClean.ExitCode -eq 0) ("reforger clean + nuke export failed: " + $armClean.Output)
+    $armAfter = [System.IO.File]::ReadAllText($armPreset)
+    Assert-NotMatch $armAfter 'joystick0:axis1-"' "reforger clean should release the written stick's other helicopter sources."
+    Assert-True ((Get-ArmNonFlight $armAfter) -eq $armNonFlight) "reforger clean + nuke must leave the infantry block identical."
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $armPreviousFakeDevices
+}

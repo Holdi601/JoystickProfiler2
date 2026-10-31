@@ -72,7 +72,7 @@ public sealed class LayoutRedesignRenderTests
         });
     }
 
-    private static async Task<MainWindowViewModel> CreateLoadedVmAsync(LayoutFakeEngine fake, string work)
+    internal static async Task<MainWindowViewModel> CreateLoadedVmAsync(LayoutFakeEngine fake, string work)
     {
         MainWindowViewModel vm = new(fake, new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
         {
@@ -109,7 +109,7 @@ public sealed class LayoutRedesignRenderTests
     // end of the Export page, rendered 2x+900 px high to reach it); since the redesign only "after" renders.
     // The stick shows its device reference (JoyPro's drawing of the Warthog stick) unless "layoutfile" picks its layout
     // file (a VKB layout of the user); "assistant" is an unknown button box with the marker assistant waiting.
-    private static class LayoutPages
+    internal static class LayoutPages
     {
         // "tables*": the stick's reference picture as a callout sheet (tables and lines, JoyPro 1's look); the
         // marker pages show the markers with labels (Tables off).
@@ -222,7 +222,7 @@ public sealed class LayoutRedesignRenderTests
                 vm.DeviceReference.SelectedLegendRow = row;
         }
     }
-    private static string ResolvePicture(string work)
+    internal static string ResolvePicture(string work)
     {
         string? fromEnv = Environment.GetEnvironmentVariable("JOYPRO_UI_LAYOUT_PICTURE");
         if (!string.IsNullOrWhiteSpace(fromEnv) && File.Exists(fromEnv))

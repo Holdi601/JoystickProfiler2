@@ -155,6 +155,9 @@ namespace JoyPro.Engine.Games
         public int RelationsImported { get; set; }
         public int NodesAddedToExisting { get; set; }
         public int ConflictsKept { get; set; }
+        // "Only add": binds not written because the game uses their input for another function (ExportSkippedBinds.cs);
+        // the export command marks them in the profile.
+        public List<ExportSkippedBind> SkippedTakenInputs { get; private set; } = new List<ExportSkippedBind>();
         public List<string> FilesWritten { get; private set; }
         public List<string> Steps { get; private set; }
         public List<string> Warnings { get; private set; }

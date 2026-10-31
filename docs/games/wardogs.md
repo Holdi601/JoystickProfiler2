@@ -84,7 +84,7 @@ The `_aaaa...` tokens are hashes of the property names: the same logical field h
 
 ## Safe write
 - Change only lines inside the section; keep all unknown fields and all ActionBindings of actions JoyPro does not manage.
-- One bind per action: the menu shows (and the game uses) one line per action, although it keeps extra lines on save. Replace the ActionBindings line of a managed action (clean / merge-overwrite); merge and add keep a bound action; append new ones after the last ActionBindings line (or after LookYaw); delete the line to unassign.
+- One bind per action: the menu shows (and the game uses) one line per action, although it keeps extra lines on save. Export modes (only cataloged helicopter actions; other lines and sections never change): `add` writes only into a free slot whose button/axis no other cataloged action uses (else the bind is skipped and listed as a skipped multi-bind) and never replaces a bound slot; `merge` writes the profile's bind into the action's slot (one slot, so it replaces that slot's input) and clears the slot or line of another cataloged action on the same input (conflict), a second line of the action stays; `merge-overwrite` = merge + extra lines of the action go; `clean` also releases the other cataloged binds of the written devices, nuke those of connected devices without binds (a device that is not connected is never cleared). New lines go after the last ActionBindings line (or after LookYaw); delete the line to unassign.
 - Unbind an axis with `DeviceIdentifier=""`.
 - If the section is missing, do not synthesize it; ask the user to open the HOTAS menu once.
 - Keep names ASCII (a non-ASCII name makes UE save the file as UTF-16).

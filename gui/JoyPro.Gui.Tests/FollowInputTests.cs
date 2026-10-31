@@ -641,7 +641,7 @@ public sealed class FollowInputTests
         Assert.True(capture.LastOptions?.RecordReleaseOfHeldButtons);
     }
 
-    private static async Task<(MainWindowViewModel Vm, FollowCapture Capture)> CreateBindsPageAsync()
+    internal static async Task<(MainWindowViewModel Vm, FollowCapture Capture)> CreateBindsPageAsync()
     {
         FollowCapture capture = new();
         MainWindowViewModel vm = new(new FollowEngine(), capture, loadPersistedUiSettings: false)

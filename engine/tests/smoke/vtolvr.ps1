@@ -145,6 +145,120 @@ try {
     $vtNoFile = Run-Engine @("--profile", $vtSettingsOnly, "vtolvr-native", "export", $vtBindings, "--text")
     Assert-Match $vtNoFile.Output "VTOL VR settings not written: .*gameSettings\.cfg does not exist yet" "vtolvr-native export should warn when gameSettings.cfg is missing."
     Assert-True (-not (Test-Path $vtSettings)) "vtolvr-native export must not create gameSettings.cfg."
+
+    # ---- export modes -------------------------------------------------------------------------------------------------
+    # BYOJoystick (FA-26B seat, Smoke Stick connected, "Other Stick" not): the game has Fire Weapon on B1 and Fire
+    # Countermeasures on B2; the profile moves Fire Weapon to B3 and puts Landing Gear Toggle on B2. Add skips and
+    # reports B2 and removes nothing; merge replaces B2 and keeps B1; merge-overwrite drops B1 (keyboard G only with
+    # --include-keyboard); a device that is not connected keeps its binds.
+    $vmSeatXml = @"
+<?xml version="1.0" encoding="utf-8"?>
+<Bindings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <KeyboardBindings>
+    <KeyboardBinding>
+      <Target>Landing Gear Toggle</Target>
+      <Key>G</Key>
+      <ModifierKey>None</ModifierKey>
+    </KeyboardBinding>
+  </KeyboardBindings>
+  <JoystickBindings>
+    <JoystickBinding>
+      <Target>Fire Weapon</Target>
+      <JoystickId>11111111-2222-3333-4444-555555555555</JoystickId>
+      <Input>B1</Input>
+      <RequiresModifier>false</RequiresModifier>
+      <Invert>false</Invert>
+      <Deadzone>0</Deadzone>
+      <POVDirection>None</POVDirection>
+    </JoystickBinding>
+    <JoystickBinding>
+      <Target>Fire Countermeasures</Target>
+      <JoystickId>11111111-2222-3333-4444-555555555555</JoystickId>
+      <Input>B2</Input>
+      <RequiresModifier>false</RequiresModifier>
+      <Invert>false</Invert>
+      <Deadzone>0</Deadzone>
+      <POVDirection>None</POVDirection>
+    </JoystickBinding>
+    <JoystickBinding>
+      <Target>Fire Weapon</Target>
+      <JoystickId>99999999-8888-7777-6666-555555555555</JoystickId>
+      <Input>B4</Input>
+      <RequiresModifier>false</RequiresModifier>
+      <Invert>false</Invert>
+      <Deadzone>0</Deadzone>
+      <POVDirection>None</POVDirection>
+    </JoystickBinding>
+  </JoystickBindings>
+</Bindings>
+"@
+    $vmProfile = Join-Path $tempDir "vtol-modes.pr0file"
+    Run-Engine @("--profile", $vmProfile, "relations", "add", "VM Fire", "--button", "--node", "VTOLVR:Fire Weapon", "--device", $vtStick, "--input", "JOY_BTN3", "--text") | Out-Null
+    Run-Engine @("--profile", $vmProfile, "relations", "add", "VM Gear", "--button", "--node", "VTOLVR:Landing Gear Toggle", "--device", $vtStick, "--input", "JOY_BTN2", "--text") | Out-Null
+    $vmSeats = @{}
+    foreach ($vmMode in @("add", "merge", "merge-overwrite", "kb")) {
+        $vmSave = Join-Path $tempDir ("vtol-modes-" + $vmMode + "\steamapps\common\VTOL VR\SaveData")
+        New-Item -Path $vmSave -ItemType Directory -Force | Out-Null
+        [System.IO.File]::WriteAllText((Join-Path $vmSave "BYOJ_FA26B.xml"), $vmSeatXml.Replace("`r`n", "`n").Replace("`n", "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+        $vmArgs = @("--profile", $vmProfile, "vtolvr", "export", "--path", $vmSave, "--mode", $(if ($vmMode -eq "kb") { "merge-overwrite" } else { $vmMode }), "--text")
+        if ($vmMode -eq "kb") { $vmArgs += "--include-keyboard" }
+        $vmRun = Run-Engine $vmArgs
+        Assert-True ($vmRun.ExitCode -eq 0) ("vtolvr " + $vmMode + " export failed: " + $vmRun.Output)
+        $vmSeats[$vmMode] = [System.IO.File]::ReadAllText((Join-Path $vmSave "BYOJ_FA26B.xml"))
+        if ($vmMode -eq "add") {
+            Assert-Match $vmRun.Output "VM Gear \(Landing Gear Toggle\) on Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN2 in FA26B: the game uses that input for Fire Countermeasures" ("vtolvr add should report the skipped multi bind: " + $vmRun.Output)
+        }
+    }
+    $vmBind = { param($text, $target, $id, $button) $text -match ("<Target>" + [regex]::Escape($target) + "</Target>\s*<JoystickId>" + $id + "</JoystickId>\s*<Input>" + $button + "</Input>") }
+    $vmStickId = "11111111-2222-3333-4444-555555555555"
+    $vmOtherId = "99999999-8888-7777-6666-555555555555"
+    Assert-True ((& $vmBind $vmSeats["add"] "Fire Countermeasures" $vmStickId "B2") -and -not (& $vmBind $vmSeats["add"] "Landing Gear Toggle" $vmStickId "B2")) "vtolvr add must keep the game's bind on B2 and not write the profile's."
+    Assert-True ((& $vmBind $vmSeats["add"] "Fire Weapon" $vmStickId "B1") -and (& $vmBind $vmSeats["add"] "Fire Weapon" $vmStickId "B3")) "vtolvr add must keep Fire Weapon's old button and write the new one."
+    Assert-True ((& $vmBind $vmSeats["merge"] "Landing Gear Toggle" $vmStickId "B2") -and -not (& $vmBind $vmSeats["merge"] "Fire Countermeasures" $vmStickId "B2")) "vtolvr merge should replace the conflicting bind on B2."
+    Assert-True ((& $vmBind $vmSeats["merge"] "Fire Weapon" $vmStickId "B1") -and (& $vmBind $vmSeats["merge"] "Fire Weapon" $vmStickId "B3")) "vtolvr merge must keep Fire Weapon's old button."
+    Assert-True ((-not (& $vmBind $vmSeats["merge-overwrite"] "Fire Weapon" $vmStickId "B1")) -and (& $vmBind $vmSeats["merge-overwrite"] "Fire Weapon" $vmStickId "B3")) "vtolvr merge-overwrite should drop Fire Weapon's old button."
+    foreach ($vmMode in @("add", "merge", "merge-overwrite", "kb")) {
+        Assert-True (& $vmBind $vmSeats[$vmMode] "Fire Weapon" $vmOtherId "B4") ("vtolvr " + $vmMode + " must keep the binds of a device that is not connected.")
+    }
+    Assert-Match $vmSeats["merge-overwrite"] "<Key>G</Key>" "vtolvr merge-overwrite without --include-keyboard must keep the keyboard bind."
+    Assert-NotMatch $vmSeats["kb"] "<Key>G</Key>" "vtolvr merge-overwrite with --include-keyboard should drop the gear's key."
+
+    # Native (Crosswind and T-Rudder connected): the profile puts Rudder on the Crosswind's X (Wheel Brake L there,
+    # Rudder on RZ). Add reports it and changes nothing; merge replaces Brake L and keeps RZ; merge-overwrite drops RZ
+    # and the T-Rudder's rudder, but not on a T-Rudder that is not connected.
+    $nmProfile = Join-Path $tempDir "vtol-native-modes.pr0file"
+    Run-Engine @("--profile", $nmProfile, "relations", "add", "NM Rudder", "--axis", "--node", "VTOLVRNative:Rudder", "--device", $vtPedals, "--input", "JOY_X", "--text") | Out-Null
+    $nmText = @{}
+    foreach ($nmMode in @("add", "merge", "merge-overwrite", "disconnected")) {
+        $nmDir = Join-Path $tempDir ("vtol-native-modes-" + $nmMode)
+        New-Item -Path $nmDir -ItemType Directory -Force | Out-Null
+        $nmFile = Join-Path $nmDir "inputbindings.cfg"
+        Copy-Item -Path (Join-Path $vtFixture "native\inputbindings.cfg") -Destination $nmFile -Force
+        if ($nmMode -eq "disconnected") {
+            $nmDevices = Join-Path $nmDir "devices.tsv"
+            Get-Content (Join-Path $vtFixture "devices.tsv") | Where-Object { $_ -notmatch "^T-Rudder" } | Set-Content -Path $nmDevices -Encoding UTF8
+            $env:JOYPRO_FAKE_DEVICES = $nmDevices
+        }
+        $nmRun = Run-Engine @("--profile", $nmProfile, "vtolvr-native", "export", $nmFile, "--mode", $(if ($nmMode -eq "disconnected") { "merge-overwrite" } else { $nmMode }), "--text")
+        $env:JOYPRO_FAKE_DEVICES = Join-Path $vtFixture "devices.tsv"
+        Assert-True ($nmRun.ExitCode -eq 0) ("vtolvr-native " + $nmMode + " export failed: " + $nmRun.Output)
+        $nmText[$nmMode] = [System.IO.File]::ReadAllText($nmFile)
+        if ($nmMode -eq "add") {
+            Assert-Match $nmRun.Output "NM Rudder \(Rudder\) on MFG Crosswind V2 \{42ce2930-0a3f-11f0-8001-444553540000\} JOY_X: the game uses that input for Wheel Brake L" ("vtolvr-native add should report the skipped multi bind: " + $nmRun.Output)
+            Assert-True ($nmText[$nmMode] -eq [System.IO.File]::ReadAllText((Join-Path $vtFixture "native\inputbindings.cfg"))) "vtolvr-native add must not change anything here."
+        }
+    }
+    $nmMap = { param($text, $name) [regex]::Match($text, "hardwareName=""" + [regex]::Escape($name) + """.*?</JoystickMap>").Value }
+    $nmEl = { param($action, $element) "<actionId>" + $action + "</actionId><elementType>0</elementType><elementIdentifierId>" + $element + "</elementIdentifierId>" }
+    $nmCross = & $nmMap $nmText["merge"] "MFG Crosswind V2"
+    Assert-True ($nmCross.Contains((& $nmEl 0 0)) -and -not $nmCross.Contains((& $nmEl 5 0))) "vtolvr-native merge should replace Brake L on X with the rudder."
+    Assert-True ($nmCross.Contains((& $nmEl 0 2)) -and $nmCross.Contains((& $nmEl 6 1))) "vtolvr-native merge must keep the rudder's old axis and the right brake."
+    Assert-True ((& $nmMap $nmText["merge"] "T-Rudder").Contains((& $nmEl 0 2))) "vtolvr-native merge must keep the other pedals' rudder."
+    $nmCross = & $nmMap $nmText["merge-overwrite"] "MFG Crosswind V2"
+    Assert-True ($nmCross.Contains((& $nmEl 0 0)) -and -not $nmCross.Contains((& $nmEl 0 2)) -and $nmCross.Contains((& $nmEl 6 1))) "vtolvr-native merge-overwrite should drop the rudder's old axis."
+    $nmRudder = & $nmMap $nmText["merge-overwrite"] "T-Rudder"
+    Assert-True ((-not $nmRudder.Contains((& $nmEl 0 2))) -and $nmRudder.Contains((& $nmEl 5 0))) "vtolvr-native merge-overwrite should drop the rudder from the other connected pedals and keep their brakes."
+    Assert-True ((& $nmMap $nmText["disconnected"] "T-Rudder").Contains((& $nmEl 0 2))) "vtolvr-native merge-overwrite must keep the rudder of pedals that are not connected."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices

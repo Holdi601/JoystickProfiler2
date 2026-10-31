@@ -122,6 +122,13 @@ namespace JoyPro.Engine
             }
             if (keyboardSkipped > 0)
                 AddUnique(result.Warnings, keyboardSkipped.ToString(CultureInfo.InvariantCulture) + " keyboard bind(s) not exported (use --include-keyboard true to include them).");
+            // Without Star Citizen binds clean and nuke could only erase the game's binds (and switch off its defaults).
+            if (resolved.Count == 0)
+            {
+                AddUnique(result.Warnings, "The profile has no Star Citizen binds. actionmaps.xml was left unchanged.");
+                ApplyGameSettings(paths.ProfileDirectory, result);
+                return result;
+            }
 
             Dictionary<string, int> deviceUsage = resolved
                 .Select(p => p.Key)
@@ -168,24 +175,114 @@ namespace JoyPro.Engine
             List<XElement> joyProRebinds = new List<XElement>();
             List<ScWantedRebind> writtenRebinds = new List<ScWantedRebind>();
 
+            // Joystick slots whose device is connected: only their ship rebinds (and the game's js1 defaults when js1 is
+            // one of them) may be released. Slots of devices that are not connected stay as they are; mouse and gamepad
+            // rebinds are never touched, keyboard rebinds only with --include-keyboard. A rebind with an empty input
+            // ("js1_ ", a default the game switched off) binds nothing and is never released.
+            HashSet<int> ownedSlots = OwnedJoystickSlots(slotPlan, hasLocalActionmaps ? localActionData.JoystickOptions : null);
+            Func<XElement, bool> releasable = rebind =>
+            {
+                string input = RebindInput(rebind);
+                if (input.EndsWith("_", StringComparison.Ordinal))
+                    return false;
+                string type = RebindType(rebind);
+                return type == "js" ? ownedSlots.Contains(RebindInstance(rebind)) : type == "kb" && effectiveOptions.IncludeKeyboard;
+            };
+            // Each input the profile writes and the ship action it gets ("same input" = same input string, modifiers in it).
+            // Several actions of the profile on one input are no conflict among themselves.
+            Dictionary<string, HashSet<string>> wantedInputs = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, Dictionary<string, ScWantedRebind>> entry in wanted)
+                foreach (ScWantedRebind want in entry.Value.Values)
+                {
+                    HashSet<string> owners;
+                    string input = (want.Input ?? string.Empty).Trim();
+                    if (!wantedInputs.TryGetValue(input, out owners))
+                        wantedInputs[input] = owners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    owners.Add(entry.Key);
+                }
+            // The game's own use of an input: its rebinds and its active js1 defaults (ship actions without a js rebind).
+            // Actions the profile itself puts on that input do not count.
+            Func<string, string, string> gameActionOn = (input, exceptKey) =>
+            {
+                HashSet<string> profileOwners;
+                if (!wantedInputs.TryGetValue(input, out profileOwners))
+                    profileOwners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (XElement action in document.ShipActions())
+                {
+                    string key = BuildNodeKey((string)action.Parent.Attribute("name"), (string)action.Attribute("name"));
+                    if (string.Equals(key, exceptKey, StringComparison.OrdinalIgnoreCase) || profileOwners.Contains(key))
+                        continue;
+                    if (action.Elements("rebind").Any(r => string.Equals(RebindInput(r), input, StringComparison.OrdinalIgnoreCase)))
+                        return key;
+                }
+                foreach (KeyValuePair<string, ScCatalogAction> c in catalog.Where(c => !string.IsNullOrWhiteSpace(c.Value.DefaultJoystick) && IsFlightMap(c.Value.Category)))
+                {
+                    if (string.Equals(c.Key, exceptKey, StringComparison.OrdinalIgnoreCase) || profileOwners.Contains(c.Key) ||
+                        !string.Equals("js1_" + c.Value.DefaultJoystick.Trim(), input, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    XElement existing = document.FindAction(c.Value.Category, c.Value.Id);
+                    if (existing == null || !existing.Elements("rebind").Any(r => RebindType(r) == "js"))
+                        return c.Key;
+                }
+                return string.Empty;
+            };
+
             foreach (KeyValuePair<string, Dictionary<string, ScWantedRebind>> entry in wanted)
             {
                 foreach (KeyValuePair<string, ScWantedRebind> typed in entry.Value)
                 {
                     ScWantedRebind want = typed.Value;
-                    XElement action = document.FindOrCreateAction(want.State.Category, want.State.Id, want.State.Title, want.State.IsAxis);
-                    List<XElement> current = action.Elements("rebind").Where(r => RebindType(r) == typed.Key).ToList();
-                    if (current.Count > 0 && (mode == StarCitizenExportMode.Merge || mode == StarCitizenExportMode.Add) &&
-                        !current.Any(r => string.Equals(RebindInput(r), want.Input, StringComparison.OrdinalIgnoreCase)))
+                    XElement action = document.FindAction(want.State.Category, want.State.Id);
+                    List<XElement> current = action == null ? new List<XElement>() : action.Elements("rebind").Where(r => RebindType(r) == typed.Key).ToList();
+                    XElement same = current.FirstOrDefault(r => string.Equals(RebindInput(r), want.Input, StringComparison.OrdinalIgnoreCase));
+                    if (same != null)
                     {
-                        result.MergeConflictsKept++;
+                        joyProRebinds.Add(same);
+                        writtenRebinds.Add(want);
                         continue;
                     }
-                    XElement same = current.FirstOrDefault(r => string.Equals(RebindInput(r), want.Input, StringComparison.OrdinalIgnoreCase));
-                    if (same == null && current.Count > 0)
+                    string defaultInput = DefaultJoystickInput(catalog, entry.Key);
+                    // The game's own default on js1 already does this: no rebind is written (only real differences).
+                    if (typed.Key == "js" && current.Count == 0 && string.Equals(defaultInput, (want.Input ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        writtenRebinds.Add(want);
+                        continue;
+                    }
+                    if (mode == StarCitizenExportMode.Add)
+                    {
+                        // Only add never changes what the game has: the action's slot is taken (a rebind, or its active
+                        // default), or another action uses the input (it would become a multi-bind).
+                        bool slotTaken = current.Any(r => !RebindInput(r).EndsWith("_", StringComparison.Ordinal)) ||
+                                         (typed.Key == "js" && current.Count == 0 && defaultInput.Length > 0);
+                        if (slotTaken)
+                        {
+                            result.MergeConflictsKept++;
+                            continue;
+                        }
+                        string other = gameActionOn((want.Input ?? string.Empty).Trim(), entry.Key);
+                        if (other.Length > 0)
+                        {
+                            result.MergeConflictsKept++;
+                            result.SkippedTakenInputs.Add(new ExportSkippedBind
+                            {
+                                Game = StarCitizenGame,
+                                Aircraft = want.State.Category ?? string.Empty,
+                                Device = want.Bind == null ? string.Empty : want.Bind.Joystick ?? string.Empty,
+                                Input = want.Bind == null ? want.Input : (want.IsAxis ? want.Bind.JAxis : want.Bind.JButton) ?? want.Input,
+                                ModifiersText = want.Bind == null || want.Bind.AllReformers == null ? string.Empty : string.Join("+", want.Bind.AllReformers),
+                                Relation = want.RelationName ?? string.Empty,
+                                Action = entry.Key,
+                                GameAction = other
+                            });
+                            continue;
+                        }
+                    }
+                    action = action ?? document.FindOrCreateAction(want.State.Category, want.State.Id, want.State.Title, want.State.IsAxis);
+                    // Star Citizen has one slot per input type: merge and merge-overwrite put the profile's input into it.
+                    same = current.FirstOrDefault();
+                    if (same != null)
                     {
                         // Only the input changes; the rebind keeps its place and attributes (activation mode etc.).
-                        same = current[0];
                         same.SetAttributeValue("input", want.Input);
                         result.MergeConflictsOverwritten++;
                         result.EntriesWritten++;
@@ -206,15 +303,64 @@ namespace JoyPro.Engine
                 }
             }
 
+            // Merge, merge-overwrite and clean: a game bind on an input the profile gives another ship action goes
+            // (conflict). An action with a default joystick bind gets "js1_ " instead, so its default does not come back.
+            // Merge-overwrite: a ship action the profile binds also loses its binds of the other input type the export
+            // owns (the keyboard with --include-keyboard, a connected joystick).
+            if (mode != StarCitizenExportMode.Add)
+            {
+                foreach (XElement action in document.ShipActions().ToList())
+                {
+                    string key = BuildNodeKey((string)action.Parent.Attribute("name"), (string)action.Attribute("name"));
+                    Dictionary<string, ScWantedRebind> wantedTypes;
+                    wanted.TryGetValue(key, out wantedTypes);
+                    foreach (XElement rebind in action.Elements("rebind").ToList())
+                    {
+                        if (!releasable(rebind) || (wantedTypes != null && wantedTypes.Values.Any(w => string.Equals(w.Input, RebindInput(rebind), StringComparison.OrdinalIgnoreCase))))
+                            continue;
+                        HashSet<string> owners;
+                        bool conflict = wantedInputs.TryGetValue(RebindInput(rebind), out owners) && !owners.Contains(key);
+                        bool moved = mode == StarCitizenExportMode.MergeOverwrite && wantedTypes != null && !wantedTypes.ContainsKey(RebindType(rebind));
+                        if (!conflict && !moved)
+                            continue;
+                        if (RebindType(rebind) == "js" && DefaultJoystickInput(catalog, key).Length > 0 && ownedSlots.Contains(1))
+                            rebind.SetAttributeValue("input", "js1_ ");
+                        else
+                            ScActionmapsDocument.RemoveWithIndent(rebind);
+                        result.MergeConflictsOverwritten++;
+                    }
+                    if (!action.Elements().Any())
+                        document.RemoveEmptyAction(action);
+                }
+                // An active js1 default of another ship action on an input the profile uses: switched off.
+                if (ownedSlots.Contains(1))
+                {
+                    foreach (KeyValuePair<string, ScCatalogAction> c in catalog.Where(c => !string.IsNullOrWhiteSpace(c.Value.DefaultJoystick) && IsFlightMap(c.Value.Category)))
+                    {
+                        HashSet<string> owners;
+                        if (!wantedInputs.TryGetValue("js1_" + c.Value.DefaultJoystick.Trim(), out owners) || owners.Contains(c.Key))
+                            continue;
+                        XElement existing = document.FindAction(c.Value.Category, c.Value.Id);
+                        if (existing != null && existing.Elements("rebind").Any(r => RebindType(r) == "js"))
+                            continue;
+                        document.AddRebind(existing ?? document.FindOrCreateAction(c.Value.Category, c.Value.Id, c.Value.Title, c.Value.IsAxis), "js1_ ");
+                        result.DefaultJoystickBindsCleared++;
+                    }
+                }
+            }
+
             // Axis settings of the axis rebinds JoyPro wrote: option groups (invert, exponent/curve, sensitivity) and
             // device options (dead zone, saturation). Ownership next to actionmaps.xml lets merge keep in-game changes.
             Dictionary<string, HashSet<string>> ownedBefore = GameOwnershipStore.Load(paths.ActionmapsFile, result.Warnings);
             Dictionary<string, HashSet<string>> owned = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             ApplyAxisSettings(document, writtenRebinds, optionTree, mode, ownedBefore, owned, result);
 
-            // Clean releases the ship binds of the devices the export writes, nuke those of the devices it does not use.
-            // Keyboard rebinds only with --include-keyboard; mouse and gamepad rebinds are never touched.
-            if (mode == StarCitizenExportMode.Clean || effectiveOptions.NukeUnusedDevices)
+            // Clean releases the ship binds of the devices the export writes, nuke those of the connected devices it does
+            // not use (not with add, which never removes anything).
+            bool nuke = effectiveOptions.NukeUnusedDevices && mode != StarCitizenExportMode.Add;
+            if (mode == StarCitizenExportMode.Add && effectiveOptions.NukeUnusedDevices)
+                AddUnique(result.Warnings, "\"Only add\" never removes binds: --nuke-untouched-devices was not used.");
+            if (mode == StarCitizenExportMode.Clean || nuke)
             {
                 HashSet<int> usedSlots = new HashSet<int>(slotPlan.DeviceToSlot.Values);
                 bool keyboardUsed = wanted.Values.Any(t => t.ContainsKey("kb"));
@@ -226,15 +372,13 @@ namespace JoyPro.Engine
                     foreach (XElement rebind in action.Elements("rebind").ToList())
                     {
                         string type = RebindType(rebind);
-                        if (wantedTypes != null && wantedTypes.ContainsKey(type))
+                        if ((wantedTypes != null && wantedTypes.ContainsKey(type)) || !releasable(rebind))
                             continue;
                         bool release;
                         if (type == "js")
-                            release = usedSlots.Contains(RebindInstance(rebind)) ? mode == StarCitizenExportMode.Clean : effectiveOptions.NukeUnusedDevices;
-                        else if (type == "kb")
-                            release = effectiveOptions.IncludeKeyboard && (keyboardUsed ? mode == StarCitizenExportMode.Clean : effectiveOptions.NukeUnusedDevices);
+                            release = usedSlots.Contains(RebindInstance(rebind)) ? mode == StarCitizenExportMode.Clean : nuke;
                         else
-                            release = false;
+                            release = keyboardUsed ? mode == StarCitizenExportMode.Clean : nuke;
                         if (!release)
                             continue;
                         ScActionmapsDocument.RemoveWithIndent(rebind);
@@ -246,18 +390,17 @@ namespace JoyPro.Engine
 
                 // The game's own joystick defaults (defaultProfile.xml joystick="y", "button1", ...) act on js1 until
                 // the action has a js rebind. Clean (js1 written) and nuke (js1 not used) switch them off with an
-                // empty rebind "js1_ ", as the game's menu does when a bind is cleared. Ship actions only.
+                // empty rebind "js1_ ", as the game's menu does when a bind is cleared. Ship actions only, and only
+                // when the device on js1 is connected.
                 bool js1Used = usedSlots.Contains(1);
-                if (js1Used ? mode == StarCitizenExportMode.Clean : effectiveOptions.NukeUnusedDevices)
+                if (ownedSlots.Contains(1) && (js1Used ? mode == StarCitizenExportMode.Clean : nuke))
                 {
                     foreach (KeyValuePair<string, ScCatalogAction> entry in catalog.Where(c => !string.IsNullOrWhiteSpace(c.Value.DefaultJoystick) && IsFlightMap(c.Value.Category)))
                     {
                         Dictionary<string, ScWantedRebind> wantedTypes;
                         if (wanted.TryGetValue(entry.Key, out wantedTypes) && wantedTypes.ContainsKey("js"))
                             continue;
-                        XElement existingAction = document.ShipActions().FirstOrDefault(a =>
-                            string.Equals((string)a.Parent.Attribute("name"), entry.Value.Category, StringComparison.OrdinalIgnoreCase) &&
-                            string.Equals((string)a.Attribute("name"), entry.Value.Id, StringComparison.OrdinalIgnoreCase));
+                        XElement existingAction = document.FindAction(entry.Value.Category, entry.Value.Id);
                         if (existingAction != null && existingAction.Elements("rebind").Any(r => RebindType(r) == "js"))
                             continue;
                         XElement action = existingAction ?? document.FindOrCreateAction(entry.Value.Category, entry.Value.Id, entry.Value.Title, entry.Value.IsAxis);
@@ -402,6 +545,13 @@ namespace JoyPro.Engine
             sb.AppendLine("Default Joystick Binds Cleared: " + result.DefaultJoystickBindsCleared);
             sb.AppendLine("Merge Conflicts Added: " + result.MergeConflictsAdded);
             sb.AppendLine("Skipped Entries: " + result.SkippedEntries);
+
+            if (result.SkippedTakenInputs.Count > 0)
+            {
+                sb.AppendLine("Binds Not Written, Button Taken In The Game:");
+                foreach (ExportSkippedBind skipped in result.SkippedTakenInputs)
+                    sb.AppendLine("  - " + skipped.Describe());
+            }
 
             if (result.JoystickOptions.Count > 0)
             {
@@ -631,6 +781,67 @@ namespace JoyPro.Engine
             InternalDataManagement.ResyncRelations();
         }
 
+        // Ship actions whose default joystick bind (defaultProfile.xml joystick="...") acts on js1: the file has no js
+        // rebind for them (an empty "js1_ " rebind switches the default off, any other js rebind replaces it).
+        private static List<ScActionEntry> ActiveJoystickDefaults(ScActionFileData data, Dictionary<string, ScCatalogAction> catalog)
+        {
+            List<ScActionEntry> output = new List<ScActionEntry>();
+            if (catalog == null)
+                return output;
+            HashSet<string> withJs = new HashSet<string>(
+                data.Actions.Where(a => a != null && a.Rebinds.Any(r => r != null && (r.Input ?? string.Empty).Trim().StartsWith("js", StringComparison.OrdinalIgnoreCase)))
+                    .Select(a => BuildNodeKey(a.Category, a.Id)),
+                StringComparer.OrdinalIgnoreCase);
+            foreach (ScCatalogAction item in catalog.Values.OrderBy(c => c.Order))
+            {
+                if (item == null || string.IsNullOrWhiteSpace(item.DefaultJoystick) || !IsFlightMap(item.Category) || withJs.Contains(BuildNodeKey(item.Category, item.Id)))
+                    continue;
+                ScActionEntry entry = new ScActionEntry();
+                entry.Category = item.Category;
+                entry.Id = item.Id;
+                entry.Title = item.Title;
+                entry.IsAxis = item.IsAxis;
+                entry.Rebinds.Add(new ScRebindEntry { Input = "js1_" + item.DefaultJoystick.Trim() });
+                output.Add(entry);
+            }
+            return output;
+        }
+
+        // The js slots whose device is connected (n-th slot of a product = n-th connected device of it).
+        private static HashSet<int> OwnedJoystickSlots(ScSlotPlan plan, List<ScOptionDevice> fileOptions)
+        {
+            HashSet<int> owned = new HashSet<int>();
+            Dictionary<string, int> seen = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            // The plan's slots, and the file's slots the plan does not use (a device the profile has no binds for).
+            Dictionary<int, string> slots = new Dictionary<int, string>(plan.SlotToProduct);
+            foreach (ScOptionDevice option in fileOptions ?? new List<ScOptionDevice>())
+            {
+                if (option != null && option.Instance > 0 && !slots.ContainsKey(option.Instance))
+                    slots[option.Instance] = option.Product ?? string.Empty;
+            }
+            foreach (KeyValuePair<int, string> slot in slots.OrderBy(s => s.Key))
+            {
+                string product = NormalizeScProductToken(slot.Value);
+                if (product.Length == 0)
+                    continue;
+                int occurrence;
+                seen.TryGetValue(product, out occurrence);
+                seen[product] = occurrence + 1;
+                if (ConnectedInstanceForProduct(product, occurrence).Length > 0)
+                    owned.Add(slot.Key);
+            }
+            return owned;
+        }
+
+        // The game's default js1 input of a ship action ("js1_button1"), empty when it has none.
+        private static string DefaultJoystickInput(Dictionary<string, ScCatalogAction> catalog, string nodeKey)
+        {
+            ScCatalogAction item;
+            return catalog != null && catalog.TryGetValue(nodeKey, out item) && item != null && !string.IsNullOrWhiteSpace(item.DefaultJoystick)
+                ? "js1_" + item.DefaultJoystick.Trim()
+                : string.Empty;
+        }
+
         private static List<ScImportCandidate> BuildImportCandidates(
             ScActionFileData data,
             Dictionary<string, ScCatalogAction> catalog,
@@ -652,9 +863,13 @@ namespace JoyPro.Engine
                 .GroupBy(v => v.Instance)
                 .ToDictionary(g => g.Key, g => NormalizeScProductToken(g.First().Product), EqualityComparer<int>.Default);
 
-            for (int i = 0; i < data.Actions.Count; i++)
+            // The game's own joystick defaults that are active (an action without a js rebind) come in as js1 binds, so
+            // the profile holds what the game does and an export of it changes nothing.
+            List<ScActionEntry> actions = new List<ScActionEntry>(data.Actions);
+            actions.AddRange(ActiveJoystickDefaults(data, catalog));
+            for (int i = 0; i < actions.Count; i++)
             {
-                ScActionEntry action = data.Actions[i];
+                ScActionEntry action = actions[i];
                 if (action == null)
                     continue;
                 result.ActionsParsed++;
@@ -849,11 +1064,33 @@ namespace JoyPro.Engine
 
             if (preferLocalOrder)
             {
+                // The game's own record first: a connected device the file names for a slot keeps that slot (its
+                // Product is the game's "name  {PIDVID}", mapped to the device as the import maps it), so an export
+                // of an imported profile moves no bind to another slot.
+                HashSet<int> fileSlots = new HashSet<int>();
+                foreach (ScOptionDevice option in localOptions.Where(o => o != null && o.Instance > 0 && o.Instance <= MaxJoystickSlots).OrderBy(o => o.Instance))
+                {
+                    string fileProduct = NormalizeScProductToken(option.Product);
+                    if (fileProduct.Length == 0 || baseSlots.ContainsKey(option.Instance))
+                        continue;
+                    int occurrence = localOptions.Count(o => o != null && o.Instance > 0 && o.Instance < option.Instance &&
+                                                             string.Equals(NormalizeScProductToken(o.Product), fileProduct, StringComparison.OrdinalIgnoreCase));
+                    string connectedInstance = ConnectedInstanceForProduct(fileProduct, occurrence);
+                    if (connectedInstance.Length == 0)
+                        continue;
+                    string key = ResolveProductForDevice(connectedInstance, profileProductMap);
+                    if (key.Length == 0 || productToSlot.ContainsKey(key))
+                        continue;
+                    baseSlots[option.Instance] = new ScOptionDevice { Instance = option.Instance, Product = key };
+                    productToSlot[key] = option.Instance;
+                    fileSlots.Add(option.Instance);
+                }
+
                 foreach (KeyValuePair<string, int> entry in connectedStartupOrder
                     .Where(v => !string.IsNullOrWhiteSpace(v.Key) && v.Value > 0 && v.Value <= MaxJoystickSlots)
                     .OrderBy(v => v.Value))
                 {
-                    if (baseSlots.ContainsKey(entry.Value))
+                    if (baseSlots.ContainsKey(entry.Value) || productToSlot.ContainsKey(entry.Key))
                         continue;
 
                     ScOptionDevice startupOption = new ScOptionDevice();
@@ -867,7 +1104,7 @@ namespace JoyPro.Engine
                 for (int i = 0; i < localOptions.Count; i++)
                 {
                     ScOptionDevice option = localOptions[i];
-                    if (option == null || option.Instance <= 0 || option.Instance > MaxJoystickSlots)
+                    if (option == null || option.Instance <= 0 || option.Instance > MaxJoystickSlots || fileSlots.Contains(option.Instance))
                         continue;
 
                     ScOptionDevice copy = new ScOptionDevice();
@@ -1581,7 +1818,20 @@ namespace JoyPro.Engine
             if (connectedProducts == null)
             {
                 connectedProducts = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                try
+                // Test hook (JOYPRO_FAKE_DEVICES): the fake devices are the connected ones, named as their product.
+                if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(JoyPro.Engine.Games.GameDeviceDirectory.FakeDevicesEnvironmentVariable)))
+                {
+                    foreach (JoyPro.Engine.Games.GameDevice fake in JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>()).Devices)
+                    {
+                        string name = (fake.JoyProName ?? string.Empty).Trim();
+                        if (name.Length > 0 && !connectedProducts.ContainsKey(name))
+                        {
+                            connectedProducts[name] = name;
+                            connectedInOrder.Add(new KeyValuePair<string, string>(name, name));
+                        }
+                    }
+                }
+                else try
                 {
                     foreach (DirectInputDeviceDiscovery.DirectInputDeviceInfo info in DirectInputDeviceDiscovery.EnumerateConnectedDeviceInfos(new List<string>()))
                     {
@@ -3009,6 +3259,13 @@ namespace JoyPro.Engine
                     AddChild(map, action, 3);
                 }
                 return action;
+            }
+
+            // The action element, null when the file has none.
+            public XElement FindAction(string category, string id)
+            {
+                XElement map = profile.Elements("actionmap").FirstOrDefault(m => string.Equals((string)m.Attribute("name"), category, StringComparison.OrdinalIgnoreCase));
+                return map == null ? null : map.Elements("action").FirstOrDefault(a => string.Equals((string)a.Attribute("name"), id, StringComparison.OrdinalIgnoreCase));
             }
 
             public XElement AddRebind(XElement action, string input)

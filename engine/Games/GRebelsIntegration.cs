@@ -194,6 +194,13 @@ namespace JoyPro.Engine.Games
             Dictionary<int, Dictionary<string, KeyValuePair<int, bool>>> axisWanted = new Dictionary<int, Dictionary<string, KeyValuePair<int, bool>>>();
             Dictionary<string, string> buttonWanted = new Dictionary<string, string>(StringComparer.Ordinal);
             HashSet<int> written = new HashSet<int>();
+            Dictionary<int, GameAction> roleActions = RoleActions(request.Catalog);
+            Dictionary<string, GameAction> buttonActions = ButtonActions(request.Catalog);
+            // The game's button binds (read before the decisions: "only add" must not make a multi-bind).
+            string buttonsPath = ButtonsPath(request.ConfigPath);
+            GvasKeyMappings mappings = null;
+            if (File.Exists(buttonsPath) && !GvasKeyMappings.TryLoad(buttonsPath, result.Warnings, out mappings))
+                mappings = null;
             foreach (GameInputBinding binding in request.Bindings)
             {
                 GameAction action;
@@ -215,6 +222,7 @@ namespace JoyPro.Engine.Games
                 JoyInput input = default(JoyInput);
                 if (reason.Length == 0 && !GameInputTokens.TryParse(binding.Input, out input))
                     reason = "input '" + binding.Input + "' is not a joystick input.";
+                string otherAction = string.Empty;
                 if (reason.Length == 0 && action.IsAxis)
                 {
                     int role;
@@ -225,8 +233,12 @@ namespace JoyPro.Engine.Games
                     else
                     {
                         string key = AxisKey(channel, input.Index);
-                        if (!options.Axes.Any(a => a.Key == key && a.RoleDigit >= 0))
+                        GRebelsSaveOptions.Axis saved = options.Axes.FirstOrDefault(a => a.Key == key && a.RoleDigit >= 0);
+                        if (saved == null)
                             reason = "the game has not saved axis " + key + " yet (change one axis role on the JST" + channel.ToString(CultureInfo.InvariantCulture) + " tab once: the game saves the axis rows only then).";
+                        // One role per axis: "only add" does not replace another role on it.
+                        else if (request.Mode == GameExportMode.Add && saved.Role != RoleNone && saved.Role != role)
+                            otherAction = roleActions.ContainsKey(saved.Role) ? roleActions[saved.Role].Id : "role " + saved.Role.ToString(CultureInfo.InvariantCulture);
                         else
                         {
                             if (!axisWanted.ContainsKey(channel))
@@ -240,7 +252,30 @@ namespace JoyPro.Engine.Games
                     if (input.Kind != JoyInputKind.Button)
                         reason = "only buttons are written (hats go to the JST tab's POV rows, not yet supported).";
                     else
-                        buttonWanted[action.NativeId + "JST" + channel.ToString(CultureInfo.InvariantCulture)] = "RawInput_Controller" + channel.ToString(CultureInfo.InvariantCulture) + "_Button" + (input.Index + 1).ToString(CultureInfo.InvariantCulture);
+                    {
+                        string key = "RawInput_Controller" + channel.ToString(CultureInfo.InvariantCulture) + "_Button" + (input.Index + 1).ToString(CultureInfo.InvariantCulture);
+                        GvasKeyMapping user = request.Mode == GameExportMode.Add && mappings != null
+                            ? mappings.Mappings.FirstOrDefault(m => string.Equals(m.CurrentKey, key, StringComparison.OrdinalIgnoreCase) && NativeOf(m.MappingName) != action.NativeId && buttonActions.ContainsKey(NativeOf(m.MappingName)))
+                            : null;
+                        if (user != null)
+                            otherAction = buttonActions[NativeOf(user.MappingName)].Id;
+                        else
+                            buttonWanted[action.NativeId + "JST" + channel.ToString(CultureInfo.InvariantCulture)] = key;
+                    }
+                }
+                if (otherAction.Length > 0)
+                {
+                    result.BindingsSkipped++;
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
+                    {
+                        Game = GameId,
+                        Device = binding.Device,
+                        Input = binding.Input,
+                        Relation = binding.RelationName,
+                        Action = binding.ActionId,
+                        GameAction = otherAction
+                    });
+                    continue;
                 }
                 if (reason.Length > 0)
                 {
@@ -252,9 +287,15 @@ namespace JoyPro.Engine.Games
                 result.BindingsWritten++;
             }
 
-            // Axes: JoyPro's roles; clean: every other axis of a written channel to None; merge-overwrite: another axis of
-            // the channel holding a role JoyPro sets goes to None; merge: keeps the game's axis with that role.
-            HashSet<int> nukeChannels = new HashSet<int>(request.NukeUnusedDevices ? options.Devices.Where(d => d.Enabled && !written.Contains(d.Channel)).Select(d => d.Channel) : new int[0]);
+            // Channels JoyPro owns: switched on in the game and connected now. Merge-overwrite and nuke touch only these.
+            HashSet<int> owned = new HashSet<int>(options.Devices.Where(d => d.Enabled && DeviceOfPath(request.Devices, d.Path) != null).Select(d => d.Channel));
+            HashSet<int> nukeChannels = new HashSet<int>(request.NukeUnusedDevices ? owned.Where(c => !written.Contains(c)) : new int[0]);
+            HashSet<int> wantedRoles = new HashSet<int>(axisWanted.Values.SelectMany(w => w.Values.Select(v => v.Key)));
+
+            // Axes (one role per physical axis): JoyPro's role replaces the axis' role (merge, merge-overwrite, clean:
+            // the profile wins on its input; "only add" wrote only free axes). Merge-overwrite and clean: another axis of
+            // an owned channel holding a role JoyPro sets goes to None (a moved role fully moves); clean: every other
+            // axis of a written channel; nuke: the owned channels without binds.
             foreach (GRebelsSaveOptions.Axis axis in options.Axes)
             {
                 Match match = Regex.Match(axis.Key, @"^RawInput_Controller(\d+)_Axis");
@@ -265,38 +306,29 @@ namespace JoyPro.Engine.Games
                 KeyValuePair<int, bool> mine;
                 if (axisWanted.TryGetValue(channel, out wanted) && wanted.TryGetValue(axis.Key, out mine))
                 {
-                    if (request.Mode == GameExportMode.Merge && axis.Role != mine.Key && axis.Role != RoleNone)
-                    {
-                        result.ConflictsKept++;
-                        result.Warnings.Add(axis.Key + " keeps the game's role (merge mode).");
+                    if (request.Mode == GameExportMode.Add && axis.Role == mine.Key)
                         continue;
-                    }
                     options.SetRole(axis, mine.Key);
                     options.SetInverted(axis, mine.Value);
                 }
-                else if (wanted != null && axis.Role != RoleNone &&
-                         (request.Mode == GameExportMode.Clean || (request.Mode == GameExportMode.MergeOverwrite && wanted.Values.Any(v => v.Key == axis.Role))))
-                    options.SetRole(axis, RoleNone);
-                else if (nukeChannels.Contains(channel) && axis.Role != RoleNone)
+                else if (axis.Role != RoleNone &&
+                         ((wanted != null && request.Mode == GameExportMode.Clean) ||
+                          ((request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean) && owned.Contains(channel) && wantedRoles.Contains(axis.Role)) ||
+                          nukeChannels.Contains(channel)))
                     options.SetRole(axis, RoleNone);
             }
 
-            // Buttons.
-            string buttonsPath = ButtonsPath(request.ConfigPath);
-            GvasKeyMappings mappings = null;
+            // Buttons: one key per action and channel. A mapping of another action on a key JoyPro writes goes (a
+            // conflict; "only add" skipped those binds); merge-overwrite and clean: the action's mappings on other owned
+            // channels go; clean: the other cataloged mappings of written channels; nuke: those of owned channels
+            // without binds.
             bool buttonsChanged = false;
-            if (buttonWanted.Count > 0 || request.Mode == GameExportMode.Clean || request.NukeUnusedDevices)
-            {
-                if (!File.Exists(buttonsPath) || !GvasKeyMappings.TryLoad(buttonsPath, result.Warnings, out mappings))
-                {
-                    mappings = null;
-                    if (buttonWanted.Count > 0)
-                        result.Warnings.Add("Button binds not written: " + ButtonsFile + " has no key profile yet (bind one button in the game once).");
-                }
-            }
+            if (mappings == null && buttonWanted.Count > 0)
+                result.Warnings.Add("Button binds not written: " + ButtonsFile + " has no key profile yet (bind one button in the game once).");
             if (mappings != null)
             {
                 HashSet<string> catalogNames = new HashSet<string>(request.Catalog.Actions.Where(a => !a.IsAxis).Select(a => a.NativeId), StringComparer.Ordinal);
+                HashSet<string> wantedNatives = new HashSet<string>(buttonWanted.Keys.Select(NativeOf), StringComparer.Ordinal);
                 foreach (GvasKeyMapping mapping in mappings.Mappings.ToList())
                 {
                     Match name = Regex.Match(mapping.MappingName, @"^(.+)JST(\d+)$");
@@ -304,8 +336,10 @@ namespace JoyPro.Engine.Games
                         continue;
                     int channel = int.Parse(name.Groups[2].Value, CultureInfo.InvariantCulture);
                     bool release = (written.Contains(channel) && request.Mode == GameExportMode.Clean) || nukeChannels.Contains(channel);
-                    if (!release && request.Mode == GameExportMode.MergeOverwrite && written.Contains(channel))
+                    if (!release && request.Mode != GameExportMode.Add)
                         release = buttonWanted.Values.Contains(mapping.CurrentKey, StringComparer.OrdinalIgnoreCase);
+                    if (!release && (request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean) && owned.Contains(channel))
+                        release = wantedNatives.Contains(name.Groups[1].Value);
                     if (release)
                     {
                         mappings.Mappings.Remove(mapping);
@@ -317,10 +351,10 @@ namespace JoyPro.Engine.Games
                     GvasKeyMapping mapping = mappings.Mappings.FirstOrDefault(m => m.MappingName == wanted.Key && m.Slot == 0);
                     if (mapping != null && string.Equals(mapping.CurrentKey, wanted.Value, StringComparison.OrdinalIgnoreCase))
                         continue;
-                    if (mapping != null && request.Mode == GameExportMode.Merge)
+                    if (mapping != null && request.Mode == GameExportMode.Add)
                     {
                         result.ConflictsKept++;
-                        result.Warnings.Add(wanted.Key + " keeps the game's '" + mapping.CurrentKey + "' (merge mode).");
+                        result.Warnings.Add(wanted.Key + " keeps the game's '" + mapping.CurrentKey + "' (add mode).");
                         continue;
                     }
                     if (mapping == null)
@@ -368,6 +402,13 @@ namespace JoyPro.Engine.Games
             role = -1;
             Match match = Regex.Match(action.NativeId ?? string.Empty, @"^role:(\d)$");
             return match.Success && int.TryParse(match.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out role);
+        }
+
+        // "<native>" of a button mapping name "<native>JST<channel>", "" for other names.
+        private static string NativeOf(string mappingName)
+        {
+            Match match = Regex.Match(mappingName ?? string.Empty, @"^(.+)JST(\d+)$");
+            return match.Success ? match.Groups[1].Value : string.Empty;
         }
 
         private static Dictionary<int, GameAction> RoleActions(GameCatalog catalog)

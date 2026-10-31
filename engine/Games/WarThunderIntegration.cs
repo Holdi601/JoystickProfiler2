@@ -13,7 +13,7 @@ namespace JoyPro.Engine.Games
     // an exported preset. Only hotkeys{} blocks of cataloged flight IDs and axes{} entries of cataloged flight axes
     // are changed; deviceMapping{} is only read, to translate between device-local and War Thunder's global indices.
     // See docs/games/war-thunder.md.
-    internal sealed class WarThunderIntegration : IGameIntegration, IGameOwnershipTracking, IGameSettingsFile
+    internal sealed class WarThunderIntegration : IGameIntegration, IGameSettingsFile
     {
         public string GameId { get { return "WarThunder"; } }
         public string DisplayName { get { return "War Thunder"; } }
@@ -240,6 +240,10 @@ namespace JoyPro.Engine.Games
             Dictionary<string, List<List<BlkParam>>> wantedShortcuts = new Dictionary<string, List<List<BlkParam>>>(StringComparer.Ordinal);
             Dictionary<string, GameInputBinding> wantedAxes = new Dictionary<string, GameInputBinding>(StringComparer.Ordinal);
             Dictionary<string, int> wantedAxisIds = new Dictionary<string, int>(StringComparer.Ordinal);
+            // The game's aircraft (cataloged) binds per input, for "only add" (a bind on an input the game uses for
+            // another action is not written) and the merge conflicts. Tank, ship and menu binds never count.
+            Dictionary<string, List<string>> gameShortcuts = GameShortcuts(context, request.Catalog);
+            Dictionary<int, List<string>> gameAxes = GameAxes(context, request.Catalog);
 
             foreach (GameInputBinding binding in request.Bindings)
             {
@@ -251,6 +255,19 @@ namespace JoyPro.Engine.Games
                     reason = EncodeAxis(context, binding, request.Devices, result.Warnings, out axisId);
                     if (reason.Length == 0 && wantedAxes.ContainsKey(action.Id))
                         reason = "the axis is already bound by relation '" + wantedAxes[action.Id].RelationName + "'.";
+                    if (reason.Length == 0 && request.Mode == GameExportMode.Add)
+                    {
+                        string other = OtherUser(gameAxes, axisId, action.Id);
+                        int current = GameAxisId(context, action.Id);
+                        if (other.Length > 0)
+                        {
+                            SkipMultiBind(result, binding, other);
+                            continue;
+                        }
+                        // War Thunder has one axis per action: "only add" does not replace the game's axis.
+                        if (current >= 0 && current != axisId)
+                            reason = "the game already has another axis on it (add keeps the game's binds).";
+                    }
                     if (reason.Length == 0)
                     {
                         wantedAxes[action.Id] = binding;
@@ -261,6 +278,12 @@ namespace JoyPro.Engine.Games
                 {
                     List<BlkParam> shortcut;
                     reason = EncodeShortcut(context, binding, request.Devices, result.Warnings, out shortcut);
+                    string other = reason.Length == 0 && request.Mode == GameExportMode.Add ? OtherUser(gameShortcuts, Signature(shortcut), binding.ActionId) : string.Empty;
+                    if (other.Length > 0)
+                    {
+                        SkipMultiBind(result, binding, other);
+                        continue;
+                    }
                     if (reason.Length == 0)
                     {
                         List<List<BlkParam>> list;
@@ -282,9 +305,8 @@ namespace JoyPro.Engine.Games
                 result.BindingsWritten++;
             }
 
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(request.ConfigPath, result.Warnings);
             HashSet<string> usedDevices = new HashSet<string>(request.Bindings.Select(b => b.IsKeyboard ? "Keyboard" : b.Device.Trim()), StringComparer.OrdinalIgnoreCase);
-            WriteHotkeys(context, request, wantedShortcuts, owned, usedDevices, result);
+            WriteHotkeys(context, request, wantedShortcuts, usedDevices, result);
             WriteAxes(context, request, wantedAxes, wantedAxisIds, usedDevices, result);
             WriteSettings(context, result);
 
@@ -294,9 +316,82 @@ namespace JoyPro.Engine.Games
                 return result;
             }
 
-            GameOwnershipStore.Save(request.ConfigPath, GameId, owned);
             Save(context, request.ConfigPath, result);
             return result;
+        }
+
+        // "Only add": the profile's bind is not written, the game uses the input for another (aircraft) action.
+        private void SkipMultiBind(GameIoResult result, GameInputBinding binding, string gameAction)
+        {
+            result.BindingsSkipped++;
+            result.SkippedTakenInputs.Add(new ExportSkippedBind
+            {
+                Game = GameId,
+                Device = binding.Device,
+                Input = binding.Input,
+                ModifiersText = string.Join("+", (binding.Reformers ?? new List<string>()).Select(r => r.Split('§')).Select(p => p.Length >= 3 ? p[1] + " " + p[2] : p[0])),
+                Relation = binding.RelationName,
+                Action = binding.ActionId,
+                GameAction = gameAction
+            });
+        }
+
+        // The first action other than 'self' that uses the input, "" when none.
+        private static string OtherUser<T>(Dictionary<T, List<string>> users, T input, string self)
+        {
+            List<string> ids;
+            return users.TryGetValue(input, out ids) ? ids.FirstOrDefault(id => id != self) ?? string.Empty : string.Empty;
+        }
+
+        // Cataloged shortcut blocks of the file per signature (keys + buttons of one shortcut).
+        private static Dictionary<string, List<string>> GameShortcuts(WtContext context, GameCatalog catalog)
+        {
+            Dictionary<string, List<string>> users = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+            BlkBlock hotkeys = Section(context, "hotkeys");
+            if (hotkeys == null)
+                return users;
+            foreach (BlkChild child in context.Document.Children(hotkeys).Where(c => c.Kind == BlkChildKind.Block && c.Params.Count > 0))
+            {
+                GameAction action = catalog.Find(child.Name);
+                if (action == null || action.IsAxis)
+                    continue;
+                string signature = Signature(child.Params);
+                List<string> ids;
+                if (!users.TryGetValue(signature, out ids))
+                    users[signature] = ids = new List<string>();
+                if (!ids.Contains(child.Name))
+                    ids.Add(child.Name);
+            }
+            return users;
+        }
+
+        // Cataloged axes of the file per axisId (unbound axes, axisId -1, are left out).
+        private static Dictionary<int, List<string>> GameAxes(WtContext context, GameCatalog catalog)
+        {
+            Dictionary<int, List<string>> users = new Dictionary<int, List<string>>();
+            BlkBlock axes = Section(context, "axes");
+            if (axes == null)
+                return users;
+            foreach (BlkChild child in context.Document.Children(axes).Where(c => c.Kind == BlkChildKind.Block))
+            {
+                GameAction action = catalog.Find(child.Name);
+                int axisId = AxisId(child);
+                if (action == null || !action.IsAxis || axisId < 0)
+                    continue;
+                List<string> ids;
+                if (!users.TryGetValue(axisId, out ids))
+                    users[axisId] = ids = new List<string>();
+                if (!ids.Contains(child.Name))
+                    ids.Add(child.Name);
+            }
+            return users;
+        }
+
+        private static int GameAxisId(WtContext context, string axisName)
+        {
+            BlkBlock axes = Section(context, "axes");
+            BlkChild child = axes == null ? null : context.Document.Children(axes).FirstOrDefault(c => c.Kind == BlkChildKind.Block && c.Name == axisName);
+            return child == null ? -1 : AxisId(child);
         }
 
         private static void Save(WtContext context, string path, GameIoResult result)
@@ -358,8 +453,8 @@ namespace JoyPro.Engine.Games
         }
 
         // Each ID_...{} block is one shortcut, several blocks of one ID are alternatives. Blocks of IDs outside the
-        // catalog are never touched; within the catalog the mode decides which existing blocks go.
-        private static void WriteHotkeys(WtContext context, GameExportRequest request, Dictionary<string, List<List<BlkParam>>> wanted, Dictionary<string, HashSet<string>> owned, HashSet<string> usedDevices, GameIoResult result)
+        // catalog (tanks, ships, menus) are never touched; within the catalog the mode decides which existing blocks go.
+        private static void WriteHotkeys(WtContext context, GameExportRequest request, Dictionary<string, List<List<BlkParam>>> wanted, HashSet<string> usedDevices, GameIoResult result)
         {
             BlkBlock hotkeys = Section(context, "hotkeys");
             if (hotkeys == null)
@@ -372,11 +467,17 @@ namespace JoyPro.Engine.Games
             List<BlkChild> children = context.Document.Children(hotkeys);
             string indent = context.Document.ChildIndent(hotkeys);
             HashSet<string> managedIds = new HashSet<string>(request.Catalog.Actions.Where(a => !a.IsAxis).Select(a => a.Id), StringComparer.Ordinal);
-            Dictionary<string, HashSet<string>> ownedBefore = owned.ToDictionary(e => e.Key, e => new HashSet<string>(e.Value, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
-            if (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite)
+            // The actions the profile puts on each input: the game's block of another action on it is a conflict.
+            Dictionary<string, HashSet<string>> wantedBy = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            foreach (KeyValuePair<string, List<List<BlkParam>>> entry in wanted)
             {
-                foreach (string id in managedIds)
-                    owned.Remove(id);
+                foreach (List<BlkParam> shortcut in entry.Value)
+                {
+                    HashSet<string> ids;
+                    if (!wantedBy.TryGetValue(Signature(shortcut), out ids))
+                        wantedBy[Signature(shortcut)] = ids = new HashSet<string>(StringComparer.Ordinal);
+                    ids.Add(entry.Key);
+                }
             }
 
             // New shortcuts of an ID go behind its last existing block (and the blank line after it).
@@ -406,7 +507,7 @@ namespace JoyPro.Engine.Games
                 if (child.Kind == BlkChildKind.Blank)
                     keep = !droppedBlock;
                 else
-                    keep = child.Kind != BlkChildKind.Block || !managedIds.Contains(child.Name) || !DropShortcut(context, child, request, wanted, ownedBefore, usedDevices);
+                    keep = child.Kind != BlkChildKind.Block || !managedIds.Contains(child.Name) || !DropShortcut(context, child, request, wanted, wantedBy, usedDevices);
                 droppedBlock = !keep && child.RawLines.Count > 1;
                 if (keep)
                     body.Add(child.RawLines);
@@ -415,22 +516,28 @@ namespace JoyPro.Engine.Games
                 if (insertAfter.TryGetValue(i, out ids))
                 {
                     foreach (string id in ids)
-                        AddMissingShortcuts(id, children, wanted[id], request.Mode, indent, body, owned, result);
+                        AddMissingShortcuts(id, children, wanted[id], indent, body, result);
                 }
             }
 
             foreach (KeyValuePair<string, List<List<BlkParam>>> entry in wanted.Where(e => !present.Contains(e.Key)).OrderBy(e => e.Key, StringComparer.Ordinal))
             {
                 result.Warnings.Add(entry.Key + " was not customized in this file, so War Thunder used the base preset's shortcuts for it; JoyPro's shortcuts replace them.");
-                AddMissingShortcuts(entry.Key, children, entry.Value, request.Mode, indent, body, owned, result);
+                AddMissingShortcuts(entry.Key, children, entry.Value, indent, body, result);
             }
 
             context.Document.ReplaceBody(hotkeys, body);
         }
 
-        // A cataloged shortcut goes when JoyPro wrote it before (clean, merge-overwrite) or when its device is released:
-        // clean releases the devices the export writes, nuke the connected devices it does not use.
-        private static bool DropShortcut(WtContext context, BlkChild child, GameExportRequest request, Dictionary<string, List<List<BlkParam>>> wanted, Dictionary<string, HashSet<string>> ownedBefore, HashSet<string> usedDevices)
+        // A cataloged shortcut goes when
+        //  - the profile puts another action on the same input (merge, merge-overwrite, clean: the conflict goes),
+        //  - merge-overwrite or clean: its action is in the profile and this is another input of it on a device JoyPro
+        //    owns in this export (a connected joystick War Thunder's device list names; the keyboard only with
+        //    --include-keyboard), so a moved action fully moves,
+        //  - its device is released: clean releases the devices the export writes, nuke the connected devices it does
+        //    not use.
+        // "Only add" removes nothing (apart from the devices nuke releases); plain merge keeps the action's old inputs.
+        private static bool DropShortcut(WtContext context, BlkChild child, GameExportRequest request, Dictionary<string, List<List<BlkParam>>> wanted, Dictionary<string, HashSet<string>> wantedBy, HashSet<string> usedDevices)
         {
             List<List<BlkParam>> wantedForId;
             if (!wanted.TryGetValue(child.Name, out wantedForId))
@@ -441,10 +548,17 @@ namespace JoyPro.Engine.Games
             string signature = Signature(child.Params);
             if (wantedForId.Any(w => Signature(w) == signature))
                 return false;
-            bool isOwned = GameOwnershipStore.Contains(ownedBefore, child.Name, signature);
-            if (isOwned && (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite))
-                return true;
-            return Released(ShortcutDevice(context, child, request.Devices), request, usedDevices);
+            string device = ShortcutDevice(context, child, request.Devices);
+            if (request.Mode != GameExportMode.Add)
+            {
+                HashSet<string> users;
+                if (wantedBy.TryGetValue(signature, out users) && !users.Contains(child.Name))
+                    return true;
+                if (request.Mode != GameExportMode.Merge && wantedForId.Count > 0 && device.Length > 0 &&
+                    (request.IncludeKeyboard || !string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase)))
+                    return true;
+            }
+            return Released(device, request, usedDevices);
         }
 
         // War Thunder also has tanks and ships: only cataloged (aircraft) entries are ever released, keyboard ones only
@@ -480,19 +594,16 @@ namespace JoyPro.Engine.Games
             return axisId >= 0 && TryDecodeAxis(context, axisId, devices, new List<string>(), out device, out token) ? device : string.Empty;
         }
 
-        private static void AddMissingShortcuts(string id, List<BlkChild> existing, List<List<BlkParam>> wanted, GameExportMode mode, string indent, List<List<string>> body, Dictionary<string, HashSet<string>> owned, GameIoResult result)
+        // The profile's shortcuts the action does not have yet go behind its blocks (every mode: the game's other
+        // shortcuts of the action are alternatives, a conflict on another action was removed or skipped before).
+        private static void AddMissingShortcuts(string id, List<BlkChild> existing, List<List<BlkParam>> wanted, string indent, List<List<string>> body, GameIoResult result)
         {
             List<BlkChild> blocks = existing.Where(c => c.Kind == BlkChildKind.Block && c.Name == id).ToList();
-            if (mode == GameExportMode.Merge && blocks.Any(c => c.Params.Any(p => p.Name == "joyButton")))
-                return;
-
             HashSet<string> existingSignatures = new HashSet<string>(blocks.Where(c => c.Params.Count > 0).Select(c => Signature(c.Params)), StringComparer.Ordinal);
             int count = existingSignatures.Count;
             foreach (List<BlkParam> shortcut in wanted)
             {
-                string signature = Signature(shortcut);
-                GameOwnershipStore.Add(owned, id, signature);
-                if (!existingSignatures.Add(signature))
+                if (!existingSignatures.Add(Signature(shortcut)))
                     continue;
                 if (++count == 4)
                     result.Warnings.Add(id + " now has more than 3 shortcuts; War Thunder's controls menu only shows 3.");
@@ -529,9 +640,13 @@ namespace JoyPro.Engine.Games
                 GameInputBinding binding;
                 if (action == null || !action.IsAxis || !present.Add(child.Name))
                     body.Add(child.RawLines);
+                // One axis per action: merge and merge-overwrite set the profile's axis, "only add" keeps a bound one
+                // as it is (a different one was skipped before).
                 else if (wanted.TryGetValue(child.Name, out binding))
-                    body.Add(request.Mode == GameExportMode.Merge && AxisId(child) >= 0 ? child.RawLines : SetAxis(context, child.Name, child.RawLines, wantedIds[child.Name], binding, child, result.Warnings));
-                else if (AxisId(child) >= 0 && Released(AxisDevice(context, child, request.Devices), request, usedDevices))
+                    body.Add(request.Mode == GameExportMode.Add && AxisId(child) >= 0 ? child.RawLines : SetAxis(context, child.Name, child.RawLines, wantedIds[child.Name], binding, child, result.Warnings));
+                // Another aircraft axis on the axis the profile uses is a conflict (unbound, except in "only add").
+                else if (AxisId(child) >= 0 && ((request.Mode != GameExportMode.Add && wantedIds.ContainsValue(AxisId(child))) ||
+                                                Released(AxisDevice(context, child, request.Devices), request, usedDevices)))
                     body.Add(BlkDocument.SetParams(child.RawLines, new[] { IntParam("axisId", -1) }, true));
                 else
                     body.Add(child.RawLines);
@@ -807,22 +922,6 @@ namespace JoyPro.Engine.Games
             if (!warnings.Contains(warning))
                 warnings.Add(warning);
             return null;
-        }
-
-        public void RecordImport(string configPath, List<GameInputBinding> applied, GameDeviceDirectory devices, GameIoResult result)
-        {
-            WtContext context;
-            if (!TryOpen(configPath, result.Errors, out context))
-                return;
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(configPath, result.Warnings);
-            foreach (GameInputBinding binding in applied.Where(b => !b.IsAxis))
-            {
-                List<BlkParam> shortcut;
-                if (EncodeShortcut(context, binding, devices, result.Warnings, out shortcut).Length == 0)
-                    GameOwnershipStore.Add(owned, binding.ActionId, Signature(shortcut));
-            }
-            GameOwnershipStore.Save(configPath, GameId, owned);
-            result.FilesWritten.Add(configPath + GameOwnershipStore.Suffix);
         }
 
         // Rebuilds the catalog from War Thunder's control scripts (shortcutsgroupaircraft/helicopter.nut): entries of the

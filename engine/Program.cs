@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -220,6 +220,10 @@ namespace JoyPro.Engine
             string correctionReportPath = PopOptionValue(tokens, "--correction-report");
             // What the change is called in the profile history (the GUI passes its own words, docs/profile-history.md).
             EngineProfileHistory.Note = PopOptionValue(tokens, "--history-note") ?? string.Empty;
+            // The vJoy device JoyPro tunnels into (imports and scans leave it out; docs/virtual-joystick.md).
+            string vjoyTunnelError;
+            if (!VJoyTunnel.TrySet(PopOptionValue(tokens, VJoyTunnel.Option), out vjoyTunnelError))
+                return Fail(vjoyTunnelError);
             // The usage ranking as the style reference of Auto Assign, Auto Group, the Setup wizard and Lay out with AI
             // (docs/usage-statistics.md#style-reference): on unless the GUI's setting is off.
             string usageStyle = PopOptionValue(tokens, "--usage-style");
@@ -319,6 +323,7 @@ namespace JoyPro.Engine
                     return 0;
                 });
             WriteLoadCorrectionReportIfRequested();
+            SaveLoadModifierMerges(profilePath, command);
 
             bool shouldAutoSaveProfile = ShouldAutoSaveProfile(profilePath, area, command);
             EngineProfileHistory.CommandLabel = EngineProfileHistory.DescribeCommand(area, command);
@@ -382,6 +387,9 @@ namespace JoyPro.Engine
                     break;
                 case "profile":
                     exitCode = Measure("command.execute", () => RunProfile(command, outPath, textOutput));
+                    break;
+                case "export-marks":
+                    exitCode = Measure("command.execute", () => RunExportMarks(command, outPath, textOutput));
                     break;
                 case "db":
                     exitCode = Measure("command.execute", () => RunDb(command, outPath, textOutput));
@@ -491,9 +499,21 @@ namespace JoyPro.Engine
             // elsewhere and the game's binds would move.
             if (exitCode == 0 && vjoyScope.MappingChanged && !command.Any(c => string.Equals(c, "--dry-run", StringComparison.OrdinalIgnoreCase)))
                 shouldAutoSaveProfile = !string.IsNullOrWhiteSpace(profilePath);
+            // An export changed the marks of binds it could not write, or a game became one the profile is synced with:
+            // saved quietly (the export's output stays its payload alone, as before 2.5.0).
+            bool quietAutoSave = false;
+            if (!shouldAutoSaveProfile && (ExportSkipMarks.Changed || EngineSync.ProfileSyncedGamesChanged) && !command.Any(c => string.Equals(c, "--dry-run", StringComparison.OrdinalIgnoreCase)))
+            {
+                shouldAutoSaveProfile = !string.IsNullOrWhiteSpace(profilePath);
+                quietAutoSave = true;
+            }
 
             if (exitCode == 0 && shouldAutoSaveProfile && !CommandChangedNothing)
             {
+                // An import can bring a modifier of a key the profile has under another name ("LAlt" next to
+                // "KeyboardLeftAlt"): one modifier, saved with the command's own step.
+                foreach (KeyboardModifierMerge.MergeResult merge in KeyboardModifierMerge.MergeDuplicates())
+                    JoyPro.Logging.JoyProLog.Info("Profile", "Merged modifiers of the same key: " + merge.Describe());
                 try
                 {
                     Measure(
@@ -503,7 +523,8 @@ namespace JoyPro.Engine
                             InternalDataManagement.SaveProfileTo(profilePath);
                             return 0;
                         });
-                    Console.WriteLine("Auto-saved profile: " + profilePath);
+                    if (!quietAutoSave)
+                        Console.WriteLine("Auto-saved profile: " + profilePath);
                 }
                 catch (Exception ex)
                 {
@@ -590,6 +611,8 @@ namespace JoyPro.Engine
                     return CheckRelationAircraft(command, outPath, textOutput);
                 case "duplicates":
                     return RelationDuplicatesCommand(command, outPath, textOutput);
+                case "conflicts":
+                    return RelationConflictsCommand(command, outPath, textOutput);
                 case "merge-copies":
                     return RelationMergeCopiesCommand(command, outPath, textOutput);
                 case "meanings":
@@ -665,11 +688,53 @@ namespace JoyPro.Engine
             }
         }
 
+        // engine export-marks list [--game <id>] | dismiss --game <id> --relation <name> [--aircraft <a>]: the binds an
+        // "Only add" export did not write because the game uses their input for another function (ExportSkippedBinds.cs).
+        private static int RunExportMarks(List<string> command, string outPath, bool textOutput)
+        {
+            string action = command.Count == 0 ? "list" : command[0].ToLowerInvariant();
+            List<string> args = command.Skip(1).ToList();
+            string game = PopOptionValue(args, "--game");
+            string relation = PopOptionValue(args, "--relation");
+            string aircraft = PopOptionValue(args, "--aircraft");
+            if (args.Count > 0)
+                return Fail("Unknown export-marks argument(s): " + string.Join(" ", args));
+            ExportSkipMarksDocument doc = new ExportSkipMarksDocument();
+            switch (action)
+            {
+                case "list":
+                    break;
+                case "dismiss":
+                    if (string.IsNullOrWhiteSpace(game) || string.IsNullOrWhiteSpace(relation))
+                        return Fail("export-marks dismiss needs --game <id> and --relation <name>.");
+                    doc.Changed = ExportSkipMarks.Dismiss(game.Trim(), relation.Trim(), aircraft);
+                    if (doc.Changed == 0)
+                        CommandChangedNothing = true;
+                    break;
+                default:
+                    return Fail("engine export-marks list [--game <id>] | dismiss --game <id> --relation <name> [--aircraft <a>]");
+            }
+            doc.Marks = ExportSkipMarks.List(game);
+            EmitPayload(textOutput ? ExportSkipMarks.ToText(doc) : EngineSerialization.ToJson(doc), outPath);
+            return 0;
+        }
+
         private static int RunProfile(List<string> command, string outPath, bool textOutput)
         {
             string action = command.Count == 0 ? "summary" : command[0].ToLowerInvariant();
             switch (action)
             {
+                case "game-state":
+                    {
+                        List<string> stateArgs = command.Skip(1).ToList();
+                        string stateGame = PopOptionValue(stateArgs, "--game");
+                        string statePath = PopOptionValue(stateArgs, "--path");
+                        if (string.IsNullOrWhiteSpace(stateGame) || stateArgs.Count > 0)
+                            return Fail("engine profile game-state --game <id> [--path <config>]");
+                        EngineProfileGameState state = EngineSync.GameState(stateGame.Trim(), statePath);
+                        EmitPayload(textOutput ? EngineSync.GameStateText(state) : EngineSerialization.ToJson(state), outPath);
+                        return 0;
+                    }
                 case "summary":
                     Console.WriteLine(Summary());
                     return 0;
@@ -679,6 +744,7 @@ namespace JoyPro.Engine
                     string sourcePath = NormalizePath(command[1]);
                     InternalDataManagement.LoadProfile(sourcePath);
                     WriteLoadCorrectionReportIfRequested();
+                    RemoveUntickedActionsOnLoad(sourcePath);
                     Console.WriteLine("Loaded profile: " + sourcePath);
                     Console.WriteLine(Summary());
                     return 0;
@@ -3841,6 +3907,8 @@ namespace JoyPro.Engine
             deviceOptions.AddRange(PopOptionValues(args, "--devices"));
             List<string> ignoredDeviceOptions = PopOptionValues(args, "--ignore-device");
             ignoredDeviceOptions.AddRange(PopOptionValues(args, "--ignore-devices"));
+            if (action == "import" || action == "scan")
+                VJoyTunnel.AddTo(ignoredDeviceOptions);
             bool includeKeyboard = PopOptionBoolean(args, "--include-keyboard", true, out bool includeKeyboardProvided);
             includeKeyboard = PopOptionBoolean(args, "--import-keyboard", includeKeyboard, out bool importKeyboardProvided);
             bool ignoreEasyPlanes = PopOptionBoolean(args, "--ignore-easy-planes", false, out bool ignoreEasyPlanesProvided);
@@ -3852,7 +3920,7 @@ namespace JoyPro.Engine
             bool keepKeyboardDefaults = PopOptionBoolean(args, "--keep-keyboard-defaults", true, out bool keepKeyboardDefaultsProvided);
             bool clearKeyboardDefaults = PopOptionBoolean(args, "--clear-keyboard-defaults", false, out bool clearKeyboardDefaultsProvided);
             bool nukeUntouchedDevices = PopOptionBoolean(args, "--nuke-untouched-devices", false, out bool nukeUntouchedDevicesProvided);
-            bool cleanAllAircraft = PopOptionBoolean(args, "--clean-all-aircraft", true, out bool cleanAllAircraftProvided);
+            bool cleanAllAircraft = PopOptionBoolean(args, "--clean-all-aircraft", false, out bool cleanAllAircraftProvided);
             bool includeDefaults = PopFlag(args, "--include-defaults");
             includeDefaults = includeDefaults || PopFlag(args, "--import-default");
             bool importInverted = PopFlag(args, "--import-inverted");
@@ -3879,7 +3947,7 @@ namespace JoyPro.Engine
             bool hasImportOnlyOptions =
                 (planeOptions.Count > 0 && action != "export") ||
                 deviceOptions.Count > 0 ||
-                ignoredDeviceOptions.Count > 0 ||
+                (ignoredDeviceOptions.Count > 0 && action != "export") ||
                 includeDefaults ||
                 importInverted ||
                 importSlider ||
@@ -3976,6 +4044,7 @@ namespace JoyPro.Engine
                     result = EngineDcsImport.Import(path, merge, importOptions);
                     if (result.Errors == null || result.Errors.Count == 0)
                     {
+                        EngineSync.MarkImported("DCS");
                         if (!string.IsNullOrWhiteSpace(saveProfile))
                         {
                             string target = NormalizePath(saveProfile);
@@ -3999,6 +4068,9 @@ namespace JoyPro.Engine
                         exportOptions.NukeUntouchedDevices = nukeUntouchedDevices;
                         exportOptions.CleanAllAircraft = cleanAllAircraft;
                         exportOptions.Planes = ParseDelimitedOptionValues(planeOptions);
+                        // Devices nuke and merge-overwrite never touch: the import's ignored devices and the vJoy tunnel.
+                        exportOptions.KeepDevices = ParseDelimitedOptionValues(ignoredDeviceOptions);
+                        VJoyTunnel.AddTo(exportOptions.KeepDevices);
                         exportOptions.StatusSink = BuildStatusSink("dcs export");
                         JoyPro.Logging.JoyProLog.Info("Export", "DCS export to " + path + ": mode=" + exportOptions.Mode + ", keep-keyboard-defaults=" + keepKeyboardDefaults +
                                                                 ", clear-keyboard-defaults=" + clearKeyboardDefaults +
@@ -4008,7 +4080,10 @@ namespace JoyPro.Engine
                         JoyPro.Logging.JoyProLog.Info("Export", "DCS export finished: " + (export.Errors == null ? 0 : export.Errors.Count).ToString(CultureInfo.InvariantCulture) + " error(s), " +
                                                                 (export.Warnings == null ? 0 : export.Warnings.Count).ToString(CultureInfo.InvariantCulture) + " warning(s)");
                         if (export.Errors == null || export.Errors.Count == 0)
+                        {
                             EngineSync.RecordAfterExport("DCS", path, export.Warnings);
+                            ExportSkipMarks.Apply("DCS", export.ExportedPlanes, export.SkippedTakenInputs);
+                        }
                         string exportPayload = textOutput
                             ? EngineDcsExport.ToText(export)
                             : EngineSerialization.ToJson(export);
@@ -4053,6 +4128,8 @@ namespace JoyPro.Engine
             deviceOptions.AddRange(PopOptionValues(args, "--devices"));
             List<string> ignoredDeviceOptions = PopOptionValues(args, "--ignore-device");
             ignoredDeviceOptions.AddRange(PopOptionValues(args, "--ignore-devices"));
+            if (action == "import" || action == "scan")
+                VJoyTunnel.AddTo(ignoredDeviceOptions);
             bool importInverted = PopFlag(args, "--import-inverted");
             bool importCurvature = PopFlag(args, "--import-curvature");
             bool importDeadzone = PopFlag(args, "--import-deadzone");
@@ -4153,6 +4230,7 @@ namespace JoyPro.Engine
                         EngineIl2ImportResult import = EngineIl2.Import(path, merge, importOptions);
                         if (import.Errors == null || import.Errors.Count == 0)
                         {
+                            EngineSync.MarkImported("IL2Game");
                             if (!string.IsNullOrWhiteSpace(saveProfile))
                             {
                                 string target = NormalizePath(saveProfile);
@@ -4181,7 +4259,10 @@ namespace JoyPro.Engine
                         string exportMode = string.IsNullOrWhiteSpace(mode) ? "merge-overwrite" : mode;
                         EngineIl2ExportResult export = EngineIl2.Export(path, exportMode, BuildStatusSink("il2 export"), il2Nuke);
                         if (export.Errors == null || export.Errors.Count == 0)
+                        {
                             EngineSync.RecordAfterExport("IL2Game", path, export.Warnings);
+                            ExportSkipMarks.Apply("IL2Game", null, export.SkippedTakenInputs);
+                        }
                         string exportPayload = textOutput
                             ? EngineIl2.ToText(export)
                             : EngineSerialization.ToJson(export);
@@ -4247,6 +4328,8 @@ namespace JoyPro.Engine
             deviceOptions.AddRange(PopOptionValues(args, "--devices"));
             List<string> ignoredDeviceOptions = PopOptionValues(args, "--ignore-device");
             ignoredDeviceOptions.AddRange(PopOptionValues(args, "--ignore-devices"));
+            if (action == "import" || action == "scan")
+                VJoyTunnel.AddTo(ignoredDeviceOptions);
             // Keyboard binds are imported and exported only on request (flight/ship actions only).
             bool includeKeyboard = PopOptionBoolean(args, "--include-keyboard", false, out bool includeKeyboardProvided);
             bool keepKeyboardDefaults = PopOptionBoolean(args, "--keep-keyboard-defaults", false, out bool keepKeyboardDefaultsProvided);
@@ -4351,6 +4434,7 @@ namespace JoyPro.Engine
 
                         if (action == "import" && (result.Errors == null || result.Errors.Count == 0))
                         {
+                            EngineSync.MarkImported("StarCitizen");
                             if (!string.IsNullOrWhiteSpace(saveProfile))
                             {
                                 string target = NormalizePath(saveProfile);
@@ -4387,7 +4471,10 @@ namespace JoyPro.Engine
 
                         EngineStarCitizenExportResult export = EngineStarCitizen.Export(path, exportMode, exportOptions);
                         if ((export.Errors == null || export.Errors.Count == 0) && !string.IsNullOrWhiteSpace(export.ActionmapsFile))
+                        {
                             EngineSync.RecordAfterExport("StarCitizen", export.ActionmapsFile, export.Warnings);
+                            ExportSkipMarks.Apply("StarCitizen", null, export.SkippedTakenInputs);
+                        }
                         string payload = textOutput
                             ? EngineStarCitizen.ToText(export)
                             : EngineSerialization.ToJson(export);
@@ -6164,6 +6251,7 @@ namespace JoyPro.Engine
             List<string> deviceOptions = PopOptionValues(args, "--device");
             deviceOptions.AddRange(PopOptionValues(args, "--devices"));
             bool includeDisconnected = PopOptionBoolean(args, "--include-disconnected", false, out _);
+            string dumpActive = PopOptionValue(args, "--dump-active");
             string maxRaw = PopOptionValue(args, "--max-listed");
             int maxListed = 200;
             if (!string.IsNullOrWhiteSpace(maxRaw) && !int.TryParse(maxRaw, NumberStyles.Integer, CultureInfo.InvariantCulture, out maxListed))
@@ -6177,7 +6265,8 @@ namespace JoyPro.Engine
             options.UseHeadlessLuaRefresh = true;
             options.Confirm = false;
             options.PlaneFilter = NormalizeDcsPlaneFilterTokens(ParseDelimitedOptionValues(planeOptions));
-            DcsVerifyCleanResult result = EngineDcsRefresh.VerifyClean(options, ParseDelimitedOptionValues(deviceOptions), includeDisconnected, maxListed);
+            DcsVerifyCleanResult result = EngineDcsRefresh.VerifyClean(options, ParseDelimitedOptionValues(deviceOptions), includeDisconnected, maxListed,
+                string.IsNullOrWhiteSpace(dumpActive) ? null : NormalizePath(dumpActive));
             EmitPayload(textOutput ? EngineDcsRefresh.ToText(result) : EngineSerialization.ToJson(result), outPath);
             if (result.Errors.Count > 0)
                 return Fail("dcs verify-clean failed: " + string.Join(" | ", result.Errors));
@@ -8200,6 +8289,7 @@ namespace JoyPro.Engine
             }
 
             InternalDataManagement.AllRelations[finalName] = relation;
+            EngineDismissedSuggestions.Rename(oldName, finalName);
             return finalName;
         }
 
@@ -11059,87 +11149,12 @@ namespace JoyPro.Engine
                 AddUnique(result.Warnings, group.Message);
             }
 
-            Dictionary<string, List<string>> bindKeys = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<string, Bind> kvp in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            // One input bound in several relations that have an action of the same aircraft on (EngineCheckConflicts; kept
+            // ones are not listed).
+            foreach (EngineInputConflict conflict in EngineCheckConflicts.InputConflicts(includeKept: false, withTitles: false))
             {
-                string relationName = kvp.Key ?? string.Empty;
-                Bind bind = kvp.Value;
-                if (bind == null)
-                    continue;
-
-                Relation relation = bind.Rl;
-                if (relation == null && InternalDataManagement.AllRelations != null && InternalDataManagement.AllRelations.ContainsKey(relationName))
-                    relation = InternalDataManagement.AllRelations[relationName];
-                if (relation == null)
-                    continue;
-
-                string resolvedRelationName = string.IsNullOrWhiteSpace(relation.NAME)
-                    ? (string.IsNullOrWhiteSpace(relationName) ? "<unnamed relation>" : relationName)
-                    : relation.NAME;
-                string joystick = bind.Joystick ?? string.Empty;
-                string input = relation.ISAXIS ? (bind.JAxis ?? string.Empty) : (bind.JButton ?? string.Empty);
-
-                List<RelationItem> nodes = relation.NODES ?? new List<RelationItem>();
-                for (int j = 0; j < nodes.Count; j++)
-                {
-                    RelationItem node = nodes[j];
-                    if (node == null || node.AIRCRAFT == null)
-                        continue;
-
-                    string game = NormalizeValidationGame(node.Game);
-                    if (string.Equals(game, "StarCitizen", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    foreach (KeyValuePair<string, bool> aircraftEntry in node.AIRCRAFT)
-                    {
-                        if (!aircraftEntry.Value || string.IsNullOrWhiteSpace(aircraftEntry.Key))
-                            continue;
-
-                        StringBuilder keyBuilder = new StringBuilder();
-                        keyBuilder.Append(game);
-                        keyBuilder.Append(":");
-                        keyBuilder.Append(aircraftEntry.Key.Trim());
-                        keyBuilder.Append("§");
-                        keyBuilder.Append(joystick);
-                        keyBuilder.Append("§");
-                        keyBuilder.Append(input);
-
-                        List<string> reformers = bind.AllReformers ?? new List<string>();
-                        for (int r = 0; r < reformers.Count; r++)
-                        {
-                            keyBuilder.Append("§");
-                            keyBuilder.Append(reformers[r] ?? string.Empty);
-                        }
-
-                        string bindKey = keyBuilder.ToString();
-                        if (!bindKeys.TryGetValue(bindKey, out List<string> relationNames))
-                        {
-                            relationNames = new List<string>();
-                            bindKeys[bindKey] = relationNames;
-                        }
-
-                        if (!relationNames.Any(v => string.Equals(v, resolvedRelationName, StringComparison.OrdinalIgnoreCase)))
-                            relationNames.Add(resolvedRelationName);
-                    }
-                }
-            }
-
-            foreach (KeyValuePair<string, List<string>> kvp in bindKeys)
-            {
-                List<string> relationNames = kvp.Value ?? new List<string>();
-                if (relationNames.Count < 2)
-                    continue;
-
-                StringBuilder error = new StringBuilder();
-                error.Append("Button Item key found in multiple Relation: ");
-                error.Append(kvp.Key);
-                error.Append(" The Relations it was found in: ");
-                error.Append(relationNames[0]);
-                for (int i = 1; i < relationNames.Count; i++)
-                    error.Append(", ").Append(relationNames[i]);
-
-                AddUnique(result.BindErrors, error.ToString());
-                AddUnique(result.Errors, error.ToString());
+                AddUnique(result.BindErrors, conflict.Message);
+                AddUnique(result.Errors, conflict.Message);
             }
 
             Dictionary<string, Dictionary<string, bool>> modifierUsedOnCraft =
@@ -11246,48 +11261,11 @@ namespace JoyPro.Engine
                 }
             }
 
-            for (int i = 0; i < relations.Count; i++)
+            // Relations with two actions of one aircraft on (EngineCheckConflicts; kept ones are not listed).
+            foreach (EngineActionConflict conflict in EngineCheckConflicts.ActionConflicts(includeKept: false, withTitles: false))
             {
-                Relation relation = relations[i];
-                string relationName = string.IsNullOrWhiteSpace(relation.NAME)
-                    ? "<unnamed relation>"
-                    : relation.NAME;
-                Dictionary<string, int> planeState = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-                List<RelationItem> nodes = relation.NODES ?? new List<RelationItem>();
-                for (int n = 0; n < nodes.Count; n++)
-                {
-                    RelationItem node = nodes[n];
-                    if (node == null || node.AIRCRAFT == null)
-                        continue;
-
-                    string game = NormalizeValidationGame(node.Game);
-                    foreach (KeyValuePair<string, bool> aircraftEntry in node.AIRCRAFT)
-                    {
-                        if (!aircraftEntry.Value || string.IsNullOrWhiteSpace(aircraftEntry.Key))
-                            continue;
-
-                        string key = game + "§" + aircraftEntry.Key.Trim();
-                        if (!planeState.ContainsKey(key))
-                            planeState[key] = 0;
-                        planeState[key]++;
-                    }
-                }
-
-                foreach (KeyValuePair<string, int> planeEntry in planeState)
-                {
-                    if (planeEntry.Value <= 1)
-                        continue;
-
-                    string[] parts = planeEntry.Key.Split(new[] { '§' }, 2);
-                    string game = parts.Length > 0 ? parts[0] : "DCS";
-                    string plane = parts.Length > 1 ? parts[1] : string.Empty;
-                    string error =
-                        "The game " + game +
-                        " has multiple active items for the plane " + plane +
-                        " on the Relation " + relationName;
-                    AddUnique(result.DuplicateActiveErrors, error);
-                    AddUnique(result.Errors, error);
-                }
+                AddUnique(result.DuplicateActiveErrors, conflict.Message);
+                AddUnique(result.Errors, conflict.Message);
             }
 
             return result;
@@ -13902,6 +13880,82 @@ namespace JoyPro.Engine
             return "Ambiguous " + kind + " query '" + query + "'. Matches: " + sample;
         }
 
+        // Modifiers of one key under several names that the profile load merged (InternalDataManagement.LoadModifierMerges):
+        // saved right away as one history step of their own, whatever the command (not in a dry run), so the binds keep
+        // their modifier and the next change is not mixed with it.
+        private static void SaveLoadModifierMerges(string profilePath, List<string> command)
+        {
+            List<string> merges = InternalDataManagement.LoadModifierMerges;
+            if (merges == null || merges.Count == 0 || string.IsNullOrWhiteSpace(profilePath) || !File.Exists(profilePath) ||
+                command.Any(c => string.Equals(c, "--dry-run", StringComparison.OrdinalIgnoreCase)))
+                return;
+            string note = EngineProfileHistory.Note;
+            string label = EngineProfileHistory.CommandLabel;
+            try
+            {
+                EngineProfileHistory.Note = "Merged modifiers of the same key: " + string.Join("; ", merges);
+                EngineProfileHistory.CommandLabel = "Merge modifiers of the same key";
+                InternalDataManagement.SaveProfileTo(profilePath);
+                Status("Merged modifiers of the same key: " + string.Join("; ", merges));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Profile", "Could not save the merged modifiers", ex);
+            }
+            finally
+            {
+                EngineProfileHistory.Note = note;
+                EngineProfileHistory.CommandLabel = label;
+                InternalDataManagement.LoadModifierMerges = new List<string>();
+            }
+        }
+
+        // Opening a profile (profile load): actions of a relation with no aircraft ticked leave it, their aircraft go onto
+        // the relation's dismissed suggestions (EngineDismissedSuggestions); saved as one history step of its own (one
+        // undo brings them back) and logged.
+        private static void RemoveUntickedActionsOnLoad(string profilePath)
+        {
+            if (string.IsNullOrWhiteSpace(profilePath) || !File.Exists(profilePath))
+                return;
+            List<string> removed;
+            try
+            {
+                removed = EngineDismissedSuggestions.RemoveUntickedActions();
+            }
+            catch (Exception ex)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Profile", "Taking out actions with no aircraft ticked failed", ex);
+                return;
+            }
+            if (removed.Count == 0)
+                return;
+            int actions = removed.Sum(r => int.TryParse(r.Substring(r.LastIndexOf(": ", StringComparison.Ordinal) + 2).Split(' ')[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) ? n : 0);
+            string text = "Removed " + actions.ToString(CultureInfo.InvariantCulture) + (actions == 1 ? " action" : " actions") + " with no aircraft ticked from " +
+                          removed.Count.ToString(CultureInfo.InvariantCulture) + (removed.Count == 1 ? " relation" : " relations");
+            JoyPro.Logging.JoyProLog.Info("Profile", text + " (kept as dismissed suggestions): " + string.Join("; ", removed));
+            string note = EngineProfileHistory.Note;
+            string label = EngineProfileHistory.CommandLabel;
+            try
+            {
+                EngineProfileHistory.Note = text;
+                EngineProfileHistory.CommandLabel = "Remove actions with no aircraft ticked";
+                EngineProfileHistory.NoCoalesce = true;
+                InternalDataManagement.ResyncRelations();
+                InternalDataManagement.SaveProfileTo(profilePath);
+                Status(text);
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Profile", "Could not save the profile without the unticked actions", ex);
+            }
+            finally
+            {
+                EngineProfileHistory.Note = note;
+                EngineProfileHistory.CommandLabel = label;
+                EngineProfileHistory.NoCoalesce = false;
+            }
+        }
+
         private static bool ShouldAutoSaveProfile(string profilePath, string area, List<string> command)
         {
             if (string.IsNullOrWhiteSpace(profilePath))
@@ -14175,6 +14229,8 @@ namespace JoyPro.Engine
                     return action == "prefs" && command.Count > 1 && (string.Equals(command[1], "clear", StringComparison.OrdinalIgnoreCase) || string.Equals(command[1], "remove", StringComparison.OrdinalIgnoreCase));
                 case "sync":
                     return EngineSync.IsMutating(command);
+                case "export-marks":
+                    return action == "dismiss";
                 case "vjoy":
                     return EngineVJoy.IsMutating(command);
                 case "ffb":
@@ -14225,6 +14281,8 @@ namespace JoyPro.Engine
                         return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
                     if (action == "duplicates")
                         return command.Any(a => DuplicatesMutatingFlags.Contains(a));
+                    if (action == "conflicts")
+                        return command.Any(a => ConflictsMutatingFlags.Contains(a));
                     if (action == "merge-copies")
                         return !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
                     if (action == "function")
@@ -14449,6 +14507,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  --confirm-corrections true|false   Ask for confirmation on medium-confidence item remaps (default: true)");
             Console.WriteLine("  --correction-report <path>         Write load correction report (json, or text with .txt/.log)");
             Console.WriteLine("  --history-note <text>  Name of this change in the profile history (default: the command's name)");
+            Console.WriteLine("  --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: imports and scans (dcs, il2, starcitizen, the other games) leave only that vJoy device out; every other vJoy device is read like any device (default: none)");
             Console.WriteLine("  --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)");
             Console.WriteLine();
             Console.WriteLine("Commands:");
@@ -14459,6 +14518,9 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine profile new <path.pr0file>");
             Console.WriteLine("  engine profile save-last");
             Console.WriteLine("  engine profile validate [--fail-on-warnings true|false]");
+            Console.WriteLine("  engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)");
+            Console.WriteLine("  engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)");
+            Console.WriteLine("  engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks)");
             Console.WriteLine("  engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)");
             Console.WriteLine("  engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--save <path.pr0file>]");
             Console.WriteLine("  engine profile history [list]   (the versions of --profile, newest first: every save is one, kept in <data>\\ProfileHistory; undo/redo state)");
@@ -14468,12 +14530,12 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine profile history prune [--all] [--dry-run] | usage [--all]   (clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total)");
             Console.WriteLine("  engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]");
             Console.WriteLine("  engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]");
-            Console.WriteLine("  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included; the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)");
+            Console.WriteLine("  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>] [--ignore-device <name>] [--ignore-devices <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; the .diff.lua holds only differences from DCS's defaults (added non-default binds, removed defaults, defaults with other tuning as changed); add never deletes and lists binds whose button the game uses for another function (SkippedTakenInputs); merge removes a game bind on a button the profile puts another function on; merge-overwrite also takes the profile's actions off their other buttons in that aircraft; clean replaces the written devices in the exported aircraft, with --clean-all-aircraft true (default false) also in every other aircraft; nuke: connected devices without binds in an exported plane lose all binds there, DCS defaults included (--ignore-device(s) and --vjoy-tunnel devices are never cleared); the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)");
             Console.WriteLine("  engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)");
             Console.WriteLine("  engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)");
             Console.WriteLine("  engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore puts the originals back; auto re-applies after a DCS update; patched files fail server integrity checks)");
             Console.WriteLine("  engine dcs device-luas [list|remove|restore] [--dry-run] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back)");
-            Console.WriteLine("  engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; read only)");
+            Console.WriteLine("  engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>] [--dump-active <file>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only)");
             Console.WriteLine("  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]");
             Console.WriteLine("  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]");
             Console.WriteLine("  engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]");
@@ -14482,10 +14544,10 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine dcs ffb clear [<device-name>] [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--all] [--confirm true|false]");
             Console.WriteLine("  engine il2 scan [<il2-root-path>] [--path <il2-root-path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]");
             Console.WriteLine("  engine il2 import [<il2-root-path>] [--path <il2-root-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]");
-            Console.WriteLine("  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (conflict = same action on the same device; clean releases the other binds of the written devices, nuke the joysticks the profile does not use; keyboard lines stay)");
+            Console.WriteLine("  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)");
             Console.WriteLine("  engine starcitizen scan [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]");
             Console.WriteLine("  engine starcitizen import [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]");
-            Console.WriteLine("  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (clean releases the ship binds of the written devices, nuke those of the devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke))");
+            Console.WriteLine("  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)");
             Console.WriteLine("  engine starcitizen list-devices [<sc-root-or-profile-path>] [--path <path>] [--source <path>]   (aliases: devices, list)");
             Console.WriteLine("  engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)");
             Console.WriteLine("  engine db summary [--keyboard] [--no-keyboard] [--strict-names]");
@@ -14519,7 +14581,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)");
             Console.WriteLine("  engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, \"new\" (+ Name) or \"ignore\"; then the config counts as known)");
             Console.WriteLine("  engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)");
-            Console.WriteLine("  engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history and the games' current bind files; user folder replaced, nothing uploaded; --list only shows the contents)");
+            Console.WriteLine("  engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history, the games' current bind files and JoyPro 1's profiles (Documents\\JoyPro); user folder replaced, nothing uploaded; --list only shows the contents)");
             Console.WriteLine("  engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\\data)");
             Console.WriteLine("  engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)");
             Console.WriteLine("  engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))");
@@ -14669,6 +14731,11 @@ namespace JoyPro.Engine
             Console.WriteLine("      a fix for many: a preview of every change, applied with --apply as one undo step; --changes \"key=>relation;key=>-\"");
             Console.WriteLine("      applies a preview's ticked changes exactly; --apply-suggested = --rule suggested --apply; --forget-kept, --include-kept,");
             Console.WriteLine("      --keys-only, --evaluate <older.pr0file> [--no-history] (the suggestions against the version before the duplicates).");
+            Console.WriteLine("  engine relations conflicts [--keys \"k;k\"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]");
+            Console.WriteLine("      the check's errors in detail: an input bound in several relations that have an action of the same aircraft on, and");
+            Console.WriteLine("      a relation with two actions of one aircraft on, with the actions' titles (unknown ones marked); --keep switches the");
+            Console.WriteLine("      aircraft off in the other relations, --keep-action keeps one action, --off switches them off, --keep-both stops the");
+            Console.WriteLine("      check naming them, --remove-actions takes \"game|id|aircraft\" actions out of every relation (one undo step each).");
             Console.WriteLine("  engine relations merge-copies [--dry-run] [--name <relation>]");
             Console.WriteLine("      relations an import copied (\"<name>__N\") with the same device, input and modifiers as \"<name>\" are merged back");
             Console.WriteLine("      into one: their aircraft, groups and per-aircraft tuning; one undo step. --dry-run lists them only.");

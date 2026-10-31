@@ -22,8 +22,8 @@ namespace JoyPro.Gui.Tests;
 
 // Back and Forward in the header (docs/ui/navigation.md): the history class (push, back, forward, the cap, the same place
 // twice in a row kept once, forward cleared by a new place, nothing pushed while a place is restored), the view model
-// (page changes and "Open both relations" push, Back puts page, search, open cards and the relation back), and a render:
-// Check list scrolled to a card -> "Open both relations" -> Back shows the same list with the same card in view. The
+// (page changes and a card's "Open <relation>" push, Back puts page, search, open cards and the relation back), and a render:
+// Check list scrolled to a card -> a card's "Open <relation>" -> Back shows the same list with the same card in view. The
 // header with the arrows next to Undo fits at 1280 and 2267 px in both themes.
 // JOYPRO_NAV_OUT=<folder> keeps the renders.
 [SupportedOSPlatform("windows")]
@@ -191,11 +191,20 @@ public sealed class NavigationHistoryTests
         return "{\"Duplicates\":[" + duplicates + "],\"Groups\":[" + groups + "]}";
     }
 
-    private static CheckIssueCard Card(MainWindowViewModel vm, string title) =>
-        vm.CheckSections.SelectMany(s => s.Cards).Single(c => c.Headline.Contains("'" + title + "'", StringComparison.Ordinal));
+    // The card of the action (its page of cards shown, as "Show more" would).
+    private static CheckIssueCard Card(MainWindowViewModel vm, string title)
+    {
+        foreach (CheckIssueSection section in vm.CheckSections)
+        {
+            int index = section.AllCards.ToList().FindIndex(c => c.Sentence.Contains("'" + title + "'", StringComparison.Ordinal));
+            while (index >= section.Cards.Count && section.HasMore)
+                section.ShowMoreCommand!.Execute(null);
+        }
+        return vm.CheckSections.SelectMany(s => s.Cards).Single(c => c.Sentence.Contains("'" + title + "'", StringComparison.Ordinal));
+    }
 
     [Fact]
-    public async Task ViewModel_PageChangesAndOpenBoth_Push_BackRestoresTheCheckList()
+    public async Task ViewModel_PageChangesAndOpenRelation_Push_BackRestoresTheCheckList()
     {
         MainWindowViewModel vm = new(new UiDesignRenderTests.DesignFakeEngine(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
         {
@@ -217,7 +226,7 @@ public sealed class NavigationHistoryTests
         CheckIssueCard closed = Card(vm, "Action 03");
         closed.IsExpanded = false;
         CheckIssueCard target = Card(vm, "Action 10");
-        target.OpenAllCommand!.Execute(null);
+        target.OpenButtons[0].Command!.Execute(null);
         Assert.Equal(UiStage.Relations, vm.CurrentStage);
         Assert.Equal(target.Relations[0], vm.SelectedRelation?.Name);
         Assert.Equal("Back to Export (Alt+Left or the mouse's back button)", vm.NavigateBackTip);
@@ -283,16 +292,17 @@ public sealed class NavigationHistoryTests
                 using HiddenWindow window = HiddenWindow.Create(new MainWindow { DataContext = vm }, new Size(1280, 800));
                 Settle(window, vm);
                 CheckIssueCard target = Card(vm, "Action 10");
+                Settle(window, vm);
                 Border card = CardBorder(window, target) ?? throw new InvalidOperationException("the card 'Action 10' is not on the Export page");
                 ScrollViewer page = card.GetVisualAncestors().OfType<ScrollViewer>().First();
                 card.BringIntoView();
                 Settle(window, vm);
                 double offset = page.Offset.Y;
                 Assert.True(offset > 200, "the Export page must be scrolled down to the card (offset " + offset + ")");
-                AssertInView(card, page, "before 'Open both relations'");
+                AssertInView(card, page, "before 'Open <relation>'");
                 Save(window, outDir, "check-before.png");
 
-                target.OpenAllCommand!.Execute(null);
+                target.OpenButtons[0].Command!.Execute(null);
                 Settle(window, vm);
                 Assert.Equal(UiStage.Relations, vm.CurrentStage);
                 Assert.False(card.IsEffectivelyVisible);

@@ -124,27 +124,37 @@ try {
     Assert-Match $noBack.Output "Pitch <- vJoy Device \{[^}]+\} JOY_Y" "the exported Pitch should read back."
     Assert-Match $noBack.Output "Throttle\.Positive <- Smoke Stick \{[^}]+\} JOY_BTN2" "the exported pole button should read back."
 
-    # ---- nuke: unused devices lose their flight binds; a connected device without a saved map gets an empty one -----
+    # ---- nuke: unused devices lose their flight binds; a connected device without a saved map keeps the game's
+    # default map (JoyPro cannot read it, so it is not in the profile and not JoyPro's to switch off) -----------------
     $noNukePath = New-NoCopy "nuke"
     $noNuke = Run-Engine @("--profile", $noProfile, "nuclearoption", "export", $noNukePath, "--nuke-untouched-devices", "--text")
     Assert-True ($noNuke.ExitCode -eq 0) "nuclearoption nuke export failed. Output: $($noNuke.Output)"
     $noNuked = Read-NoRegistry $noNukePath
     Assert-NotMatch $noNuked[$noPedalsName] "<actionId>2</actionId>|<actionId>5</actionId>" "nuke should release the flight binds of an unused device."
     Assert-Match $noNuked[$noPedalsName] (Get-NoElement 23 0 1) "nuke must keep the camera bind of an unused device."
-    Assert-True ($noNuked.ContainsKey($noPanelName)) "nuke should give a connected device without a saved map an empty map."
-    Assert-Match $noNuked[$noPanelName] "<buttonMaps /><axisMaps /></JoystickMap>" "the nuke map of an unused device should be empty."
-    # merge-overwrite (the default) on vJoy: the game's other flight binds stay.
-    Assert-Match $noNuked[$noVjoyName] (Get-NoElement 5 1 32) "merge-overwrite must keep the game's flight binds JoyPro does not replace."
+    Assert-True (-not $noNuked.ContainsKey($noPanelName)) "nuke must not give a connected device without a saved map an empty map."
+    # merge-overwrite (the default) on vJoy: the game's other flight binds stay; Fire, which the profile binds on Smoke
+    # Stick, leaves vJoy's Button 1 (an action the profile binds loses its other inputs).
+    Assert-Match $noNuked[$noVjoyName] (Get-NoElement 7 1 33) "merge-overwrite must keep the game's flight binds JoyPro does not replace."
+    Assert-NotMatch $noNuked[$noVjoyName] (Get-NoElement 5 1 32) "merge-overwrite should take Fire off vJoy's Button 1 (the profile binds it on Smoke Stick)."
     Assert-NotMatch $noNuked[$noVjoyName] (Get-NoElement 0 0 4) "merge-overwrite should replace the game's Pitch bind of the device."
 
     # ---- merge vs merge-overwrite: Fire on Button 5 of vJoy (the game has Fire on Button 1, Next Countermeasure on 5) -
     $noMergeProfile = Join-Path $noDir "merge.pr0file"
     Run-Engine @("--profile", $noMergeProfile, "relations", "add", "NO Fire 5", "--button", "--node", "NuclearOption:Fire", "--device", $noVjoy, "--input", "JOY_BTN5", "--text") | Out-Null
     $noMergePath = New-NoCopy "merge"
+    # Only add: Button 5 drives Next Countermeasure, so Fire is not put there (reported) and nothing changes.
+    $noAdd = Run-Engine @("--profile", $noMergeProfile, "nuclearoption", "export", $noMergePath, "--mode", "add", "--nuke-untouched-devices")
+    Assert-True ($noAdd.ExitCode -eq 0) "nuclearoption add export failed. Output: $($noAdd.Output)"
+    Assert-True ([System.IO.File]::ReadAllText($noMergePath) -eq [System.IO.File]::ReadAllText((Join-Path $noFixture "registry.json"))) "add must not change a bind of the game (not even with nuke)."
+    Assert-Match $noAdd.Output '"Action":\s*"Fire"' "add should report Fire as not written (Button 5 drives another action)."
+    # Merge: Fire takes Button 5 and the game's Next Countermeasure there goes (conflict); Fire on Button 1 stays.
     $noMerge = Run-Engine @("--profile", $noMergeProfile, "nuclearoption", "export", $noMergePath, "--mode", "merge", "--text")
     Assert-True ($noMerge.ExitCode -eq 0) "nuclearoption merge export failed. Output: $($noMerge.Output)"
-    Assert-Match $noMerge.Output "kept the game's bind \(merge mode\)" "merge should keep the game's Fire bind."
-    Assert-True ([System.IO.File]::ReadAllText($noMergePath) -eq [System.IO.File]::ReadAllText((Join-Path $noFixture "registry.json"))) "a merge that keeps every game bind must not write."
+    $noMerged = (Read-NoRegistry $noMergePath)[$noVjoyName]
+    Assert-Match $noMerged (Get-NoElement 5 1 36) "merge should bind Fire to Button 5."
+    Assert-Match $noMerged (Get-NoElement 5 1 32) "merge must keep the game's Fire on Button 1 (the action's other input)."
+    Assert-NotMatch $noMerged "<actionId>10</actionId>" "merge should release the flight action the game had on Button 5 (conflict)."
     $noOverwrite = Run-Engine @("--profile", $noMergeProfile, "nuclearoption", "export", $noMergePath, "--mode", "merge-overwrite", "--text")
     Assert-True ($noOverwrite.ExitCode -eq 0) "nuclearoption merge-overwrite export failed. Output: $($noOverwrite.Output)"
     $noOver = (Read-NoRegistry $noMergePath)[$noVjoyName]

@@ -142,6 +142,33 @@ public sealed partial class MainWindowViewModel
 
     // ---- Picture, status, saving ----
 
+    // The line above the device list names the shown picture: the reference's model and the picked picture when JoyPro
+    // knows the model ("Picture: VPC MongoosT-50CM3 · Photo 4 · Virpil"), never the engine's weak template guess
+    // ("Placeholder ... (match 30%)", 2.5.0 tester report); the template's match only while no model is known.
+    private void UpdateLayoutPictureStatus()
+    {
+        LayoutSuggestionItem? item = SelectedLayoutSuggestion;
+        if (item == null)
+            return;
+        if (LayoutShowsReference && deviceReference is { HasModel: true, IsGeneric: false } reference && SameDevice(reference.DeviceName, item.Device))
+        {
+            LayoutSuggestStatus = T("Picture: {0} · {1}", reference.Title, reference.SelectedPicture?.Title ?? T("JoyPro drawing"));
+            return;
+        }
+        if (LayoutShowsLayoutFile && LayoutWorkspaceTemplateName.Length > 0)
+        {
+            LayoutSuggestStatus = T("Picture: {0}", LayoutSuggestionItem.ReadablePictureName(LayoutWorkspaceTemplateName));
+            return;
+        }
+        LayoutSuggestStatus = LayoutTemplateMatchText(item);
+    }
+
+    // The engine's template match ("Picture: Placeholder (match 30%)"): the only thing known before the reference.
+    internal static string LayoutTemplateMatchText(LayoutSuggestionItem value) =>
+        string.IsNullOrWhiteSpace(value.TemplateName) ? string.Empty
+        : value.Score < 60 ? T("Picture: {0} (match {1}%). Not your device? Model... > Choose another model", value.PictureName, value.MatchPercent.ToString(CultureInfo.InvariantCulture))
+        : T("Picture: {0} (match {1}%)", value.PictureName, value.MatchPercent.ToString(CultureInfo.InvariantCulture));
+
     public string LayoutWorkspacePictureCaption => LayoutShowsLayoutFile
         ? LayoutWorkspaceTemplateName
         : deviceReference?.Title is { Length: > 0 } title ? title + " · " + (deviceReference.SelectedPicture?.Title ?? "JoyPro drawing") : string.Empty;
@@ -279,6 +306,7 @@ public sealed partial class MainWindowViewModel
             case nameof(DeviceReferenceViewModel.SelectedPicture):
                 SyncSelectedWorkspacePicture();
                 OnPropertyChanged(nameof(LayoutWorkspacePictureCaption));
+                UpdateLayoutPictureStatus();
                 break;
             case nameof(DeviceReferenceViewModel.Status):
             case nameof(DeviceReferenceViewModel.Subtitle):
@@ -291,7 +319,9 @@ public sealed partial class MainWindowViewModel
             case nameof(DeviceReferenceViewModel.Title):
             case nameof(DeviceReferenceViewModel.Model):
             case nameof(DeviceReferenceViewModel.HasModel):
+            case nameof(DeviceReferenceViewModel.IsGeneric):
                 NotifyWorkspacePicture();
+                UpdateLayoutPictureStatus();
                 break;
             case nameof(DeviceReferenceViewModel.HasGripChoices):
             case nameof(DeviceReferenceViewModel.SelectedGrip):
@@ -391,6 +421,7 @@ public sealed partial class MainWindowViewModel
         SyncSelectedWorkspacePicture();
         RebuildLayoutBindCandidates();
         RefreshSheetStyleScope();
+        UpdateLayoutPictureStatus();
         if (value)
             return;
         // The layout file's tools do nothing on the reference picture.
@@ -714,6 +745,23 @@ public sealed partial class MainWindowViewModel
             return;
         if (deviceReference.DropAssistantPart(drop.PartId, drop.X, drop.Y))
             OnPropertyChanged(nameof(WorkspaceHasUnsavedChanges));
+    }
+
+    // Where the marker assistant's panel was dragged to (from its place in the picture's top left corner), kept over
+    // restarts (ui-settings.json).
+    [ObservableProperty] private double markerAssistantOffsetX;
+    [ObservableProperty] private double markerAssistantOffsetY;
+
+    // The panel let go after a drag: its place is kept.
+    internal void SetMarkerAssistantOffset(double x, double y, bool keep)
+    {
+        MarkerAssistantOffsetX = Math.Round(Math.Max(0, x));
+        MarkerAssistantOffsetY = Math.Round(Math.Max(0, y));
+        if (!keep)
+            return;
+        JoyPro.Logging.JoyProLog.Info("Layout", "Marker assistant moved to " + MarkerAssistantOffsetX.ToString(CultureInfo.InvariantCulture) + "," +
+                                                MarkerAssistantOffsetY.ToString(CultureInfo.InvariantCulture));
+        SaveUiSettings();
     }
 
     [RelayCommand]

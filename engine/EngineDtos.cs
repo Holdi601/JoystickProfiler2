@@ -254,6 +254,10 @@ namespace JoyPro.Engine
         public int DefaultEntriesOnSharedInputs { get; set; }
         // DCS's generic joystick defaults (default.lua) of devices without defaults of their own: not imported.
         public int GenericJoystickDefaultsSkipped { get; set; }
+        // Include defaults: DCS's generic joystick defaults (default.lua) taken in, and the aircraft/device pairs of
+        // connected devices without a file of the user (DCS gives them its defaults all the same).
+        public int GenericJoystickDefaultsImported { get; set; }
+        public int DefaultDevicesWithoutFile { get; set; }
         public int ImportedRelations { get; set; }
         public int ImportedBinds { get; set; }
         // Binds that joined a relation of the profile on the same input (adding to the profile).
@@ -459,6 +463,8 @@ namespace JoyPro.Engine
         public int AxisResponsesWritten { get; set; }
         public int FilesWritten { get; set; }
         public int SkippedEntries { get; set; }
+        // "Only add": binds not written because the game uses their input for another function (ExportSkippedBinds.cs).
+        public List<ExportSkippedBind> SkippedTakenInputs { get; set; } = new List<ExportSkippedBind>();
         public List<string> WrittenFiles { get; set; }
         public List<string> Errors { get; set; }
         public List<string> Warnings { get; set; }
@@ -581,6 +587,8 @@ namespace JoyPro.Engine
         public int DefaultJoystickBindsCleared { get; set; }
         public int MergeConflictsAdded { get; set; }
         public int SkippedEntries { get; set; }
+        // "Only add": binds not written because the game uses their input for another function (ExportSkippedBinds.cs).
+        public List<ExportSkippedBind> SkippedTakenInputs { get; set; } = new List<ExportSkippedBind>();
         public List<string> JoystickOptions { get; set; }
         public int OptionGroupsWritten { get; set; }
         public int DeviceOptionsWritten { get; set; }

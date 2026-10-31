@@ -26,6 +26,9 @@ public sealed class ListPreferences
     // relation|game|id|plane; the "same id, different meaning" check does not ask about them again.
     public List<string> KeptAircraft { get; set; } = [];
 
+    // The games whose import showed the watcher hint once ("changes come in through Watch for changes").
+    public List<string> WatcherHintShownGames { get; set; } = [];
+
     private static readonly JsonSerializerOptions Options = new() { WriteIndented = true, PropertyNameCaseInsensitive = true };
 
     public static string DefaultPath => Path.Combine(AppInfo.SettingsFolder, "list-preferences.json");
@@ -42,6 +45,7 @@ public sealed class ListPreferences
                     loaded.Filters = new Dictionary<string, ListFilterState>(loaded.Filters ?? [], StringComparer.OrdinalIgnoreCase);
                     loaded.Confirmations = new Dictionary<string, bool>(loaded.Confirmations ?? [], StringComparer.OrdinalIgnoreCase);
                     loaded.KeptAircraft ??= [];
+                    loaded.WatcherHintShownGames ??= [];
                     loaded.Sorts = new Dictionary<string, List<string>>(loaded.Sorts ?? [], StringComparer.OrdinalIgnoreCase);
                     return loaded;
                 }

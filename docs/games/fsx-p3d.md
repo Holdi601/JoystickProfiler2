@@ -107,8 +107,12 @@ FSX's install template and Prepar3D's `Standard.xmlx` name. `AXIS_*` events are 
 
 Flight-only: clean takes over the devices it writes (all blocks of their main maps), nuke clears the main maps of the
 other connected devices (the maps stay, empty); slew, mouse and keyboard maps are untouched (keyboard only with
-`--include-keyboard`). Merge keeps the sim's event on an input, merge-overwrite replaces it, add never removes. Backup
-before the first write; JoyPro's inputs are remembered in `Standard.XML.joypro.json`.
+`--include-keyboard`). Maps of devices that are not connected are never touched. Only add never removes or replaces a
+block: a profile bind on an input that has another event is not written and listed under "Binds Not Written, Button Taken In The Game". Merge
+replaces that event (the conflict) and keeps everything else, also a moved event's old input. Merge-overwrite also
+removes the other inputs of the events the profile binds (connected devices; keyboard only with `--include-keyboard`).
+Backup before the first write; JoyPro's inputs are remembered in `Standard.XML.joypro.json` (no longer used to decide
+what an export removes).
 
 ## Open points
 

@@ -123,6 +123,9 @@ public sealed partial class MainWindowViewModel
         if (listFiltersInitialized)
             return;
         listFiltersInitialized = true;
+        // Hidden games have no game chip on either page (Settings > Games shows them again).
+        RelationFilter.IsGameHidden = IsGameHidden;
+        BindFilter.IsGameHidden = IsGameHidden;
         if (ListPrefs.Filters.TryGetValue(RelationFilter.Page, out ListFilterState? relationState))
             RelationFilter.LoadState(relationState);
         if (ListPrefs.Filters.TryGetValue(BindFilter.Page, out ListFilterState? bindState))

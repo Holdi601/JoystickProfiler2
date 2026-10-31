@@ -111,11 +111,12 @@ of each version again.
 - Device slots: `_joy_unique_id` VID:PID; when identical devices exist, the DirectInput HID interface path (`DIPROP_GUIDANDPATH`) must equal `_joy_location`. Slots of devices that are not connected are skipped.
 - Local axis index = DirectInput `EnumObjects` order, which follows the HID report order like X-Plane [INF]. Buttons: device buttons, then the first hat as 8 buttons clockwise from up (diagonals included); other hats are not mapped.
 - No modifiers and no keyboard binds.
-- Ownership: `<file>.joypro.json` records the inputs JoyPro wrote or took over on import (`A<index>` axes, `B<index>` buttons).
-  - `merge-overwrite` releases JoyPro's old inputs (only while they still hold JoyPro's value) and overwrites occupied inputs with a warning.
-  - `merge` keeps occupied inputs.
+- Export modes (slots of devices that are not connected are never touched):
+  - `add` writes free inputs only; a profile bind on an input with another use or command is not written and listed under "Binds Not Written, Button Taken In The Game". An axis use the game has on another axis stays there (warning).
+  - `merge` replaces the other use or command on the profile's input (the conflict) and keeps everything else, also a moved command's old button. An axis use moves (X-Plane ignores a use two axes share).
+  - `merge-overwrite` also releases the other axes and buttons of connected devices that hold a use or command the profile binds (with their curves).
   - `clean` also releases every other flight axis/command on connected devices.
-  - `add` writes without releasing.
+  - `<file>.joypro.json` records the inputs JoyPro wrote or took over on import (`A<index>` axes, `B<index>` buttons) and its curves; it no longer decides which binds an export removes.
 - Axis response (axis model `xplane`, `engine\AxisModels\XPlane.cs`; tuning scopes `game:XPlane12` / `game:XPlane11` -> `family:xplane` -> base):
   - Import reads each flight axis's curve into the relation's `game:XPlane12` (or `game:XPlane11`) tuning: the exact stops (`n.cpN`,
     `n.cpx<i>`, `n.cpy<i>`), `interp` (0 LINEAR, 1 CATMULL_ROM, 2 CUBIC_AVG), `rangeType` (1..7 in the order above) and
@@ -126,8 +127,8 @@ of each version again.
     mode. A bind without X-Plane tuning gets its base curve as LINEAR stops (adaptive, within 0.001 of the DCS curve).
     A linear tuning without a fixed range writes no line. An unchanged curve keeps its bytes.
   - A curve made in X-Plane (not imported, or changed in the game since JoyPro wrote it) stays when JoyPro's tuning is
-    linear and in merge mode (warning); merge-overwrite and add replace it (warning); clean replaces or removes it.
-    JoyPro's own curve on an axis it no longer exports is removed; clean/nuke remove the curves of the axes they clear.
+    linear and in merge and add mode (warning); merge-overwrite replaces it (warning); clean replaces or removes it.
+    Clean, nuke and merge-overwrite remove the curves of the axes they clear; a curve of an axis that stays assigned stays.
   - Fixed ranges are written only on their kind of axis (beta/helicopter/FADEC: throttles, feather: props, cutoff:
     mixtures); otherwise a warning.
   - `engine binds tuning set ... --scope game:XPlane12 --curve-points 0:0,0.4:0.3,1:1` sets any stops (`none` drops

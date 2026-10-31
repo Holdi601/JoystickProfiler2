@@ -19,6 +19,22 @@ public sealed partial class MainWindowViewModel
         nameof(ExportMode), nameof(ExportNukeUntouchedDevices), nameof(ExportKeepKeyboardDefaults), nameof(ExportDcsCleanAllAircraft),
         nameof(ExportStarCitizenKeepKeyboardDefaults), nameof(ExportStarCitizenPreferLocalOrder), nameof(RegistryGameDryRun),
         nameof(ImportIncludeDisconnected), nameof(ImportIncludeSimDefaults), nameof(MsfsWriteUserProfiles), nameof(MsfsAlwaysImportFiles), nameof(ValidationShowErrors), nameof(ValidationShowWarnings), nameof(ExportDcsPath), nameof(ExportIl2Path), nameof(ExportStarCitizenPath), nameof(StarCitizenSourcePath), nameof(RegistryGamePath),
+        nameof(ImportDcsPath), nameof(ImportIl2Path), nameof(ImportStarCitizenPath), nameof(DcsSavedGamesPath),
+    };
+
+    // The choices of how JoyPro writes: changed by the user, they are kept over JoyPro's later defaults (ModeChosenByUser).
+    private static readonly HashSet<string> ExportModeChoiceProperties = new(StringComparer.Ordinal)
+    {
+        nameof(ExportMode), nameof(ExportNukeUntouchedDevices), nameof(ExportDcsCleanAllAircraft),
+    };
+
+    // The game paths are per PC (export-settings.json "paths", app-wide); a profile may keep its own (PathOverrides).
+    // Property -> key. A path the user typed or picked is a hand path: JoyPro's detection never replaces it.
+    private static readonly Dictionary<string, string> RememberedPathKeys = new(StringComparer.Ordinal)
+    {
+        [nameof(ExportDcsPath)] = "dcs", [nameof(ExportIl2Path)] = "il2", [nameof(ExportStarCitizenPath)] = "starCitizen",
+        [nameof(StarCitizenSourcePath)] = "starCitizenSource", [nameof(ImportDcsPath)] = "dcsImport", [nameof(ImportIl2Path)] = "il2Import",
+        [nameof(ImportStarCitizenPath)] = "starCitizenImport", [nameof(DcsSavedGamesPath)] = "dcsSavedGames",
     };
 
     private ExportSettings exportSettings = new();
@@ -63,18 +79,36 @@ public sealed partial class MainWindowViewModel
         MsfsAlwaysImportFiles = s.MsfsAlwaysImportFiles;
         ValidationShowErrors = s.ValidationShowErrors;
         ValidationShowWarnings = s.ValidationShowWarnings;
-        if (RememberedFolder("dcs") is { } dcs)
+        ApplyRememberedPaths(s.Paths);
+    }
+
+    private void ApplyRememberedPaths(Dictionary<string, string> paths)
+    {
+        string? Folder(string key) => paths.TryGetValue(key, out string? path) && path.Length > 0 && Directory.Exists(path) ? path : null;
+        if (Folder("dcsSavedGames") is { } savedGames)
+            DcsSavedGamesPath = savedGames;
+        if (Folder("dcs") is { } dcs)
             ExportDcsPath = dcs;
-        if (RememberedFolder("il2") is { } il2)
+        if (Folder("dcsImport") is { } dcsImport)
+            ImportDcsPath = dcsImport;
+        if (Folder("il2") is { } il2)
             ExportIl2Path = il2;
-        if (RememberedFolder("starCitizen") is { } sc)
+        if (Folder("il2Import") is { } il2Import)
+            ImportIl2Path = il2Import;
+        if (Folder("starCitizen") is { } sc)
             ExportStarCitizenPath = sc;
-        if (s.Paths.TryGetValue("starCitizenSource", out string? source) && source.Length > 0 && (File.Exists(source) || Directory.Exists(source)))
+        if (Folder("starCitizenImport") is { } scImport)
+            ImportStarCitizenPath = scImport;
+        if (paths.TryGetValue("starCitizenSource", out string? source) && source.Length > 0 && (File.Exists(source) || Directory.Exists(source)))
             StarCitizenSourcePath = source;
     }
 
-    private string? RememberedFolder(string key) =>
-        exportSettings.Paths.TryGetValue(key, out string? path) && path.Length > 0 && Directory.Exists(path) ? path : null;
+    // A path the user set by hand (typed or picked): JoyPro's detection leaves it alone.
+    internal bool IsHandPath(string propertyName) =>
+        RememberedPathKeys.TryGetValue(propertyName, out string? key) && exportSettings.HandPaths.Contains(key, StringComparer.OrdinalIgnoreCase);
+
+    // JoyPro itself sets a path it detected (not a hand path).
+    private bool adoptingDetectedPaths;
 
     private void OnExportSettingChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -84,6 +118,13 @@ public sealed partial class MainWindowViewModel
         {
             RememberRegistryGamePath();
             return;
+        }
+        if (CanRememberExportSettings && !adoptingDetectedPaths)
+        {
+            if (ExportModeChoiceProperties.Contains(e.PropertyName))
+                exportSettings.ModeChosenByUser = true;
+            if (RememberedPathKeys.TryGetValue(e.PropertyName, out string? key) && !exportSettings.HandPaths.Contains(key, StringComparer.OrdinalIgnoreCase))
+                exportSettings.HandPaths.Add(key);
         }
         SaveExportSettings();
     }
@@ -95,7 +136,7 @@ public sealed partial class MainWindowViewModel
         if (!CanRememberExportSettings)
             return;
         ExportSettings s = exportSettings;
-        s.Mode = string.IsNullOrWhiteSpace(ExportMode) ? "merge" : ExportMode.Trim();
+        s.Mode = EffectiveExportMode;
         s.NukeUntouchedDevices = ExportNukeUntouchedDevices;
         s.DcsKeepKeyboardDefaults = ExportKeepKeyboardDefaults;
         s.DcsCleanAllAircraft = ExportDcsCleanAllAircraft;
@@ -108,18 +149,106 @@ public sealed partial class MainWindowViewModel
         s.MsfsAlwaysImportFiles = MsfsAlwaysImportFiles;
         s.ValidationShowErrors = ValidationShowErrors;
         s.ValidationShowWarnings = ValidationShowWarnings;
-        void Path(string key, string value)
+        // The profile's own paths while it keeps them, else the PC's.
+        Dictionary<string, string> paths = OwnPathsTicks()?.PathOverrides ?? s.Paths;
+        foreach ((string property, string key) in RememberedPathKeys)
         {
+            string value = PathValue(property);
             if (string.IsNullOrWhiteSpace(value))
-                s.Paths.Remove(key);
+                paths.Remove(key);
             else
-                s.Paths[key] = value.Trim();
+                paths[key] = value.Trim();
         }
-        Path("dcs", ExportDcsPath);
-        Path("il2", ExportIl2Path);
-        Path("starCitizen", ExportStarCitizenPath);
-        Path("starCitizenSource", StarCitizenSourcePath);
         ExportSettingsStore.Save(ExportSettingsPath, s);
+    }
+
+    private string PathValue(string property) => (property switch
+    {
+        nameof(ExportDcsPath) => ExportDcsPath,
+        nameof(ExportIl2Path) => ExportIl2Path,
+        nameof(ExportStarCitizenPath) => ExportStarCitizenPath,
+        nameof(StarCitizenSourcePath) => StarCitizenSourcePath,
+        nameof(ImportDcsPath) => ImportDcsPath,
+        nameof(ImportIl2Path) => ImportIl2Path,
+        nameof(ImportStarCitizenPath) => ImportStarCitizenPath,
+        nameof(DcsSavedGamesPath) => DcsSavedGamesPath,
+        _ => string.Empty
+    }) ?? string.Empty;
+
+    // ---- Paths and ignored devices: the PC's, or the open profile's own ----
+
+    // The ticks of the open profile when it keeps its own paths and ignored devices.
+    private ProfileExportTicks? OwnPathsTicks() => RememberedTicks(create: false) is { HasOwnPaths: true } ticks ? ticks : null;
+
+    // "Own paths and ignored devices for this profile" (Export page, Options and paths): off = the PC's (every profile).
+    public bool ProfileOwnPaths
+    {
+        get => OwnPathsTicks() != null;
+        set
+        {
+            if (value == ProfileOwnPaths || !HasProfile)
+                return;
+            if (value)
+            {
+                if (RememberedTicks(create: true) is not { } ticks)
+                    return;
+                ticks.PathOverrides = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach ((string property, string key) in RememberedPathKeys)
+                {
+                    string path = PathValue(property).Trim();
+                    if (path.Length > 0)
+                        ticks.PathOverrides[key] = path;
+                }
+                ticks.IgnoreDevicesCsv = ImportIgnoreDevicesCsv?.Trim() ?? string.Empty;
+                ticks.IgnoredDevices = ImportIgnoreDeviceOptions.Where(o => o.IsSelected).Select(o => o.Name).ToList();
+                ticks.LastUsed = DateTime.UtcNow;
+                ExportSettingsStore.Save(ExportSettingsPath, exportSettings);
+            }
+            else
+            {
+                ProfileExportTicks ticks = OwnPathsTicks()!;
+                ticks.PathOverrides = null;
+                ticks.IgnoreDevicesCsv = null;
+                ticks.IgnoredDevices = null;
+                ExportSettingsStore.Save(ExportSettingsPath, exportSettings);
+                ApplyPathsOfProfile();
+            }
+            OnPropertyChanged();
+        }
+    }
+
+    // The ignored devices remembered for the open profile (its own) or for the PC.
+    private List<string> ActiveIgnoredDevices()
+    {
+        ProfileExportTicks? own = OwnPathsTicks();
+        if (own != null)
+            return own.IgnoredDevices ??= [];
+        return exportSettings.Import.IgnoredDevices;
+    }
+
+    // A profile was opened: its own paths and ignored devices, else the PC's.
+    private void ApplyPathsOfProfile()
+    {
+        if (!exportSettingsReady)
+            return;
+        ProfileExportTicks? own = OwnPathsTicks();
+        using (SuppressExportSettings())
+        {
+            importSettingsApplying = true;
+            try
+            {
+                ApplyRememberedPaths(own?.PathOverrides ?? exportSettings.Paths);
+                ImportIgnoreDevicesCsv = own != null ? own.IgnoreDevicesCsv ?? string.Empty : exportSettings.Import.IgnoreDevicesCsv;
+                HashSet<string> ignored = new(own != null ? own.IgnoredDevices ?? [] : exportSettings.Import.IgnoredDevices, StringComparer.OrdinalIgnoreCase);
+                foreach (SelectableTagItem item in ImportIgnoreDeviceOptions)
+                    item.IsSelected = ignored.Contains(item.Name);
+            }
+            finally
+            {
+                importSettingsApplying = false;
+            }
+        }
+        OnPropertyChanged(nameof(ProfileOwnPaths));
     }
 
     // The path box of a registry game is per game: remembered for the selected one, put back when it is picked again.

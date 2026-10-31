@@ -254,7 +254,7 @@ public sealed class DuplicateActionEngineTests
             outputs.Add(System.Text.RegularExpressions.Regex.Replace(
                 result.StandardOutput.Replace(folder, "<side>", StringComparison.OrdinalIgnoreCase).Replace(folder.Replace('\\', '/'), "<side>", StringComparison.OrdinalIgnoreCase)
                     .Replace(folder.Replace("\\", "\\\\"), "<side>", StringComparison.OrdinalIgnoreCase),
-                "\"(GeneratedUtc|CreatedUtc|RecordedUtc|SuggestionVersion|Detail)\":\"[^\"]*\"|\"(\\w*Milliseconds)\":\\d+|(the only one with it on) [^)]*", "<x>"));
+                "\"(GeneratedUtc|CreatedUtc|RecordedUtc|SuggestionVersion|Detail|CausedAt)\":\"[^\"]*\"|\"(\\w*Milliseconds)\":\\d+|(the only one with it on) [^)]*", "<x>"));
         }
         return new Side(folder, profile, outputs, raw);
     }

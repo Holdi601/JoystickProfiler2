@@ -504,6 +504,20 @@ namespace JoyPro.Engine.Games
             return string.Empty;
         }
 
+        private ExportSkippedBind SkippedMultiBind(GameInputBinding binding, string gameAction)
+        {
+            return new ExportSkippedBind
+            {
+                Game = GameId,
+                Device = binding.Device ?? string.Empty,
+                Input = binding.Input ?? string.Empty,
+                ModifiersText = binding.Reformers == null ? string.Empty : string.Join(" + ", binding.Reformers.Select(r => { string[] p = (r ?? string.Empty).Split('§'); return p.Length >= 3 ? p[1] + " " + p[2] : r; })),
+                Relation = binding.RelationName ?? string.Empty,
+                Action = binding.ActionId ?? string.Empty,
+                GameAction = gameAction ?? string.Empty
+            };
+        }
+
         public GameIoResult Write(GameExportRequest request)
         {
             GameIoResult result = new GameIoResult();
@@ -567,9 +581,12 @@ namespace JoyPro.Engine.Games
                 }
             }
 
-            // Inputs JoyPro wrote before and no longer wants (clean, merge-overwrite), unless changed in the sim.
+            // "My profile wins" (clean, merge-overwrite): an event the profile binds loses its other inputs, so a moved
+            // bind fully moves. Only inputs JoyPro owns in this export: connected devices (the maps above) and the
+            // keyboard when the export includes it. Inputs JoyPro wrote before count like any other bind of the sim.
             if (overwrite)
             {
+                HashSet<string> profileEvents = new HashSet<string>(wanted.Values.Select(w => w.Binding.ActionId), StringComparer.OrdinalIgnoreCase);
                 foreach (KeyValuePair<string, FsxChild> e in existing)
                 {
                     if (e.Key.StartsWith("KEYBOARD|", StringComparison.Ordinal) && !request.IncludeKeyboard)
@@ -578,10 +595,10 @@ namespace JoyPro.Engine.Games
                             GameOwnershipStore.Add(newOwned, e.Value.Event, e.Key);
                         continue;
                     }
-                    Wanted want;
-                    bool still = wanted.TryGetValue(e.Key, out want) && string.Equals(want.Binding.ActionId, e.Value.Event, StringComparison.OrdinalIgnoreCase);
-                    if (!still && GameOwnershipStore.Contains(owned, e.Value.Event ?? string.Empty, e.Key) && !e.Value.Removed)
-                        file.Remove(e.Value);
+                    // An input of the profile is rewritten in place below.
+                    if (wanted.ContainsKey(e.Key) || e.Value.Removed || !profileEvents.Contains(e.Value.Event ?? string.Empty))
+                        continue;
+                    file.Remove(e.Value);
                 }
             }
 
@@ -627,16 +644,22 @@ namespace JoyPro.Engine.Games
                     if (want.Binding.Inverted)
                         scale = -scale;
                 }
-                if (current != null)
+                if (current != null && request.Mode == GameExportMode.Add)
                 {
-                    bool sameEvent = string.Equals(current.Event, want.Binding.ActionId, StringComparison.OrdinalIgnoreCase);
-                    if (!sameEvent && !overwrite)
+                    // "Only add" never replaces or removes a block: the event already on its input is nothing to do,
+                    // another event there keeps the input and the profile's bind is reported (no multi-bind).
+                    if (!same.Any(s => string.Equals(s.Event, want.Binding.ActionId, StringComparison.OrdinalIgnoreCase)))
                     {
                         result.ConflictsKept++;
                         result.BindingsSkipped++;
-                        result.Warnings.Add(label + ": the input already has '" + current.Event + "'; " + (request.Mode == GameExportMode.Add ? "add" : "merge") + " keeps the sim's bind.");
-                        continue;
+                        result.SkippedTakenInputs.Add(SkippedMultiBind(want.Binding, string.IsNullOrEmpty(current.Event) ? current.Up ?? string.Empty : current.Event));
                     }
+                    continue;
+                }
+                if (current != null)
+                {
+                    // Merge and "my profile wins": another event on the profile's input is a conflict and is replaced.
+                    bool sameEvent = string.Equals(current.Event, want.Binding.ActionId, StringComparison.OrdinalIgnoreCase);
                     if (!sameEvent)
                         result.Warnings.Add(label + " replaced '" + current.Event + "' on its input.");
                     bool rewrite = !sameEvent;

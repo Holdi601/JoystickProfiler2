@@ -186,7 +186,7 @@ public sealed class QualityGatePerformanceTests
                             Gate.CopyFolder(input, Path.Combine(target, "Config", "Input"));
                         vm.ExportDcsPath = target;
                         how = "into a copy of Config\\Input";
-                        await s.MeasureAsync("export dry-run", "DCS (" + how + ")", async () => result = await s.InvokePrivateAsync<EngineCommandResult?>("RunDcsExportAsync", [null]));
+                        await s.MeasureAsync("dcs export dry-run", "DCS (" + how + ")", async () => result = await s.InvokePrivateAsync<EngineCommandResult?>("RunDcsExportAsync", [null]));
                         break;
                     }
                 case "IL2Game":

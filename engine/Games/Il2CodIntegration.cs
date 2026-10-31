@@ -78,6 +78,12 @@ namespace JoyPro.Engine.Games
             return axis ? 1 : 0;
         }
 
+        // The ground vehicles (Desert Wings - Tobruk) are not flight: JoyPro never releases their binds.
+        protected override bool IsFlightSection(string section)
+        {
+            return !string.Equals(section, "vehicle", StringComparison.OrdinalIgnoreCase);
+        }
+
         protected override string CategoryOf(string section)
         {
             switch (section)

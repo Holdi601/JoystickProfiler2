@@ -67,23 +67,39 @@ try {
     Assert-True ($fsxRound.ExitCode -eq 0) ("fsx export after import failed: " + $fsxRound.Output)
     Assert-True ([System.IO.File]::ReadAllText($fsxFile) -eq $fsxOriginal) ("fsx import/export must leave Standard.XML as it was: " + $fsxRound.Output)
 
-    # Merge: blocks added to the device's map, a new map for a new device, conflicts kept, hats only as a whole.
+    # Merge: blocks added to the device's map, a new map for a new device, a conflict replaced, a moved bind keeps its
+    # old input, hats only as a whole. Only add (on a copy) writes nothing over the sim's binds and reports the conflict.
     Run-Engine @("--profile", $fsxProfile, "relations", "add", "FSX Prop", "--axis", "--node", "FSX:AXIS_PROPELLER_SET", "--device", $fsxStick, "--input", "JOY_SLIDER1", "--text") | Out-Null
     Run-Engine @("--profile", $fsxProfile, "relations", "add", "FSX Box Gear", "--button", "--node", "FSX:GEAR_DOWN", "--device", $fsxBox, "--input", "JOY_BTN2", "--text") | Out-Null
     Run-Engine @("--profile", $fsxProfile, "relations", "add", "FSX Spoilers", "--button", "--node", "FSX:SPOILERS_TOGGLE", "--device", $fsxStick, "--input", "JOY_BTN8", "--text") | Out-Null
     Run-Engine @("--profile", $fsxProfile, "relations", "add", "FSX Hat Flaps", "--button", "--node", "FSX:FLAPS_UP", "--device", $fsxStick, "--input", "JOY_BTN_POV2_U", "--text") | Out-Null
+    $fsxMove = Run-Engine @("--profile", $fsxProfile, "binds", "set", "Brakes (both)", "--input", "JOY_BTN3", "--text")
+    Assert-True ($fsxMove.ExitCode -eq 0) ("binds set for the FSX brakes failed: " + $fsxMove.Output)
+    $fsxAddFile = Join-Path $fsxDir "add\Standard.XML"
+    New-Item -Path (Split-Path $fsxAddFile) -ItemType Directory -Force | Out-Null
+    Copy-Item -Path $fsxFile -Destination $fsxAddFile -Force
+    $fsxAdd = Run-Engine @("--profile", $fsxProfile, "fsx", "export", $fsxAddFile, "--mode", "add", "--text")
+    Assert-True ($fsxAdd.ExitCode -eq 0) ("fsx add export failed: " + $fsxAdd.Output)
+    Assert-Match $fsxAdd.Output ("FSX Spoilers \(SPOILERS_TOGGLE\) on " + [regex]::Escape($fsxStick) + " JOY_BTN8: the game uses that input for GEAR_TOGGLE") ("add should report the skipped multi bind: " + $fsxAdd.Output)
+    $fsxAddMap = Get-FsxMap (Get-FsxText $fsxAddFile) "Smoke Stick{11111111-2222-3333-4444-555555555555}"
+    Assert-Match $fsxAddMap "<Index>7</Index>\n\s*<Down>GEAR_TOGGLE</Down>" "add must keep the sim's bind on button 8."
+    Assert-Match $fsxAddMap "<Index>0</Index>\n\s*<Down>BRAKES</Down>" "add must keep the moved brakes' old button."
+    Assert-Match $fsxAddMap "<Index>2</Index>\n\s*<Down>BRAKES</Down>" "add should write the brakes' new button."
     $fsxDry = Run-Engine @("--profile", $fsxProfile, "fsx", "export", $fsxFile, "--mode", "merge", "--dry-run", "--text")
     Assert-Match $fsxDry.Output "Dry run: \d+ block change\(s\)" ("fsx dry run should count the changes: " + $fsxDry.Output)
     Assert-True ([System.IO.File]::ReadAllText($fsxFile) -eq $fsxOriginal) "fsx dry run must not write."
     $fsxMerge = Run-Engine @("--profile", $fsxProfile, "fsx", "export", $fsxFile, "--mode", "merge", "--text")
     Assert-True ($fsxMerge.ExitCode -eq 0) ("fsx merge export failed: " + $fsxMerge.Output)
-    Assert-Match $fsxMerge.Output "the input already has 'GEAR_TOGGLE'; merge keeps the sim's bind" "merge should keep the sim's bind on button 8."
+    Assert-Match $fsxMerge.Output "replaced 'GEAR_TOGGLE' on its input" "merge should replace the conflicting sim bind on button 8."
     Assert-Match $fsxMerge.Output "assign a hat as a whole" "a hat direction for another event should be refused."
     $fsxText = Get-FsxText $fsxFile
     $fsxStickMap = Get-FsxMap $fsxText "Smoke Stick{11111111-2222-3333-4444-555555555555}"
-    Assert-Match $fsxStickMap "        <Axis>\n            <AxName>Slider</AxName>\n            <Index>6</Index>\n            <AxEvent>AXIS_PROPELLER_SET</AxEvent>\n            <AxScale>127</AxScale>\n        </Axis>\n    </SimControls.Map>" ("merge should append the propeller axis to the stick's map: " + $fsxStickMap)
+    Assert-Match $fsxStickMap "(?s)        <Axis>\n            <AxName>Slider</AxName>\n            <Index>6</Index>\n            <AxEvent>AXIS_PROPELLER_SET</AxEvent>\n            <AxScale>127</AxScale>\n        </Axis>\n(        <Entry>(?:(?!</Entry>).)*</Entry>\n)*    </SimControls.Map>" ("merge should append the propeller axis to the stick's map: " + $fsxStickMap)
     $fsxBoxMap = Get-FsxMap $fsxText "Smoke Box{0000BEEF-1111-2222-3333-444444444444}"
     Assert-Match $fsxBoxMap "<Index>1</Index>\n\s*<Down>GEAR_DOWN</Down>" ("merge should add a map for the new device: " + $fsxText)
+    Assert-Match $fsxStickMap "<Index>7</Index>\n\s*<Down>SPOILERS_TOGGLE</Down>" "merge should put the spoilers on button 8."
+    Assert-Match $fsxStickMap "<Index>0</Index>\n\s*<Down>BRAKES</Down>" "merge must keep the moved brakes' old button."
+    Assert-Match $fsxStickMap "<Index>2</Index>\n\s*<Down>BRAKES</Down>" "merge should write the brakes' new button."
     Assert-Match $fsxText "</SimControls\.Map>\n</SimBase\.Document>\n$" "the new map goes before the document's end."
     Assert-Match $fsxText "(?s)Type=""Controls""\n        version=""1,0""" "export must keep the root element's formatting."
     Assert-True (Test-Path ($fsxFile + ".jpbak")) "the FSX export should back up Standard.XML."
@@ -96,7 +112,9 @@ try {
     $fsxStickMap = Get-FsxMap (Get-FsxText $fsxFile) "Smoke Stick{11111111-2222-3333-4444-555555555555}"
     Assert-Match $fsxStickMap "<Index>7</Index>\n\s*<Down>SPOILERS_TOGGLE</Down>" "merge-overwrite should put the spoilers on button 8."
     Assert-Match $fsxStickMap "<AxEvent>AXIS_AILERONS_SET</AxEvent>\n\s*<AxScale>100</AxScale>\n\s*<AxNull>10</AxNull>" ("export should write the aileron sensitivity and null zone: " + $fsxStickMap)
-    Assert-Match $fsxStickMap "<Down>BRAKES</Down>\n\s*<DownRpt>1</DownRpt>" "untouched blocks keep their <DownRpt>."
+    Assert-Match $fsxStickMap "<Down>PAN_VIEW</Down>\n\s*<DownRpt>1</DownRpt>" "untouched blocks keep their <DownRpt>."
+    Assert-NotMatch $fsxStickMap "<Index>0</Index>\n\s*<Down>BRAKES</Down>" "merge-overwrite should release the moved brakes' old button."
+    Assert-Match $fsxStickMap "<Index>2</Index>\n\s*<Down>BRAKES</Down>" "merge-overwrite must keep the brakes' new button."
 
     # Clean: the written devices keep only the profile's binds; slew, keyboard and unknown devices stay.
     $fsxDelete = Run-Engine @("--profile", $fsxProfile, "relations", "mass", "delete", "--relation", "Brakes (both)", "--text")

@@ -192,6 +192,14 @@ public sealed partial class MainWindowViewModel
             RebuildVisibleRegistryGames();
             RebuildVisibleDbGames();
             RebuildVisibleFfbGames();
+            // The Relations and Binds pages' game chips, the catalog and the action search leave hidden games out.
+            if (listFiltersInitialized)
+            {
+                RelationFilter.RefreshHiddenGames();
+                BindFilter.RefreshHiddenGames();
+            }
+            RefreshHiddenGamesInCatalog();
+            JoyPro.Logging.JoyProLog.Info("Games", "Hidden games: " + (hiddenGames.Count == 0 ? "none" : string.Join(", ", hiddenGames.OrderBy(g => g, StringComparer.OrdinalIgnoreCase))));
             if (GameBackupGames.Count > 1 || GameBackups.Count > 0)
                 _ = RefreshGameBackupsAsync();
             if (ExportGames.Count > 0 || ExportGamesNotInstalled.Length > 0)
@@ -210,6 +218,20 @@ public sealed partial class MainWindowViewModel
         // The test sandbox (UserFolders): the engine finds the real games of the PC; their folders are never taken over.
         if (UserFolders.IsSandboxed)
             return;
+        // What JoyPro detects is no hand path; a path the user set by hand is never replaced (per PC, export-settings.json).
+        adoptingDetectedPaths = true;
+        try
+        {
+            AdoptEngineGamePathsCore();
+        }
+        finally
+        {
+            adoptingDetectedPaths = false;
+        }
+    }
+
+    private void AdoptEngineGamePathsCore()
+    {
         GameInstallItem? dcs = GameInstalls.FirstOrDefault(g => g.GameId == "DCS");
         if (dcs != null && !dcs.Disabled)
         {
@@ -218,13 +240,14 @@ public sealed partial class MainWindowViewModel
                 DcsInstallPath = dcs.InstallPath;
             string config = dcs.FirstConfigPath;
             if (config.Length > 0 && Directory.Exists(config) && !string.Equals(config, DcsSavedGamesPath, StringComparison.OrdinalIgnoreCase) &&
+                (!IsHandPath(nameof(DcsSavedGamesPath)) || !Directory.Exists(DcsSavedGamesPath)) &&
                 (dcs.ConfigOverridden || !Directory.Exists(DcsSavedGamesPath) || string.Equals(DcsSavedGamesPath, lastAdoptedDcsConfig, StringComparison.OrdinalIgnoreCase)))
             {
                 string previous = DcsSavedGamesPath;
                 DcsSavedGamesPath = config;
-                if (string.IsNullOrWhiteSpace(ImportDcsPath) || string.Equals(ImportDcsPath, previous, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrWhiteSpace(ImportDcsPath) || (!IsHandPath(nameof(ImportDcsPath)) && string.Equals(ImportDcsPath, previous, StringComparison.OrdinalIgnoreCase)))
                     ImportDcsPath = config;
-                if (string.IsNullOrWhiteSpace(ExportDcsPath) || string.Equals(ExportDcsPath, previous, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrWhiteSpace(ExportDcsPath) || (!IsHandPath(nameof(ExportDcsPath)) && string.Equals(ExportDcsPath, previous, StringComparison.OrdinalIgnoreCase)))
                     ExportDcsPath = config;
                 lastAdoptedDcsConfig = config;
             }
@@ -235,12 +258,13 @@ public sealed partial class MainWindowViewModel
         {
             string config = sc.FirstConfigPath;
             if (config.Length > 0 && Directory.Exists(config) && !string.Equals(config, ImportStarCitizenPath, StringComparison.OrdinalIgnoreCase) &&
+                (!IsHandPath(nameof(ImportStarCitizenPath)) || !Directory.Exists(ImportStarCitizenPath)) &&
                 (sc.ConfigOverridden || sc.Overridden || !Directory.Exists(ImportStarCitizenPath) ||
                  string.Equals(ImportStarCitizenPath, lastAdoptedStarCitizenConfig, StringComparison.OrdinalIgnoreCase)))
             {
                 string previous = ImportStarCitizenPath;
                 ImportStarCitizenPath = config;
-                if (string.IsNullOrWhiteSpace(ExportStarCitizenPath) || string.Equals(ExportStarCitizenPath, previous, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrWhiteSpace(ExportStarCitizenPath) || (!IsHandPath(nameof(ExportStarCitizenPath)) && string.Equals(ExportStarCitizenPath, previous, StringComparison.OrdinalIgnoreCase)))
                     ExportStarCitizenPath = config;
                 lastAdoptedStarCitizenConfig = config;
             }

@@ -60,7 +60,7 @@ Force Feedback, Settings, Advanced), the profile bar at the top, and the confirm
 | `backups restore latest --game <id>` | Tile **Undo last export**; Start card **Undo export** | IMPROVED | New: one click per game, asks first. |
 | `games installs` | Settings > Games (cards with status symbols); Start cards | FULL | |
 | `games install set/clear` | Settings > Games: **Choose folder...** (folder picker), **Use detected** | FULL | |
-| `games install disable/enable` | Start page: hide button on a game card, "Hidden games" > **Show again**; Settings > Games: **Hide** / **Show again**; first-start setup | FULL | |
+| `games install disable/enable` | Start page: hide button on a game card (the line below the cards leads to Settings > Games); Settings > Games: **Hide** / **Show again**; first-start setup | FULL | |
 | `games config set/clear` | Settings > Games > **Run setup again** (game setup window, Browse) | FULL | |
 | `games paths`, `<game> paths` | Settings: "Command lists (DB) and game paths" expander; Expert import **Detect** | EXPERT | The paths are used automatically. |
 | `games integrations` | Used automatically for the Start cards; Expert import **Load Games** | FULL | |

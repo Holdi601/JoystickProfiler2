@@ -125,7 +125,7 @@ public sealed partial class MainWindowViewModel
         foreach (CheckIssueSection section in CheckSections)
         {
             expanded["check-section:" + section.Kind] = section.IsExpanded;
-            foreach (CheckIssueCard card in section.Cards)
+            foreach (CheckIssueCard card in section.AllCards)
                 expanded[CheckCardKey(card)] = card.IsExpanded;
         }
         if (stage == UiStage.Settings)
@@ -146,7 +146,7 @@ public sealed partial class MainWindowViewModel
         };
     }
 
-    private static string CheckCardKey(CheckIssueCard card) => "check-card:" + card.Kind + "|" + card.Headline + "|" + card.RelationsSort;
+    private static string CheckCardKey(CheckIssueCard card) => "check-card:" + card.Kind + "|" + card.ButtonsLine + "|" + card.Sentence + "|" + card.RelationsSort;
 
     // Puts a place back: search texts, page, sub-view, selection, open cards; the window then scrolls the lists.
     internal void RestoreNavigationPlace(NavigationEntry entry)
@@ -243,7 +243,7 @@ public sealed partial class MainWindowViewModel
         {
             if (entry.Expanded.TryGetValue("check-section:" + section.Kind, out bool open) && section.IsExpanded != open)
                 section.IsExpanded = open;
-            foreach (CheckIssueCard card in section.Cards)
+            foreach (CheckIssueCard card in section.AllCards)
             {
                 if (entry.Expanded.TryGetValue(CheckCardKey(card), out bool cardOpen) && card.IsExpanded != cardOpen)
                     card.IsExpanded = cardOpen;

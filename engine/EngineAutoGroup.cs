@@ -248,6 +248,12 @@ namespace JoyPro.Engine
                     }
                 }
             }
+            // Dismissed suggestions (EngineDismissedSuggestions) stay off in their relation too.
+            foreach (KeyValuePair<string, EngineDismissedSuggestions.Entry> dismissed in EngineDismissedSuggestions.ForKeys(NodeKey))
+            {
+                if (!removedNames.Contains(dismissed.Value.Relation))
+                    AddOwner(disabledByUser, dismissed.Key, dismissed.Value.Relation);
+            }
 
             HashSet<string> planesCovered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             EngineFunctionMap.Map functionMap = useMap ? EngineFunctionMap.Load(result.Warnings) : null;

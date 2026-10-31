@@ -43,7 +43,9 @@ Three columns.
   - the grip choice for a base that several grips share;
   - the maker's credit under a vendor photo.
 - The marker assistant's panel takes the label's place while it runs: Start, Axis, Skip, Undo, Stop, Finish, Close.
-  A click on the picture places the part it asks for.
+  A click on the picture places the part it asks for. Since 2.5.0 it sits in the top left corner (at most 400 px wide),
+  never over the middle of the picture, and its grip (left of the wand) drags it anywhere over the picture; the place
+  is kept in `ui-settings.json` (`markerAssistantX/Y`) and pulled back inside a smaller window.
 - The status bar shows what the reference is ("Thrustmaster · Stick · USB 044F:0402 · all 25 inputs known") or its
   message, and key hints.
 - Empty state (no device): "Pick a device on the left".

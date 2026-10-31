@@ -276,7 +276,9 @@ public sealed class MainWindowViewModelSmokeTests
         Assert.Equal("Brake lever", Assert.Single(stick.Levers).Label);
         Assert.Equal(3, stick.Bars.Count);
 
-        // Full right, full forward, twist right (DirectInput 0..1).
+        // Full right, full forward, twist right (DirectInput 0..1), after a centred first report (an axis stuck at an end
+        // since the first report counts as dead and stays centred, 2.5.0).
+        stick.ApplyAxes([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]);
         stick.ApplyAxes([1.0, 0.0, 1.0, 0.5, 0.5, 0.5, 0.5, 0.25]);
         Assert.Equal(18, stick.Roll);
         Assert.Equal(14, stick.Pitch);
@@ -366,6 +368,8 @@ public sealed class MainWindowViewModelSmokeTests
         vm.OnHudInput(new JoystickInputEvent("Renamed {00000000-0000-0000-0000-0000000000B1}", "JOY_BTN1", true));
         Assert.True(stick.Device!.ButtonCells[0].IsPressed);
         Assert.Equal("Trigger", stick.Device.PressedText);
+        // Centred first, then full left (an axis stuck at an end since the first report counts as dead: centred).
+        vm.OnHudAxes(new JoystickAxisSnapshot("VKB Stick {00000000-0000-0000-0000-0000000000B1}", [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]));
         vm.OnHudAxes(new JoystickAxisSnapshot("VKB Stick {00000000-0000-0000-0000-0000000000B1}", [0.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]));
         Assert.Equal(-18, stick.Device.Roll);
 

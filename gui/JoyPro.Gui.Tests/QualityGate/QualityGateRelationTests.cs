@@ -196,7 +196,9 @@ public sealed class QualityGateRelationTests
                     await Task.Delay(50);
                     await s.SettleAsync(() => vm.SelectedRelation?.Name == relation.Name, 30000);
                 });
-                if (vm.RelationNodes.Count == 0)
+                // A relation without actions is fine since 2.5.0 (opening a profile removes actions with no aircraft
+                // ticked, the relation stays); only one the list shows with games must open with its actions.
+                if (vm.RelationNodes.Count == 0 && !string.IsNullOrWhiteSpace(relation.Games) && !relation.Games.Contains("<none>"))
                     Gate.Fail("I6", "relation opens without actions in the editor", string.Empty, relation.Name, "the relation list says games: " + relation.Games);
                 foreach (RelationNodeItem node in vm.RelationNodes.ToList())
                 {
@@ -256,7 +258,7 @@ public sealed class QualityGateRelationTests
             foreach (CheckIssueCard card in vm.CheckSections.SelectMany(section => section.Cards))
             {
                 cards++;
-                foreach (string text in new[] { card.Headline, card.Details, card.SuggestionText, card.ReasonText }.Concat(card.ActionLines).Concat(card.Choices.Select(c => c.KeepText)))
+                foreach (string text in CheckTextGate.Texts(card).Concat(new[] { card.SuggestionText, card.ReasonText }).Concat(card.Choices.Select(c => c.KeepText)))
                 {
                     string? raw = RawIdInShownText(text, userNames);
                     if (raw != null)

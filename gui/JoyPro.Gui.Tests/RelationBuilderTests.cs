@@ -746,6 +746,10 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     // A bound relation with a DCS node and a War Thunder node the profile stored without a title (BindPeekTests).
     public void AddElevatorRelation() => relations.Add(("Elevator", true, Stick + "::JOY_Y", [("DCS", "a2001cdnil", "F-16C_50"), ("WarThunder", "elevator", "WarThunder")]));
 
+    // A button relation with five actions of five aircraft (the tester's card list, ContextMenuRowTests).
+    public void AddFiveActionRelation() => relations.Add(("Button CP2 B3", false, Stick + "::JOY_BTN3",
+        [("DCS", "d3001pnilu3001", "F-5E-3"), ("DCS", "d3002pnilu3002", "AJS37"), ("DCS", "d3003pnilu3003", "SpitfireLFMkIX"), ("DCS", "d3004pnilu3004", "FA-18C_hornet"), ("DCS", "d3005pnilu3005", "AH-64D_BLK_II")]));
+
     // "relations aircraft" answers with this when set (the nodes' titles in their games).
     public string AircraftJson { get; set; } = string.Empty;
 

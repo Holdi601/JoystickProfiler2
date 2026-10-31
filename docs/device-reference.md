@@ -139,6 +139,16 @@ Pictures are shown best first. The picture strip over the canvas has one button 
 The Layout page shows the first of these that it can, and the picture strip offers the others in this order; the
 Start page's device cards use the same order.
 
+**A picture picked in the strip is kept at once** (2.5.0 tester report: "Photo 4 · Virpil" fell back to JoyPro's line
+drawing, and Save stayed off because nothing was unsaved): `<data>\DeviceReference\pictures.json` holds per device (its
+name with the GUID, else without it; a catalog model by its id) `<model id>|<picture id>` (`vendor:<address>`,
+`lineart:<content key>`, `user`, `schematic`, `class`). Whenever the device is shown again (a refresh, a rename, the next
+start) that picture comes first if it is still there and loads; another model shown for the device (a grip picked) does
+not take it over. The markers belong to the picture: each picture keeps its own positions (see section 3). The status
+line says "<picture> is kept for this device.", and the line above the device list names the model and the picture
+("Picture: VPC MongoosT-50CM3 · Photo 4 · Virpil"); the engine's template guess ("Placeholder ... (match 30%)") shows
+only while no model is known.
+
 ![Class outlines](device-reference/class-stick.png)
 
 More: `docs/device-reference/class-*.png`. JoyPro's schematic drawings and class outlines are drawn from the catalog's

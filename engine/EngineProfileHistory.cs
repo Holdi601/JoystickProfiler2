@@ -201,7 +201,10 @@ namespace JoyPro.Engine
                 AxisCalibrations = InternalDataManagement.AxisCalibrations,
                 VirtualJoystick = InternalDataManagement.VirtualJoystickConfig,
                 LayoutPreferences = InternalDataManagement.LayoutPreferences,
-                KeptDuplicates = InternalDataManagement.KeptDuplicates
+                KeptDuplicates = InternalDataManagement.KeptDuplicates,
+                ExportSkipMarks = InternalDataManagement.ExportSkipMarks,
+                DismissedSuggestions = InternalDataManagement.DismissedSuggestions,
+                SyncedGames = InternalDataManagement.SyncedGames
             };
             return Items(profile);
         }
@@ -309,6 +312,8 @@ namespace JoyPro.Engine
                 AddSection(lines, hash, "Layout preferences", profile.LayoutPreferences);
                 AddSection(lines, hash, "Actions kept in several relations", profile.KeptDuplicates == null ? string.Empty
                     : string.Join("\n", profile.KeptDuplicates.OrderBy(k => k, StringComparer.OrdinalIgnoreCase)));
+                AddSection(lines, hash, "Dismissed suggestions", profile.DismissedSuggestions == null ? string.Empty
+                    : string.Join("\n", profile.DismissedSuggestions.OrderBy(k => k, StringComparer.OrdinalIgnoreCase)));
             }
             return lines;
         }

@@ -26,8 +26,31 @@ The GUI tests point `JOYPRO_USAGE_ROOT` at an empty folder, so no test reads thi
 
 Check page with thousands of findings: `CheckResponsivenessTests` (5000 relations, 3000 errors, 900 duplicate cards in a
 HiddenWindow; a UI-thread probe fails any block over 400 ms; `JOYPRO_CHECK_REPLAY=<folder>` replays real engine outputs,
-`JOYPRO_CHECK_REPORT=<file>` writes the timings). DCS import with "include defaults": the smoke part
-`engine\tests\smoke\dcsincludedefaults.ps1`.
+`JOYPRO_CHECK_REPORT=<file>` writes the timings). The Check's cards on a copy of a real profile with the real engine, rendered
+at 1280 and 2267 in Light and Dark, with the gate on ids and internal words in card texts (`CheckTextGate`):
+`CheckCardsRenderTests` (`JOYPRO_CHECK_CARDS_PROFILE`, `JOYPRO_CHECK_CARDS_HISTORY`, `JOYPRO_CHECK_CARDS_OUT`,
+docs/ui/check.md); the engine side: `engine\tests\smoke\checkconflicts.ps1`. DCS import with "include defaults": the smoke part
+`engine\tests\smoke\dcsincludedefaults.ps1`. DCS export modes (2.5.0: add never deletes and marks taken buttons,
+merge / profile wins after a Move, minimal diff, `changed` tuning, clean + nuke only in the exported aircraft and only
+connected devices, import -> clean + nuke -> import round trip, undo byte for byte, `profile game-state`,
+`export-marks`): `engine\tests\smoke\dcsexportmodes.ps1` (loads the written files in DCS's luae.exe when DCS is
+installed). A round trip on a copy of real Saved Games: `engine dcs verify-clean --include-disconnected true
+--dump-active <file>` before and after the export lists every bind DCS has active ([DCS](games/dcs.md#import-of-the-default-binds-include-defaults-on-by-default-in-the-gui-since-250)).
+
+The 2.5.0 tester batch: `ContextMenuRowTests` (right-clicks at seven points of every action card and bind card reach
+the card's menu; a hit test of its own, because the hidden host answers from its last composited frame),
+`TesterBatch250Tests` (the HUD stick element of a grip without X/Y on its base: centred, from the base, a picked axis
+kept over a restart, 10 000 axis reports allocate nothing; the picked Layout picture kept at once and shown again; the
+marker assistant's place; the engine output's height; hidden games without game chips; the problem reports' move; the
+first-export question's primary button) and the renders of every changed view at 1280 / 2267, dark and light, with
+`JOYPRO_A4_RENDER_OUT=<folder>` (`TesterBatch250RenderTests`). JoyPro 1's profiles in the support file: the smoke part
+`engine\tests\smoke\supportbundle.ps1` (`JOYPRO_JOYPRO1_DIR`).
+
+Keyboard key and modifier names (JoyPro 1's LeftAlt / Oem102 and DCS's LAlt / OEM102 are one key,
+`engine\KeyboardKeyNames.cs`): the smoke part `engine\tests\smoke\keyboardnames.ps1` reads a profile with both
+"KeyboardLeftAlt" (Keyboard, LeftAlt) and "LAlt" (Keyboard, LAlt) and checks one modifier with the user's name, every
+bind kept, one history step of its own and none on the next run; and a DCS import with JoyPro 1's spellings that stores
+DCS's. vJoy devices in imports and `--vjoy-tunnel`: `engine\tests\smoke\vjoytunnel.ps1`.
 
 ## Test sandbox
 

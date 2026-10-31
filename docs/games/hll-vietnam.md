@@ -132,8 +132,10 @@ What JoyPro writes:
 - Only the `<Action>_Keyboard` mappings of the `Driver_*` pilot actions, and only with `--include-keyboard`. The
   mapping list is rewritten on its own; every other byte stays identical (`GvasKeyMappings`).
 - Key names are translated to Unreal FKey names (`Space` → `SpaceBar`, `D1` → `One`, ...).
-- `merge`, `merge-overwrite` and `clean` work as in the other games. Ownership is kept in
-  `EnhancedInputUserSettings.sav.joypro.json`.
+- One key per pilot action. `add` keeps the game's key and skips a key another pilot action has (listed as a skipped
+  multi-bind); `merge` / `merge-overwrite` set the profile's key and drop the key of another pilot action on it
+  (conflict, the game then uses its default there); `clean` drops the other changed pilot keys. A mouse button on a
+  pilot action always stays. Infantry and common keys never change. No ownership file any more.
 
 The game only lists keyboard and mouse keys in its key selector, and gamepad keys are not player-mappable. That is why
 JoyPro does not write gamepad binds (`IGameGamepadBinds` is not implemented).

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace JoyPro.Engine
 {
-    internal static class EngineDcsExport
+    internal static partial class EngineDcsExport
     {
         private const string SignatureSeparator = "\u00A7";
         // DCS loads these files with Lua 5.1, which rejects a UTF-8 byte order mark ("unexpected symbol near '\xEF'").
@@ -75,6 +75,8 @@ namespace JoyPro.Engine
                 result.Warnings.Add("Nothing to export for " + missing + ": the profile has no bound relation for it.");
             Dictionary<string, Dictionary<string, ModifierPayload>> generatedModifiers = BuildGeneratedPlaneModifiers(generatedPayloads);
             Dictionary<string, DiffPayload> cleanProfiles = new Dictionary<string, DiffPayload>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<string>> profileActions = ProfileActionsByPlane(generatedPayloads, !effectiveOptions.KeepKeyboardDefaults);
+            result.ExportedPlanes = generatedPayloads.Keys.OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
             ReportStatus(
                 effectiveOptions,
                 "Writing payload files for " +
@@ -110,15 +112,18 @@ namespace JoyPro.Engine
                     bool keepOtherKeyboardDefaults = keyboard && !effectiveOptions.ClearKeyboardDefaults;
                     if (keepOtherKeyboardDefaults)
                         DropFormerKeyboardClear(existing, clean, planeName, result);
-                    DiffPayload merged = MergePayloads(mode, existing, generated, result);
-                    if (keepOtherKeyboardDefaults)
-                        AddKeyboardConflictRemovals(merged, generated, clean, result);
-                    else
-                        AddCleanProfileRemovals(merged, clean);
-                    DropRemovalsOfAddedBinds(merged);
+                    HashSet<string> planeActions;
+                    profileActions.TryGetValue(planeName, out planeActions);
+                    // The binds the file shall have active by mode; the .diff.lua gets only the differences from DCS's
+                    // defaults (EngineDcsExport.Modes.cs).
+                    FileWrite write = BuildFileWrite(mode, existing, generated, clean, keyboard, keepOtherKeyboardDefaults, planeName, device, planeActions, result);
+                    // Every bind of the device is a DCS default and the device has no file: nothing to write (DCS
+                    // applies its defaults without one).
+                    if (IsEmptyDiff(write.Diff) && !File.Exists(files.ExistingDiff) && !File.Exists(files.ExistingBackup))
+                        continue;
 
-                    WritePayloadFile(planeDir, files.Diff, merged, false, result);
-                    WritePayloadFile(planeDir, files.Backup, merged, true, result);
+                    WritePayloadFile(planeDir, files.Diff, write.Diff, false, result);
+                    WritePayloadFile(planeDir, files.Backup, write.Backup, true, result);
                     RemoveLegacyFiles(files, result);
                 }
 
@@ -134,23 +139,26 @@ namespace JoyPro.Engine
                 result.Warnings.Add("The DCS default keys are back on the keyboard of " + string.Join(", ", result.KeyboardRestoredPlanes) +
                                     ": an older JoyPro export had removed all of them. Only keys your profile binds replace a default now.");
 
-            // JoyPro takes over whole devices (docs/games/README.md, rule 5): the written devices also lose their DCS
-            // defaults in every other installed aircraft. Clean also clears their binds there; the other modes keep
-            // the binds the files already have.
-            if (effectiveOptions.CleanAllAircraft && effectiveOptions.Planes.Count == 0)
+            // Profile wins: the profile's actions also lose their other buttons on the aircraft's other devices.
+            if (mode == EngineDcsExportMode.MergeOverwrite)
             {
-                bool keepBinds = mode != EngineDcsExportMode.Clean;
-                ReportStatus(effectiveOptions, keepBinds
-                    ? "Removing the DCS default binds of the written devices in the other aircraft."
-                    : "Clearing the written devices in the other aircraft.");
-                CleanOtherAircraft(result.InputPath, generatedPayloads, cleanProfiles, result, keepBinds);
+                ReportStatus(effectiveOptions, "Taking the profile's actions off their other buttons in the exported aircraft.");
+                RemoveOtherButtonsElsewhere(result.InputPath, generatedPayloads, profileActions, effectiveOptions, cleanProfiles, result);
+            }
+
+            // Clean touches only the exported aircraft (2.5.0). Only on request ("clean all aircraft", off by default)
+            // the written devices also lose their binds and DCS defaults in every other installed aircraft.
+            if (mode == EngineDcsExportMode.Clean && effectiveOptions.CleanAllAircraft && effectiveOptions.Planes.Count == 0)
+            {
+                ReportStatus(effectiveOptions, "Clearing the written devices in the other aircraft.");
+                CleanOtherAircraft(result.InputPath, generatedPayloads, cleanProfiles, result, false);
             }
             WarnAboutUncoveredDeviceTypes(generatedPayloads, result);
 
             if (effectiveOptions.NukeUntouchedDevices)
             {
                 ReportStatus(effectiveOptions, "Removing all binds of devices the profile does not use.");
-                NukeUnusedDevices(result.InputPath, generatedPayloads, cleanProfiles, result);
+                NukeUnusedDevices(result.InputPath, generatedPayloads, cleanProfiles, effectiveOptions, result);
             }
 
             result.PlaneCount = generatedPayloads.Keys.Count;
@@ -187,6 +195,14 @@ namespace JoyPro.Engine
             sb.AppendLine("Merge Conflicts Kept: " + result.MergeConflictsKept);
             sb.AppendLine("Merge Conflicts Overwritten: " + result.MergeConflictsOverwritten);
             sb.AppendLine("Merge Conflicts Added: " + result.MergeConflictsAdded);
+            sb.AppendLine("Game Binds On Taken Buttons Removed (Merge): " + result.ConflictingGameBindsRemoved);
+            sb.AppendLine("Other Buttons Of Profile Actions Removed (Profile Wins): " + result.OtherButtonsOfProfileActionsRemoved);
+            sb.AppendLine("Binds Equal To A DCS Default (Not Written): " + result.DefaultsKeptUnwritten);
+            sb.AppendLine("DCS Defaults With Changed Tuning (Changed): " + result.DefaultsWithChangedTuning);
+            sb.AppendLine("Binds Not Written, Button Taken In The Game (Only Add): " + (result.SkippedTakenInputs == null ? 0 : result.SkippedTakenInputs.Count));
+            foreach (ExportSkippedBind skipped in result.SkippedTakenInputs ?? new List<ExportSkippedBind>())
+                sb.AppendLine("  - " + skipped.Aircraft + ": " + skipped.Relation + " (" + skipped.Action + ") on " + skipped.Device + " " +
+                              (skipped.Modifiers.Count > 0 ? string.Join("+", skipped.Modifiers) + "+" : string.Empty) + skipped.Input + " is used for " + skipped.GameAction);
             sb.AppendLine("Device Files Cleared (Nuke): " + result.DevicesCleared);
             sb.AppendLine("Other Aircraft Files Cleaned (Clean): " + result.OtherAircraftFilesCleaned);
             if (result.RenamedDeviceFiles != null)
@@ -227,6 +243,7 @@ namespace JoyPro.Engine
             normalized.ClearKeyboardDefaults = effective.ClearKeyboardDefaults;
             normalized.NukeUntouchedDevices = effective.NukeUntouchedDevices;
             normalized.CleanAllAircraft = effective.CleanAllAircraft;
+            normalized.KeepDevices = (effective.KeepDevices ?? new List<string>()).Where(d => !string.IsNullOrWhiteSpace(d)).Select(d => d.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             normalized.Planes = (effective.Planes ?? new List<string>())
                 .Where(p => !string.IsNullOrWhiteSpace(p))
                 .Select(p => SanitizePathSegment(p.Trim()))
@@ -1152,6 +1169,7 @@ namespace JoyPro.Engine
                 }
                 foreach (DiffRemoved removed in ExtractRemovedEntries(entry.Block))
                     AddRemoved(parsedEntry, removed);
+                parsedEntry.Changed.AddRange(ExtractAddedEntries(entry.Block, "changed"));
 
                 if (!target.ContainsKey(entry.Id))
                 {
@@ -1174,6 +1192,7 @@ namespace JoyPro.Engine
                     }
                     foreach (DiffRemoved removed in parsedEntry.Removed)
                         AddRemoved(existing, removed);
+                    existing.Changed.AddRange(parsedEntry.Changed);
                 }
             }
         }
@@ -1215,11 +1234,11 @@ namespace JoyPro.Engine
                 : (hasSwapAxis && ExtractNamedBool(ffBlock, "swapAxis", false));
         }
 
-        private static List<DiffAdded> ExtractAddedEntries(string entryBlock)
+        private static List<DiffAdded> ExtractAddedEntries(string entryBlock, string blockName = "added")
         {
             List<DiffAdded> result = new List<DiffAdded>();
             string addedBlock;
-            if (!TryExtractNamedBlock(entryBlock, "added", out addedBlock))
+            if (!TryExtractNamedBlock(entryBlock, blockName, out addedBlock))
                 return result;
 
             List<SectionEntry> items = ParseTopLevelEntries(addedBlock);
@@ -1321,11 +1340,32 @@ namespace JoyPro.Engine
                         sb.AppendLine("        },");
                     }
                     sb.AppendLine("      },");
-                    if (entry.Added.Count == 0)
+                }
+                if (entry.Changed.Count > 0)
+                {
+                    sb.AppendLine("      [\"changed\"] = {");
+                    for (int c = 0; c < entry.Changed.Count; c++)
                     {
-                        sb.AppendLine("    },");
-                        continue;
+                        DiffAdded changed = entry.Changed[c];
+                        sb.AppendLine("        [" + (c + 1) + "] = {");
+                        sb.AppendLine("          [\"key\"] = \"" + EscapeLua(changed.Key) + "\",");
+                        if (changed.Reformers != null && changed.Reformers.Count > 0)
+                        {
+                            sb.AppendLine("          [\"reformers\"] = {");
+                            for (int r = 0; r < changed.Reformers.Count; r++)
+                                sb.AppendLine("            [" + (r + 1) + "] = \"" + EscapeLua(changed.Reformers[r]) + "\",");
+                            sb.AppendLine("          },");
+                        }
+                        if (isAxis && HasAxisFilter(changed))
+                            RenderAxisFilter(sb, changed);
+                        sb.AppendLine("        },");
                     }
+                    sb.AppendLine("      },");
+                }
+                if (entry.Added.Count == 0)
+                {
+                    sb.AppendLine("    },");
+                    continue;
                 }
                 sb.AppendLine("      [\"added\"] = {");
                 for (int a = 0; a < entry.Added.Count; a++)
@@ -1629,18 +1669,22 @@ namespace JoyPro.Engine
             "VoiceChat", "ground_unit", "TrackIR", "Headtracker"
         };
 
-        // JoyPro1 behaviour: in every plane the profile exports, each joystick device the profile does not use there
-        // (connected, or with an existing file) gets a file that only removes the plane's DCS defaults, so it has no
-        // binds at all. Force feedback settings of the file stay. Keyboard files and other planes are not touched.
+        // JoyPro1 behaviour: in every plane the profile exports, each connected joystick the profile does not use there
+        // gets a file that only removes the plane's DCS defaults, so it has no binds at all. Force feedback settings of
+        // the file stay. Keyboard files and other planes are not touched. Not connected devices (an import with "only
+        // connected devices" did not read them) and the kept devices (the import's ignored devices, the vJoy device
+        // JoyPro tunnels into) keep their binds (2.5.0; up to 2.4.3 every device with a file was cleared).
         private static void NukeUnusedDevices(
             string inputPath,
             Dictionary<string, Dictionary<string, DiffPayload>> generatedPayloads,
             Dictionary<string, DiffPayload> cleanProfiles,
+            EngineDcsExportOptions options,
             EngineDcsExportResult result)
         {
             List<string> connected = Games.GameDeviceDirectory.Discover(result.Warnings).Devices
-                .Where(d => d.Connected && !string.IsNullOrWhiteSpace(d.JoyProName))
+                .Where(d => d.Connected && !string.IsNullOrWhiteSpace(d.JoyProName) && !string.Equals(d.JoyProName.Trim(), "Keyboard", StringComparison.OrdinalIgnoreCase))
                 .Select(d => d.JoyProName.Trim())
+                .Where(d => !IsKeptDevice(d, options))
                 .ToList();
             List<string> withoutCleanProfile = new List<string>();
 
@@ -1659,17 +1703,6 @@ namespace JoyPro.Engine
                 HashSet<string> devices = new HashSet<string>(
                     connected.Select(d => SanitizeDcsFileName(DcsDeviceNames.DcsName(d, joystickDir))),
                     StringComparer.OrdinalIgnoreCase);
-                if (Directory.Exists(joystickDir))
-                {
-                    foreach (string file in Directory.GetFiles(joystickDir))
-                    {
-                        string name = Path.GetFileName(file);
-                        if (name.EndsWith(".diff.lua", StringComparison.OrdinalIgnoreCase))
-                            devices.Add(name.Substring(0, name.Length - ".diff.lua".Length));
-                        else if (name.EndsWith(".jp", StringComparison.OrdinalIgnoreCase))
-                            devices.Add(name.Substring(0, name.Length - ".jp".Length));
-                    }
-                }
                 devices.RemoveWhere(d => used.Contains(DcsDeviceNames.JoyProName(d)));
                 if (devices.Count == 0)
                     continue;
@@ -2038,6 +2071,8 @@ namespace JoyPro.Engine
             }
             for (int i = 0; i < source.Removed.Count; i++)
                 AddRemoved(entry, source.Removed[i]);
+            foreach (DiffAdded changed in source.Changed)
+                entry.Changed.Add(CloneAdded(changed));
             return entry;
         }
 
@@ -2178,9 +2213,10 @@ namespace JoyPro.Engine
             List<string> planes;
             try
             {
+                // Only the exported aircraft (2.5.0: an export touches no other aircraft).
                 planes = planeFilter != null && planeFilter.Count > 0
                     ? planeFilter.ToList()
-                    : Directory.GetDirectories(inputPath).Select(Path.GetFileName).ToList();
+                    : generatedPayloads.Keys.ToList();
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {
@@ -2950,6 +2986,8 @@ namespace JoyPro.Engine
             public HashSet<string> Signatures { get; set; }
             // Default binds this device drops for the action (DCS "removed" list).
             public List<DiffRemoved> Removed { get; set; }
+            // Default binds with another axis tuning (DCS "changed" list).
+            public List<DiffAdded> Changed { get; set; } = new List<DiffAdded>();
 
             public DiffEntry()
             {
@@ -3078,6 +3116,9 @@ namespace JoyPro.Engine
         public bool CleanAllAircraft { get; set; }
         // Only these aircraft (and layers) are written; empty = every aircraft of the profile.
         public List<string> Planes { get; set; }
+        // Devices the export never clears or takes binds from (nuke, merge-overwrite's other devices): the import's
+        // ignored devices and the vJoy device JoyPro tunnels into.
+        public List<string> KeepDevices { get; set; } = new List<string>();
         public Action<string> StatusSink { get; set; }
 
         public EngineDcsExportOptions()
@@ -3085,7 +3126,7 @@ namespace JoyPro.Engine
             Mode = "merge-overwrite";
             KeepKeyboardDefaults = true;
             NukeUntouchedDevices = false;
-            CleanAllAircraft = true;
+            CleanAllAircraft = false;
             Planes = new List<string>();
             StatusSink = null;
         }
@@ -3124,6 +3165,17 @@ namespace JoyPro.Engine
         // DCS default keys an older export had removed from a keyboard file and this one put back.
         public int KeyboardDefaultsRestored { get; set; }
         public List<string> KeyboardRestoredPlanes { get; set; } = new List<string>();
+        // The aircraft this export wrote (the scope of the profile's "not exported" marks).
+        public List<string> ExportedPlanes { get; set; } = new List<string>();
+        // "Only add": profile binds not written because the game uses their input for another function.
+        public List<ExportSkippedBind> SkippedTakenInputs { get; set; } = new List<ExportSkippedBind>();
+        // Game binds a merge took off a button the profile puts another function on (merge, merge-overwrite), and binds
+        // of the profile's actions merge-overwrite took off their other buttons.
+        public int ConflictingGameBindsRemoved { get; set; }
+        public int OtherButtonsOfProfileActionsRemoved { get; set; }
+        // Binds equal to a DCS default that the diff leaves out (the default applies) and defaults written as "changed".
+        public int DefaultsKeptUnwritten { get; set; }
+        public int DefaultsWithChangedTuning { get; set; }
         public List<string> WrittenFiles { get; set; }
         public List<string> ClearedFiles { get; set; }
         public List<string> Errors { get; set; }

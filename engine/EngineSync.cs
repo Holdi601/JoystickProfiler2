@@ -20,7 +20,7 @@ namespace JoyPro.Engine
     //   apply:  the user's choice per change (a relation, a new relation, or ignore) goes into the profile.
     // The fingerprints live in <data>\Sync\<game>.json with a baseline (hashes of the binds the file held when recorded),
     // so a diff only reports what the game changed, not what the user changed in JoyPro since the export.
-    internal static class EngineSync
+    internal static partial class EngineSync
     {
         private const char Sep = '\u001F';
         // The section sign between the parts of a modifier string (name, device, key, switch).
@@ -635,6 +635,7 @@ namespace JoyPro.Engine
                 SyncGame game;
                 if (!TryResolveGame(gameId, out game))
                     return;
+                MarkProfileSynced(game.Id, "export");
                 List<string> local = new List<string>();
                 SyncLocation location = ResolveLocation(game, configPath, local);
                 if (!location.Exists)
@@ -741,6 +742,7 @@ namespace JoyPro.Engine
                 SyncGame game;
                 if (!TryResolveGame(gameId, out game))
                     return;
+                MarkProfileSynced(game.Id, "import");
                 List<string> local = new List<string>();
                 SyncLocation location = ResolveLocation(game, configPath, local);
                 if (!location.Exists || FindRecord(game.Id, location.ConfigPath) != null)

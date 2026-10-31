@@ -26,6 +26,7 @@ Open it with **HUD** in the bottom bar. **Start HUD** (also on the Start page) s
     - *Photo* (the manufacturer's picture) is also what *Auto* uses.
     - *Layout* is your JoyPro layout picture. The pressed buttons light up at the positions stored in the layout. JoyPro 1 layouts put these positions on the label boxes.
   - **Grip on this base:** for a base that takes several grips, such as VPforce Rhino or Virpil WarBRD. The grip decides the picture and the button names.
+  - **Stick axes** (2.5.0): where the stick element (gimbal dot, twist and the tilt of the picture) gets **X**, **Y** and **Twist** from. *Automatic* (the default) takes the device's own axis; a grip that is a device of its own without X/Y (a VKB grip on a VPforce Rhino base: buttons from the grip, axes from the base) takes them from the base it sits on. The base is a stick-like device with its own X and Y, fewer buttons and no other hand; the same alias (Layout page) wins, then a base by its kind, then the fewest buttons. Each box can also name any device's axis (*Rhino · X*). An axis that is missing, has not reported yet or is stuck at an end of its travel since the first report (a grip's X/Y without sensors) is centred, never a corner. The line below the boxes says what *Automatic* uses. Kept in `hud.json` per widget (`AxisX`, `AxisY`, `AxisTwist`: empty = Automatic, else `<device>|<input>`).
 - **Look:**
   - Style: *Glass* (frosted dark cards), *Neon* (glowing outlines) or *Minimal*.
   - Accent colour and opacity.
@@ -39,6 +40,9 @@ The layout is saved in `%APPDATA%\JoyPro2\hud.json`.
 - The HUD window stays on top and never takes the focus from the game. It is not in the task bar or Alt+Tab, and it lets clicks through ("Click-through", applied when the HUD starts).
 - It is only as large as the visible widgets, placed where the designer puts them (scaled from 1920 x 1080 to the primary screen).
 - It works over windowed and borderless games. Exclusive full screen hides it (a Windows limit).
+- It must never cost the game anything: the axis reports allocate nothing (the stick element's sources are worked out
+  when the devices or a choice change, not per report), properties change only when their value does (only then is
+  something drawn again), and a hidden game is not looked for.
 
 ## Which game and aircraft
 

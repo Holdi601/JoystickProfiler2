@@ -81,6 +81,9 @@ namespace JoyPro.Engine.Games
         protected abstract string FindCatalogAssets(string sourcePath);
         // Hat elements were seen in a map the game saved: JoyPro reads and writes the four main directions.
         protected virtual bool HatsVerified { get { return false; } }
+        // Nuke gives connected devices without a saved map an empty one. Only for a game whose default map of an unknown
+        // joystick binds nothing (Tiny Combat Arena), so the empty map changes nothing the game does.
+        protected virtual bool EmptyMapsOnNuke { get { return false; } }
         // The Rewired player whose maps the game saves (Nuclear Option "Player0", Tiny Combat Arena "Player").
         protected virtual string PlayerName { get { return "Player0"; } }
         // Rewired map category ("tab" of the Control Mapper) an action of this action category is saved in; -1 when
@@ -232,6 +235,7 @@ namespace JoyPro.Engine.Games
             // Wanted element maps per device identifier and map category.
             Dictionary<Tuple<string, int>, List<RewiredElementMap>> wanted = new Dictionary<Tuple<string, int>, List<RewiredElementMap>>();
             Dictionary<string, string> hardwareNames = new Dictionary<string, string>(StringComparer.Ordinal);
+            Dictionary<RewiredElementMap, GameInputBinding> sources = new Dictionary<RewiredElementMap, GameInputBinding>();
             bool sliderWarned = false;
             foreach (GameInputBinding binding in request.Bindings)
             {
@@ -270,12 +274,18 @@ namespace JoyPro.Engine.Games
                 if (!wanted.TryGetValue(slot, out list))
                     wanted[slot] = list = new List<RewiredElementMap>();
                 if (!list.Any(m => Same(m, map)))
+                {
                     list.Add(map);
+                    sources[map] = binding;
+                }
                 hardwareNames[identifier] = device.HidProductString.Replace("\0", string.Empty);
                 result.BindingsWritten++;
             }
 
             HashSet<int> owned = new HashSet<int>(actions.ById.Where(a => IsCleanCategory(a.Value.Category)).Select(a => a.Key));
+            // Merge-overwrite: an action the profile binds leaves its other inputs, also on other connected devices.
+            HashSet<string> boundActions = new HashSet<string>(wanted.Values.SelectMany(l => l).Select(FunctionOf), StringComparer.Ordinal);
+            bool nuke = request.NukeUnusedDevices && request.Mode != GameExportMode.Add;
             Dictionary<string, string> changes = new Dictionary<string, string>(StringComparer.Ordinal);
             int removed = 0;
             int added = 0;
@@ -287,7 +297,13 @@ namespace JoyPro.Engine.Games
                 // Clean: also the maps of the written devices JoyPro has no binds for in this map category.
                 bool written = value.Duplicate == "0" && hardwareNames.ContainsKey(value.Identifier);
                 List<RewiredElementMap> mine = joyPro ? wanted[slot] : new List<RewiredElementMap>();
-                if (!joyPro && !request.NukeUnusedDevices && !(written && request.Mode == GameExportMode.Clean))
+                bool moving = request.Mode == GameExportMode.MergeOverwrite && boundActions.Count > 0;
+                if (!joyPro && !nuke && !moving && !(written && request.Mode == GameExportMode.Clean))
+                    continue;
+                // Nuke and merge-overwrite: only devices the import can read (connected, one of its model). The maps of
+                // others are not in the profile, so they are not JoyPro's to clear.
+                string unreadable;
+                if (!joyPro && !written && FindDevice(request.Devices, value.Identifier, value.Duplicate, out unreadable) == null)
                     continue;
 
                 List<RewiredElementMap> existing;
@@ -300,13 +316,14 @@ namespace JoyPro.Engine.Games
                 HashSet<RewiredElementMap> drop = new HashSet<RewiredElementMap>();
                 if (!joyPro && !written)
                 {
-                    // Nuke: JoyPro's actions leave the devices the export does not use.
-                    foreach (RewiredElementMap map in existing.Where(m => owned.Contains(m.ActionId)))
+                    // Nuke: JoyPro's actions leave the devices the export does not use; merge-overwrite: the actions the
+                    // profile binds elsewhere.
+                    foreach (RewiredElementMap map in existing.Where(m => owned.Contains(m.ActionId) && (nuke || (moving && boundActions.Contains(FunctionOf(m))))))
                         drop.Add(map);
                 }
                 else
                 {
-                    PlanDevice(request.Mode, existing, mine, owned, actions, value.Identifier, drop, add, result);
+                    PlanDevice(request.Mode, existing, mine, owned, boundActions, actions, value.Identifier, drop, add, sources, result);
                 }
                 string updated;
                 if (!RewiredJoystickMap.TryEdit(value.Xml, m => drop.Any(d => Same(d, m)), add, out updated))
@@ -332,9 +349,10 @@ namespace JoyPro.Engine.Games
                 added += map.Value.Count;
                 result.Steps.Add("New joystick map for '" + hardwareNames[map.Key.Item1].Trim() + "'" + MapCategoryNote(map.Key.Item2) + " (the game's default binds of this device are replaced).");
             }
-            // Nuke: connected devices the game has no saved map for would keep the game's default binds (axes and buttons
-            // of every device); an empty map (per map category of JoyPro's actions) switches them off.
-            if (request.NukeUnusedDevices && request.Devices != null)
+            // Connected devices the game has no saved map for keep the game's default binds (axes and buttons of every
+            // device): JoyPro cannot read that default map, so the import has none of it and nuke leaves it alone (an
+            // empty map would switch it off). Only a game that asks for it (EmptyMapsOnNuke) still writes empty maps.
+            if (request.NukeUnusedDevices && request.Devices != null && EmptyMapsOnNuke)
             {
                 HashSet<int> categories = new HashSet<int>(actions.ById.Values.Where(a => IsCleanCategory(a.Category)).Select(a => MapCategoryOf(a.Category)).Where(c => c >= 0));
                 foreach (GameDevice device in request.Devices.Devices.Where(d => d.HasVidPid && !string.IsNullOrWhiteSpace(d.HidProductString)))
@@ -379,38 +397,49 @@ namespace JoyPro.Engine.Games
             return result;
         }
 
-        // One device JoyPro writes. A conflict is the same action (and pole) on the same device: merge-overwrite replaces
-        // it, merge keeps it, add keeps both. Clean releases every other owned action of the device. In clean and
-        // merge-overwrite an element JoyPro uses leaves the other owned actions it drove.
-        private static void PlanDevice(GameExportMode mode, List<RewiredElementMap> existing, List<RewiredElementMap> mine, HashSet<int> owned, ActionTable actions,
-                                       string identifier, HashSet<RewiredElementMap> drop, List<RewiredElementMap> add, GameIoResult result)
+        // One device JoyPro writes (docs/export.md "Export modes"). Clean releases every other owned action of the device.
+        // Merge and merge-overwrite release an owned action on an element the profile gives another action (conflict);
+        // merge-overwrite also the other elements of an action the profile binds. Add releases nothing and leaves out a
+        // bind whose element drives another action (no multi-bind; reported). Actions JoyPro does not manage (not flight)
+        // are never released.
+        private void PlanDevice(GameExportMode mode, List<RewiredElementMap> existing, List<RewiredElementMap> mine, HashSet<int> owned, HashSet<string> boundActions,
+                                ActionTable actions, string identifier, HashSet<RewiredElementMap> drop, List<RewiredElementMap> add,
+                                Dictionary<RewiredElementMap, GameInputBinding> sources, GameIoResult result)
         {
-            bool overwrite = mode == GameExportMode.Clean || mode == GameExportMode.MergeOverwrite;
             foreach (RewiredElementMap map in existing)
             {
-                if (mine.Any(m => Same(m, map)))
+                if (mine.Any(m => Same(m, map)) || !owned.Contains(map.ActionId))
                     continue;
-                if (mode == GameExportMode.Clean && owned.Contains(map.ActionId))
+                if (mode == GameExportMode.Clean)
                     drop.Add(map);
-                else if (overwrite && mine.Any(m => SameSlot(m, map)))
+                else if (mode != GameExportMode.Add && mine.Any(m => SameElement(m, map) && FunctionOf(m) != FunctionOf(map)))
                     drop.Add(map);
-                else if (overwrite && owned.Contains(map.ActionId) && mine.Any(m => SameElement(m, map)))
+                else if (mode == GameExportMode.MergeOverwrite && boundActions.Contains(FunctionOf(map)))
                     drop.Add(map);
             }
             foreach (RewiredElementMap map in mine)
             {
                 if (existing.Any(m => Same(m, map)))
                     continue;
-                if (mode == GameExportMode.Merge && existing.Any(m => SameSlot(m, map)))
+                RewiredElementMap other = existing.FirstOrDefault(m => !drop.Contains(m) && SameElement(m, map) && FunctionOf(m) != FunctionOf(map));
+                if (other != null && mode == GameExportMode.Add)
                 {
+                    GameInputBinding source;
+                    sources.TryGetValue(map, out source);
                     result.ConflictsKept++;
-                    result.Warnings.Add(ActionName(actions, map) + " on '" + identifier + "': kept the game's bind (merge mode).");
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
+                    {
+                        Game = GameId,
+                        Device = source == null ? identifier : source.Device,
+                        Input = source == null ? map.ElementId.ToString(CultureInfo.InvariantCulture) : source.Input,
+                        Relation = source == null ? string.Empty : source.RelationName ?? string.Empty,
+                        Action = ActionName(actions, map),
+                        GameAction = ActionName(actions, other)
+                    });
                     continue;
                 }
-                RewiredElementMap other = existing.FirstOrDefault(m => !drop.Contains(m) && SameElement(m, map) && m.ActionId != map.ActionId);
                 if (other != null)
-                    result.Warnings.Add(ActionName(actions, map) + " on '" + identifier + "': the element also drives " + ActionName(actions, other) + " (kept: " +
-                                        (owned.Contains(other.ActionId) ? GameCommands.ModeToString(mode) + " mode" : "not an action JoyPro manages") + ").");
+                    result.Warnings.Add(ActionName(actions, map) + " on '" + identifier + "': the element also drives " + ActionName(actions, other) + " (kept: not an action JoyPro manages).");
                 add.Add(map);
             }
         }
@@ -436,6 +465,13 @@ namespace JoyPro.Engine.Games
             if (a.ActionId != b.ActionId || a.ElementType != b.ElementType)
                 return false;
             return a.ElementType != 1 || a.AxisContribution == b.AxisContribution;
+        }
+
+        // The function an element map drives: the action, and for a button on an axis action its pole (positive and
+        // negative are two functions; a full axis is a third).
+        private static string FunctionOf(RewiredElementMap map)
+        {
+            return map.ActionId.ToString(CultureInfo.InvariantCulture) + "|" + (map.ElementType == 1 ? map.AxisContribution.ToString(CultureInfo.InvariantCulture) : "axis");
         }
 
         private static bool SameElement(RewiredElementMap a, RewiredElementMap b)

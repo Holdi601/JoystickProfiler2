@@ -48,6 +48,9 @@ namespace JoyPro.Engine.Games
         protected abstract string CtrlWord { get; }
         // True when a button or key may stand on an axis command's line (Cliffs of Dover).
         protected virtual bool AxisCommandsTakeButtons { get { return false; } }
+        // False for a section of non-flight commands (the ground vehicles of Cliffs of Dover): JoyPro writes the profile's
+        // binds there but never releases the game's (clean, nuke, merge conflicts and merge-overwrite leave them).
+        protected virtual bool IsFlightSection(string section) { return true; }
 
         public abstract List<string> DiscoverConfigPaths(List<string> warnings);
         // JoyPro's own command list (rows of the catalog a refresh starts from).
@@ -166,9 +169,13 @@ namespace JoyPro.Engine.Games
                 return result;
             LegacyIniFile file = context.File;
 
-            // What the profile wants, one bind per input.
+            // What the profile wants, one bind per input and command (an input may carry several commands, as the game's
+            // own files do: then they are all the profile's).
             List<Il2LegacyWanted> wanted = new List<Il2LegacyWanted>();
-            Dictionary<string, Il2LegacyWanted> byKey = new Dictionary<string, Il2LegacyWanted>(StringComparer.Ordinal);
+            Dictionary<string, List<Il2LegacyWanted>> byKey = new Dictionary<string, List<Il2LegacyWanted>>(StringComparer.Ordinal);
+            // Commands with a profile bind JoyPro cannot write: which input it means is unknown, so merge-overwrite leaves
+            // the game's inputs of these commands alone.
+            HashSet<string> unwritten = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (GameInputBinding binding in request.Bindings)
             {
                 string section;
@@ -188,13 +195,18 @@ namespace JoyPro.Engine.Games
                     reason = axisSection ? "'" + command + "' is an axis command; bind an axis." : "'" + command + "' needs a button or key.";
                 if (reason.Length == 0 && !TryEncodeKey(binding, request.Devices, file, out key, out fileDevice, out reason))
                     reason = reason.Length == 0 ? "the input cannot be written." : reason;
-                Il2LegacyWanted existing;
-                if (reason.Length == 0 && byKey.TryGetValue(NormalizeKey(key), out existing))
-                    reason = "the input is already used by relation '" + existing.Binding.RelationName + "'.";
+                List<Il2LegacyWanted> existing;
+                Il2LegacyWanted twin = reason.Length == 0 && byKey.TryGetValue(NormalizeKey(key), out existing)
+                    ? existing.FirstOrDefault(w => string.Equals(w.Section, section, StringComparison.OrdinalIgnoreCase) && string.Equals(w.Command, command, StringComparison.OrdinalIgnoreCase))
+                    : null;
+                if (twin != null)
+                    reason = "the input is already used by relation '" + twin.Binding.RelationName + "'.";
                 if (reason.Length > 0)
                 {
                     result.BindingsSkipped++;
                     result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
+                    if (action != null && twin == null)
+                        unwritten.Add(action.Id);
                     continue;
                 }
                 Il2LegacyWanted want = new Il2LegacyWanted
@@ -208,7 +220,10 @@ namespace JoyPro.Engine.Games
                     Value = EncodeValue(section, command, binding.IsAxis, binding.IsAxis && binding.Inverted)
                 };
                 wanted.Add(want);
-                byKey[want.Normalized] = want;
+                List<Il2LegacyWanted> sameKey;
+                if (!byKey.TryGetValue(want.Normalized, out sameKey))
+                    byKey[want.Normalized] = sameKey = new List<Il2LegacyWanted>();
+                sameKey.Add(want);
             }
 
             // What the file has.
@@ -240,33 +255,26 @@ namespace JoyPro.Engine.Games
             Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(request.ConfigPath, result.Warnings);
             bool overwrite = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
             HashSet<int> remove = new HashSet<int>();
-
-            // Inputs JoyPro wrote before and no longer wants go (clean, merge-overwrite), unless changed in the game.
-            if (overwrite)
+            // A line JoyPro may release: the import reads it (connected devices, every trigger known; never the mouse), a
+            // flight command (not the vehicles of Cliffs of Dover), keyboard lines only when the export includes the keyboard.
+            Func<Existing, bool> releasable = l => l.JoyProDevice.Length > 0 && IsFlightSection(l.Section) && (l.FileDevice.Length > 0 || request.IncludeKeyboard);
+            Func<Existing, string> idOf = l => Il2LegacyInput.Id(l.Section, l.Command);
+            Func<Existing, bool> wantedHere = l =>
             {
-                foreach (Existing line in lines)
-                {
-                    // Keyboard binds are only managed by exports that include them.
-                    if (line.FileDevice.Length == 0 && !request.IncludeKeyboard)
-                        continue;
-                    string id = Il2LegacyInput.Id(line.Section, line.Command);
-                    Il2LegacyWanted want;
-                    bool stillWanted = byKey.TryGetValue(line.Normalized, out want) && string.Equals(Il2LegacyInput.Id(want.Section, want.Command), id, StringComparison.OrdinalIgnoreCase);
-                    if (!stillWanted && GameOwnershipStore.Contains(owned, id, line.Normalized))
-                        remove.Add(line.Line);
-                }
-            }
+                List<Il2LegacyWanted> same;
+                return byKey.TryGetValue(l.Normalized, out same) && same.Any(w => string.Equals(Il2LegacyInput.Id(w.Section, w.Command), idOf(l), StringComparison.OrdinalIgnoreCase));
+            };
 
             // Clean: the written devices keep only the profile's binds; nuke: the other connected devices lose theirs.
+            // Keyboard lines stay (the game's keyboard defaults), as do lines the import cannot read.
             HashSet<string> usedDevices = new HashSet<string>(wanted.Where(w => w.FileDevice.Length > 0).Select(w => w.FileDevice), StringComparer.OrdinalIgnoreCase);
-            HashSet<string> connectedDevices = new HashSet<string>(lines.Where(l => l.FileDevice.Length > 0 && l.JoyProDevice.Length > 0).Select(l => l.FileDevice), StringComparer.OrdinalIgnoreCase);
             int released = 0;
             foreach (Existing line in lines)
             {
-                if (line.FileDevice.Length == 0 || byKey.ContainsKey(line.Normalized))
+                if (line.FileDevice.Length == 0 || byKey.ContainsKey(line.Normalized) || !releasable(line))
                     continue;
                 bool used = usedDevices.Contains(line.FileDevice);
-                if ((used && request.Mode == GameExportMode.Clean) || (!used && request.NukeUnusedDevices && connectedDevices.Contains(line.FileDevice)))
+                if ((used && request.Mode == GameExportMode.Clean) || (!used && request.NukeUnusedDevices))
                 {
                     if (remove.Add(line.Line))
                         released++;
@@ -274,6 +282,17 @@ namespace JoyPro.Engine.Games
             }
             if (released > 0)
                 result.Steps.Add("Released " + released.ToString(CultureInfo.InvariantCulture) + " bind(s) of " + (request.Mode == GameExportMode.Clean ? "the written devices" : "unused devices") + ".");
+
+            // "My profile wins": a command the profile binds keeps only the profile's inputs (a move fully moves).
+            if (request.Mode == GameExportMode.MergeOverwrite)
+            {
+                HashSet<string> bound = new HashSet<string>(wanted.Select(w => Il2LegacyInput.Id(w.Section, w.Command)), StringComparer.OrdinalIgnoreCase);
+                foreach (Existing line in lines.Where(l => bound.Contains(idOf(l)) && !unwritten.Contains(idOf(l)) && releasable(l) && !wantedHere(l)))
+                {
+                    if (remove.Add(line.Line))
+                        result.Steps.Add(idOf(line) + ": the game's input '" + line.Key + "' removed (the profile binds the command elsewhere).");
+                }
+            }
 
             // The profile's binds.
             List<string> inserts = new List<string>();
@@ -298,21 +317,41 @@ namespace JoyPro.Engine.Games
                 string label = "Relation '" + want.Binding.RelationName + "' (" + id + ")";
                 List<Existing> sameInput = lines.Where(l => l.Normalized == want.Normalized && !remove.Contains(l.Line)).ToList();
                 Existing exact = sameInput.FirstOrDefault(l => string.Equals(l.Section, want.Section, StringComparison.OrdinalIgnoreCase) && l.Value == want.Value);
-                List<Existing> others = sameInput.Where(l => l != exact).ToList();
-                if (others.Count > 0)
+                // The same command in another form (an axis' inversion): the profile's update of this bind ("Only add"
+                // keeps the game's).
+                List<Existing> sameCommand = exact != null ? new List<Existing>() : sameInput.Where(l => string.Equals(idOf(l), id, StringComparison.OrdinalIgnoreCase)).ToList();
+                // A conflict: the game uses the input for another command the profile does not put there (the vehicles
+                // of Cliffs of Dover have their own inputs, so only commands of the same kind count).
+                List<Existing> conflicts = sameInput.Where(l => l != exact && !sameCommand.Contains(l) && !wantedHere(l) && IsFlightSection(l.Section) == IsFlightSection(want.Section)).ToList();
+                if (request.Mode == GameExportMode.Add && conflicts.Count > 0)
                 {
-                    if (!overwrite)
+                    result.BindingsSkipped++;
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
                     {
-                        result.ConflictsKept++;
-                        result.BindingsSkipped++;
-                        result.Warnings.Add(label + ": the input already has '" + others[0].Value + "' in [" + SectionHeader(others[0].Section) + "]; " + ModeName(request.Mode) + " keeps the game's bind.");
-                        continue;
-                    }
-                    foreach (Existing other in others)
-                    {
-                        remove.Add(other.Line);
-                        result.Warnings.Add(label + " replaced '" + other.Value + "' on its input.");
-                    }
+                        Game = GameId,
+                        Device = want.Binding.Device ?? string.Empty,
+                        Input = want.Binding.Input ?? string.Empty,
+                        ModifiersText = string.Join("+", (want.Binding.Reformers ?? new List<string>()).Select(r => r.Split('§')).Where(p => p.Length >= 3).Select(p => p[1] + " " + p[2])),
+                        Relation = want.Binding.RelationName ?? string.Empty,
+                        Action = id,
+                        GameAction = idOf(conflicts[0])
+                    });
+                    continue;
+                }
+                List<Existing> replace = conflicts.Concat(sameCommand).ToList();
+                Existing kept = request.Mode == GameExportMode.Add ? replace.FirstOrDefault() : replace.FirstOrDefault(l => !releasable(l));
+                if (kept != null)
+                {
+                    result.ConflictsKept++;
+                    result.BindingsSkipped++;
+                    result.Warnings.Add(label + ": the input already has '" + kept.Value + "' in [" + SectionHeader(kept.Section) + "]; " +
+                                        (request.Mode == GameExportMode.Add ? "add keeps the game's bind." : "JoyPro does not release it (keyboard without --include-keyboard, or a line it cannot read), so it stays."));
+                    continue;
+                }
+                foreach (Existing other in replace)
+                {
+                    remove.Add(other.Line);
+                    result.Warnings.Add(label + " replaced '" + other.Value + "' on its input.");
                 }
 
                 // The game's controls page keeps one axis and two inputs per command and drops the rest.
@@ -325,15 +364,17 @@ namespace JoyPro.Engine.Games
                     int room = max - alsoWanted;
                     if (commandInputs.Count + 1 > room)
                     {
-                        if (!overwrite || room <= 0)
+                        // Merge and add keep the game's inputs (the command is full); merge-overwrite and clean replace them.
+                        List<Existing> drops = commandInputs.Take(commandInputs.Count + 1 - room).ToList();
+                        if (!overwrite || room <= 0 || drops.Any(l => !releasable(l)))
                         {
                             result.ConflictsKept++;
                             result.BindingsSkipped++;
                             result.Warnings.Add(label + ": " + DisplayName + " keeps " + max.ToString(CultureInfo.InvariantCulture) + " input(s) per command and '" + want.Command + "' has them; " +
-                                                (overwrite ? "the profile binds it more often than that." : ModeName(request.Mode) + " keeps the game's."));
+                                                (overwrite && room <= 0 ? "the profile binds it more often than that." : overwrite ? "JoyPro does not release the game's." : ModeName(request.Mode) + " keeps the game's."));
                             continue;
                         }
-                        foreach (Existing drop in commandInputs.Take(commandInputs.Count + 1 - room))
+                        foreach (Existing drop in drops)
                         {
                             remove.Add(drop.Line);
                             result.Warnings.Add(label + " replaced the game's input '" + drop.Normalized + "' of '" + want.Command + "' (" + DisplayName + " keeps " + max.ToString(CultureInfo.InvariantCulture) + " per command).");

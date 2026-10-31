@@ -160,6 +160,8 @@ namespace JoyPro.Engine.Games
             Dictionary<string, List<ByojJoystickBinding>> wantedJoystick = Seats.ToDictionary(s => s, s => new List<ByojJoystickBinding>(), StringComparer.Ordinal);
             Dictionary<string, List<ByojKeyboardBinding>> wantedKeyboard = Seats.ToDictionary(s => s, s => new List<ByojKeyboardBinding>(), StringComparer.Ordinal);
             HashSet<Guid> exported = new HashSet<Guid>();
+            // The profile's bind behind each wanted file entry (for the "Only add" report).
+            Dictionary<object, GameInputBinding> sources = new Dictionary<object, GameInputBinding>();
             foreach (GameInputBinding binding in request.Bindings)
             {
                 HashSet<string> seats;
@@ -181,6 +183,7 @@ namespace JoyPro.Engine.Games
                     }
                     foreach (string seat in seats)
                         wantedKeyboard[seat].Add(keyboard);
+                    sources[keyboard] = binding;
                     result.BindingsWritten++;
                     continue;
                 }
@@ -209,6 +212,7 @@ namespace JoyPro.Engine.Games
                     if (modifier != null && !wantedJoystick[seat].Any(w => w.Target == ModifierTarget && w.SameInput(modifier)))
                         wantedJoystick[seat].Add(modifier);
                 }
+                sources[wanted] = binding;
                 exported.Add(wanted.JoystickId);
                 if (modifier != null)
                     exported.Add(modifier.JoystickId);
@@ -216,7 +220,6 @@ namespace JoyPro.Engine.Games
             }
 
             string ownershipPath = Path.Combine(folder, "JoyPro");
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipPath, result.Warnings);
             Dictionary<string, HashSet<string>> nowOwned = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
             int filesChanged = 0;
             foreach (string seat in Seats)
@@ -235,19 +238,38 @@ namespace JoyPro.Engine.Games
                     file = ByojFile.Empty();
                 }
 
-                HashSet<string> ownedHere;
-                owned.TryGetValue(seat, out ownedHere);
-                ownedHere = ownedHere ?? new HashSet<string>(StringComparer.Ordinal);
-                bool replaceOwned = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
+                bool overwrite = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
                 List<ByojJoystickBinding> wanted = wantedJoystick[seat];
+                // The targets the profile binds in this seat (joystick and keyboard): "my profile wins" takes their other
+                // inputs away.
+                HashSet<string> profileTargets = new HashSet<string>(wanted.Where(w => w.Target != ModifierTarget).Select(w => w.Target)
+                    .Concat(wantedKeyboard[seat].Select(k => k.Target)), StringComparer.Ordinal);
+                bool profileModifier = wanted.Any(w => w.Target == ModifierTarget);
                 List<ByojJoystickBinding> kept = new List<ByojJoystickBinding>();
                 List<ByojJoystickBinding> dropped = new List<ByojJoystickBinding>();
                 foreach (ByojJoystickBinding existing in file.Joystick)
                 {
                     bool joyProDevice = exported.Contains(existing.JoystickId);
-                    bool drop = (request.Mode == GameExportMode.Clean && joyProDevice) ||
+                    bool wantedHere = wanted.Any(w => w.Target == existing.Target && w.SameInput(existing));
+                    bool drop;
+                    if (existing.Target == ModifierTarget)
+                    {
+                        // The seat's modifier button is used by binds JoyPro may not touch: it only gives way to the
+                        // profile's own modifier.
+                        drop = profileModifier && !wantedHere && request.Mode != GameExportMode.Add && OwnsInput(request.Devices, existing);
+                    }
+                    else
+                    {
+                        drop = OwnsInput(request.Devices, existing) &&
+                               ((request.Mode == GameExportMode.Clean && joyProDevice) ||
                                 (request.NukeUnusedDevices && !joyProDevice) ||
-                                (replaceOwned && ownedHere.Contains(existing.Key));
+                                (overwrite && profileTargets.Contains(existing.Target) && !wantedHere));
+                    }
+                    // Merge and "my profile wins": another target on an input (with the same modifier state) the profile
+                    // binds is a conflict and goes.
+                    if (!drop && !wantedHere && request.Mode != GameExportMode.Add &&
+                        wanted.Any(w => w.Target != existing.Target && w.SameInput(existing) && w.RequiresModifier == existing.RequiresModifier))
+                        drop = true;
                     if (!drop)
                         kept.Add(existing);
                     else
@@ -255,8 +277,23 @@ namespace JoyPro.Engine.Games
                 }
                 foreach (ByojJoystickBinding want in wanted)
                 {
-                    if (request.Mode == GameExportMode.Merge && kept.Any(k => k.Target == want.Target && exported.Contains(k.JoystickId)))
-                        continue;
+                    if (request.Mode == GameExportMode.Add)
+                    {
+                        // "Only add" never changes or removes a bind: the target already on its input is nothing to do,
+                        // another target there keeps the input and the profile's bind is reported (no multi-bind).
+                        if (kept.Any(k => k.Target == want.Target && k.SameInput(want) && k.RequiresModifier == want.RequiresModifier))
+                            continue;
+                        ByojJoystickBinding taken = kept.FirstOrDefault(k => k.Target != want.Target && k.SameInput(want) && k.RequiresModifier == want.RequiresModifier);
+                        GameInputBinding source;
+                        if (taken != null && sources.TryGetValue(want, out source))
+                        {
+                            result.BindingsSkipped++;
+                            result.SkippedTakenInputs.Add(SkippedMultiBind(source, seat, taken.Target));
+                            continue;
+                        }
+                        if (taken != null)
+                            continue;
+                    }
                     ByojJoystickBinding same = kept.FirstOrDefault(k => k.Target == want.Target && k.SameInput(want));
                     if (same != null)
                     {
@@ -277,16 +314,31 @@ namespace JoyPro.Engine.Games
                     }
                 }
 
+                // Keyboard: the same rules on key + modifier key. "My profile wins" takes keys of the profile's targets
+                // away only when the export includes the keyboard.
                 List<ByojKeyboardBinding> keyboard = file.Keyboard.ToList();
-                foreach (IGrouping<string, ByojKeyboardBinding> target in wantedKeyboard[seat].GroupBy(k => k.Target))
+                List<ByojKeyboardBinding> wantedKeys = wantedKeyboard[seat];
+                if (request.Mode != GameExportMode.Add)
                 {
-                    if (request.Mode == GameExportMode.Merge && keyboard.Any(k => k.Target == target.Key))
+                    keyboard.RemoveAll(k => !wantedKeys.Any(w => w.KeyId == k.KeyId) &&
+                        (wantedKeys.Any(w => w.Target != k.Target && w.Key == k.Key && w.ModifierKey == k.ModifierKey) ||
+                         (overwrite && request.IncludeKeyboard && profileTargets.Contains(k.Target))));
+                }
+                foreach (ByojKeyboardBinding want in wantedKeys)
+                {
+                    if (keyboard.Any(k => k.KeyId == want.KeyId))
                         continue;
-                    keyboard.RemoveAll(k => k.Target == target.Key && (replaceOwned || ownedHere.Contains(k.KeyId)));
-                    foreach (ByojKeyboardBinding want in target.Where(w => !keyboard.Any(k => k.KeyId == w.KeyId)))
+                    ByojKeyboardBinding taken = keyboard.FirstOrDefault(k => k.Key == want.Key && k.ModifierKey == want.ModifierKey);
+                    GameInputBinding source;
+                    if (taken != null && sources.TryGetValue(want, out source))
+                    {
+                        result.BindingsSkipped++;
+                        result.SkippedTakenInputs.Add(SkippedMultiBind(source, seat, taken.Target));
+                        continue;
+                    }
+                    if (taken == null)
                         keyboard.Add(want);
                 }
-
                 HashSet<string> seatOwned = new HashSet<string>(StringComparer.Ordinal);
                 foreach (ByojJoystickBinding want in wanted.Where(w => kept.Any(k => k.Key == w.Key)))
                     seatOwned.Add(want.Key);
@@ -321,6 +373,28 @@ namespace JoyPro.Engine.Games
             if (filesChanged == 0)
                 result.Steps.Add("The BYOJoystick files already match.");
             return result;
+        }
+
+        // Binds JoyPro may release: on a connected device, and an input the import reads (others are not in the profile).
+        private static bool OwnsInput(GameDeviceDirectory devices, ByojJoystickBinding binding)
+        {
+            return devices != null && devices.FindByInstanceGuid(binding.JoystickId) != null &&
+                   (binding.Target == ModifierTarget || ToJoyProInput(binding).Length > 0);
+        }
+
+        private ExportSkippedBind SkippedMultiBind(GameInputBinding binding, string seat, string gameAction)
+        {
+            return new ExportSkippedBind
+            {
+                Game = GameId,
+                Aircraft = seat ?? string.Empty,
+                Device = binding.Device ?? string.Empty,
+                Input = binding.Input ?? string.Empty,
+                ModifiersText = binding.Reformers == null ? string.Empty : string.Join(" + ", binding.Reformers.Select(r => { string[] p = (r ?? string.Empty).Split('§'); return p.Length >= 3 ? p[1] + " " + p[2] : r; })),
+                Relation = binding.RelationName ?? string.Empty,
+                Action = binding.ActionId ?? string.Empty,
+                GameAction = gameAction ?? string.Empty
+            };
         }
 
         public void RecordImport(string configPath, List<GameInputBinding> applied, GameDeviceDirectory devices, GameIoResult result)

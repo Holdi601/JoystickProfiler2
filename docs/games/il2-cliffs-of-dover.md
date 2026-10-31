@@ -87,9 +87,12 @@ default `confUser.ini`. Mission builder sections are not taken.
 
 ## Export rules
 
-Flight game (also vehicles, but JoyPro manages the listed sections only): clean takes over the devices it writes,
-nuke clears the other connected devices; keyboard only with `--include-keyboard`; merge keeps the game's bind on an
-input, merge-overwrite replaces it, add never removes. Backup before the first write; JoyPro's inputs are remembered in
+Flight game (also vehicles, but JoyPro manages the listed sections only): clean takes over the connected devices it
+writes, nuke clears the other connected devices; a device that is not connected, a line the import cannot read, the
+mouse, keyboard lines and the `vehicle` section (ground vehicles, not flight) are never cleared. Add never removes and
+does not write a bind on an input the game uses for another command (listed as a skipped multi bind); merge removes the
+game's bind on an input the profile gives another command and keeps the rest; merge-overwrite also takes the other inputs
+of every command the profile binds away (keyboard only with `--include-keyboard`). Backup before the first write; JoyPro's inputs are remembered in
 `confUser.ini.joypro.json`.
 
 ## Live checks still needed

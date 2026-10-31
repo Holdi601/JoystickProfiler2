@@ -161,6 +161,26 @@ public static class DisplayText
         return known.Length > 0 ? known : (engineName ?? string.Empty).Trim();
     }
 
+    // An action title a game wrote twice in a row, once (DCS's OH-58D: "Display Select Switch - LEFT [VSD Page]Display
+    // Select Switch - LEFT [VSD Page]"; the engine's EngineReadableNames.WithoutRepeat does the same).
+    public static string ActionTitle(string title)
+    {
+        string text = (title ?? string.Empty).Trim();
+        if (text.Length < 12)
+            return text;
+        for (int gap = 0; gap <= 3; gap++)
+        {
+            if ((text.Length - gap) % 2 != 0)
+                continue;
+            int part = (text.Length - gap) / 2;
+            if (part < 6)
+                continue;
+            if (text.Substring(part, gap).Trim(' ', '-', '/', '|', ';', ',').Length == 0 && string.Equals(text[..part], text[(part + gap)..], StringComparison.Ordinal))
+                return text[..part].Trim();
+        }
+        return text;
+    }
+
     // "a, b, c" -> [a, b, c] without the placeholders the engine prints for none.
     public static IReadOnlyList<string> List(string csv, char separator = ',')
     {

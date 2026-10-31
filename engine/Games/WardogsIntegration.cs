@@ -209,13 +209,46 @@ namespace JoyPro.Engine.Games
                 if (TryBuildIdentifier(device, request.Devices, section, out identifier, new List<string>()))
                     usedIdentifiers.Add(identifier);
             }
+            // Nuke releases only devices JoyPro can identify (connected); a device that is not connected is never cleared.
             Func<string, bool> release = identifier => identifier.Length > 0 &&
-                (usedIdentifiers.Contains(identifier) ? request.Mode == GameExportMode.Clean : request.NukeUnusedDevices);
+                (usedIdentifiers.Contains(identifier) ? request.Mode == GameExportMode.Clean
+                    : request.NukeUnusedDevices && ResolveDevice(identifier, request.Devices, new List<string>()).Length > 0);
+
+            // The inputs the profile uses ("A|identifier|axis", "B|identifier|button") and the game's cataloged slots on
+            // them: "only add" skips a bind on an input another action uses (no multi-bind), the other modes clear that
+            // slot (a conflict). Nothing else of the game is touched by a conflict.
+            Dictionary<string, string> wantedInputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (GameInputBinding binding in desired.Values)
+            {
+                string key = InputKey(binding, request.Devices, section);
+                if (key.Length > 0 && !wantedInputs.ContainsKey(key))
+                    wantedInputs[key] = binding.ActionId;
+            }
+            if (request.Mode == GameExportMode.Add)
+            {
+                Dictionary<string, string> gameInputs = GameInputs(section, axisIndexKey, buttonIndexKey, action => managedActions.Contains(action));
+                foreach (GameInputBinding binding in desired.Values.ToList())
+                {
+                    string key = InputKey(binding, request.Devices, section);
+                    string other;
+                    if (key.Length > 0 && gameInputs.TryGetValue(key, out other) && !string.Equals(other, binding.ActionId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        SkipMultiBind(result, binding, other);
+                        desired.Remove(binding.ActionId);
+                    }
+                }
+            }
+            Func<string, string, string, string, bool> conflict = (kind, identifier, index, action) =>
+            {
+                string user;
+                return request.Mode != GameExportMode.Add && identifier.Length > 0 &&
+                       wantedInputs.TryGetValue(kind + "|" + identifier + "|" + index, out user) && !string.Equals(user, action, StringComparison.OrdinalIgnoreCase);
+            };
 
             foreach (string axisName in AxisNames)
-                ApplyAxis(section, axisName, desired, request, axisIndexKey, buttonIndexKey, release, result);
+                ApplyAxis(section, axisName, desired, request, axisIndexKey, buttonIndexKey, release, conflict, result);
 
-            ApplyActionBindings(section, desired, request, buttonIndexKey, action => managedActions.Contains(action), release, result);
+            ApplyActionBindings(section, desired, request, buttonIndexKey, action => managedActions.Contains(action), release, conflict, result);
 
             if (result.Errors.Count > 0)
                 return result;
@@ -225,6 +258,73 @@ namespace JoyPro.Engine.Games
             else if (settings["enableHotas"] == 0 && result.BindingsWritten > 0)
                 result.Warnings.Add("'Enable HOTAS' is off in the profile's WARDOGS settings: the game ignores the joystick binds until it is on.");
             return Finish(section, request, result);
+        }
+
+        // "A|identifier|axis" or "B|identifier|button" of a profile bind, "" when the device is not connected.
+        private static string InputKey(GameInputBinding binding, GameDeviceDirectory devices, WardogsSection section)
+        {
+            string identifier;
+            JoyInput input;
+            if (!GameInputTokens.TryParse(binding.Input, out input) || !TryBuildIdentifier(binding.Device, devices, section, out identifier, new List<string>()))
+                return string.Empty;
+            return (input.Kind == JoyInputKind.Axis ? "A|" : "B|") + identifier + "|" + input.Index.ToString(CultureInfo.InvariantCulture);
+        }
+
+        // The inputs the game's cataloged slots use, with their action: axis slots, the button halves of axes that use
+        // buttons (bUseButtons True), action lines.
+        private static Dictionary<string, string> GameInputs(WardogsSection section, string axisIndexKey, string buttonIndexKey, Func<string, bool> managed)
+        {
+            Dictionary<string, string> inputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            Action<string, UeIniStruct, string, string> add = (kind, slot, indexKey, action) =>
+            {
+                string identifier = FieldText(slot, "DeviceIdentifier");
+                int index;
+                if (identifier.Length > 0 && int.TryParse(FieldText(slot, indexKey), NumberStyles.Integer, CultureInfo.InvariantCulture, out index) && index >= 0 && managed(action))
+                {
+                    string key = kind + "|" + identifier + "|" + index.ToString(CultureInfo.InvariantCulture);
+                    if (!inputs.ContainsKey(key))
+                        inputs[key] = action;
+                }
+            };
+            foreach (string axisName in AxisNames)
+            {
+                WardogsLine line = section.FindAxis(axisName);
+                if (line == null)
+                    continue;
+                add("A", line.Value, axisIndexKey, axisName);
+                bool useButtons;
+                UeIniField useButtonsField = line.Value.After("bInvert");
+                if (useButtonsField == null || !useButtonsField.TryGetBool(out useButtons) || !useButtons)
+                    continue;
+                foreach (string half in new[] { "Positive", "Negative" })
+                {
+                    UeIniField field = line.Value.Get(half);
+                    if (field != null && field.Struct != null)
+                        add("B", field.Struct, buttonIndexKey, axisName + (half == "Positive" ? PositiveSuffix : NegativeSuffix));
+                }
+            }
+            foreach (WardogsLine line in section.Lines.Where(l => l.Key == ActionBindingsKey && l.Value != null))
+            {
+                UeIniField bound = line.Value.Get("Binding");
+                if (bound != null && bound.Struct != null)
+                    add("B", bound.Struct, buttonIndexKey, FieldText(line.Value, "Action"));
+            }
+            return inputs;
+        }
+
+        // "Only add": the profile's bind is not written, the game uses the input for another action.
+        private void SkipMultiBind(GameIoResult result, GameInputBinding binding, string gameAction)
+        {
+            result.BindingsSkipped++;
+            result.SkippedTakenInputs.Add(new ExportSkippedBind
+            {
+                Game = GameId,
+                Device = binding.Device,
+                Input = binding.Input,
+                Relation = binding.RelationName,
+                Action = binding.ActionId,
+                GameAction = gameAction
+            });
         }
 
         private static GameIoResult Finish(WardogsSection section, GameExportRequest request, GameIoResult result)
@@ -314,7 +414,7 @@ namespace JoyPro.Engine.Games
             return AxisNames.Any(a => string.Equals(a, actionId, StringComparison.OrdinalIgnoreCase));
         }
 
-        private void ApplyAxis(WardogsSection section, string axisName, Dictionary<string, GameInputBinding> desired, GameExportRequest request, string axisIndexKey, string buttonIndexKey, Func<string, bool> release, GameIoResult result)
+        private void ApplyAxis(WardogsSection section, string axisName, Dictionary<string, GameInputBinding> desired, GameExportRequest request, string axisIndexKey, string buttonIndexKey, Func<string, bool> release, Func<string, string, string, string, bool> conflict, GameIoResult result)
         {
             WardogsLine line = section.FindAxis(axisName);
             if (line == null)
@@ -326,7 +426,8 @@ namespace JoyPro.Engine.Games
             bool hasAxis = desired.TryGetValue(axisName, out axisBinding);
             bool currentlyBound = FieldText(axis, "DeviceIdentifier").Length > 0;
 
-            // One slot per axis: merge keeps the game's bind, and add never removes one.
+            // One slot per axis: "only add" never replaces the game's bind; merge and merge-overwrite write the
+            // profile's axis into the slot (there is no second slot to keep the old one in).
             if (hasAxis && currentlyBound && KeepsBoundSlot(request.Mode) && !HoldsBind(axis, axisBinding, request, section, axisIndexKey))
             {
                 result.BindingsSkipped++;
@@ -350,36 +451,42 @@ namespace JoyPro.Engine.Games
                     result.BindingsSkipped++;
                 }
             }
-            else if (!hasAxis && release(FieldText(axis, "DeviceIdentifier")))
+            else if (release(FieldText(axis, "DeviceIdentifier")) ||
+                     conflict("A", FieldText(axis, "DeviceIdentifier"), FieldText(axis, axisIndexKey), axisName))
             {
                 changed |= SetQuoted(axis.Get("DeviceIdentifier"), string.Empty);
             }
 
+            // The button halves: a half the profile binds is written, another one goes when its device is released or
+            // when the profile puts another action on its button (a conflict; only while the axis uses its buttons).
             GameInputBinding positive;
             GameInputBinding negative;
             bool hasPositive = desired.TryGetValue(axisName + PositiveSuffix, out positive);
             bool hasNegative = desired.TryGetValue(axisName + NegativeSuffix, out negative);
             UeIniField useButtons = axis.After("bInvert");
-            if (hasPositive || hasNegative)
+            bool useButtonsValue;
+            bool buttonsActive = useButtons != null && useButtons.TryGetBool(out useButtonsValue) && useButtonsValue;
+            bool cleared = false;
+            foreach (string half in new[] { "Positive", "Negative" })
             {
-                changed |= ApplyButtonStruct(axis.Get("Positive"), positive, request, section, buttonIndexKey, result);
-                changed |= ApplyButtonStruct(axis.Get("Negative"), negative, request, section, buttonIndexKey, result);
-                changed |= SetRaw(useButtons, "True");
+                UeIniField field = axis.Get(half);
+                GameInputBinding wanted = half == "Positive" ? positive : negative;
+                if (wanted != null)
+                    changed |= ApplyButtonStruct(field, wanted, request, section, buttonIndexKey, result);
+                else if (field != null && field.Struct != null &&
+                         (release(FieldText(field.Struct, "DeviceIdentifier")) ||
+                          (buttonsActive && conflict("B", FieldText(field.Struct, "DeviceIdentifier"), FieldText(field.Struct, buttonIndexKey), axisName + (half == "Positive" ? PositiveSuffix : NegativeSuffix)))))
+                    cleared |= ClearButtonStruct(field, buttonIndexKey);
             }
+            if (hasPositive || hasNegative)
+                changed |= SetRaw(useButtons, "True");
             else
             {
-                bool cleared = false;
-                foreach (string half in new[] { "Positive", "Negative" })
-                {
-                    UeIniField field = axis.Get(half);
-                    if (field != null && field.Struct != null && release(FieldText(field.Struct, "DeviceIdentifier")))
-                        cleared |= ClearButtonStruct(field, buttonIndexKey);
-                }
                 bool anyHalfBound = new[] { "Positive", "Negative" }.Any(h => axis.Get(h) != null && axis.Get(h).Struct != null && FieldText(axis.Get(h).Struct, "DeviceIdentifier").Length > 0);
                 if (cleared && !anyHalfBound)
                     cleared |= SetRaw(useButtons, "False");
-                changed |= cleared;
             }
+            changed |= cleared;
 
             if (changed)
                 line.MarkChanged();
@@ -439,14 +546,15 @@ namespace JoyPro.Engine.Games
             return changed;
         }
 
+        // "Only add" never replaces a bound slot; merge updates it (it keeps the game's other binds, not this slot's).
         private static bool KeepsBoundSlot(GameExportMode mode)
         {
-            return mode == GameExportMode.Merge || mode == GameExportMode.Add;
+            return mode == GameExportMode.Add;
         }
 
         private static string ModeName(GameExportMode mode)
         {
-            return mode == GameExportMode.Add ? "add" : "merge";
+            return "add";
         }
 
         // The slot already holds this bind (re-export of the same profile): not a conflict.
@@ -469,7 +577,7 @@ namespace JoyPro.Engine.Games
             return changed;
         }
 
-        private void ApplyActionBindings(WardogsSection section, Dictionary<string, GameInputBinding> desired, GameExportRequest request, string buttonIndexKey, Func<string, bool> managed, Func<string, bool> release, GameIoResult result)
+        private void ApplyActionBindings(WardogsSection section, Dictionary<string, GameInputBinding> desired, GameExportRequest request, string buttonIndexKey, Func<string, bool> managed, Func<string, bool> release, Func<string, string, string, string, bool> conflict, GameIoResult result)
         {
             HashSet<string> handled = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (WardogsLine line in section.Lines.Where(l => l.Key == ActionBindingsKey && l.Value != null).ToList())
@@ -478,15 +586,17 @@ namespace JoyPro.Engine.Games
                 GameInputBinding binding;
                 if (desired.TryGetValue(actionName, out binding) && !IsAxisAction(actionName) && !actionName.Contains("."))
                 {
-                    // A second line of the action (left by an older add export): clean / merge-overwrite keep one.
-                    if (handled.Contains(actionName) && (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite))
+                    // A second line of the action (left by an older add export): clean / merge-overwrite keep one, merge
+                    // and add leave it as it is.
+                    if (handled.Contains(actionName))
                     {
-                        section.Remove(line);
+                        if (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite)
+                            section.Remove(line);
                         continue;
                     }
                     handled.Add(actionName);
-                    // One bind per action (the game shows and uses one): merge keeps the game's, add never removes one.
-                    if (request.Mode == GameExportMode.Merge || request.Mode == GameExportMode.Add)
+                    // One bind per action (the game shows and uses one): "only add" never replaces it, merge updates it.
+                    if (request.Mode == GameExportMode.Add)
                     {
                         if (!LineHolds(line, binding, request, section, buttonIndexKey))
                         {
@@ -521,7 +631,10 @@ namespace JoyPro.Engine.Games
                 else if (managed(actionName))
                 {
                     UeIniField bound = line.Value.Get("Binding");
-                    if (bound != null && bound.Struct != null && release(FieldText(bound.Struct, "DeviceIdentifier")))
+                    // Released device, or the profile puts another action on this button (a conflict).
+                    if (bound != null && bound.Struct != null &&
+                        (release(FieldText(bound.Struct, "DeviceIdentifier")) ||
+                         conflict("B", FieldText(bound.Struct, "DeviceIdentifier"), FieldText(bound.Struct, buttonIndexKey), actionName)))
                         section.Remove(line);
                 }
             }

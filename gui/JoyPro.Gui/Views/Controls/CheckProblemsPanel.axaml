@@ -6,16 +6,48 @@
              xmlns:controls="using:JoyPro.Gui.Views.Controls"
              x:Class="JoyPro.Gui.Views.Controls.CheckProblemsPanel"
              x:DataType="vm:MainWindowViewModel">
-    <!-- The check's problems (MainWindowViewModel.Duplicates.cs): sections by kind with a count and what they mean, a search,
-         a filter, sorting, collapse/expand; per card of "actions in several relations" the actions and aircraft in words,
-         the suggestion with its confidence and one-click fixes; fixes for many with a preview and ticks (one undo step). -->
+    <!-- The check's problems (MainWindowViewModel.Duplicates.cs, MainWindowViewModel.CheckCards.cs, docs/ui/check.md):
+         sections by kind with a count, what they mean and their icon (errors red, warnings amber), a search, a filter,
+         sorting into groups, collapse/expand; each card in game words: a short title, the buttons, one sentence, aircraft
+         -> command, what caused it, one recommended fix, the other fixes and "More", an "Open" per relation and the
+         details collapsed; fixes for many with a preview and ticks (one undo step). -->
+    <UserControl.Styles>
+        <!-- A card's left edge in the color of its kind -->
+        <Style Selector="Border.checkCard">
+            <Setter Property="BorderThickness" Value="4,1,1,1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusInfoBrush}" />
+        </Style>
+        <Style Selector="Border.checkCard.checkWarn">
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusWarnBrush}" />
+        </Style>
+        <Style Selector="Border.checkCard.checkError">
+            <Setter Property="BorderBrush" Value="{DynamicResource StatusErrorBrush}" />
+        </Style>
+        <!-- The card's open/close arrow: no accent fill while open -->
+        <Style Selector="ToggleButton.cardToggle:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource JP.TextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.checkButtons">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource JP.AccentTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.checkGroup">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="2,6,0,2" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="Foreground" Value="{DynamicResource JP.TextMutedBrush}" />
+        </Style>
+    </UserControl.Styles>
     <StackPanel Spacing="8">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
             <PathIcon Data="{StaticResource Icon.Ok}" Width="18" Height="18" />
             <TextBlock Grid.Column="1" Text="{l:T 'Problems found by the check'}" FontWeight="SemiBold" VerticalAlignment="Center" />
         </Grid>
-        <TextBlock Text="{Binding ValidationSummary}" TextWrapping="Wrap" />
-        <TextBlock Classes="hint" Text="{Binding CheckSummaryText}" TextWrapping="Wrap" IsVisible="{Binding CheckSummaryText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <!-- The counts of the cards below (the engine's line count only while there are none) -->
+        <TextBlock Text="{Binding ValidationSummary}" TextWrapping="Wrap" IsVisible="{Binding CheckSummaryText, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+        <TextBlock Text="{Binding CheckSummaryText}" TextWrapping="Wrap" IsVisible="{Binding CheckSummaryText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <!-- Search, filter, sort, collapse -->
         <WrapPanel ItemSpacing="8" LineSpacing="6">
@@ -120,7 +152,7 @@
             </StackPanel>
         </Border>
 
-        <!-- The sections and their cards -->
+        <!-- The sections and their cards: errors (red, their own icon), warnings (amber), notes -->
         <ItemsControl x:Name="CheckSectionList" ItemsSource="{Binding CheckSections}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:CheckIssueSection">
@@ -128,8 +160,9 @@
                         <Expander.Header>
                             <StackPanel Spacing="1">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <PathIcon Data="{StaticResource Icon.Warning}" Width="16" Height="16" Classes="warn" IsVisible="{Binding IsSerious}" />
-                                    <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" IsVisible="{Binding !IsSerious}" />
+                                    <PathIcon Data="{StaticResource Icon.Error}" Width="16" Height="16" Classes="error" IsVisible="{Binding IsError}" />
+                                    <PathIcon Data="{StaticResource Icon.Warning}" Width="16" Height="16" Classes="warn" IsVisible="{Binding IsWarning}" />
+                                    <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" IsVisible="{Binding IsNote}" />
                                     <TextBlock Text="{Binding CountText}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
                                 </StackPanel>
                                 <TextBlock Classes="hint" Text="{Binding Severity}" TextWrapping="Wrap" />
@@ -140,78 +173,152 @@
                         <StackPanel Spacing="0">
                         <ItemsControl ItemsSource="{Binding Cards}">
                             <ItemsControl.DataTemplates>
-                                <!-- The check's own lines (errors, notes): a light card; thousands of them can come. -->
+                                <!-- The check's own lines (other errors, notes): a light card; thousands of them can come. -->
                                 <DataTemplate x:DataType="models:PlainCheckIssueCard">
-                                    <Border Classes="card" Padding="10,8" Margin="0,0,0,6">
+                                    <Border Classes="card checkCard" Classes.checkError="{Binding IsError}" Classes.checkWarn="{Binding IsWarning}" Padding="12,8" Margin="0,0,0,6">
                                         <StackPanel Spacing="4">
-                                            <TextBlock Text="{Binding Headline}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                            <StackPanel Spacing="4" IsVisible="{Binding IsExpanded}">
-                                                <TextBlock Text="{Binding Details}" TextWrapping="Wrap" IsVisible="{Binding Details, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                <Button Classes="small ghost" Content="{l:T 'Open Issue Context'}" Command="{Binding OpenContextCommand}" IsVisible="{Binding HasOpenContext}" />
-                                            </StackPanel>
+                                            <TextBlock Classes="checkGroup" Text="{Binding GroupHeader}" IsVisible="{Binding HasGroupHeader}" />
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                <PathIcon Width="15" Height="15" VerticalAlignment="Top" Margin="0,1,0,0" Data="{Binding Severity, Converter={x:Static controls:CheckIconConverter.Instance}}"
+                                                          Classes.error="{Binding IsError}" Classes.warn="{Binding IsWarning}" Classes.info="{Binding IsNote}" />
+                                                <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            </Grid>
+                                            <TextBlock Classes="checkButtons" Text="{Binding ButtonsLine}" IsVisible="{Binding PlainShowsButtonsLine}" />
+                                            <TextBlock Text="{Binding Sentence}" TextWrapping="Wrap" IsVisible="{Binding PlainShowsSentence}" />
+                                            <!-- Its fixes and one "Open" per relation, light: thousands of these cards can come -->
+                                            <Button Classes="small ghost" HorizontalAlignment="Left" IsVisible="{Binding PlainShowsOpenMenu}" Click="OpenMenuClicked"
+                                                    Content="{l:T 'Open a relation ▾'}" ToolTip.Tip="{l:T 'Opens one of the relations with the actions of this card marked; Back returns here.'}" />
+                                            <ItemsControl ItemsSource="{Binding PlainButtons}" IsVisible="{Binding PlainShowsButtons}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel ItemSpacing="6" LineSpacing="4" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:CheckFix">
+                                                        <Button Classes="small" Classes.ghost="{Binding IsOpen}" Command="{Binding Command}" ToolTip.Tip="{Binding Tip}" Content="{Binding Label}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>
+                                <!-- A card in words: title, the buttons, one sentence, aircraft -> command, the cause, the fixes -->
                                 <DataTemplate x:DataType="models:CheckIssueCard">
-                                    <Border Classes="card" Padding="10,8" Margin="0,0,0,6">
-                                        <StackPanel Spacing="4">
-                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                                                <TextBlock Text="{Binding Headline}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                                <Border Grid.Column="1" Classes="chip" IsVisible="{Binding IsNew}" VerticalAlignment="Top">
-                                                    <TextBlock Text="{l:T 'New'}" FontSize="{DynamicResource JP.FontSize.11}" />
-                                                </Border>
-                                                <ToggleButton Grid.Column="2" Classes="small ghost" Padding="4,0" VerticalAlignment="Top" IsChecked="{Binding IsExpanded}"
-                                                              IsVisible="{Binding HasChoices}" ToolTip.Tip="{l:T 'Show or hide the details and fixes'}">
-                                                    <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="12" Height="12" />
-                                                </ToggleButton>
-                                            </Grid>
-                                            <StackPanel Spacing="4" IsVisible="{Binding IsExpanded}">
-                                                <TextBlock Text="{Binding Details}" TextWrapping="Wrap" IsVisible="{Binding Details, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                                                <ItemsControl ItemsSource="{Binding ActionLines}" IsVisible="{Binding HasActionLines}" Margin="12,0,0,0">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate x:DataType="x:String">
-                                                            <TextBlock Text="{Binding}" TextWrapping="Wrap" />
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                                <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding HasSuggestion}">
-                                                    <PathIcon Data="{StaticResource Icon.Info}" Width="14" Height="14" Classes="info" VerticalAlignment="Center" />
-                                                    <TextBlock Text="{Binding SuggestionText}" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center" />
-                                                </StackPanel>
-                                                <TextBlock Classes="hint" Text="{Binding ReasonText}" TextWrapping="Wrap" IsVisible="{Binding HasReason}" />
-                                                <WrapPanel ItemSpacing="6" LineSpacing="4" IsVisible="{Binding HasChoices}">
-                                                    <ItemsControl ItemsSource="{Binding Choices}">
+                                    <StackPanel Spacing="2" Margin="0,0,0,8">
+                                        <TextBlock Classes="checkGroup" Text="{Binding GroupHeader}" IsVisible="{Binding HasGroupHeader}" />
+                                        <Border Classes="card checkCard" Classes.checkError="{Binding IsError}" Classes.checkWarn="{Binding IsWarning}" Padding="12,10">
+                                            <StackPanel Spacing="6">
+                                                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                                    <Panel VerticalAlignment="Top" Margin="0,2,0,0">
+                                                        <PathIcon Data="{StaticResource Icon.Error}" Width="16" Height="16" Classes="error" IsVisible="{Binding IsError}" />
+                                                        <PathIcon Data="{StaticResource Icon.Warning}" Width="16" Height="16" Classes="warn" IsVisible="{Binding IsWarning}" />
+                                                        <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" IsVisible="{Binding IsNote}" />
+                                                    </Panel>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.14}" TextWrapping="Wrap" />
+                                                    <Border Grid.Column="2" Classes="chip" IsVisible="{Binding IsNew}" VerticalAlignment="Top">
+                                                        <TextBlock Text="{l:T 'New'}" FontSize="{DynamicResource JP.FontSize.11}" />
+                                                    </Border>
+                                                    <ToggleButton Grid.Column="3" Classes="small ghost cardToggle" Padding="4,0" VerticalAlignment="Top" IsChecked="{Binding IsExpanded}"
+                                                                  ToolTip.Tip="{l:T 'Show or hide this card'}">
+                                                        <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="12" Height="12" />
+                                                    </ToggleButton>
+                                                </Grid>
+                                                <StackPanel Spacing="6" IsVisible="{Binding IsExpanded}">
+                                                    <TextBlock Classes="checkButtons" Text="{Binding ButtonsLine}" IsVisible="{Binding HasButtonsLine}" />
+                                                    <TextBlock Text="{Binding Sentence}" TextWrapping="Wrap" IsVisible="{Binding HasSentence}" />
+                                                    <!-- Aircraft -> command, the first rows; "Show all" opens the rest -->
+                                                    <Border Classes="sunken" Padding="8,6" IsVisible="{Binding HasRows}">
+                                                        <StackPanel Spacing="2">
+                                                            <Grid ColumnDefinitions="2*,3*" ColumnSpacing="12">
+                                                                <TextBlock Classes="caption" FontWeight="SemiBold" Text="{Binding RowsHeaderLeft}" />
+                                                                <TextBlock Grid.Column="1" Classes="caption" FontWeight="SemiBold" Text="{Binding RowsHeaderRight}" />
+                                                            </Grid>
+                                                            <ItemsControl ItemsSource="{Binding ShownRows}">
+                                                                <ItemsControl.ItemTemplate>
+                                                                    <DataTemplate x:DataType="models:CheckTableRow">
+                                                                        <Grid ColumnDefinitions="2*,3*" ColumnSpacing="12" Margin="0,1">
+                                                                            <TextBlock Text="{Binding Left}" TextWrapping="Wrap" />
+                                                                            <TextBlock Grid.Column="1" Text="{Binding Right}" TextWrapping="Wrap" Classes.warnText="{Binding IsUnknown}" />
+                                                                        </Grid>
+                                                                    </DataTemplate>
+                                                                </ItemsControl.ItemTemplate>
+                                                            </ItemsControl>
+                                                            <Button Classes="small ghost" HorizontalAlignment="Left" Padding="4,1" Command="{Binding ToggleRowsCommand}" IsVisible="{Binding HasHiddenRows}">
+                                                                <TextBlock Text="{Binding ShowRowsText}" />
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </Border>
+                                                    <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding HasCaused}">
+                                                        <PathIcon Data="{StaticResource Icon.History}" Width="13" Height="13" Classes="info" VerticalAlignment="Center" />
+                                                        <TextBlock Classes="hint" Text="{Binding CausedText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                    <!-- The fixes: the recommended one first (accent), the others, the rest under "More" -->
+                                                    <WrapPanel ItemSpacing="6" LineSpacing="4" IsVisible="{Binding HasAnyFix}">
+                                                        <ItemsControl ItemsSource="{Binding MainFixes}">
+                                                            <ItemsControl.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <WrapPanel ItemSpacing="6" LineSpacing="4" />
+                                                                </ItemsPanelTemplate>
+                                                            </ItemsControl.ItemsPanel>
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate x:DataType="models:CheckFix">
+                                                                    <Button Classes="small" Classes.accent="{Binding IsRecommended}" Command="{Binding Command}" ToolTip.Tip="{Binding Tip}">
+                                                                        <TextBlock Text="{Binding RecommendedLabel}" TextWrapping="Wrap" MaxWidth="420" />
+                                                                    </Button>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                        <!-- "More": a menu of the other fixes, made when it opens (CheckProblemsPanel.axaml.cs) -->
+                                                        <Button Classes="small" IsVisible="{Binding HasMoreFixes}" ToolTip.Tip="{l:T 'More ways to fix it'}" Click="MoreFixesClicked"
+                                                                Content="{l:T 'More ▾'}" />
+                                                    </WrapPanel>
+                                                    <!-- One "Open" per relation: it opens with this card's commands and aircraft marked; Back returns here -->
+                                                    <ItemsControl ItemsSource="{Binding OpenButtons}" IsVisible="{Binding HasOpenButtons}">
                                                         <ItemsControl.ItemsPanel>
                                                             <ItemsPanelTemplate>
                                                                 <WrapPanel ItemSpacing="6" LineSpacing="4" />
                                                             </ItemsPanelTemplate>
                                                         </ItemsControl.ItemsPanel>
                                                         <ItemsControl.ItemTemplate>
-                                                            <DataTemplate x:DataType="models:DuplicateRelationChoice">
-                                                                <Button Classes="small" Classes.accent="{Binding IsSuggested}" Command="{Binding KeepCommand}" ToolTip.Tip="{Binding Tip}">
-                                                                    <TextBlock Text="{Binding KeepText}" TextWrapping="Wrap" MaxWidth="360" />
+                                                            <DataTemplate x:DataType="models:CheckFix">
+                                                                <Button Classes="small ghost checkOpen" Command="{Binding Command}" ToolTip.Tip="{Binding Tip}">
+                                                                    <TextBlock Text="{Binding Label}" TextWrapping="Wrap" MaxWidth="460" />
                                                                 </Button>
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
-                                                    <Button Classes="small" Content="{l:T 'Keep both (it is intended)'}" Command="{Binding KeepBothCommand}"
-                                                            ToolTip.Tip="{l:T 'Both relations keep it; JoyPro remembers this in your profile and does not warn about it again. Ctrl+Z undoes it.'}" />
-                                                    <Button Classes="small ghost" Content="{l:T 'Open both relations'}" Command="{Binding OpenAllCommand}"
-                                                            ToolTip.Tip="{l:T 'Opens the first relation in the Relations page and names the other one'}" />
-                                                    <Button Classes="small ghost" Content="{l:T 'Switch off in all'}" Command="{Binding SwitchOffAllCommand}"
-                                                            ToolTip.Tip="{l:T 'None of these relations keeps it for these aircraft (a tick brings it back). Ctrl+Z undoes it.'}" />
-                                                </WrapPanel>
-                                                <WrapPanel ItemSpacing="6" LineSpacing="4" IsVisible="{Binding HasMergeCopies}">
-                                                    <Button Classes="small accent" Content="{Binding MergeCopiesText}" Command="{Binding MergeCopiesCommand}"
-                                                            ToolTip.Tip="{l:T 'One relation with every aircraft of the copies, their groups and their tuning per aircraft; the copies are removed. Ctrl+Z undoes it.'}" />
-                                                    <Button Classes="small" Content="{Binding MergeAllCopiesText}" Command="{Binding MergeAllCopiesCommand}" IsVisible="{Binding HasMergeAllCopies}"
-                                                            ToolTip.Tip="{l:T 'Every family of copied relations shown here, each into one relation (one undo step)'}" />
-                                                    <Button Classes="small ghost" Content="{l:T 'Open the relations'}" Command="{Binding OpenAllCommand}" />
-                                                </WrapPanel>
-                                                <Button Classes="small ghost" Content="{l:T 'Open Issue Context'}" Command="{Binding OpenContextCommand}" IsVisible="{Binding HasOpenContext}" />
+                                                    <!-- How sure JoyPro is and why, where an unknown command came from -->
+                                                    <StackPanel Spacing="3" IsVisible="{Binding HasDetails}">
+                                                        <ToggleButton Classes="small ghost cardToggle" Padding="4,1" HorizontalAlignment="Left" IsChecked="{Binding IsDetailsOpen}">
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <PathIcon Data="{StaticResource Icon.ChevronRight}" Width="9" Height="9" IsVisible="{Binding !IsDetailsOpen}" />
+                                                                <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="9" Height="9" IsVisible="{Binding IsDetailsOpen}" />
+                                                                <TextBlock Classes="caption" Text="{l:T 'Details'}" />
+                                                            </StackPanel>
+                                                        </ToggleButton>
+                                                        <!-- Built only while open (a page of cards stays light) -->
+                                                        <ContentControl Content="{Binding DetailsHost}" Margin="14,0,0,0">
+                                                            <ContentControl.ContentTemplate>
+                                                                <DataTemplate x:DataType="models:CheckIssueCard">
+                                                                    <StackPanel Spacing="2">
+                                                                        <ItemsControl ItemsSource="{Binding DetailLines}">
+                                                                            <ItemsControl.ItemTemplate>
+                                                                                <DataTemplate x:DataType="x:String">
+                                                                                    <TextBlock Classes="hint" Text="{Binding}" TextWrapping="Wrap" />
+                                                                                </DataTemplate>
+                                                                            </ItemsControl.ItemTemplate>
+                                                                        </ItemsControl>
+                                                                        <SelectableTextBlock Classes="caption" Text="{Binding TechnicalLine}" TextWrapping="Wrap" IsVisible="{Binding HasTechnicalLine}" />
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ContentControl.ContentTemplate>
+                                                        </ContentControl>
+                                                    </StackPanel>
+                                                </StackPanel>
                                             </StackPanel>
-                                        </StackPanel>
-                                    </Border>
+                                        </Border>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.DataTemplates>
                         </ItemsControl>

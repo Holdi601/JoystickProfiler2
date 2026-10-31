@@ -622,17 +622,49 @@ suggestion is right at every threshold with the history; without it 22 of 22 at 
 at 80% (the other 2 are right binds too: none of the relations had them, they stay in the one of their function); on two
 more profiles corrupted by the old load correction (414 and 194 duplicates) every suggestion at 85% and more is right.
 
-**Export page, "Problems found by the check"** (Views/Controls/CheckProblemsPanel.axaml): sections by kind (actions in
-several relations, errors, notes) with a count and what they mean for the game, a search, a kind filter, sorting (by
-relation, aircraft, game, confidence), expand/collapse all; a card per relation pair in words ("AH-64D Block II (CPG and
-Pilot): 'Force Trim/Hold Mode Switch - AL/Right' is in 2 relations: 'Mode Button 07' (Total Controls MFBB · BTN 39) and
-'Trim Right' (MOZA AB9 FFB Base · BTN 4)"), "96% sure: keep in 'Trim Right'" with the reasons, and Keep in X only / Keep
-both (it is intended) / Open both relations / Switch off in all. Fixes for many: "Fix automatically when JoyPro is at
-least X% sure" (slider, default 90, saved) with "Fix the sure ones (n of m at X% or more)", "Fix all with a rule", "Fix
-with AI" - each shows a preview of every change with a tick and applies the ticked ones in one step. "Also right after
-imports and take-overs" (off at first, saved) fixes the sure ones of an import at once. Imports (DCS, IL-2, Star Citizen,
-the other games) and watcher take-overs compare the duplicates before and after and say on the Relations page when they
-put actions into a second relation ("Review them" opens the check).
+**Export page, "Problems found by the check"** ([docs/ui/check.md](ui/check.md), Views/Controls/CheckProblemsPanel.axaml):
+since 2.5.0 every card in plain words - a short title ("Same command on two buttons"), the buttons as device · button with
+their relation ("LEFT VPC Throttle MT-50 CM · BTN 9 ('A10 - DMS Down') ↔ VKB-Sim Gunfighter · BTN 16 ('Sensor Select
+Aft')"), one sentence what happens in the game, aircraft -> command (3 rows, "Show all"), "Caused by: <history entry> on
+<date>" when the profile history tells (`CausedBy`, `CausedSummary`, `CausedAt` of the group: the version that brought
+most of its actions into the second relation; one whose change names other relations only is skipped), one recommended
+fix (the suggestion), "Keep only on X" / "Keep both" / "More ▾" (switch it off on both buttons), an "Open '<relation>'"
+button per relation that opens it with exactly the card's commands and aircraft marked (Back returns to the card), and
+the confidence with its reasons in the collapsed details. Only aircraft ticked in both relations count. A command the
+aircraft's current list no longer has is `Unknown` (its `Title` is the name the relation stored): the card says "unknown
+command '...'" and offers "Remove the unknown command" / "Find similar". Fixes for many: "Fix automatically when JoyPro
+is at least X% sure" (slider, default 90, saved) with "Fix the sure ones (n of m at X% or more)", "Fix all with a rule",
+"Fix with AI" - each shows a preview of every change with a tick and applies the ticked ones in one step. "Also right
+after imports and take-overs" (off at first, saved) fixes the sure ones of an import at once. Imports (DCS, IL-2, Star
+Citizen, the other games) and watcher take-overs compare the duplicates before and after and say on the Relations page
+when they put actions into a second relation ("Review them" opens the check).
+
+### The check's errors
+
+`relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions]
+[--include-kept]` (`engine/EngineCheckConflicts.cs`) gives profile validate's two errors in detail; validate prints the
+same lines from it:
+
+- `InputConflicts`: an input (device, input, modifiers) bound in several relations that all have an action of the same
+  aircraft on (`Key` "game:plane§device§input[§modifier]", `Message` = the validate line, `Sides`: each relation with its
+  actions `{ Id, Title, Unknown }`). The app: "One button does two things", one card per input and relation set with the
+  aircraft in its table. `--keep <relation>` switches the aircraft off in the other relations of the conflict.
+- `ActionConflicts`: a relation with two actions of one aircraft (or game) on (`Key` "game|plane|relation"). The app:
+  "One button runs two commands". `--keep-action <id>` switches the relation's other actions of the game off for the
+  aircraft; `--off` all of them.
+- `--keep-both` saves "input|<key>|<relations>" / "active|<key>|<ids>" in `Pr0file.KeptDuplicates`: the check does not
+  name it again while exactly these relations (actions) have it. `--remove-actions --keys "game|id|plane;..."` takes
+  actions (unknown ones) out of every relation. Each fix is one profile version (one undo step).
+
+### Dismissed suggestions
+
+`Pr0file.DismissedSuggestions` ("relation<TAB>game<TAB>id<TAB>plane", `engine/EngineDismissedSuggestions.cs`): what the
+user dismissed for a relation. `relations suggest` does not propose it and lists it under `Dismissed`; Auto Group and the
+grouping in words keep it out of that relation; `suggest apply --remove` (Restore) takes it off the list; a renamed
+relation keeps it. Opening a profile (`profile load`) takes every action with no aircraft ticked out of its relation and
+puts its aircraft onto this list (before 2.5.0 a dismissed suggestion was such an action): one history step of its own
+("Removed 12 actions with no aircraft ticked from 9 relations"), logged, Undo brings them back, nothing on the next
+load. An action with one aircraft ticked and every relation (also one without a bind) always stays.
 
 `relations check-aircraft [--relation <name>] [--apply] [--include-same-function]`: `{ Relations, Nodes, AffectedNodes,
 AffectedRelations, AircraftToDrop, AircraftSameFunction, Applied, Dropped, Found: [ { Relation, Game, Id, Title,

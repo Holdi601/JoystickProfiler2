@@ -161,10 +161,19 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task ExportGameNowAsync(ExportGameItem? game)
     {
-        if (game == null || !await ConfirmRiskyExportAsync(game.Name))
+        if (game == null)
+            return;
+        // The first export of a game this profile never imported from: import first? ("Export anyway" counts as the
+        // answer to the removal question too.)
+        FirstExportChoice first = await AskAboutFirstExportAsync(game.GameId, game.Name);
+        if (first is FirstExportChoice.Cancel or FirstExportChoice.ImportFirst)
+            return;
+        if (first != FirstExportChoice.ExportConfirmed && !await ConfirmRiskyExportAsync(game.Name))
             return;
         bool ok = await ExportGameAsync(game);
-        StatusText = ok ? game.Name + ": " + game.ExportState + "." : game.Name + ": " + game.ExportState;
+        string status = ok ? game.Name + ": " + game.ExportState + "." : game.Name + ": " + game.ExportState;
+        string skipped = ok ? await ExportMarksNoteAsync(game.GameId) : string.Empty;
+        StatusText = skipped.Length > 0 ? status + " " + skipped : status;
         await AfterExportsAsync();
     }
 
@@ -177,15 +186,34 @@ public sealed partial class MainWindowViewModel
             StatusText = T("Tick at least one game to export.");
             return;
         }
-        if (!await ConfirmRiskyExportAsync(string.Join(", ", games.Select(g => g.Name))))
+        // Each game exported for the first time by this profile asks on its own (Import first / Export anyway / Cancel).
+        List<ExportGameItem> asked = [];
+        foreach (ExportGameItem game in games.ToList())
+        {
+            FirstExportChoice first = await AskAboutFirstExportAsync(game.GameId, game.Name);
+            if (first is FirstExportChoice.Cancel or FirstExportChoice.ImportFirst)
+                games.Remove(game);
+            else if (first == FirstExportChoice.ExportConfirmed)
+                asked.Add(game);
+            if (first == FirstExportChoice.ImportFirst)
+                return;
+        }
+        List<ExportGameItem> unasked = games.Where(g => !asked.Contains(g)).ToList();
+        if (games.Count == 0 || (unasked.Count > 0 && !await ConfirmRiskyExportAsync(string.Join(", ", unasked.Select(g => g.Name)))))
             return;
         List<ExportGameItem> exported = [];
+        List<string> skippedNotes = [];
         foreach (ExportGameItem game in games)
         {
             if (await ExportGameAsync(game))
+            {
                 exported.Add(game);
+                string note = await ExportMarksNoteAsync(game.GameId);
+                if (note.Length > 0)
+                    skippedNotes.Add(note);
+            }
         }
-        string status = ExportRunStatus(games, exported, dryRun: false);
+        string status = ExportRunStatus(games, exported, dryRun: false) + (skippedNotes.Count > 0 ? " " + string.Join(" ", skippedNotes) : string.Empty);
         await AfterExportsAsync();
         StatusText = status;
         ExportGamesStatus = status;

@@ -91,8 +91,37 @@ public sealed partial class HudWidget : ObservableObject
         showHats = config.ShowHats;
         pictureSource = string.IsNullOrWhiteSpace(config.PictureSource) ? T("Auto") : config.PictureSource;
         grip = config.Grip;
+        axisX = config.AxisX ?? string.Empty;
+        axisY = config.AxisY ?? string.Empty;
+        axisTwist = config.AxisTwist ?? string.Empty;
         if (device != null)
             device.TiltEnabled = tilt;
+    }
+
+    // The stick element's axis sources: empty = Automatic, else "<device>|<input>" (HudWidgetConfig).
+    [ObservableProperty]
+    private string axisX;
+
+    [ObservableProperty]
+    private string axisY;
+
+    [ObservableProperty]
+    private string axisTwist;
+
+    partial void OnAxisXChanged(string value) => Config.AxisX = value ?? string.Empty;
+    partial void OnAxisYChanged(string value) => Config.AxisY = value ?? string.Empty;
+    partial void OnAxisTwistChanged(string value) => Config.AxisTwist = value ?? string.Empty;
+
+    public string AxisSourceOf(int role) => role switch { HudDevice.RoleX => AxisX, HudDevice.RoleY => AxisY, _ => AxisTwist };
+
+    public void SetAxisSource(int role, string value)
+    {
+        switch (role)
+        {
+            case HudDevice.RoleX: AxisX = value; break;
+            case HudDevice.RoleY: AxisY = value; break;
+            default: AxisTwist = value; break;
+        }
     }
 
     public HudWidgetConfig Config { get; }
@@ -258,6 +287,25 @@ public sealed partial class HudDevice : ObservableObject
     private readonly HashSet<int> pressed = [];
     private int rollIndex = -1, pitchIndex = -1, twistIndex = -1;
 
+    // ---- The stick element's axes (2.5.0 HUD bug: a VKB grip on a VPforce Rhino base is a device of its own without
+    //      X/Y; the gimbal read its missing X/Y and lay in a corner). A missing or dead axis is centred, never a corner;
+    //      Automatic takes an axis the device lacks from the base it sits on; the designer can pick any device's axis.
+    //      The live path allocates nothing: the snapshot array is kept by reference, masks are ints, the dependents a
+    //      list built when the sources change; properties are set only when their value changes.
+    public const int RoleX = 0, RoleY = 1, RoleTwist = 2;
+
+    // The axes the device reports (bit per DirectInput axis index), seen in a snapshot, moved since the first one.
+    private int reportedMask, seenMask, movedMask;
+    private readonly double[] firstAxes = new double[8];
+    private double[]? lastAxes;
+    // Per role: a picked source (device and axis index), or null = Automatic.
+    private readonly HudDevice?[] pickedDevice = new HudDevice?[3];
+    private readonly int[] pickedIndex = [-1, -1, -1];
+    // The base this device sits on (Automatic takes the axes it lacks from there).
+    private HudDevice? pairedBase;
+    // Devices whose stick element reads an axis of this one.
+    private readonly List<HudDevice> axisDependents = [];
+
     public HudDevice(string device, string name, string model, string kind, int buttons, int hats, IEnumerable<(string Input, string Control, string Label)> axes,
         IReadOnlyDictionary<string, string> labels, IEnumerable<(string Id, string Name)> gripChoices, string hand = "")
     {
@@ -274,6 +322,7 @@ public sealed partial class HudDevice : ObservableObject
             int index = AxisIndex(input);
             if (index < 0)
                 continue;
+            reportedMask |= 1 << index;
             string role = control.ToLowerInvariant();
             bool stickLike = kind is "stick" or "yoke" or "hotas" or "base" or "controller";
             if (rollIndex < 0 && (role.EndsWith(".axis.roll", StringComparison.Ordinal) || (role.Length == 0 && stickLike && input == "JOY_X")))
@@ -347,9 +396,95 @@ public sealed partial class HudDevice : ObservableObject
     // The held buttons by name ("Trigger", "Weapon release"), newest last.
     public ObservableCollection<string> PressedChips { get; } = [];
 
-    public bool HasGimbal => rollIndex >= 0 && pitchIndex >= 0;
+    // The stick element shows when X and Y have a source: the device's own, the base's (Automatic) or picked ones.
+    public bool HasGimbal => HasSource(RoleX) && HasSource(RoleY);
 
-    public bool HasTwist => twistIndex >= 0;
+    public bool HasTwist => HasSource(RoleTwist);
+
+    // The axes the device reports, as "JOY_X" ... (the designer's axis lists).
+    public IEnumerable<string> ReportedAxes()
+    {
+        for (int i = 0; i < AxisTokens.Length; i++)
+        {
+            if ((reportedMask & (1 << i)) != 0)
+                yield return AxisTokens[i];
+        }
+    }
+
+    public static readonly string[] AxisTokens = ["JOY_X", "JOY_Y", "JOY_Z", "JOY_RX", "JOY_RY", "JOY_RZ", "JOY_SLIDER1", "JOY_SLIDER2"];
+
+    public bool Reports(int index) => index >= 0 && index < 8 && (reportedMask & (1 << index)) != 0;
+
+    // The device's own axis of a role (roll, pitch, twist by the catalog's roles or the stick defaults), -1 = none.
+    public int OwnIndex(int role) => role switch { RoleX => rollIndex, RoleY => pitchIndex, _ => twistIndex };
+
+    public HudDevice? PairedBase => pairedBase;
+
+    // An axis that gives a position: reported, and either moved since the first report or not stuck at an end of its
+    // travel (a grip's X/Y without sensors reads 0 or 1 for ever).
+    public bool AxisLive(int index)
+    {
+        if (!Reports(index))
+            return false;
+        if ((movedMask & (1 << index)) != 0 || lastAxes == null || index >= lastAxes.Length)
+            return true;
+        double v = lastAxes[index];
+        return v > 0.002 && v < 0.998;
+    }
+
+    private bool HasSource(int role) =>
+        pickedDevice[role] != null ? pickedDevice[role]!.Reports(pickedIndex[role])
+        : OwnIndex(role) >= 0 || (pairedBase != null && pairedBase.OwnIndex(role) >= 0);
+
+    // Where a role's axis comes from now: the picked one, else (Automatic) the device's own while it is live, else the
+    // base's; (null, -1) = nothing, the element stays centred.
+    public (HudDevice? Device, int Index) SourceOf(int role)
+    {
+        if (pickedDevice[role] is { } picked)
+            return (picked, pickedIndex[role]);
+        int own = OwnIndex(role);
+        if (own >= 0 && AxisLive(own))
+            return (this, own);
+        if (pairedBase != null && pairedBase.OwnIndex(role) is int baseIndex and >= 0 && pairedBase.AxisLive(baseIndex))
+            return (pairedBase, baseIndex);
+        return own >= 0 ? (this, own) : (null, -1);
+    }
+
+    // Sets the axis sources (the HUD designer, a device list change); the old ones stop feeding this device.
+    public void SetAxisSources(HudDevice? baseDevice, (HudDevice? Device, int Index) x, (HudDevice? Device, int Index) y, (HudDevice? Device, int Index) twist)
+    {
+        pairedBase = ReferenceEquals(baseDevice, this) ? null : baseDevice;
+        (HudDevice? Device, int Index)[] picks = [x, y, twist];
+        for (int role = 0; role < 3; role++)
+        {
+            pickedDevice[role] = picks[role].Device;
+            pickedIndex[role] = picks[role].Device == null ? -1 : picks[role].Index;
+        }
+        OnPropertyChanged(nameof(HasGimbal));
+        OnPropertyChanged(nameof(HasTwist));
+        OnPropertyChanged(nameof(CanTilt));
+        UpdateGimbal();
+    }
+
+    // The devices this one reads axes from (itself excluded): the base and the picked ones.
+    public IEnumerable<HudDevice> AxisProviders()
+    {
+        if (pairedBase != null)
+            yield return pairedBase;
+        for (int role = 0; role < 3; role++)
+        {
+            if (pickedDevice[role] is { } picked && !ReferenceEquals(picked, this) && !ReferenceEquals(picked, pairedBase))
+                yield return picked;
+        }
+    }
+
+    public void ClearAxisDependents() => axisDependents.Clear();
+
+    public void AddAxisDependent(HudDevice device)
+    {
+        if (!ReferenceEquals(device, this) && !axisDependents.Contains(device))
+            axisDependents.Add(device);
+    }
 
     public bool CanTilt => HasGimbal && DeviceKind is "stick" or "base" or "hotas" or "yoke";
 
@@ -442,10 +577,55 @@ public sealed partial class HudDevice : ObservableObject
             marker.Place(PictureWidth, PictureHeight);
     }
 
+    // A snapshot of this device's axes (0..1 each): its bars and levers, its stick element and the stick elements that
+    // read an axis of it. Nothing is allocated here (runs for every axis report while the HUD is on).
     public void ApplyAxes(double[] axes)
     {
-        double Bi(int index) => index >= 0 && index < axes.Length ? Deadzone(axes[index] * 2 - 1) : 0;
-        double rollValue = Bi(rollIndex), pitchValue = Bi(pitchIndex), twistValue = Bi(twistIndex);
+        int count = Math.Min(axes.Length, firstAxes.Length);
+        for (int i = 0; i < count; i++)
+        {
+            int bit = 1 << i;
+            if ((seenMask & bit) == 0)
+            {
+                firstAxes[i] = axes[i];
+                seenMask |= bit;
+            }
+            else if ((movedMask & bit) == 0 && Math.Abs(axes[i] - firstAxes[i]) > 0.02)
+            {
+                movedMask |= bit;
+            }
+        }
+        lastAxes = axes;
+        UpdateGimbal();
+        for (int i = 0; i < Bars.Count; i++)
+        {
+            HudAxis axis = Bars[i];
+            if (axis.Index < axes.Length)
+                axis.Value = axes[axis.Index];
+        }
+        for (int i = 0; i < Levers.Count; i++)
+        {
+            HudAxis axis = Levers[i];
+            if (axis.Index < axes.Length)
+                axis.Value = axes[axis.Index];
+        }
+        for (int i = 0; i < axisDependents.Count; i++)
+            axisDependents[i].UpdateGimbal();
+    }
+
+    // -1..1 of a role from its source; 0 (centred) when there is none, it reports nothing yet or it is dead.
+    private double RoleValue(int role)
+    {
+        (HudDevice? device, int index) = SourceOf(role);
+        if (device == null || index < 0 || device.lastAxes is not { } axes || index >= axes.Length || !device.AxisLive(index))
+            return 0;
+        return Deadzone(axes[index] * 2 - 1);
+    }
+
+    // The stick element and the tilt of the picture from the axis sources (only changed values reach the view).
+    public void UpdateGimbal()
+    {
+        double rollValue = RoleValue(RoleX), pitchValue = RoleValue(RoleY), twistValue = RoleValue(RoleTwist);
         bool tilt = TiltEnabled && CanTilt;
         Roll = tilt ? Math.Round(rollValue * 18, 2) : 0;
         Pitch = tilt ? Math.Round(-pitchValue * 14, 2) : 0;
@@ -453,11 +633,6 @@ public sealed partial class HudDevice : ObservableObject
         GimbalX = Math.Round(rollValue * GimbalRadius, 1);
         GimbalY = Math.Round(pitchValue * GimbalRadius, 1);
         TwistTick = Math.Round(twistValue * 90, 1);
-        foreach (HudAxis axis in Bars.Concat(Levers))
-        {
-            if (axis.Index < axes.Length)
-                axis.Value = axes[axis.Index];
-        }
     }
 
     public void SetInput(string input, bool down)
@@ -591,12 +766,18 @@ public sealed partial class HudAxis : ObservableObject
 
     public string Percent => Bipolar ? ((int)Math.Round((Value - 0.5) * 200)).ToString("+0;-0;0") : ((int)Math.Round(Value * 100)) + "%";
 
+    // Cached event arguments: an axis report changes these many times a second while the HUD is on (no allocation).
+    private static readonly System.ComponentModel.PropertyChangedEventArgs FillLeftChanged = new(nameof(FillLeft));
+    private static readonly System.ComponentModel.PropertyChangedEventArgs FillWidthChanged = new(nameof(FillWidth));
+    private static readonly System.ComponentModel.PropertyChangedEventArgs LeverFillChanged = new(nameof(LeverFill));
+    private static readonly System.ComponentModel.PropertyChangedEventArgs PercentChanged = new(nameof(Percent));
+
     partial void OnValueChanged(double value)
     {
-        OnPropertyChanged(nameof(FillLeft));
-        OnPropertyChanged(nameof(FillWidth));
-        OnPropertyChanged(nameof(LeverFill));
-        OnPropertyChanged(nameof(Percent));
+        OnPropertyChanged(FillLeftChanged);
+        OnPropertyChanged(FillWidthChanged);
+        OnPropertyChanged(LeverFillChanged);
+        OnPropertyChanged(PercentChanged);
     }
 }
 

@@ -113,6 +113,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   --confirm-corrections true|false   Ask for confirmation on medium-confidence item remaps (default: true)
   --correction-report <path>         Write load correction report (json, or text with .txt/.log)
   --history-note <text>  Name of this change in the profile history (default: the command's name)
+  --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: imports and scans (dcs, il2, starcitizen, the other games) leave only that vJoy device out; every other vJoy device is read like any device (default: none)
   --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)
 ```
 
@@ -125,6 +126,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine profile new <path.pr0file>
   engine profile save-last
   engine profile validate [--fail-on-warnings true|false]
+  engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)
+  engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)
+  engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks)
   engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)
   engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--save <path.pr0file>]
   engine profile history [list]   (the versions of --profile, newest first: every save is one, kept in <data>\ProfileHistory; undo/redo state)
@@ -134,12 +138,12 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine profile history prune [--all] [--dry-run] | usage [--all]   (clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total)
   engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]
   engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]
-  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included; the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)
+  engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>] [--ignore-device <name>] [--ignore-devices <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; the .diff.lua holds only differences from DCS's defaults (added non-default binds, removed defaults, defaults with other tuning as changed); add never deletes and lists binds whose button the game uses for another function (SkippedTakenInputs); merge removes a game bind on a button the profile puts another function on; merge-overwrite also takes the profile's actions off their other buttons in that aircraft; clean replaces the written devices in the exported aircraft, with --clean-all-aircraft true (default false) also in every other aircraft; nuke: connected devices without binds in an exported plane lose all binds there, DCS defaults included (--ignore-device(s) and --vjoy-tunnel devices are never cleared); the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)
   engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)
   engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)
   engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore puts the originals back; auto re-applies after a DCS update; patched files fail server integrity checks)
   engine dcs device-luas [list|remove|restore] [--dry-run] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back)
-  engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; read only)
+  engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>] [--dump-active <file>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only)
   engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
   engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
   engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
@@ -148,10 +152,10 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine dcs ffb clear [<device-name>] [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--all] [--confirm true|false]
   engine il2 scan [<il2-root-path>] [--path <il2-root-path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]
   engine il2 import [<il2-root-path>] [--path <il2-root-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]
-  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (conflict = same action on the same device; clean releases the other binds of the written devices, nuke the joysticks the profile does not use; keyboard lines stay)
+  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)
   engine starcitizen scan [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]
   engine starcitizen import [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]
-  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (clean releases the ship binds of the written devices, nuke those of the devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke))
+  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)
   engine starcitizen list-devices [<sc-root-or-profile-path>] [--path <path>] [--source <path>]   (aliases: devices, list)
   engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)
   engine db summary [--keyboard] [--no-keyboard] [--strict-names]
@@ -183,7 +187,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)
   engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, "new" (+ Name) or "ignore"; then the config counts as known)
   engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)
-  engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history and the games' current bind files; user folder replaced, nothing uploaded; --list only shows the contents)
+  engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history, the games' current bind files and JoyPro 1's profiles (Documents\JoyPro); user folder replaced, nothing uploaded; --list only shows the contents)
   engine support unpack <file.zip> --to <folder>   (a maintainer's copy of a support file: the profile to <folder>\profile, its history where profile history restore finds it with JOYPRO_DATA_DIR=<folder>\data)
   engine vjoy status   (virtual joystick mode: vJoy and HidHide installed, vJoy devices, HidHide state and JoyPro's session, games native/virtual, the mapping table, what vJoy must offer; read-only)
   engine vjoy mode <game> native|virtual|xbox [--dry-run]   (per game: physical devices, the virtual joystick (vJoy, every used input gets a fixed vJoy slot) or the virtual Xbox 360 pad (ViGEmBus, for XInput-only or one-device games: the game's gamepad layout first, then sticks, triggers, buttons, D-pad))
@@ -461,6 +465,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]
   engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]
   engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]
+  engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]
   engine relations merge-copies [--dry-run] [--name <relation>]
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g] [--all-examples]
@@ -722,6 +727,15 @@ Example:
 engine --help
 ```
 
+### `--vjoy-tunnel <1-16>`
+What it does: Command argument. See examples for typical values.
+Value format: Command argument. See examples for typical values.
+
+Example:
+```powershell
+engine --help
+```
+
 ### `--usage-style`
 What it does: Command argument. See examples for typical values.
 
@@ -814,6 +828,48 @@ Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --text
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --fail-on-warnings true --text
+```
+
+### `engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `<config>`: The game's config (file, folder or HKCU registry key) as engine sync status lists it; default: the one the export uses.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks)`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
+- `<a>`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
 ```
 
 ### `engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)`
@@ -981,7 +1037,7 @@ Examples:
 engine dcs import 'C:\Users\Pilot\Saved Games\DCS.openbeta' --device 'VKB Gladiator NXT' --merge --save-profile 'C:\JoyPro\profiles\dcs_import.pr0file' --text
 ```
 
-### `engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; clean: the written devices also lose binds and DCS defaults in every other aircraft unless --clean-all-aircraft false or a plane filter; nuke: devices without binds in an exported plane lose all binds there, DCS defaults included; the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)`
+### `engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>] [--ignore-device <name>] [--ignore-devices <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; the .diff.lua holds only differences from DCS's defaults (added non-default binds, removed defaults, defaults with other tuning as changed); add never deletes and lists binds whose button the game uses for another function (SkippedTakenInputs); merge removes a game bind on a button the profile puts another function on; merge-overwrite also takes the profile's actions off their other buttons in that aircraft; clean replaces the written devices in the exported aircraft, with --clean-all-aircraft true (default false) also in every other aircraft; nuke: connected devices without binds in an exported plane lose all binds there, DCS defaults included (--ignore-device(s) and --vjoy-tunnel devices are never cleared); the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)`
 What it does: Writes current profile mappings back to DCS-compatible files.
 
 Arguments and example values:
@@ -996,6 +1052,9 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--vjoy-tunnel`: Command argument. See examples for typical values.
 
 How arguments interact:
 - Import-only filters/settings are not valid for export commands.
@@ -1104,7 +1163,7 @@ engine dcs device-luas remove --text
 engine dcs device-luas restore --text
 ```
 
-### `engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; read only)`
+### `engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>] [--dump-active <file>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only)`
 What it does: Runs DCS's own input code (luae.exe) on a copy of a Saved Games input folder and lists every DCS default bind still active on the joysticks.
 
 Arguments and example values:
@@ -1121,6 +1180,8 @@ Arguments and example values:
 - `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
 - `--max-listed`: dcs verify-clean: how many remaining default binds are listed (counts are always complete).
 - `<n>`: Integer numeric value. Example: 45.
+- `--dump-active`: Command argument. See examples for typical values.
+- `<file>`: Command argument. See examples for typical values.
 
 How arguments interact:
 - Read only: works on a temporary copy of Config\\Input. Needs the DCS installation (luae.exe and Scripts).
@@ -1384,7 +1445,7 @@ Examples:
 engine il2 import 'D:\Games\IL-2 Sturmovik Great Battles' --devices 'VKB Gladiator NXT,LEFT VPC Throttle' --save-last --text
 ```
 
-### `engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (conflict = same action on the same device; clean releases the other binds of the written devices, nuke the joysticks the profile does not use; keyboard lines stay)`
+### `engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)`
 What it does: Exports current profile mappings to IL2-compatible files.
 
 Arguments and example values:
@@ -1450,7 +1511,7 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' starcitizen import --text
 ```
 
-### `engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (clean releases the ship binds of the written devices, nuke those of the devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke))`
+### `engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)`
 What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
 
 Arguments and example values:
@@ -1905,7 +1966,7 @@ Examples:
 engine --help
 ```
 
-### `engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history and the games' current bind files; user folder replaced, nothing uploaded; --list only shows the contents)`
+### `engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history, the games' current bind files and JoyPro 1's profiles (Documents\JoyPro); user folder replaced, nothing uploaded; --list only shows the contents)`
 What it does: Writes the support file (docs/logging.md "Support file"), everything a maintainer needs in one zip: summary with versions, system, the games' environment, the devices, every part with its size and what was trimmed; JoyPro's logs (GUI, engine, tray and watcher, force feedback) of at least 14 days and back to the oldest history version of the open profile, at most 100 MB, the oldest trimmed first; crash reports and the last errors with stack traces; JoyPro's settings and state files, the versions of the game lists and installed packs; devices and the vJoy / HidHide state; per game the watcher's record, the list of JoyPro's backups and the newest set, for MSFS the profiles JoyPro reads. With --profile and --include-profile true (the default when --profile is given) also the open profile, its history (the newest versions up to --history-cap-mb, default 50, plus the whole index) and the games' current bind files with JoyPro's .jp / .joypro-meta.json files. Every text is scrubbed (user folder -> %USERPROFILE%), the profile copies inside their strings; originals are only read; nothing is uploaded. --list only prints the parts and entries.
 
 Arguments and example values:
@@ -1913,7 +1974,7 @@ Arguments and example values:
 - `<id>`: Command argument. See examples for typical values.
 - `--days`: For support bundle: logs and crash reports of at least the last N days (default 14; older ones when the open profile's history goes further back).
 - `<n>`: Integer numeric value. Example: 45.
-- `--include-profile`: For support bundle: true puts the open profile (--profile), its history and the games' current bind files in; false leaves them out. Default: true when --profile is given.
+- `--include-profile`: For support bundle: true puts the open profile (--profile), its history, the games' current bind files and JoyPro 1's profiles (Documents\JoyPro\*.pr0file) in; false leaves them out. Default: true when --profile is given.
 - `--history-cap-mb`: For support bundle: the most megabytes of stored history copies (default 50); the newest versions go in, summary.txt names the ones left out. Example: 50.
 - `--list`: For support bundle: only print what the zip would hold; nothing is written.
 - `--out`: Global option: write result output to file path instead of terminal.
@@ -5930,6 +5991,25 @@ Arguments and example values:
 - `--instruction`: Command argument. See examples for typical values.
 - `--llm`: Command argument. See examples for typical values.
 - `--apply`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine --help
+```
+
+### `engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]`
+What it does: Runs this command operation.
+
+Arguments and example values:
+- `--keys`: Command argument. See examples for typical values.
+- `--keep`: Command argument. See examples for typical values.
+- `<relation>`: Command argument. See examples for typical values.
+- `--keep-action`: Command argument. See examples for typical values.
+- `<id>`: Command argument. See examples for typical values.
+- `--off`: Command argument. See examples for typical values.
+- `--keep-both`: Command argument. See examples for typical values.
+- `--remove-actions`: Command argument. See examples for typical values.
+- `--include-kept`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

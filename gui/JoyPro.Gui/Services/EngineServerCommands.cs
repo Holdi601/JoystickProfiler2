@@ -15,7 +15,7 @@ public static class EngineServerCommands
     private static readonly Dictionary<string, HashSet<string>> Served = new(StringComparer.OrdinalIgnoreCase)
     {
         ["relations"] = Set("list", "show", "add", "group", "item", "mass", "search", "browse", "catalog", "pair", "functions", "resolve", "rename",
-            "function", "aircraft", "check-aircraft", "suggest", "meanings", "action-info", "duplicates", "merge-copies"),
+            "function", "aircraft", "check-aircraft", "suggest", "meanings", "action-info", "duplicates", "conflicts", "merge-copies"),
         ["binds"] = Set("list", "show", "set", "clear", "tuning", "detent", "modifier", "unbind"),
         ["profile"] = Set("summary", "load", "save", "games", "validate"),
         ["layout"] = Set("titles", "suggest", "template-inspect"),

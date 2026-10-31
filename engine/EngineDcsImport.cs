@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -59,9 +59,10 @@ namespace JoyPro.Engine
                 sb.AppendLine("Defaults Removed In DCS (skipped): " + result.DefaultEntriesRemovedByUser);
                 sb.AppendLine("Defaults Replaced By Own Binds (skipped): " + result.DefaultEntriesReplacedByOwnBinds);
                 sb.AppendLine("Defaults On Inputs With Own Binds (skipped): " + result.DefaultEntriesOnOwnInputs);
-                sb.AppendLine("Defaults Of An Action Another Device Has (skipped): " + result.DefaultEntriesOnOtherDevice);
                 sb.AppendLine("Defaults On An Input DCS Gives Two Actions (skipped): " + result.DefaultEntriesOnSharedInputs);
-                sb.AppendLine("Generic Joystick Defaults (skipped): " + result.GenericJoystickDefaultsSkipped);
+                sb.AppendLine("Keyboard Defaults Of An Action A Joystick Default Has (skipped): " + result.DefaultEntriesOnOtherDevice);
+                sb.AppendLine("Generic Joystick Defaults (default.lua, imported): " + result.GenericJoystickDefaultsImported);
+                sb.AppendLine("Connected Devices Without A File (defaults imported): " + result.DefaultDevicesWithoutFile);
             }
             sb.AppendLine("Imported Relations: " + result.ImportedRelations);
             sb.AppendLine("Imported Binds: " + result.ImportedBinds);
@@ -619,20 +620,22 @@ namespace JoyPro.Engine
             return token.EndsWith("_easy", StringComparison.OrdinalIgnoreCase);
         }
 
-        // "Include defaults": the binds DCS gives a device by default and the user kept, as DCS really uses them.
-        // For every aircraft and device the user has an input file for (so only devices that passed the import's device
-        // filters, --only-connected and the same-name merge), the defaults DCS applies to that device are added (the
-        // keyboard's, and the ones DCS ships for the device's model), all keys of an action with their modifiers, except:
+        // "Include defaults": every bind DCS has active by default on an imported device, so that an import followed by a
+        // clean + nuke export leaves exactly the binds the game had (docs/games/dcs.md "Import of the default binds").
+        // Imported devices are the joysticks whose files the import reads (after the device filters, --only-connected
+        // and the same-name merge) and the connected joysticks that pass the same filters (DCS gives them its defaults
+        // without any file); per imported aircraft (an aircraft with a file of the user that passed the filters) each of
+        // them gets the defaults DCS applies to it: the ones DCS ships for the device's model, else DCS's generic
+        // joystick defaults (default.lua), and the keyboard's. All keys of an action with their modifiers, except:
         // - defaults the user's file removes (DCS writes a "removed" entry when a default is cleared or rebound);
-        // - actions the user bound himself in that aircraft, on any device (his binds replace the defaults);
-        // - defaults on an input (key and modifiers) the user uses for another action of that aircraft: the user's bind
-        //   wins, so no input gets two relations because of a default;
-        // - a default of an action another device already got in that aircraft (model defaults before the keyboard), and
-        //   the second action of an input DCS ships for two: one input per action and one action per input, as in a
-        //   profile;
-        // - DCS's generic joystick defaults (default.lua): DCS puts them on every device without defaults of its own,
-        //   button boxes included, so they would put one action on every device.
-        // Defaults of aircraft or devices without a file of the user are not added (nothing says he flies or has them).
+        // - defaults of an action the user bound himself on that device in that aircraft (his binds replace them); for the
+        //   keyboard, of an action he bound on any device there (the keyboard's other defaults stay in the game anyway);
+        // - defaults on an input (key and modifiers) the user uses for another action on that device in that aircraft:
+        //   the user's bind wins, so no input gets two relations because of a default;
+        // - the second action of an input DCS ships for two on one device: one action per input, as in a profile;
+        // - a keyboard default of an action a joystick got a default for in that aircraft (one is enough in the profile;
+        //   the keyboard's default keys stay in the game anyway).
+        // Aircraft without a file of the user are not added (nothing says he flies them).
         private static List<ParsedBind> AppendDefaultsFromCleanProfiles(
             List<ParsedBind> parsed,
             EngineDcsImportOptions options,
@@ -646,6 +649,7 @@ namespace JoyPro.Engine
             {
                 ParsedBind bind = parsed[i];
                 UpsertParsedBind(merged, bind);
+                ownActions.Add(BuildPlaneDeviceIdKey(bind.Plane, bind.Device, bind.Id, bind.IsAxis));
                 ownActions.Add(BuildPlaneDeviceIdKey(bind.Plane, string.Empty, bind.Id, bind.IsAxis));
                 ownInputs.Add(DefaultInputKey(bind.Plane, bind.Device, bind.Key, bind.Reformers));
             }
@@ -653,12 +657,13 @@ namespace JoyPro.Engine
             HashSet<string> matchedPlanes = new HashSet<string>(result.MatchedPlanes ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
             HashSet<string> matchedDevices = new HashSet<string>(result.MatchedDevices ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
             Dictionary<string, List<DefaultBind>> defaultFiles = new Dictionary<string, List<DefaultBind>>(StringComparer.OrdinalIgnoreCase);
-            // plane|id|axis -> the device whose default has the action: one device per action and aircraft.
-            Dictionary<string, string> defaultActionDevice = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             // plane|device|input of the defaults added so far.
             HashSet<string> defaultOnInput = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            // Per aircraft the devices with defaults made for their model first, the keyboard after them.
-            foreach (DefaultsPair pair in (basis == null ? new List<DefaultsPair>() : basis.Pairs.Values.ToList())
+            // plane|id|axis of the joystick defaults added: the keyboard's default of such an action is left out.
+            HashSet<string> joystickDefaultActions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            List<DefaultsPair> pairs = basis == null ? new List<DefaultsPair>() : basis.Pairs.Values.ToList();
+            AddDevicesWithoutFile(pairs, options, result);
+            foreach (DefaultsPair pair in pairs
                 .OrderBy(p => p.Plane, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(p => string.Equals(p.Device, "Keyboard", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
                 .ThenBy(p => p.Device, StringComparer.OrdinalIgnoreCase))
@@ -673,13 +678,9 @@ namespace JoyPro.Engine
                     defaults = ParseDefaultFile(defaultsFile, result);
                     defaultFiles[defaultsFile] = defaults;
                 }
-                // DCS's generic joystick defaults (default.lua) are meant for an unknown stick and land on every device
-                // without defaults of its own, button boxes included (one action on every device): not imported.
-                if (!keyboard && string.Equals(Path.GetFullPath(defaultsFile), Path.GetFullPath(Path.Combine(GameDataPaths.CleanProfileFolder("DCS", false), pair.Plane + ".cf")), StringComparison.OrdinalIgnoreCase))
-                {
-                    result.GenericJoystickDefaultsSkipped += defaults.Count;
-                    continue;
-                }
+                // DCS's generic joystick defaults (default.lua) are active on every device without defaults of its own:
+                // imported like the others (counted apart).
+                bool generic = !keyboard && string.Equals(Path.GetFullPath(defaultsFile), Path.GetFullPath(Path.Combine(GameDataPaths.CleanProfileFolder("DCS", false), pair.Plane + ".cf")), StringComparison.OrdinalIgnoreCase);
 
                 Dictionary<string, string> modifierLookup = null;
                 if (basis.ModifierLookupByPlane != null)
@@ -691,14 +692,16 @@ namespace JoyPro.Engine
                         result.DefaultEntriesRemovedByUser++;
                         continue;
                     }
-                    string actionKey = BuildPlaneDeviceIdKey(pair.Plane, string.Empty, entry.Id, entry.IsAxis);
+                    // The keyboard is never taken over (its other default keys stay in the game anyway): a keyboard
+                    // default of an action the user bound on any device of the aircraft is left out, as up to 2.4.3.
+                    string actionKey = BuildPlaneDeviceIdKey(pair.Plane, keyboard ? string.Empty : pair.Device, entry.Id, entry.IsAxis);
                     if (ownActions.Contains(actionKey))
                     {
                         result.DefaultEntriesReplacedByOwnBinds++;
                         continue;
                     }
-                    string actionDevice;
-                    if (defaultActionDevice.TryGetValue(actionKey, out actionDevice) && !string.Equals(actionDevice, pair.Device, StringComparison.OrdinalIgnoreCase))
+                    string planeActionKey = BuildPlaneDeviceIdKey(pair.Plane, string.Empty, entry.Id, entry.IsAxis);
+                    if (keyboard && joystickDefaultActions.Contains(planeActionKey))
                     {
                         result.DefaultEntriesOnOtherDevice++;
                         continue;
@@ -718,7 +721,10 @@ namespace JoyPro.Engine
                         continue;
                     }
                     defaultOnInput.Add(inputKey);
-                    defaultActionDevice[actionKey] = pair.Device;
+                    if (!keyboard)
+                        joystickDefaultActions.Add(planeActionKey);
+                    if (generic)
+                        result.GenericJoystickDefaultsImported++;
 
                     ParsedBind bind = new ParsedBind();
                     bind.Id = entry.Id;
@@ -750,6 +756,57 @@ namespace JoyPro.Engine
                 .ThenBy(v => v.Id ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(v => v.Plane ?? string.Empty, StringComparer.OrdinalIgnoreCase)
                 .ToList();
+        }
+
+        // The aircraft/device pairs DCS gives defaults to without a file of the user: every imported aircraft times every
+        // imported joystick (read from files) and every connected joystick that passes the import's device filters.
+        private static void AddDevicesWithoutFile(List<DefaultsPair> pairs, EngineDcsImportOptions options, EngineDcsImportResult result)
+        {
+            if (string.IsNullOrWhiteSpace(result.InputPath))
+                return;
+            HashSet<string> deviceFilter = new HashSet<string>(options.DeviceFilter ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            HashSet<string> deviceFilterByName = BuildGuidlessDeviceFilterSet(deviceFilter);
+            HashSet<string> ignored = new HashSet<string>(options.IgnoreDeviceFilter ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            HashSet<string> ignoredByName = BuildGuidlessDeviceFilterSet(ignored);
+            HashSet<string> devices = new HashSet<string>(
+                (result.MatchedDevices ?? new List<string>()).Where(d => !string.Equals(d, "Keyboard", StringComparison.OrdinalIgnoreCase)),
+                StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                foreach (JoyPro.Engine.Games.GameDevice device in JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>()).Devices)
+                {
+                    string name = (device.JoyProName ?? string.Empty).Trim();
+                    if (!device.Connected || name.Length == 0 || string.Equals(name, "Keyboard", StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    if (deviceFilter.Count > 0 && !MatchesDeviceFilter(name, deviceFilter, deviceFilterByName))
+                        continue;
+                    if (ignored.Count > 0 && MatchesDeviceFilter(name, ignored, ignoredByName))
+                        continue;
+                    devices.Add(name);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Warnings.Add("The connected devices could not be listed for their DCS defaults: " + ex.Message);
+            }
+
+            HashSet<string> known = new HashSet<string>(pairs.Select(p => p.Plane.Trim().ToLowerInvariant() + SignatureSeparator + p.Device.Trim().ToLowerInvariant()), StringComparer.Ordinal);
+            foreach (string plane in (result.MatchedPlanes ?? new List<string>()).OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
+            {
+                foreach (string device in devices.OrderBy(d => d, StringComparer.OrdinalIgnoreCase))
+                {
+                    string key = plane.Trim().ToLowerInvariant() + SignatureSeparator + device.Trim().ToLowerInvariant();
+                    if (!known.Add(key))
+                        continue;
+                    pairs.Add(new DefaultsPair
+                    {
+                        Plane = plane.Trim(),
+                        Device = device.Trim(),
+                        SourceFile = Path.Combine(result.InputPath, plane.Trim(), "joystick", device.Trim() + ".diff.lua")
+                    });
+                    result.DefaultDevicesWithoutFile++;
+                }
+            }
         }
 
         // An input of an aircraft and device as DCS tells inputs apart: key and the physical modifier keys (a modifier is
@@ -1073,7 +1130,8 @@ namespace JoyPro.Engine
                     bind.IsAxis = isAxis;
                     bind.Plane = string.IsNullOrWhiteSpace(plane) ? "UnknownPlane" : plane;
                     bind.Device = string.IsNullOrWhiteSpace(device) ? "UnknownDevice" : device;
-                    bind.Key = addedEntry.Key.Trim();
+                    // JoyPro 1's key names (LeftShift, Oem102) and DCS's (LShift, OEM102) name one key: DCS's spelling.
+                    bind.Key = KeyboardKeyNames.IsKeyboard(bind.Device) ? KeyboardKeyNames.ToDcs(addedEntry.Key) : addedEntry.Key.Trim();
                     bind.Reformers = NormalizeImportedReformers(addedEntry.Reformers, modifierLookup);
                     if (devicePlan != null && devicePlan.HasRemaps && bind.Reformers.Count > 0)
                         bind.Reformers = bind.Reformers.Select(devicePlan.RemapReformer).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
@@ -2382,8 +2440,10 @@ namespace JoyPro.Engine
                 normalized.Add(BuildFallbackReformerString(token));
             }
 
+            // A keyboard modifier key in DCS's spelling (JoyPro 1 wrote LeftAlt, DCS writes LAlt).
             return normalized
                 .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Select(KeyboardKeyNames.NormalizeReformer)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
         }

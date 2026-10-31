@@ -166,9 +166,12 @@ try {
     $tcaMergeProfile = Join-Path $tcaDir "merge.pr0file"
     Run-Engine @("--profile", $tcaMergeProfile, "relations", "add", "TCA Fire 2", "--button", "--node", "TinyCombatArena:FireGun", "--device", $tcaVjoy, "--input", "JOY_BTN2", "--text") | Out-Null
     $tcaMergePath = New-TcaCopy "merge"
+    # Merge adds Button 2 and keeps the game's Fire Gun on Button 1 (the action's other input is no conflict).
     $tcaMerge = Run-Engine @("--profile", $tcaMergeProfile, "tca", "export", $tcaMergePath, "--mode", "merge", "--text")
-    Assert-Match $tcaMerge.Output "kept the game's bind \(merge mode\)" "merge should keep the game's Fire Gun bind."
-    Assert-True ([System.IO.File]::ReadAllText($tcaMergePath) -eq [System.IO.File]::ReadAllText($tcaFixture)) "a merge that keeps every game bind must not write."
+    Assert-True ($tcaMerge.ExitCode -eq 0) "tca merge export failed. Output: $($tcaMerge.Output)"
+    $tcaMerged = (Read-TcaRegistry $tcaMergePath)[$tcaVjoy8]
+    Assert-Match $tcaMerged (Get-TcaPart 58 1 33) "merge should bind Fire Gun to Button 2."
+    Assert-Match $tcaMerged (Get-TcaPart 58 1 32) "merge must keep the game's Fire Gun on Button 1."
     $tcaOverwrite = Run-Engine @("--profile", $tcaMergeProfile, "tca", "export", $tcaMergePath, "--mode", "merge-overwrite", "--text")
     Assert-True ($tcaOverwrite.ExitCode -eq 0) "tca merge-overwrite export failed. Output: $($tcaOverwrite.Output)"
     $tcaOver = (Read-TcaRegistry $tcaMergePath)[$tcaVjoy8]

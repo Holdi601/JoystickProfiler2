@@ -40,6 +40,22 @@ namespace JoyPro
         [OptionalField]
         public List<string> KeptDuplicates;
 
+        // Binds an "Only add" export did not write because the game uses their input for another function, one JSON
+        // object per line (ExportSkipMarks); they clear at the next export that writes the bind or finds the input free.
+        [OptionalField]
+        public List<string> ExportSkipMarks;
+
+        // Games this profile imported from or exported to (EngineSync hooks): the GUI asks "Import first?" before the
+        // first export to any other game (engine profile game-state).
+        [OptionalField]
+        public List<string> SyncedGames;
+
+        // Suggestions the user dismissed ("Never") for a relation, "relation<TAB>game<TAB>id<TAB>plane": they are not
+        // proposed again (engine relations suggest, Auto Group). Before 2.5.0 a dismissed suggestion was an action of
+        // the relation with no aircraft ticked; such actions move here when the profile is opened (EngineDismissedSuggestions).
+        [OptionalField]
+        public List<string> DismissedSuggestions;
+
         public Pr0file()
         {
             Relations = new Dictionary<string, Relation>(StringComparer.OrdinalIgnoreCase);

@@ -431,6 +431,23 @@ namespace JoyPro.Engine
                 Command command = context.Find(game, node.ID, off[0]);
                 list.Add(new EngineRelationDismissed { Game = game, Id = node.ID, Title = command != null ? command.Title : node.ID, Planes = off });
             }
+            // The relation's list of dismissed suggestions (actions with no aircraft ticked land there on profile load).
+            foreach (IGrouping<string, EngineDismissedSuggestions.Entry> action in EngineDismissedSuggestions.Of(relation.NAME)
+                         .GroupBy(e => GameKey(e.Game) + "|" + NodeId(GameKey(e.Game), e.Id), StringComparer.OrdinalIgnoreCase))
+            {
+                EngineDismissedSuggestions.Entry first = action.First();
+                string game = GameKey(first.Game);
+                EngineRelationDismissed listed = list.FirstOrDefault(d => string.Equals(d.Game, game, StringComparison.OrdinalIgnoreCase) &&
+                                                                          string.Equals(NodeId(game, d.Id), NodeId(game, first.Id), StringComparison.OrdinalIgnoreCase));
+                List<string> planes = action.Select(e => e.Plane).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
+                if (listed != null)
+                {
+                    listed.Planes = listed.Planes.Concat(planes).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
+                    continue;
+                }
+                Command command = context.Find(game, first.Id, planes.FirstOrDefault() ?? game);
+                list.Add(new EngineRelationDismissed { Game = game, Id = first.Id, Title = command != null ? command.Title : first.Id, Planes = planes });
+            }
             return list;
         }
 
@@ -559,9 +576,18 @@ namespace JoyPro.Engine
                                                                                                  string.Equals(GameKey(n.Game), GameKey(game), StringComparison.OrdinalIgnoreCase));
                 if (existing == null)
                 {
+                    // Restoring a dismissed suggestion that is only on the relation's list (EngineDismissedSuggestions).
+                    int restored = target == null ? EngineDismissedSuggestions.Remove(relation.NAME, game, id, planes) : 0;
+                    if (restored > 0)
+                    {
+                        result.Removed += restored;
+                        continue;
+                    }
                     result.Errors.Add(game + ":" + id + " is not in '" + relation.NAME + "'.");
                     continue;
                 }
+                if (target == null)
+                    EngineDismissedSuggestions.Remove(relation.NAME, game, id, planes);
                 foreach (string plane in planes)
                 {
                     existing.DeleteAircraftFromActivity(plane);
@@ -770,6 +796,12 @@ namespace JoyPro.Engine
                 // A command of another game counts as present for the whole game.
                 if (game != "DCS")
                     present.Add(game + "|" + NodeId(game, node.ID) + "|" + game);
+            }
+            // Dismissed suggestions of the relation (EngineDismissedSuggestions) are not proposed again either.
+            foreach (EngineDismissedSuggestions.Entry dismissed in EngineDismissedSuggestions.Of(relation.NAME))
+            {
+                string game = GameKey(dismissed.Game);
+                present.Add(game + "|" + NodeId(game, dismissed.Id) + "|" + (game == "DCS" ? dismissed.Plane : game));
             }
 
             // The relation's function (EngineRelationPurpose): only one that (nearly) all of its actions are, the

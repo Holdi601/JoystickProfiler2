@@ -57,6 +57,18 @@ The vJoy device's identity in the games is its DirectInput name (`vJoy Device {G
 HID collection (`&col01` = the first configured device). Games that tell devices apart only by name (for example
 WARDOGS, Arma Reforger) cannot tell several vJoy devices apart: keep such games within one vJoy device.
 
+### vJoy devices in imports (2.5.0)
+
+vJoy devices are imported and exported like any other device: a user may feed one on purpose (VoiceAttack, his own
+feeder) and bind it in the game; no default ignore list leaves them out. Only the vJoy device JoyPro tunnels into is
+JoyPro's own: Settings "vJoy device JoyPro tunnels into" (instance 1-16, default none) passes `--vjoy-tunnel <n>` to
+every import and scan (`engine dcs|il2|starcitizen import|scan`, `engine <game> import|scan`). The engine finds that instance's device the way the virtual mode does (the
+HID collection `&col0n` against the configured vJoy devices, `EngineVJoy.ScanDevices`) and adds its `vJoy Device
+{GUID}` to the ignore list (registry games: its binds are dropped from the read); every other vJoy instance stays a
+normal device. When that vJoy device is not connected nothing is left out and the log says so. Checked by
+`engine\tests\smoke\vjoytunnel.ps1` (two fake vJoy devices: without the option both are imported, `--vjoy-tunnel 1`
+leaves out only device 1, `2` only device 2, `17` is refused).
+
 ### Virtual Xbox pad (mode "xbox", ViGEmBus)
 
 For games that only read Xbox controllers (XInput) or only one device, a game can use a **virtual Xbox 360 pad**

@@ -24,7 +24,8 @@ public sealed partial class MainWindowViewModel
         set => SetConfirmationAsked(ConfirmImportUnexportedKey, value);
     }
 
-    public bool HasSwitchedOffConfirmations => !AskBeforeRemovingAction || !AskBeforeImportDropsChanges;
+    public bool HasSwitchedOffConfirmations => !AskBeforeRemovingAction || !AskBeforeImportDropsChanges || !AskBeforeFirstExport ||
+                                               !AskBeforeExportRemoves || !ShowWatcherHintInImport;
 
     internal void SetConfirmationAsked(string key, bool ask)
     {
@@ -34,6 +35,9 @@ public sealed partial class MainWindowViewModel
         SaveListPreferences();
         OnPropertyChanged(nameof(AskBeforeRemovingAction));
         OnPropertyChanged(nameof(AskBeforeImportDropsChanges));
+        OnPropertyChanged(nameof(AskBeforeFirstExport));
+        OnPropertyChanged(nameof(AskBeforeExportRemoves));
+        OnPropertyChanged(nameof(ShowWatcherHintInImport));
         OnPropertyChanged(nameof(HasSwitchedOffConfirmations));
     }
 
@@ -43,6 +47,9 @@ public sealed partial class MainWindowViewModel
     {
         SetConfirmationAsked(ConfirmRemoveActionKey, true);
         SetConfirmationAsked(ConfirmImportUnexportedKey, true);
+        SetConfirmationAsked(ConfirmFirstExportKey, true);
+        SetConfirmationAsked(ConfirmExportRemovesKey, true);
+        SetConfirmationAsked(WatcherHintKey, true);
         StatusText = T("JoyPro asks every question again.");
     }
 }

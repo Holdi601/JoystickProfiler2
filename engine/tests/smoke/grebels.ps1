@@ -158,3 +158,57 @@ try {
 finally {
     $env:JOYPRO_FAKE_DEVICES = $grPreviousDevices
 }
+
+# ---- export modes (one role per physical axis; mouse and gamepad rows are not JoyPro's and never change):
+#   add       writes a role only on an axis without one; an axis with another role is skipped and reported
+#   merge     the profile's role replaces the axis' role (conflict), the role's old axis keeps it
+#   merge-overwrite  merge + the role's other axes on connected channels go to None
+$grmPrevious = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = $grDevices
+try {
+    function Get-GrmNonFlight([string]$Path) {
+        $text = $grAscii.GetString([System.IO.File]::ReadAllBytes($Path))
+        $i = $text.IndexOf("MouseX")
+        return $text.Substring($i, $text.IndexOf("RawInput_Controller0_AxisX") - $i)
+    }
+    $grmProfile = Join-Path $grDir "modes.pr0file"
+    # Moved: pitch from vJoy Y to Ry. Conflict: roll on vJoy Rz (the game's yaw); the stick keeps roll on X.
+    Run-Engine @("--profile", $grmProfile, "relations", "add", "GRM Pitch", "--axis", "--node", "GRebels:Axis_Pitch", "--device", $grVjoy, "--input", "JOY_RY", "--text") | Out-Null
+    Run-Engine @("--profile", $grmProfile, "relations", "add", "GRM Roll", "--axis", "--node", "GRebels:Axis_Roll", "--device", $grVjoy, "--input", "JOY_RZ", "--text") | Out-Null
+    $grmPath = New-GrCopy "modes"
+    $grmNonFlight = Get-GrmNonFlight $grmPath
+
+    $grmAdd = Run-Engine @("--profile", $grmProfile, "grebels", "export", $grmPath, "--mode", "add")
+    Assert-True ($grmAdd.ExitCode -eq 0) ("grebels add export failed: " + $grmAdd.Output)
+    $grmAddJson = ($grmAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($grmAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "Axis_Roll" -and $_.GameAction -eq "Axis_Yaw" }).Count -eq 1) ("grebels add should report roll on the yaw axis: " + $grmAdd.Output)
+    $grmScan = (Run-Engine @("grebels", "scan", $grmPath, "--text")).Output | Out-String
+    Assert-Match $grmScan "Axis_Pitch <- vJoy Device \{[^}]+\} JOY_RY" "grebels add should write pitch on the free Ry."
+    Assert-Match $grmScan "Axis_Pitch <- vJoy Device \{[^}]+\} JOY_Y" "grebels add must keep pitch's old axis."
+    Assert-Match $grmScan "Axis_Yaw <- vJoy Device \{[^}]+\} JOY_RZ" "grebels add must keep yaw."
+    Assert-True ((Get-GrmNonFlight $grmPath) -eq $grmNonFlight) "grebels add must leave the mouse and gamepad rows identical."
+
+    $grmMerge = Run-Engine @("--profile", $grmProfile, "grebels", "export", $grmPath, "--mode", "merge", "--text")
+    Assert-True ($grmMerge.ExitCode -eq 0) ("grebels merge export failed: " + $grmMerge.Output)
+    $grmScan = (Run-Engine @("grebels", "scan", $grmPath, "--text")).Output | Out-String
+    Assert-Match $grmScan "Axis_Roll <- vJoy Device \{[^}]+\} JOY_RZ" "grebels merge should put roll on Rz (the yaw there goes)."
+    Assert-NotMatch $grmScan "Axis_Yaw" "grebels merge should remove yaw from the profile's axis (conflict)."
+    Assert-Match $grmScan "Axis_Pitch <- vJoy Device \{[^}]+\} JOY_Y" "grebels merge must keep pitch's old axis."
+    Assert-Match $grmScan "Axis_Roll <- GR Stick \{[^}]+\} JOY_X" "grebels merge must keep roll's old axis."
+    Assert-True ((Get-GrmNonFlight $grmPath) -eq $grmNonFlight) "grebels merge must leave the mouse and gamepad rows identical."
+
+    $grmOverwrite = Run-Engine @("--profile", $grmProfile, "grebels", "export", $grmPath, "--mode", "merge-overwrite", "--text")
+    Assert-True ($grmOverwrite.ExitCode -eq 0) ("grebels merge-overwrite export failed: " + $grmOverwrite.Output)
+    $grmScan = (Run-Engine @("grebels", "scan", $grmPath, "--text")).Output | Out-String
+    Assert-NotMatch $grmScan "Axis_Pitch <- vJoy Device \{[^}]+\} JOY_Y\b" "grebels merge-overwrite should take pitch off its old axis."
+    Assert-NotMatch $grmScan "Axis_Roll <- GR Stick" "grebels merge-overwrite should take roll off the stick (connected channel)."
+    Assert-Match $grmScan "Axis_Pitch <- vJoy Device \{[^}]+\} JOY_RY" "grebels merge-overwrite keeps the new axis."
+    Assert-True ((Get-GrmNonFlight $grmPath) -eq $grmNonFlight) "grebels merge-overwrite must leave the mouse and gamepad rows identical."
+
+    $grmClean = Run-Engine @("--profile", $grmProfile, "grebels", "export", (New-GrCopy "modes-clean"), "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($grmClean.ExitCode -eq 0) ("grebels clean + nuke export failed: " + $grmClean.Output)
+    Assert-True ((Get-GrmNonFlight (Join-Path $grDir "modes-clean\SaveOptions.sav")) -eq $grmNonFlight) "grebels clean + nuke must leave the mouse and gamepad rows identical."
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $grmPrevious
+}

@@ -169,6 +169,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         OnFfbProfileChanged();
         OnProfileDisplayChanged();
         OnHistoryProfileChanged();
+        ApplyPathsOfProfile();
+        if (persistUiFiles)
+            _ = LoadExportMarksAsync();
     }
 
     [ObservableProperty]
@@ -348,7 +351,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private bool importIncludeDefaults;
+    private bool importIncludeDefaults = true;
 
     [ObservableProperty]
     private bool importMerge;
@@ -795,8 +798,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private string layoutEditorConnectorSourcePointLabel = "<none>";
 
+    // JoyPro's default since 2.5.0: "Replace on my devices" + "Also clear my other devices" (ExportSettings.DefaultMode).
     [ObservableProperty]
-    private string exportMode = "merge";
+    private string exportMode = Services.ExportSettings.DefaultMode;
 
     [ObservableProperty]
     private string exportDcsPath = string.Empty;
@@ -811,11 +815,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private bool exportKeepKeyboardDefaults = true;
 
     [ObservableProperty]
-    private bool exportNukeUntouchedDevices;
+    private bool exportNukeUntouchedDevices = true;
 
-    // DCS: the written devices also lose their DCS defaults in every other aircraft (clean mode: their binds too).
+    // DCS: the written devices also lose their binds and DCS defaults in every other aircraft (off by default since
+    // 2.5.0: an export touches only the exported aircraft).
     [ObservableProperty]
-    private bool exportDcsCleanAllAircraft = true;
+    private bool exportDcsCleanAllAircraft;
 
     [ObservableProperty]
     private bool exportStarCitizenKeepKeyboardDefaults = true;
@@ -1402,9 +1407,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (value == null)
             return;
         // A weak match says where to pick the right model.
-        LayoutSuggestStatus = string.IsNullOrWhiteSpace(value.TemplateName) ? string.Empty
-            : value.Score < 60 ? T("Picture: {0} (match {1}%). Not your device? Model... > Choose another model", value.PictureName, value.MatchPercent.ToString(CultureInfo.InvariantCulture))
-            : T("Picture: {0} (match {1}%)", value.PictureName, value.MatchPercent.ToString(CultureInfo.InvariantCulture));
+        LayoutSuggestStatus = LayoutTemplateMatchText(value);
         bool otherDevice = !string.Equals(layoutEditorContextDevice, (value.Device ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase);
         layoutEditorContextDevice = (value.Device ?? string.Empty).Trim();
         // The device reference (docs/device-reference.md) of the picked device at once: your photo, else the maker's
@@ -1426,6 +1429,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         }
         if (variantLayout == null)
             RememberLayoutDeviceMapping(layoutEditorContextDevice, value.LayoutPath);
+        UpdateLayoutPictureStatus();
         string candidate = TryFindFirstExistingFile(
         [
             variantLayout ?? string.Empty,
@@ -2383,6 +2387,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         allBinds.Clear();
         allValidationIssues.Clear();
         plainCheckCards.Clear();
+        inputConflictCards.Clear();
+        actionConflictCards.Clear();
+        conflictMessages.Clear();
         checkShownCards.Clear();
         checkSortedCards.Clear();
         checkPresortedCards.Clear();
@@ -2625,6 +2632,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--device", device]);
         foreach (string ignored in ignoredDevices)
             args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
         args.AddRange(["--include-keyboard", ImportKeyboardCommands ? "true" : "false"]);
         args.AddRange(["--ignore-easy-planes", ImportIgnoreEasyPlanes ? "true" : "false"]);
         AddDcsDeviceImportArgs(args);
@@ -2686,6 +2694,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--device", device]);
         foreach (string ignored in ignoredDevices)
             args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
 
         if (ImportInverted)
             args.Add("--import-inverted");
@@ -2740,6 +2749,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--device", device]);
         foreach (string ignored in ignoredDevices)
             args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
         args.AddRange(["--include-keyboard", ImportStarCitizenIncludeKeyboard ? "true" : "false"]);
 
         // Changes made in JoyPro and not exported yet would come back from the game: ask first (MainWindowViewModel.ImportGuard.cs).
@@ -2795,6 +2805,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--device", device]);
         foreach (string ignored in ignoredDevices)
             args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
         args.AddRange(["--include-keyboard", ImportKeyboardCommands ? "true" : "false"]);
         args.AddRange(["--ignore-easy-planes", ImportIgnoreEasyPlanes ? "true" : "false"]);
         AddDcsDeviceImportArgs(args);
@@ -2820,6 +2831,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--device", device]);
         foreach (string ignored in ignoredDevices)
             args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
         await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: N("Scanning IL-2..."));
     }
 
@@ -2843,6 +2855,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--device", device]);
         foreach (string ignored in ignoredDevices)
             args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
         args.AddRange(["--include-keyboard", ImportStarCitizenIncludeKeyboard ? "true" : "false"]);
 
         await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: N("Scanning Star Citizen..."));
@@ -3964,6 +3977,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             RelationNodes.Clear();
         else
             RelationNodes.ReplaceAll(parsed);
+        ApplyExportMarksToNodes();
         _ = LoadRelationNodePicturesAsync(RelationNodes.ToList());
     }
 
@@ -6997,8 +7011,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 await LoadDuplicateIssuesAsync();
             else
                 ApplyDuplicates("{\"Duplicates\":[],\"Groups\":[]}");
+            // One button that does two things, a relation with two commands: cards with the commands and their fixes.
+            if (allValidationIssues.Any(i => i.Kind == "Error"))
+                await LoadConflictIssuesAsync();
+            else
+                ApplyConflicts(string.Empty);
             // Relations an import copied with the same input ("<name>__N"): cards that merge them back into one.
             await LoadMergeCopiesIssuesAsync();
+            // Binds "Only add" did not write into a game (engine export-marks).
+            await LoadExportMarksAsync();
         }
         finally
         {
@@ -7055,10 +7076,15 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         List<string> args = ["dcs", "export"];
         if (!string.IsNullOrWhiteSpace(ExportDcsPath))
             args.AddRange(["--path", ExportDcsPath.Trim()]);
-        args.AddRange(["--mode", string.IsNullOrWhiteSpace(ExportMode) ? "merge" : ExportMode.Trim()]);
+        args.AddRange(["--mode", EffectiveExportMode]);
         args.AddRange(["--keep-keyboard-defaults", ExportKeepKeyboardDefaults ? "true" : "false"]);
         args.AddRange(["--nuke-untouched-devices", ExportNukeUntouchedDevices ? "true" : "false"]);
         args.AddRange(["--clean-all-aircraft", ExportDcsCleanAllAircraft ? "true" : "false"]);
+        // The devices the import leaves out (ignored ones, the vJoy device JoyPro tunnels into) are never cleared by
+        // nuke or "my profile wins".
+        foreach (string ignored in BuildEffectiveImportIgnoredDeviceFilter())
+            args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
         if (planes != null && planes.Count > 0)
             args.AddRange(["--planes", string.Join("|", planes)]);
         return await RunEngineAsync(args, includeProfile: true, mutatesProfile: false,
@@ -7073,7 +7099,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         List<string> args = ["il2", "export"];
         if (!string.IsNullOrWhiteSpace(ExportIl2Path))
             args.AddRange(["--path", ExportIl2Path.Trim()]);
-        args.AddRange(["--mode", string.IsNullOrWhiteSpace(ExportMode) ? "merge" : ExportMode.Trim()]);
+        args.AddRange(["--mode", EffectiveExportMode]);
         args.AddRange(["--nuke-untouched-devices", ExportNukeUntouchedDevices ? "true" : "false"]);
         return await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Exporting IL-2..."));
     }
@@ -7135,7 +7161,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--path", ExportStarCitizenPath.Trim()]);
         if (!string.IsNullOrWhiteSpace(StarCitizenSourcePath))
             args.AddRange(["--source", StarCitizenSourcePath.Trim()]);
-        args.AddRange(["--mode", string.IsNullOrWhiteSpace(ExportMode) ? "merge" : ExportMode.Trim()]);
+        args.AddRange(["--mode", EffectiveExportMode]);
         args.AddRange(["--keep-keyboard-defaults", ExportStarCitizenKeepKeyboardDefaults ? "true" : "false"]);
         args.AddRange(["--prefer-local-order", ExportStarCitizenPreferLocalOrder ? "true" : "false"]);
         args.AddRange(["--include-keyboard", ImportStarCitizenIncludeKeyboard ? "true" : "false"]);
@@ -7575,6 +7601,19 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     [RelayCommand]
     private void AutoDetectSettingsPaths()
+    {
+        adoptingDetectedPaths = true;
+        try
+        {
+            AutoDetectSettingsPathsCore();
+        }
+        finally
+        {
+            adoptingDetectedPaths = false;
+        }
+    }
+
+    private void AutoDetectSettingsPathsCore()
     {
         string detectedSavedGames = GuessSavedGamesDcsPath();
         if ((string.IsNullOrWhiteSpace(DcsSavedGamesPath) || !Directory.Exists(DcsSavedGamesPath)) &&
@@ -9946,7 +9985,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 if (string.IsNullOrWhiteSpace(nodeId))
                     continue;
 
-                string title = CleanHtmlCell(match.Groups["command"].Value);
+                string title = DisplayText.ActionTitle(CleanHtmlCell(match.Groups["command"].Value));
                 string description = DcsCommandNames.ResolveCategory(CleanHtmlCell(match.Groups["description"].Value), DcsEnglishNames());
                 // The key stays findable ("flaps_1"): the stored key, or the keys DCS's English catalog has for the title.
                 string keys = DcsCommandNames.IsLocalizationKey(title) ? title.Trim() : string.Join(" ", DcsCommandNames.KeysFor(title, DcsEnglishNames()));
@@ -10445,7 +10484,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             if (string.IsNullOrWhiteSpace(hash) || map.ContainsKey(hash))
                 continue;
 
-            string command = CleanHtmlCell(match.Groups["command"].Value);
+            string command = DisplayText.ActionTitle(CleanHtmlCell(match.Groups["command"].Value));
             if (skipRaw && IsRawDcsTitle(command, hash))
                 continue;
             map[hash] = string.IsNullOrWhiteSpace(command) ? hash : command;
@@ -12226,6 +12265,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             ShowStatisticsPage = state.ShowStatisticsPage;
             UseUsageStyle = state.UsageStyle ?? true;
             SupportIncludeProfile = state.SupportIncludeProfile ?? true;
+            if (state.MarkerAssistantX is double assistantX && double.IsFinite(assistantX) && state.MarkerAssistantY is double assistantY && double.IsFinite(assistantY))
+                SetMarkerAssistantOffset(Math.Min(assistantX, 4000), Math.Min(assistantY, 3000), keep: false);
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
             {
                 if (!OverlayPlaneOptions.Contains(state.OverlayPlaneChoice))
@@ -12301,7 +12342,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 HiddenNavPages = HiddenNavPagesForSave(),
                 ShowStatisticsPage = ShowStatisticsPage,
                 UsageStyle = UseUsageStyle,
-                SupportIncludeProfile = SupportIncludeProfile
+                SupportIncludeProfile = SupportIncludeProfile,
+                MarkerAssistantX = MarkerAssistantOffsetX > 0 || MarkerAssistantOffsetY > 0 ? MarkerAssistantOffsetX : null,
+                MarkerAssistantY = MarkerAssistantOffsetX > 0 || MarkerAssistantOffsetY > 0 ? MarkerAssistantOffsetY : null
             };
 
             string json = JsonSerializer.Serialize(state, UiSettingsJsonOptions);
@@ -12525,6 +12568,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public bool OverlayOnlyInGame { get; set; } = true;
 
         public string OverlayPlaneChoice { get; set; } = MainWindowViewModel.OverlayAutomaticPlane;
+
+        // Layout page: where the marker assistant's panel was dragged to (null: its corner).
+        public double? MarkerAssistantX { get; set; }
+
+        public double? MarkerAssistantY { get; set; }
 
         // Settings > About JoyPro and updates (docs/updates.md): check at start (on unless switched off), the
         // repository the updates come from ("owner/repo", empty = JoyPro's own) and the version the user skipped.

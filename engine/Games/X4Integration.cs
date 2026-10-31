@@ -292,9 +292,26 @@ namespace JoyPro.Engine.Games
                 managedIds.UnionWith(members);
             }
 
+            // Slots JoyPro owns in this export: pinned in config.xml to a device that is connected now. Merge-overwrite and
+            // nuke touch only these (and the keyboard with --include-keyboard); gamepad sources never.
+            HashSet<int> ownedSlots = new HashSet<int>(slots.PinnedSlots().Where(s =>
+            {
+                Guid guid;
+                return slots.TryGetDevice(s, out guid) && request.Devices != null && request.Devices.FindByInstanceGuid(guid) != null;
+            }));
+            HashSet<string> catalogIds = new HashSet<string>(request.Catalog.Actions.Select(a => a.Id), StringComparer.Ordinal);
+            // The game's inputs of the flight actions themselves (their map twins are other contexts and never count).
+            Dictionary<string, string> gameInputs = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (X4Entry entry in map.Entries.Where(e => catalogIds.Contains(e.Id)))
+            {
+                if (!gameInputs.ContainsKey(entry.Source + "|" + entry.Code))
+                    gameInputs[entry.Source + "|" + entry.Code] = entry.Id;
+            }
+
             List<X4Entry> desired = new List<X4Entry>();
             List<KeyValuePair<GameInputBinding, string>> axisBinds = new List<KeyValuePair<GameInputBinding, string>>();
             HashSet<int> usedSlots = new HashSet<int>();
+            Dictionary<string, HashSet<string>> wantedInputs = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
             bool usesKeyboard = false;
             foreach (GameInputBinding binding in request.Bindings)
             {
@@ -307,6 +324,24 @@ namespace JoyPro.Engine.Games
                     result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
                     continue;
                 }
+                // "Only add": an input another flight action has in the game is not written (no multi-bind).
+                string other;
+                if (request.Mode == GameExportMode.Add && gameInputs.TryGetValue(source + "|" + code, out other) && other != binding.ActionId &&
+                    !(membersOf.ContainsKey(binding.ActionId) && membersOf[binding.ActionId].Contains(other)))
+                {
+                    result.BindingsSkipped++;
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
+                    {
+                        Game = GameId,
+                        Device = binding.Device,
+                        Input = binding.Input,
+                        ModifiersText = string.Join("+", (binding.Reformers ?? new List<string>()).Select(r => r.Split('§')).Select(p => p.Length >= 3 ? p[1] + " " + p[2] : p[0])),
+                        Relation = binding.RelationName,
+                        Action = binding.ActionId,
+                        GameAction = other
+                    });
+                    continue;
+                }
 
                 int slot;
                 bool axisSource;
@@ -317,7 +352,12 @@ namespace JoyPro.Engine.Games
                 if (binding.IsAxis && axisSource)
                     axisBinds.Add(new KeyValuePair<GameInputBinding, string>(binding, source));
 
-                foreach (string id in membersOf.ContainsKey(binding.ActionId) ? membersOf[binding.ActionId] : new List<string> { binding.ActionId })
+                List<string> group = membersOf.ContainsKey(binding.ActionId) ? membersOf[binding.ActionId] : new List<string> { binding.ActionId };
+                HashSet<string> users;
+                if (!wantedInputs.TryGetValue(source + "|" + code, out users))
+                    wantedInputs[source + "|" + code] = users = new HashSet<string>(StringComparer.Ordinal);
+                users.UnionWith(group);
+                foreach (string id in group)
                 {
                     if (!desired.Any(d => d.Id == id && d.Source == source && d.Code == code))
                         desired.Add(new X4Entry { Element = ElementOf(id), Id = id, Source = source, Code = code, RelationName = binding.RelationName });
@@ -325,8 +365,7 @@ namespace JoyPro.Engine.Games
             }
 
             // Releases (X4 has on-foot play too, so only managed flight ids are released): clean on the slots the export
-            // writes, nuke on the slots config.xml pins to devices the export does not use. Keyboard lines only with
-            // --include-keyboard.
+            // writes, nuke on the owned slots the export does not use. Keyboard lines only with --include-keyboard.
             HashSet<string> releasedSources = new HashSet<string>(StringComparer.Ordinal);
             if (request.Mode == GameExportMode.Clean)
             {
@@ -340,23 +379,35 @@ namespace JoyPro.Engine.Games
             }
             if (request.NukeUnusedDevices)
             {
-                foreach (int slot in slots.PinnedSlots().Where(s => !usedSlots.Contains(s)))
+                foreach (int slot in ownedSlots.Where(s => !usedSlots.Contains(s)))
                 {
                     releasedSources.Add(JoySource(slot, true));
                     releasedSources.Add(JoySource(slot, false));
                 }
             }
 
-            // A conflict is the same action on the same device (joystick slot, or the keyboard): merge-overwrite
-            // replaces it, merge keeps it. Binds of the action on other devices stay.
+            // A conflict is another flight action on an input the profile uses: it goes in merge, merge-overwrite and
+            // clean. Merge-overwrite and clean also take an action the profile binds off its other inputs on owned slots
+            // (and the keyboard with --include-keyboard); plain merge keeps them.
+            HashSet<string> desiredIds = new HashSet<string>(desired.Select(d => d.Id), StringComparer.Ordinal);
+            bool moves = request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean;
             List<X4Entry> releasedEntries = new List<X4Entry>();
             foreach (X4Entry entry in map.Entries)
             {
                 if (!managedIds.Contains(entry.Id) || desired.Any(d => d.Same(entry)))
                     continue;
                 bool release = releasedSources.Contains(entry.Source);
-                if (!release && request.Mode == GameExportMode.MergeOverwrite)
-                    release = desired.Any(d => d.Id == entry.Id && SameDevice(d.Source, entry.Source));
+                HashSet<string> users;
+                if (!release && request.Mode != GameExportMode.Add && catalogIds.Contains(entry.Id))
+                    release = wantedInputs.TryGetValue(entry.Source + "|" + entry.Code, out users) && !users.Contains(entry.Id);
+                if (!release && moves && desiredIds.Contains(entry.Id))
+                {
+                    int slot;
+                    bool axisSource;
+                    release = TryParseJoySource(entry.Source, out slot, out axisSource)
+                        ? ownedSlots.Contains(slot)
+                        : entry.Source == "INPUT_SOURCE_KEYBOARD" && request.IncludeKeyboard;
+                }
                 if (release)
                     releasedEntries.Add(entry);
             }
@@ -368,16 +419,6 @@ namespace JoyPro.Engine.Games
             {
                 if (map.Entries.Any(e => e.Same(entry)))
                     continue;
-                if (request.Mode == GameExportMode.Merge)
-                {
-                    X4Entry user = map.Entries.FirstOrDefault(e => e.Id == entry.Id && SameDevice(e.Source, entry.Source));
-                    if (user != null)
-                    {
-                        result.ConflictsKept++;
-                        result.Warnings.Add(entry.Id + ": kept the game's bind " + user.Source + " " + user.Code + " (merge mode).");
-                        continue;
-                    }
-                }
                 map.Insert(entry);
                 added++;
             }
@@ -385,7 +426,7 @@ namespace JoyPro.Engine.Games
             result.BindingsWritten = added;
             List<string> settingChanges = new List<string>();
             Dictionary<string, double> explicitValues = FfbSettings.Resolve(InternalDataManagement.FfbOverrides, FfbSettings.AnyDevice, GameId, null);
-            // Only the axes the file now has from JoyPro (merge may have kept the game's bind instead).
+            // Only the axes the file now has from JoyPro ("only add" may have skipped one).
             List<KeyValuePair<GameInputBinding, string>> writtenAxes = axisBinds.Where(b => map.Entries.Any(e => e.Id == b.Key.ActionId && e.Source == b.Value)).ToList();
             Dictionary<string, double> values = DeriveSettings(map, writtenAxes, explicitValues, result);
             ApplyParams(map, values, settingChanges, result);
@@ -668,18 +709,6 @@ namespace JoyPro.Engine.Games
         {
             string source = axis ? "INPUT_SOURCE_JOYAXES" : "INPUT_SOURCE_JOYBUTTONS";
             return slot <= 1 ? source : source + "_" + slot.ToString(CultureInfo.InvariantCulture);
-        }
-
-        // Same joystick slot (axes or buttons of it), or the same non-joystick source.
-        private static bool SameDevice(string a, string b)
-        {
-            int slotA, slotB;
-            bool axisA, axisB;
-            bool joyA = TryParseJoySource(a ?? string.Empty, out slotA, out axisA);
-            bool joyB = TryParseJoySource(b ?? string.Empty, out slotB, out axisB);
-            if (joyA || joyB)
-                return joyA && joyB && slotA == slotB;
-            return string.Equals(a, b, StringComparison.Ordinal);
         }
 
         private static bool TryParseJoySource(string source, out int slot, out bool axis)

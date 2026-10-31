@@ -28,7 +28,7 @@
             <ItemsControl x:Name="AircraftList" ItemsSource="{Binding Visible}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="models:AircraftChoiceItem">
-                        <StackPanel>
+                        <StackPanel Classes.searchHit="{Binding IsHighlighted}">
                             <TextBlock Classes="caption" FontWeight="SemiBold" Margin="0,6,0,2" TextTrimming="CharacterEllipsis"
                                        Classes.warnText="{Binding IsOtherFunction}" Text="{Binding GroupHeader}" IsVisible="{Binding HasGroupHeader}" />
                             <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0"

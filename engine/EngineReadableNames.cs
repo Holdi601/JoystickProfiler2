@@ -229,7 +229,7 @@ namespace JoyPro.Engine
         // readable ("FMS: key_0" -> "FMS: key 0", "HeliBrakes" -> "Heli Brakes", "TOGGLE PUSHBACK" -> "Toggle Pushback").
         public static string Title(string game, string title)
         {
-            string text = (title ?? string.Empty).Trim();
+            string text = WithoutRepeat((title ?? string.Empty).Trim());
             if (text.Length == 0 || string.Equals(game, "DCS", StringComparison.OrdinalIgnoreCase))
                 return text;
             if (text.IndexOf('_') >= 0)
@@ -238,6 +238,42 @@ namespace JoyPro.Engine
                 return Regex.Replace(text, "(?<=[a-z])(?=[A-Z])", " ");
             if (!text.Any(char.IsLower) && Regex.Matches(text, "[A-Z]{5,}").Count > 0)
                 return Readable(text, sentence: false);
+            return text;
+        }
+
+        // A title the game wrote twice in a row: DCS's OH-58D names its "Display Select Switch - LEFT [VSD Page]" with the
+        // text twice ("...[VSD Page]Display Select Switch - LEFT [VSD Page]", Mods\aircraft\OH-58D\Cockpit\inputTables.lua),
+        // and its control list copies that. Read once; a title that only starts like it ends stays as it is.
+        public static string WithoutRepeat(string title)
+        {
+            string text = title ?? string.Empty;
+            int start = 0, end = text.Length;
+            while (start < end && char.IsWhiteSpace(text[start])) start++;
+            while (end > start && char.IsWhiteSpace(text[end - 1])) end--;
+            int length = end - start;
+            if (length < 12)
+                return text;
+            // Compared in place: called for every title the engine shows.
+            for (int gap = 0; gap <= 3; gap++)
+            {
+                if ((length - gap) % 2 != 0)
+                    continue;
+                int part = (length - gap) / 2;
+                if (part < 6)
+                    continue;
+                bool separatorOnly = true;
+                for (int i = start + part; i < start + part + gap; i++)
+                {
+                    char c = text[i];
+                    if (!(c == ' ' || c == '-' || c == '/' || c == '|' || c == ';' || c == ','))
+                    {
+                        separatorOnly = false;
+                        break;
+                    }
+                }
+                if (separatorOnly && string.CompareOrdinal(text, start, text, start + part + gap, part) == 0)
+                    return text.Substring(start, part).Trim();
+            }
             return text;
         }
 

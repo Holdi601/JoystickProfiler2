@@ -13,6 +13,9 @@
                   ToolTip.Tip="{l:T 'On: the x of an action asks \'Remove this action?\' first. Off: it is removed at once (Ctrl+Z undoes it).'}" />
         <CheckBox Content="{l:T 'Ask before an import drops changes I made in JoyPro and did not export yet'}" IsChecked="{Binding AskBeforeImportDropsChanges}"
                   ToolTip.Tip="{l:T 'On: Import on a game card asks first when the profile has changes for that game that are not in the game yet (Export first, Import, Cancel). Off: it imports at once (History brings the changes back).'}" />
+        <CheckBox Content="{l:T 'Ask before the first export to a game this profile never imported from'}" IsChecked="{Binding AskBeforeFirstExport}" />
+        <CheckBox Content="{l:T 'Ask before an export removes binds (Replace on my devices, Also clear my other devices)'}" IsChecked="{Binding AskBeforeExportRemoves}" />
+        <CheckBox Content="{l:T 'Show the hint about watching for changes in the import'}" IsChecked="{Binding ShowWatcherHintInImport}" />
         <Button Classes="small" Content="{l:T 'Ask everything again'}" Command="{Binding AskAllConfirmationsAgainCommand}" HorizontalAlignment="Left"
                 IsEnabled="{Binding HasSwitchedOffConfirmations}" ToolTip.Tip="{l:T 'Every question you switched off is asked again'}" />
     </StackPanel>

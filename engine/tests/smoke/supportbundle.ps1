@@ -12,7 +12,7 @@ $sbData = Join-Path $sbRoot "data"
 $sbLogs = Join-Path $sbRoot "logs"
 New-Item -Path $sbData, $sbLogs -ItemType Directory -Force | Out-Null
 $sbPrevious = @{
-    Data = $env:JOYPRO_DATA_DIR; Logs = $env:JOYPRO_LOG_DIR; Assume = $env:JOYPRO_TEST_ASSUME_INSTALLED; Detection = $env:JOYPRO_INSTALL_DETECTION
+    Data = $env:JOYPRO_DATA_DIR; Logs = $env:JOYPRO_LOG_DIR; Assume = $env:JOYPRO_TEST_ASSUME_INSTALLED; Detection = $env:JOYPRO_INSTALL_DETECTION; Jp1 = $env:JOYPRO_JOYPRO1_DIR
 }
 $env:JOYPRO_DATA_DIR = $sbData
 $env:JOYPRO_LOG_DIR = $sbLogs
@@ -71,10 +71,20 @@ try {
     Start-Sleep -Milliseconds 2200
     Assert-True ((Run-Engine @("--profile", $sbProfile, "relations", "add", "Gear", "--button", "--node", "DCS:sb_gear:A-10C_2", "--text")).ExitCode -eq 0) "support bundle: second relations add failed."
 
+    # JoyPro 1's profiles (Documents\JoyPro, here a folder of its own): an old profile and JoyPro 1's last.pr0file,
+    # both holding the user folder in a relation name.
+    $sbJp1 = Join-Path $sbRoot "joypro1"
+    New-Item -Path $sbJp1 -ItemType Directory -Force | Out-Null
+    Copy-Item $sbProfile (Join-Path $sbJp1 "Old Hornet.pr0file")
+    Copy-Item $sbProfile (Join-Path $sbJp1 "last.pr0file")
+    [System.IO.File]::WriteAllText((Join-Path $sbJp1 "not-a-profile.txt"), "notes", $sbUtf8)
+    $env:JOYPRO_JOYPRO1_DIR = $sbJp1
+
     # --list shows the parts without writing anything.
     $sbList = Run-Engine @("--profile", $sbProfile, "support", "bundle", "--list", "--text")
     Assert-True ($sbList.ExitCode -eq 0) ("support bundle --list failed: " + $sbList.Output)
     Assert-Match $sbList.Output "(?m)^  \+ profile \|" "support bundle --list does not list the profile part."
+    Assert-Match $sbList.Output "(?m)^  \+ joypro1 \| .*\| 2 file\(s\)" "support bundle --list does not list JoyPro 1's two profiles."
     Assert-Match $sbList.Output "(?m)^Profile: support\.pr0file .*3 version\(s\), 3 in this file" "support bundle --list does not name the profile and its versions."
 
     # With the profile (the default with --profile).
@@ -90,6 +100,12 @@ try {
         Assert-True ($sbEntries.ContainsKey($name)) ("the support file misses " + $name + ": " + (($sbEntries.Keys | Sort-Object) -join ", "))
     }
     Assert-True (@($sbEntries.Keys | Where-Object { $_ -like "profile/history/blobs/*.gz" -and $_ -notlike "*.items.gz" }).Count -eq 3) "the support file should hold the 3 stored versions."
+    foreach ($name in @("joypro1/Old Hornet.pr0file", "joypro1/last.pr0file")) {
+        Assert-True ($sbEntries.ContainsKey($name)) ("the support file misses JoyPro 1's " + $name + ": " + (($sbEntries.Keys | Sort-Object) -join ", "))
+        $sbJp1Text = [System.Text.Encoding]::UTF8.GetString($sbEntries[$name])
+        Assert-True (-not $sbJp1Text.Contains($env:USERPROFILE) -and $sbJp1Text.Contains("%USERPROFILE%\Saved Games\smoke")) ("JoyPro 1's " + $name + " in the support file still holds the user folder.")
+    }
+    Assert-True (@($sbEntries.Keys | Where-Object { $_ -like "joypro1/*" }).Count -eq 2) "only the .pr0file files of JoyPro 1's folder belong in the support file."
     $sbSummary = $sbUtf8.GetString($sbEntries["summary.txt"])
     Assert-Match $sbSummary "(?m)^Profile: support\.pr0file \(.*\), history: 3 version\(s\), 3 in this file" "summary.txt does not name the profile and its history versions."
     Assert-Match $sbSummary "(?m)^  game-binds " "summary.txt does not list the parts with their sizes."
@@ -123,7 +139,7 @@ try {
     $sbRunNo = Run-Engine @("--profile", $sbProfile, "--out", $sbZipNo, "support", "bundle", "--include-profile", "false")
     Assert-True ($sbRunNo.ExitCode -eq 0) ("support bundle --include-profile false failed: " + $sbRunNo.Output)
     $sbEntriesNo = Sb-Entries $sbZipNo
-    Assert-True (@($sbEntriesNo.Keys | Where-Object { $_ -like "profile/*" -or $_ -like "games/*/current*" }).Count -eq 0) ("--include-profile false still holds personal parts: " + (($sbEntriesNo.Keys | Sort-Object) -join ", "))
+    Assert-True (@($sbEntriesNo.Keys | Where-Object { $_ -like "profile/*" -or $_ -like "games/*/current*" -or $_ -like "joypro1/*" }).Count -eq 0) ("--include-profile false still holds personal parts: " + (($sbEntriesNo.Keys | Sort-Object) -join ", "))
     Assert-True ($sbEntriesNo.ContainsKey("summary.txt") -and $sbEntriesNo.ContainsKey("errors/last-errors.txt")) "--include-profile false lost the other parts."
     Assert-Match $sbUtf8.GetString($sbEntriesNo["summary.txt"]) "(?m)^Profile: not included" "summary.txt should say the profile is not included."
 
@@ -138,8 +154,10 @@ try {
     $sbEntriesNone = Sb-Entries $sbZipNone
     Assert-Match $sbUtf8.GetString($sbEntriesNone["summary.txt"]) "(?m)^Profile: none open" "summary.txt should say that no profile is open."
     Assert-True ($sbEntriesNone.ContainsKey("games/IL2Game/current/global.actions")) "the box on without a profile should still hold the games' bind files."
+    Assert-True ($sbEntriesNone.ContainsKey("joypro1/last.pr0file")) "the box on without a profile should still hold JoyPro 1's profiles."
 }
 finally {
+    $env:JOYPRO_JOYPRO1_DIR = $sbPrevious.Jp1
     $env:JOYPRO_DATA_DIR = $sbPrevious.Data
     $env:JOYPRO_LOG_DIR = $sbPrevious.Logs
     $env:JOYPRO_TEST_ASSUME_INSTALLED = $sbPrevious.Assume

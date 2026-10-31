@@ -287,6 +287,8 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(MixedRelationNodesText));
         // The banner's example aircraft comes from the aircraft just read.
         UpdateRelationCheck();
+        // Opened from a card of the check: its aircraft are marked now that they are there.
+        ApplyCheckHighlight();
     }
 
     // A game node whose aircraft report lists aircraft of the game's list (MSFS), not only the game itself.

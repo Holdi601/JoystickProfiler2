@@ -1537,6 +1537,9 @@ namespace JoyPro.Engine
                         AddOwner(plane.Value ? usedElsewhere : disabled, NodeKey(node.Game, node.ID, plane.Key), pair.Key);
                 }
             }
+            // Dismissed suggestions count as switched off in their relation.
+            foreach (KeyValuePair<string, EngineDismissedSuggestions.Entry> dismissed in EngineDismissedSuggestions.ForKeys(NodeKey))
+                AddOwner(disabled, dismissed.Key, dismissed.Value.Relation);
 
             foreach (EngineNlGroupProposal proposal in result.Proposals)
             {

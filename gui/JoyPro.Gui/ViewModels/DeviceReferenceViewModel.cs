@@ -313,6 +313,15 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             updating = false;
         }
         await SelectPictureAsync(Pictures.First(p => p.Kind is "schematic" or "class"));
+        // The picture the user picked for this device (kept since he picked it), when it is still there and loads.
+        if (PictureChoiceKey() is { Length: > 0 } choiceKey && DeviceReferenceService.PictureChoiceOf(choiceKey, Model!.Id) is { Length: > 0 } chosenId &&
+            Pictures.FirstOrDefault(p => PictureId(p) == chosenId) is { } chosen)
+        {
+            if (current != version)
+                return;
+            if (await SelectPictureAsync(chosen, quiet: true))
+                return;
+        }
         // The best picture, in the order of the list: the user's photo, JoyPro's line drawing with JoyPro's positions,
         // the maker's photo (downloaded on this PC after the user's yes), else the schematic drawing that is already
         // shown; a line drawing without positions only instead of the class outline.
@@ -419,8 +428,46 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(CanDownloadReferencePhoto));
         if (value != null && !updating && !ReferenceEquals(value, loadedPicture))
-            _ = SelectPictureAsync(value);
+            LastPictureChoice = ChoosePictureAsync(value);
     }
+
+    // The last picture the user picked (tests wait for it).
+    internal Task LastPictureChoice { get; private set; } = Task.CompletedTask;
+
+    // A picture picked by the user (the Layout page's picture strip): shown and kept for the device at once, no Save
+    // needed; its markers are the ones of that picture (each picture keeps its own positions).
+    private async Task ChoosePictureAsync(ReferencePictureOption option)
+    {
+        if (!await SelectPictureAsync(option) || Model == null)
+            return;
+        string key = PictureChoiceKey();
+        if (key.Length == 0)
+            return;
+        try
+        {
+            DeviceReferenceService.SetPictureChoice(key, Model.Id, PictureId(option));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            JoyPro.Logging.JoyProLog.Warn("Layout", "The picture choice could not be kept: " + ex.Message);
+            return;
+        }
+        JoyPro.Logging.JoyProLog.Info("Layout", "Picture picked for " + key + ": " + option.Title + " (" + PictureId(option) + ")");
+        string positions = Status;
+        Status = T("{0} is kept for this device.", option.Title) + (positions.Length > 0 ? " " + positions : string.Empty);
+    }
+
+    // Under which name the picked picture is kept: the connected device, else (a model from the catalog) the model.
+    private string PictureChoiceKey() => DeviceName.Length > 0 ? DeviceName : Model?.Id ?? string.Empty;
+
+    // A picture's identity over restarts: its kind and what tells it from the others of that kind (the maker's photo by
+    // its address, a line drawing by its content key).
+    internal static string PictureId(ReferencePictureOption option) => option.Kind switch
+    {
+        "vendor" => "vendor:" + option.Source,
+        "lineart" => "lineart:" + option.Key,
+        _ => option.Kind
+    };
 
     partial void OnSelectedGripChanged(RefDevice? value)
     {

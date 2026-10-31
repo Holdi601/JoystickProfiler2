@@ -65,4 +65,12 @@ public sealed class HudWidgetConfig
 
     // The grip on a base that takes several (catalog id), as for Auto Assign.
     public string Grip { get; set; } = string.Empty;
+
+    // Where the stick element's axes come from: empty = Automatic (the device's own axis; a grip without X/Y takes them
+    // from the base it sits on), else "<device>|<input>" ("VPforce Rhino FFB Joystick {GUID}|JOY_X").
+    public string AxisX { get; set; } = string.Empty;
+
+    public string AxisY { get; set; } = string.Empty;
+
+    public string AxisTwist { get; set; } = string.Empty;
 }

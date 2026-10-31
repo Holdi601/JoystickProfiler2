@@ -100,7 +100,6 @@ namespace JoyPro.Engine
                 out Dictionary<string, string> il2ToDx,
                 out Dictionary<string, string> dxToIl,
                 result.Warnings);
-            _ = il2ToDx;
 
             Dictionary<int, string> existingDeviceMap = ParseDevicesFile(result.DevicesFile, null);
             Dictionary<string, AxisResponseSetting> existingResponses = ParseResponsesFile(result.ResponsesFile, null);
@@ -127,6 +126,7 @@ namespace JoyPro.Engine
             Dictionary<string, AxisResponseSetting> generatedResponses = new Dictionary<string, AxisResponseSetting>(StringComparer.OrdinalIgnoreCase);
             List<ActionLine> generatedGlobal = new List<ActionLine>();
             List<ActionLine> generatedJp = new List<ActionLine>();
+            Dictionary<ActionLine, ExportTemplate> templateOf = new Dictionary<ActionLine, ExportTemplate>();
 
             ReportStatus(statusSink, "Rendering " + templates.Count.ToString(CultureInfo.InvariantCulture) + " IL2 template(s).");
             for (int i = 0; i < templates.Count; i++)
@@ -140,6 +140,7 @@ namespace JoyPro.Engine
 
                 generatedGlobal.Add(globalLine);
                 generatedJp.Add(jpLine);
+                templateOf[globalLine] = template;
 
                 int done = i + 1;
                 if (done == templates.Count || done % 100 == 0)
@@ -159,8 +160,20 @@ namespace JoyPro.Engine
             // Devices are told apart by their joy<N> index; the keyboard is its own device. clean releases the other
             // binds of the devices the export writes, nuke the binds of the joysticks it does not write.
             HashSet<string> writtenDevices = new HashSet<string>(generatedGlobal.Select(DeviceOf), StringComparer.OrdinalIgnoreCase);
-            List<ActionLine> finalGlobal = MergeActionLines(mode, existingGlobal, generatedGlobal, writtenDevices, nukeUntouchedDevices);
-            List<ActionLine> finalJp = MergeActionLines(mode, existingJp, generatedJp, writtenDevices, nukeUntouchedDevices);
+            // Only lines of connected joysticks (and of the keyboard when the export writes keyboard lines) are released.
+            if (mode == EngineIl2ExportMode.Add && nukeUntouchedDevices)
+                result.Warnings.Add("\"Only add\" never removes binds: --nuke-untouched-devices was not used.");
+            HashSet<string> ownedDevices = OwnedDevices(deviceIndex, writtenDevices);
+            // A line the import cannot read (an unknown token) is not in the profile either: it always stays.
+            Func<ActionLine, bool> readable = line => line.Sides != null && line.Sides.Count > 0 && line.Sides.All(side =>
+                side != null && TryConvertIl2TokenToDcs(side.MainToken, existingDeviceMap, il2ToDx, out string _, out string _, out bool _, out string _));
+            List<KeyValuePair<ActionLine, ActionLine>> skipped = new List<KeyValuePair<ActionLine, ActionLine>>();
+            List<ActionLine> finalGlobal = MergeActionLines(mode, existingGlobal, generatedGlobal, writtenDevices, nukeUntouchedDevices, ownedDevices, readable, skipped);
+            List<ActionLine> finalJp = MergeActionLines(mode, existingJp, generatedJp, writtenDevices, nukeUntouchedDevices, ownedDevices, readable, null);
+            // A line add left out of global.actions stays out of jp.actions too.
+            HashSet<string> skippedKeys = new HashSet<string>(skipped.Select(s => BindKeyOf(s.Key)), StringComparer.Ordinal);
+            finalJp = finalJp.Where(l => !(skippedKeys.Contains(BindKeyOf(l)) && generatedJp.Contains(l))).ToList();
+            ReportSkippedTakenInputs(skipped, templateOf, result);
             Dictionary<string, AxisResponseSetting> finalResponses = MergeAxisSettings(mode, existingResponses, generatedResponses);
 
             WriteActionsFile(result.GlobalActionsFile, finalGlobal.Select(l => l.RawLine).ToList(), result);
@@ -275,6 +288,13 @@ namespace JoyPro.Engine
             sb.AppendLine("Axis Responses Written: " + result.AxisResponsesWritten);
             sb.AppendLine("Files Written: " + result.FilesWritten);
             sb.AppendLine("Skipped Entries: " + result.SkippedEntries);
+
+            if (result.SkippedTakenInputs != null && result.SkippedTakenInputs.Count > 0)
+            {
+                sb.AppendLine("Binds Not Written, Button Taken In The Game:");
+                foreach (ExportSkippedBind skipped in result.SkippedTakenInputs)
+                    sb.AppendLine("  - " + skipped.Describe());
+            }
 
             if (result.Errors != null && result.Errors.Count > 0)
             {
@@ -543,20 +563,40 @@ namespace JoyPro.Engine
         // as the bind's IL-2 tuning; one it can reproduce drops an older IL-2 tuning, so the values from the game win.
         private static void ApplyImportedResponse(Bind bind, ImportCandidate candidate)
         {
-            if (!candidate.IsAxis || candidate.Response == null)
+            if (!candidate.IsAxis)
                 return;
+            // Without --import-inverted/--import-curvature/--import-deadzone the base keeps JoyPro's defaults (other games
+            // share it), but IL-2 keeps what its files say: the file's invert and axis row become the IL-2 tuning.
+            // An axis JoyPro exported has its exact tuning from the //JP: comment already.
+            AxisResponseSetting r = candidate.Response;
+            if (r == null)
+            {
+                if (candidate.Meta != null && candidate.Meta.HasTuning)
+                    return;
+                r = candidate.FileResponse;
+            }
             string scope = JoyPro.Engine.Axis.BindTuning.GameScope(Il2Game);
             JoyPro.Engine.Axis.BindTuning.Clear(bind, scope);
             JoyPro.Engine.Axis.AxisTuning resolved = JoyPro.Engine.Axis.BindTuning.Resolve(bind, Il2Game, null).Tuning;
-            AxisResponseSetting r = candidate.Response;
             Func<string, double, bool> holds = (key, value) => Math.Abs(Math.Round(JoyPro.Engine.Axis.AxisModels.Il2Value(resolved, key), 2) - value) < 1e-9;
-            bool same = r.OneSided
-                ? resolved.Slider && holds("highValuesDeadZone", r.HighDeadZone) && holds("lowValuesDeadZone", r.LowDeadZone)
-                : !resolved.Slider && holds("centerDeadZone", r.CenterDeadZone) && holds("sensitivityBallance", r.Sensitivity) && holds("sideDeadZone", r.SideDeadZone)
-                    && holds("pitchShift", r.PitchShift);
+            bool sameInvert = resolved.Inverted == candidate.FileInverted;
+            bool same = r == null
+                ? sameInvert
+                : sameInvert && (r.OneSided
+                    ? resolved.Slider && holds("highValuesDeadZone", r.HighDeadZone) && holds("lowValuesDeadZone", r.LowDeadZone)
+                    : !resolved.Slider && holds("centerDeadZone", r.CenterDeadZone) && holds("sensitivityBallance", r.Sensitivity) && holds("sideDeadZone", r.SideDeadZone)
+                        && holds("pitchShift", r.PitchShift));
             if (same)
                 return;
-            JoyPro.Engine.Axis.AxisTuning tuning = new JoyPro.Engine.Axis.AxisTuning { Inverted = candidate.Inverted, Slider = r.OneSided };
+            if (r == null)
+            {
+                // Only the invert differs: the base's values with the file's invert.
+                JoyPro.Engine.Axis.AxisTuning inverted = resolved.Clone();
+                inverted.Inverted = candidate.FileInverted;
+                JoyPro.Engine.Axis.BindTuning.Set(bind, scope, inverted);
+                return;
+            }
+            JoyPro.Engine.Axis.AxisTuning tuning = new JoyPro.Engine.Axis.AxisTuning { Inverted = candidate.FileInverted, Slider = r.OneSided };
             if (r.OneSided)
             {
                 tuning.Native["highValuesDeadZone"] = r.HighDeadZone;
@@ -682,6 +722,8 @@ namespace JoyPro.Engine
                             candidate.Reformers = stored;
                     }
                     candidate.Inverted = isAxis && line.Inverted;
+                    candidate.FileInverted = isAxis && line.Inverted;
+                    candidate.FileResponse = axisSettings;
                     candidate.Slider = Bind.Slider_Default;
                     candidate.Deadzone = Bind.Deadzone_Default;
                     candidate.Sensitivity = Bind.Curvature_Default[0];
@@ -1021,7 +1063,9 @@ namespace JoyPro.Engine
 
             if (string.Equals(joy, "Keyboard", StringComparison.OrdinalIgnoreCase))
             {
-                string mapped = dxToIl.ContainsKey(key) ? dxToIl[key] : key.ToLowerInvariant();
+                // A DCS spelling (LAlt, Num1, ...) in a relation shared with DCS: the conversion table knows DirectInput names.
+                string dx = KeyboardKeyNames.ToDirectInput(key);
+                string mapped = dxToIl.ContainsKey(key) ? dxToIl[key] : dxToIl.ContainsKey(dx) ? dxToIl[dx] : key.ToLowerInvariant();
                 token = "key_" + mapped;
                 return true;
             }
@@ -1355,11 +1399,11 @@ namespace JoyPro.Engine
                     source.Joystick = bind.Joystick;
                     source.Input = input;
                     source.IsAxis = relation.ISAXIS;
-                    source.Inverted = bind.Inverted == true;
+                    source.Tuning = relation.ISAXIS ? JoyPro.Engine.Axis.BindTuning.Resolve(bind, Il2Game, null).Tuning : null;
+                    source.Inverted = relation.ISAXIS ? source.Tuning.Inverted : bind.Inverted == true;
                     source.Slider = bind.Slider == true;
                     source.Deadzone = bind.Deadzone;
                     source.Sensitivity = bind.Curvature == null || bind.Curvature.Count == 0 ? Bind.Curvature_Default[0] : bind.Curvature[0];
-                    source.Tuning = relation.ISAXIS ? JoyPro.Engine.Axis.BindTuning.Resolve(bind, Il2Game, null).Tuning : null;
                     source.Reformers = bind.AllReformers == null ? new List<string>() : new List<string>(bind.AllReformers);
                     source.Description = string.IsNullOrWhiteSpace(bind.AdditionalImportInfo) ? relation.NAME : bind.AdditionalImportInfo;
                     source.Alias = !string.IsNullOrWhiteSpace(bind.AliasJoystick)
@@ -1509,82 +1553,174 @@ namespace JoyPro.Engine
             usage[part.Joystick]++;
         }
 
-        // The device an action line binds: "joy<N>" or "key" (keyboard / mouse).
+        // The device an action line binds: "joy<N>" (inputs of one joystick, keyboard modifiers allowed), "key" (only
+        // keyboard keys), "mouse" (any mouse input, also with keyboard modifiers) or "other" (TrackIR, inputs of two
+        // joysticks, unknown tokens). JoyPro imports and writes only joystick and keyboard lines, so only those can be
+        // released; mouse and other lines always stay.
         private static string DeviceOf(ActionLine line)
         {
-            Match match = Regex.Match(line == null ? string.Empty : line.Command ?? string.Empty, @"joy(\d+)_", RegexOptions.IgnoreCase);
-            return match.Success ? "joy" + match.Groups[1].Value : "key";
+            string command = line == null ? string.Empty : line.Command ?? string.Empty;
+            string joy = null;
+            bool key = false;
+            foreach (string raw in command.Split(new[] { '+', '/' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string token = raw.Trim().TrimStart('-').ToLowerInvariant();
+                if (token.Length == 0)
+                    continue;
+                if (token.StartsWith("mouse_", StringComparison.Ordinal))
+                    return "mouse";
+                Match match = Regex.Match(token, @"^joy(\d+)_");
+                if (match.Success)
+                {
+                    string device = "joy" + match.Groups[1].Value;
+                    if (joy != null && joy != device)
+                        return "other";
+                    joy = device;
+                }
+                else if (token.StartsWith("key_", StringComparison.Ordinal))
+                    key = true;
+                else
+                    return "other";
+            }
+            return joy ?? (key ? "key" : "other");
         }
 
-        private static string ActionDeviceOf(ActionLine line)
+        // The input of a line as IL-2 tells inputs apart: device, input and modifiers in one command ("key_lshift+joy0_b3").
+        private static string InputOf(ActionLine line)
         {
-            return (line.Id ?? string.Empty).Trim().ToLowerInvariant() + "|" + DeviceOf(line);
+            return (line.Command ?? string.Empty).Replace(" ", string.Empty).ToLowerInvariant();
         }
 
+        // Devices whose lines an export may release: the joy<N> of connected joysticks (the import reads their binds)
+        // and "key" when the export writes keyboard lines.
+        private static HashSet<string> OwnedDevices(Dictionary<string, int> deviceIndex, HashSet<string> writtenDevices)
+        {
+            HashSet<string> owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (writtenDevices.Contains("key"))
+                owned.Add("key");
+            HashSet<string> connected = new HashSet<string>(
+                JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>()).Devices.Select(d => d.JoyProName ?? string.Empty),
+                StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, int> device in deviceIndex)
+            {
+                if (connected.Contains(device.Key))
+                    owned.Add("joy" + device.Value.ToString(CultureInfo.InvariantCulture));
+            }
+            return owned;
+        }
+
+        // "Only add": the profile's lines left out because the game uses their input for another action.
+        private static void ReportSkippedTakenInputs(List<KeyValuePair<ActionLine, ActionLine>> skipped, Dictionary<ActionLine, ExportTemplate> templateOf, EngineIl2ExportResult result)
+        {
+            foreach (KeyValuePair<ActionLine, ActionLine> item in skipped)
+            {
+                ExportTemplate template;
+                templateOf.TryGetValue(item.Key, out template);
+                ExportPart part = template == null ? null : template.Primary;
+                result.SkippedTakenInputs.Add(new ExportSkippedBind
+                {
+                    Game = Il2Game,
+                    Device = part == null ? DeviceOf(item.Key) : part.Joystick ?? string.Empty,
+                    Input = part == null ? item.Key.Command ?? string.Empty : part.Input ?? string.Empty,
+                    ModifiersText = part == null || part.Reformers == null ? string.Empty : string.Join("+", part.Reformers),
+                    Relation = part == null ? string.Empty : part.RelationName ?? string.Empty,
+                    Action = item.Key.Id ?? string.Empty,
+                    GameAction = item.Value.Id ?? string.Empty
+                });
+            }
+        }
+
+        private static string ActionOf(ActionLine line)
+        {
+            return (line.Id ?? string.Empty).Trim().ToLowerInvariant();
+        }
+
+        private static string BindKeyOf(ActionLine line)
+        {
+            return ActionOf(line) + "|" + InputOf(line);
+        }
+
+        // Export modes (docs/export.md "Export modes"). The file's order stays and new lines go to the end, so an export
+        // that changes nothing writes the file as it was. Lines are released only on owned devices: joysticks that are
+        // connected (the import reads their binds) and the keyboard when the export writes keyboard lines. Mouse lines,
+        // TrackIR and devices that are not connected always stay.
+        //   clean: the written devices keep only the profile's lines. nuke: connected joysticks the export does not
+        //   write lose theirs (not with add, which never removes anything).
+        //   add: only lines whose input the game does not use for another action (the others go to skipped).
+        //   merge: the profile's lines; a game line on the same input for another action goes (conflict).
+        //   merge-overwrite: merge, and an action the profile binds loses its other inputs.
         private static List<ActionLine> MergeActionLines(
             EngineIl2ExportMode mode,
             List<ActionLine> existing,
             List<ActionLine> generated,
             HashSet<string> writtenDevices,
-            bool nukeUntouchedDevices)
+            bool nukeUntouchedDevices,
+            HashSet<string> ownedDevices,
+            Func<ActionLine, bool> readable,
+            List<KeyValuePair<ActionLine, ActionLine>> skipped)
         {
             existing = (existing ?? new List<ActionLine>()).Where(l => l != null).ToList();
             generated = (generated ?? new List<ActionLine>()).Where(l => l != null).ToList();
             writtenDevices = writtenDevices ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (nukeUntouchedDevices)
-                existing = existing.Where(l => DeviceOf(l) == "key" || writtenDevices.Contains(DeviceOf(l))).ToList();
+            ownedDevices = ownedDevices ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            switch (mode)
+            Dictionary<string, ActionLine> wanted = new Dictionary<string, ActionLine>(StringComparer.Ordinal);
+            foreach (ActionLine line in generated)
+                if (!wanted.ContainsKey(BindKeyOf(line)))
+                    wanted[BindKeyOf(line)] = line;
+            HashSet<string> wantedInputs = new HashSet<string>(generated.Select(InputOf), StringComparer.Ordinal);
+            HashSet<string> wantedActions = new HashSet<string>(generated.Select(ActionOf), StringComparer.Ordinal);
+
+            List<ActionLine> combined = new List<ActionLine>();
+            HashSet<string> present = new HashSet<string>(StringComparer.Ordinal);
+            foreach (ActionLine line in existing)
             {
-                case EngineIl2ExportMode.Clean:
-                    {
-                        // Lines of the keyboard and of devices the export does not write stay.
-                        List<ActionLine> combined = new List<ActionLine>(generated);
-                        combined.AddRange(existing.Where(l => !writtenDevices.Contains(DeviceOf(l))));
-                        return combined;
-                    }
-                case EngineIl2ExportMode.Add:
-                    {
-                        // A line the file already has (same action and input) is not added again.
-                        List<ActionLine> combined = new List<ActionLine>(existing);
-                        HashSet<string> existingBinds = new HashSet<string>(
-                            existing.Where(l => l != null).Select(BindKeyOf),
-                            StringComparer.OrdinalIgnoreCase);
-                        foreach (ActionLine line in generated)
-                        {
-                            if (line != null && existingBinds.Add(BindKeyOf(line)))
-                                combined.Add(line);
-                        }
-                        return combined;
-                    }
-                case EngineIl2ExportMode.Merge:
-                    {
-                        // A conflict is the same action on the same device: the file's line stays.
-                        List<ActionLine> combined = new List<ActionLine>(existing);
-                        HashSet<string> existingKeys = new HashSet<string>(existing.Select(ActionDeviceOf), StringComparer.Ordinal);
-                        foreach (ActionLine line in generated)
-                        {
-                            if (existingKeys.Add(ActionDeviceOf(line)))
-                                combined.Add(line);
-                        }
-                        return combined;
-                    }
-                case EngineIl2ExportMode.MergeOverwrite:
-                    {
-                        // A conflict is the same action on the same device: the profile's line replaces it.
-                        List<ActionLine> combined = new List<ActionLine>(generated);
-                        HashSet<string> generatedKeys = new HashSet<string>(generated.Select(ActionDeviceOf), StringComparer.Ordinal);
-                        combined.AddRange(existing.Where(l => !generatedKeys.Contains(ActionDeviceOf(l))));
-                        return combined;
-                    }
-                default:
-                    return new List<ActionLine>(generated);
+                string key = BindKeyOf(line);
+                ActionLine want;
+                if (wanted.TryGetValue(key, out want))
+                {
+                    // The profile has this bind: the file's line stays; its invert follows the profile (not with add).
+                    bool replace = mode != EngineIl2ExportMode.Add && want.Inverted != line.Inverted && !present.Contains(key);
+                    combined.Add(replace ? want : line);
+                    present.Add(key);
+                    continue;
+                }
+                string device = DeviceOf(line);
+                bool release = false;
+                if (mode != EngineIl2ExportMode.Add && ownedDevices.Contains(device) && (readable == null || readable(line)))
+                {
+                    if (mode == EngineIl2ExportMode.Clean && writtenDevices.Contains(device))
+                        release = true;
+                    else if (nukeUntouchedDevices && device.StartsWith("joy", StringComparison.Ordinal) && !writtenDevices.Contains(device))
+                        release = true;
+                    else if (wantedInputs.Contains(InputOf(line)))
+                        release = true; // conflict: the profile puts another action on this input
+                    else if (mode == EngineIl2ExportMode.MergeOverwrite && wantedActions.Contains(ActionOf(line)))
+                        release = true; // the profile's action leaves its other inputs
+                }
+                if (!release)
+                    combined.Add(line);
             }
-        }
 
-        private static string BindKeyOf(ActionLine line)
-        {
-            return (line.Id ?? string.Empty).Trim() + "|" + (line.Command ?? string.Empty).Replace(" ", string.Empty);
+            foreach (ActionLine line in generated)
+            {
+                string key = BindKeyOf(line);
+                if (present.Contains(key))
+                    continue;
+                if (mode == EngineIl2ExportMode.Add)
+                {
+                    ActionLine taken = combined.FirstOrDefault(l => InputOf(l) == InputOf(line));
+                    if (taken != null)
+                    {
+                        if (skipped != null)
+                            skipped.Add(new KeyValuePair<ActionLine, ActionLine>(line, taken));
+                        continue;
+                    }
+                }
+                present.Add(key);
+                combined.Add(line);
+            }
+            return combined;
         }
 
         private static Dictionary<string, AxisResponseSetting> MergeAxisSettings(
@@ -1595,9 +1731,15 @@ namespace JoyPro.Engine
             existing = existing ?? new Dictionary<string, AxisResponseSetting>(StringComparer.OrdinalIgnoreCase);
             generated = generated ?? new Dictionary<string, AxisResponseSetting>(StringComparer.OrdinalIgnoreCase);
 
+            // A centred row without any value is the game's default: it is not added for an action without a row.
+            generated = generated.Where(g => existing.ContainsKey(g.Key) || g.Value == null || !IsDefaultResponse(g.Value))
+                .ToDictionary(g => g.Key, g => g.Value, StringComparer.OrdinalIgnoreCase);
             Dictionary<string, AxisResponseSetting> merged = new Dictionary<string, AxisResponseSetting>(StringComparer.OrdinalIgnoreCase);
             if (mode == EngineIl2ExportMode.Clean)
             {
+                // Rows of actions the export does not write (mouse axes, lines it leaves alone) stay.
+                foreach (KeyValuePair<string, AxisResponseSetting> item in existing)
+                    merged[item.Key] = item.Value;
                 foreach (KeyValuePair<string, AxisResponseSetting> item in generated)
                     merged[item.Key] = item.Value;
                 return merged;
@@ -1619,6 +1761,11 @@ namespace JoyPro.Engine
             }
 
             return merged;
+        }
+
+        private static bool IsDefaultResponse(AxisResponseSetting s)
+        {
+            return !s.OneSided && s.Kind != "type3" && s.CenterDeadZone == 0.0 && s.Sensitivity == 0.0 && s.SideDeadZone == 0.0 && s.PitchShift == 0.0;
         }
 
         // Backs the file up and writes it only when the text changes, so an export that changes nothing leaves the
@@ -2812,6 +2959,11 @@ namespace JoyPro.Engine
             public double Sensitivity { get; set; }
             // The axis row of current.responses (null when not imported).
             public AxisResponseSetting Response { get; set; }
+            // What the game file has, whatever the import options put into the bind's base: the invert column and the
+            // axis row (null when the file has none). They become the bind's IL-2 tuning where the base differs, so an
+            // export of the imported profile writes the file as it was.
+            public bool FileInverted { get; set; }
+            public AxisResponseSetting FileResponse { get; set; }
             // JoyPro's data from the //JP: comment (null without one).
             public JoyPro.Engine.Games.BindMetadata Meta { get; set; }
 

@@ -99,6 +99,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(HasSelectedHudWidget));
         OnPropertyChanged(nameof(SelectedHudWidgetIsDevice));
         OnPropertyChanged(nameof(SelectedHudGrip));
+        NotifyHudAxisSelection();
     }
 
     partial void OnHudAccentChanged(string value) => ApplyHudLook();
@@ -343,7 +344,9 @@ public sealed partial class MainWindowViewModel
             config.Device = device.Device;
             AddHudWidget(new HudWidget(config, HudContext, device));
         }
-        SelectedHudWidget = HudWidgets.FirstOrDefault(w => w.Config.Id == selectedId) ?? HudWidgets.FirstOrDefault(w => w.IsDevice && w.Visible) ?? HudWidgets.FirstOrDefault();
+        // Where each stick element's axes come from (a grip without X/Y takes them from its base).
+        ApplyHudAxisSources();
+        SelectedHudWidget =HudWidgets.FirstOrDefault(w => w.Config.Id == selectedId) ?? HudWidgets.FirstOrDefault(w => w.IsDevice && w.Visible) ?? HudWidgets.FirstOrDefault();
         ScheduleHudSave();
     }
 
@@ -439,6 +442,8 @@ public sealed partial class MainWindowViewModel
         ScheduleHudSave();
         if (e.PropertyName == nameof(HudWidget.Grip) && sender is HudWidget { IsDevice: true })
             _ = LoadHudDevicesAsync();
+        else if (e.PropertyName is nameof(HudWidget.AxisX) or nameof(HudWidget.AxisY) or nameof(HudWidget.AxisTwist))
+            ApplyHudAxisSources();
     }
 
     // Default places on the 1920 x 1080 screen: right-hand stick bottom right, left stick / throttle bottom left,

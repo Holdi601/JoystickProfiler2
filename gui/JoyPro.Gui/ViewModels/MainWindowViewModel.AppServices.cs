@@ -177,6 +177,7 @@ public sealed partial class MainWindowViewModel
             return;
         }
         string diagnostics = await BuildDiagnosticsAsync();
+        ProblemReporter.MigrateOldFolder();
         string folder = ProblemReporter.FolderOverride ?? ProblemReporter.DefaultFolder;
         string zip = Path.Combine(folder, "JoyPro2-report-" + DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture) + ".zip");
         try

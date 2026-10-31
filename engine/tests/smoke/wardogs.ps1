@@ -104,3 +104,81 @@ try {
 finally {
     $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices
 }
+
+# Export modes (one bind per action/slot in WARDOGS; only cataloged helicopter actions count, other lines never change):
+#   add       never replaces a bound slot; a bind on a button another cataloged action uses is skipped and reported
+#   merge     writes the profile's binds, clears the other action's slot on the same input (conflict), keeps a second
+#             line of the action (its old input)
+#   merge-overwrite  merge + the action's second line goes (a moved action fully moves)
+$wdmDir = Join-Path $tempDir "wardogs-modes"
+New-Item -Path $wdmDir -ItemType Directory -Force | Out-Null
+$wdmIni = Join-Path $wdmDir "GameUserSettings.ini"
+# The throttle gets the name the game uses (no name repair in this test); Fire has a second, older line on button 6.
+$wdmText = [System.IO.File]::ReadAllText((Join-Path $engineDir "tests\fixtures\wardogs\GameUserSettings.ini")).Replace("Smoke Throttle (ARM)", "Smoke Throttle")
+$wdmText = $wdmText.Replace("ActionBindings=(Action=UnknownFutureAction", "ActionBindings=(Action=Fire,Binding=(DeviceIdentifier=`"1234:5678:Smoke Stick`",_aaaaljahlggohoapfcfef=5))`r`nActionBindings=(Action=UnknownFutureAction")
+[System.IO.File]::WriteAllText($wdmIni, $wdmText)
+$wdmProfile = Join-Path $wdmDir "modes.pr0file"
+$wdmIds = @("Pitch", "Roll", "Yaw", "Throttle", "LookPitch", "LookYaw") + @(((Run-Engine @("wardogs", "catalog")).Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json).Actions | ForEach-Object { $_.Id })
+# Everything but the axis lines and the action lines of cataloged actions.
+function Get-WdmNonFlight([string]$Text) {
+    return (($Text -split "\r?\n") | Where-Object {
+        $m = [regex]::Match($_, '^(?:(\w+)=\(DeviceIdentifier|ActionBindings=\(Action=(\w+))')
+        -not ($m.Success -and ($wdmIds -contains ($m.Groups[1].Value + $m.Groups[2].Value)))
+    }) -join "`n"
+}
+$wdmNonFlight = Get-WdmNonFlight $wdmText
+$wdmPreviousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\wardogs\devices.tsv"
+try {
+    $wdmStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
+    $wdmThrottle = "Smoke Throttle {66666666-7777-8888-9999-000000000000}"
+    # Moved: Fire to stick button 3. Conflict: look up on throttle button 9, which the game uses for look down.
+    # Flares on throttle button 13: the game has UnknownFutureAction there (not cataloged: no conflict, no multi-bind).
+    Run-Engine @("--profile", $wdmProfile, "relations", "add", "WDM Fire", "--button", "--node", "Wardogs:Fire", "--device", $wdmStick, "--input", "JOY_BTN3", "--text") | Out-Null
+    Run-Engine @("--profile", $wdmProfile, "relations", "add", "WDM Look up", "--button", "--node", "Wardogs:LookPitch.Positive", "--device", $wdmThrottle, "--input", "JOY_BTN9", "--text") | Out-Null
+    Run-Engine @("--profile", $wdmProfile, "relations", "add", "WDM Flares", "--button", "--node", "Wardogs:Flares", "--device", $wdmThrottle, "--input", "JOY_BTN13", "--text") | Out-Null
+
+    $wdmAdd = Run-Engine @("--profile", $wdmProfile, "wardogs", "export", $wdmIni, "--mode", "add")
+    Assert-True ($wdmAdd.ExitCode -eq 0) ("wardogs add export failed: " + $wdmAdd.Output)
+    $wdmAddJson = ($wdmAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($wdmAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "LookPitch.Positive" -and $_.GameAction -eq "LookPitch.Negative" }).Count -eq 1) ("wardogs add should report look up on look down's button: " + $wdmAdd.Output)
+    $wdmAfter = [System.IO.File]::ReadAllText($wdmIni)
+    Assert-Match $wdmAfter 'Action=Fire,Binding=\(DeviceIdentifier="1234:5678:Smoke Stick",_aaaaljahlggohoapfcfef=0\)' "wardogs add must keep the game's Fire bind."
+    Assert-Match $wdmAfter 'Negative=\(DeviceIdentifier="ABCD:0001:Smoke Throttle",_aaaaljahlggohoapfcfef=8,' "wardogs add must keep look down."
+    Assert-Match $wdmAfter 'Action=Flares,Binding=\(DeviceIdentifier="ABCD:0001:Smoke Throttle",_aaaaljahlggohoapfcfef=12\)' "wardogs add should write Flares beside the uncataloged action."
+    Assert-True ((Get-WdmNonFlight $wdmAfter) -eq $wdmNonFlight) "wardogs add must leave the non-flight lines identical."
+
+    $wdmMerge = Run-Engine @("--profile", $wdmProfile, "wardogs", "export", $wdmIni, "--mode", "merge", "--text")
+    Assert-True ($wdmMerge.ExitCode -eq 0) ("wardogs merge export failed: " + $wdmMerge.Output)
+    $wdmAfter = [System.IO.File]::ReadAllText($wdmIni)
+    Assert-Match $wdmAfter 'Action=Fire,Binding=\(DeviceIdentifier="1234:5678:Smoke Stick",_aaaaljahlggohoapfcfef=2\)' "wardogs merge should write Fire's new button."
+    Assert-Match $wdmAfter 'Action=Fire,Binding=\(DeviceIdentifier="1234:5678:Smoke Stick",_aaaaljahlggohoapfcfef=5\)' "wardogs merge must keep Fire's second (old) line."
+    Assert-Match $wdmAfter 'Positive=\(DeviceIdentifier="ABCD:0001:Smoke Throttle",_aaaaljahlggohoapfcfef=8,' "wardogs merge should write look up."
+    Assert-Match $wdmAfter 'Negative=\(DeviceIdentifier="",_aaaaljahlggohoapfcfef=-1,_aaaaidddockpolojoodpb=-1,_aaaamdcclmobefllhjkdm=Up\),_aaaaoabiaaaacohedinbn=1\.000000,_aaabgcjobaejlnkbppedn=False,_aaaaombggppmmijkohdph=\(DeviceIdentifier="",_aaaajcpgpllhacnlfdnkg=-1,_aaaajlbldnobdplelbhhg=0\.500000,_aaaakbblnlfadfmofnkml=True,_aaaaljahlggohoapfcfef=-1,_aaaaidddockpolojoodpb=-1,_aaaamdcclmobefllhjkdm=Up\),_aaaaochdddlogkjceogmo=\(DeviceIdentifier="",_aaaajcpgpllhacnlfdnkg=-1,_aaaajlbldnobdplelbhhg=0\.500000,_aaaakbblnlfadfmofnkml=True,_aaaaljahlggohoapfcfef=-1,_aaaaidddockpolojoodpb=-1,_aaaamdcclmobefllhjkdm=Up\),Sensitivity=1\.000000,DeadZone=0\.050000\)\r?\nLookYaw' "wardogs merge should clear look down on look up's button (conflict)."
+    Assert-Match $wdmAfter '(?m)^Roll=\(DeviceIdentifier="1234:5678:Smoke Stick",_aaaajcpgpllhacnlfdnkg=0,' "wardogs merge must keep the game's other binds."
+    Assert-True ((Get-WdmNonFlight $wdmAfter) -eq $wdmNonFlight) "wardogs merge must leave the non-flight lines identical."
+
+    $wdmOverwrite = Run-Engine @("--profile", $wdmProfile, "wardogs", "export", $wdmIni, "--mode", "merge-overwrite", "--text")
+    Assert-True ($wdmOverwrite.ExitCode -eq 0) ("wardogs merge-overwrite export failed: " + $wdmOverwrite.Output)
+    $wdmAfter = [System.IO.File]::ReadAllText($wdmIni)
+    Assert-NotMatch $wdmAfter '_aaaaljahlggohoapfcfef=5\)' "wardogs merge-overwrite should remove Fire's old line."
+    Assert-Match $wdmAfter 'Action=Fire,Binding=\(DeviceIdentifier="1234:5678:Smoke Stick",_aaaaljahlggohoapfcfef=2\)' "wardogs merge-overwrite should keep Fire's new button."
+    Assert-Match $wdmAfter '(?m)^Roll=\(DeviceIdentifier="1234:5678:Smoke Stick",_aaaajcpgpllhacnlfdnkg=0,' "wardogs merge-overwrite must keep binds of actions the profile does not bind."
+    Assert-True ((Get-WdmNonFlight $wdmAfter) -eq $wdmNonFlight) "wardogs merge-overwrite must leave the non-flight lines identical."
+
+    $wdmClean = Run-Engine @("--profile", $wdmProfile, "wardogs", "export", $wdmIni, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($wdmClean.ExitCode -eq 0) ("wardogs clean + nuke export failed: " + $wdmClean.Output)
+    $wdmAfter = [System.IO.File]::ReadAllText($wdmIni)
+    Assert-Match $wdmAfter '(?m)^Roll=\(DeviceIdentifier="",' "wardogs clean should release the written devices' other binds."
+    Assert-True ((Get-WdmNonFlight $wdmAfter) -eq $wdmNonFlight) "wardogs clean + nuke must leave the non-flight lines identical."
+
+    # Nuke never clears a device that is not connected.
+    $wdmGone = $wdmText.Replace('Roll=(DeviceIdentifier="1234:5678:Smoke Stick"', 'Roll=(DeviceIdentifier="0FFF:0FFF:Gone Stick"')
+    [System.IO.File]::WriteAllText($wdmIni, $wdmGone)
+    $wdmNuke = Run-Engine @("--profile", $wdmProfile, "wardogs", "export", $wdmIni, "--mode", "merge", "--nuke-untouched-devices", "--text")
+    Assert-True ($wdmNuke.ExitCode -eq 0) ("wardogs nuke export failed: " + $wdmNuke.Output)
+    Assert-Match ([System.IO.File]::ReadAllText($wdmIni)) 'Roll=\(DeviceIdentifier="0FFF:0FFF:Gone Stick"' "wardogs nuke must keep binds of devices that are not connected."
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $wdmPreviousFakeDevices
+}

@@ -35,6 +35,20 @@ public partial class ConfirmWindow : Window
             Grid.SetColumn(ConfirmButtons, 0);
             Grid.SetColumnSpan(ConfirmButtons, 2);
             Width = 600;
+            if (request.SecondaryIsPrimary)
+            {
+                // The recommended way ("Import first") is the accent and default button and comes first; the action
+                // ("Export anyway") is a plain button that Enter does not press.
+                SecondaryButton.Classes.Add("accent");
+                SecondaryButton.IsDefault = true;
+                ConfirmButton.Classes.Remove("accent");
+                ConfirmButton.IsDefault = false;
+                ConfirmButtons.Children.Move(ConfirmButtons.Children.IndexOf(SecondaryButton), 0);
+                if (this.TryFindResource("Icon.Import", out object? import))
+                    SecondaryButton.Tag = import;
+                if (this.TryFindResource("Icon.Export", out object? export))
+                    ConfirmButton.Tag = export;
+            }
         }
         if (request.IsDanger && this.TryFindResource("Icon.Warning", out object? warning) && warning is Geometry geometry)
         {

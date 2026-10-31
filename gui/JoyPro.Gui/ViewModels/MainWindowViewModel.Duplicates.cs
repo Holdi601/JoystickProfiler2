@@ -88,7 +88,7 @@ public sealed partial class MainWindowViewModel
     public IReadOnlyList<DuplicateRuleChoice> CheckKindChoices { get; } =
     [
         new DuplicateRuleChoice { Rule = "all", Label = N("All problems") },
-        new DuplicateRuleChoice { Rule = "duplicates", Label = N("Actions in several relations") },
+        new DuplicateRuleChoice { Rule = "duplicates", Label = N("Same command on two buttons") },
         new DuplicateRuleChoice { Rule = "errors", Label = N("Errors") },
         new DuplicateRuleChoice { Rule = "notes", Label = N("Notes") }
     ];
@@ -278,22 +278,25 @@ public sealed partial class MainWindowViewModel
     {
         if (!root.TryGetProperty("Groups", out JsonElement groups) || groups.ValueKind != JsonValueKind.Array)
             return;
+        foreach (JsonElement g in groups.EnumerateArray())
+            ReadPlaneNameList(g, "PlaneNames", ReadJsonString(g, "Game"));
+    }
+
+    // A list of { Plane, Name, Seat } of one game (relations duplicates per group, relations conflicts at the top).
+    private void ReadPlaneNameList(JsonElement item, string property, string game)
+    {
+        if (!item.TryGetProperty(property, out JsonElement list) || list.ValueKind != JsonValueKind.Array)
+            return;
         Dictionary<string, (string Name, string Seat)> known = duplicatePlaneNames;
         Dictionary<string, (string Name, string Seat)>? names = null;
-        foreach (JsonElement g in groups.EnumerateArray())
+        foreach (JsonElement n in list.EnumerateArray())
         {
-            string game = ReadJsonString(g, "Game");
-            if (!g.TryGetProperty("PlaneNames", out JsonElement list) || list.ValueKind != JsonValueKind.Array)
+            string key = game + "|" + ReadJsonString(n, "Plane");
+            (string Name, string Seat) value = (ReadJsonString(n, "Name"), ReadJsonString(n, "Seat"));
+            if (known.TryGetValue(key, out var had) && had == value)
                 continue;
-            foreach (JsonElement n in list.EnumerateArray())
-            {
-                string key = game + "|" + ReadJsonString(n, "Plane");
-                (string Name, string Seat) value = (ReadJsonString(n, "Name"), ReadJsonString(n, "Seat"));
-                if (known.TryGetValue(key, out var had) && had == value)
-                    continue;
-                names ??= new Dictionary<string, (string Name, string Seat)>(known, StringComparer.OrdinalIgnoreCase);
-                names[key] = value;
-            }
+            names ??= new Dictionary<string, (string Name, string Seat)>(known, StringComparer.OrdinalIgnoreCase);
+            names[key] = value;
         }
         if (names != null)
             duplicatePlaneNames = names;
@@ -301,81 +304,6 @@ public sealed partial class MainWindowViewModel
 
     private static int ReadJsonIntValue(JsonElement item, string name) =>
         item.TryGetProperty(name, out JsonElement value) && value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out int n) ? n : 0;
-
-    private CheckIssueCard BuildDuplicateCard(JsonElement g, HashSet<string> newKeys)
-    {
-        string game = ReadJsonString(g, "Game");
-        List<string> keys = ReadStringArray(g, "Keys");
-        string suggestedRelation = ReadJsonString(g, "Suggested");
-        bool suggestOff = ReadJsonBool(g, "SuggestOff");
-        int confidence = ReadJsonIntValue(g, "Confidence");
-        List<(string Relation, string Bind)> places = [];
-        if (g.TryGetProperty("Relations", out JsonElement rel) && rel.ValueKind == JsonValueKind.Array)
-        {
-            foreach (JsonElement r in rel.EnumerateArray())
-                places.Add((ReadJsonString(r, "Relation"), DisplayText.BindLabel(ReadJsonString(r, "Device"), ReadJsonString(r, "Input"), null)));
-        }
-        List<(string Title, List<string> Planes)> actions = [];
-        if (g.TryGetProperty("Actions", out JsonElement acts) && acts.ValueKind == JsonValueKind.Array)
-        {
-            foreach (JsonElement a in acts.EnumerateArray())
-                actions.Add((ReadJsonString(a, "Title"), ReadStringArray(a, "Planes")));
-        }
-        List<string> allPlanes = actions.SelectMany(a => a.Planes).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-        string placesText = CheckIssueText.Join(places.Select(p => p.Bind.Length > 0 ? T("'{0}' ({1})", p.Relation, p.Bind) : T("'{0}' (not bound)", p.Relation)).ToList(), T("and"));
-        string gameName = game.Equals("DCS", StringComparison.OrdinalIgnoreCase) ? "DCS" : DisplayText.Game(game);
-        string headline = actions.Count == 1
-            ? T("{0}: '{1}'", AircraftWords(game, actions[0].Planes), actions[0].Title)
-            : T("{0}: {1} actions", AircraftWords(game, allPlanes), actions.Count);
-        string details = T("is in {0} relations: {1}. {2} gets a bind on each of these inputs.", places.Count, placesText, gameName);
-        List<string> actionLines = actions.Count == 1 ? [] : actions.Select(a => T("{0}: '{1}'", AircraftWords(game, a.Planes), a.Title)).ToList();
-        string suggestion = suggestedRelation.Length > 0 ? T("{0}% sure: keep in '{1}'", confidence, suggestedRelation)
-            : suggestOff ? T("{0}% sure: switch it off in all of them", confidence) : string.Empty;
-        List<string> reasons = [];
-        if (g.TryGetProperty("Reasons", out JsonElement rs) && rs.ValueKind == JsonValueKind.Array)
-        {
-            foreach (JsonElement r in rs.EnumerateArray())
-            {
-                string text = ReasonWords(ReadJsonString(r, "Code"), ReadJsonString(r, "Relation"), ReadJsonString(r, "Detail"));
-                if (text.Length > 0 && !reasons.Contains(text))
-                    reasons.Add(text);
-            }
-        }
-        bool isNew = keys.Any(newKeys.Contains);
-        List<string> relationNames = places.Select(p => p.Relation).ToList();
-        CheckIssueCard card = new()
-        {
-            Kind = "duplicates",
-            Headline = headline,
-            Details = details,
-            ActionLines = actionLines,
-            SuggestionText = suggestion,
-            Confidence = confidence,
-            ReasonText = string.Join(" ", reasons.Take(3)),
-            IsNew = isNew,
-            Game = game,
-            RelationsSort = string.Join(" / ", relationNames),
-            AircraftSort = string.Join(", ", allPlanes),
-            SearchText = string.Join("\n", new[] { headline, details, string.Join(" ", actionLines), string.Join(" ", allPlanes) }),
-            Keys = keys,
-            Relations = relationNames,
-            Suggested = suggestedRelation,
-            SuggestOff = suggestOff,
-            Choices = places.Select(p => new DuplicateRelationChoice
-            {
-                Relation = p.Relation,
-                BindLabel = p.Bind,
-                IsSuggested = p.Relation == suggestedRelation,
-                KeepText = T("Keep in '{0}' only", p.Relation),
-                Tip = T("The action stays on in '{0}'; the other relations keep their binds for the other aircraft and get these aircraft switched off (a tick brings them back). Ctrl+Z undoes it.", p.Relation),
-                KeepCommand = new AsyncRelayCommand(() => KeepDuplicatesInAsync(keys, p.Relation))
-            }).ToList(),
-            KeepBothCommand = new AsyncRelayCommand(() => KeepBothDuplicatesAsync(keys)),
-            OpenAllCommand = new RelayCommand(() => OpenRelations(relationNames)),
-            SwitchOffAllCommand = new AsyncRelayCommand(() => SwitchOffDuplicatesAsync(keys))
-        };
-        return card;
-    }
 
     // "AH-64D Block II (CPG and Pilot)", "F-14 (Pilot and RIO)", "F-16C Block 50 and F/A-18C"; other games: the game.
     internal string AircraftWords(string game, IReadOnlyList<string> planes)
@@ -508,24 +436,35 @@ public sealed partial class MainWindowViewModel
                 plainCheckCards[issue] = card = PlainCard(issue, knownRelations ??= KnownRelationNames());
             return card;
         }
+        // Errors first (the export or the game goes wrong), then warnings (worth fixing), then notes.
+        if (kind is "all" or "errors")
+            AddSection("input-conflicts", T("One button does two things"), T("One press runs two commands at once in the game."), "error",
+                SortedAll("input-conflicts", () => inputConflictCards).Where(Matches));
+        if (kind is "all" or "errors")
+            AddSection("action-conflicts", T("One button runs two commands"), T("A relation has two commands for the same aircraft, so its button runs both."), "error",
+                SortedAll("action-conflicts", () => actionConflictCards).Where(Matches));
+        if (kind is "all" or "errors")
+            AddSection("errors", T("Other errors"), T("The export cannot write these as they are."), "error",
+                SortedAll("errors", () => allValidationIssues.Where(i => i.Kind == "Error" && !conflictMessages.Contains(i.Message)).Select(Plain)).Where(Matches));
         if (kind is "all" or "duplicates")
-            AddSection("duplicates", T("Actions in several relations"), T("Two inputs do the same thing in the game: usually one of them is left over."), true,
+            AddSection("duplicates", T("Same command on two buttons"), T("The game gets the same command from two buttons. Usually only one of them is wanted."), "warning",
                 SortedAll("duplicates", () => duplicateCards).Where(Matches),
                 // The same unit as the summary line and the import's notice: an action of one aircraft counts once.
                 list => DuplicateCountLabel(list.Sum(c => c.Keys.Count), list.Count));
         if (kind is "all" or "duplicates")
-            AddSection("copies", T("Copied relations"), T("An import made copies of a relation with the same input: they can be merged back into one."), true,
+            AddSection("copies", T("Copied relations"), T("An import made copies of a relation on the same button. They can be merged back into one."), "warning",
                 SortedAll("copies", () => copyCards).Where(Matches));
         if (kind is "all" or "errors")
-            AddSection("errors", T("Errors"), T("The export cannot write these as they are."), true,
-                SortedAll("errors", () => allValidationIssues.Where(i => i.Kind == "Error").Select(Plain)).Where(Matches));
+            AddSection("export-skips", T("Not written to the game"), T("'Only add' left these binds out: the game already uses their button for something else."), "warning",
+                SortedAll("export-skips", () => exportSkipCards).Where(Matches));
         if (kind is "all" or "notes")
-            AddSection("notes", T("Notes"), T("Harmless, worth a look."), false,
+            AddSection("notes", T("Notes"), T("Harmless, worth a look."), "note",
                 SortedAll("notes", () => allValidationIssues.Where(i => i.Kind == "Warning").Select(Plain)).Where(Matches));
-        CheckSummaryText = duplicateCards.Count == 0 && copyCards.Count == 0 && !allValidationIssues.Any() ? string.Empty
-            : T("{0} actions in several relations ({1} cards), {2} errors, {3} notes", DuplicateActionCount, duplicateCards.Count,
-                allValidationIssues.Count(i => i.Kind == "Error"), allValidationIssues.Count(i => i.Kind == "Warning")) +
-              (copyCards.Count == 0 ? string.Empty : ", " + T("{0} copied relations", copyCards.Sum(c => c.Relations.Count - 1)));
+        int errorCards = inputConflictCards.Count + actionConflictCards.Count + allValidationIssues.Count(i => i.Kind == "Error" && !conflictMessages.Contains(i.Message));
+        int warningCards = duplicateCards.Count + copyCards.Count + exportSkipCards.Count;
+        int noteCards = allValidationIssues.Count(i => i.Kind == "Warning");
+        CheckSummaryText = errorCards == 0 && warningCards == 0 && noteCards == 0 ? string.Empty
+            : T("To look at: {0} errors, {1} warnings, {2} notes", errorCards, warningCards, noteCards);
 
         for (int i = CheckSections.Count - 1; i >= 0; i--)
         {
@@ -539,11 +478,12 @@ public sealed partial class MainWindowViewModel
         }
 
         // Only a page of cards is built per section (thousands of cards froze the page); "Show more" adds the next one.
-        void AddSection(string sectionKind, string title, string severity, bool serious, IEnumerable<CheckIssueCard> cards, Func<List<CheckIssueCard>, string>? countLabel = null)
+        void AddSection(string sectionKind, string title, string meaning, string level, IEnumerable<CheckIssueCard> cards, Func<List<CheckIssueCard>, string>? countLabel = null)
         {
             List<CheckIssueCard> list = cards.ToList();
             if (list.Count == 0)
                 return;
+            MarkCheckGroups(list, sort);
             int shown = checkShownCards.TryGetValue(sectionKind, out int kept) ? kept : 0;
             if (previous.TryGetValue(sectionKind, out CheckIssueSection? section) && section.Title == title &&
                 section.PageSize == (list[0] is PlainCheckIssueCard ? CheckIssueSection.DefaultPageSize : CheckIssueSection.HeavyPageSize))
@@ -559,8 +499,8 @@ public sealed partial class MainWindowViewModel
                 Kind = sectionKind,
                 Title = title,
                 CountLabel = countLabel?.Invoke(list) ?? string.Empty,
-                Severity = severity,
-                IsSerious = serious,
+                Severity = meaning,
+                Level = level,
                 Breakdown = Breakdown(list),
                 PageSize = list[0] is PlainCheckIssueCard ? CheckIssueSection.DefaultPageSize : CheckIssueSection.HeavyPageSize,
                 ShowMoreCommand = new RelayCommand(() => ShowMoreCheckCards(sectionKind))
@@ -574,13 +514,36 @@ public sealed partial class MainWindowViewModel
     // The cards in an order of the Sort box ("relation", "aircraft", "game", "confidence").
     private static List<CheckIssueCard> SortCheckCards(IEnumerable<CheckIssueCard> cards, string sort) => (sort switch
     {
-        "aircraft" => cards.OrderBy(c => c.AircraftSort, StringComparer.CurrentCultureIgnoreCase),
+        "aircraft" => cards.OrderBy(c => c.AircraftGroup, StringComparer.CurrentCultureIgnoreCase).ThenBy(c => c.AircraftSort, StringComparer.CurrentCultureIgnoreCase),
         "game" => cards.OrderBy(c => c.Game, StringComparer.CurrentCultureIgnoreCase).ThenBy(c => c.RelationsSort, StringComparer.CurrentCultureIgnoreCase),
         "confidence" => cards.OrderByDescending(c => c.Confidence).ThenBy(c => c.RelationsSort, StringComparer.CurrentCultureIgnoreCase),
         _ => cards.OrderBy(c => c.RelationsSort, StringComparer.CurrentCultureIgnoreCase)
     }).ToList();
 
     private string CheckSortRule => SelectedCheckSort?.Rule ?? "relation";
+
+    // The cards of a section grouped by the chosen order: a header above the first card of each relation (aircraft,
+    // game) - only where a group has more than one card, so a list of single cards stays a plain list.
+    private static void MarkCheckGroups(List<CheckIssueCard> cards, string sort)
+    {
+        string Key(CheckIssueCard c) => sort switch
+        {
+            "aircraft" => c.AircraftGroup,
+            "game" => DisplayText.Game(c.Game),
+            "confidence" => string.Empty,
+            _ => c.RelationGroup
+        };
+        // Groups only help where some of them have several cards (a list of thousands of single lines stays a list).
+        int groups = sort == "confidence" ? cards.Count : cards.Select(Key).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        bool grouped = groups <= cards.Count * 2 / 3;
+        string? last = null;
+        foreach (CheckIssueCard card in cards)
+        {
+            string key = Key(card);
+            card.GroupHeader = grouped && key.Length > 0 && !string.Equals(key, last, StringComparison.OrdinalIgnoreCase) ? key : string.Empty;
+            last = key;
+        }
+    }
 
     // "Most of them: Keyboard (2919), MOZA AB9 FFB Base (130), VPC MongoosT-50CM3 (101) and 9 more": where the findings
     // of a long section are, in one line (empty for a short section or cards without a device).
@@ -615,36 +578,8 @@ public sealed partial class MainWindowViewModel
     internal CheckIssueCard PlainCard(ValidationIssueItem issue) => PlainCard(issue, KnownRelationNames());
 
     // knownRelations: the profile's relation names (to split the line's list of names); runs off the UI thread too.
-    private CheckIssueCard PlainCard(ValidationIssueItem issue, HashSet<string> knownRelations)
-    {
-        InputConflict? conflict = ParseInputConflict(issue.Message, knownRelations);
-        string headline = issue.Message;
-        string details = string.Empty;
-        if (conflict != null)
-        {
-            string aircraft = AircraftWords(conflict.Game, [conflict.Plane]);
-            string input = DisplayText.BindLabel(conflict.Device, conflict.Input, conflict.Modifiers);
-            headline = T("{0}: {1}", aircraft, input.Length > 0 ? input : DisplayText.ShortDevice(conflict.Device));
-            details = T("This input is bound in {0} relations: {1}. In the game it does all of them at once.", conflict.Relations.Count,
-                CheckIssueText.Join(conflict.Relations.Select(r => "'" + r + "'").ToList(), T("and")));
-        }
-        return new PlainCheckIssueCard
-        {
-            Kind = issue.Kind == "Error" ? "errors" : "notes",
-            Headline = headline,
-            Details = details,
-            Game = conflict?.Game ?? string.Empty,
-            GroupLabel = conflict == null ? string.Empty : DisplayText.ShortDevice(conflict.Device),
-            // The engine's line stays searchable (relation names, the aircraft id); it is not shown.
-            SearchText = conflict == null ? issue.Message : headline + "\n" + details + "\n" + issue.Message,
-            RelationsSort = conflict == null ? issue.Message : string.Join(" / ", conflict.Relations),
-            AircraftSort = conflict?.Plane ?? issue.Message,
-            Relations = conflict?.Relations.ToList() ?? [],
-            OpenContextCommand = issue.Message.Contains("The Relations it was found in:", StringComparison.OrdinalIgnoreCase)
-                ? new RelayCommand(() => { SelectedValidationIssue = issue; OpenIssueContext(); })
-                : null
-        };
-    }
+    private CheckIssueCard PlainCard(ValidationIssueItem issue, HashSet<string> knownRelations) =>
+        PlainLineCard(issue, ParseInputConflict(issue.Message, knownRelations));
 
     internal sealed record InputConflict(string Game, string Plane, string Device, string Input, IReadOnlyList<string> Modifiers, IReadOnlyList<string> Relations);
 
@@ -751,19 +686,6 @@ public sealed partial class MainWindowViewModel
             return;
         await AfterDuplicatesChangedAsync();
         StatusText = T("Switched off in every relation. Ctrl+Z undoes it.");
-    }
-
-    // Opens the first relation in the editor and puts all of them into the relation list's search.
-    private void OpenRelations(IReadOnlyList<string> relations)
-    {
-        RelationListItem? first = relations.Select(r => allRelations.FirstOrDefault(v => string.Equals(v.Name, r, StringComparison.OrdinalIgnoreCase))).FirstOrDefault(m => m != null);
-        if (first == null)
-            return;
-        // Back (header, Alt+Left) returns to this Check list, scrolled to this card.
-        RememberPlace();
-        CurrentStage = UiStage.Relations;
-        SelectedRelation = first;
-        StatusText = T("Opened '{0}'. The other one: {1}", first.Name, string.Join(", ", relations.Where(r => !string.Equals(r, first.Name, StringComparison.OrdinalIgnoreCase)).Select(r => "'" + r + "'")));
     }
 
     private async Task AfterDuplicatesChangedAsync()

@@ -44,11 +44,32 @@ extracted copy (`--source`). `DB\StarCitizen\AllBinds.xml` (and the identical `a
   rotz, `v_strafe_up` button9, `v_afterburner` button8, `v_weapon_toggle_launch_missile` button1. Debug aid:
   `JOYPRO_SC_DUMP_DIR=<folder>` makes the refresh save every CryXmlB (binary XML) source it converted as text.
 
-### Default joystick binds (clean, nuke)
-The defaults act on js1 until the action has a js rebind. Clean (with a device written to js1) and nuke (js1 not used)
-switch them off for the ship actions JoyPro does not bind itself: an empty rebind `<rebind input="js1_ "/>`, as the
-game's menu writes a cleared bind. Merge and add leave them. An import ignores empty rebinds. [OBS 2026-10-10: a clean +
-nuke export with vJoy on js4 wrote 29 empty js1 rebinds; the game kept all 29 when it rewrote actionmaps.xml on exit]
+### Default joystick binds (import, clean, nuke)
+The defaults act on js1 until the action has a js rebind. An import takes every active default of a ship action (no js
+rebind in the file; an empty rebind switches the default off) as a bind of the js1 device, so the profile holds what
+the game does (since 2.4.3). An export writes no rebind for a bind that equals the action's default on js1 (only real
+differences), so import + clean + nuke leaves actionmaps.xml byte-identical. Clean (with a device written to js1) and
+nuke (js1 not used) switch off the defaults the profile does not have (the user removed them in JoyPro): an empty
+rebind `<rebind input="js1_ "/>`, as the game's menu writes a cleared bind, and only when the device on js1 is
+connected. An empty rebind already in the file stays where it is.
+
+Export modes (since 2.5.0, [export](../export.md#export-modes)); ship actions only, the on-foot, vehicle and menu maps
+stay byte-identical:
+- Add changes no game bind: an action whose joystick slot holds a rebind or an active default keeps it, and a bind on
+  an input another ship action uses (a rebind or an active js1 default) is not written and listed as a skipped multi
+  bind.
+- Merge and merge-overwrite put the profile's input into the action's joystick slot (Star Citizen has one per action
+  and input type) and release the game's bind on an input the profile gives another ship action: its rebind goes, or
+  becomes `js1_ ` when the action has a default (so the default does not come back); an active default on that input
+  gets `js1_ `. Merge-overwrite also takes a bound action's keyboard rebind away when the export includes the keyboard.
+- Clean and nuke release only slots of connected devices; a slot whose device is not connected keeps its rebinds.
+An export of a profile without Star Citizen binds leaves actionmaps.xml as it is. [OBS 2026-10-10: a clean + nuke
+export with vJoy on js4 wrote 29 empty js1 rebinds; the game kept all 29 when it rewrote actionmaps.xml on exit]
+
+Joystick slots (`--prefer-local-order`, the default): a connected device the file's `<options type="joystick">` names
+keeps that slot (the game's own record, matched by product as the import does); other devices fill the free slots in
+DirectInput order. Before 2.4.3 the DirectInput order came first, so an export could move every bind of a device the
+game had on js1 to another slot.
 
 ## Axis settings (axis model `starcitizen`, `engine\AxisModels\StarCitizen.cs`)
 Two stages, as the files and menus show them:

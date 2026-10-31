@@ -177,8 +177,11 @@ Assert-Match $scAttrAgain.Output "(?m)^Files Written:\s+2\s*$" "unchanged game s
 # ---- Clean switches off the game's default joystick binds on js1 (defaultJoystick in the catalog) -------------------
 # defaultProfile.xml gives v_pitch "y", v_yaw "x" and v_fire "button1" on the joystick; they act on js1 until the action
 # has a js rebind. Clean writes an empty rebind "js1_ " for the defaults JoyPro does not bind itself; merge-overwrite
-# leaves them; an import ignores the empty rebinds.
+# leaves them; an import ignores the empty rebinds. Only a connected device's defaults are switched off: Test Stick is
+# faked as connected here.
 Copy-Item -Path (Join-Path $scRefreshDb "AllBinds.xml") -Destination $starCitizenDbCatalogPath -Force
+$scPreviousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\roundtrip\starcitizen-devices.tsv"
 try {
     $scDefProfile = Join-Path $tempDir "sc_defaults.pr0file"
     $scDefAdd = Run-Engine @("--profile", $scDefProfile, "relations", "add", "SC Def Pitch", "--axis", "--node", "StarCitizen:spaceship_movement|v_pitch", "--device", $scStick, "--input", "JOY_Y", "--text")
@@ -205,5 +208,6 @@ try {
     Assert-NotMatch ([System.IO.File]::ReadAllText($scDefMerge.File)) 'input="js1_ "' "merge-overwrite must leave the game's default joystick binds."
 }
 finally {
+    $env:JOYPRO_FAKE_DEVICES = $scPreviousFakeDevices
     Copy-Item -Path (Join-Path $scFixtures "catalog.xml") -Destination $starCitizenDbCatalogPath -Force
 }

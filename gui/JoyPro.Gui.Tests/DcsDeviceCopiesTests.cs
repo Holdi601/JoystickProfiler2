@@ -89,27 +89,27 @@ public sealed class DcsDeviceCopiesTests
         CheckIssueSection copies = Assert.Single(vm.CheckSections, s => s.Kind == "copies");
         Assert.Equal("Copied relations (2)", copies.CountText);
         CheckIssueCard card = copies.Cards.Single(c => c.RelationsSort == "Razer BTN12 - PREV KNEEBOARD PAGE");
-        Assert.Equal("3 relations are copies of 'Razer BTN12 - PREV KNEEBOARD PAGE' with the same input", card.Headline);
-        Assert.Contains("keeps every aircraft (4)", card.Details);
-        Assert.DoesNotContain("{40509BC0", card.Details);
-        Assert.Equal(["'Razer BTN12 - PREV KNEEBOARD PAGE__1'", "'Razer BTN12 - PREV KNEEBOARD PAGE__2'", "'Razer BTN12 - PREV KNEEBOARD PAGE__3'"], card.ActionLines);
-        Assert.True(card.HasMergeCopies);
-        Assert.Equal("Merge into one", card.MergeCopiesText);
-        Assert.True(card.HasMergeAllCopies);
-        Assert.Equal("Merge all copied relations (4)", card.MergeAllCopiesText);
-        Assert.Contains("4 copied relations", vm.CheckSummaryText);
+        Assert.Equal("A relation was copied 3 times", card.Title);
+        Assert.Contains("keeps every aircraft (4)", card.Sentence);
+        Assert.DoesNotContain("{40509BC0", card.Sentence + card.ButtonsLine);
+        Assert.Equal(["'Razer BTN12 - PREV KNEEBOARD PAGE__1'", "'Razer BTN12 - PREV KNEEBOARD PAGE__2'", "'Razer BTN12 - PREV KNEEBOARD PAGE__3'"], card.Rows.Select(r => r.Left));
+        Assert.True(card.HasRecommended);
+        Assert.Equal("Merge into one", card.Recommended!.Text);
+        Assert.Equal("Merge all copied relations (4)", Assert.Single(card.MoreFixes).Text);
+        Assert.Single(card.OpenButtons);
+        Assert.Contains("warnings", vm.CheckSummaryText);
         // Nothing changed by looking.
         Assert.DoesNotContain(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "merge-copies") && !c.Contains("--dry-run"));
 
         // Merge one family: one engine call (one profile version) with its history note; checked again, its card is gone.
-        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)card.MergeCopiesCommand!).ExecuteAsync(null);
+        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)card.Recommended!.Command!).ExecuteAsync(null);
         IReadOnlyList<string> merge = fake.Calls.Single(c => AxisTuningTests.Seq(c, "relations", "merge-copies", "--name", "Razer BTN12 - PREV KNEEBOARD PAGE"));
         Assert.DoesNotContain("--dry-run", merge);
         Assert.Equal("Merging copied relations", ValueAfter(merge, "--history-note"));
         Assert.Equal("Merged 3 copies into 'Razer BTN12 - PREV KNEEBOARD PAGE'. Ctrl+Z undoes it.", vm.StatusText);
         copies = Assert.Single(vm.CheckSections, s => s.Kind == "copies");
         CheckIssueCard left = Assert.Single(copies.Cards);
-        Assert.False(left.HasMergeAllCopies);
+        Assert.False(left.HasMoreFixes);
 
         // Search finds a card by a copy's name; the kind filter "errors" hides the section.
         vm.CheckSearchText = "EJECT__1";
@@ -120,7 +120,7 @@ public sealed class DcsDeviceCopiesTests
         vm.SelectedCheckKind = vm.CheckKindChoices[0];
 
         // The last family.
-        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)left.MergeCopiesCommand!).ExecuteAsync(null);
+        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)left.Recommended!.Command!).ExecuteAsync(null);
         Assert.DoesNotContain(vm.CheckSections, s => s.Kind == "copies");
     }
 
@@ -131,7 +131,7 @@ public sealed class DcsDeviceCopiesTests
         MainWindowViewModel vm = NewVm(fake);
         await vm.ValidateProfileCommand.ExecuteAsync(null);
         CheckIssueCard card = vm.CheckSections.Single(s => s.Kind == "copies").Cards.First();
-        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)card.MergeAllCopiesCommand!).ExecuteAsync(null);
+        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)card.MoreFixes.Single().Command!).ExecuteAsync(null);
         IReadOnlyList<string> merge = fake.Calls.Single(c => AxisTuningTests.Seq(c, "relations", "merge-copies") && !c.Contains("--dry-run"));
         Assert.DoesNotContain("--name", merge);
         Assert.Equal("Merging copied relations", ValueAfter(merge, "--history-note"));

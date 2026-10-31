@@ -95,6 +95,14 @@ How JoyPro writes an axis: as **two halves**, the way the game's default profile
 - **Hats:** four directions only; diagonals are skipped.
 - **No modifiers.**
 - **Keyboard keys:** written only for button actions (axis actions have keyboard pairs the game manages).
+- **Export modes** (only jet / helicopter slots; jet and helicopter are different vehicles; soldier and ground vehicle
+  slots, mouse and pad slots, keys on axis actions and joystick codes JoyPro's table does not read never change):
+  `add` skips a bind whose input another action of the same vehicle uses (listed as a skipped multi-bind) and never
+  frees a slot; `merge` frees the other action's slot on the profile's input (conflict) and keeps the action's bound
+  slots (a bind that finds no free slot of its kind stays out, as in add); `merge-overwrite` = merge + the action's
+  other joystick slots (and keys with `--include-keyboard`) are freed and a bound slot takes the profile's input;
+  `clean` frees the flight slots of the devices the export writes (the joystick when it gets binds, the keyboard keys
+  when keys are exported).
 
 ## Automated survey (`BattlefieldJoystickSurvey.ps1 -Auto`, BattlefieldSurveyAuto.ps1)
 **Needs a reboot window:** on a test PC vJoyConfig answers with "You must restart your computer to apply these

@@ -273,6 +273,46 @@ public static class DeviceReferenceService
 
     public const string ClassChoicePrefix = "class:";
 
+    // ------------------------------------------------------------------ the picture picked for a device
+
+    private static string PictureChoiceFile() => Path.Combine(DataFolder(), "pictures.json");
+
+    // The picture the user picked on the Layout page ("Photo 4 · Virpil", "Top · Razer", a line drawing), by device (the
+    // JoyPro name with its GUID first, else the name without it; a model picked from the catalog by its model id), stored
+    // as "<model id>|<picture id>": another model shown for the device (a grip picked) does not take it over. It is kept
+    // the moment it is picked (2.5.0 tester report: the choice fell back to JoyPro's line drawing). Null = none picked.
+    public static string? PictureChoiceOf(string device, string modelId)
+    {
+        Dictionary<string, string>? choices = ReadJson<Dictionary<string, string>>(PictureChoiceFile());
+        if (choices == null || string.IsNullOrWhiteSpace(device) || string.IsNullOrWhiteSpace(modelId))
+            return null;
+        string wanted = device.Trim();
+        string? value = choices.FirstOrDefault(c => string.Equals(c.Key, wanted, StringComparison.OrdinalIgnoreCase)).Value;
+        if (value == null)
+        {
+            string name = DeviceProbe.RemoveGuid(wanted);
+            value = choices.Where(c => string.Equals(DeviceProbe.RemoveGuid(c.Key), name, StringComparison.OrdinalIgnoreCase)).Select(c => c.Value).FirstOrDefault();
+        }
+        if (value == null)
+            return null;
+        int bar = value.IndexOf('|');
+        return bar > 0 && string.Equals(value[..bar], modelId, StringComparison.OrdinalIgnoreCase) ? value[(bar + 1)..] : null;
+    }
+
+    public static void SetPictureChoice(string device, string modelId, string pictureId)
+    {
+        if (string.IsNullOrWhiteSpace(device) || string.IsNullOrWhiteSpace(modelId) || string.IsNullOrWhiteSpace(pictureId))
+            return;
+        lock (Gate)
+        {
+            Dictionary<string, string> choices = new(ReadJson<Dictionary<string, string>>(PictureChoiceFile()) ?? [], StringComparer.OrdinalIgnoreCase)
+            {
+                [device.Trim()] = modelId.Trim() + "|" + pictureId.Trim()
+            };
+            WriteJson(PictureChoiceFile(), choices);
+        }
+    }
+
     // ------------------------------------------------------------------ marker positions per photo (exact or none)
 
     private static List<DeviceLayoutSet>? curated;

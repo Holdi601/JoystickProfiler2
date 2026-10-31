@@ -102,8 +102,9 @@ read its commands, and the result of the last action on it. Buttons on a card:
   section title ticks or unticks all installed games at once. When `Settings > Games > Watch game configs` is off,
   nothing is watched whatever the boxes say (the page tells you above the cards).
 - The crossed-out eye at the top right of a card hides the game (you do not have it or are not interested): it leaves
-  the cards, the game count, the watcher, the setup wizard and the export page; your binds for it stay. Below the
-  cards, `Hidden games (n)` lists the hidden games with `Show again`.
+  the cards, the game count, the watcher, the setup wizard, the export page, the filters, the catalog, the action
+  search and the HUD; your binds for it stay. Below the cards a line says how many games are hidden; its button opens
+  `Settings > Games`, the one place that shows them again.
 - `Look again`: find your games again.
 - `Set up my devices automatically...`: the Setup wizard (below).
 - `Supported games`: every game JoyPro knows, in your browser (below).
@@ -665,8 +666,8 @@ open sections for the next start.
 
 `Games` lists every supported game: installed or not, its folder, how JoyPro found it and where it keeps
 its controls. `Choose folder...` makes a folder the game's installation (for a game JoyPro did not find); `Use
-detected` forgets it again. `Hide` hides a game; the hidden ones are listed under "Hidden games" with `Show again`
-(as below the Start page's cards). `Run setup again` opens the first-start setup. Games that are not installed are
+detected` forgets it again. `Hide` hides a game everywhere in JoyPro; the hidden ones are listed under "Hidden games" with `Show again` (the
+only place that lists them). `Run setup again` opens the first-start setup. Games that are not installed are
 blocked for import, export, scan, DB refresh and backup restore. Details: [docs/installs.md](../../docs/installs.md).
 
 `Appearance`: Light, Dark, System or a theme of your own; `Text size` and `UI scale` (80 % to 200 %, on top of the
@@ -769,7 +770,7 @@ Something went wrong? Four steps, nothing is sent by itself:
 1. Write into `What happened?` what you did, what you expected and what happened instead.
 2. Leave `Include my open profile and its history (your binds and device names)` ticked (on by default, remembered)
    unless you do not want to send your binds.
-3. Press `Create Report`. JoyPro shows what goes in, then saves one zip (in `Documents\JoyPro2 Problem Reports`) and
+3. Press `Create Report`. JoyPro shows what goes in, then saves one zip (in `Documents\JoyPro2\Problem Reports`) and
    shows it in Explorer. It holds your text, the JoyPro and Windows versions, JoyPro's logs of at least the last 14
    days, errors and crash reports, JoyPro's settings and versions, your devices with vJoy and HidHide, and per game its
    folders and JoyPro's backups; with the box ticked also the open profile, its saved versions and the games' current

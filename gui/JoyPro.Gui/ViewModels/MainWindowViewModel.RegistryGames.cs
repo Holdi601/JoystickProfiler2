@@ -303,6 +303,7 @@ public sealed partial class MainWindowViewModel
         List<string>? args = BuildRegistryGameArgs("scan");
         if (args == null)
             return;
+        AddVJoyTunnelArgs(args);
         AddDisconnectedDevicesOption(args);
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: false, mutatesProfile: false, busyLabel: "Scanning " + SelectedRegistryGame!.DisplayName + "...");
         await AfterCommandListBuiltAsync(result);
@@ -356,6 +357,7 @@ public sealed partial class MainWindowViewModel
         List<string>? args = BuildRegistryGameArgs("import");
         if (args == null)
             return;
+        AddVJoyTunnelArgs(args);
         if (!ImportMerge)
             args.Add("--replace");
         if (RegistryGameIncludeKeyboard)
@@ -398,7 +400,7 @@ public sealed partial class MainWindowViewModel
         List<string>? args = BuildRegistryGameArgs("export");
         if (args == null)
             return null;
-        args.AddRange(["--mode", string.IsNullOrWhiteSpace(ExportMode) ? "merge-overwrite" : ExportMode.Trim()]);
+        args.AddRange(["--mode", EffectiveExportMode]);
         if (RegistryGameDryRun)
             args.Add("--dry-run");
         if (RegistryGameIncludeKeyboard)

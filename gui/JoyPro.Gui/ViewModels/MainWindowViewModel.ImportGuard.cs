@@ -112,6 +112,8 @@ public sealed partial class MainWindowViewModel
         // The point is to put the changes into the game: "keep the game's binds" (merge) would keep the old button of a
         // moved action (the game's bind is the one JoyPro wrote before), so this export lets the profile win; "clean" stays.
         string modeBefore = ExportMode;
+        // JoyPro's own change for this one export: not remembered, no choice of the user.
+        using IDisposable suppressed = SuppressExportSettings();
         if (!string.Equals(ExportMode?.Trim(), "clean", StringComparison.OrdinalIgnoreCase))
             ExportMode = "merge-overwrite";
         EngineCommandResult? result;

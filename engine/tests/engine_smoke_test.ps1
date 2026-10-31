@@ -567,6 +567,11 @@ try {
 '@
     [System.IO.File]::WriteAllText($scInPlaceFile, $scInPlaceText.Replace("`r`n", "`n") + "`n", (New-Object System.Text.UTF8Encoding($false)))
     $scInPlaceOriginal = [System.IO.File]::ReadAllText($scInPlaceFile)
+    # Clean and nuke release only binds of connected devices: both sticks are faked as connected.
+    $scInPlacePreviousFake = $env:JOYPRO_FAKE_DEVICES
+    $scInPlaceFake = Join-Path $tempDir "starcitizen_inplace_devices.tsv"
+    [System.IO.File]::WriteAllText($scInPlaceFake, "Test Stick {11111111-1111-1111-1111-111111111111}`t1234`t5678`tTest Stick`r`nOther Stick {22222222-2222-3333-4444-555555555555}`t1234`t5679`tOther Stick`r`n")
+    $env:JOYPRO_FAKE_DEVICES = $scInPlaceFake
     $scInPlaceProfile = Join-Path $tempDir "starcitizen_inplace.pr0file"
     $scInPlaceAdd = Run-Engine @("--profile", $scInPlaceProfile, "relations", "add", "SC InPlace Pitch", "--axis", "--node", "StarCitizen:spaceship_movement|pitch", "--device", "Test Stick {11111111-1111-1111-1111-111111111111}", "--input", "JOY_X", "--text")
     Assert-True ($scInPlaceAdd.ExitCode -eq 0) "relations add for the in-place Star Citizen check failed."
@@ -576,7 +581,9 @@ try {
     Assert-True ($scInPlaceExport.ExitCode -eq 0) "starcitizen in-place export failed."
     Assert-Match $scInPlaceExport.Output "JoyPro only writes Star Citizen ship controls" "starcitizen export must skip on-foot actions."
     $scInPlaceAfter = [System.IO.File]::ReadAllText($scInPlaceFile)
-    Assert-True ($scInPlaceAfter -eq $scInPlaceOriginal.Replace('<rebind input="js1_y"/>', '<rebind input="js1_x"/>')) "starcitizen export must change only the ship rebind JoyPro writes and keep everything else byte-identical."
+    # pitch moves to js1_x; yawx's js1_x goes (the same input for another ship action: a conflict), its mouse rebind stays.
+    $scInPlaceExpected = $scInPlaceOriginal.Replace('<rebind input="js1_y"/>', '<rebind input="js1_x"/>').Replace("`n    <rebind input=`"js1_x`"/>`n    <rebind input=`"mo1_maxis_x`"/>", "`n    <rebind input=`"mo1_maxis_x`"/>")
+    Assert-True ($scInPlaceAfter -eq $scInPlaceExpected) ("starcitizen export must change only the ship rebinds JoyPro writes or that conflict with them and keep everything else byte-identical: " + $scInPlaceAfter)
     $scInPlaceAgain = Run-Engine @("--profile", $scInPlaceProfile, "starcitizen", "export", $scInPlaceRoot, "--prefer-local-order", "false", "--text")
     Assert-True ([System.IO.File]::ReadAllText($scInPlaceFile) -eq $scInPlaceAfter) "a repeated starcitizen export must not change the file."
     $scInPlaceClean = Run-Engine @("--profile", $scInPlaceProfile, "starcitizen", "export", $scInPlaceRoot, "--mode", "clean", "--prefer-local-order", "false", "--text")
@@ -593,6 +600,7 @@ try {
     $scInPlaceNukeText = [System.IO.File]::ReadAllText($scInPlaceFile)
     Assert-NotMatch $scInPlaceNukeText 'js2_rotz' "starcitizen nuke must release ship binds of unused devices."
     Assert-Match $scInPlaceNukeText '<rebind input="js1_x"/>' "starcitizen nuke must keep the profile's binds."
+    $env:JOYPRO_FAKE_DEVICES = $scInPlacePreviousFake
 
     New-Item -Path $starCitizenOrderProfileDir -ItemType Directory -Force | Out-Null
     New-Item -Path $starCitizenOrderExportProfileDir -ItemType Directory -Force | Out-Null
@@ -1961,8 +1969,9 @@ return modifiers
     Assert-Match $mergeText '"JOY_BTN2"' "merge mode should keep existing d_conflict input."
     Assert-Match $mergeText '"JOY_BTN5"' "merge mode should still add non-conflicting d_new input."
     Assert-Match $mergeText '"d_existing_only"' "merge mode should retain existing-only entries."
-    Assert-Match $mergeText '"JOY_X"' "merge mode should keep existing axis on conflict."
-    Assert-NotMatch $mergeText '"JOY_Y"' "merge mode should not overwrite conflicting axis in merge mode."
+    Assert-Match $mergeText '"JOY_X"' "merge mode should keep the action's existing axis (2.5.0: a moved action keeps its old input in merge)."
+    Assert-Match $mergeText '"JOY_Y"' "merge mode should add the profile's axis input."
+    Assert-Match $mergeText '"JOY_BTN1"' "merge mode should add the profile's d_conflict input next to the existing one."
     Assert-Match $mergeText '"ffDiffs"' "merge mode should include ffDiffs section."
     Assert-True (($mergeText -match '"shake"\]\s*=\s*0\.4,') -and ($mergeText -match '"trimmer"\]\s*=\s*0\.75,') -and ($mergeText -match '"ignore"\]\s*=\s*false,')) "merge mode must keep the device's other force feedback settings (trimmer, shake, ignore)."
     Assert-Match $mergeText '"invertX"\]\s*=\s*false' "merge mode should keep existing FFB invertX on conflict."
@@ -1999,8 +2008,9 @@ return modifiers
     Assert-Match $overwriteModifiersText '\["LegacyOnly"\]' "merge-overwrite mode should retain non-conflicting existing modifiers."
     Assert-Match $overwriteModifiersText '\["SmokeMod"\][\s\S]*?\["key"\]\s*=\s*"SmokeMod"' "merge-overwrite mode should overwrite SmokeMod modifier on conflict."
 
-    # DCS default binds (JoyPro1 behaviour): every device file JoyPro writes drops the plane's defaults from
-    # CleanProfile\DCS\<plane>.cf and keeps removals the file already had; a bind JoyPro sets is not removed.
+    # DCS default binds (JoyPro1 behaviour, clean mode): every device file JoyPro writes drops the plane's defaults from
+    # CleanProfile\DCS\<plane>.cf and keeps removals the file already had; a default the profile sets is neither removed
+    # nor written again (2.5.0: the diff holds only differences from the defaults).
     # Files are written without a BOM because DCS's Lua 5.1 rejects one.
     $dcsDefaultsRoot = Join-Path $tempDir "saved-games-defaults"
     $dcsDefaultsJoyDir = Join-Path $dcsDefaultsRoot "Config\\Input\\A-10C\\joystick"
@@ -2024,7 +2034,7 @@ return diff
     $dcsDefaultsProfile = Join-Path $tempDir "dcs-defaults.pr0file"
     $dcsDefaultsAdd = Run-Engine @("--profile", $dcsDefaultsProfile, "relations", "add", "Smoke A10 Default Button", "--button", "--node", "DCS:d554pnilu638cdnilvdnilvpnilvunil:A-10C", "--device", "Smoke Stick {11111111-2222-3333-4444-555555555555}", "--input", "JOY_BTN1", "--text")
     Assert-True ($dcsDefaultsAdd.ExitCode -eq 0) "relations add for the DCS default-bind check failed."
-    $dcsDefaultsExport = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsDefaultsRoot, "--mode", "merge-overwrite", "--text")
+    $dcsDefaultsExport = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsDefaultsRoot, "--mode", "clean", "--text")
     Assert-True ($dcsDefaultsExport.ExitCode -eq 0) "dcs export for the default-bind check failed."
     $dcsDefaultsBytes = [System.IO.File]::ReadAllBytes($dcsDefaultsFile)
     Assert-True ($dcsDefaultsBytes[0] -eq 0x6C) "dcs export must write diff.lua without a BOM (DCS's Lua 5.1 cannot load it otherwise)."
@@ -2037,7 +2047,7 @@ return diff
     }
     Assert-Match $dcsDefaultsText '(?s)\["d_user_cleared"\] = \{\s*\["name"\] = "User Cleared",\s*\["removed"\] = \{\s*\[1\] = \{\s*\["key"\] = "JOY_BTN9"' "dcs export must keep removals the file already had."
     $dcsDefaultsBlock = [regex]::Match($dcsDefaultsText, '(?s)\["d554pnilu638cdnilvdnilvpnilvunil"\] = \{(.*?)\r?\n    \},')
-    Assert-True ($dcsDefaultsBlock.Success -and $dcsDefaultsBlock.Groups[1].Value -match '"JOY_BTN1"' -and $dcsDefaultsBlock.Groups[1].Value -notmatch '\["removed"\]') "dcs export must not remove a default bind the profile sets."
+    Assert-True ((-not $dcsDefaultsBlock.Success) -or ($dcsDefaultsBlock.Groups[1].Value -notmatch '\["removed"\]')) "dcs export must not remove a default bind the profile sets."
     # Nuke in a plane with a clean profile: an unused device loses its binds and gets the plane's default removals.
     $dcsNukeRoot = Join-Path $tempDir "saved-games-defaults-nuke"
     $dcsNukeJoyDir = Join-Path $dcsNukeRoot "Config\\Input\\A-10C\\joystick"
@@ -2058,7 +2068,17 @@ local diff = {
 }
 return diff
 '@ | Set-Content -Path $dcsNukePedals -Encoding UTF8
-    $dcsNuke = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsNukeRoot, "--mode", "clean", "--nuke-untouched-devices", "true", "--text")
+    # Nuke clears only connected devices (2.5.0): first without the pedals connected, then with them.
+    $dcsNukePreviousFake = $env:JOYPRO_FAKE_DEVICES
+    $dcsNukeFake = Join-Path $tempDir "dcs-nuke-devices.tsv"
+    [System.IO.File]::WriteAllLines($dcsNukeFake, @("Smoke Stick {11111111-2222-3333-4444-555555555555}`t1234`t0001`tSmoke Stick"))
+    $env:JOYPRO_FAKE_DEVICES = $dcsNukeFake
+    $dcsNukeAway = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsNukeRoot, "--mode", "clean", "--nuke-untouched-devices", "true", "--text")
+    Assert-True ($dcsNukeAway.ExitCode -eq 0) "dcs clean export with nuke (pedals not connected) failed."
+    Assert-Match ([System.IO.File]::ReadAllText($dcsNukePedals)) '"JOY_RZ"' "nuke must not clear a device that is not connected."
+    [System.IO.File]::WriteAllLines($dcsNukeFake, @("Smoke Stick {11111111-2222-3333-4444-555555555555}`t1234`t0001`tSmoke Stick", "Old Pedals {99999999-8888-7777-6666-555555555555}`t1234`t0002`tOld Pedals"))
+    $dcsNuke = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsNukeRoot, "--mode", "clean", "--nuke-untouched-devices", "true", "--clean-all-aircraft", "true", "--text")
+    $env:JOYPRO_FAKE_DEVICES = $dcsNukePreviousFake
     Assert-True ($dcsNuke.ExitCode -eq 0) "dcs clean export with nuke failed."
     $dcsNukePedalsText = [System.IO.File]::ReadAllText($dcsNukePedals)
     Assert-NotMatch $dcsNukePedalsText '\["added"\]' "nuke must remove every bind of an unused device."
@@ -2066,8 +2086,9 @@ return diff
     Assert-Match $dcsNukePedalsText '(?s)\["a2001cdnil"\] = \{\s*\["name"\] = "[^"]*",\s*\["removed"\] = \{\s*\[1\] = \{\s*\["key"\] = "JOY_Y"' "nuke must remove the plane's DCS defaults from an unused device."
     }
     Assert-True ([System.IO.File]::ReadAllBytes($dcsNukePedals)[0] -eq 0x6C) "nuke must write files without a BOM."
-    # Clean mode covers every aircraft: the written device also loses its DCS defaults in aircraft the profile does
-    # not bind (here F-16C_50, which has a clean profile); --clean-all-aircraft false keeps the other aircraft.
+    # Clean with --clean-all-aircraft true (off by default since 2.5.0) covers every aircraft: the written device also
+    # loses its DCS defaults in aircraft the profile does not bind (here F-16C_50, which has a clean profile); without it
+    # the other aircraft stay.
     $dcsOtherPlaneFile = Join-Path $dcsNukeRoot "Config\\Input\\F-16C_50\\joystick\\Smoke Stick {11111111-2222-3333-4444-555555555555}.diff.lua"
     if ($dcsHasCleanProfiles) {
     Assert-True (Test-Path -LiteralPath $dcsOtherPlaneFile) "dcs clean export must clear the written device in the other aircraft too."
@@ -2103,7 +2124,7 @@ return diff
 '@ | Set-Content -Path $dcsTypeCleanFile -Encoding UTF8
     try {
         $dcsTypeRoot = Join-Path $tempDir "saved-games-device-type"
-        $dcsTypeExport = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsTypeRoot, "--mode", "merge-overwrite", "--text")
+        $dcsTypeExport = Run-Engine @("--profile", $dcsDefaultsProfile, "dcs", "export", $dcsTypeRoot, "--mode", "clean", "--text")
         Assert-True ($dcsTypeExport.ExitCode -eq 0) "dcs export with a device type clean profile failed."
         $dcsTypeText = [System.IO.File]::ReadAllText((Join-Path $dcsTypeRoot "Config\\Input\\A-10C\\joystick\\Smoke Stick {11111111-2222-3333-4444-555555555555}.diff.lua"))
         Assert-Match $dcsTypeText '"JOY_BTN30"' "dcs export must remove the device type's own defaults (CleanProfile\DCS\<plane>\<type>.cf)."
@@ -2184,7 +2205,8 @@ return diff
     Assert-True ($dcsNormExport.ExitCode -eq 0) "dcs merge export for the normalized-default check failed."
     $dcsNormText = [System.IO.File]::ReadAllText($dcsNormFile)
     $dcsNormPitch = [regex]::Match($dcsNormText, '(?s)\["a2001cdnil"\] = \{(.*?)\n    \},')
-    if ($dcsHasCleanProfiles) { Assert-True ($dcsNormPitch.Success -and $dcsNormPitch.Groups[1].Value -match '\["added"\][\s\S]*"JOY_Y"' -and $dcsNormPitch.Groups[1].Value -notmatch '\["removed"\]') "dcs merge export must keep a default bind DCS dropped from the diff but the .jp has." }
+    # 2.5.0: a default that stays active is not written again (the diff holds only differences from the defaults).
+    if ($dcsHasCleanProfiles) { Assert-True ((-not $dcsNormPitch.Success) -or ($dcsNormPitch.Groups[1].Value -notmatch '\["removed"\]')) "dcs merge export must keep a default bind DCS dropped from the diff but the .jp has." }
     $dcsNormRudder = [regex]::Match($dcsNormText, '(?s)\["a2003cdnil"\] = \{(.*?)\n    \},')
     Assert-True ($dcsNormRudder.Success -and $dcsNormRudder.Groups[1].Value -match '\["added"\][\s\S]*"JOY_RX"' -and $dcsNormRudder.Groups[1].Value -match '\["removed"\][\s\S]*"JOY_RZ"') "dcs merge export must add the profile's bind to an action the file only drops defaults on."
 
@@ -2252,7 +2274,12 @@ return diff
 
     $modeNukeRoot = Join-Path $tempDir "saved-games-mode-nuke"
     & $createDcsModeFixture $modeNukeRoot
+    $modeNukePreviousFake = $env:JOYPRO_FAKE_DEVICES
+    $modeNukeFake = Join-Path $tempDir "dcs-mode-nuke-devices.tsv"
+    [System.IO.File]::WriteAllLines($modeNukeFake, @("Smoke Stick`t1234`t0001`tSmoke Stick", "Legacy Stick`t1234`t0002`tLegacy Stick"))
+    $env:JOYPRO_FAKE_DEVICES = $modeNukeFake
     $modeNuke = Run-Engine @("--profile", $modeProfile, "dcs", "export", $modeNukeRoot, "--mode", "merge-overwrite", "--keep-keyboard-defaults", "true", "--nuke-untouched-devices", "true", "--text")
+    $env:JOYPRO_FAKE_DEVICES = $modeNukePreviousFake
     Assert-True ($modeNuke.ExitCode -eq 0) "dcs export nuke mode failed."
     Assert-Match $modeNuke.Output "Device Files Cleared \(Nuke\):\s+[1-9]\d*" "dcs export nuke mode did not report clearing unused devices."
     # Nuke empties unused devices instead of deleting their files (a missing file would bring DCS defaults back).
@@ -2437,6 +2464,11 @@ return diff
     Assert-True ([System.IO.File]::ReadAllText($il2DevicesFile) -eq "ffEnabled=1&ffShaking=1&mouseAcceleration=0&ffForce=1&mouseSensitivity=4&mouseInvertYAxis=0&joystickFilter=0.4") ("il2 export without binds should still write the noise filter: " + [System.IO.File]::ReadAllText($il2DevicesFile))
     Assert-True ([System.IO.File]::ReadAllText((Join-Path (Split-Path -Parent $il2ResponsesFile) "global.actions")) -eq $il2GlobalBefore) "il2 export without binds must leave global.actions unchanged."
     Remove-Item -LiteralPath $il2DevicesFile -Force
+    # Clean and nuke release only lines of connected joysticks: both devices are faked as connected.
+    $il2PreviousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+    $il2FakeDevices = Join-Path $tempDir "il2dev-devices.tsv"
+    [System.IO.File]::WriteAllText($il2FakeDevices, "Smoke Stick {11111111-2222-3333-8002-444553540000}`t1234`t5678`tSmoke Stick`r`nOld Pedals {66666666-7777-8888-8011-444553540000}`t1234`t5679`tOld Pedals`r`n")
+    $env:JOYPRO_FAKE_DEVICES = $il2FakeDevices
     $il2CleanProfile = Join-Path $tempDir "il2clean.pr0file"
     Run-Engine @("--profile", $il2CleanProfile, "relations", "add", "IL2 Gear", "--button", "--node", "IL2Game:gear", "--device", "Smoke Stick {11111111-2222-3333-8002-444553540000}", "--input", "JOY_BTN5", "--text") | Out-Null
     $il2Clean = Run-Engine @("--profile", $il2CleanProfile, "il2", "export", $il2DevRoot, "--mode", "clean", "--text")
@@ -2456,6 +2488,7 @@ return diff
     $il2NukeText = [System.IO.File]::ReadAllText((Join-Path $il2DevInput "global.actions"))
     Assert-NotMatch $il2NukeText "joy1_" "il2 nuke must clear the joysticks the profile does not use."
     Assert-Match $il2NukeText "gear, key_g" "il2 nuke must keep keyboard lines."
+    $env:JOYPRO_FAKE_DEVICES = $il2PreviousFakeDevices
 
     # Registry game WARDOGS: synthetic GameUserSettings.ini and fake devices (no hardware needed).
     $wdFixtureDir = Join-Path $engineDir "tests\\fixtures\\wardogs"
@@ -2563,7 +2596,7 @@ return diff
         Assert-True ($a3Import.ExitCode -eq 0) "arma3 import failed."
         Assert-Match $a3Import.Output "(?m)^Conflicts Kept:\s+0\s*$" "arma3 import should take both collective axes (one relation per bind), not drop the second."
         Assert-Match $a3Import.Output "(?m)^Relations Imported:\s+5\s*$" "arma3 import should create a relation for each of the 5 binds."
-        Assert-True (Test-Path ($a3Profile + ".joypro.json")) "arma3 import should record the codes JoyPro took over."
+        Assert-True (-not (Test-Path ($a3Profile + ".joypro.json"))) "arma3 import no longer records codes as JoyPro's (merge removes only conflicts)."
 
         $a3RoundTrip = Run-Engine @("--profile", $a3JoyProProfile, "arma3", "export", $a3Profile, "--text")
         Assert-True ($a3RoundTrip.ExitCode -eq 0) "arma3 export after import failed."
@@ -2694,7 +2727,7 @@ return diff
         Run-Engine @("--profile", $nativeProfile, "relations", "add", "N Rudder", "--axis", "--node", "VTOLVRNative:Rudder", "--device", $vtolPedals, "--input", "JOY_RZ", "--text") | Out-Null
         Run-Engine @("--profile", $nativeProfile, "relations", "add", "N Brake L", "--axis", "--node", "VTOLVRNative:Wheel Brake L", "--device", $vtolPedals, "--input", "JOY_X", "--text") | Out-Null
         Run-Engine @("--profile", $nativeProfile, "relations", "add", "N Brake R", "--axis", "--node", "VTOLVRNative:Wheel Brake R", "--device", $vtolPedals, "--input", "JOY_Y", "--text") | Out-Null
-        $nativeSame = Run-Engine @("--profile", $nativeProfile, "vtolvr-native", "export", $vtolNative, "--text")
+        $nativeSame = Run-Engine @("--profile", $nativeProfile, "vtolvr-native", "export", $vtolNative, "--mode", "merge", "--text")
         Assert-Match $nativeSame.Output "already matches" "a vtolvr-native export of the same binds should change nothing."
         Assert-Match $nativeSame.Output "Hardware Control Rudder is on" "vtolvr-native export should warn while Hardware Control Rudder is off."
         Assert-True ([Convert]::ToBase64String($vtolNativeOriginal) -eq [Convert]::ToBase64String([System.IO.File]::ReadAllBytes($vtolNative))) "vtolvr-native must not touch an unchanged file."
@@ -2773,7 +2806,7 @@ return diff
         $wtImport = Run-Engine @("--profile", $wtProfile, "warthunder", "import", $wtBlk, "--text")
         Assert-True ($wtImport.ExitCode -eq 0) "warthunder import failed."
         Assert-Match $wtImport.Output "(?m)^Relations Imported:\s+7\s*$" "warthunder import should create 7 relations."
-        Assert-True (Test-Path ($wtBlk + ".joypro.json")) "warthunder import should record the shortcuts JoyPro took over."
+        Assert-True (-not (Test-Path ($wtBlk + ".joypro.json"))) "warthunder import no longer records shortcuts as JoyPro's (merge removes only conflicts)."
 
         $wtRoundTrip = Run-Engine @("--profile", $wtProfile, "warthunder", "export", $wtBlk, "--text")
         Assert-True ($wtRoundTrip.ExitCode -eq 0) "warthunder export after import failed."
@@ -2857,8 +2890,33 @@ return diff
         Assert-True ($xpAddServos.ExitCode -eq 0) "relations add for X-Plane servos failed."
 
         $xpMerge = Run-Engine @("--profile", $xpProfile, "xplane12", "export", $xpPrf, "--mode", "merge", "--dry-run", "--text")
-        Assert-Match $xpMerge.Output "already has 'sim/view/default_view' in X-Plane; merge keeps it" "xplane merge must keep the user's command on an occupied button."
+        Assert-Match $xpMerge.Output "replaced 'sim/view/default_view'" "xplane merge must replace the game's other command on the profile's button (a conflict)."
+        Assert-Match $xpMerge.Output "moved from axis 50" "xplane merge should move the yaw use (X-Plane ignores a use two axes share)."
         Assert-True ([System.IO.File]::ReadAllText($xpPrf) -eq $xpOriginalText) "xplane dry run must not write."
+
+        # Export modes on copies: add skips and reports the conflict, merge removes it and keeps the moved guns' old
+        # button, merge-overwrite (below, default) releases the old button.
+        $xpAddPrf = Join-Path $tempDir "xplane-add\\X-Plane Joystick Settings.prf"
+        $xpMergePrf = Join-Path $tempDir "xplane-merge\\X-Plane Joystick Settings.prf"
+        foreach ($xpCopy in @($xpAddPrf, $xpMergePrf)) {
+            New-Item -Path (Split-Path $xpCopy) -ItemType Directory -Force | Out-Null
+            Copy-Item -Path $xpPrf -Destination $xpCopy -Force
+        }
+        $xpAdd = Run-Engine @("--profile", $xpProfile, "xplane12", "export", $xpAddPrf, "--mode", "add", "--text")
+        Assert-True ($xpAdd.ExitCode -eq 0) ("xplane add export failed: " + $xpAdd.Output)
+        Assert-Match $xpAdd.Output "XP Servos \(sim/autopilot/servos_off_any\) on Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN2: the game uses that input for sim/view/default_view" ("xplane add should report the skipped multi bind: " + $xpAdd.Output)
+        Assert-Match $xpAdd.Output "add keeps it" "xplane add must leave the yaw use where the game has it."
+        $xpAdded = [System.IO.File]::ReadAllText($xpAddPrf)
+        Assert-Match $xpAdded "(?m)^_joy_BUTN_use1 sim/view/default_view\r?$" "xplane add must not overwrite the game's command."
+        Assert-Match $xpAdded "(?m)^_joy_BUTN_use0 sim/weapons/fire_guns\r?$" "xplane add must keep the guns' old button."
+        Assert-Match $xpAdded "(?m)^_joy_BUTN_use2 sim/weapons/fire_guns\r?$" "xplane add should write the guns' new button."
+        $xpMergeRun = Run-Engine @("--profile", $xpProfile, "xplane12", "export", $xpMergePrf, "--mode", "merge", "--text")
+        Assert-True ($xpMergeRun.ExitCode -eq 0) ("xplane merge export failed: " + $xpMergeRun.Output)
+        $xpMerged = [System.IO.File]::ReadAllText($xpMergePrf)
+        Assert-Match $xpMerged "(?m)^_joy_BUTN_use1 sim/autopilot/servos_off_any\r?$" "xplane merge should replace the conflicting command."
+        Assert-Match $xpMerged "(?m)^_joy_BUTN_use0 sim/weapons/fire_guns\r?$" "xplane merge must keep the guns' old button."
+        Assert-Match $xpMerged "(?m)^_joy_BUTN_use2 sim/weapons/fire_guns\r?$" "xplane merge should write the guns' new button."
+        Assert-Match $xpMerged "(?m)^_joy_BUTN_use640 sim/autopilot/servos_off_any\r?$" "xplane merge must keep slots of devices that are not connected."
 
         $xpExport = Run-Engine @("--profile", $xpProfile, "xplane12", "export", $xpPrf, "--text")
         Assert-True ($xpExport.ExitCode -eq 0) "xplane export after rebind failed."
@@ -2935,9 +2993,34 @@ return diff
         Assert-Match $bmsInferList.Output "BMS Brakes \| type=button" "relations add must take the type of registry-game actions from the catalog (not from DCS-style prefixes)."
 
         $bmsMerge = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsConfig, "--mode", "merge", "--dry-run", "--text")
-        Assert-Match $bmsMerge.Output "already has 'OTWViewLeft' in BMS; merge keeps it" "bms merge must keep the user's callback on an occupied button."
-        Assert-Match $bmsMerge.Output "BMS already has this axis on Smoke Stick JOY_X; merge keeps it" "bms merge must not move an axis function the user assigned."
+        Assert-Match $bmsMerge.Output "replaced 'OTWViewLeft'" "bms merge must replace the game's other callback on the profile's button (a conflict)."
+        Assert-Match $bmsMerge.Output "moved from Smoke Stick JOY_X" "bms merge should move the axis function (BMS gives it to one axis only)."
         Assert-True ([System.IO.File]::ReadAllText($bmsStickFile) -eq $bmsStickText) "bms dry run must not write."
+
+        # Export modes on copies: add skips and reports the conflict, merge removes it and keeps the moved pickle's old
+        # button, merge-overwrite (below, default) releases the old button.
+        $bmsAddConfig = Join-Path $tempDir "bms-add\\Config"
+        $bmsMergeConfig = Join-Path $tempDir "bms-merge\\Config"
+        foreach ($bmsCopy in @($bmsAddConfig, $bmsMergeConfig)) {
+            New-Item -Path $bmsCopy -ItemType Directory -Force | Out-Null
+            Copy-Item -Path (Join-Path $bmsConfig "*") -Destination $bmsCopy -Force
+        }
+        $bmsAdd = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsAddConfig, "--mode", "add", "--text")
+        Assert-True ($bmsAdd.ExitCode -eq 0) ("bms add export failed: " + $bmsAdd.Output)
+        Assert-Match $bmsAdd.Output "BMS CAT \(SimCATSwitch\) on Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN6: the game uses that input for OTWViewLeft" ("bms add should report the skipped multi bind: " + $bmsAdd.Output)
+        Assert-Match $bmsAdd.Output "add keeps it" "bms add must leave an axis function where the game has it."
+        [xml]$bmsAddStick = [System.IO.File]::ReadAllText((Join-Path $bmsAddConfig "Setup.v100.Smoke Stick {11111111-2222-3333-4444-555555555555}.xml"))
+        $bmsAddDx = $bmsAddStick.JoyAssgn.dx.DxAssgn
+        Assert-True ($bmsAddDx[5].assign.Assgn[0].Callback -eq "OTWViewLeft") "bms add must not overwrite the game's callback."
+        Assert-True ($bmsAddDx[1].assign.Assgn[0].Callback -eq "SimPickle" -and $bmsAddDx[2].assign.Assgn[0].Callback -eq "SimPickle") "bms add must keep the old pickle button and write the new one."
+        Assert-True ($bmsAddStick.JoyAssgn.axis.AxAssgn[0].AxisName -eq "Roll") "bms add must not move roll away from the stick."
+        $bmsMergeRun = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsMergeConfig, "--mode", "merge", "--text")
+        Assert-True ($bmsMergeRun.ExitCode -eq 0) ("bms merge export failed: " + $bmsMergeRun.Output)
+        [xml]$bmsMergeStick = [System.IO.File]::ReadAllText((Join-Path $bmsMergeConfig "Setup.v100.Smoke Stick {11111111-2222-3333-4444-555555555555}.xml"))
+        $bmsMergeDx = $bmsMergeStick.JoyAssgn.dx.DxAssgn
+        Assert-True ($bmsMergeDx[5].assign.Assgn[0].Callback -eq "SimCATSwitch") "bms merge should replace the conflicting callback."
+        Assert-True ($bmsMergeDx[1].assign.Assgn[0].Callback -eq "SimPickle" -and $bmsMergeDx[2].assign.Assgn[0].Callback -eq "SimPickle") "bms merge must keep the moved pickle's old button."
+        Assert-True ([System.IO.File]::ReadAllText((Join-Path $bmsMergeConfig "Setup.v100.Old Pedals {99999999-8888-7777-6666-555555555555}.xml")) -eq $bmsPedalsText) "bms merge must not touch a device that is not connected."
 
         $bmsExport = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsConfig, "--text")
         Assert-True ($bmsExport.ExitCode -eq 0) "bms export after rebind failed."
@@ -2981,7 +3064,8 @@ return diff
         $bmsKeepSpare = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsConfig, "--text")
         Assert-True ($bmsKeepSpare.ExitCode -eq 0) "bms export with a spare device failed."
         [xml]$bmsSpareKept = [System.IO.File]::ReadAllText($bmsSpareFile)
-        Assert-True ($bmsSpareKept.JoyAssgn.dx.DxAssgn[1].assign.Assgn[0].Callback -eq "SimPickle") "bms export without nuke must keep binds of devices the profile does not use."
+        Assert-True ($bmsSpareKept.JoyAssgn.dx.DxAssgn[5].assign.Assgn[0].Callback -eq "OTWViewLeft") "bms export without nuke must keep binds of devices the profile does not use."
+        Assert-True ($bmsSpareKept.JoyAssgn.dx.DxAssgn[1].assign.Assgn[0].Callback -eq "SimDoNothing") "bms merge-overwrite should release the profile's pickle on another connected device."
         $bmsNuke = Run-Engine @("--profile", $bmsProfile, "bms", "export", $bmsConfig, "--nuke-untouched-devices", "--text")
         Assert-True ($bmsNuke.ExitCode -eq 0) "bms export with nuke failed."
         [xml]$bmsSpareNuked = [System.IO.File]::ReadAllText($bmsSpareFile)
@@ -2989,6 +3073,7 @@ return diff
         Assert-True (@($bmsSpareNuked.JoyAssgn.axis.AxAssgn | Where-Object { -not [string]::IsNullOrEmpty($_.AxisName) }).Count -eq 0) "bms nuke should release every axis of an unused device."
         [xml]$bmsNukeStick = [System.IO.File]::ReadAllText($bmsStickFile)
         Assert-True ($bmsNukeStick.JoyAssgn.dx.DxAssgn[2].assign.Assgn[0].Callback -eq "SimPickle") "bms nuke must keep the binds of used devices."
+        Assert-True ([System.IO.File]::ReadAllText($bmsPedalsFile) -eq $bmsPedalsText) "bms clean and nuke must not clear a device that is not connected (Old Pedals)."
 
         # A connected device of the profile without a device file gets one in the launcher's layout.
         $bmsFreshConfig = Join-Path $tempDir "bms-fresh\\User\\Config"
@@ -3002,161 +3087,6 @@ return diff
         [xml]$bmsFreshXml = [System.IO.File]::ReadAllText($bmsFreshThrottle)
         Assert-True (@($bmsFreshXml.JoyAssgn.axis.AxAssgn).Count -eq 8 -and @($bmsFreshXml.JoyAssgn.pov.PovAssgn).Count -eq 4 -and @($bmsFreshXml.JoyAssgn.dx.DxAssgn).Count -eq 128) "a created bms device file needs the launcher's layout (8 axes, 4 hats, 128 buttons)."
         Assert-True ($bmsFreshXml.JoyAssgn.axis.AxAssgn[0].AxisName -eq "Roll") "a created bms device file should hold the profile's binds."
-    }
-    finally {
-        $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices
-    }
-
-    # Registry game IL-2 Korea: synthetic general.actions + known.devices.json (Smoke Stick = device 1, Old Pedals =
-    # device 3 and not connected, Smoke Throttle known to the game without a device number).
-    $koDir = Join-Path $tempDir "il2korea\\input"
-    New-Item -Path $koDir -ItemType Directory -Force | Out-Null
-    Copy-Item -Path (Join-Path $engineDir "tests\\fixtures\\il2korea\\input\\*") -Destination $koDir -Force
-    $koActions = Join-Path $koDir "general.actions"
-    $koKnown = Join-Path $koDir "known.devices.json"
-    $koProfile = Join-Path $tempDir "il2korea.pr0file"
-    $koStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
-    $koThrottle = "Smoke Throttle {66666666-7777-8888-9999-000000000000}"
-    $previousFakeDevices = $env:JOYPRO_FAKE_DEVICES
-    $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\\fixtures\\il2korea\\devices.tsv"
-    try {
-        $koScan = Run-Engine @("il2korea", "scan", $koActions, "--text")
-        Assert-True ($koScan.ExitCode -eq 0) "il2korea scan failed."
-        Assert-Match $koScan.Output "(?m)^Bindings Read:\s+10\s*$" "il2korea scan should read 7 joystick and 3 keyboard inputs (button pairs and the mouse are not JoyPro inputs)."
-        Assert-Match $koScan.Output "gear <- Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN3" "il2korea scan should map dev1_b2 (0-based) to the device numbered 1 in known.devices.json."
-        Assert-Match $koScan.Output "airbrakes_on <- Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN_POV1_R" "il2korea scan should read hats (pov0_90 = first hat, right)."
-        Assert-Match $koScan.Output "canopy_open_close <- Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN6 \+ Keyboard LeftShift" "il2korea scan should read a keyboard modifier."
-        Assert-Match $koScan.Output "rpc_yaw <- Old Pedals \{99999999-8888-7777-6666-555555555555\} JOY_RZ" "il2korea scan should name a device that is not connected after known.devices.json."
-
-        $koImport = Run-Engine @("--profile", $koProfile, "il2korea", "import", $koActions, "--text")
-        Assert-True ($koImport.ExitCode -eq 0) "il2korea import failed."
-        Assert-True (Test-Path ($koActions + ".joypro.json")) "il2korea import should record JoyPro's inputs."
-        $koActionsText = [System.IO.File]::ReadAllText($koActions)
-        $koKnownText = [System.IO.File]::ReadAllText($koKnown)
-        $koRound = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--text")
-        Assert-True ($koRound.ExitCode -eq 0) "il2korea export after import failed."
-        Assert-True (([System.IO.File]::ReadAllText($koActions) -eq $koActionsText) -and ([System.IO.File]::ReadAllText($koKnown) -eq $koKnownText)) "il2korea import/export round trip must leave both files byte-identical."
-
-        # Axis response (general.pitch / shared.responses): imported as the relation's IL-2 Korea tuning, not as its
-        # base (which DCS uses); the preview reproduces the table the game compiled for these settings.
-        $koPitchFile = Join-Path $koDir "general.pitch"
-        $koSharedFile = Join-Path $koDir "shared.responses"
-        $koPitchText = [System.IO.File]::ReadAllText($koPitchFile)
-        $koSharedText = [System.IO.File]::ReadAllText($koSharedFile)
-        Assert-True (([System.IO.File]::ReadAllText($koPitchFile) -eq $koPitchText) -and ([System.IO.File]::ReadAllText($koSharedFile) -eq $koSharedText)) "il2korea round trip must leave the response files as they were."
-        $koPitchShow = Run-Engine @("--profile", $koProfile, "binds", "tuning", "show", "Pitch (Elevator)", "--game", "IL2Korea", "--text")
-        Assert-Match $koPitchShow.Output "game:IL2Korea: .*n\.deadZone0=3;.*n\.offset=39;n\.sensitivity=22" "il2korea import should store general.pitch as the relation's IL-2 Korea tuning."
-        Assert-Match $koPitchShow.Output "base: inv=1;sl=0;dz=0;sx=1;sy=1;cv=0\s" "il2korea import must not put Korea's response into the base tuning (DCS)."
-        $koPreview = Run-Engine @("--profile", $koProfile, "binds", "tuning", "preview", "Pitch (Elevator)", "--game", "IL2Korea", "--points", "11", "--text")
-        Assert-Match $koPreview.Output "-0\.200 -> \+0\.477850" "il2korea preview must match the table the game compiled (exponent 22, centre dead zone 3, offset 39; the inverted axis mirrors the input)."
-        $koRollSet = Run-Engine @("--profile", $koProfile, "binds", "tuning", "set", "Roll (Ailerons)", "--scope", "game:IL2Korea", "--param", "sensitivity=60", "--param", "deadZone1=4", "--text")
-        Assert-True ($koRollSet.ExitCode -eq 0) "binds tuning set for the Korea roll relation failed."
-        $koYawSet = Run-Engine @("--profile", $koProfile, "binds", "tuning", "set", "Yaw (Rudder)", "--scope", "base", "--curvature", "0.3", "--deadzone", "0.05", "--text")
-        Assert-True ($koYawSet.ExitCode -eq 0) "binds tuning set for the yaw base failed."
-        $koCurveExport = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--text")
-        Assert-True ($koCurveExport.ExitCode -eq 0) "il2korea export with axis tuning failed."
-        $koShared = [System.IO.File]::ReadAllText($koSharedFile) | ConvertFrom-Json
-        Assert-True ($koShared.curves.rpc_roll.sensitivity -eq 60 -and $koShared.curves.rpc_roll.deadZone1 -eq 4) "il2korea export should write the relation's Korea tuning to shared.responses."
-        Assert-True ($koShared.curves.rpc_yaw.sensitivity -eq 93 -and $koShared.curves.rpc_yaw.deadZone0 -eq 5) "il2korea export should fit the base curve (DCS curvature 0.3, dead zone 0.05) to Korea's exponent when the relation has no Korea tuning."
-        Assert-True ([System.IO.File]::ReadAllText($koPitchFile) -eq $koPitchText) "il2korea export must leave an unchanged pitch curve as it was."
-        # A response the user changed in the game: merge keeps it, merge-overwrite sets the profile's again.
-        [System.IO.File]::WriteAllText($koSharedFile, ([System.IO.File]::ReadAllText($koSharedFile) -replace '"sensitivity": 60', '"sensitivity": 61'), (New-Object System.Text.UTF8Encoding($false)))
-        $koCurveMerge = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--mode", "merge", "--text")
-        Assert-True ($koCurveMerge.ExitCode -eq 0) "il2korea merge export failed."
-        Assert-Match $koCurveMerge.Output "rpc_roll has response settings made in the game; merge keeps them" "il2korea merge should report the kept in-game response."
-        Assert-True (([System.IO.File]::ReadAllText($koSharedFile) | ConvertFrom-Json).curves.rpc_roll.sensitivity -eq 61) "il2korea merge must keep a response changed in the game."
-        $koCurveOverwrite = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--text")
-        Assert-True (([System.IO.File]::ReadAllText($koSharedFile) | ConvertFrom-Json).curves.rpc_roll.sensitivity -eq 60) "il2korea merge-overwrite should set the profile's response again."
-
-        # Game-wide force feedback and the axis noise filter (engine ffb --device *): Settings > Input devices, which
-        # Korea keeps in data\NSData\UserData\UserSettings.json "input"; other keys and startup.cfg untouched.
-        $koUserData = Join-Path (Split-Path -Parent $koDir) "NSData\UserData"
-        New-Item -ItemType Directory -Force -Path $koUserData | Out-Null
-        $koSettings = Join-Path $koUserData "UserSettings.json"
-        $koSettingsText = "{`r`n  `"camera`": {`r`n    `"shake`": 1`r`n  },`r`n  `"input`": {`r`n    `"mouseSensitivity`": 4.0,`r`n    `"joyFilter`": 0.0,`r`n    `"ffEnabled`": true,`r`n    `"ffAmplitude`": 100.0,`r`n    `"ffForce`": 100.0,`r`n    `"exclusive`": true`r`n  }`r`n}"
-        [System.IO.File]::WriteAllText($koSettings, $koSettingsText, (New-Object System.Text.UTF8Encoding($false)))
-        $koStartup = Join-Path (Split-Path -Parent $koDir) "startup.cfg"
-        [System.IO.File]::WriteAllText($koStartup, "[KEY = force_feedback]`r`n`tforce = 1.0`r`n[END]`r`n", (New-Object System.Text.UTF8Encoding($false)))
-        $koFfb = Run-Engine @("--profile", $koProfile, "ffb", "set", "--device", "*", "--game", "IL2Korea", "--param", "ffEnabled=false", "--param", "ffForce=50", "--param", "ffForceFactorMax=178", "--param", "joyFilter=38", "--text")
-        Assert-True ($koFfb.ExitCode -eq 0) ("ffb set for IL-2 Korea failed: " + $koFfb.Output)
-        $koFfbExport = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--text")
-        Assert-True ($koFfbExport.ExitCode -eq 0) "il2korea export with force feedback settings failed."
-        $koSettingsAfter = [System.IO.File]::ReadAllText($koSettings)
-        $koSettingsWant = "{`r`n  `"camera`": {`r`n    `"shake`": 1`r`n  },`r`n  `"input`": {`r`n    `"mouseSensitivity`": 4.0,`r`n    `"joyFilter`": 38.0,`r`n    `"ffEnabled`": false,`r`n    `"ffAmplitude`": 100.0,`r`n    `"ffForce`": 50.0,`r`n    `"exclusive`": true,`r`n    `"ffForceFactorMax`": 178.0`r`n  }`r`n}"
-        Assert-True ($koSettingsAfter -eq $koSettingsWant) ("il2korea export should set the Input devices keys in UserSettings.json in place: " + $koSettingsAfter)
-        Assert-True ([System.IO.File]::ReadAllText($koStartup) -eq "[KEY = force_feedback]`r`n`tforce = 1.0`r`n[END]`r`n") "il2korea export must not write startup.cfg (the game does not read force feedback from it)."
-
-        # Relative Control ("*" before the token) and the one-sided kind of throttle-like axes come in as the relation's
-        # IL-2 Korea tuning and go back out unchanged; the built-in curve and control surface loading drop-downs of the
-        # primary controls are tuning values written to the response file.
-        $koRelDir = Join-Path $tempDir "il2korea-rel\\input"
-        New-Item -Path $koRelDir -ItemType Directory -Force | Out-Null
-        Copy-Item -Path (Join-Path $engineDir "tests\\fixtures\\il2korea\\input\\*") -Destination $koRelDir -Force
-        $koRelActions = Join-Path $koRelDir "general.actions"
-        $koRelText = [System.IO.File]::ReadAllText($koRelActions).Replace("`"actions`": {`n", "`"actions`": {`n    `"rpc_all_engines_throttles`": [`n      `"*-dev1_axis_t`"`n    ],`n")
-        # Relative Control's dead zone and sensitivity (the diamond dialog) live in general.actions "additive", shown value / 100.
-        $koRelText = $koRelText.TrimEnd().TrimEnd('}').TrimEnd() + ",`n  `"additive`": {`n    `"rpc_all_engines_throttles`": {`n      `"deadzone`": 0.17,`n      `"sensitivity`": 0.11`n    }`n  }`n}`n"
-        [System.IO.File]::WriteAllText($koRelActions, $koRelText, (New-Object System.Text.UTF8Encoding($false)))
-        $koRelProfile = Join-Path $tempDir "il2korea-rel.pr0file"
-        $koRelImport = Run-Engine @("--profile", $koRelProfile, "il2korea", "import", $koRelActions, "--text")
-        Assert-True ($koRelImport.ExitCode -eq 0) ("il2korea import with a relative axis failed: " + $koRelImport.Output)
-        $koRelShow = Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "show", "Throttle control", "--game", "IL2Korea", "--text")
-        Assert-Match $koRelShow.Output "game:IL2Korea: inv=1;sl=1;.*n\.relative=1" ("il2korea import should keep Relative Control, the inversion and the one-sided kind of the throttle: " + $koRelShow.Output)
-        Assert-Match $koRelShow.Output "n\.relativeDeadZone=17\b" ("il2korea import should read Relative Control's dead zone (0.17 -> 17 %): " + $koRelShow.Output)
-        Assert-Match $koRelShow.Output "n\.relativeSensitivity=11\b" ("il2korea import should read Relative Control's sensitivity (0.11 -> 11): " + $koRelShow.Output)
-        $koRelBefore = [System.IO.File]::ReadAllText($koRelActions)
-        $koRelExport = Run-Engine @("--profile", $koRelProfile, "il2korea", "export", $koRelActions, "--text")
-        Assert-True ($koRelExport.ExitCode -eq 0) "il2korea export with a relative axis failed."
-        Assert-True ([System.IO.File]::ReadAllText($koRelActions) -eq $koRelBefore) "il2korea export must write a relative inverted axis back as *-dev1_axis_t."
-        Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "set", "Throttle control", "--scope", "game:IL2Korea", "--slider", "true", "--inverted", "false", "--param", "deadZone0=10", "--param", "relative=1", "--param", "relativeDeadZone=80", "--param", "relativeSensitivity=20", "--text") | Out-Null
-        $koRelPreview = Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "preview", "Throttle control", "--game", "IL2Korea", "--points", "11", "--text")
-        Assert-Match $koRelPreview.Output "-0\.800 -> -1\.000000" "a one-sided Korea axis keeps -1 for the low dead zone (10 % of the whole travel)."
-        Assert-Match $koRelPreview.Output "\+0\.000 -> -0\.11111" "a one-sided Korea axis runs the curve over the whole travel."
-        Run-Engine @("--profile", $koRelProfile, "binds", "tuning", "set", "Pitch (Elevator)", "--scope", "game:IL2Korea", "--param", "harmonization=2", "--param", "normalized=0", "--text") | Out-Null
-        Run-Engine @("--profile", $koRelProfile, "il2korea", "export", $koRelActions, "--mode", "merge-overwrite", "--text") | Out-Null
-        $koRelPitch = ([System.IO.File]::ReadAllText((Join-Path $koRelDir "general.pitch")) | ConvertFrom-Json).curves.rpc_pitch
-        Assert-True ($koRelPitch.harmonization -eq 2 -and $koRelPitch.normalized -eq 0) ("il2korea export should write the built-in curve and control surface loading: " + ($koRelPitch | ConvertTo-Json -Compress))
-        $koRelAdditive = ([System.IO.File]::ReadAllText($koRelActions) | ConvertFrom-Json).additive.rpc_all_engines_throttles
-        Assert-True ($koRelAdditive.deadzone -eq 0.8 -and $koRelAdditive.sensitivity -eq 0.2) ("il2korea export should write Relative Control's dead zone and sensitivity / 100: " + ($koRelAdditive | ConvertTo-Json -Compress))
-
-        # A user bind made in the game (not JoyPro's): merge keeps it, merge-overwrite replaces it on the same device.
-        $koUser = $koActionsText.Replace("`"key_f`"`n", "`"key_f`",`n      `"dev1_b9`"`n")
-        [System.IO.File]::WriteAllText($koActions, $koUser, (New-Object System.Text.UTF8Encoding($false)))
-        $koAddFlaps = Run-Engine @("--profile", $koProfile, "relations", "add", "Korea Flaps", "--button", "--node", "IL2Korea:flaps", "--device", $koStick, "--input", "JOY_BTN8", "--text")
-        Assert-True ($koAddFlaps.ExitCode -eq 0) "relations add for Korea flaps failed."
-        $koMerge = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--mode", "merge", "--dry-run", "--text")
-        Assert-Match $koMerge.Output "flaps already has 'dev1_b9' on that device in the game; merge keeps it" "il2korea merge must keep the user's input on the same device."
-        Assert-True ([System.IO.File]::ReadAllText($koActions) -eq $koUser) "il2korea dry run must not write."
-
-        # The throttle has no device number yet: JoyPro gives it the lowest free one (2) in known.devices.json.
-        $koAddGear = Run-Engine @("--profile", $koProfile, "relations", "add", "Korea Gear Throttle", "--button", "--node", "IL2Korea:gear_up", "--device", $koThrottle, "--input", "JOY_BTN4", "--text")
-        Assert-True ($koAddGear.ExitCode -eq 0) "relations add for Korea gear up on the throttle failed."
-        $koExport = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--text")
-        Assert-True ($koExport.ExitCode -eq 0) "il2korea merge-overwrite export failed."
-        Assert-Match $koExport.Output "device number 2" "il2korea export should report the device number it gave the throttle."
-        $koAfter = [System.IO.File]::ReadAllText($koActions) | ConvertFrom-Json
-        $koKnownAfter = [System.IO.File]::ReadAllText($koKnown) | ConvertFrom-Json
-        Assert-True ($koKnownAfter.knownDevices."66666666-7777-8888-0000000000009999".deviceId -eq 2) "il2korea export should number the throttle in known.devices.json."
-        Assert-True (@($koAfter.devices | Where-Object { $_.deviceId -eq 2 -and $_.ident -eq "abcd_0001" }).Count -eq 1) "il2korea export should list the throttle under devices."
-        Assert-True ((@($koAfter.actions.gear_up) -contains "dev2_b3")) "il2korea export should write the throttle's button."
-        Assert-True ((@($koAfter.actions.flaps) -contains "dev1_b7") -and -not (@($koAfter.actions.flaps) -contains "dev1_b9")) "il2korea merge-overwrite should replace the user's input on the same device."
-        Assert-True ((@($koAfter.actions.rpc_pitch) -contains "-dev1_axis_y") -and (@($koAfter.actions.rpc_pitch) -contains "key_down/key_up")) "il2korea export must keep inverted axes and button pairs."
-        Assert-True (Test-Path ($koActions + ".jpbak")) "il2korea export should back up the actions file."
-
-        # Clean takes over the devices it writes and keeps the keyboard; nuke also clears devices the profile does not use.
-        $koClearGuns = Run-Engine @("--profile", $koProfile, "binds", "clear", "Fire all guns", "--text")
-        Assert-True ($koClearGuns.ExitCode -eq 0) ("binds clear on the imported Korea guns relation failed: " + $koClearGuns.Output)
-        $koClean = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--mode", "clean", "--text")
-        Assert-True ($koClean.ExitCode -eq 0) "il2korea clean export failed."
-        $koCleanJson = [System.IO.File]::ReadAllText($koActions) | ConvertFrom-Json
-        Assert-True ((@($koCleanJson.actions.all_guns_fire) -join ",") -eq "key_space,mouse_b0") "il2korea clean should release unbound inputs of written devices and keep keyboard and mouse."
-        Assert-True ((@($koCleanJson.actions.rpc_yaw) -contains "dev3_axis_t")) "il2korea clean without nuke must keep devices JoyPro does not write."
-        $koNuke = Run-Engine @("--profile", $koProfile, "binds", "clear", "Yaw (Rudder)", "--text")
-        $koNuke = Run-Engine @("--profile", $koProfile, "il2korea", "export", $koActions, "--mode", "clean", "--nuke-untouched-devices", "--text")
-        Assert-True ($koNuke.ExitCode -eq 0) "il2korea nuke export failed."
-        $koNukeJson = [System.IO.File]::ReadAllText($koActions) | ConvertFrom-Json
-        Assert-True (-not (@($koNukeJson.actions.rpc_yaw) -contains "dev3_axis_t") -and (@($koNukeJson.actions.rpc_yaw) -contains "key_x/key_z")) "il2korea nuke should clear an unused device and keep the keyboard."
-        Assert-True ((@($koNukeJson.actions.gear) -contains "key_g")) "il2korea nuke must keep keyboard inputs."
     }
     finally {
         $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices
@@ -3362,6 +3292,9 @@ return diff
     $msStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
     $previousDataDir = $env:JOYPRO_DATA_DIR
     $env:JOYPRO_DATA_DIR = Join-Path $tempDir "joypro-data"
+    # The stick is connected (exports clear and move binds only on connected devices), the throttle is not.
+    $msPreviousFake = $env:JOYPRO_FAKE_DEVICES
+    $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\\fixtures\\msfs\\devices-stick.tsv"
     try {
         $msAmbiguous = Run-Engine @("msfs2020", "scan", $msRemote, "--include-disconnected", "--text")
         # Scan and import take the most recently saved profile of a device with several (and say which); an export
@@ -3385,6 +3318,31 @@ return diff
         Assert-True ($msRoundTrip.ExitCode -eq 0) "msfs export after import failed."
         Assert-True ([System.IO.File]::ReadAllText($msSting) -eq $msStingText) "msfs import/export round trip must leave the profile byte-identical."
 
+        # Export modes on copies (a profile that moves the gear from buttons 3 and 12 to 5 and puts the parking brake on
+        # button 3): add skips and reports button 3, merge replaces it and keeps the gear's button 12, merge-overwrite
+        # leaves the gear only on button 5.
+        $msModesProfile = Join-Path $tempDir "msfs-modes.pr0file"
+        Run-Engine @("--profile", $msModesProfile, "relations", "add", "MM Gear", "--button", "--node", "MSFS:KEY_GEAR_TOGGLE", "--device", $msStick, "--input", "JOY_BTN5", "--text") | Out-Null
+        Run-Engine @("--profile", $msModesProfile, "relations", "add", "MM Parking", "--button", "--node", "MSFS:KEY_PARKING_BRAKES", "--device", $msStick, "--input", "JOY_BTN3", "--text") | Out-Null
+        $msModes = @{}
+        foreach ($msMode in @("add", "merge", "merge-overwrite")) {
+            $msModeDir = Join-Path $tempDir ("msfs-modes-" + $msMode + "\\remote")
+            New-Item -Path $msModeDir -ItemType Directory -Force | Out-Null
+            Copy-Item -Path (Join-Path $engineDir "tests\\fixtures\\msfs\\remote\\*") -Destination $msModeDir -Force
+            $msModeRun = Run-Engine @("--profile", $msModesProfile, "msfs2020", "export", $msModeDir, "--game-profile", "Sting", "--mode", $msMode, "--text")
+            Assert-True ($msModeRun.ExitCode -eq 0) ("msfs " + $msMode + " export failed: " + $msModeRun.Output)
+            $msModes[$msMode] = [System.IO.File]::ReadAllText((Join-Path $msModeDir "inputprofile_0000000001"))
+            if ($msMode -eq "add") {
+                Assert-Match $msModeRun.Output "MM Parking \(KEY_PARKING_BRAKES\) on Smoke Stick \{11111111-2222-3333-4444-555555555555\} JOY_BTN3: the game uses that input for KEY_GEAR_TOGGLE" ("msfs add should report the skipped multi bind: " + $msModeRun.Output)
+            }
+            Assert-True ([System.IO.File]::ReadAllText((Join-Path $msModeDir "inputprofile_0000000003")) -eq [System.IO.File]::ReadAllText((Join-Path $engineDir "tests\\fixtures\\msfs\\remote\\inputprofile_0000000003"))) ("msfs " + $msMode + " must not touch the profile of a device that is not connected.")
+        }
+        Assert-Match $msModes["add"] '(?s)ActionName="KEY_GEAR_TOGGLE" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 3">2</KEY>\s*</Primary>\s*<Secondary>\s*<KEY Information="Joystick Button 12">11</KEY>' "msfs add must keep the gear's buttons."
+        Assert-NotMatch $msModes["add"] 'KEY_PARKING_BRAKES" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 3">' "msfs add must not put the parking brake on the gear's button."
+        Assert-Match $msModes["merge"] '(?s)ActionName="KEY_GEAR_TOGGLE" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 12">11</KEY>\s*</Primary>\s*<Secondary>\s*<KEY Information="Joystick Button 5">4</KEY>' "msfs merge should drop the conflict (button 3) and keep the gear's button 12 next to button 5."
+        Assert-Match $msModes["merge"] '(?s)ActionName="KEY_PARKING_BRAKES" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 3">2</KEY>' "msfs merge should put the parking brake on button 3."
+        Assert-Match $msModes["merge-overwrite"] '(?s)ActionName="KEY_GEAR_TOGGLE" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 5">4</KEY>\s*</Primary>\s*</Action>' "msfs merge-overwrite should leave the gear only on button 5."
+        Assert-Match $msModes["merge-overwrite"] '(?s)ActionName="KEY_FLAPS_INCR" Flag="2">\s*<Primary>\s*<KEY Information="Joystick Button 1">0</KEY>' "msfs merge-overwrite must keep actions the profile does not bind."
         $msSetGear = Run-Engine @("--profile", $msProfile, "binds", "set", "Gear Toggle", "--input", "JOY_BTN5", "--text")
         Assert-True ($msSetGear.ExitCode -eq 0) "binds set on the imported MSFS relation failed."
         $msSetElevator = Run-Engine @("--profile", $msProfile, "binds", "set", "Elevator Axis", "--inverted", "false", "--text")
@@ -3412,7 +3370,8 @@ return diff
         Assert-True ($ms2024Flaps.ExitCode -eq 0) "relations add for the MSFS 2024 flaps axis failed."
         $ms2024Delete = Run-Engine @("--profile", $ms2024Profile, "relations", "mass", "delete", "--relation", "AP Master", "--text")
         Assert-True ($ms2024Delete.ExitCode -eq 0) "relations mass delete for the MSFS 2024 autopilot failed."
-        $ms2024Export = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "export", $ms2024, "--text")
+        # Clean: the deleted relation's action goes (merge-overwrite keeps actions the profile does not bind).
+        $ms2024Export = Run-Engine @("--profile", $ms2024Profile, "msfs2024", "export", $ms2024, "--mode", "clean", "--text")
         Assert-True ($ms2024Export.ExitCode -eq 0) "msfs 2024 export failed."
         $ms2024After = [System.IO.File]::ReadAllText($ms2024)
         Assert-Match $ms2024After '(?s)ActionName="KEY_AXIS_FLAPS_SET" ValueEvent="0.000000" Delay="0.000000" Flag="4">\s*<Primary>\s*<KEY Information="Joystick Slider X ">514</KEY>' "msfs 2024 export should expand an unbound action and set the axis flag."
@@ -3421,6 +3380,7 @@ return diff
     }
     finally {
         $env:JOYPRO_DATA_DIR = $previousDataDir
+        $env:JOYPRO_FAKE_DEVICES = $msPreviousFake
     }
     }
 
@@ -3492,7 +3452,7 @@ return diff
     # The parts that read real game catalogs (DB\<game>, CleanProfile) run only with the development game lists. A new
     # part that needs them goes into this list (check: it must pass in a checkout without EngineOnly_Runtime\DB\<game>).
     $smokeNeedingGameData = @("aiallgames.ps1", "arma.ps1", "bms.ps1", "elite.ps1", "grebels.ps1", "il2.ps1", "legacyids.ps1", "msfs.ps1",
-        "nlgroup.ps1", "nuclearoption.ps1", "progress.ps1", "reforger.ps1", "relationassistant.ps1", "relationbuilder.ps1", "searchranking.ps1", "autogroupown.ps1", "setupwizard.ps1", "autoassignmatrix.ps1", "sync.ps1",
+        "nlgroup.ps1", "nuclearoption.ps1", "progress.ps1", "reforger.ps1", "roundtrip.ps1", "relationassistant.ps1", "relationbuilder.ps1", "searchranking.ps1", "autogroupown.ps1", "setupwizard.ps1", "autoassignmatrix.ps1", "sync.ps1",
         "tinycombatarena.ps1", "vtolvr.ps1", "wardogs.ps1", "warthunder.ps1", "x4.ps1", "xplane.ps1")
     foreach ($gameSmoke in @(Get-ChildItem -Path (Join-Path $engineDir "tests\smoke") -Filter "*.ps1" -ErrorAction SilentlyContinue | Sort-Object Name)) {
         if ($smokeNeedingGameData -contains $gameSmoke.Name -and (Skip-WithoutGameData ("smoke\" + $gameSmoke.Name))) {

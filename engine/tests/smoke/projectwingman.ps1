@@ -10,7 +10,9 @@
 #     a moved device number is read with a note, an unknown device is reported; the save's curve / dead zone.
 #  3. export (merge-overwrite): keys per device, Invert as Scale -1, a hat is refused with the game's own way, the
 #     other lines stay, savegame.sav gets the curve / dead zone floats (new ones before "None"), a second export changes
-#     nothing; merge keeps the game's bind; clean drops the exported devices' other joystick lines.
+#     nothing; add skips and reports a bind on an input another action uses; merge removes only that conflict;
+#     merge-overwrite moves an action off its other joystick inputs; clean drops the exported devices' other joystick
+#     lines, nuke those of the other connected devices; a device that is not connected, keyboard and gamepad stay.
 #  4. no Input.ini yet: the export writes the pak's defaults first (plain lines; the Android keys stay: the menu shows
 #     one slot per mapping and those are its empty slots).
 $pwDir = Join-Path $tempDir "projectwingman"
@@ -148,7 +150,9 @@ try {
     Assert-True ($pwExport.ExitCode -eq 0) "pw export failed. Output: $($pwExport.Output)"
     $pwText = [System.IO.File]::ReadAllText($pwIni)
     Assert-Match $pwText "AxisMappings=\(AxisName=""Pitch Axis"",Scale=-1\.000000,Key=Joystick_VJThrottle_1_Axis6\)" "Inverted Slider1 of the throttle (8 axes) must be Axis6 with Scale -1."
-    Assert-Match $pwText "AxisMappings=\(AxisName=""Pitch Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis1\)" "Pitch on another device must stay."
+    Assert-NotMatch $pwText "AxisMappings=\(AxisName=""Pitch Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis1\)" "Merge-overwrite moves Pitch: its stick axis must go."
+    Assert-Match $pwText "AxisMappings=\(AxisName=""Pitch Axis"",Scale=1\.000000,Key=Gamepad_LeftY\)" "Gamepad and keyboard mappings of a moved action must stay."
+    Assert-NotMatch $pwText "AxisName=""Roll Axis"",Scale=-1\.000000,Key=Joystick_VJStick_2_Axis2\)" "Roll on the stick axis the profile gives Yaw is a conflict and must go."
     Assert-Match $pwText "ActionMappings=\(ActionName=""Gun Fire"",bShift=False,bCtrl=False,bAlt=False,bCmd=False,Key=Joystick_VJStick_2_Button9\)" "JOY_BTN10 must be Button9."
     Assert-Match $pwText "AxisMappings=\(AxisName=""Yaw Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis2\)" "Yaw must be the stick's Axis2."
     Assert-Match $pwText "Key=Joystick_Foo_7_Axis0" "A mapping of another device must stay (merge-overwrite)."
@@ -164,12 +168,31 @@ try {
     Assert-Match $pwAgain.Output "Input.ini is already up to date" "A second export must change nothing."
     Assert-Match $pwAgain.Output "curves and dead zones are already up to date" "A second export must not touch the save."
 
-    # merge keeps the game's own joystick bind of an action on that device
+    # Roll goes on stick X (the game has it on the stick's Axis2, which the profile gives Yaw).
     Copy-Item (Join-Path $pwFixture "Input.ini") $pwIni -Force
     Run-Engine @("--profile", $pwProfile, "relations", "add", "Roll", "--axis", "--node", "ProjectWingman:Roll Axis", "--device", $pwStick, "--input", "JOY_X", "--text") | Out-Null
+
+    # Only add: nothing is removed; Yaw on the game's Roll axis is skipped and reported.
+    $pwAdd = Run-Engine @("--profile", $pwProfile, "pw", "export", $pwIni, "--mode", "add")
+    Assert-True ($pwAdd.ExitCode -eq 0) "pw export --mode add failed. Output: $($pwAdd.Output)"
+    $pwAddResult = $pwAdd.Output.Substring($pwAdd.Output.IndexOf('{')) | ConvertFrom-Json
+    Assert-True (@($pwAddResult.SkippedTakenInputs | Where-Object { $_.Action -eq "Yaw Axis" -and $_.GameAction -eq "Roll Axis" -and $_.Input -eq "JOY_RZ" }).Count -eq 1) ("Add must report Yaw on the game's Roll axis: " + $pwAdd.Output)
+    $pwText = [IO.File]::ReadAllText($pwIni)
+    Assert-Match $pwText "AxisName=""Roll Axis"",Scale=-1\.000000,Key=Joystick_VJStick_2_Axis2\)" "Add must keep the game's Roll axis."
+    Assert-NotMatch $pwText "AxisName=""Yaw Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis2\)" "Add must not write a multi bind."
+    Assert-Match $pwText "AxisName=""Roll Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis0\)" "Add should write Roll on stick X."
+    Assert-Match $pwText "AxisName=""Pitch Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis1\)" "Add must keep Pitch's old input."
+
+    # Merge: the conflicting Roll axis goes, Pitch keeps its old stick axis.
+    Copy-Item (Join-Path $pwFixture "Input.ini") $pwIni -Force
     $pwMerge = Run-Engine @("--profile", $pwProfile, "pw", "export", $pwIni, "--mode", "merge", "--text")
-    Assert-Match $pwMerge.Output "the game already has Roll Axis on Joystick_VJStick_2_Axis2 \(merge keeps it\)" "Merge must keep the game's bind."
-    Assert-NotMatch ([IO.File]::ReadAllText($pwIni)) "Joystick_VJStick_2_Axis0" "Merge must not add a second stick axis to Roll."
+    Assert-True ($pwMerge.ExitCode -eq 0) "pw export --mode merge failed. Output: $($pwMerge.Output)"
+    $pwText = [IO.File]::ReadAllText($pwIni)
+    Assert-NotMatch $pwText "AxisName=""Roll Axis"",Scale=-1\.000000,Key=Joystick_VJStick_2_Axis2\)" "Merge must remove the game's Roll on the axis the profile gives Yaw."
+    Assert-Match $pwText "AxisName=""Yaw Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis2\)" "Merge should write Yaw there."
+    Assert-Match $pwText "AxisName=""Pitch Axis"",Scale=1\.000000,Key=Joystick_VJStick_2_Axis1\)" "Merge must keep Pitch's old input."
+    Assert-Match $pwText "AxisName=""Pitch Axis"",Scale=-1\.000000,Key=Joystick_VJThrottle_1_Axis6\)" "Merge should add Pitch's new input."
+    Assert-Match $pwText "Key=Joystick_Foo_7_Axis0" "Merge must keep a device that is not connected."
 
     # clean: the other joystick lines of the exported devices go, other devices stay
     Copy-Item (Join-Path $pwFixture "Input.ini") $pwIni -Force
@@ -178,9 +201,21 @@ try {
     $pwText = [IO.File]::ReadAllText($pwIni)
     Assert-NotMatch $pwText "Joystick_VJStick_2_Axis1\)" "Clean must drop the stick's old Pitch line."
     Assert-NotMatch $pwText "Joystick_VJThrottle_1_Button4" "Clean must drop the throttle's old Missile line."
-    Assert-Match $pwText "Joystick_Foo_7_Axis0" "Clean must keep a device JoyPro does not export."
+    Assert-NotMatch $pwText "Joystick_VJThrottle_5_Button0" "Clean must drop the throttle's line under its older place in the list."
+    Assert-Match $pwText "Joystick_Foo_7_Axis0" "Clean must keep a device that is not connected."
     Assert-Match $pwText "Key=SpaceBar" "Clean must keep keyboard keys."
+    Assert-Match $pwText "Key=Gamepad_DPad_Up" "Clean must keep gamepad keys."
 
+    # clean + nuke with a stick-only profile: the connected throttle loses its lines, the missing device keeps them.
+    Copy-Item (Join-Path $pwFixture "Input.ini") $pwIni -Force
+    $pwNukeProfile = Join-Path $pwDir "pw-nuke.pr0file"
+    Run-Engine @("--profile", $pwNukeProfile, "relations", "add", "Gun", "--button", "--node", "ProjectWingman:Gun Fire", "--device", $pwStick, "--input", "JOY_BTN10", "--text") | Out-Null
+    $pwNuke = Run-Engine @("--profile", $pwNukeProfile, "pw", "export", $pwIni, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($pwNuke.ExitCode -eq 0) "pw export --mode clean --nuke-untouched-devices failed. Output: $($pwNuke.Output)"
+    $pwText = [IO.File]::ReadAllText($pwIni)
+    Assert-NotMatch $pwText "Joystick_VJThrottle_" "Nuke must clear the connected throttle."
+    Assert-Match $pwText "Joystick_Foo_7_Axis0" "Nuke must keep a device that is not connected."
+    Assert-Match $pwText "Key=Joystick_VJStick_2_Button9\)" "Nuke must write the profile's bind."
     # ---- 4. no Input.ini yet: the pak's defaults come first
     $pwNew = Join-Path $pwDir "new\Input.ini"
     $pwFresh = Run-Engine @("--profile", $pwProfile, "pw", "export", $pwNew, "--text")

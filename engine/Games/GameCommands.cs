@@ -315,6 +315,10 @@ namespace JoyPro.Engine.Games
                 result = game.Read(path, catalog, devices) ?? new GameScanResult();
                 result.Warnings.InsertRange(0, warnings);
                 result.ConfigPath = path;
+                // The vJoy device JoyPro tunnels into (--vjoy-tunnel): its binds are JoyPro's forwarding, not read.
+                int tunnelBinds = result.Bindings.RemoveAll(b => b != null && VJoyTunnel.IsTunnelDevice(b.Device));
+                if (VJoyTunnel.Instance > 0)
+                    result.Steps.AddRange(VJoyTunnel.Notes.Select(n => n + (tunnelBinds > 0 ? " Binds left out: " + tunnelBinds.ToString(CultureInfo.InvariantCulture) + "." : string.Empty)));
             }
 
             result.Steps.InsertRange(0, catalogResult.Steps);
@@ -363,6 +367,12 @@ namespace JoyPro.Engine.Games
                 return 1;
             }
 
+            // "Only add" never removes anything, so it never nukes either.
+            if (nuke && mode == GameExportMode.Add)
+            {
+                nuke = false;
+                result.Warnings.Add("\"Only add\" never removes binds: --nuke-untouched-devices was not used.");
+            }
             GameExportRequest request = new GameExportRequest
             {
                 ConfigPath = path,
@@ -549,7 +559,10 @@ namespace JoyPro.Engine.Games
         private static void RecordSync(IGameIntegration game, string path, bool dryRun, GameIoResult result)
         {
             if (!dryRun && result.Errors.Count == 0)
+            {
                 EngineSync.RecordAfterExport(game.GameId, path, result.Warnings);
+                ExportSkipMarks.Apply(game.GameId, null, result.SkippedTakenInputs);
+            }
         }
 
         private static bool SameCatalog(GameCatalog a, GameCatalog b)
@@ -586,6 +599,7 @@ namespace JoyPro.Engine.Games
             target.BindingsWritten += source.BindingsWritten;
             target.BindingsSkipped += source.BindingsSkipped;
             target.ConflictsKept += source.ConflictsKept;
+            target.SkippedTakenInputs.AddRange(source.SkippedTakenInputs);
             target.FilesWritten.AddRange(source.FilesWritten);
             target.Steps.AddRange(source.Steps);
             target.Warnings.AddRange(source.Warnings);
@@ -652,7 +666,8 @@ namespace JoyPro.Engine.Games
                     result.Warnings,
                     result.Errors,
                     ProfileUpdates = result.ProfileUpdates.Select(u => new { u.Device, u.Category, u.Profile, u.Status, u.Reason, u.Binds, u.NotWritten, u.Aircraft }).ToList(),
-                    OnlyInAircraft = result.OnlyInAircraft.Select(o => new { o.Relation, o.Game, o.ActionId, o.Device, o.Input, o.Aircraft, o.AircraftText, o.LimitCommand }).ToList()
+                    OnlyInAircraft = result.OnlyInAircraft.Select(o => new { o.Relation, o.Game, o.ActionId, o.Device, o.Input, o.Aircraft, o.AircraftText, o.LimitCommand }).ToList(),
+                    result.SkippedTakenInputs
                 });
             }
 
@@ -682,6 +697,8 @@ namespace JoyPro.Engine.Games
             // Imported for all aircraft; "engine <command>" limits one (--limit-to-profile-aircraft: all at once).
             AppendList(sb, "Only In Some Aircraft", result.OnlyInAircraft.Select(o => "Only in the sim's profile(s) of " + o.AircraftText + ": " + o.Relation + " (" + o.Device + " " + o.Input +
                                                                                       "), imported for all aircraft. Limit: engine " + o.LimitCommand).ToList());
+            // "Only add": binds not written because the game uses the input for another action.
+            AppendList(sb, "Binds Not Written, Button Taken In The Game", result.SkippedTakenInputs.Select(m => m.Describe()).ToList());
             AppendList(sb, "Steps", result.Steps);
             AppendList(sb, "Warnings", result.Warnings);
             AppendList(sb, "Errors", result.Errors);

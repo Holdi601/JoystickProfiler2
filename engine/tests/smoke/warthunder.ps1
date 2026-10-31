@@ -245,3 +245,74 @@ try {
 finally {
     $env:JOYPRO_DATA_DIR = $wcPreviousData
 }
+
+# Export modes on the synthetic machine.blk (aircraft = cataloged entries; tank, ship and menu binds never change):
+#   add       never removes; a bind on an input the game uses for another aircraft action is skipped and reported
+#   merge     removes the game's bind of another aircraft action on the profile's input, keeps the action's old input
+#   merge-overwrite  merge + the action loses its other inputs on connected devices
+#   clean/nuke  release the written / unused connected devices
+$wtmDir = Join-Path $tempDir "warthunder-modes"
+New-Item -Path $wtmDir -ItemType Directory -Force | Out-Null
+$wtmBlk = Join-Path $wtmDir "machine.blk"
+$wtmProfile = Join-Path $wtmDir "modes.pr0file"
+Copy-Item -Path (Join-Path $engineDir "tests\fixtures\warthunder\machine.blk") -Destination $wtmBlk -Force
+$wtmPreviousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\warthunder\devices.tsv"
+try {
+    $wtmStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
+    $wtmThrottle = "Smoke Throttle {66666666-7777-8888-9999-000000000000}"
+    $wtmIds = @(((Run-Engine @("warthunder", "catalog")).Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json).Actions | ForEach-Object { $_.Id })
+    # Everything but the cataloged (aircraft) blocks, blank lines left out.
+    function Get-WtmNonFlight([string]$Text) {
+        $rest = [regex]::Replace($Text, '(?m)^[ \t]*(\w+)\{[^{}]*\}[ \t]*\r?\n', { param($m) if ($wtmIds -contains $m.Groups[1].Value) { "" } else { $m.Value } })
+        return (($rest -split "\r?\n") | Where-Object { $_.Trim().Length -gt 0 }) -join "`n"
+    }
+    $wtmNonFlight = Get-WtmNonFlight ([System.IO.File]::ReadAllText($wtmBlk))
+    # Moved: guns from stick button 1 (28) to button 3 (30). Conflict: airbrake on throttle button 7 (50), which the game
+    # uses for the gear. Rockets on stick button 2 (29): the game has the tank gun ID_FIRE_GM there (not an aircraft
+    # action, so neither a conflict nor a multi-bind).
+    Run-Engine @("--profile", $wtmProfile, "relations", "add", "WTM Guns", "--button", "--node", "WarThunder:ID_FIRE_MGUNS", "--device", $wtmStick, "--input", "JOY_BTN3", "--text") | Out-Null
+    Run-Engine @("--profile", $wtmProfile, "relations", "add", "WTM Airbrake", "--button", "--node", "WarThunder:ID_AIR_BRAKE", "--device", $wtmThrottle, "--input", "JOY_BTN7", "--text") | Out-Null
+    Run-Engine @("--profile", $wtmProfile, "relations", "add", "WTM Rockets", "--button", "--node", "WarThunder:ID_ROCKETS", "--device", $wtmStick, "--input", "JOY_BTN2", "--text") | Out-Null
+
+    $wtmAdd = Run-Engine @("--profile", $wtmProfile, "warthunder", "export", $wtmBlk, "--mode", "add")
+    Assert-True ($wtmAdd.ExitCode -eq 0) ("warthunder add export failed: " + $wtmAdd.Output)
+    $wtmAddJson = ($wtmAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    $wtmText = [System.IO.File]::ReadAllText($wtmBlk)
+    Assert-True (@($wtmAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "ID_AIR_BRAKE" -and $_.GameAction -eq "ID_GEAR" -and $_.Input -eq "JOY_BTN7" }).Count -eq 1) ("warthunder add should report the airbrake on the gear's input: " + $wtmAdd.Output)
+    Assert-Match $wtmText "(?s)ID_GEAR\{\s*joyButton:i=50\s*\}" "warthunder add must keep the game's gear bind."
+    Assert-Match $wtmText "ID_AIR_BRAKE\{\}" "warthunder add must not write the airbrake on the gear's input."
+    Assert-Match $wtmText "(?s)ID_FIRE_MGUNS\{\s*joyButton:i=28\s*\}" "warthunder add must keep the guns' old input."
+    Assert-Match $wtmText "(?s)ID_FIRE_MGUNS\{\s*joyButton:i=30\s*\}" "warthunder add should add the guns' new input."
+    Assert-Match $wtmText "(?s)ID_ROCKETS\{\s*joyButton:i=29\s*\}" "warthunder add should write the rockets beside the tank gun."
+    Assert-True ((Get-WtmNonFlight $wtmText) -eq $wtmNonFlight) "warthunder add must leave the non-flight binds identical."
+
+    $wtmMerge = Run-Engine @("--profile", $wtmProfile, "warthunder", "export", $wtmBlk, "--mode", "merge", "--text")
+    Assert-True ($wtmMerge.ExitCode -eq 0) ("warthunder merge export failed: " + $wtmMerge.Output)
+    $wtmText = [System.IO.File]::ReadAllText($wtmBlk)
+    Assert-NotMatch $wtmText "(?s)ID_GEAR\{\s*joyButton:i=50\s*\}" "warthunder merge should remove the gear bind on the airbrake's input (conflict)."
+    Assert-Match $wtmText "(?s)ID_GEAR\{\s*keyboardKey:i=34\s*\}" "warthunder merge must keep the gear's other input."
+    Assert-Match $wtmText "(?s)ID_AIR_BRAKE\{\s*joyButton:i=50\s*\}" "warthunder merge should write the airbrake."
+    Assert-Match $wtmText "(?s)ID_FIRE_MGUNS\{\s*joyButton:i=28\s*\}" "warthunder merge must keep the guns' old input."
+    Assert-Match $wtmText "(?s)ID_FIRE_MGUNS\{\s*joyButton:i=30\s*\}" "warthunder merge should keep the guns' new input."
+    Assert-True ((Get-WtmNonFlight $wtmText) -eq $wtmNonFlight) "warthunder merge must leave the non-flight binds identical."
+
+    $wtmOverwrite = Run-Engine @("--profile", $wtmProfile, "warthunder", "export", $wtmBlk, "--mode", "merge-overwrite", "--text")
+    Assert-True ($wtmOverwrite.ExitCode -eq 0) ("warthunder merge-overwrite export failed: " + $wtmOverwrite.Output)
+    $wtmText = [System.IO.File]::ReadAllText($wtmBlk)
+    Assert-NotMatch $wtmText "(?s)ID_FIRE_MGUNS\{\s*joyButton:i=28\s*\}" "warthunder merge-overwrite should remove the guns' old input."
+    Assert-Match $wtmText "(?s)ID_FIRE_MGUNS\{\s*mouseButton:i=0\s*\}" "warthunder merge-overwrite must keep the mouse input."
+    Assert-Match $wtmText "(?s)ID_FIRE_MGUNS\{\s*joyButton:i=30\s*\}" "warthunder merge-overwrite should keep the guns' new input."
+    Assert-Match $wtmText "(?s)ID_BOMBS_SERIES\{\s*joyButton:i=5\s*\}" "warthunder merge-overwrite must keep binds of devices that are not connected."
+    Assert-True ((Get-WtmNonFlight $wtmText) -eq $wtmNonFlight) "warthunder merge-overwrite must leave the non-flight binds identical."
+
+    $wtmClean = Run-Engine @("--profile", $wtmProfile, "warthunder", "export", $wtmBlk, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($wtmClean.ExitCode -eq 0) ("warthunder clean + nuke export failed: " + $wtmClean.Output)
+    $wtmText = [System.IO.File]::ReadAllText($wtmBlk)
+    Assert-NotMatch $wtmText "(?s)ID_TOGGLE_ENGINE\{\s*joyButton" "warthunder clean should release the written devices' other binds."
+    Assert-Match $wtmText "(?s)ID_BOMBS_SERIES\{\s*joyButton:i=5\s*\}" "warthunder nuke must keep binds of devices that are not connected."
+    Assert-True ((Get-WtmNonFlight $wtmText) -eq $wtmNonFlight) "warthunder clean + nuke must leave the non-flight binds identical."
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $wtmPreviousFakeDevices
+}

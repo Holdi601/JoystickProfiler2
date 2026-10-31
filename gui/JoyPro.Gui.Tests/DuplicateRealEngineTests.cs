@@ -52,16 +52,21 @@ public sealed class DuplicateRealEngineTests
                 AvaloniaRenderThread.Wait(vm.ValidateProfileCommand.ExecuteAsync(null));
                 CheckIssueSection section = Assert.Single(vm.CheckSections, s => s.Kind == "duplicates");
                 Assert.Equal(4, section.Cards.Count);
-                CheckIssueCard trim = section.Cards.Single(c => c.Headline.Contains("AL/Right", StringComparison.Ordinal));
-                Assert.Equal("AH-64D Block II (CPG and Pilot): 'Force Trim/Hold Mode Switch - AL/Right'", trim.Headline);
-                Assert.Equal("96% sure: keep in 'Trim Right'", trim.SuggestionText);
+                CheckIssueCard trim = section.Cards.Single(c => c.Sentence.Contains("AL/Right", StringComparison.Ordinal));
+                Assert.Equal("In AH-64D Block II (CPG and Pilot), both buttons do 'Force Trim/Hold Mode Switch - AL/Right'. Usually only one of them is wanted.", trim.Sentence);
+                Assert.Equal("96% sure: keep it only on MOZA AB9 FFB Base · BTN 4", trim.SuggestionText);
                 Assert.Contains("It was only in 'Trim Right' before", trim.ReasonText);
-                Assert.Contains(section.Cards, c => c.Headline == "AJS 37 Viggen and Mirage 2000C: 'Thrust'" && c.SuggestionText == "96% sure: keep in 'Throttle Right Inverted DZ'");
+                // What caused it: the import's history entry.
+                Assert.StartsWith("Caused by: ", trim.CausedText);
+                Assert.Contains("Importing from DCS", trim.CausedText);
+                Assert.Contains(section.Cards, c => c.Sentence.StartsWith("In AJS 37 Viggen and Mirage 2000C, both buttons do 'Thrust'.", StringComparison.Ordinal) &&
+                                                    c.SuggestionText == "96% sure: keep it only on VPC VMAX Prime Throttle · Axis RY");
                 foreach (CheckIssueCard card in section.Cards)
                 {
-                    foreach (string text in new[] { card.Headline, card.Details, card.SuggestionText, card.ReasonText }.Concat(card.ActionLines).Concat(card.Choices.Select(c => c.KeepText)))
+                    foreach (string text in CheckTextGate.Texts(card).Concat(new[] { card.SuggestionText, card.ReasonText }).Concat(card.Choices.Select(c => c.KeepText)))
                         Assert.False(RawId.IsMatch(text), "a raw id in the panel: " + text);
                 }
+                Assert.Empty(CheckTextGate.Problems(section.Cards));
                 Assert.Equal("Fix the sure ones (7 of 7 at 90% or more)", vm.FixSureOnesText);
 
                 // The import's notice and the check count the same unit for the same profile: actions in several
@@ -74,8 +79,8 @@ public sealed class DuplicateRealEngineTests
                 int noticeCount = int.Parse(notice.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
                 Assert.Equal(7, noticeCount);
                 Assert.Equal(vm.DuplicateActionCount, noticeCount);
-                Assert.Equal("Actions in several relations (actions: " + noticeCount + ", cards: 4)", section.CountText);
-                Assert.StartsWith(noticeCount + " actions in several relations (4 cards)", vm.CheckSummaryText);
+                Assert.Equal("Same command on two buttons (actions: " + noticeCount + ", cards: 4)", section.CountText);
+                Assert.StartsWith("To look at: ", vm.CheckSummaryText);
                 vm.DismissDuplicateImportNoticeCommand.Execute(null);
                 if (!string.IsNullOrWhiteSpace(render))
                     RenderPanel(vm, render, "cards");
@@ -94,17 +99,17 @@ public sealed class DuplicateRealEngineTests
                 Assert.Equal(4, vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Count);
 
                 // Keep both: saved in the profile, the card stays away after a reload.
-                CheckIssueCard caution = vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Single(c => c.Headline.Contains("Master Caution", StringComparison.Ordinal));
+                CheckIssueCard caution = vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Single(c => c.Sentence.Contains("Master Caution", StringComparison.Ordinal));
                 AvaloniaRenderThread.Wait(((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)caution.KeepBothCommand!).ExecuteAsync(null));
                 Assert.Equal(3, vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Count);
                 MainWindowViewModel again = new(new EngineCliClient(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false) { EnginePath = engine, ProfilePath = profile };
                 AvaloniaRenderThread.Wait(again.ValidateProfileCommand.ExecuteAsync(null));
-                Assert.DoesNotContain(again.CheckSections.Single(s => s.Kind == "duplicates").Cards, c => c.Headline.Contains("Master Caution", StringComparison.Ordinal));
+                Assert.DoesNotContain(again.CheckSections.Single(s => s.Kind == "duplicates").Cards, c => c.Sentence.Contains("Master Caution", StringComparison.Ordinal));
 
                 // Keep in one relation, one card.
-                CheckIssueCard thrust = again.CheckSections.Single(s => s.Kind == "duplicates").Cards.Single(c => c.Headline.Contains("Thrust", StringComparison.Ordinal));
+                CheckIssueCard thrust = again.CheckSections.Single(s => s.Kind == "duplicates").Cards.Single(c => c.Sentence.Contains("Thrust", StringComparison.Ordinal));
                 AvaloniaRenderThread.Wait(((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)thrust.Choices.Single(c => c.Relation == "Throttle Right Inverted DZ").KeepCommand!).ExecuteAsync(null));
-                Assert.DoesNotContain(again.CheckSections.Single(s => s.Kind == "duplicates").Cards, c => c.Headline.Contains("Thrust", StringComparison.Ordinal));
+                Assert.DoesNotContain(again.CheckSections.Single(s => s.Kind == "duplicates").Cards, c => c.Sentence.Contains("Thrust", StringComparison.Ordinal));
 
                 // An instruction in words, read by the phrase rules alone.
                 again.DuplicateInstruction = "keep trim functions in the Trim relations, everything else in the Mode Button relations";

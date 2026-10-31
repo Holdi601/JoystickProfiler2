@@ -38,6 +38,9 @@ sealed class Program
         Watch.GuiPresence.Announce(names);
         App.InstanceGuard = guard;
         App.Names = names;
+        // Problem reports of 2.4.x move from Documents\JoyPro2 Problem Reports to Documents\JoyPro2\Problem Reports (once,
+        // in the background: the window does not wait for it).
+        System.Threading.Tasks.Task.Run(Services.ProblemReporter.MigrateOldFolder);
         try
         {
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);

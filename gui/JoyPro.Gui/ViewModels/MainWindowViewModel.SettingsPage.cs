@@ -17,7 +17,7 @@ public sealed partial class MainWindowViewModel
     // JoyPro's own order (new sections of a later version go where they stand here, SettingsSectionOrder.Merge).
     internal static readonly (string Id, string Title, string Keywords, string Tab)[] SettingsSectionDefaults =
     [
-        ("games", N("Games"), "hidden games hide show installed folder portable watch config detect setup war thunder archives hell let loose vietnam oodle", N("Games")),
+        ("games", N("Games"), "hidden games hide show installed folder portable watch config detect setup war thunder archives hell let loose vietnam oodle vjoy tunnel voiceattack", N("Games")),
         ("binds", N("Binds"), "follow input record button held pressed switch binds page", N("Binds")),
         ("startup", N("Startup"), "last profile open start autosave history versions", N("Startup")),
         ("pages", N("Pages in the bottom bar"), "pages tabs navigation bottom bar menu hide show order reorder move drag", N("Pages")),

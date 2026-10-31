@@ -31,11 +31,76 @@ public static class ProblemReporter
     public const long MaxLogBytes = 60L * 1024 * 1024;
     public const int MaxCrashReports = 10;
 
-    // Where reports go when the caller names no folder (Documents\JoyPro2 Problem Reports); the tests point it to a
-    // temp folder.
+    // Where reports go when the caller names no folder (Documents\JoyPro2\Problem Reports, next to the profiles); the
+    // tests point it to a temp folder.
     public static string? FolderOverride { get; set; }
 
-    public static string DefaultFolder => Path.Combine(UserFolders.Get(Environment.SpecialFolder.MyDocuments), "JoyPro2 Problem Reports");
+    public static string DefaultFolder => Path.Combine(UserFolders.Get(Environment.SpecialFolder.MyDocuments), "JoyPro2", "Problem Reports");
+
+    // Up to 2.4.x the reports had a folder of their own in Documents (tester wish on 2.4.3: inside JoyPro2's folder).
+    public static string OldDefaultFolder => Path.Combine(UserFolders.Get(Environment.SpecialFolder.MyDocuments), "JoyPro2 Problem Reports");
+
+    private static int migrated;
+
+    // Once per run (start of the app, before a report is made): the reports of the old folder move into the new one; a
+    // file whose name the new folder already has stays where it is (nothing is overwritten), and the old folder goes
+    // when it is empty. Not with FolderOverride (tests use their own folders).
+    public static void MigrateOldFolder()
+    {
+        if (FolderOverride != null || System.Threading.Interlocked.Exchange(ref migrated, 1) == 1)
+            return;
+        MigrateFolder(OldDefaultFolder, DefaultFolder);
+    }
+
+    // Moves every file of `oldFolder` (with its sub-folders) into `newFolder`; returns (moved, kept).
+    internal static (int Moved, int Kept) MigrateFolder(string oldFolder, string newFolder)
+    {
+        int moved = 0, kept = 0;
+        try
+        {
+            if (!Directory.Exists(oldFolder))
+                return (0, 0);
+            foreach (string file in Directory.GetFiles(oldFolder, "*", SearchOption.AllDirectories))
+            {
+                string target = Path.Combine(newFolder, Path.GetRelativePath(oldFolder, file));
+                try
+                {
+                    if (File.Exists(target))
+                    {
+                        kept++;
+                        continue;
+                    }
+                    Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                    File.Move(file, target);
+                    moved++;
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    kept++;
+                    JoyProLog.Warn("Report", "Problem report not moved: " + file + " (" + ex.Message + ")");
+                }
+            }
+            foreach (string dir in Directory.GetDirectories(oldFolder, "*", SearchOption.AllDirectories).OrderByDescending(d => d.Length).Append(oldFolder))
+            {
+                try
+                {
+                    if (!Directory.EnumerateFileSystemEntries(dir).Any())
+                        Directory.Delete(dir);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    // An empty folder that stays does no harm.
+                }
+            }
+            JoyProLog.Info("Report", "Problem reports moved from " + oldFolder + " to " + newFolder + ": " + moved.ToString(CultureInfo.InvariantCulture) + " moved, " +
+                                     kept.ToString(CultureInfo.InvariantCulture) + " kept in the old folder (same name in the new one or locked)");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            JoyProLog.Warn("Report", "Problem reports could not be moved from " + oldFolder + ": " + ex.Message);
+        }
+        return (moved, kept);
+    }
 
     public static ProblemReport Create(
         string description,
@@ -51,6 +116,8 @@ public static class ProblemReporter
     {
         JoyProLog.Flush();
         DateTime time = now ?? DateTime.Now;
+        if (outputFolder == null)
+            MigrateOldFolder();
         string folder = outputFolder ?? FolderOverride ?? DefaultFolder;
         Directory.CreateDirectory(folder);
         string stamp = time.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture);
@@ -161,7 +228,7 @@ public static class ProblemReporter
         string title = T("Problem: {0}", FirstLine(LogScrubber.Scrub(description ?? string.Empty)));
         string body = "**What happened**\n" + (string.IsNullOrWhiteSpace(description) ? T("(please describe)") : LogScrubber.Scrub(description.Trim())) +
                       "\n\n**Version:** " + AppInfo.Version + "\n**OS:** " + AppInfo.OsDescription +
-                      "\n\nPlease attach `" + Path.GetFileName(zipPath) + "` (in Documents\\JoyPro2 Problem Reports).";
+                      "\n\nPlease attach `" + Path.GetFileName(zipPath) + "` (in Documents\\JoyPro2\\Problem Reports).";
         return AppInfo.IssuesUrl + "?title=" + Uri.EscapeDataString(title) + "&body=" + Uri.EscapeDataString(body);
     }
 

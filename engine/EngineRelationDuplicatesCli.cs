@@ -213,6 +213,96 @@ namespace JoyPro.Engine
             return 0;
         }
 
+        private static readonly HashSet<string> ConflictsMutatingFlags = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "--keep", "--keep-action", "--off", "--keep-both", "--remove-actions"
+        };
+
+        // relations conflicts: the check's errors in detail (EngineCheckConflicts) - inputs bound in several relations that
+        // have an action of the same aircraft on, and relations with two actions of one aircraft on - with the actions'
+        // titles (unknown ones marked) and the validate line each stands for.
+        //   --keys "k;k"                   the conflicts a fix is about (their Key; for --remove-actions "game|id|plane")
+        //   --keep <relation>              an input conflict's aircraft stays on only in this relation (off in the others)
+        //   --keep-action <id>             a relation's two actions: only this one stays on for the aircraft
+        //   --off                          switched off in every relation of the conflict (all actions of a relation)
+        //   --keep-both                    both stay; the check does not name them again (kept in the profile)
+        //   --remove-actions               takes these actions of these aircraft out of every relation (unknown ones)
+        //   --include-kept                 lists the kept ones too
+        private static int RelationConflictsCommand(List<string> command, string outPath, bool textOutput)
+        {
+            List<string> args = command.Skip(1).ToList();
+            bool offEverywhere = PopFlag(args, "--off");
+            bool keepBoth = PopFlag(args, "--keep-both");
+            bool removeActions = PopFlag(args, "--remove-actions");
+            bool includeKept = PopFlag(args, "--include-kept");
+            string keep = PopOptionValue(args, "--keep");
+            string keepAction = PopOptionValue(args, "--keep-action");
+            string keysOption = PopOptionValue(args, "--keys");
+            if (args.Count > 0)
+                return Fail("Unknown relations conflicts argument(s): " + string.Join(" ", args) +
+                            ". Usage: relations conflicts [--keys k;k] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]");
+            if (new[] { keep != null, keepAction != null, offEverywhere, keepBoth, removeActions }.Count(b => b) > 1)
+                return Fail("relations conflicts: --keep, --keep-action, --off, --keep-both and --remove-actions exclude each other.");
+            HashSet<string> keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string key in (keysOption ?? string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+                keys.Add(key.Trim());
+
+            EngineConflictsResult result = new EngineConflictsResult();
+            bool fix = keep != null || keepAction != null || offEverywhere || keepBoth || removeActions;
+            if (fix)
+            {
+                if (keys.Count == 0)
+                    return Fail("relations conflicts: a fix needs the conflicts: --keys \"k;k\" (the Key of each, or game|id|aircraft for --remove-actions).");
+                if (removeActions)
+                {
+                    result.Changed = EngineCheckConflicts.RemoveActions(keys);
+                    if (string.IsNullOrWhiteSpace(EngineProfileHistory.Note))
+                        EngineProfileHistory.Note = "Removing unknown actions";
+                }
+                else
+                {
+                    List<EngineInputConflict> inputs = EngineCheckConflicts.InputConflicts(includeKept: true, withTitles: false).Where(c => keys.Contains(c.Key)).ToList();
+                    List<EngineActionConflict> actions = EngineCheckConflicts.ActionConflicts(includeKept: true, withTitles: false).Where(c => keys.Contains(c.Key)).ToList();
+                    if (inputs.Count == 0 && actions.Count == 0)
+                        return Fail("Those conflicts are not there any more (nothing to resolve).");
+                    string relationName = null;
+                    if (keep != null)
+                    {
+                        List<string> candidates;
+                        if (!TryResolveRelationName(keep, out relationName, out candidates))
+                            return FailResolution("relation", keep, candidates);
+                        EngineInputConflict without = inputs.FirstOrDefault(c => !c.Sides.Any(s => string.Equals(s.Relation, relationName, StringComparison.OrdinalIgnoreCase)));
+                        if (without != null || inputs.Count == 0)
+                            return Fail("Relation '" + relationName + "' is not one of the relations of these conflicts.");
+                    }
+                    if (keepAction != null && (actions.Count == 0 || actions.Any(c => !c.Actions.Any(a => string.Equals(a.Id, keepAction.Trim(), StringComparison.OrdinalIgnoreCase)))))
+                        return Fail("The action '" + keepAction + "' is not one of the actions of these conflicts.");
+                    if (keepBoth)
+                        result.Changed = EngineCheckConflicts.KeepBoth(inputs, actions);
+                    else if (keepAction != null)
+                        result.Changed = actions.Sum(c => EngineCheckConflicts.KeepAction(c, keepAction.Trim()));
+                    else
+                        result.Changed = inputs.Sum(c => EngineCheckConflicts.KeepOnly(c, relationName)) + actions.Sum(c => offEverywhere ? EngineCheckConflicts.KeepAction(c, null) : 0);
+                    if (string.IsNullOrWhiteSpace(EngineProfileHistory.Note))
+                        EngineProfileHistory.Note = keepBoth ? "Keeping both binds" : relationName != null ? "Keeping the input in '" + relationName + "' only"
+                            : keepAction != null ? "Keeping one action on the input" : "Switching the conflicting actions off";
+                }
+                if (result.Changed > 0)
+                    InternalDataManagement.ResyncRelations();
+            }
+            result.InputConflicts = EngineCheckConflicts.InputConflicts(includeKept, withTitles: true);
+            result.ActionConflicts = EngineCheckConflicts.ActionConflicts(includeKept, withTitles: true);
+            result.KeptCount = (InternalDataManagement.KeptDuplicates ?? new List<string>()).Count(EngineCheckConflicts.IsConflictEntry);
+            result.PlaneNames = result.InputConflicts.Select(c => c.Game + "\u0001" + c.Plane).Concat(result.ActionConflicts.Select(c => c.Game + "\u0001" + c.Plane))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(k => k.Split('\u0001'))
+                .Where(p => string.Equals(p[0], "DCS", StringComparison.OrdinalIgnoreCase))
+                .Select(p => EngineRelationDuplicates.PlaneNameOf(p[0], p[1]))
+                .ToList();
+            EmitPayload(textOutput ? EngineCheckConflicts.ToText(result) : EngineSerialization.ToJson(result), outPath);
+            return 0;
+        }
+
         private static bool IsDuplicateRule(string rule)
         {
             string r = (rule ?? string.Empty).Trim().ToLowerInvariant();

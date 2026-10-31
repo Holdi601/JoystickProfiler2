@@ -146,9 +146,12 @@ try {
     $vjFiles = @(Get-ChildItem -Path $vjJoystickDir -Filter "*.diff.lua" | Select-Object -ExpandProperty Name)
     Assert-True ($vjFiles.Count -eq 1 -and $vjFiles[0] -like "vJoy Device {89D63500-B53F-11*") "dcs export in virtual mode must write only the vJoy device file. Files: $($vjFiles -join ', ')"
     $vjLua = [System.IO.File]::ReadAllText((Join-Path $vjJoystickDir $vjFiles[0]))
-    Assert-Match $vjLua '\["a2004cdnil"\][\s\S]*?\["key"\] = "JOY_Z"' "The throttle's X must be exported on vJoy Z."
-    Assert-Match $vjLua '\["a2005cdnil"\][\s\S]*?\["key"\] = "JOY_RX"' "The throttle's Z must be exported on vJoy RX."
-    Assert-Match $vjLua '\["d3016pnilunilcd2vd1vpnilvunil"\][\s\S]*?\["key"\] = "JOY_BTN_POV1_U"' "The hat direction must be exported on the vJoy hat."
+    # The .jp lists every bind JoyPro wrote, also one equal to a DCS default (2.5.0: the .diff.lua leaves those out).
+    $vjJp = [System.IO.File]::ReadAllText((Join-Path $vjJoystickDir ($vjFiles[0].Substring(0, $vjFiles[0].Length - ".diff.lua".Length) + ".jp")))
+    Assert-Match $vjJp '\["a2004cdnil"\][\s\S]*?\["key"\] = "JOY_Z"' "The throttle's X must be exported on vJoy Z."
+    Assert-NotMatch $vjLua '\["a2004cdnil"\] = \{[^}]*\["removed"\][^}]*"JOY_Z"' "vJoy Z must not be removed from the throttle."
+    Assert-Match $vjJp '\["a2005cdnil"\][\s\S]*?\["key"\] = "JOY_RX"' "The throttle's Z must be exported on vJoy RX."
+    Assert-Match $vjJp '\["d3016pnilunilcd2vd1vpnilvunil"\][\s\S]*?\["key"\] = "JOY_BTN_POV1_U"' "The hat direction must be exported on the vJoy hat."
     $vjModifiers = [System.IO.File]::ReadAllText((Join-Path $vjSaved "Config\Input\F-16C_50\modifiers.lua"))
     Assert-Match $vjModifiers '\["Shift"\] = \{\s*\["device"\] = "vJoy Device \{89D63500-B53F-11F1-8002-444553540000\}",\s*\["key"\] = "JOY_BTN2"' "The modifier must be exported on its vJoy button."
     $vjBinds = Run-Engine @("--profile", $vjProfile, "binds", "list", "--text")

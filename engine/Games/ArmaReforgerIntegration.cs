@@ -397,55 +397,110 @@ namespace JoyPro.Engine.Games
             // joystickN of each exported device, and the order rules that pin it.
             Dictionary<string, int> slots = AssignSlots(request, result);
 
-            // Generated sources per action: (preset, input, filter class, filter parameters).
-            Dictionary<string, List<string[]>> sources = new Dictionary<string, List<string[]>>(StringComparer.OrdinalIgnoreCase);
-            foreach (GameInputBinding binding in request.Bindings)
-            {
-                string reason = AddSources(binding, request.Devices, request.Catalog, slots, sources);
-                if (reason.Length > 0)
-                {
-                    result.BindingsSkipped++;
-                    result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
-                    continue;
-                }
-                result.BindingsWritten++;
-            }
-
-            HashSet<string> usedDevices = new HashSet<string>(request.Bindings.Select(b => b.Device.Trim()), StringComparer.OrdinalIgnoreCase);
             SlotMap readSlots = LoadSlots(request.ConfigPath, new List<string>());
             List<string> managed = CompositeAxes.Values.SelectMany(v => new[] { v[0], v[2] })
                 .Concat(ButtonPresets.Keys)
                 .Concat(GenericActions(request.Catalog).Select(a => ReforgerActionSpec.Of(a).Action))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
+            // The joystick inputs of the preset's flight actions (infantry and vehicle actions never count), for "only
+            // add" (no multi-bind).
+            Dictionary<string, string> gameInputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string action in managed.Where(file.HasAction))
+            {
+                foreach (string[] source in file.ReadSources(action))
+                {
+                    int slot;
+                    string token;
+                    if (TryParseInput(source[1], out slot, out token) && !gameInputs.ContainsKey(source[1]))
+                        gameInputs[source[1]] = action;
+                }
+            }
+
+            // Generated sources per action: (preset, input, filter class, filter parameters).
+            Dictionary<string, List<string[]>> sources = new Dictionary<string, List<string[]>>(StringComparer.OrdinalIgnoreCase);
+            foreach (GameInputBinding binding in request.Bindings)
+            {
+                Dictionary<string, List<string[]>> own = new Dictionary<string, List<string[]>>(StringComparer.OrdinalIgnoreCase);
+                string reason = AddSources(binding, request.Devices, request.Catalog, slots, own);
+                if (reason.Length > 0)
+                {
+                    result.BindingsSkipped++;
+                    result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
+                    continue;
+                }
+                // "Only add": an input the preset uses for another flight action is not written.
+                string other = string.Empty;
+                if (request.Mode == GameExportMode.Add)
+                {
+                    foreach (KeyValuePair<string, List<string[]>> entry in own)
+                    {
+                        string user;
+                        string[] taken = entry.Value.FirstOrDefault(s => gameInputs.TryGetValue(s[1], out user) && !string.Equals(user, entry.Key, StringComparison.OrdinalIgnoreCase));
+                        if (taken != null)
+                        {
+                            other = gameInputs[taken[1]];
+                            break;
+                        }
+                    }
+                }
+                if (other.Length > 0)
+                {
+                    result.BindingsSkipped++;
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
+                    {
+                        Game = GameId,
+                        Device = binding.Device,
+                        Input = binding.Input,
+                        Relation = binding.RelationName,
+                        Action = binding.ActionId,
+                        GameAction = other
+                    });
+                    continue;
+                }
+                foreach (KeyValuePair<string, List<string[]>> entry in own)
+                    foreach (string[] source in entry.Value)
+                        AddSource(sources, entry.Key, source[0], source[1], source[2], source[3]);
+                result.BindingsWritten++;
+            }
+
+            // The flight action each profile input goes to: the preset's source of another action on it is a conflict.
+            Dictionary<string, string> wantedInputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (KeyValuePair<string, List<string[]>> entry in sources)
+                foreach (string[] source in entry.Value.Where(s => !wantedInputs.ContainsKey(s[1])))
+                    wantedInputs[source[1]] = entry.Key;
+            HashSet<string> usedDevices = new HashSet<string>(request.Bindings.Select(b => b.Device.Trim()), StringComparer.OrdinalIgnoreCase);
 
             foreach (string action in managed)
             {
                 List<string[]> actionSources;
                 sources.TryGetValue(action, out actionSources);
+                actionSources = actionSources ?? new List<string[]>();
                 bool exists = file.HasAction(action);
-                if (request.Mode == GameExportMode.Merge && exists)
+                if (!exists && actionSources.Count == 0)
                     continue;
-                if (actionSources == null || actionSources.Count == 0)
-                {
-                    // Only clean removes managed actions that the profile does not bind; nuke drops the sources of
-                    // devices the export does not use.
-                    if (request.Mode == GameExportMode.Clean && exists)
-                        file.RemoveAction(action);
-                    else if (request.NukeUnusedDevices && exists)
-                        DropUnusedDeviceSources(file, action, usedDevices, request.Devices, readSlots);
-                    continue;
-                }
 
-                List<string[]> existing = file.ReadSources(action);
-                List<string[]> merged = actionSources;
-                if (request.Mode == GameExportMode.Add && exists)
-                    merged = existing.Concat(actionSources.Where(s => !existing.Any(e => e[1] == s[1]))).ToList();
+                // Existing sources stay in place unless they go (see Keep); a source on an input the profile also uses
+                // gets the profile's filter (not in "only add"); the profile's new inputs go behind.
+                List<string[]> existing = exists ? file.ReadSources(action) : new List<string[]>();
+                List<string[]> merged = new List<string[]>();
+                foreach (string[] source in existing)
+                {
+                    string[] mine = actionSources.FirstOrDefault(s => string.Equals(s[1], source[1], StringComparison.OrdinalIgnoreCase));
+                    if (mine != null)
+                        merged.Add(request.Mode == GameExportMode.Add ? source : mine);
+                    else if (Keep(source, action, actionSources.Count > 0, request, wantedInputs, usedDevices, readSlots))
+                        merged.Add(source);
+                }
+                merged.AddRange(actionSources.Where(s => !existing.Any(e => string.Equals(e[1], s[1], StringComparison.OrdinalIgnoreCase))));
 
                 // Keep the existing block (and its ids) when it already holds exactly these sources.
                 if (exists && SameSources(existing, merged))
                     continue;
-                file.SetAction(action, BuildActionBlock(action, merged, file.ActionIndent));
+                if (merged.Count == 0)
+                    file.RemoveAction(action);
+                else
+                    file.SetAction(action, BuildActionBlock(action, merged, file.ActionIndent));
             }
 
             if (request.DryRun)
@@ -671,24 +726,28 @@ namespace JoyPro.Engine.Games
             return SettingsFolders(configPath).SelectMany(f => new[] { Path.Combine(f, "ReforgerGameSettings.conf"), Path.Combine(f, "GameUserSettings.conf") }).ToList();
         }
 
-        private static void DropUnusedDeviceSources(EnfusionActionFile file, string action, HashSet<string> usedDevices, GameDeviceDirectory devices, SlotMap slots)
+        // A preset source of a flight action stays unless
+        //  - the profile puts another flight action on its joystick input (a conflict; not in "only add"),
+        //  - merge-overwrite / clean: the profile binds this action and it is another joystick input of it on a connected
+        //    device (a moved action fully moves),
+        //  - its device is released: clean releases the devices the export writes, nuke the connected devices it does
+        //    not use.
+        // Keyboard, mouse and gamepad sources and joysticks that are not connected always stay.
+        private static bool Keep(string[] source, string action, bool profileBinds, GameExportRequest request, Dictionary<string, string> wantedInputs, HashSet<string> usedDevices, SlotMap slots)
         {
-            List<string[]> existing = file.ReadSources(action);
-            List<string[]> kept = existing.Where(source =>
-            {
-                int slot;
-                string token;
-                if (!TryParseInput(source[1], out slot, out token))
-                    return true;
-                string device = DeviceForSlot(slots, slot, devices, new List<string>());
-                return device.Length == 0 || usedDevices.Contains(device);
-            }).ToList();
-            if (kept.Count == existing.Count)
-                return;
-            if (kept.Count == 0)
-                file.RemoveAction(action);
-            else
-                file.SetAction(action, BuildActionBlock(action, kept, file.ActionIndent));
+            int slot;
+            string token;
+            if (!TryParseInput(source[1], out slot, out token))
+                return true;
+            string user;
+            if (request.Mode != GameExportMode.Add && wantedInputs.TryGetValue(source[1], out user) && !string.Equals(user, action, StringComparison.OrdinalIgnoreCase))
+                return false;
+            string device = DeviceForSlot(slots, slot, request.Devices, new List<string>());
+            if (device.Length == 0)
+                return true;
+            if (profileBinds && (request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean))
+                return false;
+            return !(usedDevices.Contains(device) ? request.Mode == GameExportMode.Clean : request.NukeUnusedDevices);
         }
 
         private static bool SameSources(List<string[]> left, List<string[]> right)

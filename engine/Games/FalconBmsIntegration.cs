@@ -635,9 +635,14 @@ namespace JoyPro.Engine.Games
 
             string ownershipBase = OwnershipBase(request.ConfigPath);
             Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipBase, result.Warnings);
+            // JoyPro clears binds only on connected devices: the device file of one that is not connected may belong to
+            // another stick of the same name or come back later, so its binds stay whatever the mode.
+            Func<DeviceFile, bool> connected = f => request.Devices != null && request.Devices.FindByInstanceGuid(f.Guid) != null;
             if (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite)
             {
-                ReleaseOwned(files, owned, wanted);
+                // "My profile wins": every action the profile binds loses its other inputs on connected devices, so a
+                // moved bind fully moves. Inputs JoyPro wrote before count like any other bind of the game.
+                ReleaseOtherInputs(files.Where(connected).ToList(), wanted);
                 owned.Clear();
             }
             if (request.Mode == GameExportMode.Clean || request.NukeUnusedDevices)
@@ -645,7 +650,7 @@ namespace JoyPro.Engine.Games
                 // BMS is flight only: clean clears the devices JoyPro writes, nuke the ones it does not use.
                 HashSet<Guid> managed = new HashSet<Guid>(wanted.Values.Select(t => t.File.Guid));
                 bool keepShift = wanted.Values.Any(t => t.Slot == 1);
-                foreach (DeviceFile file in files)
+                foreach (DeviceFile file in files.Where(connected))
                 {
                     bool used = managed.Contains(file.Guid);
                     if (used ? request.Mode != GameExportMode.Clean : !request.NukeUnusedDevices)
@@ -660,23 +665,31 @@ namespace JoyPro.Engine.Games
                 bool free = current.Length == 0 || current == Nothing;
                 if (current != target.Value && !free)
                 {
-                    if (request.Mode == GameExportMode.Merge)
+                    // "Only add" never replaces a bind: the input keeps the game's action and the profile's bind is
+                    // reported (writing it next to the other one is not possible, one callback per slot).
+                    if (request.Mode == GameExportMode.Add)
                     {
                         result.BindingsSkipped++;
-                        result.Warnings.Add("Relation '" + target.Binding.RelationName + "' (" + target.ActionId + "): the input already has '" + current + "' in BMS; merge keeps it.");
+                        result.SkippedTakenInputs.Add(SkippedMultiBind(target.Binding, current));
                         continue;
                     }
+                    // Merge and "my profile wins": the game's other action on the profile's input is a conflict and goes.
                     result.Warnings.Add("Relation '" + target.Binding.RelationName + "' (" + target.ActionId + ") replaced '" + current + "' on its input.");
                 }
-                if (target.Kind == "AX" && request.Mode == GameExportMode.Merge)
+                if (target.Kind == "AX")
                 {
+                    // BMS gives an axis function to one physical axis only: writing it releases the older claim. "Only
+                    // add" never removes a bind, so it leaves the function where the game has it; merge moves it (it is
+                    // the same action, the profile's input wins) and says so.
                     string claimedBy = OtherAxisClaim(files, target);
-                    if (claimedBy.Length > 0)
+                    if (claimedBy.Length > 0 && request.Mode == GameExportMode.Add)
                     {
                         result.BindingsSkipped++;
-                        result.Warnings.Add("Relation '" + target.Binding.RelationName + "' (" + target.ActionId + "): BMS already has this axis on " + claimedBy + "; merge keeps it.");
+                        result.Warnings.Add("Relation '" + target.Binding.RelationName + "' (" + target.ActionId + "): BMS already has this axis on " + claimedBy + " and gives an axis function to one axis only; add keeps it.");
                         continue;
                     }
+                    if (claimedBy.Length > 0 && request.Mode == GameExportMode.Merge)
+                        result.Warnings.Add("Relation '" + target.Binding.RelationName + "' (" + target.ActionId + "): moved from " + claimedBy + " (BMS gives an axis function to one axis only).");
                 }
 
                 if (target.Kind == "AX" && BmsSettings.OneSided.Contains(target.Value) && current == target.Value)
@@ -686,7 +699,12 @@ namespace JoyPro.Engine.Games
                     if (legacy.Length > 0 && legacy != "None")
                         result.Warnings.Add("Relation '" + target.Binding.RelationName + "' (" + target.ActionId + "): BMS has no dead zone on one-sided axes (the launcher hides it; a stored one acts in the middle of the travel); '" + legacy + "' was reset to None.");
                 }
-                Assign(target, files);
+                // "Only add": the action already on its input is nothing to do (its axis settings stay the game's too).
+                if (request.Mode == GameExportMode.Add && current == target.Value)
+                    continue;
+                // The older claim of an axis function on a device that is not connected stays: the launcher gives the
+                // function to the newest claim (AssgnDate), which is JoyPro's.
+                Assign(target, files.Where(connected).ToList());
                 GameOwnershipStore.Add(owned, target.ActionId, target.OwnerToken);
                 result.BindingsWritten++;
                 if (target.Kind == "AX")
@@ -697,8 +715,22 @@ namespace JoyPro.Engine.Games
             SaveDeviceFiles(files, request.DryRun, result);
             if (!request.DryRun)
                 GameOwnershipStore.Save(ownershipBase, GameId, owned);
-            WriteGameSettings(request.ConfigPath, request.DryRun, request.Mode == GameExportMode.Merge, axes, result);
+            WriteGameSettings(request.ConfigPath, request.DryRun, request.Mode == GameExportMode.Merge || request.Mode == GameExportMode.Add, axes, result);
             return result;
+        }
+
+        private ExportSkippedBind SkippedMultiBind(GameInputBinding binding, string gameAction)
+        {
+            return new ExportSkippedBind
+            {
+                Game = GameId,
+                Device = binding.Device ?? string.Empty,
+                Input = binding.Input ?? string.Empty,
+                ModifiersText = binding.Reformers == null ? string.Empty : string.Join(" + ", binding.Reformers.Select(r => { string[] p = (r ?? string.Empty).Split('§'); return p.Length >= 3 ? p[1] + " " + p[2] : r; })),
+                Relation = binding.RelationName ?? string.Empty,
+                Action = binding.ActionId ?? string.Empty,
+                GameAction = gameAction ?? string.Empty
+            };
         }
 
         private static void SaveDeviceFiles(List<DeviceFile> files, bool dryRun, GameIoResult result)
@@ -1131,45 +1163,45 @@ namespace JoyPro.Engine.Games
                 element.Value = value;
         }
 
-        // Inputs JoyPro wrote before and no longer wants are released, unless the user changed them in the launcher.
-        private static void ReleaseOwned(List<DeviceFile> files, Dictionary<string, HashSet<string>> owned, Dictionary<string, Target> wanted)
+        // "My profile wins": the inputs (press slots, both layers, axes) of connected devices that hold an action the
+        // profile binds somewhere else are released, so a moved bind does not stay on its old input too.
+        private static void ReleaseOtherInputs(List<DeviceFile> files, Dictionary<string, Target> wanted)
         {
-            foreach (KeyValuePair<string, HashSet<string>> entry in owned)
+            foreach (DeviceFile file in files)
             {
-                foreach (string token in entry.Value)
+                Func<Target, bool> other = t => !wanted.ContainsKey(t.OwnerToken);
+                for (int i = 0; i < 8; i++)
                 {
-                    if (wanted.ContainsKey(token))
-                        continue;
-                    Target target = ParseOwner(files, token, entry.Key);
-                    if (target != null && CurrentValue(target) == target.Value)
-                        Clear(target);
+                    Target axis = new Target { File = file, Kind = "AX", Index = i };
+                    if (wanted.Values.Any(w => w.Kind == "AX" && w.Value == CurrentValue(axis)) && other(axis))
+                        Clear(axis);
+                }
+                XElement dx = ActiveDx(file);
+                int buttons = dx == null ? 0 : dx.Elements("DxAssgn").Count();
+                for (int b = 0; b < buttons; b++)
+                {
+                    for (int slot = 0; slot < PressSlots; slot++)
+                    {
+                        Target button = new Target { File = file, Kind = "DX", Index = b, Slot = slot };
+                        if (wanted.Values.Any(w => w.Kind != "AX" && w.Value == CurrentValue(button)) && other(button))
+                            Clear(button);
+                    }
+                }
+                XElement pov = ActivePov(file);
+                int hats = pov == null ? 0 : pov.Elements("PovAssgn").Count();
+                for (int h = 0; h < hats; h++)
+                {
+                    for (int d = 0; d < 8; d++)
+                    {
+                        for (int slot = 0; slot < PressSlots; slot++)
+                        {
+                            Target hat = new Target { File = file, Kind = "POV", Index = h, Direction = d, Slot = slot };
+                            if (wanted.Values.Any(w => w.Kind != "AX" && w.Value == CurrentValue(hat)) && other(hat))
+                                Clear(hat);
+                        }
+                    }
                 }
             }
-        }
-
-        private static Target ParseOwner(List<DeviceFile> files, string token, string actionId)
-        {
-            string[] parts = token.Split('|');
-            Guid guid;
-            if (parts.Length != 2 || !Guid.TryParse(parts[0], out guid))
-                return null;
-            DeviceFile file = files.FirstOrDefault(f => f.Guid == guid);
-            string[] key = parts[1].Split(':');
-            if (file == null || key.Length < 2)
-                return null;
-            int[] numbers = new int[key.Length - 1];
-            for (int i = 1; i < key.Length; i++)
-            {
-                if (!int.TryParse(key[i], NumberStyles.Integer, CultureInfo.InvariantCulture, out numbers[i - 1]) || numbers[i - 1] < 0)
-                    return null;
-            }
-            if (key[0] == "AX" && numbers.Length == 1 && actionId.StartsWith(AxisPrefix, StringComparison.OrdinalIgnoreCase))
-                return new Target { File = file, Kind = "AX", Index = numbers[0], ActionId = actionId, Value = actionId.Substring(AxisPrefix.Length) };
-            if (key[0] == "DX" && numbers.Length == 2)
-                return new Target { File = file, Kind = "DX", Index = numbers[0], Slot = numbers[1], ActionId = actionId, Value = actionId };
-            if (key[0] == "POV" && numbers.Length == 3)
-                return new Target { File = file, Kind = "POV", Index = numbers[0], Direction = numbers[1], Slot = numbers[2], ActionId = actionId, Value = actionId };
-            return null;
         }
 
         private static void Clear(Target target)

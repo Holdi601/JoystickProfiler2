@@ -36,10 +36,11 @@ public sealed class ImportSettingsPersistTests : IDisposable
         new(new NoviceGuiTests.NoviceFakeEngine(), new AxisTuningFakeCapture(), loadPersistedUiSettings: persist) { EnginePath = typeof(MainWindowViewModel).Assembly.Location };
 
     [Fact]
-    public void EveryImportOption_ComesBackAfterARestart_IncludeDefaultsStartsOff()
+    public void EveryImportOption_ComesBackAfterARestart_IncludeDefaultsStartsOn()
     {
+        // DCS "include defaults" is on by default since 2.5.0 (import, then a clean export keeps every active bind).
         MainWindowViewModel first = Vm(persist: true);
-        Assert.False(first.ImportIncludeDefaults);
+        Assert.True(first.ImportIncludeDefaults);
         Assert.True(first.ImportKeyboardCommands);
         Assert.True(first.ImportWizardAddToProfile);
 
@@ -149,9 +150,9 @@ public sealed class ImportSettingsPersistTests : IDisposable
     public void WithoutPersistedSettings_NothingIsWrittenOrRestored()
     {
         MainWindowViewModel vm = Vm(persist: false);
-        vm.ImportIncludeDefaults = true;
+        vm.ImportIncludeDefaults = false;
         vm.ImportInverted = true;
         Assert.False(File.Exists(exportSettings));
-        Assert.False(Vm(persist: false).ImportIncludeDefaults);
+        Assert.True(Vm(persist: false).ImportIncludeDefaults);
     }
 }

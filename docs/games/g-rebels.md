@@ -41,9 +41,13 @@ Tags: **[OBS]** seen on a test PC · **[SRC]** the game's files · **[WEB]** pub
 ## What JoyPro does
 - **Axes:** a relation on `Axis_Pitch` (Roll, Yaw, Thrust, SideStrafe, UpDown) with a device's axis sets that axis'
   role (and Invert) on the device's channel. The value is changed in place; entries are never added, so the game must
-  have saved the channel once: switch the device on in DEVICES and change one axis role on its JST tab (opening the tab saves nothing; the first role change saves all eight axis rows of the channel). merge-overwrite gives another
-  axis of the channel with the same role the role None; clean gives every other role of a written channel None; nuke
-  does it on the enabled channels JoyPro does not write; merge keeps a role the game already set.
+  have saved the channel once: switch the device on in DEVICES and change one axis role on its JST tab (opening the tab saves nothing; the first role change saves all eight axis rows of the channel). One role per axis: `add`
+  writes a role only on an axis without one (an axis with another role is skipped and listed as a skipped multi-bind);
+  `merge` sets the profile's role on its axis (the role there goes, a conflict) and keeps the role on its other axes;
+  `merge-overwrite` also gives the role's other axes on connected channels the role None; clean gives every other role
+  of a written channel None; nuke does it on the enabled, connected channels JoyPro does not write (a channel whose
+  device is not connected keeps its roles). Buttons follow the same rules (one key per action and channel; a mapping of
+  another action on the key goes in merge).
 - **Buttons:** `<ACTION>JST<channel>` = `RawInput_Controller<channel>_Button<n>` in EnhancedInputUserSettings.sav (it
   must exist: bind one button in the game once). The catalog's button rows carry the mapping base name in the 5th
   column; so far only **Primary Fire** (`PRIMARYFIRE`) is confirmed. Other actions follow when their names are seen.

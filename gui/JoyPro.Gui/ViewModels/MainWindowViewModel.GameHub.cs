@@ -182,12 +182,14 @@ public sealed partial class MainWindowViewModel
             // Remembered per game (MainWindowViewModel.ImportSettings.cs).
             _ => RememberedRegistryKeyboard(game.GameId)
         };
+        UpdateImportWatcherHint(game);
         ImportWizardStep = 2;
     }
 
     [RelayCommand]
     private void ImportWizardBack()
     {
+        ImportWatcherHintVisible = false;
         ImportWizardStep = 1;
         ImportWizardResult = string.Empty;
     }

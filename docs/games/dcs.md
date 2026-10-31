@@ -121,6 +121,9 @@ the clean profiles of 2026-10-13:
    and in exported aircraft where that device has no bind (a device bound only in some aircraft): only `clean` mode
    touched other aircraft, and never the exported ones. Now every mode removes the DCS defaults of the written
    devices in every aircraft (`--clean-all-aircraft`, default true; outside clean mode the files keep their binds).
+   (2.5.0 changed this again by the user's decision: clean + nuke is the default and works only in the exported
+   aircraft, the import brings the active defaults into the profile, merge and add keep DCS's defaults; see [Export
+   modes](#export-modes).)
 2. The refresh built device-type clean profiles only for types with a default file of their own. Types that
    `DefaultAssignments.lua` gives other axes (MFG Crosswind V2, the WINWING / F16 MFD panels, ...) got the generic
    stick's removals: F-15C "Wheel Brake Left" stayed on the MFG's JOY_X, and the panels got removals of axes they never
@@ -171,18 +174,68 @@ integrity check of multiplayer servers that enforce it. The GUI shows that warni
   refuse while DCS or its updater runs; without write access to the DCS folder they say so.
 
 ## Export modes
-- `merge-overwrite` (the engine's default when `--mode` is left out), `merge` (the GUI's default, "Update, keep the
-  game's binds"), `add`: the profile's binds are merged into the existing files (conflicts per input). In all three the
-  DCS defaults of every device the export writes are removed (rule 5: JoyPro takes over whole devices), in every
-  installed aircraft (the other aircraft's files keep their binds); the GUI's mode texts say so.
-- `clean`: the written devices get only JoyPro's binds. They also lose their binds and DCS defaults in every other
-  installed aircraft (every profile with a clean profile; input layers such as UiLayer, Camera and Default are not
-  touched).
-- `--clean-all-aircraft false`, or a plane filter, limits the removals to the aircraft the profile binds (GUI: "DCS: my
-  devices lose the DCS default binds in every other aircraft too").
-- `--nuke-untouched-devices true`: in the exported aircraft, devices the profile does not use there lose all binds
-  and their DCS defaults.
+Since 2.5.0 (engine/EngineDcsExport.Modes.cs) every mode works on the binds a device file has **active** in DCS: the
+device's defaults (its clean profile) minus the file's `removed`, plus its `added` and `changed` (what DCS's
+`Scripts\Input\Data.lua` applies). The mode decides which binds shall be active, and the `.diff.lua` then holds only
+real differences from the defaults:
+- an added bind that is no default, a removed default, and a default whose axis tuning (curvature, dead zone,
+  saturation, invert, slider) differs, written as DCS's `changed`;
+- a bind equal to a default is not written: no default is removed and added again (`Binds Equal To A DCS Default (Not
+  Written)` in the report). The `.jp` lists it with JoyPro's relation name for a re-import, but never a default the
+  game has by itself;
+- a removal of the file that the clean profile does not know (an older list) stays unless the bind shall be active.
+
+The modes, per device file of an exported aircraft (an input is device, key and modifiers):
+- `add` ("Only add") never deletes anything. A profile bind already active stays as the game has it; one whose input the
+  game uses for another function (also a DCS default) is not written and lands in `SkippedTakenInputs` and the
+  profile's marks ([export](../export.md)).
+- `merge` ("Update, keep the game's binds") keeps the game's binds and DCS's defaults, except a bind of another
+  function on an input the profile uses (`Game Binds On Taken Buttons Removed`). The profile's tuning wins on its own
+  binds. A moved action keeps its old input.
+- `merge-overwrite` ("Update, my profile wins", the engine's default when `--mode` is left out) does what merge does,
+  and every action the profile binds in the aircraft keeps only the profile's inputs: on the written devices, on the
+  aircraft's other device files and on connected devices without a file (their DCS defaults count too), not on the
+  import's ignored devices or the vJoy tunnel; the keyboard only when it is exported (`Other Buttons Of Profile Actions
+  Removed`).
+- `clean` ("Replace on my devices", the GUI's default with nuke since 2.5.0): the written devices get exactly the
+  profile's binds in the exported aircraft. Only with `--clean-all-aircraft true` (default false since 2.5.0, GUI "DCS:
+  my devices lose the DCS default binds in every other aircraft too", off) they also lose their binds and DCS defaults
+  in every other installed aircraft (input layers such as UiLayer, Camera and Default are not touched). Up to 2.4.3 every
+  mode removed the written devices' defaults in every aircraft.
+- `--nuke-untouched-devices true`: in the exported aircraft, the **connected** devices the profile does not use there
+  lose all binds and their DCS defaults. A device that is not connected keeps its files (an import with "only connected
+  devices" did not read it), and so do `--ignore-device(s)` and the `--vjoy-tunnel` device (the GUI passes the import's
+  ignore list and its vJoy setting).
+- A device whose binds are all DCS defaults and that has no file gets none. An export changes no file of an aircraft it
+  does not export (also not the keyboard repair below).
 - Force feedback settings (`ffDiffs`) of a file that is emptied stay.
+
+### Import of the default binds ("Include defaults", on by default in the GUI since 2.5.0)
+The import takes every default bind DCS has active for an imported device, so that import followed by a clean + nuke
+export leaves the game with the same binds (`smoke\dcsexportmodes.ps1`; real check below):
+- imported devices: the joysticks whose files the import reads (after device filters, only-connected, the same-name
+  merge) and the connected joysticks that pass the same filters; per imported aircraft each gets its model's defaults,
+  else DCS's generic defaults (`default.lua`, up to 2.4.3 left out), also where it has no file yet;
+- left out: defaults the file removes; a default of an action the user bound on that device (keyboard: on any device);
+  a default on an input the user uses for another action on that device ("your own binds win"); the second action of
+  an input DCS gives two actions on one device; a keyboard default of an action a joystick default has (the keyboard's
+  defaults stay in the game anyway);
+- the modifiers stay; the same default function and input of several aircraft is one relation.
+
+Real check (2026-10-31, a temporary copy of the user's Saved Games snapshot of 2026-10-26, 2561 files; DCS's own
+luae.exe via `engine dcs verify-clean --include-disconnected true --dump-active <file>` before and after):
+- F/A-18C, F-16C, A-10C II imported with defaults, clean + nuke export: no file outside those aircraft changed, 75
+  files written, all load in luae.exe, no default re-added (25 kept unwritten). Active binds 1077 before, 1037 after:
+  the 40 that went are the F16 MFD 1/2 model defaults in the A-10C II on buttons the user's own binds use for other
+  actions (both fired before; the rule "your own binds win" keeps the user's). No bind was gained.
+- F/A-18C, UH-1H, M-2000C (F16 MFDs without a file there, generic defaults imported): 931 active before and after.
+- Only connected, with three devices unplugged (fake device list): their files stay byte for byte; and without only
+  connected the same devices are imported and keep their binds; only the 20 / 40 rule cases above differ.
+- Undo export after clean + nuke: all 2561 files byte for byte as before.
+- Relations and Check on that copy, 2.4.3 -> 2.5.0: F/A-18C, F-16C, A-10C II 640 -> 640 relations, Check 33 -> 33
+  warnings, 0 errors, 35 -> 35 actions in several relations (the user's files removed DCS's generic defaults already);
+  F/A-18C, UH-1H, M-2000C 812 -> 835 relations, 25 -> 38 warnings, 0 errors, 27 -> 40 actions in several relations
+  (the generic defaults of the F16 MFDs, active in the game, now come in).
 
 ### Keyboard
 The keyboard is never taken over like a stick, in any mode; clean, nuke and "every other aircraft" never touch it.

@@ -162,3 +162,71 @@ finally {
         Copy-Item -Path $bfCatalogBackup -Destination $bfCatalogDir -Recurse -Force
     }
 }
+
+# ---- 7. export modes (confirmed table; only jet / helicopter slots, jet and helicopter are different vehicles):
+#   add       never frees a slot; a bind on an input another action of the same vehicle uses is skipped and reported
+#   merge     frees the other action's slot on the profile's input (conflict), keeps the action's bound slots (a bind that
+#   merge-overwrite  merge + the action's other joystick slots (and keyboard keys with --include-keyboard) are freed and
+$bmDir = Join-Path $tempDir "battlefield-modes"
+New-Item -ItemType Directory -Force -Path $bmDir | Out-Null
+$bmFile = Join-Path $bmDir "PROFSAVEbf6mp_profile"
+# Fire has stick button 1 (code 0) in a joystick slot.
+$bmText = [System.IO.File]::ReadAllText($bfFixture).Replace("GstKeyBinding.jet.ConceptFire.2.type 0`n", "GstKeyBinding.jet.ConceptFire.2.type 0`nGstKeyBinding.jet.ConceptFire.3.axis 56`nGstKeyBinding.jet.ConceptFire.3.button 0`nGstKeyBinding.jet.ConceptFire.3.negate 0`nGstKeyBinding.jet.ConceptFire.3.type 3`n")
+[System.IO.File]::WriteAllText($bmFile, $bmText)
+$bmProfile = Join-Path $bmDir "modes.pr0file"
+function Get-BmNonFlight([string]$Text) { return (($Text -split "`n") | Where-Object { $_ -notmatch '^GstKeyBinding\.(jet|helicopter)\.' }) -join "`n" }
+function Get-BmFireSlot([string]$Text, [int]$Code) { return [regex]::IsMatch($Text, "(?m)^GstKeyBinding\.jet\.ConceptFire\.(\d)\.button $Code\nGstKeyBinding\.jet\.ConceptFire\.\1\.negate 0\nGstKeyBinding\.jet\.ConceptFire\.\1\.type 3$") }
+$bmNonFlight = Get-BmNonFlight $bmText
+$bmPrevious = @{ Devices = $env:JOYPRO_FAKE_DEVICES; Detection = $env:JOYPRO_INSTALL_DETECTION; BfMap = $env:JOYPRO_BATTLEFIELD_MAP; Data = $env:JOYPRO_DATA_DIR }
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\vjoy\devices.tsv"
+$env:JOYPRO_INSTALL_DETECTION = "off"
+$env:JOYPRO_BATTLEFIELD_MAP = Join-Path $engineDir "tests\fixtures\battlefield\joystick-map.tsv"
+$env:JOYPRO_DATA_DIR = Join-Path $bmDir "data"
+try {
+    Assert-True (Get-BmFireSlot $bmText 0) "the battlefield mode fixture should have Fire on joystick code 0."
+    Run-Engine @("bf6", "refresh-db", $bmFile, "--text") | Out-Null
+    $bmStick = "VJ Stick {11111111-2222-3333-4444-000000000001}"
+    # Moved: fire from stick button 1 to button 3. Conflict: zoom on Space, the jet fire's key (the helicopter fire has
+    # Space too: another vehicle, it stays).
+    Run-Engine @("--profile", $bmProfile, "relations", "add", "BM Fire", "--button", "--node", "Battlefield6:jet.ConceptFire", "--device", $bmStick, "--input", "JOY_BTN3", "--text") | Out-Null
+    Run-Engine @("--profile", $bmProfile, "relations", "add", "BM Zoom", "--button", "--node", "Battlefield6:jet.ConceptZoom", "--device", "Keyboard", "--input", "Space", "--text") | Out-Null
+
+    $bmAdd = Run-Engine @("--profile", $bmProfile, "bf6", "export", $bmFile, "--mode", "add", "--include-keyboard")
+    Assert-True ($bmAdd.ExitCode -eq 0) ("bf6 add export failed: " + $bmAdd.Output)
+    $bmAddJson = ($bmAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($bmAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "jet.ConceptZoom" -and $_.GameAction -eq "jet.ConceptFire" }).Count -eq 1) ("bf6 add should report zoom on the fire key: " + $bmAdd.Output)
+    $bmAfter = [System.IO.File]::ReadAllText($bmFile)
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptFire\.0\.button 57$" "bf6 add must keep the fire key."
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptZoom\.1\.button 255$" "bf6 add must not write zoom on the fire key."
+    # Fire's only joystick slot is bound: add and merge keep it (the game's slots are not multiplied).
+    Assert-True ((Get-BmNonFlight $bmAfter) -eq $bmNonFlight) "bf6 add must leave the non-flight lines identical."
+
+    $bmMerge = Run-Engine @("--profile", $bmProfile, "bf6", "export", $bmFile, "--mode", "merge", "--include-keyboard", "--text")
+    Assert-True ($bmMerge.ExitCode -eq 0) ("bf6 merge export failed: " + $bmMerge.Output)
+    $bmAfter = [System.IO.File]::ReadAllText($bmFile)
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptFire\.0\.button 255$" "bf6 merge should free the fire key the profile gives zoom (conflict)."
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptZoom\.1\.button 57$" "bf6 merge should write zoom on Space."
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.helicopter\.ConceptFire\.0\.button 57$" "bf6 merge must keep the helicopter's Space (another vehicle)."
+    Assert-True ((Get-BmFireSlot $bmAfter 0) -and -not (Get-BmFireSlot $bmAfter 2)) "bf6 merge must keep fire's bound joystick slot."
+    Assert-True ((Get-BmNonFlight $bmAfter) -eq $bmNonFlight) "bf6 merge must leave the non-flight lines identical."
+
+    $bmOverwrite = Run-Engine @("--profile", $bmProfile, "bf6", "export", $bmFile, "--mode", "merge-overwrite", "--include-keyboard", "--text")
+    Assert-True ($bmOverwrite.ExitCode -eq 0) ("bf6 merge-overwrite export failed: " + $bmOverwrite.Output)
+    $bmAfter = [System.IO.File]::ReadAllText($bmFile)
+    Assert-True ((-not (Get-BmFireSlot $bmAfter 0)) -and (Get-BmFireSlot $bmAfter 2)) "bf6 merge-overwrite should free fire's old joystick slot and keep the new one."
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptPitch\.0\.button 208$" "bf6 merge-overwrite must keep actions the profile does not bind."
+    Assert-True ((Get-BmNonFlight $bmAfter) -eq $bmNonFlight) "bf6 merge-overwrite must leave the non-flight lines identical."
+
+    $bmClean = Run-Engine @("--profile", $bmProfile, "bf6", "export", $bmFile, "--mode", "clean", "--nuke-untouched-devices", "--include-keyboard", "--text")
+    Assert-True ($bmClean.ExitCode -eq 0) ("bf6 clean + nuke export failed: " + $bmClean.Output)
+    $bmAfter = [System.IO.File]::ReadAllText($bmFile)
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.helicopter\.ConceptFire\.0\.button 255$" "bf6 clean should release the other flight keys of the written keyboard."
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptPitch\.0\.button 208$" "bf6 clean must keep keys on axis actions (the import does not read them)."
+    Assert-True ((Get-BmNonFlight $bmAfter) -eq $bmNonFlight) "bf6 clean + nuke must leave the non-flight lines identical."
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $bmPrevious.Devices
+    $env:JOYPRO_INSTALL_DETECTION = $bmPrevious.Detection
+    $env:JOYPRO_BATTLEFIELD_MAP = $bmPrevious.BfMap
+    $env:JOYPRO_DATA_DIR = $bmPrevious.Data
+}

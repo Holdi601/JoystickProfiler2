@@ -33,6 +33,16 @@ public sealed partial class ListFilterViewModel : ObservableObject
     // "relations" or "binds": the key of the remembered state.
     public string Page { get; }
 
+    // The games the user hid (Settings > Games): no game chip of theirs; a tick on one is dropped.
+    public Func<string, bool>? IsGameHidden { get; set; }
+
+    // The hidden games changed: the game chips again (and the list, when a dropped tick filtered it).
+    public void RefreshHiddenGames()
+    {
+        RebuildOptions();
+        RaiseChanged();
+    }
+
     // A filter changed: the page shows its list again.
     public event EventHandler? Changed;
 
@@ -350,6 +360,9 @@ public sealed partial class ListFilterViewModel : ObservableObject
             {
                 int bar = key.IndexOf('|');
                 string game = key[..bar];
+                // A hidden game (Settings > Games) has no chip (its relations stay in the list).
+                if (IsGameHidden?.Invoke(game) == true)
+                    continue;
                 if (!byGame.TryGetValue(game, out SortedSet<string>? set))
                     byGame[game] = set = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
                 string plane = key[(bar + 1)..];

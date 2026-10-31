@@ -1055,6 +1055,8 @@ namespace JoyPro.Engine.Games
             // Axis binds: the resolved MSFS tuning and the device axis (AxisName of <Axes>).
             public AxisTuning Tuning;
             public string AxisName;
+            // The profile's bind (for the "Only add" report).
+            public GameInputBinding Binding;
         }
 
         // An axis bind whose values go to the device's Sensitivity page (not to a per-action override).
@@ -1108,7 +1110,7 @@ namespace JoyPro.Engine.Games
             wanted = new MsfsWanted
             {
                 ActionId = action.Id, Combo = combo, IsAxis = isAxis, Inverted = binding.Inverted, RelationName = binding.RelationName,
-                Tuning = isAxis ? binding.Tuning : null, AxisName = isAxis ? AxisNameOf(binding.Input) : null
+                Tuning = isAxis ? binding.Tuning : null, AxisName = isAxis ? AxisNameOf(binding.Input) : null, Binding = binding
             };
             return string.Empty;
         }
@@ -1254,6 +1256,8 @@ namespace JoyPro.Engine.Games
             // "<device guid>|<action id>" of every wanted action a profile took (an action goes to one profile of its
             // device: MSFS 2024 keeps a profile per category).
             HashSet<string> placed = new HashSet<string>(StringComparer.Ordinal);
+            // "My profile wins": the actions the export binds (every aircraft; this target has no per-aircraft profiles).
+            HashSet<string> profileActions = new HashSet<string>(wantedByDevice.Values.SelectMany(d => d.Keys), StringComparer.Ordinal);
             int changedFiles = 0;
             foreach (MsfsProfileFile profile in profiles)
             {
@@ -1262,7 +1266,7 @@ namespace JoyPro.Engine.Games
                     wanted = new Dictionary<string, List<MsfsWanted>>(StringComparer.Ordinal);
                 string ownershipKey = OwnershipKey(profile.FilePath);
                 Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipKey, result.Warnings);
-                ApplyToProfile(profile, request, wanted, owned, learnedContexts, placed, result);
+                ApplyToProfile(profile, request, wanted, profileActions, owned, learnedContexts, placed, result);
                 if (request.DryRun)
                     continue;
 
@@ -1342,43 +1346,73 @@ namespace JoyPro.Engine.Games
             return result;
         }
 
-        private void ApplyToProfile(MsfsProfileFile profile, GameExportRequest request, Dictionary<string, List<MsfsWanted>> wanted, Dictionary<string, HashSet<string>> owned, Dictionary<string, string> learnedContexts, HashSet<string> placed, GameIoResult result)
+        // "My profile wins": the actions the export binds on any device for a profile the given aircraft use (null: a
+        // profile of every aircraft; binds limited to some aircraft count only for profiles of those aircraft).
+        private static HashSet<string> ProfileActions(Dictionary<Guid, Dictionary<string, List<MsfsWanted>>> wantedByDevice, ICollection<string> aircraft)
+        {
+            HashSet<string> actions = new HashSet<string>(StringComparer.Ordinal);
+            foreach (Dictionary<string, List<MsfsWanted>> device in wantedByDevice.Values)
+            {
+                foreach (KeyValuePair<string, List<MsfsWanted>> entry in device)
+                {
+                    if (entry.Value.Any(w => w.Aircraft == null || (aircraft != null && aircraft.Count > 0 && aircraft.All(a => w.Aircraft.Contains(a, StringComparer.OrdinalIgnoreCase)))))
+                        actions.Add(entry.Key);
+                }
+            }
+            return actions;
+        }
+
+        // JoyPro clears binds only in profiles of connected devices (the import leaves the others out).
+        private static bool OwnsDevice(GameExportRequest request, Guid device)
+        {
+            GameDevice connected = request.Devices == null ? null : request.Devices.FindByInstanceGuid(device);
+            return connected != null && connected.Connected;
+        }
+
+        private ExportSkippedBind SkippedMultiBind(MsfsProfileFile profile, MsfsWanted wanted, string gameAction)
+        {
+            List<string> infos = wanted.Combo.Infos.ToList();
+            string input = infos.Count > 0 ? infos[infos.Count - 1] : string.Empty;
+            GameInputBinding binding = wanted.Binding;
+            return new ExportSkippedBind
+            {
+                Game = GameId,
+                Aircraft = profile.RecordAircraft != null ? string.Join(", ", profile.RecordAircraft) : string.Empty,
+                Device = binding != null ? binding.Device ?? string.Empty : GameDeviceDirectory.BuildJoyProName(profile.DeviceName, profile.DeviceGuid),
+                Input = binding != null ? binding.Input ?? string.Empty : input,
+                ModifiersText = binding == null || binding.Reformers == null ? string.Empty : string.Join(" + ", binding.Reformers.Select(r => { string[] p = (r ?? string.Empty).Split('§'); return p.Length >= 3 ? p[1] + " " + p[2] : r; })),
+                Relation = wanted.RelationName ?? string.Empty,
+                Action = wanted.ActionId ?? string.Empty,
+                GameAction = gameAction ?? string.Empty
+            };
+        }
+
+        // profileActions: the actions the export binds for this profile's aircraft on any device ("my profile wins"
+        // takes their other inputs away).
+        private void ApplyToProfile(MsfsProfileFile profile, GameExportRequest request, Dictionary<string, List<MsfsWanted>> wanted, HashSet<string> profileActions, Dictionary<string, HashSet<string>> owned,
+            Dictionary<string, string> learnedContexts, HashSet<string> placed, GameIoResult result)
         {
             Dictionary<string, HashSet<string>> ownedBefore = owned.ToDictionary(e => e.Key, e => new HashSet<string>(e.Value), StringComparer.OrdinalIgnoreCase);
             bool replaceOwned = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
             if (replaceOwned)
                 owned.Clear();
-            // MSFS is flight only, so JoyPro takes over whole devices: clean clears every other bind in the profiles of
-            // the devices it writes, nuke clears the profiles of devices the export does not use.
-            bool clean = wanted.Count > 0 ? request.Mode == GameExportMode.Clean : request.NukeUnusedDevices;
+            bool owns = OwnsDevice(request, profile.DeviceGuid);
+            // MSFS is flight only, so JoyPro takes over whole devices: clean clears every other flight bind in the
+            // profiles of the devices it writes, nuke clears the profiles of devices the export does not use. Only
+            // connected devices; the menu, world map and developer contexts stay (the import leaves them out).
+            bool clean = owns && (wanted.Count > 0 ? request.Mode == GameExportMode.Clean : request.NukeUnusedDevices);
             List<MsfsDeviceAxisRequest> deviceRequests = new List<MsfsDeviceAxisRequest>();
 
             string placedPrefix = profile.DeviceGuid.ToString("N") + "|";
-            foreach (MsfsAction action in profile.Actions.ToList())
-            {
-                GameAction cataloged = request.Catalog.Find(action.Name);
-                if (cataloged == null || !IsManagedContext(action.Context))
-                {
-                    if (clean && action.Combos.Count > 0)
-                    {
-                        action.Combos = new List<MsfsCombo>();
-                        action.Changed = true;
-                    }
-                    continue;
-                }
-                List<MsfsWanted> wantedForAction;
-                if (wanted.TryGetValue(action.Name, out wantedForAction))
-                    placed.Add(placedPrefix + action.Name);
-                UpdateAction(profile, action, cataloged, wantedForAction ?? new List<MsfsWanted>(), request.Mode, clean, ownedBefore, owned, deviceRequests, result);
-            }
-
             foreach (string id in wanted.Keys.Where(id => profile.Find(id) != null && !IsManagedContext(profile.Find(id).Context)))
             {
                 result.Warnings.Add(id + " sits in the " + profile.Find(id).Context + " context of '" + Path.GetFileName(profile.FilePath) + "'; JoyPro leaves the sim's menu, world map and developer contexts alone.");
                 placed.Add(placedPrefix + id);
             }
 
-            foreach (KeyValuePair<string, List<MsfsWanted>> entry in wanted.Where(e => profile.Find(e.Key) == null))
+            // Actions the profile does not list yet are added first (empty), so the conflicts below see every action
+            // of the profile.
+            foreach (KeyValuePair<string, List<MsfsWanted>> entry in wanted.Where(e => profile.Find(e.Key) == null).ToList())
             {
                 GameAction catalogedNew = request.Catalog.Find(entry.Key);
                 // The sim's "General" binds (cameras, views, pause, ...) keep their own context.
@@ -1402,8 +1436,6 @@ namespace JoyPro.Engine.Games
                         presetContext = "PLANE";
                     MsfsAction addedPreset = profile.AddAction(presetContext, entry.Key, catalogedNew.IsAxis ? FlagAxis : FlagDigital);
                     addedPreset.Attributes += " ValueEvent=\"0\"";
-                    placed.Add(placedPrefix + entry.Key);
-                    UpdateAction(profile, addedPreset, catalogedNew, entry.Value, request.Mode, clean, ownedBefore, owned, deviceRequests, result);
                     continue;
                 }
                 // A 2024 profile lists every action of its category; one that is missing belongs to another category
@@ -1423,38 +1455,99 @@ namespace JoyPro.Engine.Games
                         result.Warnings.Add(entry.Key + " is new in '" + Path.GetFileName(profile.FilePath) + "'; its MSFS 2020 context is unknown, so it goes into PLANE.");
                     }
                 }
-                MsfsAction added = profile.AddAction(context, entry.Key, catalogedNew.IsAxis ? FlagAxis : FlagDigital);
-                placed.Add(placedPrefix + entry.Key);
-                UpdateAction(profile, added, catalogedNew, entry.Value, request.Mode, clean, ownedBefore, owned, deviceRequests, result);
+                profile.AddAction(context, entry.Key, catalogedNew.IsAxis ? FlagAxis : FlagDigital);
+            }
+
+            // The inputs (combination signatures) the profile's actions get in this file, and which action of the
+            // sim's flight contexts holds each input now.
+            Dictionary<string, HashSet<string>> wantedOn = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            Dictionary<string, string> heldBy = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (MsfsAction action in profile.Actions.Where(a => IsManagedContext(a.Context)))
+            {
+                List<MsfsWanted> list;
+                if (wanted.TryGetValue(action.Name, out list))
+                {
+                    foreach (MsfsWanted item in list)
+                    {
+                        HashSet<string> names;
+                        if (!wantedOn.TryGetValue(item.Combo.Signature, out names))
+                            wantedOn[item.Combo.Signature] = names = new HashSet<string>(StringComparer.Ordinal);
+                        names.Add(action.Name);
+                    }
+                }
+                foreach (MsfsCombo combo in action.Combos.Where(c => !heldBy.ContainsKey(c.Signature)))
+                    heldBy[combo.Signature] = action.Name;
+            }
+            // Merge and "my profile wins": a combination the profile gives another action is a conflict and goes.
+            Func<MsfsAction, MsfsCombo, bool> conflict = (action, combo) =>
+            {
+                HashSet<string> names;
+                return request.Mode != GameExportMode.Add && wantedOn.TryGetValue(combo.Signature, out names) && !names.Contains(action.Name);
+            };
+            // "Only add": the action of the sim that holds an input now (null: free, or the action itself).
+            Func<MsfsAction, MsfsCombo, string> takenBy = (action, combo) =>
+            {
+                string holder;
+                return heldBy.TryGetValue(combo.Signature, out holder) && holder != action.Name && !action.Combos.Any(c => c.Signature == combo.Signature) ? holder : null;
+            };
+
+            foreach (MsfsAction action in profile.Actions.ToList())
+            {
+                GameAction cataloged = request.Catalog.Find(action.Name);
+                if (!IsManagedContext(action.Context))
+                    continue;
+                if (cataloged == null)
+                {
+                    List<MsfsCombo> kept = clean ? new List<MsfsCombo>() : action.Combos.Where(c => !conflict(action, c)).ToList();
+                    if (kept.Count != action.Combos.Count)
+                    {
+                        action.Combos = kept;
+                        action.Changed = true;
+                    }
+                    continue;
+                }
+                List<MsfsWanted> wantedForAction;
+                if (wanted.TryGetValue(action.Name, out wantedForAction))
+                    placed.Add(placedPrefix + action.Name);
+                bool overwrite = owns && replaceOwned && profileActions != null && profileActions.Contains(action.Name);
+                UpdateAction(profile, action, cataloged, wantedForAction ?? new List<MsfsWanted>(), request.Mode, clean, overwrite, conflict, takenBy, ownedBefore, owned, deviceRequests, result);
             }
 
             ApplyDeviceAxes(profile, request.Mode, deviceRequests, ownedBefore, owned, result);
         }
 
-        private static void UpdateAction(MsfsProfileFile profile, MsfsAction action, GameAction cataloged, List<MsfsWanted> wanted, GameExportMode mode, bool clean, Dictionary<string, HashSet<string>> ownedBefore, Dictionary<string, HashSet<string>> owned, List<MsfsDeviceAxisRequest> deviceRequests, GameIoResult result)
+        // clean: every combination the profile does not want goes; overwrite: the action is bound by the export ("my
+        // profile wins": its other inputs go); conflict: a combination another action of the profile gets.
+        private void UpdateAction(MsfsProfileFile profile, MsfsAction action, GameAction cataloged, List<MsfsWanted> wanted, GameExportMode mode, bool clean, bool overwrite,
+            Func<MsfsAction, MsfsCombo, bool> conflict, Func<MsfsAction, MsfsCombo, string> takenBy, Dictionary<string, HashSet<string>> ownedBefore, Dictionary<string, HashSet<string>> owned,
+            List<MsfsDeviceAxisRequest> deviceRequests, GameIoResult result)
         {
             HashSet<string> wantedSignatures = new HashSet<string>(wanted.Select(w => w.Combo.Signature), StringComparer.Ordinal);
-            List<MsfsCombo> combos = action.Combos.Where(c =>
-                wantedSignatures.Contains(c.Signature) ||
-                !(clean || (mode == GameExportMode.MergeOverwrite && GameOwnershipStore.Contains(ownedBefore, action.Name, c.Signature)))).ToList();
-
-            if (!(mode == GameExportMode.Merge && combos.Count > 0 && combos.All(c => !wantedSignatures.Contains(c.Signature))))
+            List<MsfsCombo> combos = action.Combos.Where(c => wantedSignatures.Contains(c.Signature) || !(clean || overwrite || conflict(action, c))).ToList();
+            // "Only add" never changes a bind that is there: only new combinations get the profile's axis settings.
+            HashSet<string> added = new HashSet<string>(StringComparer.Ordinal);
+            foreach (MsfsWanted item in wanted)
             {
-                foreach (MsfsWanted item in wanted)
+                if (combos.Any(c => c.Signature == item.Combo.Signature))
+                    continue;
+                if (mode == GameExportMode.Add)
                 {
-                    if (combos.Any(c => c.Signature == item.Combo.Signature))
-                        continue;
-                    if (combos.Count >= 2)
+                    // Another action of the sim on that input: not written (no multi-bind), reported.
+                    string holder = takenBy(action, item.Combo);
+                    if (holder != null)
                     {
-                        result.Warnings.Add("Relation '" + item.RelationName + "' (" + action.Name + "): both MSFS input slots of '" + Path.GetFileName(profile.FilePath) + "' are taken; not written.");
+                        result.BindingsSkipped++;
+                        result.SkippedTakenInputs.Add(SkippedMultiBind(profile, item, holder));
                         continue;
                     }
-                    combos.Add(item.Combo);
                 }
-            }
-            else if (wanted.Count > 0)
-            {
-                result.Warnings.Add(action.Name + " is already bound in '" + Path.GetFileName(profile.FilePath) + "'; merge keeps it.");
+                if (combos.Count >= 2)
+                {
+                    result.Warnings.Add("Relation '" + item.RelationName + "' (" + action.Name + "): both MSFS input slots of '" + Path.GetFileName(profile.FilePath) + "' are taken; not written.");
+                    continue;
+                }
+                combos.Add(item.Combo);
+                added.Add(item.Combo.Signature);
             }
 
             foreach (MsfsCombo combo in combos.Where(c => wantedSignatures.Contains(c.Signature)))
@@ -1466,11 +1559,10 @@ namespace JoyPro.Engine.Games
                     foreach (string signature in previous.Where(s => combos.Any(c => c.Signature == s)))
                         GameOwnershipStore.Add(owned, action.Name, signature);
             }
-
             int flag = action.Flag;
             List<string> otherLines = new List<string>(action.OtherLines);
             int overrideIndex = action.OverrideAxisIndex;
-            MsfsWanted axis = wanted.FirstOrDefault(w => w.IsAxis && combos.Any(c => c.Signature == w.Combo.Signature));
+            MsfsWanted axis = wanted.FirstOrDefault(w => w.IsAxis && combos.Any(c => c.Signature == w.Combo.Signature) && (mode != GameExportMode.Add || added.Contains(w.Combo.Signature)));
             if (axis != null)
             {
                 flag = ((flag & ~(FlagDigital | 1)) | FlagAxis) & ~FlagInvert | (axis.Inverted ? FlagInvert : 0);
@@ -1628,9 +1720,9 @@ namespace JoyPro.Engine.Games
                 if (line == null && IsDefaultPage(after))
                     continue;
                 bool changes = line == null || values.Any(v => !existing.ContainsKey(v.Key) || existing[v.Key] != v.Value);
-                if (changes && line != null && mode == GameExportMode.Merge && !IsDefaultPage(existing) && !GameOwnershipStore.Contains(ownedBefore, ownerKey, AxisToken(existing)))
+                if (changes && line != null && (mode == GameExportMode.Merge || mode == GameExportMode.Add) && !IsDefaultPage(existing) && !GameOwnershipStore.Contains(ownedBefore, ownerKey, AxisToken(existing)))
                 {
-                    result.Warnings.Add("Device '" + profile.DeviceName + "' axis " + axisName + " has Sensitivity settings made in the game; merge keeps them.");
+                    result.Warnings.Add("Device '" + profile.DeviceName + "' axis " + axisName + " has Sensitivity settings made in the game; " + (mode == GameExportMode.Add ? "add" : "merge") + " keeps them.");
                     continue;
                 }
                 GameOwnershipStore.Add(owned, ownerKey, AxisToken(after));

@@ -30,6 +30,10 @@ namespace JoyPro.Engine
         public int DefaultsLeftOnJoyProDevices { get; set; }
         public Dictionary<string, int> LeftPerDevice { get; set; } = new Dictionary<string, int>(StringComparer.Ordinal);
         public List<DcsLeftDefault> Left { get; set; } = new List<DcsLeftDefault>();
+        // --dump-active: every bind DCS's own Lua has active on the checked joysticks (all of them, not only defaults),
+        // one sorted line "profile|device|kind|command hash|key|modifiers|filter" each, written to this file.
+        public string ActiveDumpFile { get; set; }
+        public int ActiveBinds { get; set; }
         public List<string> Steps { get; set; } = new List<string>();
         public List<string> Warnings { get; set; } = new List<string>();
         public List<string> Errors { get; set; } = new List<string>();
@@ -42,8 +46,9 @@ namespace JoyPro.Engine
         // an effective bind of a device that the device's .diff.lua does not add itself. The copy is temporary; the
         // given folder is only read. Checked devices: the joysticks connected now (as DCS names them), and with
         // includeDisconnected the other devices with files, through a fake stick of their type.
-        public static DcsVerifyCleanResult VerifyClean(DcsRefreshOptions options, IList<string> deviceFilter, bool includeDisconnected, int maxListed)
+        public static DcsVerifyCleanResult VerifyClean(DcsRefreshOptions options, IList<string> deviceFilter, bool includeDisconnected, int maxListed, string dumpActivePath = null)
         {
+            List<string> activeLines = string.IsNullOrWhiteSpace(dumpActivePath) ? null : new List<string>();
             DcsRefreshOptions normalized = NormalizeOptions(options);
             DcsVerifyCleanResult verify = new DcsVerifyCleanResult();
             verify.SavedGamesPath = normalized.SavedGamesPath;
@@ -111,7 +116,7 @@ namespace JoyPro.Engine
                 {
                     List<DcsHeadlessProfileCandidate> chunk = candidates.Skip(start).Take(chunkSize).ToList();
                     EngineProgress.Report(Math.Min(candidates.Count, start + chunk.Count), candidates.Count, "DCS World, checking the default binds", chunk[0].UnitName);
-                    string script = BuildVerifyScript(scratch, chunk, start == 0, includeDisconnected ? filesByDevice : null, filters);
+                    string script = BuildVerifyScript(scratch, chunk, start == 0, includeDisconnected ? filesByDevice : null, filters, activeLines != null);
                     List<string> lines = RunLuaScript(normalized, script, verify.Errors);
                     foreach (string line in lines)
                     {
@@ -147,6 +152,11 @@ namespace JoyPro.Engine
                             if (verify.Left.Count < maxListed)
                                 verify.Left.Add(left);
                         }
+                        else if (activeLines != null && line.StartsWith("JOYPRO_ACTIVE|", StringComparison.Ordinal) && parts.Length >= 8)
+                        {
+                            parts[2] = fakeToDevice.TryGetValue(parts[2], out string realDevice) ? realDevice : parts[2];
+                            activeLines.Add(string.Join("|", parts.Skip(1)));
+                        }
                         else if (line.StartsWith("JOYPRO_PROFILE_ERR|", StringComparison.Ordinal))
                             verify.Warnings.Add("[headless-lua] " + line.Substring("JOYPRO_PROFILE_ERR|".Length));
                         else if (line.StartsWith("JOYPRO_FATAL|", StringComparison.Ordinal))
@@ -156,6 +166,13 @@ namespace JoyPro.Engine
                         break;
                 }
                 verify.Devices = verify.Devices.Select(d => fakeToDevice.TryGetValue(d, out string real) ? real : d).Distinct(StringComparer.Ordinal).ToList();
+                if (activeLines != null && verify.Errors.Count == 0)
+                {
+                    List<string> sorted = activeLines.Distinct(StringComparer.Ordinal).OrderBy(l => l, StringComparer.Ordinal).ToList();
+                    File.WriteAllLines(dumpActivePath, sorted, new System.Text.UTF8Encoding(false));
+                    verify.ActiveDumpFile = dumpActivePath;
+                    verify.ActiveBinds = sorted.Count;
+                }
             }
             catch (Exception ex)
             {
@@ -170,7 +187,7 @@ namespace JoyPro.Engine
         }
 
         private static string BuildVerifyScript(string scratchSavedGames, List<DcsHeadlessProfileCandidate> chunk, bool checkDefaultSet,
-            Dictionary<string, List<string>> disconnectedFiles, List<string> filters)
+            Dictionary<string, List<string>> disconnectedFiles, List<string> filters, bool dumpActive = false)
         {
             StringBuilder script = new StringBuilder();
             script.AppendLine("-- JoyPro headless DCS default-bind check");
@@ -281,6 +298,20 @@ namespace JoyPro.Engine
             script.AppendLine("              if combos and #combos > 0 then");
             script.AppendLine("                local hash = kind == 'key' and InputUtils.getKeyCommandHash(command) or InputUtils.getAxisCommandHash(command)");
             script.AppendLine("                for _, combo in ipairs(combos) do");
+            if (dumpActive)
+            {
+                script.AppendLine("                  local r = {}");
+                script.AppendLine("                  for _, v in ipairs(combo.reformers or {}) do table.insert(r, v) end");
+                script.AppendLine("                  table.sort(r)");
+                script.AppendLine("                  local fl = ''");
+                script.AppendLine("                  local ft = combo.filter");
+                script.AppendLine("                  if type(ft) == 'table' then");
+                script.AppendLine("                    local c = {}");
+                script.AppendLine("                    for _, v in ipairs(ft.curvature or {}) do table.insert(c, string.format('%.4f', v)) end");
+                script.AppendLine("                    fl = 'c=' .. table.concat(c, ',') .. ';d=' .. string.format('%.4f', ft.deadzone or 0) .. ';i=' .. tostring(ft.invert and true or false) .. ';s=' .. tostring(ft.slider and true or false) .. ';x=' .. string.format('%.4f', ft.saturationX or 1) .. ';y=' .. string.format('%.4f', ft.saturationY or 1)");
+                script.AppendLine("                  end");
+                script.AppendLine("                  print('JOYPRO_ACTIVE|' .. clean(profileName) .. '|' .. clean(d) .. '|' .. kind .. '|' .. clean(hash) .. '|' .. clean(combo.key) .. '|' .. clean(table.concat(r, ',')) .. '|' .. clean(fl))");
+            }
             script.AppendLine("                  if not added[sig(hash, combo.key, combo.reformers)] then");
             script.AppendLine("                    print('JOYPRO_LEFT|' .. clean(profileName) .. '|' .. clean(d) .. '|' .. kind .. '|' .. clean(command.name) .. '|' .. clean(combo.key) .. '|' .. clean(table.concat(combo.reformers or {}, ',')) .. '|' .. clean(unitName))");
             script.AppendLine("                  end");

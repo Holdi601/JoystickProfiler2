@@ -47,7 +47,9 @@ generated that way from 0.17.2.3.
 
 ## Export rules
 Flight-only game (`ExclusiveFlightSim`): clean releases every other assignable action on the written devices, in every
-map category; nuke releases them on the other connected devices and gives devices without saved maps empty ones.
+map category; nuke releases them on the other connected devices (one of a model) and gives devices without saved maps
+empty ones (unknown joysticks have no default binds here, so that changes nothing the game does; Nuclear Option no
+longer does it).
 merge / merge-overwrite / add as in Nuclear Option. Keyboard binds and hat diagonals are not written; a device needs to
 be connected (maps are keyed by its HID product and VID/PID); two devices of one model are skipped. Backup: the
 player's controller-map values go into the backup store before every write. Close the game first: it saves all maps

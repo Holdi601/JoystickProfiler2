@@ -213,3 +213,75 @@ try {
 finally {
     $env:JOYPRO_FAKE_DEVICES = $armaPreviousFakeDevices
 }
+
+# Arma 3 export modes (only cataloged aircraft actions; helicopter and plane actions are different vehicles):
+#   add       never removes; a bind on a code another action of the same vehicle uses is skipped and reported
+#   merge     removes the other action's code (conflict), keeps the action's old code
+#   merge-overwrite  merge + the action loses its other codes on connected joysticks
+$a3mDir = Join-Path $tempDir "arma-modes"
+New-Item -Path $a3mDir -ItemType Directory -Force | Out-Null
+$a3mFile = Join-Path $a3mDir "Modes.Arma3Profile"
+# Stick button 6 (131333) is the gear, stick button 7 (131334) the plane's flaps.
+$a3mText = [System.IO.File]::ReadAllText((Join-Path $engineDir "tests\fixtures\arma3\Smoke.Arma3Profile")).Replace("keyLaunchCM[]={46};", "keyLaunchCM[]={46};`nkeyLandGear[]={131333};`nkeyFlapsDown[]={131334};")
+[System.IO.File]::WriteAllText($a3mFile, $a3mText)
+$a3mPro = Join-Path $a3mDir "modes.pr0file"
+# Everything but the key lines of flight actions (keyFire and keyReloadMagazine are infantry actions).
+function Get-A3mNonFlight([string]$Text) {
+    return (($Text -split "\r?\n") | Where-Object { $_ -notmatch '^key' -or $_ -match '^key(Fire|ReloadMagazine)\[' }) -join "`n"
+}
+$a3mNonFlight = Get-A3mNonFlight $a3mText
+$a3mPreviousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\wardogs\devices.tsv"
+try {
+    if (-not (Skip-WithoutGameData "Arma 3 export modes (DB\Arma3)")) {
+    $a3mStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
+    # Moved: auto hover from stick button 10 to button 3 (the infantry reload is on button 3 too: no conflict).
+    # Conflict: countermeasures on button 6 (the gear's). Auto hover cancel on button 7: the plane's flaps, another vehicle.
+    Run-Engine @("--profile", $a3mPro, "relations", "add", "A3M Hover", "--button", "--node", "Arma3:AutoHover", "--device", $a3mStick, "--input", "JOY_BTN3", "--text") | Out-Null
+    Run-Engine @("--profile", $a3mPro, "relations", "add", "A3M CM", "--button", "--node", "Arma3:LaunchCM", "--device", $a3mStick, "--input", "JOY_BTN6", "--text") | Out-Null
+    Run-Engine @("--profile", $a3mPro, "relations", "add", "A3M Hover off", "--button", "--node", "Arma3:AutoHoverCancel", "--device", $a3mStick, "--input", "JOY_BTN7", "--text") | Out-Null
+
+    $a3mAdd = Run-Engine @("--profile", $a3mPro, "arma3", "export", $a3mFile, "--mode", "add")
+    Assert-True ($a3mAdd.ExitCode -eq 0) ("arma3 add export failed: " + $a3mAdd.Output)
+    $a3mAddJson = ($a3mAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($a3mAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "LaunchCM" -and $_.GameAction -eq "LandGear" }).Count -eq 1) ("arma3 add should report countermeasures on the gear's button: " + $a3mAdd.Output)
+    $a3mAfter = [System.IO.File]::ReadAllText($a3mFile)
+    Assert-Match $a3mAfter "(?m)^keyLandGear\[\]=\{131333\};" "arma3 add must keep the gear."
+    Assert-Match $a3mAfter "(?m)^keyLaunchCM\[\]=\{46\};" "arma3 add must not write countermeasures on the gear's button."
+    Assert-Match $a3mAfter "(?m)^keyAutoHover\[\]=\{45,131337,131330\};" "arma3 add should add auto hover's new code and keep the old one."
+    Assert-Match $a3mAfter "(?m)^keyAutoHoverCancel\[\]=\{131334\};" "arma3 add should write auto hover cancel on the plane flaps' button (another vehicle)."
+    Assert-Match $a3mAfter "(?m)^keyFlapsDown\[\]=\{131334\};" "arma3 add must keep the plane's flaps."
+    Assert-True ((Get-A3mNonFlight $a3mAfter) -eq $a3mNonFlight) "arma3 add must leave the non-flight lines identical."
+
+    $a3mMerge = Run-Engine @("--profile", $a3mPro, "arma3", "export", $a3mFile, "--mode", "merge", "--text")
+    Assert-True ($a3mMerge.ExitCode -eq 0) ("arma3 merge export failed: " + $a3mMerge.Output)
+    $a3mAfter = [System.IO.File]::ReadAllText($a3mFile)
+    Assert-NotMatch $a3mAfter "(?m)^keyLandGear\[\]=\{[^}]*131333" "arma3 merge should remove the gear's code the profile gives countermeasures (conflict)."
+    Assert-Match $a3mAfter "(?m)^keyLaunchCM\[\]=\{46,131333\};" "arma3 merge should write countermeasures."
+    Assert-Match $a3mAfter "(?m)^keyAutoHover\[\]=\{45,131337,131330\};" "arma3 merge must keep auto hover's old code."
+    Assert-Match $a3mAfter "(?m)^keyFlapsDown\[\]=\{131334\};" "arma3 merge must keep the plane's flaps (another vehicle)."
+    Assert-True ((Get-A3mNonFlight $a3mAfter) -eq $a3mNonFlight) "arma3 merge must leave the non-flight lines identical."
+
+    $a3mOverwrite = Run-Engine @("--profile", $a3mPro, "arma3", "export", $a3mFile, "--mode", "merge-overwrite", "--text")
+    Assert-True ($a3mOverwrite.ExitCode -eq 0) ("arma3 merge-overwrite export failed: " + $a3mOverwrite.Output)
+    $a3mAfter = [System.IO.File]::ReadAllText($a3mFile)
+    Assert-Match $a3mAfter "(?m)^keyAutoHover\[\]=\{45,131330\};" "arma3 merge-overwrite should remove auto hover's old code and keep the keyboard key."
+    Assert-Match $a3mAfter "(?m)^keyHeliCyclicForward\[\]=\{17,200,196873\};" "arma3 merge-overwrite must keep actions the profile does not bind."
+    Assert-True ((Get-A3mNonFlight $a3mAfter) -eq $a3mNonFlight) "arma3 merge-overwrite must leave the non-flight lines identical."
+
+    $a3mClean = Run-Engine @("--profile", $a3mPro, "arma3", "export", $a3mFile, "--mode", "clean", "--nuke-untouched-devices", "--text")
+    Assert-True ($a3mClean.ExitCode -eq 0) ("arma3 clean + nuke export failed: " + $a3mClean.Output)
+    $a3mAfter = [System.IO.File]::ReadAllText($a3mFile)
+    Assert-Match $a3mAfter "(?m)^keyHeliCyclicForward\[\]=\{17,200\};" "arma3 clean should release the written stick's other flight codes."
+    Assert-True ((Get-A3mNonFlight $a3mAfter) -eq $a3mNonFlight) "arma3 clean + nuke must leave the non-flight lines identical."
+
+    # Nuke never clears a joystick that is not connected (the throttle's GUID changed: not connected).
+    [System.IO.File]::WriteAllText($a3mFile, $a3mText.Replace("66666666-7777-8888-9999-000000000000", "0fff0fff-7777-8888-9999-000000000000"))
+    $a3mNuke = Run-Engine @("--profile", $a3mPro, "arma3", "export", $a3mFile, "--mode", "merge", "--nuke-untouched-devices", "--text")
+    Assert-True ($a3mNuke.ExitCode -eq 0) ("arma3 nuke export failed: " + $a3mNuke.Output)
+    Assert-Match ([System.IO.File]::ReadAllText($a3mFile)) "(?m)^keyHeliCollectiveRaiseCont\[\]=\{197130,197134\};" "arma3 nuke must keep codes of joysticks that are not connected."
+    }
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $a3mPreviousFakeDevices
+}

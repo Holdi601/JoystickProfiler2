@@ -36,23 +36,33 @@ public sealed class DuplicateActionViewModelTests
         await vm.ValidateProfileCommand.ExecuteAsync(null);
 
         CheckIssueSection duplicates = Assert.Single(vm.CheckSections, s => s.Kind == "duplicates");
-        Assert.True(duplicates.IsSerious);
-        Assert.Equal("Actions in several relations (actions: 2, cards: 1)", duplicates.CountText);
-        Assert.StartsWith("Two inputs do the same thing in the game", duplicates.Severity);
+        Assert.True(duplicates.IsWarning);
+        Assert.Equal("Same command on two buttons (actions: 2, cards: 1)", duplicates.CountText);
+        Assert.StartsWith("The game gets the same command from two buttons", duplicates.Severity);
         CheckIssueCard card = Assert.Single(duplicates.Cards);
-        Assert.Equal("AH-64D Block II (CPG and Pilot): 'Force Trim/Hold Mode Switch - AL/Right'", card.Headline);
-        Assert.Equal("is in 2 relations: 'Mode Button 07' (Total Controls MFBB · BTN 39) and 'Trim Right' (MOZA AB9 FFB Base · BTN 4). DCS gets a bind on each of these inputs.", card.Details);
-        Assert.Equal("96% sure: keep in 'Trim Right'", card.SuggestionText);
+        // The card in words: a short title, the two buttons with their relations, one sentence, the table, the fixes.
+        Assert.True(card.IsWarning);
+        Assert.Equal("Same command on two buttons", card.Title);
+        Assert.Equal("Total Controls MFBB · BTN 39 ('Mode Button 07')  ↔  MOZA AB9 FFB Base · BTN 4 ('Trim Right')", card.ButtonsLine);
+        Assert.Equal("In AH-64D Block II (CPG and Pilot), both buttons do 'Force Trim/Hold Mode Switch - AL/Right'. Usually only one of them is wanted.", card.Sentence);
+        CheckTableRow row = Assert.Single(card.Rows);
+        Assert.Equal("AH-64D Block II (CPG and Pilot)", row.Left);
+        Assert.Equal("'Force Trim/Hold Mode Switch - AL/Right'", row.Right);
+        Assert.Equal("96% sure: keep it only on MOZA AB9 FFB Base · BTN 4", card.SuggestionText);
         Assert.Contains("It was only in 'Trim Right' before", card.ReasonText);
-        foreach (string text in new[] { card.Headline, card.Details, card.SuggestionText, card.ReasonText })
-            Assert.DoesNotContain(TrimId, text);
+        Assert.Equal("Keep only on MOZA AB9 FFB Base · BTN 4", card.Recommended!.Text);
+        Assert.Equal(["Keep only on Total Controls MFBB · BTN 39", "Keep both"], card.Fixes.Select(f => f.Text));
+        Assert.Equal(["Switch it off on both buttons"], card.MoreFixes.Select(f => f.Text));
+        Assert.Equal(["Open 'Mode Button 07' (Total Controls MFBB · BTN 39)", "Open 'Trim Right' (MOZA AB9 FFB Base · BTN 4)"], card.OpenButtons.Select(f => f.Text));
+        Assert.Empty(CheckTextGate.Problems([card]));
         // The engine's plain line is not listed again under the notes; the other note stays.
         CheckIssueSection notes = Assert.Single(vm.CheckSections, s => s.Kind == "notes");
-        Assert.Equal("Bind without relation: Old", Assert.Single(notes.Cards).Headline);
+        Assert.True(notes.IsNote);
+        Assert.Equal("Bind without relation: Old", Assert.Single(notes.Cards).Sentence);
         Assert.Equal(2, card.Choices.Count);
         DuplicateRelationChoice trim = card.Choices.Single(c => c.Relation == "Trim Right");
         Assert.True(trim.IsSuggested);
-        Assert.Equal("Keep in 'Trim Right' only", trim.KeepText);
+        Assert.Equal("Keep only on MOZA AB9 FFB Base · BTN 4", trim.KeepText);
 
         // The threshold: one of two actions at 90% or more.
         Assert.Equal(90, vm.DuplicateAutoFixThreshold);
@@ -141,7 +151,7 @@ public sealed class DuplicateActionViewModelTests
         // The same number as the check on the Export page.
         await vm.ValidateProfileCommand.ExecuteAsync(null);
         Assert.Equal(2, vm.DuplicateActionCount);
-        Assert.Equal("Actions in several relations (actions: 2, cards: 1)", vm.CheckSections.Single(s => s.Kind == "duplicates").CountText);
+        Assert.Equal("Same command on two buttons (actions: 2, cards: 1)", vm.CheckSections.Single(s => s.Kind == "duplicates").CountText);
 
         vm.AutoFixDuplicatesAfterImport = true;
         fake.Resolved = true;
@@ -187,17 +197,18 @@ public sealed class DuplicateActionViewModelTests
         // The view model has no relation "Weapons, guns": the pieces stay apart.
         CheckIssueCard card = vm.PlainCard(new ValidationIssueItem { Kind = "Error", Message = message });
         // An aircraft no name table has (RelationListItem.AircraftNames is shared by the tests): its id at the seat.
-        Assert.Equal("ZZ-Test (CPG): QA Test Throttle · BTN 7 · Shift A", card.Headline);
-        Assert.Equal("This input is bound in 3 relations: 'Weapons', 'guns' and 'MFD__RIGHT__T2'. In the game it does all of them at once.", card.Details);
-        foreach (string text in new[] { card.Headline, card.Details })
-        {
-            Assert.DoesNotContain("{42CEC570", text);
-            Assert.DoesNotContain("JOY_", text);
-            Assert.DoesNotContain("§", text);
-        }
+        Assert.True(card.IsError);
+        Assert.Equal("One button does two things", card.Title);
+        Assert.Equal("QA Test Throttle · BTN 7 · Shift A in 'Weapons', 'guns' and 'MFD__RIGHT__T2'", card.ButtonsLine);
+        Assert.Equal("In ZZ-Test (CPG), one press runs the commands of 'Weapons', 'guns' and 'MFD__RIGHT__T2' at the same time.", card.Sentence);
+        Assert.Empty(CheckTextGate.Problems([card]));
         Assert.Contains("MFD__RIGHT__T2", card.SearchText);
-        Assert.True(card.HasOpenContext);
-        Assert.Equal("Bind without relation: Old", vm.PlainCard(new ValidationIssueItem { Kind = "Warning", Message = "Bind without relation: Old" }).Headline);
+        // One "Open" per relation (never one button that opens only the first).
+        Assert.Equal(3, card.OpenButtons.Count);
+        Assert.StartsWith("Open 'Weapons' (QA Test Throttle · BTN 7 · Shift A)", card.OpenButtons[0].Text);
+        CheckIssueCard note = vm.PlainCard(new ValidationIssueItem { Kind = "Warning", Message = "Bind without relation: Old" });
+        Assert.True(note.IsNote);
+        Assert.Equal("Bind without relation: Old", note.Sentence);
     }
 
     // profile validate and relations duplicates of one relation pair until a fix resolves it.

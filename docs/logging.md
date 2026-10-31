@@ -96,7 +96,7 @@ The engine's part of Settings > Report a problem > **Create Report** (see "Probl
 support bundle [--game <id>] [--days N] [--include-profile true|false] [--history-cap-mb N] [--list] --out <zip>`,
 `engine\EngineSupportBundle.cs` and `EngineSupportBundle.Profile.cs`). It holds everything a maintainer needs, so a
 tester never has to send a second file. The GUI first lists what the zip will hold (`--list`, nothing is written: every
-part with its size and what is trimmed), the user confirms, then the engine saves it as `Documents\JoyPro2 Problem
+part with its size and what is trimmed), the user confirms, then the engine saves it as `Documents\JoyPro2\Problem
 Reports\JoyPro2-report-<time>.zip`, the GUI adds `report.txt` and shows it in Explorer. The engine makes it in its own process (the GUI stays usable) and reports its progress in the busy
 area; a typical file of 40 MB takes about 5 seconds. Nothing is uploaded.
 
@@ -117,6 +117,7 @@ when `--profile` is given, else false.
 | `devices/devices.txt`, `devices/vjoy-hidhide.txt` | the devices (VID:PID, instance GUIDs, HID names) and `engine vjoy status` (vJoy, ViGEm and HidHide installed, their devices and state, JoyPro's HidHide session) |
 | `profile/<file>.pr0file` | personal: the open profile (only that one) |
 | `profile/history/` | personal: its history as `engine profile history` reads it: `history.json` (the whole index), `drafts.json`, `blobs/<hash>.gz` and `.items.gz` of the newest versions up to 50 MB of stored copies (`--history-cap-mb`); the versions left out are named in summary.txt |
+| `joypro1/<file>.pr0file` | personal (2.5.0): JoyPro 1's profiles, `Documents\JoyPro\*.pr0file` with its `last.pr0file` (a tester who comes from JoyPro 1), cleaned like the open profile, newest first up to 50 MB (the others are named in summary.txt); the open profile is not added twice. `JOYPRO_JOYPRO1_DIR` points elsewhere (tests; under the test sandbox `<root>\Documents\JoyPro`) |
 | `games/<id>/sync-record.json`, `backups.txt`, `backup-<set>/` | the watcher's record, the list of JoyPro's backups (set, time, command, files) and the newest set: JoyPro's own copies of the small text config files (at most 512 KB each) an export changed, and its manifest |
 | `games/<id>/current/`, `current-files.txt` | personal: the game's bind files as they are now, the files JoyPro imports from and exports to (DCS `Config\Input\<aircraft>\{joystick,keyboard,mouse}\*.diff.lua` and `modifiers.lua`, IL-2's `input` files and `startup.cfg`, Star Citizen's actionmaps, the other games' files, a registry game's values as text) and JoyPro's files next to them (`.jp`, `.joypro-meta.json`, `.joypro.json`); text up to 4 MB each, at most 50 MB per game (newest first), and the list of all of them with size, time and whether copied. A file that changes while it is read is not copied |
 | `games/MSFS2024/profiles/` | the input profiles JoyPro reads (Steam remote folder, Microsoft Store save; decoded text, a header line with the source path, size and time) |
@@ -202,11 +203,16 @@ Settings > Report a Problem, for users without technical knowledge, one flow (`M
 2. The box `Include my open profile and its history (your binds and device names)` (on by default, remembered; it
    replaced the report's `Attach my profile` of 2.4.2, which was never saved, so there was nothing to carry over).
 3. `Create Report`: JoyPro lists what goes in (`engine support bundle --list`), the user confirms, the engine writes the
-   support file (above) to `Documents\JoyPro2 Problem Reports\JoyPro2-report-<time>.zip`, and the GUI adds
+   support file (above) to `Documents\JoyPro2\Problem Reports\JoyPro2-report-<time>.zip`, and the GUI adds
    `report.txt` and `engine-output.log` (`ProblemReporter.AddReport`) and shows the zip in Explorer. The status line
    says what to do next.
 4. `Open GitHub Issue Page` opens a prefilled issue (title and description, scrubbed) in the browser, where the user
    drags the zip in; `Show Report` shows the zip again.
+
+The reports' folder is `Documents\JoyPro2\Problem Reports` since 2.5.0 (next to the profiles; tester wish). Up to 2.4.x
+it was `Documents\JoyPro2 Problem Reports`: at the first start of 2.5.0 (and before a report is made) its files move
+into the new folder once (`ProblemReporter.MigrateOldFolder`); a file whose name the new folder already has stays in
+the old one, the old folder goes when it is empty, and the GUI log says how many moved and stayed.
 
 Nothing is uploaded automatically and JoyPro has no upload endpoint. The zip is the support file (table above) plus:
 

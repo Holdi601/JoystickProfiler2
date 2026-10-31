@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -775,6 +775,25 @@ namespace JoyPro.Engine.Games
             public string Rendered = string.Empty;
         }
 
+        // The input itself (device, input, modifiers), without the axis flags "-" and "*": two lines with the same
+        // identity use the same input.
+        private static string Identity(KoreaInput input)
+        {
+            return (string.Join("+", input.Modifiers.OrderBy(m => m, StringComparer.OrdinalIgnoreCase)) + "|" + input.Main).ToLowerInvariant();
+        }
+
+        private static bool WantsInput(Dictionary<string, List<Wanted>> byAction, string action, string identity)
+        {
+            List<Wanted> list;
+            return byAction.TryGetValue(action, out list) && list.Any(w => Identity(w.Input) == identity);
+        }
+
+        // JoyPro's modifiers of a bind as the export result names them ("Keyboard LeftShift+...").
+        private static string ModifierText(GameInputBinding binding)
+        {
+            return string.Join("+", (binding.Reformers ?? new List<string>()).Select(r => r.Split('§')).Where(p => p.Length >= 3).Select(p => p[1] + " " + p[2]));
+        }
+
         // Device number of a JoyPro device; a connected device without one gets the lowest free number (from 1 up,
         // as the game's dialog offers) in known.devices.json.
         private static string DeviceNumber(string joyProDevice, GameDeviceDirectory devices, KnownDevices known, ActionsFile file, GameIoResult result, out int id)
@@ -917,6 +936,9 @@ namespace JoyPro.Engine.Games
 
             Dictionary<string, int> numbers = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             List<Wanted> wanted = new List<Wanted>();
+            // Actions with a profile bind JoyPro cannot write (a key on an axis action): which input it means is unknown,
+            // so merge conflicts and merge-overwrite leave the game's inputs of these actions alone.
+            HashSet<string> unwritten = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (GameInputBinding binding in request.Bindings)
             {
                 KoreaInput input;
@@ -925,14 +947,44 @@ namespace JoyPro.Engine.Games
                 {
                     result.BindingsSkipped++;
                     result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
+                    unwritten.Add(binding.ActionId);
                     continue;
                 }
                 wanted.Add(new Wanted { Binding = binding, Input = input, Rendered = input.Render() });
             }
 
             // Devices JoyPro writes: clean releases their other binds; nuke also releases joysticks the export does
-            // not use. The keyboard is never cleared (only JoyPro's own keys are replaced).
+            // not use. Clean and nuke never clear the keyboard (the game's keyboard defaults stay).
             HashSet<string> written = new HashSet<string>(wanted.Select(w => w.Input.DeviceKey).Where(k => k != "key"), StringComparer.OrdinalIgnoreCase);
+            // The device numbers of connected devices: only their binds are JoyPro's to release (the import reads a device
+            // that is not connected after known.devices.json, but its binds are not the export's to clear).
+            HashSet<string> connectedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (KnownDevice entry in known.All().Where(k => k.DeviceId >= 0 && k.Guid != Guid.Empty && request.Devices != null && request.Devices.FindByInstanceGuid(k.Guid) != null))
+                connectedIds.Add("dev" + entry.DeviceId.ToString(CultureInfo.InvariantCulture));
+            Dictionary<int, string> names = DeviceNames(file, known, request.Devices);
+            // An input JoyPro may release: an action of the catalog, every part readable by the import, the main input on
+            // a connected joystick or (merge conflicts and merge-overwrite only) the keyboard when the export includes it,
+            // joystick modifiers on connected devices. Mouse, TrackIR and button pairs never.
+            Func<string, KoreaInput, bool> releasable = (action, input) =>
+            {
+                if (input == null || request.Catalog.Find(action) == null)
+                    return false;
+                string device = input.DeviceKey;
+                if (device.Length == 0 || (device == "key" ? !request.IncludeKeyboard : !connectedIds.Contains(device)))
+                    return false;
+                string d;
+                string t;
+                bool a;
+                if (!TryDecode(input.Main, names, il2ToDx, out d, out t, out a))
+                    return false;
+                foreach (string modifier in input.Modifiers)
+                {
+                    string modifierDevice = DeviceKeyOf(modifier);
+                    if (!TryDecode(modifier, names, il2ToDx, out d, out t, out a) || a || (modifierDevice != "key" && !connectedIds.Contains(modifierDevice)))
+                        return false;
+                }
+                return true;
+            };
             Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(request.ConfigPath, result.Warnings);
             Dictionary<string, HashSet<string>> ownedBefore = owned.ToDictionary(e => e.Key, e => new HashSet<string>(e.Value, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
             if (request.Mode != GameExportMode.Add && request.Mode != GameExportMode.Merge)
@@ -955,6 +1007,22 @@ namespace JoyPro.Engine.Games
                 if (!actionIds.Contains(action, StringComparer.OrdinalIgnoreCase))
                     actionIds.Add(action);
             }
+            // The inputs (device, input, modifiers) the profile binds, and the game's: input -> (action, line).
+            HashSet<string> wantedIdentities = new HashSet<string>(wanted.Select(w => Identity(w.Input)), StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, List<KeyValuePair<string, string>>> gameInputs = new Dictionary<string, List<KeyValuePair<string, string>>>(StringComparer.OrdinalIgnoreCase);
+            foreach (string action in file.Actions.Keys)
+            {
+                foreach (string raw in file.Inputs(action))
+                {
+                    KoreaInput input = ParseInput(raw);
+                    if (input == null)
+                        continue;
+                    List<KeyValuePair<string, string>> list;
+                    if (!gameInputs.TryGetValue(Identity(input), out list))
+                        gameInputs[Identity(input)] = list = new List<KeyValuePair<string, string>>();
+                    list.Add(new KeyValuePair<string, string>(action, raw));
+                }
+            }
 
             foreach (string action in actionIds)
             {
@@ -965,30 +1033,44 @@ namespace JoyPro.Engine.Games
                 byAction.TryGetValue(action, out mine);
                 mine = mine ?? new List<Wanted>();
 
+                HashSet<Wanted> placed = new HashSet<Wanted>();
                 foreach (string raw in before)
                 {
                     KoreaInput input = ParseInput(raw);
                     string device = input == null ? string.Empty : input.DeviceKey;
+                    string identity = input == null ? string.Empty : Identity(input);
                     bool isOwned = GameOwnershipStore.Contains(ownedBefore, key, raw);
-                    bool nuked = device.Length > 0 && device != "key" && request.NukeUnusedDevices && !written.Contains(device);
-                    bool replaced = mine.Any(w => w.Input.DeviceKey == device && !string.Equals(w.Rendered, raw, StringComparison.OrdinalIgnoreCase));
-                    bool drop;
-                    switch (request.Mode)
+                    bool canRelease = releasable(key, input);
+                    // The profile's bind of this action on this input; a different form of it (invert, Relative Control)
+                    // is the profile's update of the same bind, written in its place (not by "Only add").
+                    // A key or button has no form JoyPro could change ("-key_v" on an axis action is the game's own).
+                    Wanted same = input == null ? null : mine.FirstOrDefault(w => !placed.Contains(w) && Identity(w.Input) == identity);
+                    bool sameForm = same != null && (string.Equals(same.Rendered, raw, StringComparison.OrdinalIgnoreCase) || !same.Binding.IsAxis);
+                    if (same != null && (sameForm || request.Mode == GameExportMode.Add || !canRelease))
                     {
-                        case GameExportMode.Clean:
-                            drop = device.Length > 0 && (device == "key" ? isOwned : written.Contains(device) || nuked);
-                            break;
-                        case GameExportMode.MergeOverwrite:
-                            // JoyPro's own inputs go; a user's input yields where the action gets one of the same device.
-                            drop = device.Length > 0 && (isOwned || nuked || replaced);
-                            break;
-                        case GameExportMode.Merge:
-                            // Merge removes nothing: an input already on the same device and action wins.
-                            drop = nuked;
-                            break;
-                        default:
-                            drop = nuked;
-                            break;
+                        if (sameForm)
+                            placed.Add(same);
+                        after.Add(raw);
+                        continue;
+                    }
+                    if (same != null)
+                    {
+                        placed.Add(same);
+                        after.Add(same.Rendered);
+                        continue;
+                    }
+                    bool drop = false;
+                    if (canRelease)
+                    {
+                        bool sure = !unwritten.Contains(key);
+                        // A conflict: the profile puts another action on this input (all modes but "Only add").
+                        bool conflict = sure && request.Mode != GameExportMode.Add && wantedIdentities.Contains(identity);
+                        // Nuke: joysticks the export does not use; clean: the other binds of the joysticks it writes.
+                        bool nuked = device != "key" && request.NukeUnusedDevices && !written.Contains(device);
+                        bool cleaned = device != "key" && request.Mode == GameExportMode.Clean && written.Contains(device);
+                        // "My profile wins": an action the profile binds keeps only the profile's inputs (a move fully moves).
+                        bool moved = sure && request.Mode == GameExportMode.MergeOverwrite && mine.Count > 0;
+                        drop = conflict || nuked || cleaned || moved;
                     }
                     if (drop)
                         continue;
@@ -999,26 +1081,47 @@ namespace JoyPro.Engine.Games
 
                 foreach (Wanted w in mine)
                 {
-                    if (after.Any(a => string.Equals(a, w.Rendered, StringComparison.OrdinalIgnoreCase)))
+                    if (placed.Contains(w) || after.Any(a => string.Equals(a, w.Rendered, StringComparison.OrdinalIgnoreCase)))
                     {
                         GameOwnershipStore.Add(owned, key, w.Rendered);
                         result.BindingsWritten++;
                         continue;
                     }
-                    if (request.Mode == GameExportMode.Merge)
+                    if (after.Any(a => { KoreaInput other = ParseInput(a); return other != null && Identity(other) == Identity(w.Input); }))
                     {
-                        string held = after.FirstOrDefault(a =>
+                        // "Only add" (or a bind JoyPro may not release) keeps the game's form of this bind.
+                        result.BindingsSkipped++;
+                        result.Warnings.Add(key + " already has its own form of '" + w.Rendered + "' in the game; " + (request.Mode == GameExportMode.Add ? "add" : "the export") + " keeps it.");
+                        continue;
+                    }
+                    // The game uses this input for another action the profile does not put there.
+                    List<KeyValuePair<string, string>> holders;
+                    KeyValuePair<string, string> held = gameInputs.TryGetValue(Identity(w.Input), out holders)
+                        ? holders.FirstOrDefault(h => !string.Equals(h.Key, key, StringComparison.OrdinalIgnoreCase) && !WantsInput(byAction, h.Key, Identity(w.Input)) &&
+                                                       (request.Mode == GameExportMode.Add || !releasable(h.Key, ParseInput(h.Value))))
+                        : default(KeyValuePair<string, string>);
+                    if (held.Key != null)
+                    {
+                        result.BindingsSkipped++;
+                        if (request.Mode == GameExportMode.Add)
                         {
-                            KoreaInput other = ParseInput(a);
-                            return other != null && other.DeviceKey == w.Input.DeviceKey;
-                        });
-                        if (held != null)
-                        {
-                            result.BindingsSkipped++;
-                            result.ConflictsKept++;
-                            result.Warnings.Add(key + " already has '" + held + "' on that device in the game; merge keeps it.");
-                            continue;
+                            result.SkippedTakenInputs.Add(new ExportSkippedBind
+                            {
+                                Game = GameId,
+                                Device = w.Binding.Device,
+                                Input = w.Binding.Input,
+                                ModifiersText = ModifierText(w.Binding),
+                                Relation = w.Binding.RelationName ?? string.Empty,
+                                Action = key,
+                                GameAction = held.Key
+                            });
                         }
+                        else
+                        {
+                            result.ConflictsKept++;
+                            result.Warnings.Add(key + ": the game uses '" + held.Value + "' for " + held.Key + ", which JoyPro does not release (another device, the keyboard without --include-keyboard or not a flight action); kept.");
+                        }
+                        continue;
                     }
                     after.Add(w.Rendered);
                     GameOwnershipStore.Add(owned, key, w.Rendered);

@@ -237,7 +237,7 @@ namespace JoyPro.Engine.Games
             GameIoResult scratch = new GameIoResult();
             string ownershipKey = OwnershipKey(overwrites ? StableProfilePath(basis) : path);
             Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipKey, scratch.Warnings);
-            ApplyToProfile(profile, request, wanted, owned, new Dictionary<string, string>(StringComparer.Ordinal), new HashSet<string>(StringComparer.Ordinal), scratch);
+            ApplyToProfile(profile, request, wanted, ProfileActions(WantedByDevice(request), null), owned, new Dictionary<string, string>(StringComparer.Ordinal), new HashSet<string>(StringComparer.Ordinal), scratch);
             profile.Save(path);
             GameOwnershipStore.Save(ownershipKey, GameId, owned);
             // Completeness: every bind of this file is in it as written.

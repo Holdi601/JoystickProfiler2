@@ -464,6 +464,49 @@
         <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
     </Style>
 
+    <!-- A choice of one as radio cards (the Export page's modes): one card per line, a radio dot, the picked one with
+         the accent border on a soft accent tint -->
+    <Style Selector="ListBox.modeCards">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style Selector="ListBox.modeCards ListBoxItem">
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="{DynamicResource JP.SurfaceAltBrush}" />
+    </Style>
+    <Style Selector="ListBox.modeCards ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.BorderBrush}" />
+    </Style>
+    <Style Selector="ListBox.modeCards ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.SurfaceAltBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.BorderStrongBrush}" />
+    </Style>
+    <Style Selector="ListBox.modeCards ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.AccentSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
+        <Setter Property="BorderThickness" Value="2" />
+    </Style>
+    <Style Selector="ListBox.modeCards ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource JP.AccentSoftBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource JP.AccentBrush}" />
+    </Style>
+    <Style Selector="Ellipse.modeRadio">
+        <Setter Property="Stroke" Value="{DynamicResource JP.BorderStrongBrush}" />
+        <Setter Property="Fill" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBoxItem:selected Ellipse.modeRadio">
+        <Setter Property="Stroke" Value="{DynamicResource JP.AccentBrush}" />
+    </Style>
+    <Style Selector="Ellipse.modeRadioDot">
+        <Setter Property="Fill" Value="{DynamicResource JP.AccentBrush}" />
+    </Style>
+
     <!-- An expander's title wraps to a second line where its column is narrow (a big text size), never cut off -->
     <Style Selector="Expander /template/ ToggleButton#ExpanderHeader TextBlock">
         <Setter Property="TextWrapping" Value="Wrap" />

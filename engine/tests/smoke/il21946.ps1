@@ -72,29 +72,51 @@ try {
     Assert-True ([System.IO.File]::ReadAllText($i46Settings) -eq $i46SettingsOriginal) ("il21946 import/export must leave settings.ini as it was: " + $i46Round.Output)
     Assert-True ([System.IO.File]::ReadAllText($i46Conf) -eq $i46ConfOriginal) ("il21946 import/export must leave conf.ini as it was: " + $i46Round.Output)
 
-    # Merge: a new bind is added in its section, the game's bind on a used input stays.
+    # Binds made in the game after the import: the engine on stick button 7, the air brake on stick button 8. The profile
+    # puts the hook on button 7 (a conflict) and moves the air brake to button 4.
+    $i46Game2 = $i46SettingsOriginal.Replace("Joystick1 JoystickDevice0=Gear", "Joystick1 JoystickDevice0=Gear`r`nJoystick6 JoystickDevice0=AIRCRAFT_TOGGLE_ENGINE`r`nJoystick7 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE")
+    [System.IO.File]::WriteAllText($i46Settings, $i46Game2)
     Run-Engine @("--profile", $i46Profile, "relations", "add", "I46 Airbrake", "--button", "--node", "IL21946:pilot.AIRCRAFT_TOGGLE_AIRBRAKE", "--device", $i46Stick, "--input", "JOY_BTN4", "--text") | Out-Null
-    Run-Engine @("--profile", $i46Profile, "relations", "add", "A46 Hook", "--button", "--node", "IL21946:pilot.AIRCRAFT_CARRIERHOOK", "--device", $i46Stick, "--input", "JOY_BTN2", "--text") | Out-Null
+    Run-Engine @("--profile", $i46Profile, "relations", "add", "A46 Hook", "--button", "--node", "IL21946:pilot.AIRCRAFT_CARRIERHOOK", "--device", $i46Stick, "--input", "JOY_BTN7", "--text") | Out-Null
     Run-Engine @("--profile", $i46Profile, "relations", "add", "I46 Mixture", "--axis", "--node", "IL21946:move.mixture", "--device", "Smoke Throttle {66666666-7777-8888-9999-000000000000}", "--input", "JOY_RZ", "--text") | Out-Null
     $i46Dry = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--mode", "merge", "--dry-run", "--text")
     Assert-Match $i46Dry.Output "Dry run: \d+ line\(s\) of settings\.ini would change" ("il21946 dry run should report the changes: " + $i46Dry.Output)
-    Assert-True ([System.IO.File]::ReadAllText($i46Settings) -eq $i46SettingsOriginal) "il21946 dry run must not write."
+    Assert-True ([System.IO.File]::ReadAllText($i46Settings) -eq $i46Game2) "il21946 dry run must not write."
+
+    # Only add: removes nothing, skips the hook on the engine's input and reports it.
+    $i46Add = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--mode", "add")
+    Assert-True ($i46Add.ExitCode -eq 0) ("il21946 add export failed: " + $i46Add.Output)
+    $i46AddResult = $i46Add.Output.Substring($i46Add.Output.IndexOf('{')) | ConvertFrom-Json
+    Assert-True (@($i46AddResult.SkippedTakenInputs | Where-Object { $_.Action -eq "pilot.AIRCRAFT_CARRIERHOOK" -and $_.GameAction -eq "pilot.AIRCRAFT_TOGGLE_ENGINE" -and $_.Input -eq "JOY_BTN7" }).Count -eq 1) ("add should report the hook as a skipped multi bind: " + $i46Add.Output)
+    $i46Text = [System.IO.File]::ReadAllText($i46Settings).Replace("`r`n", "`n")
+    Assert-Match $i46Text "(?m)^Joystick6 JoystickDevice0=AIRCRAFT_TOGGLE_ENGINE$" "add must keep the game's bind on the hook's input."
+    Assert-NotMatch $i46Text "AIRCRAFT_CARRIERHOOK" "add must not write a multi bind."
+    Assert-Match $i46Text "(?m)^Joystick7 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE$" "add must keep the air brake's old input."
+    Assert-Match $i46Text "(?m)^Joystick3 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE$" "add should write the air brake's new input."
+
+    # Merge: the conflicting game bind goes, the air brake keeps its old input; the rest stays.
+    [System.IO.File]::WriteAllText($i46Settings, $i46Game2)
     $i46Merge = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--mode", "merge", "--text")
     Assert-True ($i46Merge.ExitCode -eq 0) ("il21946 merge export failed: " + $i46Merge.Output)
-    Assert-Match $i46Merge.Output "the input already has 'Gear'.*merge keeps the game's bind" ("merge should keep Gear on button 2: " + $i46Merge.Output)
     $i46Text = [System.IO.File]::ReadAllText($i46Settings).Replace("`r`n", "`n")
     Assert-Match $i46Text "\[HotKey pilot\]\n(?:[^\[]*\n)?Joystick3 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE\n" "merge should add the air brake to [HotKey pilot]."
+    Assert-Match $i46Text "(?m)^Joystick7 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE$" "merge must keep the air brake's old input."
+    Assert-Match $i46Text "(?m)^Joystick6 JoystickDevice0=AIRCRAFT_CARRIERHOOK$" "merge should write the hook on button 7."
+    Assert-NotMatch $i46Text "AIRCRAFT_TOGGLE_ENGINE" "merge should remove the game's bind on the hook's input."
     Assert-Match $i46Text "(?m)^Joystick1 JoystickDevice0=Gear$" "merge must keep the game's Gear bind."
+    Assert-Match $i46Text "(?m)^MouseLeft=Fire$" "merge must keep mouse binds."
     Assert-Match $i46Text "(?m)^AXE_RZ JoystickDevice1=mixture$" "a new axis is written axis first, as the game writes a bind made on its Controls page."
     Assert-True (Test-Path ($i46Settings + ".jpbak")) "the IL-2 1946 export should back up settings.ini."
 
-    # Merge-overwrite: the profile wins on the input.
+    # Merge-overwrite: the air brake fully moves; keyboard (not exported) and the missing device stay.
     $i46Over = Run-Engine @("--profile", $i46Profile, "il21946", "export", $i46Settings, "--mode", "merge-overwrite", "--text")
     Assert-True ($i46Over.ExitCode -eq 0) ("il21946 merge-overwrite export failed: " + $i46Over.Output)
     $i46Text = [System.IO.File]::ReadAllText($i46Settings).Replace("`r`n", "`n")
-    Assert-Match $i46Text "(?m)^Joystick1 JoystickDevice0=AIRCRAFT_CARRIERHOOK$" "merge-overwrite should put the hook on button 2."
-    Assert-NotMatch $i46Text "(?m)^Joystick1 JoystickDevice0=Gear$" "merge-overwrite should replace Gear on button 2."
+    Assert-NotMatch $i46Text "(?m)^Joystick7 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE$" "merge-overwrite should remove the air brake's old input."
+    Assert-Match $i46Text "(?m)^Joystick3 JoystickDevice0=AIRCRAFT_TOGGLE_AIRBRAKE$" "merge-overwrite should keep the air brake's new input."
+    Assert-Match $i46Text "(?m)^Joystick6 JoystickDevice0=AIRCRAFT_CARRIERHOOK$" "merge-overwrite should keep the hook on button 7."
     Assert-Match $i46Text "(?m)^G=Gear$" "merge-overwrite must keep the keyboard bind of Gear."
+    Assert-Match $i46Text "(?m)^Joystick4 JoystickDevice3=Brake$" "merge-overwrite must keep the binds of a device that is not connected."
 
     # Axis response: own values go to conf.ini [rts_joystick] 1X (device 0, X).
     $i46Tune = Run-Engine @("--profile", $i46Profile, "binds", "tuning", "set", "Ailerons (roll)", "--scope", "game:IL21946", "--param", "deadBand=12", "--param", "c1=50", "--param", "c2=60", "--text")

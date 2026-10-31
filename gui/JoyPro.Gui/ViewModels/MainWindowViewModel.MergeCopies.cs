@@ -54,31 +54,35 @@ public sealed partial class MainWindowViewModel
             string bind = DisplayText.BindLabel(family.Device, family.Input, family.Modifiers);
             List<string> planes = family.Aircraft.Select(a => a.Contains('|') ? a[(a.IndexOf('|') + 1)..] : a).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             string game = family.Aircraft.Select(a => a.Contains('|') ? a[..a.IndexOf('|')] : "DCS").FirstOrDefault() ?? "DCS";
-            List<string> lines = family.Copies.Take(8).Select(c => "'" + c + "'").ToList();
-            if (family.Copies.Count > 8)
-                lines.Add(T("... and {0} more", family.Copies.Count - 8));
-            string headline = family.Copies.Count == 1
-                ? T("1 relation is a copy of '{0}' with the same input", relation)
-                : T("{0} relations are copies of '{1}' with the same input", family.Copies.Count, relation);
-            string details = T("All of them are on {0}. Merged into one, '{1}' keeps every aircraft ({2}), the groups and the tuning per aircraft.",
-                bind.Length > 0 ? bind : DisplayText.ShortDevice(family.Device), relation, planes.Count);
+            string button = bind.Length > 0 ? bind : DisplayText.ShortDevice(family.Device);
+            string sentence = family.Copies.Count == 1
+                ? T("An import made a copy of '{0}' on the same button. Merged into one, '{0}' keeps every aircraft ({1}), the groups and the tuning per aircraft.", relation, planes.Count)
+                : T("An import made {0} copies of '{1}' on the same button. Merged into one, '{1}' keeps every aircraft ({2}), the groups and the tuning per aircraft.", family.Copies.Count, relation, planes.Count);
             List<string> names = [relation, .. family.Copies];
+            List<CheckFix> more = families.Count > 1
+                ? [new CheckFix { Text = T("Merge all copied relations ({0})", totalCopies), Tip = T("Every family of copied relations shown here, each into one relation (one undo step)"), Command = new AsyncRelayCommand(() => MergeAllRelationCopiesAsync(totalCopies)) }]
+                : [];
             copyCards.Add(new CheckIssueCard
             {
                 Kind = "copies",
-                Headline = headline,
-                Details = details,
-                ActionLines = lines,
+                Severity = "warning",
+                Title = family.Copies.Count == 1 ? T("A relation was copied") : T("A relation was copied {0} times", family.Copies.Count),
+                ButtonsLine = SideWords(button, relation),
+                Sentence = sentence,
+                Rows = [.. family.Copies.Take(8).Select(c => new CheckTableRow { Left = "'" + c + "'", Right = T("copy of '{0}'", relation) })],
+                RowsHeaderLeft = T("Relation"),
+                RowsHeaderRight = T("What it is"),
+                Recommended = new CheckFix { Text = T("Merge into one"), Tip = T("One relation with every aircraft of the copies, their groups and their tuning per aircraft; the copies are removed. Ctrl+Z undoes it."), Command = new AsyncRelayCommand(() => MergeRelationCopiesAsync(relation, family.Copies.Count)), IsRecommended = true },
+                MoreFixes = more,
+                OpenButtons = [OpenFix(relation, button, game, [], planes)],
+                DetailLines = family.Copies.Count > 8 ? [T("... and {0} more", family.Copies.Count - 8)] : [],
                 Game = game,
                 RelationsSort = relation,
                 AircraftSort = string.Join(", ", planes),
-                SearchText = string.Join("\n", new[] { headline, details, string.Join(" ", family.Copies), string.Join(" ", planes) }),
-                Relations = names,
-                MergeCopiesText = T("Merge into one"),
-                MergeCopiesCommand = new AsyncRelayCommand(() => MergeRelationCopiesAsync(relation, family.Copies.Count)),
-                MergeAllCopiesText = families.Count > 1 ? T("Merge all copied relations ({0})", totalCopies) : string.Empty,
-                MergeAllCopiesCommand = families.Count > 1 ? new AsyncRelayCommand(() => MergeAllRelationCopiesAsync(totalCopies)) : null,
-                OpenAllCommand = new RelayCommand(() => OpenRelations(names))
+                RelationGroup = relation,
+                AircraftGroup = FirstPlaneWords(game, planes),
+                SearchText = string.Join("\n", new[] { relation, button, sentence, string.Join(" ", family.Copies), string.Join(" ", planes) }),
+                Relations = names
             });
         }
         checkDataVersion++;

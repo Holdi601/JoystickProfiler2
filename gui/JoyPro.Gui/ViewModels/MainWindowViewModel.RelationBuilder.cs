@@ -369,6 +369,9 @@ public sealed partial class MainWindowViewModel
             {
                 foreach (JsonElement item in suggestions.EnumerateArray())
                 {
+                    // Hidden games (Settings > Games) are not suggested.
+                    if (IsGameHidden(ReadJsonString(item, "Game")))
+                        continue;
                     int score = item.TryGetProperty("Score", out JsonElement s) && s.ValueKind == JsonValueKind.Number ? s.GetInt32() : 0;
                     allBuilderSuggestions.Add(new BuilderSuggestionItem(
                         ReadJsonString(item, "Game"), ReadJsonString(item, "Id"), ReadJsonString(item, "Title"), ReadStringArray(item, "Planes"),
@@ -981,7 +984,12 @@ public sealed partial class MainWindowViewModel
                 if (root.TryGetProperty("Results", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
                 {
                     foreach (JsonElement item in list.EnumerateArray())
-                        found.Add(ParseBuilderSearchHit(item));
+                    {
+                        BuilderSearchResultItem hit = ParseBuilderSearchHit(item);
+                        // Hidden games (Settings > Games) are not offered: no rows, no game chip.
+                        if (!IsGameHidden(hit.Game))
+                            found.Add(hit);
+                    }
                 }
             }
             catch (JsonException)

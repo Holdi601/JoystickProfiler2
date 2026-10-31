@@ -77,8 +77,15 @@ try {
     Assert-True ($null -eq (Read-KbFile $kbKeep "KbTest")) "dcskeyboard: keep keyboard defaults must not write a keyboard file."
     Assert-True ((Get-FileHash -LiteralPath (Join-Path $kbKeep "Config\Input\KbOther\keyboard\Keyboard.diff.lua")).Hash -eq $kbOtherBefore) "dcskeyboard: clean + nuke changed the keyboard file of an aircraft without keyboard binds."
 
-    # 2. Keyboard binds written, in every mode: only Gear's default G goes; F (Flaps) and LCtrl+H (Hook) stay.
-    foreach ($kbMode in @("clean", "merge", "merge-overwrite", "add")) {
+    # 2. Keyboard binds written, in every mode: only Gear's default G goes; F (Flaps) and LCtrl+H (Hook) stay. "Only add"
+    # never deletes (2.5.0): it keeps Gear's G, does not write Flaps on it and lists that bind.
+    $kbAddSaved = New-KbSavedGames "write-add"
+    $kbAddRun = Run-Engine @("--profile", $kbProfile, "dcs", "export", $kbAddSaved, "--mode", "add", "--keep-keyboard-defaults", "false", "--text")
+    Assert-True ($kbAddRun.ExitCode -eq 0) ("dcskeyboard: export (add, keyboard written) failed: " + $kbAddRun.Output)
+    $kbAddText = Read-KbFile $kbAddSaved "KbTest"
+    Assert-True ($null -eq $kbAddText -or (@(Get-KbRemovedKeys $kbAddText).Count -eq 0)) "dcskeyboard: add must not remove a default key."
+    Assert-Match $kbAddRun.Output "Binds Not Written, Button Taken In The Game \(Only Add\): 1" "dcskeyboard: add must list Flaps on Gear's key G as not written."
+    foreach ($kbMode in @("clean", "merge", "merge-overwrite")) {
         $kbSaved = New-KbSavedGames ("write-" + $kbMode)
         $kbOtherBefore = (Get-FileHash -LiteralPath (Join-Path $kbSaved "Config\Input\KbOther\keyboard\Keyboard.diff.lua")).Hash
         $kbRun = Run-Engine @("--profile", $kbProfile, "dcs", "export", $kbSaved, "--mode", $kbMode, "--keep-keyboard-defaults", "false", "--nuke-untouched-devices", "true", "--text")
@@ -87,7 +94,10 @@ try {
         Assert-True ($null -ne $kbText) ("dcskeyboard: " + $kbMode + ": the keyboard file of KbTest was not written.")
         Assert-Match $kbText '\["d2"\][\s\S]*?\["added"\][\s\S]*?\["key"\]\s*=\s*"G"' ("dcskeyboard: " + $kbMode + ": the profile's key G for Flaps is missing.")
         $kbRemoved = Get-KbRemovedKeys $kbText
-        Assert-True (($kbRemoved -join ",") -eq "G") ("dcskeyboard: " + $kbMode + ": only Gear's default G may be removed, the file removes: " + ($kbRemoved -join ","))
+        # "My profile wins" keeps the keyboard's default keys of the profile's actions (Flaps' F): the keyboard is never
+        # taken over (2.5.0).
+        $kbExpected = "G"
+        Assert-True ((($kbRemoved | Sort-Object) -join ",") -eq $kbExpected) ("dcskeyboard: " + $kbMode + ": only " + $kbExpected + " may be removed, the file removes: " + ($kbRemoved -join ","))
         Assert-Match $kbRun.Output "(?m)^Keyboard Default Keys Removed: 1\r?$" ("dcskeyboard: " + $kbMode + ": the export must report one removed default key.")
         Assert-True ((Get-FileHash -LiteralPath (Join-Path $kbSaved "Config\Input\KbOther\keyboard\Keyboard.diff.lua")).Hash -eq $kbOtherBefore) ("dcskeyboard: " + $kbMode + ": the keyboard file of KbOther (no keyboard binds) changed.")
         $kbWritten.Add((Join-Path $kbSaved "Config\Input\KbTest\keyboard\Keyboard.diff.lua"))

@@ -412,11 +412,9 @@ namespace JoyPro.Engine.Games
             }
 
             List<GameDevice> order = GameOrder(request.Devices, result.Warnings);
-            bool overwrite = request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean;
-
             // Resolve every binding to (action, key, scale).
             List<KeyValuePair<GameInputBinding, string>> resolved = new List<KeyValuePair<GameInputBinding, string>>();
-            HashSet<string> devicePrefixes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> writtenDevices = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (GameInputBinding binding in request.Bindings)
             {
                 if (binding.IsKeyboard)
@@ -457,64 +455,134 @@ namespace JoyPro.Engine.Games
                     Skip(result, binding, why);
                     continue;
                 }
-                devicePrefixes.Add(KeyPrefix(device, order));
+                writtenDevices.Add(device.JoyProName);
                 resolved.Add(new KeyValuePair<GameInputBinding, string>(binding, key));
             }
-
-            // Clean: every joystick mapping of the devices JoyPro writes goes (a flight-only game). Nuke: also the
-            // devices JoyPro does not write.
-            if (request.Mode == GameExportMode.Clean || request.NukeUnusedDevices)
+            // Actions with a profile bind JoyPro cannot write: which input it means is unknown, so merge-overwrite leaves
+            // the game's mappings of these actions alone.
+            HashSet<string> unwritten = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (GameInputBinding binding in request.Bindings.Where(b => !resolved.Any(r => r.Key == b)))
             {
-                int removed = ini.RemoveWhere(m => IsJoystickKey(m.Key) && (request.NukeUnusedDevices || devicePrefixes.Any(p => KeyBelongs(m.Key, p))) && request.Catalog.Contains(m.Name));
-                if (removed > 0)
-                    result.Steps.Add(removed.ToString(CultureInfo.InvariantCulture) + " joystick mapping(s) removed (" + (request.NukeUnusedDevices ? "all devices" : "the exported devices") + ").");
+                GameAction action = request.Catalog.Find(binding.ActionId);
+                if (action != null && !binding.IsKeyboard)
+                    unwritten.Add(action.Id);
             }
 
-            HashSet<string> written = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // The game's joystick mappings JoyPro may release: flight actions of the catalog on a connected device whose
+            // key the import reads (not keyboard, gamepad, mouse, hats or devices that are not connected), with the input
+            // as JoyPro names it ("<device>|<input>").
+            Dictionary<int, string> inputOf = new Dictionary<int, string>();
+            Dictionary<int, string> deviceOf = new Dictionary<int, string>();
+            List<PwMapping> mappings = ini.Mappings();
+            foreach (PwMapping m in mappings.Where(m => request.Catalog.Contains(m.Name) && IsJoystickKey(m.Key)))
+            {
+                GameDevice device;
+                string token;
+                string note;
+                if (!TryDecodeKey(m.Key, order, out device, out token, out note))
+                    continue;
+                inputOf[m.Line] = device.JoyProName + "|" + token;
+                deviceOf[m.Line] = device.JoyProName;
+            }
+            Func<GameInputBinding, string> wantedInput = b => b.Device + "|" + b.Input;
+            HashSet<string> wantedPairs = new HashSet<string>(resolved.Select(r => request.Catalog.Find(r.Key.ActionId).Id + "#" + wantedInput(r.Key)), StringComparer.OrdinalIgnoreCase);
+            Func<PwMapping, bool> wantedHere = m => inputOf.ContainsKey(m.Line) && wantedPairs.Contains(m.Name + "#" + inputOf[m.Line]);
+            HashSet<int> remove = new HashSet<int>();
+            List<PwMapping> add = new List<PwMapping>();
+
+            // Clean: the other joystick mappings of the devices JoyPro writes go (a flight-only game). Nuke: also those of
+            // the other connected devices.
+            int released = 0;
+            foreach (PwMapping m in mappings.Where(m => inputOf.ContainsKey(m.Line) && !wantedHere(m)))
+            {
+                bool written = writtenDevices.Contains(deviceOf[m.Line]);
+                if ((written && request.Mode == GameExportMode.Clean) || (!written && request.NukeUnusedDevices))
+                {
+                    remove.Add(m.Line);
+                    released++;
+                }
+            }
+            if (released > 0)
+                result.Steps.Add(released.ToString(CultureInfo.InvariantCulture) + " joystick mapping(s) removed (" +
+                                 (request.Mode == GameExportMode.Clean ? (request.NukeUnusedDevices ? "all connected devices" : "the exported devices") : "the devices the export does not use") + ").");
+
+            // "My profile wins": an action the profile binds keeps only the profile's joystick mappings (a move fully moves).
+            if (request.Mode == GameExportMode.MergeOverwrite)
+            {
+                HashSet<string> bound = new HashSet<string>(resolved.Select(r => request.Catalog.Find(r.Key.ActionId).Id), StringComparer.OrdinalIgnoreCase);
+                foreach (PwMapping m in mappings.Where(m => inputOf.ContainsKey(m.Line) && bound.Contains(m.Name) && !unwritten.Contains(m.Name) && !wantedHere(m)))
+                {
+                    if (remove.Add(m.Line))
+                        result.Steps.Add(m.Name + ": the game's " + UnQuote(m.Key) + " removed (the profile binds it elsewhere).");
+                }
+            }
+
+            HashSet<string> done = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<GameInputBinding, string> entry in resolved)
             {
                 GameInputBinding binding = entry.Key;
                 GameAction action = request.Catalog.Find(binding.ActionId);
                 string key = entry.Value;
-                string prefix = key.Substring(0, key.LastIndexOf('_'));
-                string pair = action.Id + "|" + prefix;
+                string input = wantedInput(binding);
                 double scale = action.IsAxis && binding.Inverted ? -1.0 : 1.0;
-                List<PwMapping> sameDevice = ini.Mappings().Where(m => string.Equals(m.Name, action.Id, StringComparison.OrdinalIgnoreCase) && KeyBelongs(m.Key, prefix)).ToList();
-                bool already = sameDevice.Any(m => string.Equals(UnQuote(m.Key), key, StringComparison.OrdinalIgnoreCase) && (!action.IsAxis || Math.Sign(m.Scale) == Math.Sign(scale)));
-                if (written.Contains(pair) && !already)
+                if (!done.Add(action.Id + "#" + input))
                 {
-                    // Several inputs of one device on one action: the game takes them all.
-                    ini.Add(new PwMapping { Name = action.Id, IsAxis = action.IsAxis, Key = key, Scale = scale });
+                    Skip(result, binding, action.Id + " is already written on that input.");
+                    continue;
+                }
+                // The action already on this input: the same mapping, or another form of it (Invert, or the device's older
+                // place in the list) that the update modes replace and "Only add" keeps.
+                List<PwMapping> same = mappings.Where(m => string.Equals(m.Name, action.Id, StringComparison.OrdinalIgnoreCase) && inputOf.ContainsKey(m.Line) && inputOf[m.Line] == input && !remove.Contains(m.Line)).ToList();
+                if (same.Any(m => string.Equals(UnQuote(m.Key), key, StringComparison.OrdinalIgnoreCase) && (!action.IsAxis || Math.Sign(m.Scale) == Math.Sign(scale))))
+                {
                     result.BindingsWritten++;
                     continue;
                 }
-                if (already && sameDevice.Count == 1)
+                if (same.Count > 0 && request.Mode == GameExportMode.Add)
                 {
-                    written.Add(pair);
-                    result.BindingsWritten++;
+                    result.ConflictsKept++;
+                    Skip(result, binding, "the game already has " + action.Id + " on " + UnQuote(same[0].Key) + " (add keeps it).");
                     continue;
                 }
-                if (sameDevice.Count > 0 && !written.Contains(pair))
+                // A conflict: another flight action on this input that the profile does not put there.
+                List<PwMapping> conflicts = mappings.Where(m => !string.Equals(m.Name, action.Id, StringComparison.OrdinalIgnoreCase) && inputOf.ContainsKey(m.Line) && inputOf[m.Line] == input &&
+                                                                !wantedHere(m) && !remove.Contains(m.Line)).ToList();
+                if (conflicts.Count > 0 && request.Mode == GameExportMode.Add)
                 {
-                    if (request.Mode == GameExportMode.Merge && !already)
+                    result.BindingsSkipped++;
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
                     {
-                        result.ConflictsKept++;
-                        Skip(result, binding, "the game already has " + action.Id + " on " + UnQuote(sameDevice[0].Key) + " (merge keeps it).");
-                        continue;
-                    }
-                    if (overwrite)
-                        ini.RemoveWhere(m => string.Equals(m.Name, action.Id, StringComparison.OrdinalIgnoreCase) && KeyBelongs(m.Key, prefix));
+                        Game = GameId,
+                        Device = binding.Device ?? string.Empty,
+                        Input = binding.Input ?? string.Empty,
+                        Relation = binding.RelationName ?? string.Empty,
+                        Action = action.Id,
+                        GameAction = conflicts[0].Name
+                    });
+                    continue;
                 }
-                if (!(already && !overwrite))
-                    ini.Add(new PwMapping { Name = action.Id, IsAxis = action.IsAxis, Key = key, Scale = scale });
-                written.Add(pair);
+                foreach (PwMapping m in same.Concat(conflicts))
+                {
+                    remove.Add(m.Line);
+                    if (m.Name != action.Id)
+                        result.Steps.Add(m.Name + " on " + UnQuote(m.Key) + " removed: the profile puts " + action.Id + " there.");
+                }
+                add.Add(new PwMapping { Name = action.Id, IsAxis = action.IsAxis, Key = key, Scale = scale });
                 result.BindingsWritten++;
-                int shown = action.IsAxis ? 4 : 3;
-                int count = ini.Mappings().Count(m => string.Equals(m.Name, action.Id, StringComparison.OrdinalIgnoreCase));
-                if (count > shown)
-                    result.Warnings.Add(action.Id + " has " + count.ToString(CultureInfo.InvariantCulture) + " mappings; the game's menu shows " + shown.ToString(CultureInfo.InvariantCulture) + " of them (all of them work).");
             }
 
+            if (remove.Count > 0)
+                ini.RemoveWhere(m => remove.Contains(m.Line));
+            foreach (PwMapping m in add)
+                ini.Add(m);
+            foreach (string name in add.Select(m => m.Name).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                bool axis = add.First(m => m.Name == name).IsAxis;
+                int shown = axis ? 4 : 3;
+                int count = ini.Mappings().Count(m => string.Equals(m.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (count > shown)
+                    result.Warnings.Add(name + " has " + count.ToString(CultureInfo.InvariantCulture) + " mappings; the game's menu shows " + shown.ToString(CultureInfo.InvariantCulture) + " of them (all of them work).");
+            }
             // Curves and dead zones of the axis actions (savegame.sav).
             Dictionary<string, PwSaveGame.Setting> axisSettings = new Dictionary<string, PwSaveGame.Setting>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<GameInputBinding, string> entry in resolved.Where(e => e.Key.Tuning != null))
@@ -560,13 +628,6 @@ namespace JoyPro.Engine.Games
         private static bool IsJoystickKey(string key)
         {
             return UnQuote(key).StartsWith("Joystick_", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool KeyBelongs(string key, string prefix)
-        {
-            string k = UnQuote(key);
-            return k.StartsWith(prefix + "_Axis", StringComparison.OrdinalIgnoreCase) || k.StartsWith(prefix + "_Button", StringComparison.OrdinalIgnoreCase) ||
-                   k.StartsWith(prefix + "_Hat", StringComparison.OrdinalIgnoreCase) || k.StartsWith(prefix + "_Ball", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void Skip(GameIoResult result, GameInputBinding binding, string reason)

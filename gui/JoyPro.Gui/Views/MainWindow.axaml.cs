@@ -65,6 +65,8 @@ public partial class MainWindow : Window
         RelationNodeList.AddHandler(KeyDownEvent, RelationNodeListKeyDown, RoutingStrategies.Tunnel);
         AttachNavPagesDrag();
         AttachNavigationHistory();
+        AttachContextMenuLog();
+        AttachMarkerAssistantPlace();
         notificationManager = new WindowNotificationManager(this)
         {
             Position = NotificationPosition.TopRight,
@@ -449,6 +451,9 @@ public partial class MainWindow : Window
         if (state.WindowX.HasValue && state.WindowY.HasValue)
             Position = new PixelPoint((int)state.WindowX.Value, (int)state.WindowY.Value);
 
+        if (state.EngineOutputHeight >= EngineOutputMinHeight && state.EngineOutputHeight <= 4000)
+            engineOutputHeight = state.EngineOutputHeight;
+
         if (state.EngineOutputExpanded.HasValue && EngineOutputExpander != null)
             EngineOutputExpander.IsExpanded = state.EngineOutputExpanded.Value;
 
@@ -516,18 +521,20 @@ public partial class MainWindow : Window
         if (ShouldUseDefaultLayout())
             return;
 
-        UiLayoutState state = new()
-        {
-            WindowWidth = Bounds.Width,
-            WindowHeight = Bounds.Height,
-            WindowX = Position.X,
-            WindowY = Position.Y,
-            EngineOutputExpanded = EngineOutputExpander?.IsExpanded,
-            RelationsLeftPaneWidth = RelationsPaneGrid.ColumnDefinitions[0].Width.Value,
-            BindsLeftPaneWidth = BindsPaneGrid.ColumnDefinitions[0].Width.Value
-        };
-        SaveLayoutState(state);
+        SaveLayoutState(CurrentLayoutState());
     }
+
+    private UiLayoutState CurrentLayoutState() => new()
+    {
+        WindowWidth = Bounds.Width,
+        WindowHeight = Bounds.Height,
+        WindowX = Position.X,
+        WindowY = Position.Y,
+        EngineOutputExpanded = EngineOutputExpander?.IsExpanded,
+        EngineOutputHeight = engineOutputHeight,
+        RelationsLeftPaneWidth = RelationsPaneGrid.ColumnDefinitions[0].Width.Value,
+        BindsLeftPaneWidth = BindsPaneGrid.ColumnDefinitions[0].Width.Value
+    };
 
     // Live views (force feedback editor, inspector) pause while the window is minimised.
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -1642,6 +1649,43 @@ public partial class MainWindow : Window
         UpdateEngineOutputCompactLayout();
     }
 
+    // The engine output's height as the user dragged it (0: not dragged yet, the default for the window's height).
+    private double engineOutputHeight;
+
+    // Header, one margin and three lines of text: the panel is never squeezed below this.
+    internal const double EngineOutputMinHeight = 120;
+
+    // The output row's height for a window: the user's height (or a fifth of the window, 150..260 px), at least the
+    // minimum and at most 60 % of the window.
+    internal static double EngineOutputRowHeight(double windowHeight, double wanted)
+    {
+        double height = wanted > 0 ? wanted : windowHeight > 0 ? Math.Clamp(windowHeight * 0.22, 150, 260) : 200;
+        double max = windowHeight > 0 ? Math.Max(EngineOutputMinHeight, windowHeight * 0.6) : double.PositiveInfinity;
+        return Math.Clamp(height, EngineOutputMinHeight, max);
+    }
+
+    // The splitter was let go: the new height is kept (also right away in ui-layout.json).
+    private void EngineOutputSplitterDragCompleted(object? sender, VectorEventArgs e)
+    {
+        if (RootLayoutGrid == null)
+            return;
+        double actual = RootLayoutGrid.RowDefinitions[3].ActualHeight;
+        if (actual <= 0)
+            return;
+        engineOutputHeight = Math.Round(actual);
+        UpdateEngineOutputCompactLayout();
+        JoyPro.Logging.JoyProLog.Info("Layout", "Engine output height set to " + engineOutputHeight + " px");
+        if (!ShouldUseDefaultLayout())
+            SaveLayoutState(CurrentLayoutState());
+    }
+
+    // Tests: the height the user gave the output (as a drag would set it).
+    internal void SetEngineOutputHeight(double height)
+    {
+        engineOutputHeight = height;
+        UpdateEngineOutputCompactLayout();
+    }
+
     private void UpdateEngineOutputCompactLayout()
     {
         if (EngineOutputHostGrid == null || EngineOutputExpander == null || EngineOutputBorder == null || RootLayoutGrid == null)
@@ -1650,13 +1694,18 @@ public partial class MainWindow : Window
         if (EngineOutputExpander.IsExpanded)
         {
             RootLayoutGrid.RowDefinitions[2].Height = new GridLength(6, GridUnitType.Pixel);
-            RootLayoutGrid.RowDefinitions[3].Height = GridLength.Auto;
+            // A row of its own height (the splitter above it drags it; kept in ui-layout.json): never squeezed below
+            // its minimum, never taller than leaves the page its room.
+            double windowHeight = double.IsNaN(Height) || Height <= 0 ? Bounds.Height : Height;
+            double height = EngineOutputRowHeight(windowHeight, engineOutputHeight);
+            RootLayoutGrid.RowDefinitions[3].MinHeight = EngineOutputMinHeight;
+            RootLayoutGrid.RowDefinitions[3].MaxHeight = Math.Max(EngineOutputMinHeight, windowHeight > 0 ? windowHeight * 0.6 : double.PositiveInfinity);
+            RootLayoutGrid.RowDefinitions[3].Height = new GridLength(height, GridUnitType.Pixel);
+            RootLayoutGrid.RowDefinitions[1].MinHeight = 200;
+            // The splitter may have turned the page's row into pixels: it takes the rest of the window again.
+            RootLayoutGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
             Grid.SetRow(EngineOutputBorder, 3);
             EngineOutputBorder.IsVisible = true;
-            // On a small window the panel takes less height, so the bottom bar stays on screen.
-            double windowHeight = double.IsNaN(Height) || Height <= 0 ? Bounds.Height : Height;
-            if (EngineOutputTextBox != null && windowHeight > 0)
-                EngineOutputTextBox.Height = Math.Clamp(windowHeight * 0.2, 90, 180);
             EngineOutputBorder.HorizontalAlignment = HorizontalAlignment.Stretch;
             EngineOutputBorder.VerticalAlignment = VerticalAlignment.Stretch;
             EngineOutputBorder.Width = double.NaN;
@@ -1670,7 +1719,9 @@ public partial class MainWindow : Window
         // Collapsed: the panel is not drawn at all (in a 0 px row its header used to paint over the status line of the
         // bottom bar); the bottom bar's "Output" button opens it again.
         RootLayoutGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Pixel);
+        RootLayoutGrid.RowDefinitions[3].MinHeight = 0;
         RootLayoutGrid.RowDefinitions[3].Height = new GridLength(0, GridUnitType.Pixel);
+        RootLayoutGrid.RowDefinitions[1].MinHeight = 0;
         Grid.SetRow(EngineOutputBorder, 3);
         EngineOutputBorder.IsVisible = false;
         if (EngineOutputQuickToggle != null)
@@ -1725,6 +1776,7 @@ public partial class MainWindow : Window
         public int? WindowX { get; set; }
         public int? WindowY { get; set; }
         public bool? EngineOutputExpanded { get; set; }
+        public double EngineOutputHeight { get; set; }
         public double RelationsLeftPaneWidth { get; set; }
         public double RelationsGroupPaneHeight { get; set; }
         public double BindsLeftPaneWidth { get; set; }

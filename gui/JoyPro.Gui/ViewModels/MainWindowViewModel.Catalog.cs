@@ -69,6 +69,24 @@ public sealed partial class MainWindowViewModel
 
     internal IReadOnlyList<CatalogRowItem> CatalogRowItems => catalogRows;
 
+    // A game was hidden or shown again (Settings > Games): the catalog's games, the action search's results and game
+    // chips and the suggestions leave hidden games out; the catalog reads its games again when it opens next.
+    private void RefreshHiddenGamesInCatalog()
+    {
+        catalogOverviewLoaded = false;
+        foreach (CatalogGameOption hidden in CatalogGames.Where(g => IsGameHidden(g.Game)).ToList())
+            CatalogGames.Remove(hidden);
+        if (CatalogGame != null && IsGameHidden(CatalogGame.Game))
+            CatalogGame = CatalogGames.FirstOrDefault();
+        if (allBuilderSearchResults.Any(r => IsGameHidden(r.Game)))
+            SetBuilderSearchResults(allBuilderSearchResults.Where(r => !IsGameHidden(r.Game)).ToList(), rebuildChips: true);
+        if (allBuilderSuggestions.RemoveAll(s => IsGameHidden(s.Game)) > 0)
+        {
+            RebuildBuilderGameChips();
+            ApplyBuilderSuggestionFilter();
+        }
+    }
+
     // "Open catalog": the panel, the games, the open relation's game and aircraft picked.
     [RelayCommand]
     internal async Task OpenCatalogAsync()
@@ -228,6 +246,9 @@ public sealed partial class MainWindowViewModel
                 foreach (JsonElement game in games.EnumerateArray())
                 {
                     string id = ReadJsonString(game, "Game");
+                    // A hidden game (Settings > Games) is not offered.
+                    if (IsGameHidden(id))
+                        continue;
                     List<CatalogPlaneOption> planes = [];
                     if (game.TryGetProperty("Planes", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
                     {

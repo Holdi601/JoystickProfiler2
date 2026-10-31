@@ -92,12 +92,21 @@ try {
     # Clean: the written devices keep only the profile's binds; builder, unknown devices and other sections stay.
     $codDelete = Run-Engine @("--profile", $codProfile, "relations", "mass", "delete", "--relation", "Fire guns", "--text")
     Assert-True ($codDelete.ExitCode -eq 0) ("relations mass delete failed: " + $codDelete.Output)
-    $codClean = Run-Engine @("--profile", $codProfile, "il2codblitz", "export", $codBlitz, "--mode", "clean", "--text")
+    # A ground vehicle bind on the stick (not flight): clean, nuke and conflicts never release it, also where the profile
+    # puts a flight command on the same button.
+    $codVehicle = [System.IO.File]::ReadAllText($codBlitz)
+    $codVehicle = $codVehicle.Insert($codVehicle.IndexOf("[ChatWindow]"), "[HotKey vehicle]`r`nSmoke_Stick-D064369+Key7=vehicle_fire`r`n`r`n")
+    [System.IO.File]::WriteAllText($codBlitz, $codVehicle)
+    Run-Engine @("--profile", $codProfile, "relations", "add", "COD Gear Stick", "--button", "--node", "IL2CoDBlitz:pilot.uc", "--device", $codStick, "--input", "JOY_BTN8", "--text") | Out-Null
+    $codClean = Run-Engine @("--profile", $codProfile, "il2codblitz", "export", $codBlitz, "--mode", "clean", "--nuke-untouched-devices", "--text")
     Assert-True ($codClean.ExitCode -eq 0) ("il2codblitz clean export failed: " + $codClean.Output)
     $codText = Get-CodText $codBlitz
+    Assert-Match $codText "(?m)^Smoke_Stick-D064369\+Key7=vehicle_fire$" "clean and nuke must keep the vehicle bind on a written device."
+    Assert-Match $codText "(?m)^Smoke_Stick-D064369\+Key7=uc$" "clean should write the flight command on the vehicle's button (another context)."
     Assert-NotMatch $codText "Key1=trigger0" "clean should release the stick's bind the profile no longer has."
     Assert-Match $codText "(?m)^Smoke_Stick-D064369\+Key5=builder_thing$" "clean must not touch the mission builder's section."
-    Assert-Match $codText "(?m)^Other_Stick-12345678\+AXE_U=-1pitch$" "clean must keep the binds of a device that is not connected."
+    Assert-Match $codText "(?m)^Other_Stick-12345678\+AXE_U=-1pitch$" "clean and nuke must keep the binds of a device that is not connected."
+    Assert-Match $codText "(?m)^Other_Stick-12345678\+Key2=landingflaps_d$" "nuke must keep the binds of a device that is not connected."
     Assert-Match $codText "(?m)^x=10$" "export must keep the other sections."
 
     # The original game: "Joystick" / "Joystick<n>" by Windows' order.

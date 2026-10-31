@@ -20,7 +20,7 @@ namespace JoyPro.Engine.Games
     //    reads the input assets from the installed game's IoStore container (UnrealIoStore) with the game's own Oodle
     //    library, or, only with the user's consent (--oodle-dll), one another installed game ships (FindOodle,
     //    AllowedForeignOodle); the build of 2026-10 ships none, so without a yes the table is used.
-    internal sealed class HllVietnamIntegration : IGameIntegration, IGameOwnershipTracking, IGameGamepadLayout, IGameDeviceLimit
+    internal sealed class HllVietnamIntegration : IGameIntegration, IGameGamepadLayout, IGameDeviceLimit
     {
         public int MaxJoysticks { get { return 0; } }
         public string SuggestedMode { get { return "xbox"; } }
@@ -220,10 +220,39 @@ namespace JoyPro.Engine.Games
                 wantedKeys[binding.ActionId] = unrealKey;
             }
 
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(request.ConfigPath, result.Warnings);
-            Dictionary<string, HashSet<string>> ownedBefore = owned.ToDictionary(e => e.Key, e => new HashSet<string>(e.Value, StringComparer.OrdinalIgnoreCase), StringComparer.OrdinalIgnoreCase);
-            if (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite)
-                owned.Clear();
+            // The game's pilot keys (cataloged keyboard actions; infantry and vehicle keys never count) per key.
+            Dictionary<string, string> gameKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (GameAction action in request.Catalog.Actions.Where(a => !IsPadAction(a.Id)))
+            {
+                GvasKeyMapping mapping = FindMapping(file, action.Id);
+                if (mapping != null && !string.IsNullOrEmpty(mapping.CurrentKey) && !gameKeys.ContainsKey(mapping.CurrentKey))
+                    gameKeys[mapping.CurrentKey] = action.Id;
+            }
+            // "Only add": a key another pilot action has is not written (no multi-bind).
+            if (request.Mode == GameExportMode.Add)
+            {
+                foreach (string id in wantedKeys.Keys.ToList())
+                {
+                    string other;
+                    if (gameKeys.TryGetValue(wantedKeys[id], out other) && !string.Equals(other, id, StringComparison.Ordinal))
+                    {
+                        GameInputBinding binding = wanted[id];
+                        result.BindingsSkipped++;
+                        result.SkippedTakenInputs.Add(new ExportSkippedBind
+                        {
+                            Game = GameId,
+                            Device = binding.Device,
+                            Input = binding.Input,
+                            Relation = binding.RelationName,
+                            Action = id,
+                            GameAction = other
+                        });
+                        wanted.Remove(id);
+                        wantedKeys.Remove(id);
+                    }
+                }
+            }
+            HashSet<string> keysInUse = new HashSet<string>(wantedKeys.Values, StringComparer.OrdinalIgnoreCase);
 
             foreach (GameAction action in request.Catalog.Actions.Where(a => !IsPadAction(a.Id)))
             {
@@ -233,14 +262,21 @@ namespace JoyPro.Engine.Games
                 {
                     if (mapping != null && string.Equals(mapping.CurrentKey, key, StringComparison.OrdinalIgnoreCase))
                     {
-                        GameOwnershipStore.Add(owned, action.Id, key);
                         result.BindingsWritten++;
                         continue;
                     }
-                    if (mapping != null && request.Mode == GameExportMode.Merge && !GameOwnershipStore.Contains(ownedBefore, action.Id, mapping.CurrentKey))
+                    // A mouse button on the pilot action stays (JoyPro writes keyboard keys only).
+                    if (mapping != null && GameKeyCodes.NameFromUnrealKey(mapping.CurrentKey).Length == 0)
                     {
-                        result.BindingsSkipped++;
-                        result.Warnings.Add(action.Id + " already has '" + mapping.CurrentKey + "' in the game; merge keeps it.");
+                        result.ConflictsKept++;
+                        result.Warnings.Add(action.Id + " has '" + mapping.CurrentKey + "' (not a keyboard key) in the game; JoyPro keeps it.");
+                        continue;
+                    }
+                    // One key per action: "only add" keeps the game's key; merge and merge-overwrite set the profile's.
+                    if (mapping != null && request.Mode == GameExportMode.Add)
+                    {
+                        result.ConflictsKept++;
+                        result.Warnings.Add(action.Id + " already has '" + mapping.CurrentKey + "' in the game; add keeps it.");
                         continue;
                     }
                     if (mapping == null)
@@ -251,34 +287,27 @@ namespace JoyPro.Engine.Games
                     mapping.CurrentKey = key;
                     mapping.Raw = null;
                     file.Changed = true;
-                    GameOwnershipStore.Add(owned, action.Id, key);
                     result.BindingsWritten++;
                     continue;
                 }
 
-                // Not bound in JoyPro: drop JoyPro's old key (merge-overwrite) or every changed key (clean), so the
-                // game falls back to its default.
-                bool release = mapping != null &&
+                // Not bound in JoyPro: clean drops every changed keyboard key (the game falls back to its default); merge
+                // and merge-overwrite drop a key the profile gives another pilot action (a conflict). Mouse buttons stay.
+                bool release = mapping != null && GameKeyCodes.NameFromUnrealKey(mapping.CurrentKey).Length > 0 &&
                                (request.Mode == GameExportMode.Clean ||
-                                (request.Mode == GameExportMode.MergeOverwrite && GameOwnershipStore.Contains(ownedBefore, action.Id, mapping.CurrentKey)));
+                                (request.Mode != GameExportMode.Add && keysInUse.Contains(mapping.CurrentKey ?? string.Empty)));
                 if (release)
                 {
                     file.Mappings.Remove(mapping);
                     file.Changed = true;
                 }
-                else if (mapping != null && request.Mode != GameExportMode.MergeOverwrite && GameOwnershipStore.Contains(ownedBefore, action.Id, mapping.CurrentKey))
-                {
-                    GameOwnershipStore.Add(owned, action.Id, mapping.CurrentKey);
-                }
             }
-
             if (request.DryRun)
             {
                 result.Steps.Add(file.Changed ? "Dry run: the pilot keys would change." : "Dry run: nothing would change.");
                 return result;
             }
 
-            GameOwnershipStore.Save(request.ConfigPath, GameId, owned);
             if (!file.Changed)
             {
                 result.Steps.Add("The pilot keys already match.");
@@ -290,19 +319,6 @@ namespace JoyPro.Engine.Games
             result.FilesWritten.Add(request.ConfigPath);
             result.Steps.Add("Pilot keys written.");
             return result;
-        }
-
-        public void RecordImport(string configPath, List<GameInputBinding> applied, GameDeviceDirectory devices, GameIoResult result)
-        {
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(configPath, result.Warnings);
-            foreach (GameInputBinding binding in applied)
-            {
-                string key;
-                if (Encode(binding, out key).Length == 0)
-                    GameOwnershipStore.Add(owned, binding.ActionId, key);
-            }
-            GameOwnershipStore.Save(configPath, GameId, owned);
-            result.FilesWritten.Add(configPath + GameOwnershipStore.Suffix);
         }
 
         // ------------------------------------------------------------------ catalog from the game files

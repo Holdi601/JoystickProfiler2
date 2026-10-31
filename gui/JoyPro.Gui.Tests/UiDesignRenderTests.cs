@@ -87,9 +87,9 @@ public sealed class UiDesignRenderTests
         });
     }
 
-    internal static async Task<MainWindowViewModel> CreateLoadedVmAsync()
+    internal static async Task<MainWindowViewModel> CreateLoadedVmAsync(DesignFakeEngine? engine = null)
     {
-        DesignFakeEngine fake = new();
+        DesignFakeEngine fake = engine ?? new();
         MainWindowViewModel vm = new(fake, new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
         {
             EnginePath = typeof(MainWindowViewModel).Assembly.Location
@@ -176,6 +176,9 @@ public sealed class UiDesignRenderTests
 
         public bool Empty { get; init; }
 
+        // "StarCitizen": that game is hidden (Settings > Games), for the renders of the hidden-games line.
+        public string HiddenGame { get; set; } = string.Empty;
+
         public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
         {
             if (AxisTuningTests.Seq(arguments, "binds", "tuning"))
@@ -256,7 +259,8 @@ public sealed class UiDesignRenderTests
                        "{\"GameId\":\"DCS\",\"Name\":\"DCS World\",\"Installed\":true,\"InstallPath\":\"D:\\\\DCS World\",\"Source\":\"test\",\"ConfigPaths\":[]}," +
                        "{\"GameId\":\"IL2Korea\",\"Name\":\"IL-2 Sturmovik: Korea\",\"Installed\":true,\"InstallPath\":\"D:\\\\IL-2 Korea\",\"Source\":\"test\",\"ConfigPaths\":[]}," +
                        "{\"GameId\":\"WarThunder\",\"Name\":\"War Thunder\",\"Installed\":true,\"InstallPath\":\"D:\\\\War Thunder\",\"Source\":\"test\",\"ConfigPaths\":[]}," +
-                       "{\"GameId\":\"StarCitizen\",\"Name\":\"Star Citizen\",\"Installed\":false,\"InstallPath\":\"\",\"Source\":\"\",\"ConfigPaths\":[]}" +
+                       "{\"GameId\":\"StarCitizen\",\"Name\":\"Star Citizen\",\"Installed\":false,\"InstallPath\":\"\",\"Source\":\"\",\"ConfigPaths\":[]" +
+                       (HiddenGame == "StarCitizen" ? ",\"Disabled\":true" : string.Empty) + "}" +
                        "]}";
             }
             if (AxisTuningTests.Seq(args, "games", "integrations"))

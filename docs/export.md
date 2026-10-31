@@ -12,18 +12,71 @@ every export).
 - **DCS** opens with **Aircraft...**: every aircraft (and input layer such as Default or UiLayer) of the profile with
   its picture, its module name and how many of its relations are bound. Only the ticked aircraft are exported; the
   other aircraft folders in Saved Games stay as they are.
-- The export mode is step 2 of the page, as four described choices: "Update, keep the game's binds" (`merge`, the
-  GUI's default), "Update, my profile wins" (`merge-overwrite`, the engine's default when a command line leaves out
-  `--mode`), "Only add" (`add`) and "Replace on my devices" (`clean`), plus "Also clear my other devices" (nuke). In
-  DCS every mode removes the DCS default binds of the devices the export writes, in every aircraft ([DCS](games/dcs.md#export-modes); the optional switches that change the DCS install itself are in Settings > DCS: default binds);
-  the choices say so. Clean and nuke ask before the export. Paths and keyboard options are under
-  **Options and paths (for experts)**. Every export backs up the game files first ([backups](backups.md)); **Undo
-  last export** on a tile restores the newest backup of that game (`engine backups restore latest --game <id>`).
+- The export mode is step 2 of the page, as four described choices, plus "Also clear my other devices" (nuke). Since
+  2.5.0 the GUI's default is "Replace on my devices" + "Also clear my other devices" (clean + nuke, as in JoyPro 1),
+  only in the aircraft of the export ("clean all aircraft" off), keyboard defaults kept. A mode the user chose
+  stays: `export-settings.json` keeps `ModeChosenByUser`; an old file with merge, no nuke and no marker gets the new
+  default, any other mode is kept. The engine's default when a command line leaves out `--mode` stays
+  `merge-overwrite`. The modes (DCS: [Export modes](games/dcs.md#export-modes)):
+  - "Only add" (`add`) never deletes anything. A profile bind whose button (device, input and modifiers, in that
+    aircraft) the game uses for another function is not written: the export lists it (`SkippedTakenInputs`: game,
+    aircraft, device, input, modifiers, relation, action, the game's action) and the profile marks it (below).
+  - "Update, keep the game's binds" (`merge`) keeps the game's other binds and removes only a game bind on a button
+    the profile puts a different function on. The profile action's old button elsewhere stays: after a Move the old
+    button keeps the action in the game (the Move panel says so in this mode) until an export with "my profile wins"
+    or "Replace".
+  - "Update, my profile wins" (`merge-overwrite`) does what merge does, and every action the profile binds loses its
+    other buttons in the game in that aircraft (also on its other devices), so a Move fully reaches the game.
+  - "Replace on my devices" (`clean`) gives the written devices only the profile's binds, in the exported aircraft;
+    nuke clears the connected devices the profile does not use there (not a device that is not connected, not the
+    import's ignored devices, not the vJoy device JoyPro tunnels into).
+  Clean and nuke ask before the export (Settings > Confirmations: `games.export-removes-binds`). Paths and keyboard
+  options are under **Options and paths (for experts)**. Every export backs up the game files first
+  ([backups](backups.md)); **Undo last export** on a tile restores the newest backup of that game (`engine backups
+  restore latest --game <id>`), byte for byte also after clean + nuke.
+- **First export to a game** this profile never imported from or exported to, when the game has binds of its own
+  (`engine profile game-state --game <id>`: `Imported`, `Exported` from the profile's `SyncedGames`, or the sync record
+  of an earlier export from this profile; `GameHasBinds`): the GUI asks once "Export replaces the binds in <game> with
+  your profile (a backup is made, Undo export brings them back). Import first?" with "Import first", "Export anyway",
+  "Cancel" and "Don't ask again" (Settings > Confirmations: `games.first-export-replaces`).
+- **Not exported marks** (`engine export-marks list|dismiss`): the profile keeps "not exported: input taken in <game>
+  by <action> (<date>)" per relation and aircraft (`Pr0file.ExportSkipMarks`). The relation shows a warning chip on the
+  action row and the aircraft; the Check has a "Not written to the game" section ("Not written to <game>: <button> is
+  used there for <other action>") with "Export with 'Update' to replace it", "Move to another button" and "Keep as is"
+  (dismiss). Each export replaces the marks of its game and aircraft with what it skipped this time, so a mark clears
+  when a later export writes the bind or the button is free. Every exporter fills the same result field
+  (`SkippedTakenInputs`, engine/ExportSkippedBinds.cs); the export command marks them.
 - Games without an exporter show "no export for this game".
 - Games that are not installed on this PC get no tile; the page names them. Set their folder in Settings > Games
   ([installed games](installs.md)).
 - Every export keeps JoyPro's own data of the binds next to the game file, so a later import restores relation
   names, groups, modifiers and tuning ([re-import](reimport.md)).
+
+## Export modes
+
+The same rules hold for every game except DCS ([DCS](games/dcs.md#export-modes)). "Same input" means the same device,
+the same button or axis and the same modifiers, in the same aircraft (or ship, vehicle) when the game keeps binds per
+aircraft.
+
+| Mode | What happens in the game |
+|---|---|
+| **Only add** (`add`) | Never removes or changes a bind of the game, also not with "Also clear my other devices" (that is not used with add). A profile bind whose input the game already uses for another action is not written, so no input gets two actions; the export lists each one (game, aircraft, device, input, the profile's action and the game's action; `SkippedTakenInputs` in the engine's result, "Binds Not Written, Button Taken In The Game" in its text). |
+| **Update, keep the game's binds** (`merge`) | Writes the profile's binds and keeps the game's other binds. A game bind on an input the profile gives another action is removed (conflict). An action you moved in JoyPro keeps its old input too, so it then sits on both; the Check and the watcher show that. Games with one slot per action (Star Citizen joystick, Wardogs, Hell Let Loose) put the new input into that slot. |
+| **Update, my profile wins** (`merge-overwrite`) | Like merge, and every action the profile binds loses its other inputs in the game (for that aircraft), so a moved action fully moves. Only inputs of connected joysticks count, and keyboard inputs only with the keyboard option. |
+| **Replace on my devices** (`clean`) | The devices the export writes keep only the profile's binds (for the aircraft in the export). |
+| **Also clear my other devices** (nuke) | Connected devices the export does not write lose their binds (for the aircraft in the export). |
+
+Never touched, in any mode: devices that are not connected, devices the import cannot read or skips (for example two
+devices of one model in a game that cannot tell them apart), mouse and gamepad binds, binds the import cannot read
+(IL-2's mouse lines, half-axis binds in Elite Dangerous, unknown tokens), keyboard binds without the keyboard option,
+and aircraft that are not in the export. In games with infantry, ground vehicles or menus (Star Citizen, War Thunder,
+Arma, Arma Reforger, Wardogs, Hell Let Loose, Battlefield) JoyPro touches only the flight actions; everything else stays
+byte-identical.
+
+Import, then export with "Replace on my devices" and "Also clear my other devices" leaves the game as it was: the
+game's active defaults of an imported device come into the profile on import (Star Citizen's joystick defaults on js1,
+for example), and an export writes only what really differs from the game's defaults, never a default removed and
+added again. The smoke test checks this with synthetic files (`engine\tests\smoke\roundtrip.ps1`).
 
 ## Remembered settings
 

@@ -122,9 +122,13 @@ try {
     Assert-True ($mcEfs.ExitCode -eq 0) ("msfs 2024 export with File.Copy failing (EFS) should still work: " + $mcEfs.Output)
     Assert-NotMatch $mcEfs.Output "could not be encrypted" "msfs 2024 export must not fail or warn on an EFS copy fault."
 
-    # Releasing an axis with an override leaves no stale <Axis/> behind.
+    # Releasing an axis with an override leaves no stale <Axis/> behind (clean: the profile no longer binds it; merge-
+    # overwrite keeps binds of actions the profile does not bind).
     Run-Engine @("--profile", $mc2024Profile, "relations", "mass", "delete", "--relation", $mcAilerons, "--text") | Out-Null
-    Run-Engine @("--profile", $mc2024Profile, "msfs2024", "export", $mc2024, "--text") | Out-Null
+    # Clean clears only devices that are connected: the override stick is (a stand-in device list).
+    $mcPreviousFake = $env:JOYPRO_FAKE_DEVICES
+    $env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\msfs\devices-override.tsv"
+    try { Run-Engine @("--profile", $mc2024Profile, "msfs2024", "export", $mc2024, "--mode", "clean", "--text") | Out-Null } finally { $env:JOYPRO_FAKE_DEVICES = $mcPreviousFake }
     $mc2024Released = [System.IO.File]::ReadAllText($mc2024)
     Assert-Match $mc2024Released 'ActionName="KEY_AXIS_AILERONS_SET" ValueEvent="0.000000" Delay="2.000000" Flag="2"/>' "msfs 2024 export should turn a released override axis into an empty element."
     Assert-NotMatch $mc2024Released 'AxisSensitivy="-40"' "msfs 2024 export must not leave the released action's <Axis/> behind."

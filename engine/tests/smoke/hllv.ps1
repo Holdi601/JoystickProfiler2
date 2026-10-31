@@ -153,3 +153,71 @@ finally {
     $env:JOYPRO_OODLE_DLL = $hoPrevious.Oodle
     $env:JOYPRO_INSTALL_DETECTION = $hoPrevious.Detection
 }
+
+# ---- Export modes for the keyboard pilot keys (one key per action; infantry and common keys never change):
+#   add       keeps every key; a key another pilot action has is skipped and reported
+#   merge / merge-overwrite  set the profile's key and drop the key of another pilot action on it (conflict)
+#   clean     drops the other changed pilot keys (the game falls back to its defaults); mouse buttons always stay
+$hmDir = Join-Path $tempDir "hllv-modes"
+New-Item -ItemType Directory -Force -Path $hmDir | Out-Null
+$hmSav = Join-Path $hmDir "EnhancedInputUserSettings.sav"
+Copy-Item (Join-Path $engineDir "tests\fixtures\hllv\EnhancedInputUserSettings.sav") $hmSav
+$hmProfile = Join-Path $hmDir "modes.pr0file"
+# A mapping's bytes from its name to the end of its struct ("None" twice), Latin-1, for the byte comparison.
+function Get-HmMapping([string]$Path, [string]$Name) {
+    $text = [System.Text.Encoding]::GetEncoding(28591).GetString([System.IO.File]::ReadAllBytes($Path))
+    $i = $text.IndexOf($Name)
+    if ($i -lt 0) { return "" }
+    $j = $text.IndexOf("None", $text.IndexOf("None", $i) + 4)
+    return $text.Substring($i, $j - $i)
+}
+$hmNonFlight = (Get-HmMapping $hmSav "Common_PushToTalk_Keyboard") + "|" + (Get-HmMapping $hmSav "Infantry_Prone_Keyboard")
+$hmPrevious = @{ Data = $env:JOYPRO_DATA_DIR; Oodle = $env:JOYPRO_OODLE_DLL; Detection = $env:JOYPRO_INSTALL_DETECTION }
+$env:JOYPRO_DATA_DIR = Join-Path $hmDir "data"
+$env:JOYPRO_OODLE_DLL = "none"
+$env:JOYPRO_INSTALL_DETECTION = "off"
+try {
+    Assert-True ($hmNonFlight.Length -gt 60) "the hllv fixture should have the push-to-talk and prone mappings."
+    Run-Engine @("hllv", "refresh-db", "--text") | Out-Null
+    # Moved: yaw left from A to Q. Conflict: roll left on S (reduce collective's). Auto-level on X: the game has a mouse
+    # button there, which stays.
+    Run-Engine @("--profile", $hmProfile, "relations", "add", "HM Yaw", "--button", "--node", "HLLVietnam:Driver_YawLeft", "--device", "Keyboard", "--input", "Q", "--text") | Out-Null
+    Run-Engine @("--profile", $hmProfile, "relations", "add", "HM Roll", "--button", "--node", "HLLVietnam:Driver_RollLeft", "--device", "Keyboard", "--input", "S", "--text") | Out-Null
+    Run-Engine @("--profile", $hmProfile, "relations", "add", "HM Level", "--button", "--node", "HLLVietnam:Driver_Auto-Level", "--device", "Keyboard", "--input", "X", "--text") | Out-Null
+
+    $hmAdd = Run-Engine @("--profile", $hmProfile, "hllv", "export", $hmSav, "--mode", "add", "--include-keyboard")
+    Assert-True ($hmAdd.ExitCode -eq 0) ("hllv add export failed: " + $hmAdd.Output)
+    $hmAddJson = ($hmAdd.Output | Out-String | ForEach-Object { $_.Substring($_.IndexOf("{")) } | ConvertFrom-Json)
+    Assert-True (@($hmAddJson.SkippedTakenInputs | Where-Object { $_.Action -eq "Driver_RollLeft" -and $_.GameAction -eq "Driver_ReduceCollective" }).Count -eq 1) ("hllv add should report roll left on reduce collective's key: " + $hmAdd.Output)
+    $hmScan = (Run-Engine @("hllv", "scan", $hmSav, "--text")).Output | Out-String
+    Assert-Match $hmScan "Driver_YawLeft <- Keyboard A" "hllv add must keep the game's yaw key."
+    Assert-Match $hmScan "Driver_ReduceCollective <- Keyboard S" "hllv add must keep reduce collective."
+    Assert-NotMatch $hmScan "Driver_RollLeft" "hllv add must not write roll left on reduce collective's key."
+    Assert-Match $hmScan "Driver_Auto-Level uses 'ThumbMouseButton'" "hllv add must keep the mouse button."
+    Assert-True (((Get-HmMapping $hmSav "Common_PushToTalk_Keyboard") + "|" + (Get-HmMapping $hmSav "Infantry_Prone_Keyboard")) -eq $hmNonFlight) "hllv add must leave the infantry and common keys identical."
+
+    foreach ($hmMode in @("merge", "merge-overwrite")) {
+        Copy-Item (Join-Path $engineDir "tests\fixtures\hllv\EnhancedInputUserSettings.sav") $hmSav -Force
+        $hmMerge = Run-Engine @("--profile", $hmProfile, "hllv", "export", $hmSav, "--mode", $hmMode, "--include-keyboard", "--text")
+        Assert-True ($hmMerge.ExitCode -eq 0) ("hllv $hmMode export failed: " + $hmMerge.Output)
+        $hmScan = (Run-Engine @("hllv", "scan", $hmSav, "--text")).Output | Out-String
+        Assert-Match $hmScan "Driver_YawLeft <- Keyboard Q" "hllv $hmMode should set the yaw key (one key per action)."
+        Assert-Match $hmScan "Driver_RollLeft <- Keyboard S" "hllv $hmMode should write roll left."
+        Assert-NotMatch $hmScan "Driver_ReduceCollective <- Keyboard S" "hllv $hmMode should drop reduce collective's key (conflict)."
+        Assert-Match $hmScan "Driver_IncreaseCollective <- Keyboard W" "hllv $hmMode must keep the other pilot keys."
+        Assert-Match $hmScan "Driver_Auto-Level uses 'ThumbMouseButton'" "hllv $hmMode must keep the mouse button."
+        Assert-True (((Get-HmMapping $hmSav "Common_PushToTalk_Keyboard") + "|" + (Get-HmMapping $hmSav "Infantry_Prone_Keyboard")) -eq $hmNonFlight) "hllv $hmMode must leave the infantry and common keys identical."
+    }
+
+    $hmClean = Run-Engine @("--profile", $hmProfile, "hllv", "export", $hmSav, "--mode", "clean", "--nuke-untouched-devices", "--include-keyboard", "--text")
+    Assert-True ($hmClean.ExitCode -eq 0) ("hllv clean export failed: " + $hmClean.Output)
+    $hmScan = (Run-Engine @("hllv", "scan", $hmSav, "--text")).Output | Out-String
+    Assert-NotMatch $hmScan "Driver_IncreaseCollective" "hllv clean should drop the other changed pilot keys."
+    Assert-Match $hmScan "Driver_Auto-Level uses 'ThumbMouseButton'" "hllv clean must keep the mouse button."
+    Assert-True (((Get-HmMapping $hmSav "Common_PushToTalk_Keyboard") + "|" + (Get-HmMapping $hmSav "Infantry_Prone_Keyboard")) -eq $hmNonFlight) "hllv clean must leave the infantry and common keys identical."
+}
+finally {
+    $env:JOYPRO_DATA_DIR = $hmPrevious.Data
+    $env:JOYPRO_OODLE_DLL = $hmPrevious.Oodle
+    $env:JOYPRO_INSTALL_DETECTION = $hmPrevious.Detection
+}

@@ -1,13 +1,14 @@
 # DCS import with "include defaults" (dot-sourced by engine_smoke_test.ps1; Run-Engine, Assert-*, $tempDir). Two made-up
 # aircraft with clean profiles in the game-data folder (generic joystick defaults, defaults of the "Smoke Model Stick"
 # model, keyboard defaults) and a synthetic Saved Games folder. Checks:
-#   - the model's defaults and the keyboard defaults are added, with their modifiers (LCtrl+F and F stay apart);
-#   - DCS's generic joystick defaults are not added (they would land on every device, here a button box);
-#   - a default the user's file removes, an action the user bound himself (on any device), a default on an input the
-#     user uses for another action, an action another device already has a default for, and the second action of an
-#     input DCS gives two actions are all left out;
+#   - the model's defaults, DCS's generic joystick defaults (default.lua, here on a button box) and the keyboard
+#     defaults are added, with their modifiers (LCtrl+F and F stay apart) (2.5.0: every default active in the game);
+#   - an imported device gets the defaults of an imported aircraft it has no file in (SmokeDefB: stick and box);
+#   - a default the user's file removes, an action the user bound himself on that device (keyboard: on any device), a
+#     default on an input the user uses for another action, the second action of an input DCS gives two actions, and a
+#     keyboard default of an action a joystick default has are all left out;
 #   - the same default function of two aircraft is one relation; aircraft without a file of the user get nothing;
-#   - the check finds no error and no action in several relations because of the defaults.
+#   - the check finds no error; the only action in several relations is DCS's generic Fire of SmokeDefB on both devices.
 $idUtf8 = New-Object System.Text.UTF8Encoding($false)
 $idRoot = Join-Path $tempDir "dcs-include-defaults"
 $idSaved = Join-Path $idRoot "saved"
@@ -55,17 +56,24 @@ try {
     Write-IdFile (Join-Path $idInput "SmokeDefB\keyboard\Keyboard.diff.lua") @((New-IdEntry "d_b_x" "B Thing" "added" @("X")))
 
     $idProfile = Join-Path $idRoot "defaults.pr0file"
+    # No connected device (else the PC's own joysticks would get defaults too).
+    $idPreviousFake = $env:JOYPRO_FAKE_DEVICES
+    $idFake = Join-Path $idRoot "no-devices.tsv"
+    [System.IO.File]::WriteAllText($idFake, "", $idUtf8)
+    $env:JOYPRO_FAKE_DEVICES = $idFake
     $idImport = Run-Engine @("--profile", $idProfile, "--remap-missing-devices", "false", "dcs", "import", $idSaved, "--include-defaults", "--include-keyboard", "true", "--confirm", "false", "--text")
     Assert-True ($idImport.ExitCode -eq 0) ("dcs import with defaults failed: " + $idImport.Output)
-    Assert-Match $idImport.Output "Default Entries Parsed:\s+7\b" "include defaults must add the model's and the keyboard's defaults (2 + 4 + 1)."
+    Assert-Match $idImport.Output "Default Entries Parsed:\s+9\b" "include defaults must add the model's (2), generic (3) and keyboard (4) defaults."
     Assert-Match $idImport.Output "Defaults Removed In DCS \(skipped\):\s+1\b" "a default the user's file removes must not be imported."
-    Assert-Match $idImport.Output "Defaults Replaced By Own Binds \(skipped\):\s+2\b" "the defaults of an action the user bound (any device) must not be imported."
-    Assert-Match $idImport.Output "Defaults On Inputs With Own Binds \(skipped\):\s+1\b" "a default on an input the user uses must not be imported."
-    Assert-Match $idImport.Output "Defaults Of An Action Another Device Has \(skipped\):\s+1\b" "an action gets defaults of one device only."
+    Assert-Match $idImport.Output "Defaults Replaced By Own Binds \(skipped\):\s+2\b" "the defaults of an action the user bound (on that device; keyboard: any device) must not be imported."
+    Assert-Match $idImport.Output "Defaults On Inputs With Own Binds \(skipped\):\s+2\b" "a default on an input the user uses must not be imported."
+    Assert-Match $idImport.Output "Keyboard Defaults Of An Action A Joystick Default Has \(skipped\):\s+2\b" "a keyboard default of an action a joystick default has must not be imported."
     Assert-Match $idImport.Output "Defaults On An Input DCS Gives Two Actions \(skipped\):\s+1\b" "the second action of a shared default input must not be imported."
-    Assert-Match $idImport.Output "Generic Joystick Defaults \(skipped\):\s+2\b" "DCS's generic joystick defaults must not be imported."
-    # 4 own relations + 2 model defaults + 4 keyboard defaults of SmokeDefA; SmokeDefB's Gear joins SmokeDefA's.
-    Assert-Match $idImport.Output "Imported Relations:\s+10\b" "include defaults must give one relation per default function and input."
+    Assert-Match $idImport.Output "Generic Joystick Defaults \(default.lua, imported\):\s+3\b" "DCS's generic joystick defaults are active in the game: imported."
+    Assert-Match $idImport.Output "Connected Devices Without A File \(defaults imported\):\s+2\b" "an imported device gets the defaults of an imported aircraft it has no file in."
+    # 4 own relations + stick Trim/Countermeasures, box Gear, keyboard Flaps/Brake/Lights of SmokeDefA, keyboard Gear of
+    # SmokeDefB, Fire of SmokeDefB on stick and box.
+    Assert-Match $idImport.Output "Imported Relations:\s+13\b" "include defaults must give one relation per default function and input."
 
     $idList = Run-Engine @("--profile", $idProfile, "--remap-missing-devices", "false", "relations", "list")
     Assert-True ($idList.ExitCode -eq 0) ("relations list failed: " + $idList.Output)
@@ -73,17 +81,20 @@ try {
     $idGear = @($idRelations | Where-Object { $_.Name -like "Gear__Keyboard__G__default__button" })
     Assert-True ($idGear.Count -eq 1) "the keyboard Gear default must be one relation."
     $idGearPlanes = @($idGear[0].Nodes | ForEach-Object { $_.Aircraft.PSObject.Properties | Where-Object { $_.Value } | ForEach-Object { $_.Name } })
-    Assert-SetEquivalent $idGearPlanes @("SmokeDefA", "SmokeDefB") "the same default function of two aircraft must be one relation, without aircraft the user has no file for."
+    Assert-SetEquivalent $idGearPlanes @("SmokeDefB") "the keyboard Gear default of SmokeDefA is left out (the box's generic Gear default has the action), SmokeDefC has no file."
     $idFlaps = @($idRelations | Where-Object { $_.Name -like "Flaps__Keyboard__LCtrl_F__default__button" })
     Assert-True ($idFlaps.Count -eq 1 -and @($idFlaps[0].Bind.AllReformers).Count -eq 1) "a keyboard default keeps its modifier (LCtrl+F)."
     Assert-True (@($idRelations | Where-Object { $_.Name -like "Brake__Keyboard__F__default__button" }).Count -eq 1) "F and LCtrl+F are two inputs."
-    Assert-True (@($idRelations | Where-Object { $_.Bind.Joystick -like "Smoke Box*" }).Count -eq 1) "the button box keeps only the user's own bind."
+    Assert-True (@($idRelations | Where-Object { $_.Bind.Joystick -like "Smoke Box*" }).Count -eq 3) "the button box has the user's own bind and DCS's generic Gear (SmokeDefA) and Fire (SmokeDefB); the generic Fire on its own input is left out."
     Assert-True (@($idRelations | Where-Object { $_.Name -like "View*" -or $_.Name -like "Own_Key_Default*" -or $_.Name -like "Lights_Other*" }).Count -eq 0) "removed, own-input and shared-input defaults must not be imported."
 
-    $idValidate = Run-Engine @("--profile", $idProfile, "--remap-missing-devices", "false", "profile", "validate", "--fail-on-warnings", "true", "--text")
-    Assert-True ($idValidate.ExitCode -eq 0) ("the defaults must not give check errors or actions in several relations: " + $idValidate.Output)
+    $idValidate = Run-Engine @("--profile", $idProfile, "--remap-missing-devices", "false", "profile", "validate", "--text")
+    Assert-True ($idValidate.ExitCode -eq 0) ("the defaults must not give check errors: " + $idValidate.Output)
+    Assert-Match $idValidate.Output "Errors:\s+0\b" "the defaults must not give check errors."
+    Assert-Match $idValidate.Output "Warnings:\s+1\b" "the only check warning is DCS's generic Fire of SmokeDefB on stick and box (as DCS has it)."
 }
 finally {
+    $env:JOYPRO_FAKE_DEVICES = $idPreviousFake
     foreach ($made in $idMade) {
         Remove-Item -LiteralPath $made -Recurse -Force -ErrorAction SilentlyContinue
     }

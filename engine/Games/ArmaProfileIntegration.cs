@@ -17,7 +17,7 @@ namespace JoyPro.Engine.Games
     // The response curve is per device and physical axis (JoysticksList arrays, shared by every vehicle and on foot):
     // the relations' tunings for the game are written there, one per physical axis. Device settings (mode, analog click)
     // and game options come from the FfbSettings store (engine ffb set --game <game>).
-    internal abstract class ArmaProfileIntegration : IGameIntegration, IGameOwnershipTracking, IGameSettingsExport, IGameSettingsReader
+    internal abstract class ArmaProfileIntegration : IGameIntegration, IGameSettingsExport, IGameSettingsReader
     {
         private const int ButtonBase = 0x00020000;
         private const int AxisBase = 0x00030000;
@@ -252,56 +252,109 @@ namespace JoyPro.Engine.Games
             HashSet<int> exportedOffsets = new HashSet<int>();
             // Physical axis (device GUID, axis) -> the tuning written there and the relation it came from.
             Dictionary<string, KeyValuePair<AxisTuning, string>> axisTunings = new Dictionary<string, KeyValuePair<AxisTuning, string>>(StringComparer.OrdinalIgnoreCase);
-            Dictionary<string, HashSet<string>> owned = null;
             if (!request.SettingsOnly)
             {
+                // Arma also has infantry and ground vehicles: only cataloged (aircraft) actions come here. Helicopter and
+                // plane actions are different vehicles, so the same input on both is not a conflict.
+                Dictionary<string, int> vehicles = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                foreach (GameAction action in request.Catalog.Actions)
+                {
+                    Composite composite;
+                    int vehicle = VehicleOf(action.Category);
+                    if (CompositeAxes.TryGetValue(action.Id, out composite))
+                    {
+                        vehicles[composite.Negative] = vehicles.ContainsKey(composite.Negative) ? vehicles[composite.Negative] | vehicle : vehicle;
+                        vehicles[composite.Positive] = vehicles.ContainsKey(composite.Positive) ? vehicles[composite.Positive] | vehicle : vehicle;
+                    }
+                    else
+                    {
+                        vehicles[action.Id] = vehicles.ContainsKey(action.Id) ? vehicles[action.Id] | vehicle : vehicle;
+                    }
+                }
+                HashSet<string> fullAxisActions = new HashSet<string>(CompositeAxes.Values.Where(c => c.FullAxis).Select(c => c.Negative), StringComparer.OrdinalIgnoreCase);
+                // The game's joystick codes of cataloged actions, for "only add" (no multi-bind).
+                Dictionary<int, List<string>> gameCodes = new Dictionary<int, List<string>>();
+                foreach (string actionName in vehicles.Keys)
+                {
+                    ArmaKeyLine line = profile.FindKey(actionName);
+                    foreach (int code in line == null ? new List<int>() : line.Codes)
+                    {
+                        ArmaCode decoded;
+                        if (!ArmaCode.TryDecode(code, true, out decoded))
+                            continue;
+                        List<string> users;
+                        if (!gameCodes.TryGetValue(code, out users))
+                            gameCodes[code] = users = new List<string>();
+                        users.Add(actionName);
+                    }
+                }
+
                 // Desired codes per Arma action, and the device offsets JoyPro owns in this export.
                 Dictionary<string, List<int>> desired = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
                 foreach (GameInputBinding binding in request.Bindings)
                 {
                     int offset;
+                    Dictionary<string, List<int>> codes = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
                     string reason = TryResolveOffset(binding, profile, request.Devices, out offset);
                     if (reason.Length == 0)
-                        reason = AddDesiredCodes(binding, offset, desired);
+                        reason = AddDesiredCodes(binding, offset, codes);
                     if (reason.Length > 0)
                     {
                         result.BindingsSkipped++;
                         result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
                         continue;
                     }
+                    // "Only add": a code the game uses for another action of the same vehicle is not written.
+                    string other = request.Mode == GameExportMode.Add ? OtherUser(codes, gameCodes, vehicles) : string.Empty;
+                    if (other.Length > 0)
+                    {
+                        result.BindingsSkipped++;
+                        result.SkippedTakenInputs.Add(new ExportSkippedBind
+                        {
+                            Game = GameId,
+                            Device = binding.Device,
+                            Input = binding.Input,
+                            Relation = binding.RelationName,
+                            Action = binding.ActionId,
+                            GameAction = other
+                        });
+                        continue;
+                    }
+                    foreach (KeyValuePair<string, List<int>> entry in codes)
+                        foreach (int code in entry.Value)
+                            AddCode(desired, entry.Key, code);
                     exportedOffsets.Add(offset);
                     result.BindingsWritten++;
                     CollectAxisTuning(binding, profile.Joysticks.First(j => j.Offset == offset), axisTunings, result);
                 }
 
-                owned = GameOwnershipStore.Load(request.ConfigPath, result.Warnings);
-                HashSet<string> managedActions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                HashSet<string> fullAxisActions = new HashSet<string>(CompositeAxes.Values.Where(c => c.FullAxis).Select(c => c.Negative), StringComparer.OrdinalIgnoreCase);
-                foreach (GameAction action in request.Catalog.Actions)
+                // Connected joysticks (no XInput gamepads) are the devices JoyPro owns here: merge-overwrite and nuke take
+                // codes off only these; a device that is not connected keeps all its codes.
+                HashSet<int> ownedOffsets = new HashSet<int>(profile.Joysticks.Where(j => OwnsJoystick(j, request.Devices)).Select(j => j.Offset));
+                Dictionary<int, List<string>> wantedBy = new Dictionary<int, List<string>>();
+                foreach (KeyValuePair<string, List<int>> entry in desired)
                 {
-                    Composite composite;
-                    if (CompositeAxes.TryGetValue(action.Id, out composite))
+                    foreach (int code in entry.Value)
                     {
-                        managedActions.Add(composite.Negative);
-                        managedActions.Add(composite.Positive);
-                    }
-                    else
-                    {
-                        managedActions.Add(action.Id);
+                        List<string> users;
+                        if (!wantedBy.TryGetValue(code, out users))
+                            wantedBy[code] = users = new List<string>();
+                        users.Add(entry.Key);
                     }
                 }
 
-                foreach (string actionName in managedActions.OrderBy(a => a, StringComparer.OrdinalIgnoreCase))
+                foreach (string actionName in vehicles.Keys.OrderBy(a => a, StringComparer.OrdinalIgnoreCase))
                 {
                     List<int> wanted;
                     desired.TryGetValue(actionName, out wanted);
                     wanted = wanted ?? new List<int>();
-                    HashSet<string> ownedCodes;
-                    owned.TryGetValue(actionName, out ownedCodes);
-                    ownedCodes = ownedCodes ?? new HashSet<string>();
 
                     ArmaKeyLine line = profile.FindKey(actionName);
-                    List<int> updated = MergeCodes(line == null ? new List<int>() : line.Codes, wanted, ownedCodes, exportedOffsets, request.Mode,
+                    List<int> existing = line == null ? new List<int>() : line.Codes;
+                    // Conflicts: codes of this action the profile puts on another action of the same vehicle.
+                    HashSet<int> conflicts = new HashSet<int>(existing.Where(c => !wanted.Contains(c) && wantedBy.ContainsKey(c) &&
+                        wantedBy[c].Any(u => !string.Equals(u, actionName, StringComparison.OrdinalIgnoreCase) && (vehicles[u] & vehicles[actionName]) != 0)));
+                    List<int> updated = MergeCodes(existing, wanted, conflicts, exportedOffsets, ownedOffsets, request.Mode,
                         request.NukeUnusedDevices, fullAxisActions.Contains(actionName));
                     if (line == null)
                     {
@@ -312,13 +365,6 @@ namespace JoyPro.Engine.Games
                     {
                         profile.SetCodes(line, updated);
                     }
-
-                    HashSet<string> nowOwned = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite
-                        ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                        : new HashSet<string>(ownedCodes, StringComparer.OrdinalIgnoreCase);
-                    foreach (int code in wanted.Where(updated.Contains))
-                        nowOwned.Add(code.ToString(CultureInfo.InvariantCulture));
-                    owned[actionName] = nowOwned;
                 }
             }
 
@@ -344,8 +390,6 @@ namespace JoyPro.Engine.Games
                 return result;
             }
 
-            if (owned != null)
-                GameOwnershipStore.Save(request.ConfigPath, GameId, owned);
             if (changes == 0)
             {
                 result.Steps.Add("The " + DisplayName + " profile already matches.");
@@ -447,40 +491,32 @@ namespace JoyPro.Engine.Games
             }
         }
 
-        // Keeps existing codes in place (so unchanged lines stay byte-identical). Overwrite only drops codes JoyPro owns
-        // (written earlier or taken over on import), so binds the user added in the game survive. Arma also has infantry
-        // and ground vehicles, so only cataloged (aircraft) actions come here: clean drops the other joystick codes of the
-        // devices the export writes, nuke those of the devices it does not use. On a full-axis action the order of the
-        // two halves is the direction, so JoyPro's codes go to the end in the wanted order. Merge keeps the action as it is
-        // when it already has an input of the same kind (button, axis, hat) on a written device: Arma's defaults put axis
-        // codes of all 16 joystick slots on many helicopter actions, which must not block a button bind.
-        private static List<int> MergeCodes(List<int> existing, List<int> wanted, HashSet<string> ownedCodes, HashSet<int> exportedOffsets,
+        // Keeps existing codes in place (so unchanged lines stay byte-identical); keyboard and mouse codes are never
+        // touched. A joystick code of the action goes when
+        //  - the profile puts it on another action of the same vehicle (a conflict; every mode but "only add"),
+        //  - merge-overwrite / clean: the profile binds this action and the code is another input of it on a connected
+        //    joystick (a moved action fully moves),
+        //  - its device is released: clean releases the devices the export writes, nuke the connected devices it does
+        //    not use (a device that is not connected is never cleared).
+        // On a full-axis action the order of the two halves is the direction, so JoyPro's codes go to the end in the
+        // wanted order ("only add" leaves the order as it is).
+        private static List<int> MergeCodes(List<int> existing, List<int> wanted, HashSet<int> conflicts, HashSet<int> exportedOffsets, HashSet<int> ownedOffsets,
             GameExportMode mode, bool nuke, bool keepWantedOrder)
         {
             List<int> result = new List<int>();
-            HashSet<JoyInputKind> wantedKinds = new HashSet<JoyInputKind>();
-            foreach (int code in wanted)
-            {
-                ArmaCode w;
-                if (ArmaCode.TryDecode(code, true, out w))
-                    wantedKinds.Add(w.Kind);
-            }
-            bool hasJoyPro = existing.Any(c => IsJoystickCodeOf(c, exportedOffsets, wantedKinds));
+            bool reorder = keepWantedOrder && mode != GameExportMode.Add;
             foreach (int code in existing)
             {
                 ArmaCode decoded;
                 bool joystick = ArmaCode.TryDecode(code, true, out decoded);
                 bool other = joystick && !wanted.Contains(code);
-                bool owned = other && ownedCodes.Contains(code.ToString(CultureInfo.InvariantCulture)) &&
-                             (mode == GameExportMode.Clean || mode == GameExportMode.MergeOverwrite);
-                bool released = other && (exportedOffsets.Contains(decoded.Offset) ? mode == GameExportMode.Clean : nuke);
-                bool drop = owned || released || (keepWantedOrder && wanted.Contains(code) && !(mode == GameExportMode.Merge && hasJoyPro));
+                bool conflict = other && mode != GameExportMode.Add && conflicts.Contains(code);
+                bool moved = other && wanted.Count > 0 && (mode == GameExportMode.Clean || mode == GameExportMode.MergeOverwrite) && ownedOffsets.Contains(decoded.Offset);
+                bool released = other && (exportedOffsets.Contains(decoded.Offset) ? mode == GameExportMode.Clean : nuke && ownedOffsets.Contains(decoded.Offset));
+                bool drop = conflict || moved || released || (reorder && wanted.Contains(code));
                 if (!drop)
                     result.Add(code);
             }
-
-            if (mode == GameExportMode.Merge && hasJoyPro)
-                return result;
 
             foreach (int code in wanted)
             {
@@ -490,10 +526,45 @@ namespace JoyPro.Engine.Games
             return result;
         }
 
-        private static bool IsJoystickCodeOf(int code, HashSet<int> offsets, HashSet<JoyInputKind> kinds)
+        // 1 = helicopter, 2 = plane, 3 = both (weapons, common, view, ... and the refreshed "Flight" entries).
+        private static int VehicleOf(string category)
         {
-            ArmaCode decoded;
-            return ArmaCode.TryDecode(code, true, out decoded) && offsets.Contains(decoded.Offset) && kinds.Contains(decoded.Kind);
+            string text = (category ?? string.Empty).Trim();
+            if (string.Equals(text, "Helicopter", StringComparison.OrdinalIgnoreCase))
+                return 1;
+            if (string.Equals(text, "Plane", StringComparison.OrdinalIgnoreCase))
+                return 2;
+            return 3;
+        }
+
+        // The first game action of the same vehicle that already has one of the bind's codes, "" when none.
+        private static string OtherUser(Dictionary<string, List<int>> codes, Dictionary<int, List<string>> gameCodes, Dictionary<string, int> vehicles)
+        {
+            foreach (KeyValuePair<string, List<int>> entry in codes)
+            {
+                int mine;
+                if (!vehicles.TryGetValue(entry.Key, out mine))
+                    mine = 3;
+                foreach (int code in entry.Value)
+                {
+                    List<string> users;
+                    if (!gameCodes.TryGetValue(code, out users))
+                        continue;
+                    string other = users.FirstOrDefault(u => !string.Equals(u, entry.Key, StringComparison.OrdinalIgnoreCase) && (vehicles[u] & mine) != 0);
+                    if (other != null)
+                        return other;
+                }
+            }
+            return string.Empty;
+        }
+
+        // A joystick of JoysticksList that is connected now (not an XInput gamepad).
+        private static bool OwnsJoystick(ArmaJoystick joystick, GameDeviceDirectory devices)
+        {
+            string xinput;
+            if (joystick.Values.TryGetValue("isXInput", out xinput) && (xinput.Trim() == "1" || xinput.Trim().Equals("true", StringComparison.OrdinalIgnoreCase)))
+                return false;
+            return devices != null && devices.FindByInstanceGuid(joystick.Guid) != null;
         }
 
         private string TryResolveOffset(GameInputBinding binding, ArmaProfile profile, GameDeviceDirectory devices, out int offset)
@@ -589,31 +660,6 @@ namespace JoyPro.Engine.Games
 
             GameDevice connected = devices == null ? null : devices.FindByInstanceGuid(joystick.Guid);
             return connected != null ? connected.JoyProName : GameDeviceDirectory.BuildJoyProName(joystick.Name, joystick.Guid);
-        }
-
-        public void RecordImport(string configPath, List<GameInputBinding> applied, GameDeviceDirectory devices, GameIoResult result)
-        {
-            ArmaProfile profile;
-            if (!ArmaProfile.TryLoad(configPath, DisplayName, result.Errors, out profile))
-                return;
-
-            Dictionary<string, List<int>> codes = new Dictionary<string, List<int>>(StringComparer.OrdinalIgnoreCase);
-            foreach (GameInputBinding binding in applied)
-            {
-                int offset;
-                if (TryResolveOffset(binding, profile, devices, out offset).Length == 0)
-                    AddDesiredCodes(binding, offset, codes);
-            }
-
-            Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(configPath, result.Warnings);
-            foreach (KeyValuePair<string, List<int>> entry in codes)
-            {
-                ArmaKeyLine line = profile.FindKey(entry.Key);
-                foreach (int code in entry.Value.Where(c => line != null && line.Codes.Contains(c)))
-                    GameOwnershipStore.Add(owned, entry.Key, code.ToString(CultureInfo.InvariantCulture));
-            }
-            GameOwnershipStore.Save(configPath, GameId, owned);
-            result.FilesWritten.Add(configPath + GameOwnershipStore.Suffix);
         }
 
         // Sources, read only: (1) the installed game's config (every action the game defines, with the English menu names

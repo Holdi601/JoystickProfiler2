@@ -182,6 +182,8 @@ namespace JoyPro.Engine.Games
             public int Code;
             public string Device;
             public AxisTuning Tuning;
+            // The profile's bind (export), for the "Only add" report.
+            public GameInputBinding Binding;
         }
 
         private sealed class XpContext
@@ -560,7 +562,7 @@ namespace JoyPro.Engine.Games
                 if (local < 0 || local >= AxesPerSlot)
                     return "the device has no " + binding.Input + " axis.";
                 target = new XpTarget { IsAxis = true, Index = slot.Index * AxesPerSlot + local, ActionId = axis.Id, Value = axis.Code.ToString(CultureInfo.InvariantCulture), Inverted = binding.Inverted, RelationName = binding.RelationName,
-                    Code = axis.Code, Device = binding.Device, Tuning = binding.Tuning };
+                    Code = axis.Code, Device = binding.Device, Tuning = binding.Tuning, Binding = binding };
                 return string.Empty;
             }
 
@@ -583,7 +585,7 @@ namespace JoyPro.Engine.Games
             }
             if (button >= ButtonsPerSlot)
                 return "X-Plane only keeps " + ButtonsPerSlot.ToString(CultureInfo.InvariantCulture) + " buttons per device.";
-            target = new XpTarget { IsAxis = false, Index = slot.Index * ButtonsPerSlot + button, ActionId = action.Id, Value = action.Id, RelationName = binding.RelationName };
+            target = new XpTarget { IsAxis = false, Index = slot.Index * ButtonsPerSlot + button, ActionId = action.Id, Value = action.Id, RelationName = binding.RelationName, Binding = binding };
             return string.Empty;
         }
 
@@ -623,7 +625,9 @@ namespace JoyPro.Engine.Games
             bool replaceOwned = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
             if (replaceOwned)
             {
-                ReleaseOwned(context, owned, wanted, result);
+                // "My profile wins": every axis use and command the profile binds loses its other inputs on connected
+                // devices, so a moved bind fully moves. Inputs JoyPro wrote before count like any other bind.
+                ReleaseOtherInputs(context, wanted, result);
                 owned.Clear();
             }
             if (request.Mode == GameExportMode.Clean || request.NukeUnusedDevices)
@@ -635,13 +639,37 @@ namespace JoyPro.Engine.Games
                 bool free = target.IsAxis ? current == "0" : current == NoCommand;
                 if (current != target.Value && !free)
                 {
-                    if (request.Mode == GameExportMode.Merge)
+                    // "Only add" never replaces an assignment: the input keeps the game's use and the profile's bind is
+                    // reported (X-Plane has one use per axis and one command per button).
+                    if (request.Mode == GameExportMode.Add)
                     {
                         result.BindingsSkipped++;
-                        result.Warnings.Add("Relation '" + target.RelationName + "' (" + target.ActionId + "): the input already has '" + Describe(target.IsAxis, current) + "' in X-Plane; merge keeps it.");
+                        result.SkippedTakenInputs.Add(SkippedMultiBind(target, Describe(target.IsAxis, current)));
                         continue;
                     }
+                    // Merge and "my profile wins": the game's other use on the profile's input is a conflict and goes.
                     result.Warnings.Add("Relation '" + target.RelationName + "' (" + target.ActionId + ") replaced '" + Describe(target.IsAxis, current) + "' on its input.");
+                }
+                // "Only add": the action already on its input is nothing to do (its curve stays the game's too).
+                if (request.Mode == GameExportMode.Add && current == target.Value)
+                    continue;
+                if (target.IsAxis)
+                {
+                    // X-Plane ignores an axis use that two connected axes share, so the use cannot sit on the old and
+                    // the new axis after a move: "only add" leaves it where the game has it, merge moves it.
+                    List<int> others = OtherAxesWithUse(context, target, wanted);
+                    if (others.Count > 0 && request.Mode == GameExportMode.Add)
+                    {
+                        result.BindingsSkipped++;
+                        result.Warnings.Add("Relation '" + target.RelationName + "' (" + target.ActionId + "): X-Plane already has this axis use on axis " + string.Join(", ", others) + " and ignores a use two axes share; add keeps it.");
+                        continue;
+                    }
+                    foreach (int other in others)
+                    {
+                        Assign(context, true, other, null, false);
+                        context.Prf.Remove(CurveKey + other.ToString(CultureInfo.InvariantCulture));
+                        result.Warnings.Add("Relation '" + target.RelationName + "' (" + target.ActionId + "): moved from axis " + other.ToString(CultureInfo.InvariantCulture) + " (X-Plane ignores an axis use two axes share).");
+                    }
                 }
 
                 Assign(context, target.IsAxis, target.Index, target.Value, target.Inverted);
@@ -709,39 +737,72 @@ namespace JoyPro.Engine.Games
             return axis != null ? axis.Title + " axis" : "axis use " + value;
         }
 
-        // Inputs JoyPro wrote before and no longer wants go back to unassigned, unless the user changed them in X-Plane.
-        private static void ReleaseOwned(XpContext context, Dictionary<string, HashSet<string>> owned, Dictionary<string, XpTarget> wanted, GameIoResult result)
+        // "My profile wins": axes of connected devices with a use the profile binds on another axis, and buttons with a
+        // command the profile binds on another button, go back to unassigned (an axis's response curve goes with it).
+        // Slots of devices that are not connected keep their assignments.
+        private static void ReleaseOtherInputs(XpContext context, Dictionary<string, XpTarget> wanted, GameIoResult result)
         {
-            foreach (KeyValuePair<string, HashSet<string>> entry in owned)
+            HashSet<int> codes = new HashSet<int>(wanted.Values.Where(t => t.IsAxis).Select(t => t.Code));
+            HashSet<string> commands = new HashSet<string>(wanted.Values.Where(t => !t.IsAxis).Select(t => t.Value), StringComparer.Ordinal);
+            int released = 0;
+            foreach (XpSlot slot in context.Slots)
             {
-                if (entry.Key.StartsWith(CurveOwner, StringComparison.Ordinal))
-                {
-                    // A curve JoyPro wrote on an axis it no longer exports goes, unless it was changed in X-Plane.
-                    int curveIndex;
-                    if (!int.TryParse(entry.Key.Substring(CurveOwner.Length), NumberStyles.Integer, CultureInfo.InvariantCulture, out curveIndex) || wanted.ContainsKey("A" + curveIndex.ToString(CultureInfo.InvariantCulture)))
-                        continue;
-                    string key = CurveKey + curveIndex.ToString(CultureInfo.InvariantCulture);
-                    string text = context.Prf.Get(key);
-                    if (text != null && entry.Value.Contains(CurveHash(text)))
-                    {
-                        context.Prf.Remove(key);
-                        result.Steps.Add("Removed JoyPro's response curve of axis " + curveIndex.ToString(CultureInfo.InvariantCulture) + " (no longer exported).");
-                    }
+                string problem;
+                if (DeviceForSlot(context, slot, out problem) == null)
                     continue;
-                }
-                foreach (string token in entry.Value)
+                for (int index = slot.Index * AxesPerSlot; index < (slot.Index + 1) * AxesPerSlot; index++)
                 {
-                    int index;
-                    if (wanted.ContainsKey(token) || token.Length < 2 || !int.TryParse(token.Substring(1), NumberStyles.Integer, CultureInfo.InvariantCulture, out index))
-                        continue;
-                    bool isAxis = token[0] == 'A';
-                    XpAxis axis = isAxis ? AxisById(entry.Key) : null;
-                    string expected = isAxis ? (axis == null ? string.Empty : axis.Code.ToString(CultureInfo.InvariantCulture)) : entry.Key;
-                    string current = isAxis ? AxisUse(context, index).ToString(CultureInfo.InvariantCulture) : ButtonUse(context, index);
-                    if (expected.Length > 0 && current == expected)
-                        Assign(context, isAxis, index, null, false);
+                    if (codes.Contains(AxisUse(context, index)) && !wanted.ContainsKey("A" + index.ToString(CultureInfo.InvariantCulture)))
+                    {
+                        Assign(context, true, index, null, false);
+                        context.Prf.Remove(CurveKey + index.ToString(CultureInfo.InvariantCulture));
+                        released++;
+                    }
+                }
+                for (int index = slot.Index * ButtonsPerSlot; index < (slot.Index + 1) * ButtonsPerSlot; index++)
+                {
+                    if (commands.Contains(ButtonUse(context, index)) && !wanted.ContainsKey("B" + index.ToString(CultureInfo.InvariantCulture)))
+                    {
+                        Assign(context, false, index, null, false);
+                        released++;
+                    }
                 }
             }
+            if (released > 0)
+                result.Steps.Add("Released " + released.ToString(CultureInfo.InvariantCulture) + " other input(s) of the profile's axes and commands.");
+        }
+
+        // Axes of connected devices (not the profile's own) that have the target's use.
+        private static List<int> OtherAxesWithUse(XpContext context, XpTarget target, Dictionary<string, XpTarget> wanted)
+        {
+            List<int> others = new List<int>();
+            foreach (XpSlot slot in context.Slots)
+            {
+                string problem;
+                if (DeviceForSlot(context, slot, out problem) == null)
+                    continue;
+                for (int index = slot.Index * AxesPerSlot; index < (slot.Index + 1) * AxesPerSlot; index++)
+                {
+                    if (index != target.Index && AxisUse(context, index) == target.Code && !wanted.ContainsKey("A" + index.ToString(CultureInfo.InvariantCulture)))
+                        others.Add(index);
+                }
+            }
+            return others;
+        }
+
+        private ExportSkippedBind SkippedMultiBind(XpTarget target, string gameAction)
+        {
+            GameInputBinding binding = target.Binding ?? new GameInputBinding();
+            return new ExportSkippedBind
+            {
+                Game = GameId,
+                Device = binding.Device ?? string.Empty,
+                Input = binding.Input ?? string.Empty,
+                ModifiersText = binding.Reformers == null ? string.Empty : string.Join(" + ", binding.Reformers.Select(r => { string[] p = (r ?? string.Empty).Split('§'); return p.Length >= 3 ? p[1] + " " + p[2] : r; })),
+                Relation = binding.RelationName ?? target.RelationName ?? string.Empty,
+                Action = target.ActionId ?? string.Empty,
+                GameAction = gameAction ?? string.Empty
+            };
         }
 
         // Clean mode: every other input of a connected device that holds a cataloged flight axis or command becomes
@@ -827,7 +888,7 @@ namespace JoyPro.Engine.Games
             {
                 if (existingText == null)
                     return;
-                if (ours || mode == GameExportMode.Clean)
+                if ((ours && mode != GameExportMode.Add) || mode == GameExportMode.Clean)
                 {
                     context.Prf.Remove(key);
                     result.Steps.Add(label + ": response curve removed (linear).");
@@ -839,9 +900,9 @@ namespace JoyPro.Engine.Games
             bool same = parsed && existing.SameAs(wanted);
             if (existingText != null && !ours && !same)
             {
-                if (mode == GameExportMode.Merge)
+                if (mode == GameExportMode.Merge || mode == GameExportMode.Add)
                 {
-                    result.Warnings.Add(label + ": the axis has a response curve made in X-Plane; merge keeps it.");
+                    result.Warnings.Add(label + ": the axis has a response curve made in X-Plane; " + (mode == GameExportMode.Add ? "add" : "merge") + " keeps it.");
                     return;
                 }
                 result.Warnings.Add(label + " replaced the response curve made in X-Plane: " + existingText.Trim());

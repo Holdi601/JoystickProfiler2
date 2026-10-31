@@ -23,6 +23,7 @@ public sealed partial class MainWindowViewModel
         nameof(ImportCurvature), nameof(ImportDeadzone), nameof(ImportSaturationX), nameof(ImportSaturationY),
         nameof(ImportAllDcsPlanes), nameof(ImportUseSelectedDevices), nameof(ImportPlanesCsv), nameof(ImportDevicesCsv),
         nameof(ImportIgnoreDevicesCsv), nameof(RegistryGameIncludeKeyboard), nameof(ImportWizardKeyboard), nameof(SelectedRegistryGame),
+        nameof(VJoyTunnelDevice),
     };
 
     private bool importSettingsApplying;
@@ -33,7 +34,8 @@ public sealed partial class MainWindowViewModel
         PropertyChanged += OnImportSettingChanged;
         WatchImportSelection(ImportPlaneOptions, () => exportSettings.Import.SelectedPlanes);
         WatchImportSelection(ImportDeviceOptions, () => exportSettings.Import.SelectedDevices);
-        WatchImportSelection(ImportIgnoreDeviceOptions, () => exportSettings.Import.IgnoredDevices);
+        // The ignored devices are per PC, or the open profile's own (MainWindowViewModel.ExportSettings.cs).
+        WatchImportSelection(ImportIgnoreDeviceOptions, ActiveIgnoredDevices);
         if (!persisted)
             return;
         ApplyRememberedImportSettings();
@@ -62,11 +64,12 @@ public sealed partial class MainWindowViewModel
             ImportPlanesCsv = s.PlanesCsv;
             ImportDevicesCsv = s.DevicesCsv;
             ImportIgnoreDevicesCsv = s.IgnoreDevicesCsv;
+            VJoyTunnelDevice = s.VJoyTunnelDevice;
             if (SelectedRegistryGame != null)
                 RegistryGameIncludeKeyboard = RememberedRegistryKeyboard(SelectedRegistryGame.GameId);
             ApplyRememberedSelection(ImportPlaneOptions, s.SelectedPlanes);
             ApplyRememberedSelection(ImportDeviceOptions, s.SelectedDevices);
-            ApplyRememberedSelection(ImportIgnoreDeviceOptions, s.IgnoredDevices);
+            ApplyRememberedSelection(ImportIgnoreDeviceOptions, ActiveIgnoredDevices());
         }
         finally
         {
@@ -121,6 +124,10 @@ public sealed partial class MainWindowViewModel
                         break;
                 }
                 break;
+            case nameof(ImportIncludeDefaults):
+                // A tick or untick by the user stays over JoyPro's default (on since 2.5.0).
+                s.IncludeDefaultsChosen = true;
+                break;
             case nameof(RegistryGameIncludeKeyboard):
                 // The Start page sets it for the game it imports (already remembered above); the expert form for its game.
                 if (ImportWizardStep == 2 || SelectedRegistryGame == null)
@@ -152,7 +159,11 @@ public sealed partial class MainWindowViewModel
         s.UseSelectedDevices = ImportUseSelectedDevices;
         s.PlanesCsv = ImportPlanesCsv?.Trim() ?? string.Empty;
         s.DevicesCsv = ImportDevicesCsv?.Trim() ?? string.Empty;
-        s.IgnoreDevicesCsv = ImportIgnoreDevicesCsv?.Trim() ?? string.Empty;
+        if (OwnPathsTicks() is { } own)
+            own.IgnoreDevicesCsv = ImportIgnoreDevicesCsv?.Trim() ?? string.Empty;
+        else
+            s.IgnoreDevicesCsv = ImportIgnoreDevicesCsv?.Trim() ?? string.Empty;
+        s.VJoyTunnelDevice = VJoyTunnelDevice;
         ExportSettingsStore.Save(ExportSettingsPath, exportSettings);
     }
 

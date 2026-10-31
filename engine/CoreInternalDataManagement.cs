@@ -39,6 +39,11 @@ namespace JoyPro
         public static string LayoutPreferences = string.Empty;
         // Actions on in several relations on purpose (Pr0file.KeptDuplicates).
         public static List<string> KeptDuplicates = new List<string>();
+        // Pr0file.ExportSkipMarks and Pr0file.SyncedGames.
+        public static List<string> ExportSkipMarks = new List<string>();
+        // Pr0file.DismissedSuggestions (EngineDismissedSuggestions).
+        public static List<string> DismissedSuggestions = new List<string>();
+        public static List<string> SyncedGames = new List<string>();
         public static bool OverwriteExistingRelationOnInsertInEngine = false;
         public static bool EnableLegacyLoadCorrections = true;
         public static bool AutoAddDbItemsOnLoad = true;
@@ -230,6 +235,9 @@ namespace JoyPro
             VirtualJoystickConfig = string.Empty;
             LayoutPreferences = string.Empty;
             KeptDuplicates = new List<string>();
+            ExportSkipMarks = new List<string>();
+            DismissedSuggestions = new List<string>();
+            SyncedGames = new List<string>();
             CurrentDatabaseFingerprint = string.Empty;
             LoadedProfileDatabaseFingerprint = string.Empty;
 
@@ -530,6 +538,7 @@ namespace JoyPro
         private static void ApplyProfile(Pr0file profile, bool applyLegacyCorrections, bool autoAddDbItems, string fileStamp = null)
         {
             NewFile(true);
+            LoadModifierMerges = new List<string>();
 
             string profileFingerprint = NormalizeDatabaseFingerprint(profile == null ? null : profile.DatabaseFingerprint);
             string currentFingerprint = applyLegacyCorrections
@@ -604,6 +613,7 @@ namespace JoyPro
                 ApplyDeviceLoadCorrections();
                 ResyncRelations();
                 RecalcFigures();
+                MergeDuplicateModifiersAfterLoad();
                 return;
             }
 
@@ -676,6 +686,9 @@ namespace JoyPro
             VirtualJoystickConfig = profile.VirtualJoystick ?? string.Empty;
             LayoutPreferences = profile.LayoutPreferences ?? string.Empty;
             KeptDuplicates = profile.KeptDuplicates == null ? new List<string>() : profile.KeptDuplicates.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            ExportSkipMarks = profile.ExportSkipMarks == null ? new List<string>() : profile.ExportSkipMarks.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.Ordinal).ToList();
+            DismissedSuggestions = profile.DismissedSuggestions == null ? new List<string>() : profile.DismissedSuggestions.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            SyncedGames = profile.SyncedGames == null ? new List<string>() : profile.SyncedGames.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
             LocalJoysticks = AllBinds.Values
                 .Where(b => b != null && !string.IsNullOrWhiteSpace(b.Joystick))
@@ -710,6 +723,27 @@ namespace JoyPro
             }
             ResyncRelations();
             RecalcFigures();
+            MergeDuplicateModifiersAfterLoad();
+        }
+
+        // Modifiers of one device and key under several names (JoyPro 1's "KeyboardLeftAlt" next to DCS's "LAlt") are
+        // merged when a profile is read (KeyboardModifierMerge); Program saves that as one history step of its own.
+        public static List<string> LoadModifierMerges = new List<string>();
+
+        private static void MergeDuplicateModifiersAfterLoad()
+        {
+            LoadModifierMerges = new List<string>();
+            try
+            {
+                foreach (KeyboardModifierMerge.MergeResult merge in KeyboardModifierMerge.MergeDuplicates())
+                    LoadModifierMerges.Add(merge.Describe());
+            }
+            catch (Exception ex)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Profile", "Merging modifiers of the same key failed", ex);
+            }
+            if (LoadModifierMerges.Count > 0)
+                JoyPro.Logging.JoyProLog.Info("Profile", "Merged modifiers of the same key: " + string.Join("; ", LoadModifierMerges));
         }
 
         // ---- The corrected state the engine server keeps (EngineLoadCorrectionCache) ----
@@ -737,6 +771,9 @@ namespace JoyPro
             public string VirtualJoystickConfig;
             public string LayoutPreferences;
             public List<string> KeptDuplicates;
+            public List<string> ExportSkipMarks;
+            public List<string> DismissedSuggestions;
+            public List<string> SyncedGames;
             public List<LoadCorrectionReportEntry> Entries;
             public List<string> Messages;
         }
@@ -781,6 +818,9 @@ namespace JoyPro
                 VirtualJoystickConfig = VirtualJoystickConfig,
                 LayoutPreferences = LayoutPreferences,
                 KeptDuplicates = KeptDuplicates,
+                ExportSkipMarks = ExportSkipMarks,
+                DismissedSuggestions = DismissedSuggestions,
+                SyncedGames = SyncedGames,
                 Entries = entries.Skip(Math.Min(entriesBefore, entries.Count)).ToList(),
                 Messages = messages ?? new List<string>()
             };
@@ -836,6 +876,9 @@ namespace JoyPro
             VirtualJoystickConfig = state.VirtualJoystickConfig;
             LayoutPreferences = state.LayoutPreferences;
             KeptDuplicates = state.KeptDuplicates;
+            ExportSkipMarks = state.ExportSkipMarks ?? new List<string>();
+            DismissedSuggestions = state.DismissedSuggestions ?? new List<string>();
+            SyncedGames = state.SyncedGames ?? new List<string>();
             foreach (LoadCorrectionReportEntry entry in state.Entries ?? new List<LoadCorrectionReportEntry>())
             {
                 entry.TimestampUtc = DateTime.MinValue;
@@ -3558,7 +3601,8 @@ namespace JoyPro
                                     DCSInput input = new DCSInput();
                                     input.ID = id;
                                     input.Plane = plane ?? string.Empty;
-                                    input.Title = title ?? string.Empty;
+                                    // DCS's own list can have a title twice in a row (OH-58D): read once.
+                                    input.Title = EngineReadableNames.WithoutRepeat(title ?? string.Empty);
                                     input.Cat = category ?? string.Empty;
                                     input.IsAxis = id.StartsWith("a", StringComparison.OrdinalIgnoreCase);
                                     result.Add(input);
@@ -4103,6 +4147,9 @@ namespace JoyPro
             profile.AxisCalibrations = AxisCalibrations == null || AxisCalibrations.Count == 0 ? null : AxisCalibrations;
             profile.LayoutPreferences = string.IsNullOrWhiteSpace(LayoutPreferences) ? null : LayoutPreferences;
             profile.KeptDuplicates = KeptDuplicates == null || KeptDuplicates.Count == 0 ? null : KeptDuplicates.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
+            profile.ExportSkipMarks = ExportSkipMarks == null || ExportSkipMarks.Count == 0 ? null : ExportSkipMarks.OrderBy(k => k, StringComparer.Ordinal).ToList();
+            profile.DismissedSuggestions = DismissedSuggestions == null || DismissedSuggestions.Count == 0 ? null : DismissedSuggestions.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
+            profile.SyncedGames = SyncedGames == null || SyncedGames.Count == 0 ? null : SyncedGames.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
             profile.DatabaseFingerprint = fingerprint ?? string.Empty;
             return profile;
         }

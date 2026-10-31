@@ -421,18 +421,75 @@ namespace JoyPro.Engine.Games
             int written = 0;
             if (request.Mode == GameExportMode.Clean)
             {
-                // Clean: JoyPro takes over the joystick slots of the flight actions.
+                // Clean: JoyPro takes over the slots of the flight actions on the devices the export writes: the
+                // joystick when it gets binds, the keyboard when keyboard keys are exported (keys of button actions that
+                // JoyPro can read).
+                bool keys = keyboard.Count > 0 && request.IncludeKeyboard;
                 foreach (GameAction action in request.Catalog.Actions)
                 {
                     string category, concept;
                     if (!SplitId(action.Id, out category, out concept))
                         continue;
-                    foreach (BattlefieldSlot slot in profile.Slots(category, concept).Where(s => s.Type == TypeJoystick))
+                    foreach (BattlefieldSlot slot in profile.Slots(category, concept))
                     {
-                        profile.Set(slot, "axis", UnboundAxis);
-                        profile.Set(slot, "button", UnboundButton);
+                        if (slot.Type == TypeJoystick && joystick.Count > 0)
+                        {
+                            profile.Set(slot, "axis", UnboundAxis);
+                            profile.Set(slot, "button", UnboundButton);
+                        }
+                        else if (slot.Type == TypeKeyboard && keys && !action.IsAxis && !IsFree(slot, TypeKeyboard) && !string.IsNullOrEmpty(GameKeyCodes.NameFromDik(slot.Button)) &&
+                                 !keyboard.Any(b => string.Equals(b.ActionId, action.Id, StringComparison.Ordinal) && string.Equals(b.Input, GameKeyCodes.NameFromDik(slot.Button), StringComparison.OrdinalIgnoreCase)))
+                        {
+                            profile.Set(slot, "button", UnboundKey);
+                        }
                     }
                 }
+            }
+
+            // "Only add" skips a bind on an input another flight action of the same vehicle uses (no multi-bind); the other
+            // modes free that slot (a conflict). Merge-overwrite and clean also free the other slots of an action the
+            // profile binds (keyboard ones only with --include-keyboard), so a moved action fully moves. Soldier and
+            // ground vehicle binds never count.
+            Dictionary<string, string> gameInputs = GameInputs(profile, request.Catalog, map);
+            Func<GameInputBinding, string> otherUser = b =>
+            {
+                GameAction a = request.Catalog.Find(b.ActionId);
+                if (a == null)
+                    return string.Empty;
+                foreach (string key in InputKeys(b, a, map))
+                {
+                    string user;
+                    if (gameInputs.TryGetValue(key, out user) && !string.Equals(user, a.Id, StringComparison.Ordinal))
+                        return user;
+                }
+                return string.Empty;
+            };
+            if (request.Mode == GameExportMode.Add)
+            {
+                foreach (GameInputBinding binding in joystick.Concat(keyboard).ToList())
+                {
+                    string other = otherUser(binding);
+                    if (other.Length == 0)
+                        continue;
+                    joystick.Remove(binding);
+                    keyboard.Remove(binding);
+                    if (!count)
+                        continue;
+                    result.BindingsSkipped++;
+                    result.SkippedTakenInputs.Add(new ExportSkippedBind
+                    {
+                        Game = GameId,
+                        Device = binding.Device,
+                        Input = binding.Input,
+                        Relation = binding.RelationName,
+                        Action = binding.ActionId,
+                        GameAction = other
+                    });
+                }
+            }
+            else
+            {
+                FreeConflicts(profile, request, joystick.Concat(keyboard).ToList(), map);
             }
 
             HashSet<string> taken = new HashSet<string>(StringComparer.Ordinal);
@@ -576,6 +633,128 @@ namespace JoyPro.Engine.Games
             if (count)
                 result.BindingsWritten += written;
             return written;
+        }
+
+        // The inputs of a profile bind as slot keys ("<vehicle>|<type>|<property>|<value>"), empty when not encodable.
+        private static List<string> InputKeys(GameInputBinding binding, GameAction action, BattlefieldJoystickMap map)
+        {
+            List<string> keys = new List<string>();
+            string category, concept;
+            if (!SplitId(action.Id, out category, out concept))
+                return keys;
+            if (binding.IsKeyboard)
+            {
+                int dik;
+                if (!action.IsAxis && GameKeyCodes.TryGetDik(binding.Input, out dik))
+                    keys.Add(category + "|" + TypeKeyboard.ToString(CultureInfo.InvariantCulture) + "|button|" + dik.ToString(CultureInfo.InvariantCulture));
+                return keys;
+            }
+            JoyInput input;
+            if (!GameInputTokens.TryParse(binding.Input, out input))
+                return keys;
+            string reason;
+            BattlefieldCode positive, negative, code;
+            List<BattlefieldCode> codes = new List<BattlefieldCode>();
+            if (action.IsAxis && map.TryHalves(input, out positive, out negative, out reason))
+                codes.AddRange(new[] { positive, negative });
+            else if (action.IsAxis && map.TryWhole(input, out code))
+                codes.Add(code);
+            else if (!action.IsAxis && map.TryButton(input, out code, out reason))
+                codes.Add(code);
+            foreach (BattlefieldCode c in codes)
+                keys.Add(category + "|" + TypeJoystick.ToString(CultureInfo.InvariantCulture) + "|" + c.Property + "|" + c.Value.ToString(CultureInfo.InvariantCulture));
+            return keys;
+        }
+
+        // The keys of a bound slot JoyPro reads (a joystick slot holds an axis or a button value JoyPro's table knows, a
+        // keyboard slot of a button action a key); slots the import does not read never count.
+        private List<string> SlotKeys(BattlefieldSlot slot, GameAction action, BattlefieldJoystickMap map)
+        {
+            List<string> keys = new List<string>();
+            string prefix = slot.Category + "|" + slot.Type.ToString(CultureInfo.InvariantCulture) + "|";
+            if (slot.Type == TypeKeyboard)
+            {
+                if (!action.IsAxis && !IsFree(slot, TypeKeyboard) && !string.IsNullOrEmpty(GameKeyCodes.NameFromDik(slot.Button)))
+                    keys.Add(prefix + "button|" + slot.Button.ToString(CultureInfo.InvariantCulture));
+            }
+            else if (slot.Type == TypeJoystick && !IsFree(slot, TypeJoystick) && map.Decode(slot, UnboundAxis, UnboundButton) != null)
+            {
+                if (slot.Axis >= 0 && slot.Axis != UnboundAxis)
+                    keys.Add(prefix + "axis|" + slot.Axis.ToString(CultureInfo.InvariantCulture));
+                if (slot.Button >= 0 && slot.Button != UnboundButton)
+                    keys.Add(prefix + "button|" + slot.Button.ToString(CultureInfo.InvariantCulture));
+            }
+            return keys;
+        }
+
+        // The flight actions' bound keyboard and joystick slots per key, with their action.
+        private Dictionary<string, string> GameInputs(BattlefieldProfile profile, GameCatalog catalog, BattlefieldJoystickMap map)
+        {
+            Dictionary<string, string> inputs = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (GameAction action in catalog.Actions)
+            {
+                string category, concept;
+                if (!SplitId(action.Id, out category, out concept))
+                    continue;
+                foreach (BattlefieldSlot slot in profile.Slots(category, concept))
+                    foreach (string key in SlotKeys(slot, action, map).Where(k => !inputs.ContainsKey(k)))
+                        inputs[key] = action.Id;
+            }
+            return inputs;
+        }
+
+        // Merge, merge-overwrite, clean: a flight action's slot on an input the profile gives another action is freed
+        // (a conflict). Merge-overwrite and clean: an action the profile binds loses its other slots on the joystick
+        // (codes JoyPro's table reads, with a game controller connected) and, with --include-keyboard, its keyboard keys (button actions:
+        // keys on an axis are not read by the import, so they stay).
+        private void FreeConflicts(BattlefieldProfile profile, GameExportRequest request, List<GameInputBinding> bindings, BattlefieldJoystickMap map)
+        {
+            Dictionary<string, string> wanted = new Dictionary<string, string>(StringComparer.Ordinal);
+            Dictionary<string, HashSet<string>> wantedOf = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+            foreach (GameInputBinding binding in bindings)
+            {
+                GameAction action = request.Catalog.Find(binding.ActionId);
+                if (action == null)
+                    continue;
+                HashSet<string> own;
+                if (!wantedOf.TryGetValue(action.Id, out own))
+                    wantedOf[action.Id] = own = new HashSet<string>(StringComparer.Ordinal);
+                foreach (string key in InputKeys(binding, action, map))
+                {
+                    own.Add(key);
+                    if (!wanted.ContainsKey(key))
+                        wanted[key] = action.Id;
+                }
+            }
+            bool moves = request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean;
+            bool joystickOwned = moves && JoystickDevice(request.Devices, new List<string>()).Length > 0;
+            foreach (GameAction action in request.Catalog.Actions)
+            {
+                string category, concept;
+                if (!SplitId(action.Id, out category, out concept))
+                    continue;
+                HashSet<string> own;
+                wantedOf.TryGetValue(action.Id, out own);
+                foreach (BattlefieldSlot slot in profile.Slots(category, concept).Where(s => s.Type == TypeJoystick || s.Type == TypeKeyboard).ToList())
+                {
+                    List<string> keys = SlotKeys(slot, action, map);
+                    if (keys.Count == 0 || (own != null && keys.Any(own.Contains)))
+                        continue;
+                    string user;
+                    bool conflict = keys.Any(k => wanted.TryGetValue(k, out user) && !string.Equals(user, action.Id, StringComparison.Ordinal));
+                    bool moved = own != null && moves &&
+                                 (slot.Type == TypeKeyboard ? request.IncludeKeyboard : joystickOwned);
+                    if (!conflict && !moved)
+                        continue;
+                    if (slot.Type == TypeKeyboard)
+                        profile.Set(slot, "button", UnboundKey);
+                    else
+                    {
+                        profile.Set(slot, "axis", UnboundAxis);
+                        profile.Set(slot, "button", UnboundButton);
+                    }
+                }
+            }
         }
 
         // A joystick code into a slot: the code's property gets the value, the other one "nothing".

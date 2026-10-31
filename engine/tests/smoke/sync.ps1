@@ -293,6 +293,11 @@ try {
     # ---- Star Citizen (actionmaps.xml) ---------------------------------------------------------------------------
     $syncScFixtures = Join-Path $engineDir "tests\smoke\fixtures\starcitizen"
     Copy-Item -Path (Join-Path $syncScFixtures "catalog.xml") -Destination $starCitizenDbCatalogPath -Force
+    # This part has its own data folder: the engine reads the catalog from there (else the program folder's copy with
+    # the game's default joystick binds, which an import takes in since 2.4.3).
+    $syncScDb = Join-Path $env:JOYPRO_DATA_DIR "GameData\DB\StarCitizen"
+    New-Item -Path $syncScDb -ItemType Directory -Force | Out-Null
+    Copy-Item -Path (Join-Path $syncScFixtures "catalog.xml") -Destination (Join-Path $syncScDb "AllBinds.xml") -Force
     $syncScRoot = Join-Path $syncRoot "starcitizen"
     $syncScDir = Join-Path $syncScRoot "LIVE\USER\Client\0\Profiles\default"
     New-Item -Path $syncScDir -ItemType Directory -Force | Out-Null

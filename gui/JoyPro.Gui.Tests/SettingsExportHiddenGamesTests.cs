@@ -314,7 +314,7 @@ public sealed class SettingsExportHiddenGamesTests : IDisposable
         Assert.Equal("clean", second.SelectedExportModeOption!.Key);
         Assert.False(second.ExportKeepKeyboardDefaults);
         Assert.False(second.ExportStarCitizenPreferLocalOrder);
-        Assert.True(second.ExportDcsCleanAllAircraft);
+        Assert.False(second.ExportDcsCleanAllAircraft);
         Assert.True(second.ImportIncludeDisconnected);
         Assert.True(second.ImportIncludeSimDefaults);
         Assert.True(second.ValidationShowWarnings);
@@ -343,7 +343,8 @@ public sealed class SettingsExportHiddenGamesTests : IDisposable
         // A broken file gives the defaults.
         File.WriteAllText(exportSettings, "{ not json");
         MainWindowViewModel third = Vm(engine, persist: true);
-        Assert.Equal("merge", third.ExportMode);
+        Assert.Equal("clean", third.ExportMode);
+        Assert.True(third.ExportNukeUntouchedDevices);
     }
 
     [Fact]

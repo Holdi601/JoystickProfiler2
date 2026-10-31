@@ -145,7 +145,9 @@ public sealed class ImportGuardTests
                     Assert.Contains(Warning, b3);
                     Assert.DoesNotContain(Warning, b1);
                     Assert.Contains("\"Count\":0", pending);
-                    string plt = File.ReadAllText(Directory.GetFiles(Path.Combine(folder.SavedGames, "Config", "Input", "AH-64D_BLK_II_PLT", "joystick"), "*.diff.lua").Single());
+                    // (2.5.0: "Export first" uses the default clean + nuke: the other devices of this PC get files of their own.)
+                    string plt = File.ReadAllText(Directory.GetFiles(Path.Combine(folder.SavedGames, "Config", "Input", "AH-64D_BLK_II_PLT", "joystick"), "*.diff.lua")
+                        .Single(f => Path.GetFileName(f).StartsWith("VPC Panel #2", StringComparison.Ordinal)));
                     int at = plt.IndexOf(Warning, StringComparison.Ordinal);
                     int next = plt.IndexOf("[\"d", at + Warning.Length, StringComparison.Ordinal);
                     string block = at < 0 ? string.Empty : plt[at..(next < 0 ? plt.Length : next)];

@@ -12,10 +12,17 @@ namespace JoyPro.Gui.Services;
 // on a fresh start). A broken or missing file gives JoyPro's defaults.
 public sealed class ExportSettings
 {
-    public string Mode { get; set; } = "merge";
-    public bool NukeUntouchedDevices { get; set; }
+    // JoyPro's default since 2.5.0: clean + nuke (as in JoyPro 1), only the exported aircraft, keyboard defaults kept.
+    public const string DefaultMode = "clean";
+    // The default up to 2.4.x: a file with it and no ModeChosenByUser gets the new default (like the log retention).
+    public const string LegacyDefaultMode = "merge";
+
+    public string Mode { get; set; } = DefaultMode;
+    public bool NukeUntouchedDevices { get; set; } = true;
     public bool DcsKeepKeyboardDefaults { get; set; } = true;
-    public bool DcsCleanAllAircraft { get; set; } = true;
+    public bool DcsCleanAllAircraft { get; set; }
+    // The user picked the mode, "Also clear my other devices" or "clean in every aircraft" on the Export page: kept.
+    public bool ModeChosenByUser { get; set; }
     public bool StarCitizenKeepKeyboardDefaults { get; set; } = true;
     public bool StarCitizenPreferLocalOrder { get; set; } = true;
     public bool RegistryDryRun { get; set; }
@@ -44,6 +51,9 @@ public sealed class ExportSettings
     // Registry game id -> its file or folder (the Export page's options; empty = detected).
     public Dictionary<string, string> RegistryPaths { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    // The keys of Paths the user typed or picked by hand: JoyPro's detection never replaces them.
+    public List<string> HandPaths { get; set; } = [];
+
     // Full profile path (lower case) -> the user's own ticks.
     public Dictionary<string, ProfileExportTicks> Profiles { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 }
@@ -55,7 +65,12 @@ public sealed class ImportSettings
     public bool AddToProfile { get; set; } = true;
     // Expert import: merge into the profile.
     public bool Merge { get; set; }
-    public bool IncludeDefaults { get; set; }
+    // DCS "include defaults": on since 2.5.0 (import -> clean export keeps every active bind); an untick stays.
+    public bool IncludeDefaults { get; set; } = true;
+    public bool IncludeDefaultsChosen { get; set; }
+    // The vJoy device (1-16) JoyPro forwards into: only that one is left out of imports; 0 = none (every vJoy device is a
+    // normal device, e.g. for VoiceAttack).
+    public int VJoyTunnelDevice { get; set; }
     public bool DcsKeyboard { get; set; } = true;
     public bool StarCitizenKeyboard { get; set; }
     // The games JoyPro reads through its game list: game id -> take the keyboard keys.
@@ -87,6 +102,14 @@ public sealed class ProfileExportTicks
     public Dictionary<string, bool> Planes { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public DateTime LastUsed { get; set; }
+
+    // "Own paths and ignored devices for this profile": the game paths (keys as ExportSettings.Paths) and the ignored
+    // devices of this profile instead of the PC's; off (null) = the PC's.
+    public Dictionary<string, string>? PathOverrides { get; set; }
+    public string? IgnoreDevicesCsv { get; set; }
+    public List<string>? IgnoredDevices { get; set; }
+
+    public bool HasOwnPaths => PathOverrides != null;
 }
 
 public static class ExportSettingsStore
@@ -119,7 +142,10 @@ public static class ExportSettingsStore
                 {
                     Games = new Dictionary<string, bool>(ticks.Games ?? [], StringComparer.OrdinalIgnoreCase),
                     Planes = new Dictionary<string, bool>(ticks.Planes ?? [], StringComparer.OrdinalIgnoreCase),
-                    LastUsed = ticks.LastUsed
+                    LastUsed = ticks.LastUsed,
+                    PathOverrides = ticks.PathOverrides == null ? null : new Dictionary<string, string>(ticks.PathOverrides, StringComparer.OrdinalIgnoreCase),
+                    IgnoreDevicesCsv = ticks.IgnoreDevicesCsv,
+                    IgnoredDevices = ticks.IgnoredDevices
                 };
             }
             settings.Profiles = profiles;
@@ -132,14 +158,36 @@ public static class ExportSettingsStore
             import.SelectedDevices ??= [];
             import.IgnoredDevices ??= [];
             settings.Import = import;
+            settings.HandPaths ??= [];
             if (string.IsNullOrWhiteSpace(settings.Mode))
-                settings.Mode = "merge";
+                settings.Mode = ExportSettings.DefaultMode;
+            Migrate(settings);
             return settings;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or NotSupportedException)
         {
             return new ExportSettings();
         }
+    }
+
+    // 2.5.0: whoever never chose gets the new defaults - the export mode clean + "also clear my other devices", DCS
+    // without "clean in every aircraft", DCS "include defaults" on. A value that is not the old default was chosen
+    // (kept); an old default without the marker was JoyPro's (replaced). Like the log retention's migration.
+    public static void Migrate(ExportSettings settings)
+    {
+        if (!settings.ModeChosenByUser)
+        {
+            if (string.Equals(settings.Mode, ExportSettings.LegacyDefaultMode, StringComparison.OrdinalIgnoreCase) && !settings.NukeUntouchedDevices)
+            {
+                settings.Mode = ExportSettings.DefaultMode;
+                settings.NukeUntouchedDevices = true;
+            }
+            settings.DcsCleanAllAircraft = false;
+        }
+        if (!settings.Import.IncludeDefaultsChosen)
+            settings.Import.IncludeDefaults = true;
+        if (settings.Import.VJoyTunnelDevice is < 0 or > 16)
+            settings.Import.VJoyTunnelDevice = 0;
     }
 
     public static void Save(string path, ExportSettings settings)

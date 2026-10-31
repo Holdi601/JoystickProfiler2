@@ -697,41 +697,18 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
-                                                <!-- Hidden games (the card's hide button, the game setup, Settings > Games): shown again with one click. -->
-                                                <Expander x:Name="HiddenGamesExpander" IsVisible="{Binding HasHiddenGames}" HorizontalAlignment="Stretch" IsExpanded="{Binding HiddenGamesExpanded}">
-                                                    <Expander.Header>
-                                                        <StackPanel Orientation="Horizontal" Spacing="8">
-                                                            <PathIcon Data="{StaticResource Icon.EyeOff}" Width="16" Height="16" Opacity="0.7" />
-                                                            <TextBlock Text="{Binding HiddenGamesTitle}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                                            <TextBlock Text="{l:T 'not on the cards, not exported, not watched; your binds for them stay'}" Classes="caption" VerticalAlignment="Center" />
-                                                        </StackPanel>
-                                                    </Expander.Header>
-                                                    <ItemsControl ItemsSource="{Binding HiddenGameInstalls}">
-                                                        <ItemsControl.ItemsPanel>
-                                                            <ItemsPanelTemplate>
-                                                                <WrapPanel />
-                                                            </ItemsPanelTemplate>
-                                                        </ItemsControl.ItemsPanel>
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate x:DataType="models:GameInstallItem">
-                                                                <Border Classes="raised" Width="300" Margin="0,0,12,8" Padding="8">
-                                                                    <Grid ColumnDefinitions="32,*,Auto" ColumnSpacing="10">
-                                                                        <Border Width="32" Height="48" CornerRadius="5" ClipToBounds="True" Background="{DynamicResource JP.SurfaceAltBrush}" Opacity="0.7">
-                                                                            <Panel>
-                                                                                <controls:GameBadge GameId="{Binding GameId}" Title="{Binding Name}" />
-                                                                                <Image Source="{Binding Cover}" Stretch="UniformToFill" />
-                                                                            </Panel>
-                                                                        </Border>
-                                                                        <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextWrapping="Wrap" Opacity="0.8" />
-                                                                        <Button Grid.Column="2" Classes="icon small" Tag="{StaticResource Icon.Eye}" Content="{l:T 'Show again'}" VerticalAlignment="Center"
-                                                                                Command="{Binding #RootWindow.DataContext.ShowHiddenGameCommand}" CommandParameter="{Binding}" IsEnabled="{Binding #RootWindow.DataContext.CanRun}"
-                                                                                ToolTip.Tip="{l:T 'Back on the cards, in the export and the watcher'}" />
-                                                                    </Grid>
-                                                                </Border>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
-                                                </Expander>
+                                                <!-- Hidden games (the card's hide button, the game setup, Settings > Games) are hidden everywhere; Settings > Games is
+                                                     the one place that shows them again, this line only says how many there are and leads there. -->
+                                                <Border x:Name="HiddenGamesHint" Classes="sunken" Padding="10,6" IsVisible="{Binding HasHiddenGames}" HorizontalAlignment="Left">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <PathIcon Data="{StaticResource Icon.EyeOff}" Width="16" Height="16" Opacity="0.7" VerticalAlignment="Center" />
+                                                        <TextBlock Text="{Binding HiddenGamesTitle}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                        <TextBlock Text="{l:T 'not shown anywhere in JoyPro; your binds for them stay'}" Classes="caption" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                        <Button Classes="icon small" Tag="{StaticResource Icon.Cog}" Content="{l:T 'Show them in Settings > Games'}" VerticalAlignment="Center"
+                                                                Command="{Binding OpenSettingsSectionCommand}" CommandParameter="games"
+                                                                ToolTip.Tip="{l:T 'Settings > Games lists your hidden games; Show again brings one back on the cards, in the export and the watcher'}" />
+                                                    </StackPanel>
+                                                </Border>
                                             </StackPanel>
 
                                             <!-- Step 2: how to import -->
@@ -760,6 +737,20 @@
                                                         <TextBlock Classes="caption" Text="{l:T 'The relations of your profile are replaced by what the game has (JoyPro keeps a copy of your profile first).'}" />
                                                     </StackPanel>
                                                 </RadioButton>
+                                                <!-- The game is in the profile already: changes made in the game come in through the watcher (once per game) -->
+                                                <Border x:Name="ImportWatcherHint" Padding="0,2" IsVisible="{Binding ImportWatcherHintVisible}">
+                                                    <StackPanel Spacing="4">
+                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                                            <PathIcon Data="{StaticResource Icon.Info}" Width="13" Height="13" Classes="info" VerticalAlignment="Top" Margin="0,2,0,0" Opacity="0.75" />
+                                                            <TextBlock Grid.Column="1" Classes="hint" Text="{Binding ImportWatcherHintText}" TextWrapping="Wrap" />
+                                                        </Grid>
+                                                        <WrapPanel Margin="19,0,0,0" ItemSpacing="6" LineSpacing="4">
+                                                            <Button Classes="small" Content="{Binding ImportWatcherTurnOnText}" Command="{Binding TurnOnWatchingFromImportCommand}" IsVisible="{Binding ImportWatcherOffersTurnOn}" />
+                                                            <Button Classes="small ghost" Content="{l:T 'Report a watcher problem'}" Command="{Binding ReportWatcherProblemCommand}" />
+                                                            <Button Classes="small ghost" Content="{l:T 'Don\'t show this again'}" Command="{Binding HideWatcherHintForGoodCommand}" />
+                                                        </WrapPanel>
+                                                    </StackPanel>
+                                                </Border>
                                                 <CheckBox IsChecked="{Binding ImportWizardKeyboard}" IsVisible="{Binding ImportWizardOffersKeyboard}"
                                                           Content="{l:T 'Also take the keyboard keys (flight commands only; device binds are always taken)'}" />
                                                 <CheckBox IsChecked="{Binding ImportIncludeDisconnected}" IsVisible="{Binding ImportWizardOffersDisconnected}"
@@ -1939,22 +1930,26 @@
                                                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate x:DataType="models:RelationNodeItem">
+                                                      <!-- The whole card answers a right-click (title, game line, aircraft line and the card's padding):
+                                                           a hit-testable background over the list item's padding (2.5.0 tester report: only the title
+                                                           line had the menu). -->
+                                                      <Border x:Name="RelationNodeRow" Background="Transparent" Margin="-10,-8" Padding="10,8">
+                                                        <Border.ContextMenu>
+                                                            <ContextMenu>
+                                                                <MenuItem Header="{l:T 'Move up'}" InputGesture="Alt+Up" Command="{Binding #RootWindow.DataContext.MoveRelationNodeUpCommand}" CommandParameter="{Binding}" />
+                                                                <MenuItem Header="{l:T 'Move down'}" InputGesture="Alt+Down" Command="{Binding #RootWindow.DataContext.MoveRelationNodeDownCommand}" CommandParameter="{Binding}" />
+                                                                <MenuItem Header="{l:T 'Move to the top'}" Command="{Binding #RootWindow.DataContext.MoveRelationNodeToTopCommand}" CommandParameter="{Binding}" />
+                                                                <MenuItem Header="{l:T 'Move to the bottom'}" Command="{Binding #RootWindow.DataContext.MoveRelationNodeToBottomCommand}" CommandParameter="{Binding}" />
+                                                                <Separator />
+                                                                <MenuItem Header="{l:T 'Move to another button...'}" Command="{Binding #RootWindow.DataContext.OpenMoveActionForNodeCommand}" CommandParameter="{Binding}"
+                                                                          ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
+                                                                <Separator />
+                                                                <MenuItem Header="{l:T 'Remove from the relation'}" Command="{Binding #RootWindow.DataContext.RemoveNodeCommand}" CommandParameter="{Binding}" />
+                                                            </ContextMenu>
+                                                        </Border.ContextMenu>
                                                       <StackPanel Spacing="4" Classes.searchHit="{Binding IsSearchHit}">
                                                         <!-- A click on the action opens (or closes) its aircraft: what the id means in each, a tick each -->
                                                         <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="8" Background="Transparent" Tapped="RelationNodeHeaderTapped">
-                                                            <Grid.ContextMenu>
-                                                                <ContextMenu>
-                                                                    <MenuItem Header="{l:T 'Move up'}" InputGesture="Alt+Up" Command="{Binding #RootWindow.DataContext.MoveRelationNodeUpCommand}" CommandParameter="{Binding}" />
-                                                                    <MenuItem Header="{l:T 'Move down'}" InputGesture="Alt+Down" Command="{Binding #RootWindow.DataContext.MoveRelationNodeDownCommand}" CommandParameter="{Binding}" />
-                                                                    <MenuItem Header="{l:T 'Move to the top'}" Command="{Binding #RootWindow.DataContext.MoveRelationNodeToTopCommand}" CommandParameter="{Binding}" />
-                                                                    <MenuItem Header="{l:T 'Move to the bottom'}" Command="{Binding #RootWindow.DataContext.MoveRelationNodeToBottomCommand}" CommandParameter="{Binding}" />
-                                                                    <Separator />
-                                                                    <MenuItem Header="{l:T 'Move to another button...'}" Command="{Binding #RootWindow.DataContext.OpenMoveActionForNodeCommand}" CommandParameter="{Binding}"
-                                                                              ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
-                                                                    <Separator />
-                                                                    <MenuItem Header="{l:T 'Remove from the relation'}" Command="{Binding #RootWindow.DataContext.RemoveNodeCommand}" CommandParameter="{Binding}" />
-                                                                </ContextMenu>
-                                                            </Grid.ContextMenu>
                                                             <!-- The grip: drag the card to another place in the relation -->
                                                             <Border x:Name="RelationNodeGrip" Background="Transparent" Width="14" VerticalAlignment="Stretch" Cursor="SizeNorthSouth"
                                                                     PointerPressed="RelationNodeGripPressed" PointerMoved="RelationNodeGripMoved"
@@ -1968,6 +1963,14 @@
                                                             <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
                                                                 <TextBlock Text="{Binding TitlesSummary}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding TitlesDisplay}" />
                                                                 <TextBlock Classes="caption" Text="{Binding DetailsText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding PlanesDisplay}" />
+                                                                <!-- "Only add" did not write it: the game uses the button for another function (engine export-marks) -->
+                                                                <Border x:Name="RelationNodeExportSkip" Classes="chip warn" HorizontalAlignment="Left" IsVisible="{Binding HasExportSkip}"
+                                                                        ToolTip.Tip="{Binding ExportSkipText}">
+                                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
+                                                                        <PathIcon Data="{StaticResource Icon.Warning}" Width="11" Height="11" Classes="warn" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                                                        <TextBlock Grid.Column="1" Text="{Binding ExportSkipText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.11}" />
+                                                                    </Grid>
+                                                                </Border>
                                                             </StackPanel>
                                                             <!-- The chevron: the action's aircraft open or close (the whole header row does the same) -->
                                                             <Button x:Name="RelationNodeChevron" Grid.Column="3" Classes="small ghost" Padding="4" VerticalAlignment="Center" IsVisible="{Binding HasAircraft}"
@@ -2008,6 +2011,7 @@
                                                             </Panel>
                                                         </StackPanel>
                                                       </StackPanel>
+                                                      </Border>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
@@ -2578,14 +2582,16 @@
                                              MinHeight="160">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate x:DataType="models:BindListItem">
-                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" ToolTip.Tip="{Binding BindTooltip}" Background="Transparent"
-                                                      PointerPressed="BindRowPointerPressed" PointerMoved="CalloutRelationPointerMoved">
-                                                    <Grid.ContextMenu>
+                                                <!-- The whole card (with the list item's padding) answers a right-click. -->
+                                                <Border x:Name="BindRow" Background="Transparent" Margin="-10,-8" Padding="10,8">
+                                                    <Border.ContextMenu>
                                                         <ContextMenu>
                                                             <MenuItem Header="{l:T 'Move an action to another button...'}" Command="{Binding #RootWindow.DataContext.OpenMoveActionForBindCommand}" CommandParameter="{Binding}"
                                                                       ToolTip.Tip="{l:T 'Only one action goes to another button; the other actions stay on this one'}" />
                                                         </ContextMenu>
-                                                    </Grid.ContextMenu>
+                                                    </Border.ContextMenu>
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" ToolTip.Tip="{Binding BindTooltip}" Background="Transparent"
+                                                      PointerPressed="BindRowPointerPressed" PointerMoved="CalloutRelationPointerMoved">
                                                     <Panel VerticalAlignment="Center">
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusOkBrush}" IsVisible="{Binding HasBind}" ToolTip.Tip="{l:T 'Bound'}" />
                                                         <Ellipse Width="8" Height="8" Fill="{DynamicResource StatusWarnBrush}" IsVisible="{Binding IsUnbound}" ToolTip.Tip="{l:T 'Not bound yet'}" />
@@ -2642,6 +2648,7 @@
                                                         <Border Classes="chip warn" IsVisible="{Binding IsUnbound}"><TextBlock Text="{l:T 'not bound'}" /></Border>
                                                     </Panel>
                                                 </Grid>
+                                                </Border>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                     </ListBox>
@@ -4460,14 +4467,25 @@
                                             </StackPanel>
                                         </Border>
 
-                                        <!-- The marker assistant (reference): press a button, click where it is -->
-                                        <Border Classes="floatingLabel" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="12,12,12,0" MaxWidth="560"
+                                        <!-- The marker assistant (reference): press a button, click where it is. In the top left corner (the
+                                             device label is hidden meanwhile), never over the middle of the picture; dragged by its grip it
+                                             goes anywhere over the picture, and its place is kept (ui-settings.json). -->
+                                        <Border x:Name="MarkerAssistantPanel" Classes="floatingLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12" MaxWidth="400"
                                                 IsVisible="{Binding HasReferenceAssistant}">
+                                            <Border.RenderTransform>
+                                                <TranslateTransform X="{Binding MarkerAssistantOffsetX}" Y="{Binding MarkerAssistantOffsetY}" />
+                                            </Border.RenderTransform>
                                             <StackPanel Spacing="8" DataContext="{Binding DeviceReference.Assistant}" x:DataType="vm:MarkerAssistantViewModel">
-                                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                                    <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
-                                                    <TextBlock Text="{Binding Prompt}" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center" MaxWidth="460" />
-                                                </StackPanel>
+                                                <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+                                                    <!-- The grip: drag the panel to another place over the picture -->
+                                                    <Border x:Name="MarkerAssistantGrip" Background="Transparent" Width="16" Cursor="SizeAll" VerticalAlignment="Stretch"
+                                                            PointerPressed="MarkerAssistantGripPressed" PointerMoved="MarkerAssistantGripMoved" PointerReleased="MarkerAssistantGripReleased"
+                                                            ToolTip.Tip="{l:T 'Drag to move the marker assistant (JoyPro keeps its place)'}">
+                                                        <PathIcon Data="{StaticResource Icon.Grip}" Width="12" Height="16" Opacity="0.6" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <Border Grid.Column="1" Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Wand}" /></Border>
+                                                    <TextBlock Grid.Column="2" Text="{Binding Prompt}" TextWrapping="Wrap" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                </Grid>
                                                 <!-- Now place: the next input without a place; a click on the picture puts it there (or press a button) -->
                                                 <Border x:Name="AssistantNowPlace" Classes="sunken" Padding="8,5" IsVisible="{Binding HasNextToPlace}">
                                                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
@@ -5422,19 +5440,22 @@
                                     <Border Classes="step"><TextBlock Text="2" /></Border>
                                     <TextBlock Classes="section" Text="{l:T 'How JoyPro writes into the games'}" />
                                 </StackPanel>
-                                <ListBox ItemsSource="{Binding ExportModeOptions}" SelectedItem="{Binding SelectedExportModeOption}" Background="Transparent">
-                                    <ListBox.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel />
-                                        </ItemsPanelTemplate>
-                                    </ListBox.ItemsPanel>
+                                <!-- The modes as a left-aligned list of radio cards (one per line, readable at any width; the
+                                     picked one has the accent border and a filled radio dot). -->
+                                <ListBox x:Name="ExportModeList" Classes="modeCards" ItemsSource="{Binding ExportModeOptions}" SelectedItem="{Binding SelectedExportModeOption}"
+                                         HorizontalAlignment="Left" MaxWidth="980"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate x:DataType="models:ChoiceOption">
-                                            <Grid Width="270" ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="2" ToolTip.Tip="{Binding Description}">
-                                                <PathIcon Data="{Binding Icon}" Width="22" Height="22" VerticalAlignment="Top" Margin="0,2,0,0" Classes.warn="{Binding IsRisky}" Classes.ok="{Binding IsRecommended}" />
-                                                <StackPanel Grid.Column="1" Spacing="2">
+                                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="12" ToolTip.Tip="{Binding Description}">
+                                                <Panel Width="18" Height="18" VerticalAlignment="Top" Margin="0,2,0,0">
+                                                    <Ellipse Classes="modeRadio" StrokeThickness="2" />
+                                                    <Ellipse Classes="modeRadioDot" Width="8" Height="8" IsVisible="{Binding $parent[ListBoxItem].IsSelected}" />
+                                                </Panel>
+                                                <PathIcon Grid.Column="1" Data="{Binding Icon}" Width="20" Height="20" VerticalAlignment="Top" Margin="0,1,0,0" Classes.warn="{Binding IsRisky}" Classes.ok="{Binding IsRecommended}" />
+                                                <StackPanel Grid.Column="2" Spacing="3">
                                                     <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                                    <TextBlock Text="{Binding Description}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.8" TextWrapping="Wrap" />
+                                                    <TextBlock Text="{Binding Description}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.85" TextWrapping="Wrap" />
                                                 </StackPanel>
                                             </Grid>
                                         </DataTemplate>
@@ -5444,7 +5465,7 @@
                                           ToolTip.Tip="{l:T 'Removes every bind of the devices your profile does not use (asks first; a backup is made)'}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                         <PathIcon Data="{StaticResource Icon.Warning}" Width="14" Height="14" Classes="warn" />
-                                        <TextBlock Text="{l:T 'Also clear my other devices (devices without a bind in my profile lose all their binds)'}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{l:T 'Also clear my other devices (in the exported aircraft, devices without a bind in my profile lose all their binds)'}" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </CheckBox>
                             </StackPanel>
@@ -5586,6 +5607,8 @@
                         <Expander Header="{l:T 'Options and paths (for experts)'}" HorizontalAlignment="Stretch">
                             <StackPanel Spacing="8" Margin="0,6,0,0">
                                 <TextBlock Classes="hint" Text="{l:T 'Your own paths for single games, the keyboard and DCS details. Empty paths: JoyPro finds the game\'s files itself.'}" />
+                                <CheckBox x:Name="ProfileOwnPathsBox" Content="{l:T 'Own paths and ignored devices for this profile'}" IsChecked="{Binding ProfileOwnPaths}" IsEnabled="{Binding HasProfile}"
+                                          ToolTip.Tip="{l:T 'Off (default): the game paths and the ignored devices belong to this PC and every profile uses them. On: this profile keeps its own; a path you type always beats what JoyPro detects.'}" />
                                 <Grid ColumnDefinitions="Auto,160,Auto,*" ColumnSpacing="8">
                                     <TextBlock Text="{l:T 'Export Mode'}" VerticalAlignment="Center" />
                                     <ComboBox Grid.Column="1" SelectedItem="{Binding ExportMode}">
@@ -5640,8 +5663,8 @@
 
                                 <WrapPanel>
                                     <CheckBox Content="{l:T 'DCS: keep keyboard defaults'}" IsChecked="{Binding ExportKeepKeyboardDefaults}" Margin="0,0,10,0" />
-                                    <CheckBox Content="{l:T 'DCS: my devices lose the DCS default binds in every other aircraft too'}" IsChecked="{Binding ExportDcsCleanAllAircraft}" Margin="0,0,10,0"
-                                              ToolTip.Tip="{l:T 'A device JoyPro writes loses its DCS default binds also in the aircraft your profile does not bind (its own binds there stay; Replace mode clears them too). Off: only the aircraft of the profile.'}" />
+                                    <CheckBox Content="{l:T 'DCS: also clean my devices in every other aircraft'}" IsChecked="{Binding ExportDcsCleanAllAircraft}" Margin="0,0,10,0"
+                                              ToolTip.Tip="{l:T 'Off (default): an export touches only the aircraft you export. On: with Replace on my devices, the devices JoyPro writes also lose their binds and DCS defaults in every other installed aircraft.'}" />
                                     <CheckBox Content="{l:T 'Nuke: remove all binds from devices JoyPro does not use (DCS and other games)'}" IsChecked="{Binding ExportNukeUntouchedDevices}" Margin="0,0,10,0" />
                                     <CheckBox Content="{l:T 'Star Citizen: keep keyboard defaults'}" IsChecked="{Binding ExportStarCitizenKeepKeyboardDefaults}" Margin="0,0,10,0" />
                                     <CheckBox Content="{l:T 'Star Citizen: prefer local order'}" IsChecked="{Binding ExportStarCitizenPreferLocalOrder}" Margin="0,0,10,0" />
@@ -5829,6 +5852,21 @@
                                         <TextBlock Text="{l:T 'Grip on this base'}" Margin="0,4,0,0" />
                                         <ComboBox ItemsSource="{Binding SelectedHudWidget.Device.GripChoices}" SelectedItem="{Binding SelectedHudGrip}" HorizontalAlignment="Stretch" />
                                     </StackPanel>
+                                    <!-- Where the stick element's axes come from: Automatic (a grip without X/Y takes them from its base) or
+                                         any device's axis -->
+                                    <TextBlock Text="{l:T 'Stick axes'}" Margin="0,6,0,0" FontWeight="SemiBold" />
+                                    <Grid x:Name="HudAxisSources" ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                        <TextBlock Text="X" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Left / right (roll)'}" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding HudAxisChoices}" SelectedItem="{Binding SelectedHudAxisX}" HorizontalAlignment="Stretch"
+                                                  ToolTip.Tip="{l:T 'Where the stick element\'s left / right comes from'}" />
+                                        <TextBlock Grid.Row="1" Text="Y" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Forward / back (pitch)'}" />
+                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding HudAxisChoices}" SelectedItem="{Binding SelectedHudAxisY}" HorizontalAlignment="Stretch"
+                                                  ToolTip.Tip="{l:T 'Where the stick element\'s forward / back comes from'}" />
+                                        <TextBlock Grid.Row="2" Text="{l:T 'Twist'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding HudAxisChoices}" SelectedItem="{Binding SelectedHudAxisTwist}" HorizontalAlignment="Stretch"
+                                                  ToolTip.Tip="{l:T 'Where the stick element\'s twist comes from'}" />
+                                    </Grid>
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" Text="{Binding HudAxisAutomaticText}" />
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
@@ -6451,6 +6489,12 @@
                                     <CheckBox Content="{l:T 'Watch game configs'}" IsChecked="{Binding WatchGameConfigs}"
                                               ToolTip.Tip="{l:T 'When you change controls JoyPro manages in a game, JoyPro asks after the game has closed whether to take them into your profile'}" />
                                     <TextBlock Text="{Binding GameWatchStatus}" TextWrapping="Wrap" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" />
+                                    <!-- vJoy: imports read every vJoy device (VoiceAttack and similar use them on purpose) except JoyPro's own one -->
+                                    <Grid x:Name="VJoyTunnelSetting" ColumnDefinitions="Auto,140" ColumnSpacing="8">
+                                        <TextBlock Text="{l:T 'vJoy device JoyPro tunnels into'}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding VJoyTunnelOptions}" SelectedIndex="{Binding VJoyTunnelDevice}" HorizontalAlignment="Stretch"
+                                                  ToolTip.Tip="{l:T 'None (default): imports and exports treat every vJoy device as a normal device, e.g. one VoiceAttack drives. A number: that vJoy device carries JoyPro\'s own output and is left out of imports.'}" />
+                                    </Grid>
                                     <TextBlock TextWrapping="Wrap" Opacity="0.8"
                                                Text="{l:T 'Command lists: JoyPro comes without game data. It builds each game\'s command list on this PC from your own installation (Start page notice, or Update on the game\'s card).'}" />
                                     <CheckBox Content="{l:T 'War Thunder: read the full command list from the game\'s archives'}" IsChecked="{Binding ReadWarThunderArchives}"
@@ -7580,6 +7624,7 @@
                             <TextBlock Text="{Binding MoveActionPreview}" TextWrapping="Wrap" />
                         </Border>
                         <TextBlock Text="{Binding MoveActionStatus}" TextWrapping="Wrap" Foreground="{DynamicResource JP.DangerTextBrush}" IsVisible="{Binding HasMoveActionStatus}" />
+                        <TextBlock x:Name="MoveActionGameNote" Classes="hint" Text="{Binding MoveActionGameNote}" TextWrapping="Wrap" IsVisible="{Binding HasMoveActionGameNote}" />
                         <WrapPanel HorizontalAlignment="Right" ItemSpacing="8" LineSpacing="6">
                             <Button Content="{l:T 'Cancel'}" Command="{Binding CancelMoveActionCommand}" />
                             <Button Classes="accent" Content="{l:T 'Move'}" Command="{Binding ApplyMoveActionCommand}" IsEnabled="{Binding CanApplyMoveAction}"
@@ -7634,14 +7679,19 @@
         </controls:PageFit>
         </ScrollViewer>
 
-        <GridSplitter Grid.Row="2"
+        <!-- Drag to give the engine output more or less room (its height is kept in ui-layout.json, MainWindow.axaml.cs). -->
+        <GridSplitter x:Name="EngineOutputSplitter"
+                      Grid.Row="2"
                       Height="6"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"
                       ResizeDirection="Rows"
                       ResizeBehavior="BasedOnAlignment"
                       IsVisible="{Binding EngineOutputExpanded}"
-                      ShowsPreview="True" />
+                      Background="Transparent"
+                      Cursor="SizeNorthSouth"
+                      DragCompleted="EngineOutputSplitterDragCompleted"
+                      ToolTip.Tip="{l:T 'Drag to make the engine output taller or smaller'}" />
 
         <Border x:Name="EngineOutputBorder" Grid.Row="3" Background="{DynamicResource JP.Console.BackgroundBrush}" CornerRadius="12" Padding="10">
             <Grid x:Name="EngineOutputHostGrid" ColumnDefinitions="*">
@@ -7649,14 +7699,15 @@
                           Grid.Column="0"
                           Header="{l:T 'Engine Output'}"
                           HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          VerticalContentAlignment="Stretch"
                           IsExpanded="{Binding EngineOutputExpanded, Mode=TwoWay}"
                           Expanded="EngineOutputExpanderExpanded"
                           Collapsed="EngineOutputExpanderCollapsed">
                     <TextBox x:Name="EngineOutputTextBox"
                              Margin="0,8,0,0"
-                             Height="180"
-                             MinHeight="90"
-                             MaxHeight="320"
+                             MinHeight="48"
+                             VerticalAlignment="Stretch"
                              Text="{Binding OutputText}"
                              IsReadOnly="True"
                              Focusable="False"

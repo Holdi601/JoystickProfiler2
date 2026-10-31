@@ -21,6 +21,9 @@ Rules:
 - **The import options (`--import-inverted`, `--import-curvature`, ...) are only about values set in the game.** A
   bind JoyPro exported itself gets its filter back without them (before 2026-10-05 a default import dropped them: a
   re-export then removed every curve from DCS; on the user's real DCS files 1121 filters were lost, now all are kept).
+  IL-2 (since 2.4.3): without them the file's invert and axis row (dead zones, balance, a one-sided throttle) become
+  the bind's IL-2 tuning instead of being dropped, so an export of the imported profile writes them back unchanged;
+  lines JoyPro does not import (mouse inputs, also with keyboard keys) stay through clean and nuke.
 - A relation exported without groups comes back without groups (DCS); binds JoyPro did not export get `DCS` / `IL2`
   / `GENERATED` + game as before, and names built from the game's action.
 - Not in any game file, so not restorable from one: relations without a bind, DCS nodes without an active aircraft
@@ -35,10 +38,30 @@ Rules:
 Every import option is remembered in `export-settings.json` (`import`, the GUI's settings folder) and comes back at
 the next start (`MainWindowViewModel.ImportSettings.cs`; up to 2.4.0 they had to be ticked again every time): on the
 Start page "Add to my profile" / "Start over" and the keyboard box per game (DCS, Star Citizen and each game of the game
-list on its own, also when you go back without importing); in the expert import merge, include defaults (off until you
-tick it), DCS keyboard commands, Star Citizen keyboard, ignore `*_easy` aircraft, the inverted/slider/curvature/
+list on its own, also when you go back without importing); in the expert import merge, include defaults (on since
+2.5.0 for whoever never ticked or unticked it, `includeDefaultsChosen`; an untick stays), DCS keyboard commands, Star Citizen keyboard, ignore `*_easy` aircraft, the inverted/slider/curvature/
 deadzone/saturation boxes, all DCS aircraft or the ticked ones, selected devices only, the ticked aircraft, devices and
 ignored devices (also while one is not listed) and the additional CSV boxes. The DCS device options (only connected,
 same name as one) stay in `ui-settings.json`, the MSFS ones (devices not connected, sim presets) with the export
-settings. The paths are not remembered here: JoyPro finds them (Settings > Games). Test:
-`gui\JoyPro.Gui.Tests\ImportSettingsPersistTests.cs`.
+settings. Test: `gui\JoyPro.Gui.Tests\ImportSettingsPersistTests.cs`.
+
+## Paths, ignored devices and vJoy are per PC (2.5.0)
+
+- The game paths (DCS Saved Games incl. `DCS.openbeta`, the import and export paths of DCS, IL-2 and Star Citizen, the
+  Star Citizen source, each registry game's file) and the ignored devices belong to the PC: `export-settings.json`
+  (`paths`, `import.ignoreDevicesCsv`, `import.ignoredDevices`), the same for every profile. A path typed or picked by
+  hand is a hand path (`handPaths`): JoyPro's detection (Settings > Games, Detect again) never replaces it.
+- "Own paths and ignored devices for this profile" (Export page, Options and paths) gives the open profile its own
+  (`profiles.<profile>.pathOverrides`, `ignoreDevicesCsv`, `ignoredDevices`); opening another profile brings the PC's
+  back, unticking it too.
+- Settings > Games, "vJoy device JoyPro tunnels into" (None, vJoy 1-16; `import.vJoyTunnelDevice`): None (default)
+  treats every vJoy device as a normal device (VoiceAttack and similar drive them on purpose). A number makes every import
+  and scan pass `--vjoy-tunnel <n>`: only that vJoy device (JoyPro's own output) is left out.
+- Test: `gui\JoyPro.Gui.Tests\ExportDefaultsTests.cs`.
+
+## The watcher hint in the import (2.5.0)
+
+When a profile is open and already has the game, the Start page import shows one muted line once per game
+(`list-preferences.json` `watcherHintShownGames`): changes made in the game come in through "Watch for changes"; with
+"Turn on watching for <game>" while that game is not watched, "Report a watcher problem" (Settings > Report a problem
+with "Watcher: " started) and "Don't show this again" (Settings > Confirmations). Importing again stays one click.
