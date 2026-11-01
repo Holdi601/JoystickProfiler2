@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Background logs and problem reports · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a class="current" href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Background logs and problem reports </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/logging.md">docs/logging.md</a> in the repository (generated, always the current text).</p><p>JoyPro2 writes a detailed log in the background so that a problem can be understood afterwards from the log alone:
+the user creates a problem report, attaches it to an issue, and the developer sees which files were read and written, which game folders were found, which export mode was used, what the engine
+printed and where it failed. Logs delete themselves after a few days.</p>
+<h2 id="where"><a class="anchor" href="#where">#</a>Where</h2>
+<p>All of them write into one folder:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Program</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GUI (<code>JoyPro.Gui.exe</code>)</td>
+<td><code>gui-&lt;yyyyMMdd&gt;.log</code></td>
+</tr>
+<tr>
+<td>Engine (<code>engine.exe</code>, also when run from a console)</td>
+<td><code>engine-&lt;yyyyMMdd&gt;.log</code></td>
+</tr>
+<tr>
+<td>Telemetry force feedback (<code>JoyPro.Ffb.exe</code>)</td>
+<td><code>ffb-&lt;yyyyMMdd&gt;.log</code></td>
+</tr>
+<tr>
+<td>Tray host (<code>tray\JoyPro.Tray.exe</code>, the config watcher while the GUI is closed)</td>
+<td><code>tray-&lt;yyyyMMdd&gt;.log</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The folder is <code>&lt;data&gt;\Logs</code>:</p>
+<ol>
+<li><code>JOYPRO_LOG_DIR</code>, when set, is the folder itself (the smoke test uses it).</li>
+<li>else <code>&lt;JOYPRO_DATA_DIR&gt;\Logs</code> (tests and portable setups),</li>
+<li>else <code>%LOCALAPPDATA%\JoyPro2\Logs</code>.</li>
+</ol>
+<p>It sits next to <code>CrashReports</code> (<code>%LOCALAPPDATA%\JoyPro2\CrashReports</code>). The engine and JoyPro.Ffb keep their other data
+in <code>%LOCALAPPDATA%\JoyPro2</code>; the logs go to the <code>JoyPro2</code> folder for all three so the GUI finds them for a report.
+Settings &gt; Report a Problem &gt; <code>Open Log Folder</code> opens it.</p>
+<p>The code is one file, <code>engine\JoyProLog.cs</code> (plain C# 7.3): the engine compiles it, <code>JoyPro.Ffb.Core</code> links it, and
+the GUI and JoyPro.Ffb use it through <code>JoyPro.Ffb.Core</code>. Nothing is written before <code>JoyProLog.Start</code>, so library code
+and unit tests that never start it log nothing.</p>
+<h2 id="format"><a class="anchor" href="#format">#</a>Format</h2>
+<pre><code>2026-10-11 10:44:12.345 INFO  engine#4711 s:3f9a2c1d c:gui-17 t:1 [Backups] Game file about to change (DCS): ...
+</code></pre>
+<ul>
+<li>local time with milliseconds, level (<code>DEBUG</code>, <code>INFO</code>, <code>WARN</code>, <code>ERROR</code>), program and process id;</li>
+<li><code>s:</code> the session: the GUI makes one per start and passes it to the engine and JoyPro.Ffb it starts
+(<code>JOYPRO_LOG_SESSION</code>); a program started on its own makes its own;</li>
+<li><code>c:</code> the call that started the process (<code>JOYPRO_LOG_PARENT</code>): the GUI logs <code>Call gui-17: engine ...</code> when it starts
+the engine, and every line of that engine run carries <code>c:gui-17</code>; <code>-</code> for a process nobody started;</li>
+<li><code>t:</code> the managed thread id, <code>[category]</code> the area (<code>Engine</code>, <code>Status</code>, <code>Backups</code>, <code>Export</code>, <code>Import</code>, <code>Installs</code>,
+<code>Paths</code>, <code>Sync</code>, <code>Profile</code>, <code>Devices</code>, <code>DbUpdate</code>, <code>Output</code>, <code>Watcher</code>, <code>Ffb</code>, <code>FfbHost</code>, <code>Report</code>, <code>Crash</code>, ...);</li>
+<li>continuation lines (stack traces, captured output) are indented by four spaces.</li>
+</ul>
+<p>To follow one GUI action: find <code>Call gui-N</code> in the GUI log, then <code>c:gui-N</code> in the engine log of the same day.</p>
+<h2 id="what-is-logged"><a class="anchor" href="#what-is-logged">#</a>What is logged</h2>
+<p>Each start writes a header: program and version, process id, session, the caller, OS, 32/64-bit, .NET version, CPU
+count, culture and time zone, the command line and the log settings.</p>
+<ul>
+<li><strong>Engine</strong>: the parsed command (area, action, profile path and size, output options, load corrections), every timed
+step (<code>Starting/Finished &lt;step&gt; in N ms</code>, also without <code>--status</code>), the progress messages of imports, exports and
+the DCS DB refresh, the structured progress of long commands (<code>[Progress] 23/59 DCS World, reading inputs: F-16C_50</code>:
+the first and last item of every phase and the ones in between at most twice a second; <code>--progress</code>), a cancel by the
+user (<code>Command cancelled by the user</code>), profile load/save with relation and bind counts, install detection per game (folder, how it was
+found, user overrides, hidden games) and config paths, the DCS/IL-2/SC paths found, every game file before it is
+changed (size, backup set) and backup restores, export options per game (mode, keyboard, nuke, aircraft, bind
+counts), what an import read, sync status per game and recorded exports, DB update checks, the connected devices with
+VID:PID and HID name (once per run), failures (<code>Command failed: ...</code>), unexpected exceptions with stack trace, what
+the run printed (stderr up to 64 KB, stdout up to 16 KB) and the exit code with the run time.</li>
+<li><strong>GUI</strong>: install, data and settings folders, every engine and JoyPro.Ffb call (arguments, call id, pid, exit code,
+duration, stderr), requirements and crash notices at startup, update checks, the game config watcher (watch list
+changes, a change seen while the game runs, a change reported after the game closed, watcher errors), log setting
+changes, problem reports and crashes (with stack trace).</li>
+<li><strong>JoyPro.Ffb</strong>: the run options and settings file, the chosen device (name, VID/PID, force axes, effects), the graph
+per aircraft, every status change (waiting / active / faulted, reason, aircraft, frames, endpoint), faults with
+their exception and the retry, game start/exit, GUI commands, STOP ALL at the end, the exit reason and code.</li>
+</ul>
+<h3 id="game-runs-since-2-2-7"><a class="anchor" href="#game-runs-since-2-2-7">#</a>Game runs (since 2.2.7)</h3>
+<p>Finding a game problem needs the exact environment and the files JoyPro worked on, so every game run (scan, import,
+export, refresh, restore, <code>sync diff</code>, a changed <code>sync status</code>) logs at debug level (<code>engine\EngineDiagnostics.cs</code>,
+fed by <code>GameBackups.Begin</code> / <code>GameBackups.Protect</code> and the game integrations):</p>
+<ul>
+<li>once per run and game, <code>[Diagnostics] Environment of &lt;game&gt;</code>: install kind (Steam, Microsoft Store, standalone),
+install folder and how it was found, the config folders and files with folder/file, attributes (Encrypted (EFS),
+ReadOnly, Hidden, Compressed, ReparsePoint, CloudPlaceholder), drive, file system (NTFS, exFAT, network share), drive
+type and free space, and the connected devices (name, VID:PID, instance GUID);</li>
+<li>per file JoyPro reads for a game (MSFS profiles) <code>Read: &lt;path&gt; (&lt;what&gt;) | size, written, attributes, sha &lt;12 hex&gt;</code>,
+per file it changes <code>Before write:</code> and, after the command, <code>After write:</code> with the same stamp;</li>
+<li>a failed run (exit code not 0) logs the whole snapshot as a warning and prints it to stderr
+(<code>Diagnostics (environment and files of this run):</code>, in the GUI's output panel); an engine crash report carries it.</li>
+<li>MSFS: the source folders searched and the files they gave, every profile read (device, GUID, category, bound and
+listed actions), which profile was taken per device and category and why, the sim's records per device and category
+(slots, votes, shipped presets), every file an export wrote (package preset, profile, import file) with the changed
+actions.</li>
+<li>The watcher (<code>[Sync]</code>, <code>[Watcher]</code>): status per game, a changed config's files (recorded and current stamp), an
+unchanged one's compared files (every 10 minutes at most), the diff's changes (or why there are none); in the GUI and
+the tray host every file event of a watched folder (kind, path, time; one line per file and kind every 2 s), the
+game process seen (pid, start time) and its exit, the wait decision, failed status/diff runs, and whether the user
+was asked (notice / notification) or the state was accepted without asking.</li>
+</ul>
+<h3 id="support-file"><a class="anchor" href="#support-file">#</a>Support file</h3>
+<p>The engine's part of Settings &gt; Report a problem &gt; <strong>Create Report</strong> (see &quot;Problem report&quot; below; engine: <code>engine support bundle [--game &lt;id&gt;] [--days N] [--include-profile true|false] [--history-cap-mb N] [--list] --out &lt;zip&gt;</code>,
+<code>engine\EngineSupportBundle.cs</code> and <code>EngineSupportBundle.Profile.cs</code>). It holds everything a maintainer needs, so a
+tester never has to send a second file. The GUI first lists what the zip will hold (<code>--list</code>, nothing is written: every
+part with its size and what is trimmed), the user confirms, then the engine saves it as <code>Documents\JoyPro2\Problem Reports\JoyPro2-report-&lt;time&gt;.zip</code>, the GUI adds <code>report.txt</code> and shows it in Explorer. The engine makes it in its own process (the GUI stays usable) and reports its progress in the busy
+area; a typical file of 40 MB takes about 5 seconds. Nothing is uploaded.</p>
+<p>The one box of the section, <strong>Include my open profile and its history (your binds and device names)</strong>, on by default
+and remembered (<code>ui-settings.json</code> <code>supportIncludeProfile</code>), decides the personal parts: the GUI passes <code>--profile &lt;open profile&gt; --include-profile true</code>, or <code>--include-profile false</code>. On the command line <code>--include-profile</code> defaults to true
+when <code>--profile</code> is given, else false.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>summary.txt</code></td>
+<td>versions, system, JoyPro's folders, the log window, the open profile (file name, size, number of history versions, which were left out), per installed game (or <code>--game</code>) the environment as above, the connected devices, then every part with its number of files and size and <strong>what was trimmed or left out</strong></td>
+</tr>
+<tr>
+<td><code>logs/*.log</code></td>
+<td>all of JoyPro's logs (GUI, engine, tray and watcher, force feedback) of at least the last 14 days (<code>--days</code>) and back to the oldest history version of the open profile, at most 100 MB; the oldest are left out first (named in summary.txt)</td>
+</tr>
+<tr>
+<td><code>crash-reports/</code>, <code>errors/last-errors.txt</code></td>
+<td>the crash reports of that time (the newest 40) and the last 50 warnings and errors with a stack trace from the logs</td>
+</tr>
+<tr>
+<td><code>state/settings/</code></td>
+<td>the app's settings folder (<code>ui-settings.json</code>, <code>ui-layout.json</code>, <code>hud.json</code>, <code>export-settings.json</code>, ...; a long text log only its last 512 KB)</td>
+</tr>
+<tr>
+<td><code>state/data/</code></td>
+<td>the data folder's state files (<code>data-migration.json</code>, <code>game-installs.json</code>, <code>games-disabled.json</code>, ...), <code>Logs\log-settings.txt</code>, the update records, device reference, local AI, force feedback, theme and watcher settings, which game files JoyPro owns (<code>Ownership</code>)</td>
+</tr>
+<tr>
+<td><code>state/versions.txt</code></td>
+<td>the game lists in use (<code>GameData\DB\&lt;game&gt;\source-version.txt</code>, the record of <code>engine db check-updates</code>) and every installed cockpit, photo and 3D pack (<code>pack.json</code>)</td>
+</tr>
+<tr>
+<td><code>state/data-folder.txt</code></td>
+<td>files and size per folder of the data folder</td>
+</tr>
+<tr>
+<td><code>devices/devices.txt</code>, <code>devices/vjoy-hidhide.txt</code></td>
+<td>the devices (VID:PID, instance GUIDs, HID names) and <code>engine vjoy status</code> (vJoy, ViGEm and HidHide installed, their devices and state, JoyPro's HidHide session)</td>
+</tr>
+<tr>
+<td><code>profile/&lt;file&gt;.pr0file</code></td>
+<td>personal: the open profile (only that one)</td>
+</tr>
+<tr>
+<td><code>profile/history/</code></td>
+<td>personal: its history as <code>engine profile history</code> reads it: <code>history.json</code> (the whole index), <code>drafts.json</code>, <code>blobs/&lt;hash&gt;.gz</code> and <code>.items.gz</code> of the newest versions up to 50 MB of stored copies (<code>--history-cap-mb</code>); the versions left out are named in summary.txt</td>
+</tr>
+<tr>
+<td><code>joypro1/&lt;file&gt;.pr0file</code></td>
+<td>personal (2.5.0): JoyPro 1's profiles, <code>Documents\JoyPro\*.pr0file</code> with its <code>last.pr0file</code> (a tester who comes from JoyPro 1), cleaned like the open profile, newest first up to 50 MB (the others are named in summary.txt); the open profile is not added twice. <code>JOYPRO_JOYPRO1_DIR</code> points elsewhere (tests; under the test sandbox <code>&lt;root&gt;\Documents\JoyPro</code>)</td>
+</tr>
+<tr>
+<td><code>games/&lt;id&gt;/sync-record.json</code>, <code>backups.txt</code>, <code>backup-&lt;set&gt;/</code></td>
+<td>the watcher's record, the list of JoyPro's backups (set, time, command, files) and the newest set: JoyPro's own copies of the small text config files (at most 512 KB each) an export changed, and its manifest</td>
+</tr>
+<tr>
+<td><code>games/&lt;id&gt;/current/</code>, <code>current-files.txt</code></td>
+<td>personal: the game's bind files as they are now, the files JoyPro imports from and exports to (DCS <code>Config\Input\&lt;aircraft&gt;\{joystick,keyboard,mouse}\*.diff.lua</code> and <code>modifiers.lua</code>, IL-2's <code>input</code> files and <code>startup.cfg</code>, Star Citizen's actionmaps, the other games' files, a registry game's values as text) and JoyPro's files next to them (<code>.jp</code>, <code>.joypro-meta.json</code>, <code>.joypro.json</code>); text up to 4 MB each, at most 50 MB per game (newest first), and the list of all of them with size, time and whether copied. A file that changes while it is read is not copied</td>
+</tr>
+<tr>
+<td><code>games/MSFS2024/profiles/</code></td>
+<td>the input profiles JoyPro reads (Steam remote folder, Microsoft Store save; decoded text, a header line with the source path, size and time)</td>
+</tr>
+<tr>
+<td><code>games/MSFS2024/package/</code>, <code>import-files/</code></td>
+<td>JoyPro's preset package and the import files</td>
+</tr>
+<tr>
+<td><code>games/MSFS2024/sim-records.txt</code></td>
+<td>the sim's device records as JoyPro reads them (not the save file)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Every text goes through <code>LogScrubber</code> (the user folder becomes <code>%USERPROFILE%</code>, see below); other binary files are left
+out. JoyPro keeps no export or import reports of its own: the logs hold what every export and import did. The profile
+and its history are binary: the copies get the same cleaning on the strings inside them (a picture path, a DCS folder:
+each string record is rewritten with its new length) and are read back with the profile's own reader before they go
+in; a copy that does not read back is left out and summary.txt says so. A cleaned version gets the hash of its new
+content (its blob, its items and <code>history.json</code> follow), so the history in the zip still restores. Only copies are
+changed; the originals and the game files are only read.</p>
+<p><strong>Ask a tester for the support file first</strong>; it holds the logs, the profile with its history and the games' files, so
+no second request is needed.</p>
+<h4 id="restoring-a-version-from-a-support-file-maintainers"><a class="anchor" href="#restoring-a-version-from-a-support-file-maintainers">#</a>Restoring a version from a support file (maintainers)</h4>
+<p>The history folder's name comes from the profile's full path, so <code>engine support unpack</code> puts both where <code>engine profile history</code> finds them, in an isolated data folder (nothing of this PC's JoyPro is touched):</p>
+<pre><code class="language-powershell">engine support unpack 'C:\Cases\JoyPro2-support-20261026-170635.zip' --to 'C:\Cases\case1' --text
+$env:JOYPRO_DATA_DIR = 'C:\Cases\case1\data'
+engine --profile 'C:\Cases\case1\profile\&lt;file&gt;.pr0file' profile history list --text
+engine --profile 'C:\Cases\case1\profile\&lt;file&gt;.pr0file' profile history show 12 --text
+engine --profile 'C:\Cases\case1\profile\&lt;file&gt;.pr0file' profile history restore 12 --text
+</code></pre>
+<p><code>unpack</code> writes the whole zip to <code>&lt;folder&gt;\support\</code>, the profile to <code>&lt;folder&gt;\profile\</code> and its history to
+<code>&lt;folder&gt;\data\ProfileHistory\&lt;id of that path&gt;\</code> (<code>history.json</code> then names the copy). After <code>restore</code> the copy is
+that version; <code>undo</code> goes back. A version left out by the size cap is listed but says &quot;The stored copy of this version
+is missing.&quot; Keep <code>JOYPRO_DATA_DIR</code> set for every command on the copy.</p>
+<p>Never per frame or per tick: the force loop and the watcher's idle time log nothing. JoyPro.Ffb writes a one-line
+summary once a minute (state, frames, memory, GC, handles, updates); repeated warnings use <code>JoyProLog.ShouldLog(key, interval)</code>.</p>
+<h2 id="size-and-retention"><a class="anchor" href="#size-and-retention">#</a>Size and retention</h2>
+<ul>
+<li>Lines are queued and written at most twice a second (warnings and errors at once, everything at exit). Files are
+opened per write under a named mutex, so several engine processes can append to one file.</li>
+<li>A file is rolled at 10 MB (<code>engine-20261011-1.log</code>, ...); at most 5 files per program and day (50 MB). The rest of
+such a day is dropped, so a runaway loop cannot fill the disk.</li>
+<li>Logs older than the retention are deleted: default <strong>30 days</strong> (up to 2.4.2: 7), 1-365, set in the GUI (Settings &gt;
+Report a Problem &gt; <code>Keep background logs for N days</code>), so the report can go back to the oldest saved version of a
+profile. The value is stored in <code>&lt;Logs&gt;\log-settings.txt</code> (<code>retention-days=30</code>, <code>retention-chosen=true</code> once the user
+set it, <code>level=debug</code>), which all three programs read at start. A file of an older version with the old default
+(<code>retention-days=7</code> without <code>retention-chosen</code>) reads as 30; any other value, and 7 chosen in 2.4.3 or later, stays. <code>JOYPRO_LOG_RETENTION_DAYS</code> and <code>JOYPRO_LOG_LEVEL</code>
+(<code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>, <code>off</code>) override it.</li>
+<li>The cleanup runs at a program start at most once an hour (<code>&lt;Logs&gt;\.last-cleanup</code>), costs one file time read
+otherwise, and also removes logs over 200 MB in total (oldest first). Crash reports in the <code>CrashReports</code> folder are
+kept at least 30 days (the GUI shows unseen ones at its next start).</li>
+</ul>
+<h2 id="privacy"><a class="anchor" href="#privacy">#</a>Privacy</h2>
+<p>The repository and the program are public, so logs and reports must not carry personal data. Every log line and every
+text file of a problem report goes through <code>LogScrubber.Scrub</code>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Becomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the user folder (<code>C:\Users\&lt;name&gt;</code>, also as <code>C:/Users/...</code> and JSON-escaped <code>C:\\Users\\...</code>)</td>
+<td><code>%USERPROFILE%</code></td>
+</tr>
+<tr>
+<td>the Windows user name (whole word, any case; e.g. <code>Arma 3\&lt;name&gt;.Arma3Profile</code>)</td>
+<td><code>&lt;user&gt;</code></td>
+</tr>
+<tr>
+<td>the PC name</td>
+<td><code>&lt;pc&gt;</code></td>
+</tr>
+<tr>
+<td>e-mail addresses</td>
+<td><code>&lt;email&gt;</code></td>
+</tr>
+<tr>
+<td><code>password=</code>, <code>pwd:</code>, <code>secret=</code> values; <code>token=</code>, <code>api_key:</code>, <code>authorization:</code>, <code>cookie=</code> values of 12+ characters; <code>Bearer</code> tokens</td>
+<td><code>&lt;redacted&gt;</code></td>
+</tr>
+<tr>
+<td>Steam ids (<code>7656119...</code>, <code>userdata\&lt;account id&gt;</code>)</td>
+<td><code>steam#</code> + 8 hex digits</td>
+</tr>
+<tr>
+<td>game account folders (War Thunder <code>Saves\&lt;id&gt;</code>, X4 <code>Egosoft\X4\&lt;id&gt;</code>)</td>
+<td><code>id#</code> + 8 hex digits</td>
+</tr>
+</tbody>
+</table></div>
+<p>The hash is SHA-256 over the id and a salt made of the PC and user name (which never reach a log): the same id gives
+the same hash on one PC, so lines stay comparable, and it cannot be looked up. JoyPro does not read e-mail addresses,
+passwords or tokens itself; the rules are a safety net for text that passes through (engine output, game files,
+exception messages). The copies of the profile and its history in a report are cleaned inside their strings as well
+(see &quot;Support file&quot; above); only the GUI's own report (when the engine cannot run) has no profile.</p>
+<h2 id="problem-report"><a class="anchor" href="#problem-report">#</a>Problem report</h2>
+<p>Settings &gt; Report a Problem, for users without technical knowledge, one flow (<code>MainWindowViewModel.AppServices.cs</code>
+<code>CreateProblemReportAsync</code>, <code>Services\ProblemReporter.cs</code>):</p>
+<ol>
+<li><code>What happened?</code>: the user describes the problem.</li>
+<li>The box <code>Include my open profile and its history (your binds and device names)</code> (on by default, remembered; it
+replaced the report's <code>Attach my profile</code> of 2.4.2, which was never saved, so there was nothing to carry over).</li>
+<li><code>Create Report</code>: JoyPro lists what goes in (<code>engine support bundle --list</code>), the user confirms, the engine writes the
+support file (above) to <code>Documents\JoyPro2\Problem Reports\JoyPro2-report-&lt;time&gt;.zip</code>, and the GUI adds
+<code>report.txt</code> and <code>engine-output.log</code> (<code>ProblemReporter.AddReport</code>) and shows the zip in Explorer. The status line
+says what to do next.</li>
+<li><code>Open GitHub Issue Page</code> opens a prefilled issue (title and description, scrubbed) in the browser, where the user
+drags the zip in; <code>Show Report</code> shows the zip again.</li>
+</ol>
+<p>The reports' folder is <code>Documents\JoyPro2\Problem Reports</code> since 2.5.0 (next to the profiles; tester wish). Up to 2.4.x
+it was <code>Documents\JoyPro2 Problem Reports</code>: at the first start of 2.5.0 (and before a report is made) its files move
+into the new folder once (<code>ProblemReporter.MigrateOldFolder</code>); a file whose name the new folder already has stays in
+the old one, the old folder goes when it is empty, and the GUI log says how many moved and stayed.</p>
+<p>Nothing is uploaded automatically and JoyPro has no upload endpoint. The zip is the support file (table above) plus:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>report.txt</code></td>
+<td>the description, time and UTC offset, version, OS, system and .NET, diagnostics (engine version, <code>engine games devices</code>, requirements, DB notices, the current page, recent engine output), the parts of the zip</td>
+</tr>
+<tr>
+<td><code>engine-output.log</code></td>
+<td>the full engine output of this GUI session</td>
+</tr>
+</tbody>
+</table></div>
+<p>When the engine cannot run, the GUI makes its own smaller zip instead (<code>ProblemReporter.Create</code>,
+<code>JoyPro2-problem-&lt;time&gt;.zip</code>): <code>report.txt</code>, the logs of the last 3 days (at most 60 MB), up to 10 crash reports and
+<code>engine-output.log</code>, without the profile.</p>
+<p>All text entries are scrubbed. Reading a report: start with <code>report.txt</code> (what the user saw), then the GUI log around
+the report time, follow <code>Call gui-N</code> into the engine log (<code>c:gui-N</code>), and check <code>WARN</code>/<code>ERROR</code> lines and the
+<code>[Output] stderr</code> blocks.</p>
+<h2 id="tests"><a class="anchor" href="#tests">#</a>Tests</h2>
+<ul>
+<li><code>gui\JoyPro.Ffb.Core.Tests\LoggingTests.cs</code>: retention (old files deleted, recent kept, settings files kept), the
+total size cap, the clamp, the once-an-hour cleanup, crash report retention, settings round trip and overrides, the
+header and line format with correlation ids, level filtering, rolling at the size cap and the daily limit, rate
+limiting, and the scrubbing rules (paths, user and PC name, e-mail, secrets kept apart from ordinary words, Steam
+and account ids).</li>
+<li><code>gui\JoyPro.Gui.Tests\AppServicesTests.cs</code>: the problem report zip (recent logs only, crash reports, engine output,
+optional profile, scrubbed contents, the issue link without secrets).</li>
+<li><code>engine\tests\engine_smoke_test.ps1</code> sends every engine and JoyPro.Ffb log of the run to a temp folder
+(<code>JOYPRO_LOG_DIR</code>) and checks the start header, the exit line and that the user folder never appears.</li>
+</ul>
+<p>Tests never write into the user's folders: the GUI tests set <code>JOYPRO_DATA_DIR</code> to a temp folder, the logging tests use
+temp folders and <code>JOYPRO_LOG_DIR</code>.</p>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#where">Where</a></li><li class="l2"><a href="#format">Format</a></li><li class="l2"><a href="#what-is-logged">What is logged</a></li><li class="l3"><a href="#game-runs-since-2-2-7">Game runs (since 2.2.7)</a></li><li class="l3"><a href="#support-file">Support file</a></li><li class="l2"><a href="#size-and-retention">Size and retention</a></li><li class="l2"><a href="#privacy">Privacy</a></li><li class="l2"><a href="#problem-report">Problem report</a></li><li class="l2"><a href="#tests">Tests</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Import a game · JoyPro</title>
+<meta name="description" content="Take the binds you already made in a game into a JoyPro profile: the import wizard on the Start page, its options, what it reads in each game and what it never changes.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a class="current" href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Main flows</div><h1>Import a game </h1><div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span><button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button><button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div></div>
+<div class="content">
+<p>Import reads the control settings a game has saved and turns them into a JoyPro profile: one relation per function
+with its button or axis. It is the quickest start: everything you already set up in your games comes in, and from
+then on JoyPro keeps it in one place.</p>
+<div class="video-slot" data-video="import-a-game"><div class="video-icon">&#9654;</div><div><strong>Video: Import your first game</strong><br>Coming later: one YouTube video per topic, recorded with the English interface, with subtitles in every language JoyPro speaks.</div></div>
+<div class="diagram"><pre class="mermaid">flowchart LR
+  G[&quot;Game files&lt;br/&gt;(read only)&quot;] --&gt; S[&quot;engine &amp;lt;game&amp;gt; import&quot;]
+  D[&quot;Connected devices&quot;] --&gt; S
+  L[&quot;The game&#x27;s command list&lt;br/&gt;(built on your PC)&quot;] --&gt; S
+  S --&gt; P[&quot;Profile: relations,&lt;br/&gt;binds, modifiers, curves&quot;]
+  M[&quot;JoyPro&#x27;s own data next&lt;br/&gt;to the game file (.jp ...)&quot;] -. names, groups .-&gt; S
+</pre></div>
+<section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<h2 id="import-in-three-clicks"><a class="anchor" href="#import-in-three-clicks">#</a>Import in three clicks</h2>
+<ol>
+<li>Open <strong>Start</strong> (the first button in the bottom bar). Under <strong>Your games</strong> every game JoyPro found on your PC has a
+card with its picture. Press <strong>Import</strong> on the game you play most.</li>
+<li>JoyPro asks <strong>how</strong>:
+<ul>
+<li><strong>Add to my profile (recommended)</strong> keeps what you have and adds the game's binds.</li>
+<li><strong>Start over from this game</strong> replaces your relations with what the game has (JoyPro keeps a copy of your
+profile first).</li>
+<li><strong>Also take the keyboard keys</strong> brings flight commands on the keyboard too. Device binds are always taken.</li>
+<li>For DCS: <strong>All my DCS aircraft</strong>, or untick it and choose aircraft.</li>
+</ul>
+</li>
+<li>Press <strong>Import now</strong>. A moment later the card says &quot;Done: your profile now has 214 relations (180 bound)&quot; and
+<strong>See my relations</strong> opens them. <strong>Look first</strong> instead shows what the game has, without changing anything.</li>
+</ol>
+<figure class="shot"><a href="../assets/shots/start-light.webp"><img class="only-light" loading="lazy" src="../assets/shots/start-light.webp" alt="The Start page with your games and devices"></a><a href="../assets/shots/start-dark.webp"><img class="only-dark" loading="lazy" src="../assets/shots/start-dark.webp" alt="The Start page with your games and devices"></a><figcaption>The Start page with your games and devices</figcaption></figure>
+<p>No profile open? JoyPro makes one for you and saves it automatically from then on (there is no Save button: every
+change is saved and can be undone, also after a restart).</p>
+<h3 id="what-changes-in-the-game"><a class="anchor" href="#what-changes-in-the-game">#</a>What changes in the game?</h3>
+<p><strong>Nothing.</strong> Import only reads the game's files. The game keeps its binds exactly as they are, whether you export
+later or not.</p>
+<h3 id="before-your-first-import-the-command-list"><a class="anchor" href="#before-your-first-import-the-command-list">#</a>Before your first import: the command list</h3>
+<p>JoyPro needs to know the commands of each game (their names and ids). It builds this list once from your own
+installation. When a list is missing, the Start page shows <strong>Build List</strong> (or <strong>Build All Missing Lists</strong>); a game
+card offers <strong>Update</strong> after a game update. This takes from a few seconds to a few minutes (DCS reads every module).</p>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<h2 id="options-and-what-they-do"><a class="anchor" href="#options-and-what-they-do">#</a>Options and what they do</h2>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add to my profile / Start over</td>
+<td>Add</td>
+<td>Add merges into the open profile (<code>--merge</code>); Start over replaces its relations after a confirmation and a copy of the profile.</td>
+</tr>
+<tr>
+<td>Also take the keyboard keys</td>
+<td>your last choice</td>
+<td>Flight commands bound to keys come in too (<code>--include-keyboard true</code>).</td>
+</tr>
+<tr>
+<td>Also import devices that are not connected</td>
+<td>on</td>
+<td>Devices that are not plugged in now are imported too (useful for a stick you connect later). Off: they are skipped and counted (DCS: <code>--only-connected true</code>).</td>
+</tr>
+<tr>
+<td>Treat devices with the same name as one device</td>
+<td>on</td>
+<td>Windows gives a device a new ID now and then; its old and new files are read as one device on the connected ID (<code>--merge-same-name true</code>). Two identical devices plugged in at once stay apart.</td>
+</tr>
+<tr>
+<td>Include defaults (DCS, expert form)</td>
+<td>on</td>
+<td>Every default bind DCS has active for an imported device comes in, so that import followed by a Replace + Also clear export leaves DCS as it was. Your own binds win over a default on the same input.</td>
+</tr>
+<tr>
+<td>Import inverted / slider / curvature / deadzone / saturation (expert form)</td>
+<td>off</td>
+<td>Takes values set <strong>in the game</strong> for binds JoyPro did not export itself. A bind JoyPro exported gets its tuning back without these.</td>
+</tr>
+<tr>
+<td>DCS: ignore *_easy aircraft</td>
+<td>off</td>
+<td>The easy-mode copies of aircraft are left out (<code>--ignore-easy-planes true</code>).</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>The <strong>expert import</strong> (Start page, below the cards, and the Advanced page) offers every engine option per game with
+<strong>Scan</strong> (preview), <strong>Import</strong> and <strong>Export</strong>. Every choice is remembered for the next import.</p>
+<h3 id="names-groups-and-modifiers-come-back"><a class="anchor" href="#names-groups-and-modifiers-come-back">#</a>Names, groups and modifiers come back</h3>
+<p>A game file only holds device, input and maybe a curve. JoyPro's export keeps its own data next to it, and an import
+reads it back:</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>JoyPro's data</th>
+<th>Restored</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS</td>
+<td><code>&lt;aircraft&gt;\joystick\&lt;device&gt;.jp</code>, <code>modifiers.lua</code></td>
+<td>relation name, groups (in order), modifiers with names, invert, slider, dead zone, saturation, curve</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td><code>data\input\jp.actions</code></td>
+<td>name, groups, alias, modifiers, the exact tuning</td>
+</tr>
+<tr>
+<td>Registry games (X-Plane, Elite, X4, Arma, MSFS, War Thunder, BMS ...)</td>
+<td><code>&lt;config&gt;.joypro-meta.json</code></td>
+<td>name, groups, alias, modifiers, tuning</td>
+</tr>
+<tr>
+<td>Star Citizen</td>
+<td><code>actionmaps.jp</code></td>
+<td>names</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>The game's current state wins: a curve you changed in DCS after the export is kept. Binds JoyPro never exported get
+a name built from the game's action and the groups <code>DCS</code>, <code>IL2</code> or <code>GENERATED</code> + game.</p>
+<h3 id="two-guards"><a class="anchor" href="#two-guards">#</a>Two guards</h3>
+<ul>
+<li><strong>Changes not exported yet.</strong> If you changed binds in JoyPro and have not exported them to this game, an import
+would bring the old binds back. JoyPro asks first (<a href="../cli/sync.html#sync-pending"><code>engine sync pending</code></a>).</li>
+<li><strong>Already imported?</strong> When the profile has the game, changes you make in the game later come in through the
+<strong>game watcher</strong> (it asks after the game closes); importing again stays one click.</li>
+</ul>
+</section>
+<div class="callout ingame"><div class="callout-title">In the game: What the import reads, per kind of game</div>
+<p>Import never writes into a game folder. What it reads:</p>
+<ul>
+<li><strong>DCS</strong>: <code>Saved Games\DCS\Config\Input\&lt;aircraft&gt;\{joystick,keyboard}\*.diff.lua</code> and <code>modifiers.lua</code>, plus the
+defaults of each device from the clean profiles JoyPro built from your DCS install (for &quot;Include defaults&quot;).</li>
+<li><strong>IL-2 Great Battles / Korea</strong>: <code>data\input\*.actions</code> and the axis responses.</li>
+<li><strong>Star Citizen</strong>: <code>actionmaps.xml</code> of the branch (LIVE, PTU ...), with the game's joystick defaults on js1.</li>
+<li><strong>Games with infantry or vehicles</strong> (War Thunder, Arma, Reforger, WARDOGS ...): only the flight actions of the
+file; everything else is ignored, not deleted.</li>
+<li><strong>MSFS</strong>: the input profiles of the sim (Steam remote folder or the Microsoft Store save) and, on request, the sim's
+default presets.</li>
+</ul>
+<p>Devices the game cannot tell apart (two devices of one model in some games) and half-axis binds (Elite) are skipped
+and named in the result.</p>
+</div>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<h2 id="how-it-works-inside"><a class="anchor" href="#how-it-works-inside">#</a>How it works inside</h2>
+<ol>
+<li><strong>GUI.</strong> <code>StartImportWizard</code> → <code>RunImportWizardAsync</code> (<code>MainWindowViewModel.GameHub.cs</code>). It asks
+<code>AskAboutUnexportedChangesAsync</code> (engine <code>sync pending</code>), confirms Start over and keeps a copy of the profile
+(<code>BackupProfileBeforeChange(&quot;before-import&quot;)</code>), then calls the game's import: <code>ImportDcsAsync</code>, <code>ImportIl2Async</code>,
+<code>ImportStarCitizenAsync</code> or <code>ImportRegistryGameAsync</code>. <strong>Look first</strong> runs the same with <code>scan</code>
+(<code>PreviewImportWizardAsync</code>) and opens the Output panel.</li>
+<li><strong>Engine.</strong> For DCS: <code>engine dcs import [--path &lt;Saved Games\DCS&gt;] --merge --include-defaults [--plane &lt;a&gt; --plane &lt;b&gt;] --include-keyboard true|false --ignore-easy-planes false --only-connected false --merge-same-name true</code>. The importer reads each device file, maps the
+device by its DirectInput instance GUID and name, maps every command id to the game's command list (<code>DB\&lt;game&gt;</code>
+in <code>%LOCALAPPDATA%\JoyPro2\GameData</code>), and builds one relation per function and input. Load-time corrections
+(<code>--load-corrections</code>, <code>--correction-mode</code>) remap renamed command ids with a confidence score.</li>
+<li><strong>Profile.</strong> The relations are merged by name and by the same input; modifiers are created from <code>modifiers.lua</code>
+(DCS) or the game's shift settings. The profile is saved atomically and every save is a version in
+<code>&lt;data&gt;\ProfileHistory</code> (Undo works across restarts).</li>
+<li><strong>Watcher.</strong> An import of a game without a sync record records the game's files, so changes you make in the game
+later are noticed (<code>&lt;data&gt;\Sync\&lt;game&gt;.json</code>).</li>
+</ol>
+<p>Engine commands: <a href="../cli/dcs.html#dcs-import"><code>engine dcs import</code></a>, <a href="../cli/dcs.html#dcs-scan"><code>engine dcs scan</code></a>, <a href="../cli/il2.html#il2-import"><code>engine il2 import</code></a>, <a href="../cli/starcitizen.html#starcitizen-import"><code>engine starcitizen import</code></a> and
+<code>engine &lt;game&gt; import</code> for every registry game (for example <a href="../cli/warthunder.html#warthunder-import"><code>engine warthunder import</code></a>, <a href="../cli/msfs2024.html#msfs2024-import"><code>engine msfs2024 import</code></a>).
+Re-import rules: <a href="../reference/reimport.html">re-import</a>. Tests: <code>engine\tests\smoke\dcsincludedefaults.ps1</code>,
+<code>engine\tests\smoke\roundtrip.ps1</code>, <code>gui\JoyPro.Gui.Tests\ImportSettingsPersistTests.cs</code>.</p>
+</section>
+<h2 id="related"><a class="anchor" href="#related">#</a>Related</h2>
+<ul>
+<li><a href="../gui/start.html">The Start page</a>, every control on it</li>
+<li><a href="../getting-started/first-start.html">First start</a>: which games JoyPro finds</li>
+<li><a href="../flows/relations.html">Build relations</a>: what to do after the import</li>
+<li><a href="../reference/sync-watcher.html">The game watcher</a></li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#import-in-three-clicks">Import in three clicks</a></li><li class="l3"><a href="#what-changes-in-the-game">What changes in the game?</a></li><li class="l3"><a href="#before-your-first-import-the-command-list">Before your first import: the command list</a></li><li class="l2"><a href="#options-and-what-they-do">Options and what they do</a></li><li class="l3"><a href="#names-groups-and-modifiers-come-back">Names, groups and modifiers come back</a></li><li class="l3"><a href="#two-guards">Two guards</a></li><li class="l2"><a href="#how-it-works-inside">How it works inside</a></li><li class="l2"><a href="#related">Related</a></li></ul></aside>
+</div>
+<script src="../assets/vendor/mermaid.min.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

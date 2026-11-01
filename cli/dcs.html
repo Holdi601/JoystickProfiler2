@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>engine dcs (DCS World) · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details open><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a class="current" href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Engine (CLI)</div><h1>engine dcs (DCS World) </h1><div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span><button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button><button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div></div>
+<div class="content">
+<p class="lead">14 commands of <code>engine dcs</code>. Each with every option and every value it takes, what it does, which GUI buttons use it, and an example.</p><div class="cmd-index"><ul><li><a href="#dcs-scan"><code>dcs scan</code></a></li><li><a href="#dcs-import"><code>dcs import</code></a></li><li><a href="#dcs-export"><code>dcs export</code></a></li><li><a href="#dcs-defaults-cut"><code>dcs defaults cut</code></a></li><li><a href="#dcs-defaults-restore"><code>dcs defaults restore</code></a></li><li><a href="#dcs-strip-defaults"><code>dcs strip-defaults</code></a></li><li><a href="#dcs-device-luas"><code>dcs device-luas</code></a></li><li><a href="#dcs-verify-clean"><code>dcs verify-clean</code></a></li><li><a href="#dcs-refresh-clean"><code>dcs refresh clean</code></a></li><li><a href="#dcs-refresh-id"><code>dcs refresh id</code></a></li><li><a href="#dcs-refresh-preview-clicks"><code>dcs refresh preview-clicks</code></a></li><li><a href="#dcs-ffb-list"><code>dcs ffb list</code></a></li><li><a href="#dcs-ffb-set"><code>dcs ffb set</code></a></li><li><a href="#dcs-ffb-clear"><code>dcs ffb clear</code></a></li></ul></div><article class="entry cli level-full" id="dcs-scan"><header><h3 class="eh"><a class="anchor" href="#dcs-scan">#</a><code>engine dcs scan</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs scan [&lt;saved-games-path&gt;] [--path &lt;saved-games-path&gt;] [--plane &lt;name&gt;] [--planes &lt;csv&gt;] [--device &lt;name&gt;] [--devices &lt;csv&gt;] [--ignore-device &lt;name&gt;] [--ignore-devices &lt;csv&gt;] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Shows what an import from DCS would bring, without changing your profile or DCS. Use it to look before you import,
+for example to see which aircraft and devices JoyPro finds. The Start page's <strong>Look first</strong> / <strong>Scan</strong> runs it.</p>
+<pre><code class="language-powershell">engine dcs scan &quot;C:\Users\Pilot\Saved Games\DCS&quot; --only-connected true --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<p>Takes the same filters and settings as <a href="../cli/dcs.html#dcs-import"><code>engine dcs import</code></a> (<code class="opt">--plane(s)</code>, <code class="opt">--device(s)</code>, <code class="opt">--ignore-device(s)</code>,
+<code class="opt">--include-defaults</code>, <code class="opt">--include-keyboard</code>, <code class="opt">--ignore-easy-planes</code>, the <code class="opt">--import-*</code> axis settings, <code class="opt">--only-connected</code>,
+<code class="opt">--merge-same-name</code>, <code class="opt">--confirm</code>) and reports what they would match. Nothing is written: no profile change, no file in
+DCS, no backup.</p>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: the same result as the import (JSON, or a text report with <code class="opt">--text</code>); exit code <code>0</code>, <code>1</code> on an error
+(<code>dcs scan failed: ...</code>).</li>
+<li><code class="opt">--save-profile</code> and <code class="opt">--save-last</code> are import options and refused here, as are the export options (<code class="opt">--mode</code> ...).</li>
+<li>Related: <a href="../cli/dcs.html#dcs-import"><code>engine dcs import</code></a>, <a href="../cli/games.html#games-paths"><code>engine games paths</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Parses DCS input files and previews what would be imported, without applying changes.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--plane</code></td><td><code>&lt;name&gt;</code></td><td>Include one plane/module per flag. Example: --plane A-10C_2.</td></tr><tr><td><code>--planes</code></td><td><code>&lt;csv&gt;</code></td><td>Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.</td></tr><tr><td><code>--device</code></td><td><code>&lt;name&gt;</code></td><td>Include one device per flag. Example: --device LEFT VPC Throttle.</td></tr><tr><td><code>--devices</code></td><td><code>&lt;csv&gt;</code></td><td>Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.</td></tr><tr><td><code>--ignore-device</code></td><td><code>&lt;name&gt;</code></td><td>Exclude one device per flag. Example: --ignore-device Keyboard.</td></tr><tr><td><code>--ignore-devices</code></td><td><code>&lt;csv&gt;</code></td><td>Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.</td></tr><tr><td><code>--include-keyboard</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--ignore-easy-planes</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--include-defaults</code></td><td><span class="muted">switch (no value)</span></td><td>Include defaults in DCS import/scan.</td></tr><tr><td><code>--import-inverted</code></td><td><span class="muted">switch (no value)</span></td><td>Include axis inversion settings.</td></tr><tr><td><code>--import-slider</code></td><td><span class="muted">switch (no value)</span></td><td>Include DCS slider axis setting.</td></tr><tr><td><code>--import-curvature</code></td><td><span class="muted">switch (no value)</span></td><td>Include axis curvature settings.</td></tr><tr><td><code>--import-deadzone</code></td><td><span class="muted">switch (no value)</span></td><td>Include axis deadzone settings.</td></tr><tr><td><code>--import-saturation-x</code></td><td><span class="muted">switch (no value)</span></td><td>Include DCS saturation X setting.</td></tr><tr><td><code>--import-saturation-y</code></td><td><span class="muted">switch (no value)</span></td><td>Include DCS saturation Y setting.</td></tr><tr><td><code>--only-connected</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--merge-same-name</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Controls suggestion confirmation (true) vs auto-accept (false).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs scan --include-keyboard true
+engine dcs scan --include-keyboard false
+engine dcs scan --ignore-easy-planes true
+engine dcs scan --ignore-easy-planes false
+engine dcs scan --only-connected true
+engine dcs scan --only-connected false
+engine dcs scan --merge-same-name true
+engine dcs scan --merge-same-name false
+engine dcs scan --confirm true
+engine dcs scan --confirm false</code></pre></details><p><span class="lbl">In the game</span> Reads DCS World's files only; nothing changes in the game. A scan only shows what an import would bring and does not change the profile. <a href="../games/ref/dcs.html">DCS World details</a> · <a href="../flows/export.html#in-the-game">what each mode changes</a></p><p><span class="lbl">Used by the GUI</span> <a href="../gui/start.html#previewimportwizard">Start: Look first</a> · <a href="../gui/start.html#scandcs">Start: Scan</a></p><p class="lbl">Example</p><pre><code>engine dcs scan &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; --plane &#x27;A-10C_2&#x27; --confirm false --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>If no device include filter is given, all devices are considered.</li>
+<li>Ignore filters (--ignore-device, --ignore-devices) remove matches even if included.</li>
+<li>--confirm false auto-accepts closest suggested device names.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-import"><header><h3 class="eh"><a class="anchor" href="#dcs-import">#</a><code>engine dcs import</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs import [&lt;saved-games-path&gt;] [--path &lt;saved-games-path&gt;] [--merge] [--save-profile &lt;path.pr0file&gt;] [--save-last] [--plane &lt;name&gt;] [--planes &lt;csv&gt;] [--device &lt;name&gt;] [--devices &lt;csv&gt;] [--ignore-device &lt;name&gt;] [--ignore-devices &lt;csv&gt;] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Reads the binds you already have in DCS into your JoyPro profile, one relation per function and button. Use it once
+at the start, or after you changed binds inside DCS; nothing in DCS changes. The GUI's <strong>Import</strong> on the Start page
+runs it.</p>
+<pre><code class="language-powershell">engine dcs import &quot;C:\Users\Pilot\Saved Games\DCS&quot; --merge --include-defaults --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<p>Reads <code>Saved Games\DCS\Config\Input</code> (or <code class="opt">--path</code>) into the profile: one relation per function and input, modifiers
+from <code>modifiers.lua</code>, tuning from the files, names and groups from JoyPro's <code>.jp</code> files.</p>
+<ul>
+<li><code class="opt">--merge</code> adds to the open profile instead of replacing it.</li>
+<li><code class="opt">--include-defaults</code> brings every default bind DCS has active for an imported device (so a clean + nuke export
+afterwards leaves DCS as it was).</li>
+<li><code class="opt">--plane(s)</code>, <code class="opt">--device(s)</code> limit what is read; <code class="opt">--ignore-device(s)</code> leaves devices out (the <code class="opt">--vjoy-tunnel</code> device
+is always left out). A device name that does not match exactly is resolved to the closest one; <code>--confirm false</code>
+takes the suggestion without asking.</li>
+<li><code class="opt">--include-keyboard</code> (default <code>true</code>) reads the keyboard too; <code>--ignore-easy-planes true</code> skips the <code>_easy</code>
+variants.</li>
+<li><code class="opt">--import-inverted</code>, <code class="opt">--import-slider</code>, <code class="opt">--import-curvature</code>, <code class="opt">--import-deadzone</code>, <code class="opt">--import-saturation-x</code>,
+<code class="opt">--import-saturation-y</code> bring that axis setting into the profile.</li>
+<li><code>--only-connected true</code> skips devices that are not plugged in; <code class="opt">--merge-same-name</code> (default <code>true</code>) reads one
+device under several Windows IDs as one.</li>
+<li>Safety: reads only; the profile is kept as the version &quot;Before import from DCS&quot; first.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON of the import result, or a text report with <code class="opt">--text</code> (paths, matched aircraft and devices, files and
+entries parsed); exit code <code>0</code>, <code>1</code> on an error (<code>dcs import failed: ...</code>).</li>
+<li><code>--save-profile &lt;file&gt;</code> saves the result to that profile file, <code class="opt">--save-last</code> to the last used one; with <code class="opt">--profile</code>
+the profile is saved after the import.</li>
+<li>Export options (<code class="opt">--mode</code>, <code class="opt">--nuke-untouched-devices</code> ...) are refused here. A successful import marks DCS as
+imported for <a href="../cli/profile.html#profile-game-state"><code>engine profile game-state</code></a>.</li>
+<li>Files read: <code>Config\Input\&lt;aircraft&gt;\joystick|keyboard\*.diff.lua</code>, the <code>.jp</code> files beside them, <code>modifiers.lua</code>.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-scan"><code>engine dcs scan</code></a> (the same without changing the profile), <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>, <a href="../cli/sync.html#sync-pending"><code>engine sync pending</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Parses DCS input files and applies results to the in-memory profile.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--merge</code></td><td><span class="muted">switch (no value)</span></td><td>Merge import results into existing in-memory profile.</td></tr><tr><td><code>--save-profile</code></td><td><code>&lt;path.pr0file&gt;</code></td><td>After import, save profile to this .pr0file path.</td></tr><tr><td><code>--save-last</code></td><td><span class="muted">switch (no value)</span></td><td>After import, save to last profile path.</td></tr><tr><td><code>--plane</code></td><td><code>&lt;name&gt;</code></td><td>Include one plane/module per flag. Example: --plane A-10C_2.</td></tr><tr><td><code>--planes</code></td><td><code>&lt;csv&gt;</code></td><td>Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.</td></tr><tr><td><code>--device</code></td><td><code>&lt;name&gt;</code></td><td>Include one device per flag. Example: --device LEFT VPC Throttle.</td></tr><tr><td><code>--devices</code></td><td><code>&lt;csv&gt;</code></td><td>Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.</td></tr><tr><td><code>--ignore-device</code></td><td><code>&lt;name&gt;</code></td><td>Exclude one device per flag. Example: --ignore-device Keyboard.</td></tr><tr><td><code>--ignore-devices</code></td><td><code>&lt;csv&gt;</code></td><td>Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.</td></tr><tr><td><code>--include-keyboard</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--ignore-easy-planes</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--include-defaults</code></td><td><span class="muted">switch (no value)</span></td><td>Include defaults in DCS import/scan.</td></tr><tr><td><code>--import-inverted</code></td><td><span class="muted">switch (no value)</span></td><td>Include axis inversion settings.</td></tr><tr><td><code>--import-slider</code></td><td><span class="muted">switch (no value)</span></td><td>Include DCS slider axis setting.</td></tr><tr><td><code>--import-curvature</code></td><td><span class="muted">switch (no value)</span></td><td>Include axis curvature settings.</td></tr><tr><td><code>--import-deadzone</code></td><td><span class="muted">switch (no value)</span></td><td>Include axis deadzone settings.</td></tr><tr><td><code>--import-saturation-x</code></td><td><span class="muted">switch (no value)</span></td><td>Include DCS saturation X setting.</td></tr><tr><td><code>--import-saturation-y</code></td><td><span class="muted">switch (no value)</span></td><td>Include DCS saturation Y setting.</td></tr><tr><td><code>--only-connected</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--merge-same-name</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Controls suggestion confirmation (true) vs auto-accept (false).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs import --include-keyboard true
+engine dcs import --include-keyboard false
+engine dcs import --ignore-easy-planes true
+engine dcs import --ignore-easy-planes false
+engine dcs import --only-connected true
+engine dcs import --only-connected false
+engine dcs import --merge-same-name true
+engine dcs import --merge-same-name false
+engine dcs import --confirm true
+engine dcs import --confirm false</code></pre></details><p><span class="lbl">In the game</span> Reads DCS World's files only; nothing changes in the game. The binds come into the profile as relations; JoyPro's own data next to the game file brings back names, groups, modifiers and curves. <a href="../games/ref/dcs.html">DCS World details</a> · <a href="../flows/export.html#in-the-game">what each mode changes</a></p><p><span class="lbl">Used by the GUI</span> <a href="../gui/start.html#runimportwizard">Start: Import now</a> · <a href="../gui/start.html#importdcs">Start: Import</a></p><p class="lbl">Example</p><pre><code>engine dcs import &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; --device &#x27;VKB Gladiator NXT&#x27; --merge --save-profile &#x27;C:\JoyPro\profiles\dcs_import.pr0file&#x27; --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>If no device include filter is given, all devices are considered.</li>
+<li>Ignore filters (--ignore-device, --ignore-devices) remove matches even if included.</li>
+<li>--confirm false auto-accepts closest suggested device names.</li>
+<li>--save-profile and --save-last are valid on import commands only.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-export"><header><h3 class="eh"><a class="anchor" href="#dcs-export">#</a><code>engine dcs export</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs export [&lt;saved-games-path&gt;] [--path &lt;saved-games-path&gt;] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane &lt;name&gt;] [--planes &lt;csv&gt;] [--ignore-device &lt;name&gt;] [--ignore-devices &lt;csv&gt;]</code></pre><p>Only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; the .diff.lua holds only differences from DCS&#x27;s defaults (added non-default binds, removed defaults, defaults with other tuning as changed); add never deletes and lists binds whose button the game uses for another function (SkippedTakenInputs); merge removes a game bind on a button the profile puts another function on; merge-overwrite also takes the profile&#x27;s actions off their other buttons in that aircraft; clean replaces the written devices in the exported aircraft, with --clean-all-aircraft true (default false) also in every other aircraft; nuke: connected devices without binds in an exported plane lose all binds there, DCS defaults included (--ignore-device(s) and --vjoy-tunnel devices are never cleared); the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile&#x27;s keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Writes your profile's binds into DCS, so the game's controls menu shows them. Use it after you changed binds in JoyPro
+and want to fly with them; the GUI's <strong>Export now</strong> on the DCS tile runs it. Close DCS first.</p>
+<pre><code class="language-powershell">engine dcs export --mode clean --nuke-untouched-devices true --planes &quot;F-16C_50|FA-18C_hornet&quot; --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<p>For each device and aircraft it computes the binds DCS has active (the device's defaults minus the file's removals,
+plus its additions and changes), decides which shall be active by the mode, and writes only real differences from
+DCS's defaults into <code>&lt;aircraft&gt;\joystick\&lt;device&gt;.diff.lua</code>, with JoyPro's <code>.jp</code> beside it and the aircraft's
+<code>modifiers.lua</code>.</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code class="opt">--mode</code></th>
+<th><code class="opt">--nuke-untouched-devices</code></th>
+<th>In DCS, in the exported aircraft</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clean</code></td>
+<td><code>true</code> (GUI default)</td>
+<td>your devices hold exactly your binds; connected devices without binds are emptied (defaults too)</td>
+</tr>
+<tr>
+<td><code>clean</code></td>
+<td><code>false</code></td>
+<td>your devices hold exactly your binds; other devices unchanged</td>
+</tr>
+<tr>
+<td><code>merge-overwrite</code> (engine default)</td>
+<td><code>true</code> / <code>false</code></td>
+<td>your binds win on their inputs, each bound action loses its other inputs; other binds stay; nuke as above</td>
+</tr>
+<tr>
+<td><code>merge</code></td>
+<td><code>true</code> / <code>false</code></td>
+<td>your binds win on their inputs; the game's other binds and defaults stay (a moved action keeps its old input)</td>
+</tr>
+<tr>
+<td><code>add</code></td>
+<td>(not used)</td>
+<td>nothing removed; a bind on an input DCS uses for another function is not written and reported (<code>SkippedTakenInputs</code>)</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li><code>--clean-all-aircraft true</code> (default <code>false</code>) also clears the written devices in every other installed aircraft (not
+UiLayer or Camera).</li>
+<li>Keyboard: never cleared or nuked. <code>--keep-keyboard-defaults false</code> writes the profile's keyboard binds and removes
+only the DCS default keys they take; <code>--clear-keyboard-defaults true</code> removes every DCS keyboard default of those
+aircraft.</li>
+<li><code class="opt">--plane</code> / <code class="opt">--planes</code> limit the export to these aircraft (several names separated by <code>|</code>, <code>,</code> or <code>;</code>).</li>
+<li>Never touched: devices passed with <code class="opt">--ignore-device(s)</code> and the <code class="opt">--vjoy-tunnel</code> device are never cleared.</li>
+<li>Safety: refused while DCS runs; every file is backed up first (undo: <a href="../cli/backups.html#backups-list"><code>engine backups restore</code></a>) and the profile is kept
+as the version &quot;Before export to DCS&quot;.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON of the export result, or a text report with <code class="opt">--text</code> (written to <code class="opt">--out</code> when given); exit code <code>0</code>, <code>1</code>
+when the export reports an error (<code>dcs export failed: ...</code> on stderr) or DCS runs.</li>
+<li>Without a path it uses the detected Saved Games folder (<code>Auto-detected DCS Saved Games path: ...</code> on stderr); none
+found fails with a hint to <a href="../cli/games.html#games-paths"><code>engine games paths</code></a>.</li>
+<li>Import options (<code class="opt">--device</code>, <code class="opt">--include-defaults</code>, <code class="opt">--confirm</code> ...) are refused here.</li>
+<li>After a successful run it records the export for <a href="../cli/sync.html#sync-pending"><code>engine sync pending</code></a> and stores the binds an &quot;Only add&quot; run could not
+write as export marks (<a href="../cli/export-marks.html#export-marks-list"><code>engine export-marks list</code></a>); the profile is saved quietly when those marks changed.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-import"><code>engine dcs import</code></a>, <a href="../cli/dcs.html#dcs-verify-clean"><code>engine dcs verify-clean</code></a>, <a href="../cli/profile.html#profile-game-state"><code>engine profile game-state</code></a>, <a href="../cli/backups.html#backups-list"><code>engine backups list</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Writes current profile mappings back to DCS-compatible files.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--mode</code></td><td><code>clean</code> <code>add</code> <code>merge</code> <code>merge-overwrite</code></td><td>Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.</td></tr><tr><td><code>--keep-keyboard-defaults</code></td><td><code>true</code> <code>false</code></td><td>DCS export only: keep existing keyboard defaults/keyboard diff files untouched (true/false).</td></tr><tr><td><code>--clear-keyboard-defaults</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--nuke-untouched-devices</code></td><td><code>true</code> <code>false</code></td><td>DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).</td></tr><tr><td><code>--clean-all-aircraft</code></td><td><code>true</code> <code>false</code></td><td></td></tr><tr><td><code>--plane</code></td><td><code>&lt;name&gt;</code></td><td>Include one plane/module per flag. Example: --plane A-10C_2.</td></tr><tr><td><code>--planes</code></td><td><code>&lt;csv&gt;</code></td><td>Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.</td></tr><tr><td><code>--ignore-device</code></td><td><code>&lt;name&gt;</code></td><td>Exclude one device per flag. Example: --ignore-device Keyboard.</td></tr><tr><td><code>--ignore-devices</code></td><td><code>&lt;csv&gt;</code></td><td>Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs export --mode clean
+engine dcs export --mode add
+engine dcs export --mode merge
+engine dcs export --mode merge-overwrite
+engine dcs export --keep-keyboard-defaults true
+engine dcs export --keep-keyboard-defaults false
+engine dcs export --clear-keyboard-defaults true
+engine dcs export --clear-keyboard-defaults false
+engine dcs export --nuke-untouched-devices true
+engine dcs export --nuke-untouched-devices false
+engine dcs export --clean-all-aircraft true
+engine dcs export --clean-all-aircraft false</code></pre></details><p><span class="lbl">In the game</span> Writes into DCS World's control files while the game is closed (refused while it runs), after a backup. Combat flight sims and combat flight games that read several joysticks. Bind file: <code>Saved Games\DCS\Config\Input\&lt;aircraft&gt;\joystick\&lt;device&gt;.diff.lua</code> (Lua diff), keyboard and modifiers.lua; <code>.jp</code> sidecar.  <a href="../games/ref/dcs.html">DCS World details</a> · <a href="../flows/export.html#in-the-game">what each mode changes</a></p><p><span class="lbl">Used by the GUI</span> <a href="../gui/start.html#exportdcs">Start: Export</a> · <a href="../gui/export.html#exportselectedgames">Export: Export ticked games</a> · <a href="../gui/export.html#previewexportgame">Export: Preview</a> · <a href="../gui/export.html#exportgamenow">Export: Export now</a> · <a href="../gui/export.html#exportdcs">Export: Export DCS</a></p><p class="lbl">Example</p><pre><code>engine dcs export &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Import-only filters/settings are not valid for export commands.</li>
+<li>--mode is valid for DCS export and IL2 export.</li>
+<li>--keep-keyboard-defaults controls whether keyboard files are preserved untouched.</li>
+<li>--nuke-untouched-devices deletes non-exported device files (except keyboard when keep-keyboard-defaults is true).</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-defaults-cut"><header><h3 class="eh"><a class="anchor" href="#dcs-defaults-cut">#</a><code>engine dcs defaults cut</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs defaults cut [&lt;saved-games-path&gt;] [&lt;dcs-install-path&gt;] [--path &lt;saved-games-path&gt;] [--install-path &lt;dcs-install-path&gt;] [--backup-path &lt;path&gt;] [--dry-run]</code></pre><p>Older way, the GUI uses dcs device-luas remove: in every &lt;install&gt;\Mods\aircraft\&lt;module&gt;\Input\&lt;input&gt;\joystick folder every file except default.lua is moved into BACKUP_JOYSTICK_DEFAULTS, default.lua is copied there; refused while DCS or DCS_updater runs; --dry-run only counts</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>The older way to move DCS's device-specific default files out of the DCS installation: into
+<code>Saved Games\DCS\BACKUP_JOYSTICK_DEFAULTS</code>. The GUI no longer runs it; its switch <strong>Remove DCS's device-specific
+default files from the install</strong> uses <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>, which keeps the files in JoyPro's own folder and moves
+them again after a DCS update. Close DCS first.</p>
+<pre><code class="language-powershell">engine dcs defaults cut --path &quot;C:\Users\Pilot\Saved Games\DCS&quot; --install-path &quot;D:\DCS World&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Paths: the Saved Games folder (first positional, <code class="opt">--path</code> or <code class="opt">--saved-games</code>) and the DCS installation (second
+positional or <code class="opt">--install-path</code>); missing ones are detected (<code>Auto-detected DCS ... path: ...</code> on stderr). The
+installation may also be given as its <code>Mods</code> or <code>Mods\aircraft</code> folder.</li>
+<li><code>--backup-path &lt;folder&gt;</code> moves the files into another folder (default <code>&lt;Saved Games&gt;\BACKUP_JOYSTICK_DEFAULTS</code>).</li>
+<li>In every <code>Mods\aircraft\&lt;aircraft&gt;\Input\&lt;input&gt;\joystick</code> folder, <code>default.lua</code> is copied into the backup folder
+(it stays in DCS) and every other file of the folder is moved there, under <code>&lt;aircraft&gt;\Input\&lt;input&gt;\joystick</code>.
+A file of the same name in the backup folder is replaced.</li>
+<li>Safety: every moved file and every file it creates or replaces in the backup folder goes into a game backup set
+first (undo: <a href="../cli/backups.html#backups-list"><code>engine backups restore</code></a>, or <a href="../cli/dcs.html#dcs-defaults-restore"><code>engine dcs defaults restore</code></a> for the backup folder). <code class="opt">--dry-run</code> counts
+the files it would move and copy and changes nothing (also while DCS runs). Refused while <code>DCS</code> or <code>DCS_updater</code>
+runs, and when DCS is not installed or switched off in Settings &gt; Games.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON of the result (<code>Action</code> <code>cut</code>, the paths, <code>AircraftRoot</code>, <code>AircraftScanned</code>, <code>JoystickFoldersScanned</code>,
+<code>DefaultFilesCopied</code>, <code>StickSpecificFilesMoved</code>, <code>DryRun</code>, <code>Warnings</code>, <code>Errors</code>), or text with <code class="opt">--text</code> (&quot;DCS Stick
+Defaults&quot;, <code>Dry Run: true ...</code> on a dry run).</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs defaults cut failed: ...</code> (for example <code>Couldn't find DCS install aircraft path under: &lt;path&gt;</code> or a file that could not be moved; the result is printed first), <code>DCS is running (...). Close DCS and its updater before dcs defaults cut.</code>, when a path is missing (<code>... requires a DCS Saved Games path. Try: engine games paths --game DCS --text</code>) or with <code>Unknown dcs defaults argument(s): ...</code>.</li>
+<li>Only <code>Mods\aircraft</code> of the installation is looked at, not <code>Saved Games\DCS\Mods</code>.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-defaults-restore"><code>engine dcs defaults restore</code></a>, <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>, <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a>; game page <a href="../games/dcs.html">dcs</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> The older way to take DCS&#x27;s device default files out of the installation (the GUI uses dcs device-luas remove): in every &lt;install&gt;\Mods\aircraft\&lt;module&gt;\Input\&lt;input&gt;\joystick folder every file except default.lua is moved into BACKUP_JOYSTICK_DEFAULTS, and default.lua is copied there. Refused while DCS or DCS_updater runs; --dry-run only counts.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--backup-path</code></td><td><code>&lt;path&gt;</code></td><td>Override backup folder path for dcs defaults cut/restore. Default: &lt;saved-games&gt;\\BACKUP_JOYSTICK_DEFAULTS.</td></tr><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>Count the files that would be moved or copied; nothing is changed (also while DCS runs).</td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine dcs defaults cut &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --dry-run --text
+engine dcs defaults cut &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>If paths are omitted, the command tries to auto-detect DCS Saved Games and install locations.</li>
+<li>Only the joystick folders under Mods\aircraft of the installation: every file except default.lua is moved into the backup, default.lua is copied.</li>
+<li>Refused while DCS or DCS_updater runs; --dry-run counts the files and changes nothing.</li>
+<li>The GUI uses dcs device-luas remove instead (it keeps files other Lua files refer to and the UI layer).</li>
+<li>Default backup location is <saved-games>\BACKUP_JOYSTICK_DEFAULTS unless --backup-path is provided.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-defaults-restore"><header><h3 class="eh"><a class="anchor" href="#dcs-defaults-restore">#</a><code>engine dcs defaults restore</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs defaults restore [&lt;saved-games-path&gt;] [&lt;dcs-install-path&gt;] [--path &lt;saved-games-path&gt;] [--install-path &lt;dcs-install-path&gt;] [--backup-path &lt;path&gt;] [--dry-run]</code></pre><p>Copies the files of BACKUP_JOYSTICK_DEFAULTS back into Mods\aircraft; refused while DCS or DCS_updater runs; --dry-run only counts</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Puts back the device default files an older JoyPro moved out of the DCS installation into
+<code>Saved Games\DCS\BACKUP_JOYSTICK_DEFAULTS</code>. Use it once if an older JoyPro version moved them. The GUI's <strong>Put back
+files an older JoyPro moved</strong> (Settings &gt; DCS: default binds, &quot;Folders and older JoyPro backups&quot;) runs it after asking.
+Close DCS first.</p>
+<pre><code class="language-powershell">engine dcs defaults restore --path &quot;C:\Users\Pilot\Saved Games\DCS&quot; --install-path &quot;D:\Games\DCS World&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Paths: the Saved Games folder (first positional or <code class="opt">--path</code>) and the DCS installation (second positional or
+<code class="opt">--install-path</code>); missing ones are detected (<code>Auto-detected DCS ... path: ...</code> on stderr).</li>
+<li><code>--backup-path &lt;folder&gt;</code> reads another backup folder (default <code>&lt;Saved Games&gt;\BACKUP_JOYSTICK_DEFAULTS</code>).</li>
+<li>Every aircraft folder of the backup is copied back into <code>&lt;install&gt;\Mods\aircraft\&lt;aircraft&gt;</code>, with its subfolders;
+existing files are replaced. Each replaced file goes into a game backup set first (undo:
+<a href="../cli/backups.html#backups-list"><code>engine backups restore</code></a>).</li>
+<li>Refused when DCS is not installed, and while <code>DCS</code> or <code>DCS_updater</code> runs. <code class="opt">--dry-run</code> counts the files and folders
+it would copy and changes nothing (also while DCS runs). Today's way to move these files is <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON of the result (paths, aircraft scanned, folders touched, files restored, <code>DryRun</code>, warnings, errors), or
+text with <code class="opt">--text</code> (<code>Dry Run: true ...</code> on a dry run).</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs defaults restore failed: ...</code> (no <code>Mods\aircraft</code> in the installation, no backup
+folder) or when a path is missing (<code>... requires a DCS Saved Games path. Try: engine games paths --game DCS --text</code>).</li>
+<li>Related: <a href="../cli/dcs.html#dcs-defaults-cut"><code>engine dcs defaults cut</code></a>, <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a>, <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Copies the files of BACKUP_JOYSTICK_DEFAULTS back into the DCS installation&#x27;s Mods\aircraft folders. Refused while DCS or DCS_updater runs; --dry-run only counts.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--backup-path</code></td><td><code>&lt;path&gt;</code></td><td>Override backup folder path for dcs defaults cut/restore. Default: &lt;saved-games&gt;\\BACKUP_JOYSTICK_DEFAULTS.</td></tr><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>Count the files that would be copied back; nothing is changed (also while DCS runs).</td></tr></tbody></table></div><p><span class="lbl">Used by the GUI</span> <a href="../gui/settings.html#dcsdefaultsrestore">Settings: Put back files an older JoyPro moved</a></p><p class="lbl">Example</p><pre><code>engine dcs defaults restore &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>If paths are omitted, the command tries to auto-detect DCS Saved Games and install locations.</li>
+<li>Restores files by copying backup aircraft input folders back into Mods\aircraft.</li>
+<li>Refused while DCS or DCS_updater runs; --dry-run counts the files and changes nothing.</li>
+<li>Default backup location is <saved-games>\BACKUP_JOYSTICK_DEFAULTS unless --backup-path is provided.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-strip-defaults"><header><h3 class="eh"><a class="anchor" href="#dcs-strip-defaults">#</a><code>engine dcs strip-defaults</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path &lt;dcs-install-path&gt;] [--saved-games &lt;saved-games-path&gt;] [--luae &lt;luae.exe&gt;] [--no-load-check] [--status]</code></pre><p>Switches DCS&#x27;s default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup &lt;file&gt;.nocombo.bak; restore (--restore) puts the originals back; status (--status) shows the state; auto re-applies after a DCS update; patched files fail server integrity checks</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Switches DCS's own default joystick binds off inside the DCS installation, for every device, also the ones JoyPro
+does not write. JoyPro's exports already remove the default binds of the devices they write, so this is an extra
+option, off by default. The GUI's <strong>Strip DCS default binds in the DCS install</strong> (Settings &gt; DCS: default binds)
+runs it after asking; <strong>Preview files</strong>, <strong>Apply now</strong>, <strong>Restore DCS files</strong> and <strong>Check again</strong> use it too. Close
+DCS first.</p>
+<pre><code class="language-powershell">engine dcs strip-defaults apply --dry-run --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Action</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>apply</code> (default)</td>
+<td>patches every joystick input file of DCS that is not patched yet and remembers the switch</td>
+</tr>
+<tr>
+<td><code>restore</code> (or <code class="opt">--restore</code>)</td>
+<td>puts every patched file back from its backup, the UI layer too, and switches it off</td>
+</tr>
+<tr>
+<td><code>status</code> (or <code class="opt">--status</code>, also before the action word)</td>
+<td>counts the files: patched, not patched, device files in DCS and kept by JoyPro; changes nothing</td>
+</tr>
+<tr>
+<td><code>auto</code></td>
+<td>does again what is switched on (this option and <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>); nothing to do when both are off</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li>The files: each <code>*.lua</code> in a folder named <code>joystick</code> below <code>&lt;DCS&gt;\Mods</code>, <code>&lt;DCS&gt;\Config</code> and
+<code>Saved Games\DCS*\Mods</code> (not below a <code>keyboard</code> folder, not <code>*.diff.lua</code>) that has <code>keyCommands</code>, <code>axisCommands</code>
+or <code>external_profile</code>. <code>Saved Games\DCS\Config\Input</code>, where your own binds are, is never touched.</li>
+<li>Patching wraps the original file in a function and sets <code>combos = nil</code> on every entry of what it returns, so DCS
+loads the same commands without default binds. The first line is the marker <code>-- [[DCS_STRIP_JOYSTICK_DEFAULTS v1]]</code>
+and the original is kept as <code>&lt;file&gt;.nocombo.bak</code>: the same marker and backup name as the community strip script,
+so either one restores the other's files.</li>
+<li>After patching, DCS's own Lua (<code>bin\luae.exe</code>, or <code>--luae &lt;file&gt;</code>) loads every patched file next to its original;
+a file it cannot load is put back at once. <code class="opt">--no-load-check</code> skips this check (meant for tests).</li>
+<li><code>--skip-ui-layer [true|false]</code> leaves the files of the UI layer (<code>UiLayer\joystick</code>: menus and VR controllers)
+unpatched; without it the last choice is used (GUI: <strong>Keep the UI layer's default binds (menus, VR)</strong>).</li>
+<li><code>--remember false</code> patches or restores without changing the stored switch (default <code>true</code>).</li>
+<li><code>--install-path &lt;folder&gt;</code> and <code>--saved-games &lt;folder&gt;</code> (also <code class="opt">--path</code>) pick the folders; without them the detected
+DCS installation and every <code>Saved Games\DCS*</code> folder are used.</li>
+<li>After a DCS update or repair the original files are back: with the switch on, JoyPro runs <code>auto</code> at its start and
+before every headless DCS list refresh (<a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a> and <a href="../cli/dcs.html#dcs-refresh-id"><code>engine dcs refresh id</code></a>; the click flow with
+<code>--headless-lua false</code> does not).</li>
+<li><code class="opt">--remove</code> is refused here (<code>dcs strip-defaults has no --remove: --restore ...</code>); it belongs to
+<a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>.</li>
+<li>Safety: <code>apply</code> and <code>restore</code> are refused while <code>DCS</code> or <code>DCS_updater</code> runs; <code class="opt">--dry-run</code> lists the files and
+writes nothing (also while DCS runs). Patched files fail the integrity check of multiplayer servers that enforce it
+(pure scripts / IC); <code>restore</code> puts DCS's files back. A missing write access to the DCS folder stops the run.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON of the result (<code>Action</code>, <code>DryRun</code>, <code>InstallPath</code>, <code>SavedGamesPaths</code>, <code>DcsVersion</code>, <code>StripEnabled</code>,
+<code>SkipUiLayer</code>, <code>RemoveDeviceLuas</code>, <code>CleanProfilesStale</code>, <code>ProfileFiles</code>, <code>Patched</code>, <code>AlreadyPatched</code>, <code>NotPatched</code>,
+<code>Restored</code>, <code>LoadChecked</code>, <code>LoadCompared</code>, <code>DefaultBindsSwitchedOff</code>, the device file counts, <code>NeedsReapply</code>,
+<code>IntegrityNote</code>, <code>Files</code>, <code>Warnings</code>, <code>Errors</code>), or text with <code class="opt">--text</code> (&quot;DCS default binds in the install&quot;).</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs strip-defaults &lt;action&gt; failed: ...</code> (the result is printed first), for example <code>DCS World was not found. Set its folder in Settings &gt; Games or pass --install-path.</code>, <code>DCS is running (...). Close DCS and its updater first.</code>, <code>DCS's Lua cannot load the patched &lt;file&gt; (...); the original was put back.</code> or <code>No backup &lt;file&gt;.nocombo.bak for the patched &lt;file&gt;: repair DCS (DCS_updater.exe repair) to get the original back.</code> Also
+<code>Unknown dcs strip-defaults action: &lt;x&gt; (use apply, restore, status or auto).</code> and <code>Unknown dcs strip-defaults argument(s): ...</code>. Without an action word the message names <code>apply</code>.</li>
+<li>The switches are kept in <code>%LOCALAPPDATA%\JoyPro2\DcsDefaults\state.json</code>.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>, <a href="../cli/dcs.html#dcs-verify-clean"><code>engine dcs verify-clean</code></a>, <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>; game page <a href="../games/dcs.html">dcs</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Switches DCS&#x27;s default joystick binds off in the DCS installation (every joystick profile lua wrapped, combos = nil, original kept as &lt;file&gt;.nocombo.bak), or restores the originals; status and auto (re-apply after a DCS update).</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>List the files that would be patched or restored; nothing is changed.</td></tr><tr><td><code>--restore</code></td><td><span class="muted">switch (no value)</span></td><td>dcs strip-defaults / device-luas: put the original DCS files back (same as the restore action).</td></tr><tr><td><code>--skip-ui-layer</code></td><td><code>true</code> <code>false</code></td><td>dcs strip-defaults: leave Config\\Input\\UiLayer unpatched (true/false; the flag alone means true).</td></tr><tr><td><code>--remember</code></td><td><code>true</code> <code>false</code></td><td>dcs strip-defaults / device-luas: keep the switch for automatic re-apply after DCS updates (default true).</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--saved-games</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Saved Games\\DCS folder whose Mods are included (default: every Saved Games\\DCS* folder found).</td></tr><tr><td><code>--luae</code></td><td><code>&lt;luae.exe&gt;</code></td><td>Path to DCS&#x27;s luae.exe for the load check (default: the install&#x27;s bin\\luae.exe).</td></tr><tr><td><code>--no-load-check</code></td><td><span class="muted">switch (no value)</span></td><td>dcs strip-defaults: skip the check with DCS&#x27;s own Lua loader after patching (tests only).</td></tr><tr><td><code>--status</code></td><td><span class="muted">switch (no value)</span></td><td>Show the state (the same as the action status).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs strip-defaults --skip-ui-layer true
+engine dcs strip-defaults --skip-ui-layer false
+engine dcs strip-defaults --remember true
+engine dcs strip-defaults --remember false</code></pre></details><p class="lbl">Example</p><pre><code>engine dcs strip-defaults apply --dry-run --text
+engine dcs strip-defaults apply --skip-ui-layer --text
+engine dcs strip-defaults status --text
+engine dcs strip-defaults --restore --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Off by default. Patched DCS files fail the integrity check of multiplayer servers that enforce it.</li>
+<li>Same marker (-- [[DCS_STRIP_JOYSTICK_DEFAULTS v1]]) and backup name as the community strip script; either one restores the other's files.</li>
+<li>apply remembers the switch; JoyPro re-applies it at its start (auto) and before every headless DCS list refresh (dcs refresh clean and dcs refresh id; the click flow does not). restore switches it off.</li>
+<li>--status shows the state (as status); --remove is refused here (use --restore, or dcs device-luas remove).</li>
+<li>Never touches Saved Games\DCS\Config\Input. Refused while DCS or DCS_updater runs.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-device-luas"><header><h3 class="eh"><a class="anchor" href="#dcs-device-luas">#</a><code>engine dcs device-luas</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs device-luas [list|remove|restore] [--dry-run] [--remove] [--restore] [--status] [--remember true|false] [--install-path &lt;dcs-install-path&gt;] [--saved-games &lt;saved-games-path&gt;]</code></pre><p>Moves the device-specific default files of the DCS install (&lt;device type&gt;.lua, template diffs) into JoyPro&#x27;s backup folder so default.lua applies; restore puts them back; list (also --status) shows them</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Moves DCS's default files for single devices (&quot;Joystick - HOTAS Warthog.lua&quot; and similar) out of the DCS installation
+into JoyPro's backup folder, so DCS uses its general <code>default.lua</code> for every device; <code>restore</code> puts them back. Off by
+default. The GUI's <strong>Remove DCS's device-specific default files from the install</strong> (Settings &gt; DCS: default binds)
+runs it after asking, then rebuilds the DCS list once; <strong>Preview device files</strong> runs <code>list</code>. Close DCS first.</p>
+<pre><code class="language-powershell">engine dcs device-luas list --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Action</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list</code> (default; also <code>status</code> or <code class="opt">--status</code>)</td>
+<td>the device files DCS has now; changes nothing</td>
+</tr>
+<tr>
+<td><code>remove</code> (or <code class="opt">--remove</code>)</td>
+<td>moves them into JoyPro's backup folder and remembers the switch</td>
+</tr>
+<tr>
+<td><code>restore</code> (or <code class="opt">--restore</code>)</td>
+<td>puts every kept file back and switches it off</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li>The files: <code>&lt;device type&gt;.lua</code> (not <code>default.lua</code>) and template diffs <code>&lt;device type&gt;.diff.lua</code> in the <code>joystick</code>
+folders below <code>&lt;DCS&gt;\Mods</code>, <code>&lt;DCS&gt;\Config</code> and <code>Saved Games\DCS*\Mods</code>. A file another Lua file of the module's
+Input folder names (a shared part) stays, and so does the UI layer (the VR controllers' defaults).</li>
+<li>A file patched by <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a> takes its <code>.nocombo.bak</code> along, and gets it back on <code>restore</code>.</li>
+<li>After a DCS update brought files back, <code>remove</code> (or <code>auto</code> of <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a>) moves them again; the
+newer file replaces JoyPro's older copy. On <code>restore</code> a file DCS already brought back stays (warning &quot;Kept the file
+DCS brought back&quot;).</li>
+<li><code>--remember false</code> moves or restores without changing the stored switch (default <code>true</code>).
+<code>--install-path &lt;folder&gt;</code> and <code>--saved-games &lt;folder&gt;</code> (also <code class="opt">--path</code>) pick the folders.</li>
+<li>After <code>remove</code> or <code>restore</code> JoyPro's DCS clean profiles no longer match what DCS loads: rebuild them with
+<a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a> (the GUI does it); until then <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a> warns.</li>
+<li>Safety: <code>remove</code> and <code>restore</code> are refused while <code>DCS</code> or <code>DCS_updater</code> runs; <code class="opt">--dry-run</code> lists the files and moves
+nothing. A missing write access to the DCS folder stops the run.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: the same result as <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a> (<code>DeviceFilesInInstall</code>, <code>DeviceFilesMoved</code>,
+<code>DeviceFilesRestored</code>, <code>DeviceFilesBackedUp</code>, <code>CleanProfilesStale</code>, <code>Files</code>, <code>Warnings</code>, <code>Errors</code>), or text with
+<code class="opt">--text</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs device-luas &lt;action&gt; failed: ...</code>, for example <code>JoyPro's copy of &lt;file&gt; is missing (...): repair DCS to get it back.</code>, or <code>Unknown dcs device-luas action: &lt;x&gt; (use list, remove or restore).</code></li>
+<li>The files are kept in <code>%LOCALAPPDATA%\JoyPro2\DcsDefaults\DeviceLuas\&lt;folder hash&gt;\</code> with <code>manifest.json</code>
+(original path, SHA-256, time moved). <code>restore</code> also names a <code>BACKUP_JOYSTICK_DEFAULTS</code> folder an older JoyPro left
+(<a href="../cli/dcs.html#dcs-defaults-restore"><code>engine dcs defaults restore</code></a>).</li>
+<li>Related: <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a>, <a href="../cli/dcs.html#dcs-defaults-restore"><code>engine dcs defaults restore</code></a>, <a href="../cli/dcs.html#dcs-verify-clean"><code>engine dcs verify-clean</code></a>; game page
+<a href="../games/dcs.html">dcs</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Moves the device-specific default files of the DCS installation into JoyPro&#x27;s backup folder so DCS uses default.lua for every device, or puts them back.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>List the files that would be moved or put back; nothing is changed.</td></tr><tr><td><code>--remove</code></td><td><span class="muted">switch (no value)</span></td><td>Move the device files away (the same as the action remove).</td></tr><tr><td><code>--restore</code></td><td><span class="muted">switch (no value)</span></td><td>dcs strip-defaults / device-luas: put the original DCS files back (same as the restore action).</td></tr><tr><td><code>--status</code></td><td><span class="muted">switch (no value)</span></td><td>List the device files and where they are (the same as the action list).</td></tr><tr><td><code>--remember</code></td><td><code>true</code> <code>false</code></td><td>dcs strip-defaults / device-luas: keep the switch for automatic re-apply after DCS updates (default true).</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--saved-games</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Saved Games\\DCS folder whose Mods are included (default: every Saved Games\\DCS* folder found).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs device-luas --remember true
+engine dcs device-luas --remember false</code></pre></details><p class="lbl">Example</p><pre><code>engine dcs device-luas list --text
+engine dcs device-luas remove --text
+engine dcs device-luas restore --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Files another Lua file of the module refers to stay; so does the UI layer (VR controllers).</li>
+<li>The moved files and manifest.json are in <data>\DcsDefaults\DeviceLuas. Rebuild the DCS clean profiles afterwards (the GUI does it).</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-verify-clean"><header><h3 class="eh"><a class="anchor" href="#dcs-verify-clean">#</a><code>engine dcs verify-clean</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs verify-clean [&lt;saved-games-path&gt;] [--path &lt;saved-games-path&gt;] [--install-path &lt;dcs-install-path&gt;] [--plane &lt;name&gt;] [--planes &lt;csv&gt;] [--device &lt;name&gt;] [--devices &lt;csv&gt;] [--include-disconnected true|false] [--max-listed &lt;n&gt;] [--dump-active &lt;file&gt;]</code></pre><p>DCS&#x27;s own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Checks which of DCS's default binds are still active on your joysticks with the binds of a Saved Games folder, using
+DCS's own input code without starting the game. After a clean export it should find none on the devices JoyPro wrote.
+It only reads.</p>
+<pre><code class="language-powershell">engine dcs verify-clean &quot;C:\Users\Pilot\Saved Games\DCS&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Path: the Saved Games folder (positional, <code class="opt">--path</code> or <code class="opt">--saved-games</code>) and <code class="opt">--install-path</code>; missing ones are
+detected.</li>
+<li><code>--plane &lt;name&gt;</code> / <code>--planes &lt;a|b&gt;</code> checks only those aircraft (an unknown name fails: <code>Plane filter was provided, but no DCS headless profile candidates matched.</code>).</li>
+<li><code>--device &lt;name&gt;</code> / <code>--devices &lt;a|b&gt;</code> checks only those devices: the DCS device name, its template name, or a part
+of the name. Lists take <code>|</code>, <code>,</code> or <code>;</code>.</li>
+<li>Checked are the joysticks connected now; <code>--include-disconnected true</code> also the devices that only have files, each
+through a fake stick of its type.</li>
+<li><code>--max-listed &lt;n&gt;</code> limits the listed defaults (default 200); the counts are always complete.</li>
+<li><code>--dump-active &lt;file&gt;</code> writes every bind DCS has active on the checked joysticks (not only defaults), one sorted line
+<code>profile|device|kind|command hash|key|modifiers|filter</code> each: run it before and after an export and compare.</li>
+<li>Safety: works on a temporary copy of <code>Config\Input</code> (<code>wizard.lua</code>, <code>disabled.lua</code>, each aircraft's <code>modifiers.lua</code>
+and <code>joystick\*.diff.lua</code>); the Saved Games folder is not changed. Not refused while DCS runs.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>SavedGamesPath</code>, <code>InstallPath</code>, <code>ProfilesChecked</code>, <code>ProfileNames</code>, <code>Devices</code>, <code>DefaultsLeft</code>,
+<code>DefaultsLeftOnJoyProDevices</code>, <code>Left</code> with profile, device, kind, command, key and whether JoyPro wrote the file,
+<code>ActiveDumpFile</code>, <code>ActiveBinds</code>, <code>Steps</code>, <code>Warnings</code>, <code>Errors</code>), or text with <code class="opt">--text</code> (&quot;DCS default-bind check&quot;,
+the defaults left per device).</li>
+<li>&quot;Defaults Left On JoyPro Devices&quot; counts the defaults on devices whose file JoyPro wrote (a <code>.jp</code> next to the
+<code>.diff.lua</code>).</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs verify-clean failed: ...</code>, for example <code>luae.exe was not found under the DCS install's bin folder.</code>, <code>The DCS default-bind check timed out.</code> (15 minutes), <code>DCS Saved Games path does not exist: &lt;path&gt;</code>,
+<code>Invalid --max-listed value: '&lt;x&gt;'.</code> or <code>Unknown dcs verify-clean argument(s): ...</code>. The dump file is written only
+without errors.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>, <a href="../cli/dcs.html#dcs-strip-defaults"><code>engine dcs strip-defaults</code></a>, <a href="../cli/dcs.html#dcs-device-luas"><code>engine dcs device-luas</code></a>, <a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a>; game
+page <a href="../games/dcs.html">dcs</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Runs DCS&#x27;s own input code (luae.exe) on a copy of a Saved Games input folder and lists every DCS default bind still active on the joysticks.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--plane</code></td><td><code>&lt;name&gt;</code></td><td>Include one plane/module per flag. Example: --plane A-10C_2.</td></tr><tr><td><code>--planes</code></td><td><code>&lt;csv&gt;</code></td><td>Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.</td></tr><tr><td><code>--device</code></td><td><code>&lt;name&gt;</code></td><td>Include one device per flag. Example: --device LEFT VPC Throttle.</td></tr><tr><td><code>--devices</code></td><td><code>&lt;csv&gt;</code></td><td>Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.</td></tr><tr><td><code>--include-disconnected</code></td><td><code>true</code> <code>false</code></td><td>dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).</td></tr><tr><td><code>--max-listed</code></td><td><code>&lt;n&gt;</code></td><td>dcs verify-clean: how many remaining default binds are listed (counts are always complete).</td></tr><tr><td><code>--dump-active</code></td><td><code>&lt;file&gt;</code></td><td></td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs verify-clean --include-disconnected true
+engine dcs verify-clean --include-disconnected false</code></pre></details><p class="lbl">Example</p><pre><code>engine dcs verify-clean &#x27;C:\Users\Pilot\Saved Games\DCS&#x27; --text
+engine dcs verify-clean --planes &#x27;FA-18C_hornet&#x27; --include-disconnected true --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Read only: works on a temporary copy of Config\Input. Needs the DCS installation (luae.exe and Scripts).</li>
+<li>Defaults Left On JoyPro Devices counts remaining defaults on files JoyPro wrote (.jp next to them); after an export it should be 0.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-refresh-clean"><header><h3 class="eh"><a class="anchor" href="#dcs-refresh-clean">#</a><code>engine dcs refresh clean</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs refresh clean [&lt;saved-games-path&gt;] [&lt;dcs-install-path&gt;] [--path &lt;saved-games-path&gt;] [--install-path &lt;dcs-install-path&gt;] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane &lt;name&gt;] [--planes &lt;csv&gt;] [--dry-run] [--confirm true|false] [--menu-wait-seconds &lt;n&gt;] [--ocr-menu-timeout-seconds &lt;n&gt;] [--settle-seconds &lt;n&gt;] [--default-stick &lt;name&gt;] [--clicks-xml &lt;path&gt;] [--clicks-dir &lt;path&gt;] [--dcs-exe &lt;path&gt;] [--preview-clicks] [--preview-image &lt;path&gt;] [--gui-scale &lt;value&gt;] [--window-left &lt;n&gt; --window-top &lt;n&gt; --window-width &lt;n&gt; --window-height &lt;n&gt;]</code></pre><p>Default --headless-lua true: DCS&#x27;s own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Builds JoyPro's DCS &quot;clean profiles&quot;: the default binds DCS puts on every device type in every aircraft. The DCS export
+removes exactly these from the devices it writes. Use it after a DCS update; it needs DCS installed. The GUI runs it in
+headless mode after the first DCS command list was built, after <strong>Apply now</strong> / <strong>Restore DCS files</strong> when needed, and
+with <strong>Refresh Clean DB</strong> (Settings &gt; Command lists of DCS, Star Citizen and IL-2).</p>
+<pre><code class="language-powershell">engine dcs refresh clean --path &quot;C:\Users\Pilot\Saved Games\DCS&quot; --install-path &quot;D:\Games\DCS World&quot; --headless-lua true
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<p>Two ways, chosen by <code class="opt">--headless-lua</code> (default <code>true</code>, in the engine and in the GUI):</p>
+<ul>
+<li><strong>Headless</strong> (<code>--headless-lua true</code> or no <code class="opt">--headless-lua</code>): DCS is not started and no window opens. Several copies of DCS's own
+<code>bin\luae.exe</code> run in the background, each in a temporary Saved Games folder, load every input profile with a
+generic stick and one stand-in stick per device type, clear them and save; those files become the clean profiles.
+Your <code>Config\Input</code> is never changed. Before it, JoyPro applies the DCS install options you switched on. The run can
+be cancelled until the clean profiles are written.</li>
+<li><strong>Legacy click mode</strong> (only with an explicit <code>--headless-lua false</code>): DCS starts in a window (or a running DCS is used) and JoyPro clicks
+through its menus: gear icon, Controls, Clear All, Check All, Yes. Before, <code>Config\Input</code> is copied to
+<code>Config\CLInput\Input</code> and removed, and <code>options.lua</code> is set to windowed and GUI scale 1.0; afterwards both come
+back, also after an error. Leave mouse and keyboard alone: a moved mouse or another active window stops the run.</li>
+</ul>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="opt">--plane</code> / <code class="opt">--planes</code></td>
+<td>only these aircraft (headless only)</td>
+</tr>
+<tr>
+<td><code class="opt">--dry-run</code></td>
+<td>headless: lists the aircraft, writes nothing; legacy: plans the clicks without starting DCS</td>
+</tr>
+<tr>
+<td><code>--launch true|false</code></td>
+<td>legacy: start DCS (default <code>true</code>); <code>false</code> needs a running DCS; in headless mode only an explicit <code class="opt">--launch</code> warns that it is ignored</td>
+</tr>
+<tr>
+<td><code class="opt">--keep-running</code></td>
+<td>legacy: leave DCS open afterwards (default <code>false</code>)</td>
+</tr>
+<tr>
+<td><code>--ocr true|false</code></td>
+<td>legacy: find the menu entries by picture instead of <code>Clicks.xml</code> positions</td>
+</tr>
+<tr>
+<td><code>--settle-seconds &lt;n&gt;</code></td>
+<td>legacy: wait after the clicks (default <code>60</code>)</td>
+</tr>
+<tr>
+<td><code class="opt">--menu-wait-seconds</code>, <code class="opt">--ocr-menu-timeout-seconds</code></td>
+<td>legacy: waits for the main menu (defaults <code>45</code>, <code>600</code>)</td>
+</tr>
+<tr>
+<td><code class="opt">--default-stick</code>, <code class="opt">--clicks-xml</code>, <code class="opt">--clicks-dir</code>, <code class="opt">--dcs-exe</code>, <code class="opt">--gui-scale</code>, <code class="opt">--window-*</code>, <code class="opt">--preview-clicks</code>, <code class="opt">--preview-image</code></td>
+<td>legacy click details; ignored in headless mode (with a warning)</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li><code class="opt">--confirm</code> (default <code>true</code>) asks &quot;Type 'yes'&quot; in an interactive console; without one the run goes on with a warning.</li>
+<li>Refused when DCS is not installed.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON of the refresh (paths, steps, aircraft, clicks, warnings, errors), or text with <code class="opt">--text</code>; progress lines
+with <code class="opt">--progress</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs refresh clean failed: ...</code>, a missing path (<code>dcs refresh clean requires a DCS Saved Games path.</code> / <code>... install path.</code>) or an invalid number; <code>3</code> when cancelled.</li>
+<li>Writes <code>CleanProfile\DCS</code> and <code>KeyboardCleanProfile\DCS</code> in the game-data folder (<code>%LOCALAPPDATA%\JoyPro2\GameData</code>).
+An aircraft whose Lua run keeps failing keeps its previous clean profiles (a warning names it).</li>
+<li>Related: <a href="../cli/dcs.html#dcs-refresh-id"><code>engine dcs refresh id</code></a>, <a href="../cli/dcs.html#dcs-verify-clean"><code>engine dcs verify-clean</code></a>, <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>, <a href="../cli/db.html#db-check"><code>engine db check</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Rebuilds JoyPro&#x27;s DCS clean profiles (the default binds DCS gives every device type). By default DCS&#x27;s own Lua (luae.exe) does it without starting DCS; only --headless-lua false starts DCS and clicks Controls -&gt; Clear All.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--ocr</code></td><td><code>true</code> <code>false</code></td><td>Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false).</td></tr><tr><td><code>--launch</code></td><td><code>true</code> <code>false</code></td><td>Click flow only (--headless-lua false): start DCS (true, default) or use a running DCS (false).</td></tr><tr><td><code>--keep-running</code></td><td><code>true</code> <code>false</code></td><td>Leave DCS running after refresh command completes (true/false).</td></tr><tr><td><code>--headless-lua</code></td><td><code>true</code> <code>false</code></td><td>true (default): DCS&#x27;s own Lua (luae.exe) builds the clean profiles in temporary folders, DCS is not started and Config\Input is not changed. false: DCS starts in a window and JoyPro clicks through its menus (the legacy click flow).</td></tr><tr><td><code>--plane</code></td><td><code>&lt;name&gt;</code></td><td>Include one plane/module per flag. Example: --plane A-10C_2.</td></tr><tr><td><code>--planes</code></td><td><code>&lt;csv&gt;</code></td><td>Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.</td></tr><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS.</td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Ask &#x27;Type yes&#x27; before the run in an interactive console (true, default); false runs without asking.</td></tr><tr><td><code>--menu-wait-seconds</code></td><td><code>&lt;n&gt;</code></td><td>Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45.</td></tr><tr><td><code>--ocr-menu-timeout-seconds</code></td><td><code>&lt;n&gt;</code></td><td>OCR max wait for DCS main menu template detection. Example: --ocr-menu-timeout-seconds 600.</td></tr><tr><td><code>--settle-seconds</code></td><td><code>&lt;n&gt;</code></td><td>Post-click settle wait for DCS file writes. Example: --settle-seconds 60.</td></tr><tr><td><code>--default-stick</code></td><td><code>&lt;name&gt;</code></td><td>Preferred joystick name for clean profile extraction if that .diff.lua exists.</td></tr><tr><td><code>--clicks-xml</code></td><td><code>&lt;path&gt;</code></td><td>Path to Clicks.xml anchor file for non-OCR refresh clicks.</td></tr><tr><td><code>--clicks-dir</code></td><td><code>&lt;path&gt;</code></td><td>Folder containing OCR template images (cog1.0.png, controls1.0.png, etc.).</td></tr><tr><td><code>--dcs-exe</code></td><td><code>&lt;path&gt;</code></td><td>Explicit DCS executable path override. Example: --dcs-exe &#x27;D:\\Games\\DCS World\\bin\\DCS_updater.exe&#x27;.</td></tr><tr><td><code>--preview-clicks</code></td><td><span class="muted">switch (no value)</span></td><td>Generate click preview data/image while running refresh commands.</td></tr><tr><td><code>--preview-image</code></td><td><code>&lt;path&gt;</code></td><td>Output .png path for click preview image overlay.</td></tr><tr><td><code>--gui-scale</code></td><td><code>&lt;value&gt;</code></td><td>Override GUI scale multiplier used for high-resolution XML click anchor offsets.</td></tr><tr><td><code>--window-left</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window left coordinate override (integer).</td></tr><tr><td><code>--window-top</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window top coordinate override (integer).</td></tr><tr><td><code>--window-width</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window width override (integer &gt; 0).</td></tr><tr><td><code>--window-height</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window height override (integer &gt; 0).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs refresh clean --ocr true
+engine dcs refresh clean --ocr false
+engine dcs refresh clean --launch true
+engine dcs refresh clean --launch false
+engine dcs refresh clean --keep-running true
+engine dcs refresh clean --keep-running false
+engine dcs refresh clean --headless-lua true
+engine dcs refresh clean --headless-lua false
+engine dcs refresh clean --confirm true
+engine dcs refresh clean --confirm false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/start.html#refreshdbupdate">Start: RefreshDbUpdateCommand</a> · <a href="../gui/start.html#buildmissinglists">Start: Build All Missing Lists</a> · <a href="../gui/start.html#updategamelist">Start: Update</a> · <a href="../gui/settings.html#applydcsinstalldefaultsnow">Settings: Apply now</a> · <a href="../gui/settings.html#restoredcsinstalldefaults">Settings: Restore DCS files</a> · <a href="../gui/settings.html#dcsrefreshclean">Settings: Refresh Clean DB</a></p><p class="lbl">Example</p><pre><code>engine dcs refresh clean &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --confirm false --text
+engine dcs refresh clean &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --plane F-16C_50 --dry-run --text
+engine dcs refresh clean &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --headless-lua false --ocr false --preview-clicks --preview-image &#x27;C:\JoyPro\logs\dcs_refresh_clean_preview.png&#x27; --confirm false --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Requires DCS Saved Games and install paths (auto-detect is attempted when omitted).</li>
+<li>Default (--headless-lua true): DCS is not started; --plane/--planes limit the aircraft; the click options below are ignored with a warning.</li>
+<li>Only with --headless-lua false: DCS starts (--launch) and JoyPro clicks through its menus. Without --ocr, XML click anchors from Clicks.xml are used; with --ocr, template image matching is used.</li>
+<li>--dry-run skips launch/click/file changes and reports planned steps only.</li>
+<li>--default-stick prefers <name>.diff.lua when rebuilding CleanProfile output (click flow).</li>
+<li>--window-left/top/width/height and --gui-scale control non-OCR click coordinate resolution (click flow).</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-refresh-id"><header><h3 class="eh"><a class="anchor" href="#dcs-refresh-id">#</a><code>engine dcs refresh id</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs refresh id [&lt;saved-games-path&gt;] [&lt;dcs-install-path&gt;] [--path &lt;saved-games-path&gt;] [--install-path &lt;dcs-install-path&gt;] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane &lt;name&gt;] [--planes &lt;csv&gt;] [--dry-run] [--confirm true|false] [--menu-wait-seconds &lt;n&gt;] [--ocr-menu-timeout-seconds &lt;n&gt;] [--modules-to-scan &lt;n&gt;] [--clicks-xml &lt;path&gt;] [--clicks-dir &lt;path&gt;] [--dcs-exe &lt;path&gt;] [--preview-clicks] [--preview-image &lt;path&gt;] [--gui-scale &lt;value&gt;] [--window-left &lt;n&gt; --window-top &lt;n&gt; --window-width &lt;n&gt; --window-height &lt;n&gt;]</code></pre><p>Default --headless-lua true: DCS&#x27;s own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Builds JoyPro's DCS command list: every aircraft's actions with their ids and names, from your DCS installation. Use it
+after a DCS update or a new module; it needs DCS installed. <strong>Update</strong> on the DCS card of the Start page and <strong>Build All
+Missing Lists</strong> run it headless; <strong>Refresh ID DB</strong> (Settings &gt; Command lists of DCS, Star Citizen and IL-2) runs it with
+the options set there.</p>
+<pre><code class="language-powershell">engine dcs refresh id --path &quot;C:\Users\Pilot\Saved Games\DCS&quot; --install-path &quot;D:\Games\DCS World&quot; --headless-lua true --plane F-16C_50
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><strong>Headless</strong> (the default, <code>--headless-lua true</code>, also the GUI's way): DCS is not started. Several <code>luae.exe</code> runs of DCS's own Lua
+read the input profiles (and your <code>Config\Input</code>, read only) and write DCS's per-aircraft HTML lists into a temporary
+folder; JoyPro copies them into its command list. Cancelable until the files are copied.</li>
+<li><strong>Legacy click mode</strong> (only with an explicit <code>--headless-lua false</code>): DCS starts in a window and JoyPro clicks gear
+icon, Controls, the aircraft list, then <strong>Make HTML</strong> for one aircraft after the other (arrow down to the next). As in
+<a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a>, <code>options.lua</code> is set to windowed and GUI scale 1.0 for the run and restored, and a moved
+mouse or another active window stops it. <code>--modules-to-scan &lt;n&gt;</code> adds loop rounds on top of the aircraft found.</li>
+<li><code class="opt">--plane</code> / <code class="opt">--planes</code>, <code class="opt">--dry-run</code>, <code class="opt">--launch</code>, <code class="opt">--keep-running</code>, <code class="opt">--ocr</code>, <code class="opt">--confirm</code> and the click details work as
+in <a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a>.</li>
+<li>Refused when DCS is not installed.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON or <code class="opt">--text</code> as for <a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a>. Exit code <code>0</code>; <code>1</code> with <code>dcs refresh id failed: ...</code>;
+<code>3</code> when cancelled.</li>
+<li>Writes <code>DB\DCS\*.html</code> in the game-data folder. After a real run (not a dry run) the DCS build is recorded for
+<a href="../cli/db.html#db-check-updates"><code>engine db check-updates</code></a>.</li>
+<li>Related: <a href="../cli/db.html#db-planes"><code>engine db planes</code></a>, <a href="../cli/db.html#db-summary"><code>engine db summary</code></a>, <a href="../cli/dcs.html#dcs-refresh-preview-clicks"><code>engine dcs refresh preview-clicks</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Rebuilds JoyPro&#x27;s DCS command lists (DB HTML per aircraft). By default DCS&#x27;s own Lua (luae.exe) writes them without starting DCS; only --headless-lua false starts DCS and clicks Controls -&gt; Make HTML per aircraft.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--ocr</code></td><td><code>true</code> <code>false</code></td><td>Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false).</td></tr><tr><td><code>--launch</code></td><td><code>true</code> <code>false</code></td><td>Click flow only (--headless-lua false): start DCS (true, default) or use a running DCS (false).</td></tr><tr><td><code>--keep-running</code></td><td><code>true</code> <code>false</code></td><td>Leave DCS running after refresh command completes (true/false).</td></tr><tr><td><code>--headless-lua</code></td><td><code>true</code> <code>false</code></td><td>true (default): DCS&#x27;s own Lua (luae.exe) writes the per-aircraft command lists, DCS is not started. false: DCS starts in a window and JoyPro clicks Make HTML per aircraft (the legacy click flow).</td></tr><tr><td><code>--plane</code></td><td><code>&lt;name&gt;</code></td><td>Include one plane/module per flag. Example: --plane A-10C_2.</td></tr><tr><td><code>--planes</code></td><td><code>&lt;csv&gt;</code></td><td>Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.</td></tr><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS.</td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Ask &#x27;Type yes&#x27; before the run in an interactive console (true, default); false runs without asking.</td></tr><tr><td><code>--menu-wait-seconds</code></td><td><code>&lt;n&gt;</code></td><td>Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45.</td></tr><tr><td><code>--ocr-menu-timeout-seconds</code></td><td><code>&lt;n&gt;</code></td><td>OCR max wait for DCS main menu template detection. Example: --ocr-menu-timeout-seconds 600.</td></tr><tr><td><code>--modules-to-scan</code></td><td><code>&lt;n&gt;</code></td><td>Additional module loop count for dcs refresh id export cycle. Example: --modules-to-scan 5.</td></tr><tr><td><code>--clicks-xml</code></td><td><code>&lt;path&gt;</code></td><td>Path to Clicks.xml anchor file for non-OCR refresh clicks.</td></tr><tr><td><code>--clicks-dir</code></td><td><code>&lt;path&gt;</code></td><td>Folder containing OCR template images (cog1.0.png, controls1.0.png, etc.).</td></tr><tr><td><code>--dcs-exe</code></td><td><code>&lt;path&gt;</code></td><td>Explicit DCS executable path override. Example: --dcs-exe &#x27;D:\\Games\\DCS World\\bin\\DCS_updater.exe&#x27;.</td></tr><tr><td><code>--preview-clicks</code></td><td><span class="muted">switch (no value)</span></td><td>Generate click preview data/image while running refresh commands.</td></tr><tr><td><code>--preview-image</code></td><td><code>&lt;path&gt;</code></td><td>Output .png path for click preview image overlay.</td></tr><tr><td><code>--gui-scale</code></td><td><code>&lt;value&gt;</code></td><td>Override GUI scale multiplier used for high-resolution XML click anchor offsets.</td></tr><tr><td><code>--window-left</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window left coordinate override (integer).</td></tr><tr><td><code>--window-top</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window top coordinate override (integer).</td></tr><tr><td><code>--window-width</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window width override (integer &gt; 0).</td></tr><tr><td><code>--window-height</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window height override (integer &gt; 0).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs refresh id --ocr true
+engine dcs refresh id --ocr false
+engine dcs refresh id --launch true
+engine dcs refresh id --launch false
+engine dcs refresh id --keep-running true
+engine dcs refresh id --keep-running false
+engine dcs refresh id --headless-lua true
+engine dcs refresh id --headless-lua false
+engine dcs refresh id --confirm true
+engine dcs refresh id --confirm false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/start.html#refreshdbupdate">Start: RefreshDbUpdateCommand</a> · <a href="../gui/start.html#acceptdbupdate">Start: Keep DB</a> · <a href="../gui/start.html#buildmissinglists">Start: Build All Missing Lists</a> · <a href="../gui/start.html#checkdbupdates">Start: Check Again</a> · <a href="../gui/start.html#acceptdbupdates">Start: Keep All DBs, Hide Notice</a> · <a href="../gui/start.html#updategamelist">Start: Update</a> · <a href="../gui/settings.html#dcsrefreshid">Settings: Refresh ID DB</a></p><p class="lbl">Example</p><pre><code>engine dcs refresh id &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --plane F-16C_50 --confirm false --text
+engine dcs refresh id &#x27;C:\Users\Pilot\Saved Games\DCS.openbeta&#x27; &#x27;D:\Games\Eagle Dynamics\DCS World OpenBeta&#x27; --headless-lua false --ocr true --modules-to-scan 0 --confirm false --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Requires DCS Saved Games and install paths (auto-detect is attempted when omitted).</li>
+<li>Default (--headless-lua true): DCS is not started; DCS's Lua writes the per-aircraft HTML lists, JoyPro copies them into DB\DCS.</li>
+<li>Only with --headless-lua false: DCS starts, exports per-module HTML and JoyPro copies the largest non-keyboard/mouse/trackir HTML per plane into DB\DCS; --modules-to-scan adds extra loop count on top of detected install/instance module counts.</li>
+<li>--dry-run skips launch/click/file changes and reports planned steps only.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-refresh-preview-clicks"><header><h3 class="eh"><a class="anchor" href="#dcs-refresh-preview-clicks">#</a><code>engine dcs refresh preview-clicks</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs refresh preview-clicks [--ocr true|false] [--path &lt;saved-games-path&gt;] [--install-path &lt;dcs-install-path&gt;] [--clicks-xml &lt;path&gt;] [--clicks-dir &lt;path&gt;] [--preview-image &lt;path&gt;] [--gui-scale &lt;value&gt;] [--window-left &lt;n&gt; --window-top &lt;n&gt; --window-width &lt;n&gt; --window-height &lt;n&gt;]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Shows where the legacy click mode of the DCS refreshes would click, as a picture with the click points, without
+clicking anything. Use it before a legacy refresh on an unusual screen. The GUI's <strong>Preview Clicks</strong> (Settings &gt;
+Command lists of DCS, Star Citizen and IL-2, legacy mode) runs it. It needs DCS installed.</p>
+<pre><code class="language-powershell">engine dcs refresh preview-clicks --ocr false --window-left 0 --window-top 0 --window-width 2560 --window-height 1440 --preview-image &quot;C:\Users\Pilot\Pictures\dcs-clicks.png&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>--ocr false</code> (default): the click points come from <code>Clicks.xml</code> (<code class="opt">--clicks-xml</code>, default <code>&lt;program folder&gt;\Clicks</code>)
+in the DCS window (a running DCS, or <code class="opt">--window-left/-top/-width/-height</code>, all four together), scaled by the GUI scale
+of DCS's options or <code class="opt">--gui-scale</code>.</li>
+<li><code>--ocr true</code>: looks for the menu pictures (<code class="opt">--clicks-dir</code>) on the screen and reports which were found.</li>
+<li><code>--preview-image &lt;file.png&gt;</code>: where the picture goes (default <code>%TEMP%\joypro_dcs_click_preview_&lt;date-time&gt;.png</code>).</li>
+<li>Nothing in DCS or JoyPro's lists changes. <code>dcs refresh</code> without a verb is this command.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (window, GUI scale, each click with its name and position, picture path, warnings), or text with
+<code class="opt">--text</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs refresh preview-clicks failed: ...</code>, an incomplete window override (<code>Window override requires --window-left, --window-top, --window-width, and --window-height.</code>) or <code class="opt">--plane</code> / <code class="opt">--headless-lua</code> (only
+for id and clean).</li>
+<li>Related: <a href="../cli/dcs.html#dcs-refresh-clean"><code>engine dcs refresh clean</code></a>, <a href="../cli/dcs.html#dcs-refresh-id"><code>engine dcs refresh id</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Shows where DCS XML/OCR click anchors resolve on your current screen and writes an annotated preview image.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--ocr</code></td><td><code>true</code> <code>false</code></td><td>Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false).</td></tr><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--install-path</code></td><td><code>&lt;dcs-install-path&gt;</code></td><td>DCS install path override (root folder that contains Mods\\aircraft).</td></tr><tr><td><code>--clicks-xml</code></td><td><code>&lt;path&gt;</code></td><td>Path to Clicks.xml anchor file for non-OCR refresh clicks.</td></tr><tr><td><code>--clicks-dir</code></td><td><code>&lt;path&gt;</code></td><td>Folder containing OCR template images (cog1.0.png, controls1.0.png, etc.).</td></tr><tr><td><code>--preview-image</code></td><td><code>&lt;path&gt;</code></td><td>Output .png path for click preview image overlay.</td></tr><tr><td><code>--gui-scale</code></td><td><code>&lt;value&gt;</code></td><td>Override GUI scale multiplier used for high-resolution XML click anchor offsets.</td></tr><tr><td><code>--window-left</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window left coordinate override (integer).</td></tr><tr><td><code>--window-top</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window top coordinate override (integer).</td></tr><tr><td><code>--window-width</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window width override (integer &gt; 0).</td></tr><tr><td><code>--window-height</code></td><td><code>&lt;n&gt;</code></td><td>Manual DCS window height override (integer &gt; 0).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs refresh preview-clicks --ocr true
+engine dcs refresh preview-clicks --ocr false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/settings.html#dcspreviewclicks">Settings: Preview Clicks</a></p><p class="lbl">Example</p><pre><code>engine dcs refresh preview-clicks --ocr false --window-left 0 --window-top 0 --window-width 2560 --window-height 1440 --preview-image &#x27;C:\JoyPro\logs\dcs_click_preview.png&#x27; --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>When --ocr false, outputs XML-anchor click landing points for the active/overridden window.</li>
+<li>When --ocr true, attempts live template detection and reports found/missing click targets.</li>
+<li>Writes an annotated preview image (--preview-image or temp path).</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-ffb-list"><header><h3 class="eh"><a class="anchor" href="#dcs-ffb-list">#</a><code>engine dcs ffb list</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs ffb list [--path &lt;saved-games-path&gt;] [--device &lt;name&gt;] [--devices &lt;csv&gt;] [--connected] [--profile-devices] [--confirm true|false]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Lists the DCS force feedback direction settings of your devices: swap axes, invert X, invert Y. The GUI's <strong>Refresh
+Devices</strong> in Settings &gt; DCS force feedback runs it to fill the table, and runs it again after every Apply or Clear.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; dcs ffb list --connected --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>The list holds the devices of the profile, the connected devices and every device with a stored setting.</li>
+<li><code class="opt">--connected</code> shows only connected devices, <code class="opt">--profile-devices</code> only the profile's (both together: no filter).</li>
+<li><code>--device &lt;name&gt;</code> / <code>--devices &lt;csv&gt;</code> (or a name as the first argument) limit the list; a name that does not match
+exactly is resolved to the closest DCS device name (<code>--confirm false</code> takes it without asking; <code class="opt">--path</code> names the
+Saved Games folder used for that).</li>
+<li>Read-only. The settings live in the profile, so pass <code class="opt">--profile</code>.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Devices</code> with <code>Device</code>, <code>HasSetting</code>, <code>InvertX</code>, <code>InvertY</code>, <code>SwapAxis</code>, <code>Connected</code>, <code>Profile</code>;
+<code>Warnings</code>), or text with <code class="opt">--text</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> on an unknown option.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-ffb-set"><code>engine dcs ffb set</code></a>, <a href="../cli/dcs.html#dcs-ffb-clear"><code>engine dcs ffb clear</code></a>, <a href="../cli/ffb.html#ffb-set"><code>engine ffb set</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Lists DCS force-feedback inversion/swap settings per device from your profile/device context.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--device</code></td><td><code>&lt;name&gt;</code></td><td>Include one device per flag. Example: --device LEFT VPC Throttle.</td></tr><tr><td><code>--devices</code></td><td><code>&lt;csv&gt;</code></td><td>Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.</td></tr><tr><td><code>--connected</code></td><td><span class="muted">switch (no value)</span></td><td>For devices list, show connected devices only.</td></tr><tr><td><code>--profile-devices</code></td><td><span class="muted">switch (no value)</span></td><td>For devices list, show profile-referenced devices only.</td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Controls suggestion confirmation (true) vs auto-accept (false).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs ffb list --confirm true
+engine dcs ffb list --confirm false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/settings.html#dcsffblist">Settings: Refresh Devices</a> · <a href="../gui/settings.html#dcsffbapplyselected">Settings: Apply Selected</a> · <a href="../gui/settings.html#dcsffbclearselected">Settings: Clear Selected</a> · <a href="../gui/settings.html#dcsffbclearall">Settings: Clear All</a> · <a href="../gui/settings.html#dcsffbapplydevice">Settings: Apply</a> · <a href="../gui/settings.html#dcsffbcleardevice">Settings: Clear</a> · <a href="../gui/settings.html#dcsffbset">Settings: Set FFB</a> · <a href="../gui/settings.html#dcsffbclear">Settings: Clear FFB</a></p><p class="lbl">Example</p><pre><code>engine dcs ffb list --text
+engine dcs ffb list --device &#x27;VKB Gladiator NXT&#x27; --confirm false --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Without --device/--devices, lists all discovered profile/connected/FFB devices.</li>
+<li>--connected and --profile-devices mirror the device list filtering behavior.</li>
+<li>--confirm false auto-accepts closest device suggestion when a requested name is fuzzy.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-ffb-set"><header><h3 class="eh"><a class="anchor" href="#dcs-ffb-set">#</a><code>engine dcs ffb set</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs ffb set &lt;device-name&gt; [--path &lt;saved-games-path&gt;] [--invert-x true|false] [--invert-y true|false] [--swap-axis true|false] [--confirm true|false]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Stores swap axes, invert X and invert Y for one device in the profile. The next DCS export writes them into that
+device's force feedback settings of every exported aircraft. The GUI's <strong>Apply</strong>, <strong>Apply Selected</strong> and <strong>Set FFB</strong>
+in Settings &gt; DCS force feedback run it.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; dcs ffb set &quot;VPforce Rhino FFB&quot; --swap-axis true --invert-x false --invert-y false
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Exactly one device (first argument, <code class="opt">--device</code> or <code class="opt">--devices</code>); its name is resolved like in <a href="../cli/dcs.html#dcs-ffb-list"><code>engine dcs ffb list</code></a>.</li>
+<li>At least one of <code class="opt">--invert-x</code>, <code class="opt">--invert-y</code>, <code class="opt">--swap-axis</code> (each <code>true|false</code>; a bare flag means <code>true</code>). Flags you
+leave out keep their stored value; a device without a setting gets one.</li>
+<li>Nothing in DCS changes now: <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a> writes the values as the device's force feedback block of each
+exported aircraft, adjusted per aircraft where JoyPro knows a correction.</li>
+<li>With <code class="opt">--profile</code> the profile is saved afterwards (one undo step).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Action</code>, <code>Devices</code>, <code>Updated</code>, the three values, <code>Warnings</code>), or text with <code class="opt">--text</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs ffb set requires at least one setting: --invert-x, --invert-y, or --swap-axis.</code>,
+<code>dcs ffb set requires a device name.</code>, <code>dcs ffb set accepts exactly one device target.</code> or <code>No DCS device matched for dcs ffb set.</code></li>
+<li>Related: <a href="../cli/dcs.html#dcs-ffb-clear"><code>engine dcs ffb clear</code></a>, <a href="../cli/dcs.html#dcs-ffb-list"><code>engine dcs ffb list</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Creates or updates DCS force-feedback settings (invert X/Y, swap axis) for one device.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--invert-x</code></td><td><code>true</code> <code>false</code></td><td>Set DCS FFB invert X flag (true/false).</td></tr><tr><td><code>--invert-y</code></td><td><code>true</code> <code>false</code></td><td>Set DCS FFB invert Y flag (true/false).</td></tr><tr><td><code>--swap-axis</code></td><td><code>true</code> <code>false</code></td><td>Set DCS FFB swap-axis flag (true/false).</td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Controls suggestion confirmation (true) vs auto-accept (false).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs ffb set --invert-x true
+engine dcs ffb set --invert-x false
+engine dcs ffb set --invert-y true
+engine dcs ffb set --invert-y false
+engine dcs ffb set --swap-axis true
+engine dcs ffb set --swap-axis false
+engine dcs ffb set --confirm true
+engine dcs ffb set --confirm false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/settings.html#dcsffbapplyselected">Settings: Apply Selected</a> · <a href="../gui/settings.html#dcsffbapplydevice">Settings: Apply</a> · <a href="../gui/settings.html#dcsffbset">Settings: Set FFB</a></p><p class="lbl">Example</p><pre><code>engine dcs ffb set &#x27;VKB Gladiator NXT&#x27; --invert-x true --invert-y false --swap-axis false --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>At least one setting flag is required: --invert-x, --invert-y, or --swap-axis.</li>
+<li>If the target device setting does not exist yet, it is created.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="dcs-ffb-clear"><header><h3 class="eh"><a class="anchor" href="#dcs-ffb-clear">#</a><code>engine dcs ffb clear</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine dcs ffb clear [&lt;device-name&gt;] [--path &lt;saved-games-path&gt;] [--device &lt;name&gt;] [--devices &lt;csv&gt;] [--all] [--confirm true|false]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Removes the stored DCS force feedback direction settings of one or more devices, or of all with <code class="opt">--all</code>. The device
+then gets DCS's default direction again at the next export. The GUI's <strong>Clear</strong>, <strong>Clear Selected</strong>, <strong>Clear All</strong> and
+<strong>Clear FFB</strong> in Settings &gt; DCS force feedback run it.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; dcs ffb clear &quot;VPforce Rhino FFB&quot; --confirm false
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Devices: first argument, <code class="opt">--device</code>, <code class="opt">--devices</code>; names are resolved like in <a href="../cli/dcs.html#dcs-ffb-list"><code>engine dcs ffb list</code></a>.</li>
+<li><code class="opt">--all</code> without names removes every stored setting.</li>
+<li>Only the profile changes; with <code class="opt">--profile</code> it is saved afterwards (one undo step).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Action</code>, <code>All</code>, <code>Devices</code>, <code>Removed</code>, <code>Warnings</code>), or text with <code class="opt">--text</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>dcs ffb clear requires a device name or --all.</code> or <code>No DCS FFB settings matched the requested device(s).</code></li>
+<li>Related: <a href="../cli/dcs.html#dcs-ffb-set"><code>engine dcs ffb set</code></a>, <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Clears DCS force-feedback settings for one or more devices (or all).</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--path</code></td><td><code>&lt;saved-games-path&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr><tr><td><code>--device</code></td><td><code>&lt;name&gt;</code></td><td>Include one device per flag. Example: --device LEFT VPC Throttle.</td></tr><tr><td><code>--devices</code></td><td><code>&lt;csv&gt;</code></td><td>Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.</td></tr><tr><td><code>--all</code></td><td><span class="muted">switch (no value)</span></td><td>Apply operation to all matches (or select all relations/devices where supported).</td></tr><tr><td><code>--confirm</code></td><td><code>true</code> <code>false</code></td><td>Controls suggestion confirmation (true) vs auto-accept (false).</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine dcs ffb clear --confirm true
+engine dcs ffb clear --confirm false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/settings.html#dcsffbclearselected">Settings: Clear Selected</a> · <a href="../gui/settings.html#dcsffbclearall">Settings: Clear All</a> · <a href="../gui/settings.html#dcsffbcleardevice">Settings: Clear</a> · <a href="../gui/settings.html#dcsffbclear">Settings: Clear FFB</a></p><p class="lbl">Example</p><pre><code>engine dcs ffb clear &#x27;VKB Gladiator NXT&#x27; --text
+engine dcs ffb clear --all --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Use --all to remove every stored DCS FFB device setting.</li>
+<li>You can clear a single device by positional name or --device/--devices.</li>
+</ul>
+</details></article>
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

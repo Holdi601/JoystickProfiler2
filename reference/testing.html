@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing JoyPro2 · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a class="current" href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Testing JoyPro2 </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/testing.md">docs/testing.md</a> in the repository (generated, always the current text).</p><p>All scripted, none needs a person once started:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Command</th>
+<th>What it covers</th>
+<th>Time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine smoke tests</td>
+<td><code>powershell -File engine\tests\engine_smoke_test.ps1</code></td>
+<td>every CLI command and game integration on fixtures</td>
+<td>~10 min</td>
+</tr>
+</tbody>
+</table></div>
+<p>Auto Assign and Lay out with AI: <code>AutoAssignMatrixTests</code> (three device sets and the same plan twice always; the full
+combination matrix with a report via <code>JOYPRO_AUTOASSIGN_MATRIX=&lt;folder&gt;</code>, docs/auto-assign.md#combination-matrix),
+<code>LayoutWithAiTests</code> (phrases on four device sets, the same phrases through the real engine, the Binds page panel; the
+author's pit on a copy of a real profile via <code>JOYPRO_LAYOUT_BIG_PROFILE</code>, pictures via <code>JOYPRO_LAYOUT_AI_OUT</code>) and the
+smoke part <code>engine\tests\smoke\autoassignmatrix.ps1</code>.</p>
+<p>Telemetry force feedback (docs/ffb-telemetry.md) is tested without moving a stick: <code>dotnet test gui\JoyPro.Ffb.Core.Tests</code> (graph, runtime safety rules, the synthetic flight through the DCS, IL-2 and War Thunder
+sources, loopback UDP host, War Thunder HTTP stub) and the smoke part <code>engine\tests\smoke\ffbtelemetry.ps1</code> (CLI
+settings and game setup on temp copies, <code>JoyPro.Ffb run --sink dry</code> against <code>JoyPro.Ffb simulate</code> per game, telemetry
+timeout, game exit, and a 60 s CPU/memory/handle resource run, ~2 min).</p>
+<p>View model tests that change the page or wait for the view model (<code>DetentModeTests</code>, <code>FollowInputTests</code>,
+<code>FfbSettingsTests</code>, <code>AllViewModelCommands_ExecuteWithoutThrowing</code>) run their body through <code>UiThread.RunAsync</code>: one thread
+with a synchronization context, as Avalonia's UI thread in the app. xUnit has none, so without it the continuations of
+the refreshes a page change starts (<code>CurrentStage = Binds</code> reloads relations, binds and the bind picker) ran on pool
+threads at the same time as the test and changed <code>Binds</code> or <code>BindInputChoices</code> under it (&quot;Collection was modified&quot;,
+<code>IndexOutOfRangeException</code> in <code>ObservableCollection.InsertItem</code>). In the app these continuations come back to the UI
+thread, and input, timers and sockets post to it (<code>Dispatcher.UIThread.Post</code>).</p>
+<p>Usage statistics (docs/usage-statistics.md): <code>UsageStoreTests</code> (parsers on the synthetic fixtures of
+<code>engine\tests\fixtures\usage\root</code>, dedupe, retention, ranking), <code>UsageRecordingTests</code> (live tail incl. a long resource
+run, tray host, the engine's usage commands in a process and the server, the Statistics page rendered at 1280 / 2267 in
+Light and Dark with <code>JOYPRO_USAGE_RENDER_OUT</code>), <code>UsageSettingsTests</code> and the smoke part <code>engine\tests\smoke\usage.ps1</code>.
+The GUI tests point <code>JOYPRO_USAGE_ROOT</code> at an empty folder, so no test reads this PC's games.</p>
+<p>Check page with thousands of findings: <code>CheckResponsivenessTests</code> (5000 relations, 3000 errors, 900 duplicate cards in a
+HiddenWindow; a UI-thread probe fails any block over 400 ms; <code>JOYPRO_CHECK_REPLAY=&lt;folder&gt;</code> replays real engine outputs,
+<code>JOYPRO_CHECK_REPORT=&lt;file&gt;</code> writes the timings). The Check's cards on a copy of a real profile with the real engine, rendered
+at 1280 and 2267 in Light and Dark, with the gate on ids and internal words in card texts (<code>CheckTextGate</code>):
+<code>CheckCardsRenderTests</code> (<code>JOYPRO_CHECK_CARDS_PROFILE</code>, <code>JOYPRO_CHECK_CARDS_HISTORY</code>, <code>JOYPRO_CHECK_CARDS_OUT</code>,
+docs/ui/check.md); the engine side: <code>engine\tests\smoke\checkconflicts.ps1</code>. DCS import with &quot;include defaults&quot;: the smoke part
+<code>engine\tests\smoke\dcsincludedefaults.ps1</code>. DCS export modes (2.5.0: add never deletes and marks taken buttons,
+merge / profile wins after a Move, minimal diff, <code>changed</code> tuning, clean + nuke only in the exported aircraft and only
+connected devices, import -&gt; clean + nuke -&gt; import round trip, undo byte for byte, <code>profile game-state</code>,
+<code>export-marks</code>): <code>engine\tests\smoke\dcsexportmodes.ps1</code> (loads the written files in DCS's luae.exe when DCS is
+installed). A round trip on a copy of real Saved Games: <code>engine dcs verify-clean --include-disconnected true --dump-active &lt;file&gt;</code> before and after the export lists every bind DCS has active (<a href="../games/ref/dcs.html#import-of-the-default-binds-include-defaults-on-by-default-in-the-gui-since-250">DCS</a>).</p>
+<p>The 2.5.0 tester batch: <code>ContextMenuRowTests</code> (right-clicks at seven points of every action card and bind card reach
+the card's menu; a hit test of its own, because the hidden host answers from its last composited frame),
+<code>TesterBatch250Tests</code> (the HUD stick element of a grip without X/Y on its base: centred, from the base, a picked axis
+kept over a restart, 10 000 axis reports allocate nothing; the picked Layout picture kept at once and shown again; the
+marker assistant's place; the engine output's height; hidden games without game chips; the problem reports' move; the
+first-export question's primary button) and the renders of every changed view at 1280 / 2267, dark and light, with
+<code>JOYPRO_A4_RENDER_OUT=&lt;folder&gt;</code> (<code>TesterBatch250RenderTests</code>). JoyPro 1's profiles in the support file: the smoke part
+<code>engine\tests\smoke\supportbundle.ps1</code> (<code>JOYPRO_JOYPRO1_DIR</code>).</p>
+<p>The Add actions search on a big DCS profile: <code>SearchSpeedTests</code> (Auto Group over 47 DCS aircraft, ~440 relations and
+~6700 actions, or a copy of a real profile with <code>JOYPRO_SEARCH_SPEED_PROFILE</code>; every keystroke of &quot;tacan channel xx0x
+inc&quot; with and without an aircraft filter through the view model, the real engine server and the real view in a hidden
+root: results within 300 ms of the debounce and no UI-thread block over 300 ms, one keystroke up to twice that;
+<code>JOYPRO_SEARCH_SPEED_REPORT=&lt;file&gt;</code>). <code>SearchTagsTests</code> / <code>SearchTagsRealEngineTests</code>: the tag of other relations
+(none, one, several, a name opens the relation, Back returns with the search), actions of the open relation greyed at
+the bottom and not counted, Replace from a Check card, the testers' F-14 &quot;master&quot; / &quot;reset&quot; / &quot;master reset&quot; cases
+through the real engine. Engine side: <code>engine\tests\smoke\searchliteral.ps1</code> (titles with every word first, brackets in
+the query, <code>[Inc]</code> / <code>[Dec]</code> / <code>[Next]</code> read right, the F-14 cases, &quot;increase tacan channel&quot;).</p>
+<p>The 2.6.0 batch: <code>TesterBatch251Tests</code> (hidden games left out of the telemetry force feedback and telemetry recording
+lists and not looked for, back after Show again; the Relations page's filter block folded up and kept over a restart,
+its folded line naming the active filters; the Check card's fix buttons all as high as &quot;More&quot;, no ▾ / ✓ characters on
+them) and the renders of every changed view at 1280 / 2267, dark and light, with <code>JOYPRO_251_RENDER_OUT=&lt;folder&gt;</code>
+(<code>TesterBatch251RenderTests</code>: Start page, Settings &gt; Devices with a device that is not connected, Settings &gt; Telemetry
+recording and the force feedback page with War Thunder hidden, the Relations page with its filters open and folded,
+the Check's cards). Switched-off buttons, check boxes and radio buttons are checked by <code>ThemeTests</code> through the
+contrast pairs (<code>ButtonForegroundDisabled</code> 3:1 on its face and the cards).</p>
+<p>Keyboard key and modifier names (JoyPro 1's LeftAlt / Oem102 and DCS's LAlt / OEM102 are one key,
+<code>engine\KeyboardKeyNames.cs</code>): the smoke part <code>engine\tests\smoke\keyboardnames.ps1</code> reads a profile with both
+&quot;KeyboardLeftAlt&quot; (Keyboard, LeftAlt) and &quot;LAlt&quot; (Keyboard, LAlt) and checks one modifier with the user's name, every
+bind kept, one history step of its own and none on the next run; and a DCS import with JoyPro 1's spellings that stores
+DCS's. vJoy devices in imports and <code>--vjoy-tunnel</code>: <code>engine\tests\smoke\vjoytunnel.ps1</code>; in the exports of every game class
+(never cleared, like ignored devices): <code>ExportKeptDevicesTests</code>. Star Citizen's stale duplicate joystick slots removed on
+export: <code>StarCitizenStaleSlotsTests</code> and <code>engine\tests\smoke\scslots.ps1</code>. The Check's vehicle classes (ground vehicles and
+ships by the catalog's category): <code>VehicleClassConflictTests</code>. The Cockpits stick page with its notes below it, light and
+dark (<code>JOYPRO_COCKPITS_RENDER_OUT</code> keeps the pictures): <code>WebsiteScreenshotTests.CockpitsStickPage_NotesBelowThePage_NotOverIt</code>.</p>
+<p>The 2.6.0 export and kit fixes: <code>engine\tests\smoke\elite.ps1</code> (one action on two buttons next to a kept keyboard key:
+only one is written, the other is listed as &quot;No Free Place&quot; with the slots' holders and kept as an export mark; the
+kept half-axis modifier bind named in plain words), the WARDOGS block of the smoke test (no &quot;is False&quot; warning from
+the export that turns Enable HOTAS on), <code>ExportDefaultsTests.ExportMarks_NoFreePlace_CardNamesTheHolders</code>,
+<code>ReferencePhotoStoreTests.ReencodedPhoto_WithAnAcceptedHash_IsThePhotoOnRecord</code>, <code>DevicePhotoListTests</code> (feeds above
+the shipped list version) and <code>tools\e2e\SelfTest.ps1</code> (MSFS 2024's footer phrase, the launch option pick, the page
+recognition of <code>games\Pages.psm1</code> on real OCR texts, every game script parses; no game is started).</p>
+<p>The 2.6.0 fixes from rebuilding the author's profile: <code>engine\tests\smoke\rebuild251.ps1</code> (a <code>devices exchange</code> save
+keeps the profile's DB fingerprint, vJoy -&gt; vJoy exchange, <code>relations import</code> keeps the stored titles, War Thunder's
+throttle and collective on one axis are no conflict), <code>engine\tests\smoke\autogroupslots.ps1</code> (needs the development
+game lists: switched off in another relation / dismissed in this one, relations sharing a button, the user's own
+substitutes over <code>DCS.rejected.tsv</code>), <code>engine\tests\smoke\scslots.ps1</code> (Star Citizen: one device under its game, instance
+and stale names takes one slot; <code>JOYPRO_FAKE_SC_PRODUCTS=pidvid</code> makes the fake devices' DirectInput product
+<code>&lt;HID product&gt;  {PIDVID}</code> as on a PC, <code>JOYPRO_DI_ORDER_OVERRIDE</code> sets the startup order) and the bare &quot;lock&quot; rows of
+<code>engine\tests\smoke\functionmap.ps1</code>.</p>
+<p>Virtual joystick, Joystick Gremlin parts (docs/virtual-joystick.md): <code>VirtualFunctionChainModeTests</code> (chaining, modes,
+remap, idle hint, no allocation), <code>GremlinImportTests</code> (the fixtures in <code>engine\tests\fixtures\gremlin</code>),
+<code>VirtualFunctionGraphModesGuiTests</code> (Modes card, editor, the editable graph, the import's report, <code>--vjoy-tunnel</code>;
+renders at 1280 / 2267, dark and light, with <code>JOYPRO_VJOY_RENDER_OUT=&lt;folder&gt;</code>) and section 8 of
+<code>engine\tests\smoke\vjoy.ps1</code>. The forwarder's permanent cost: <code>ForwarderSoakTests</code> runs the real JoyPro.VJoy with the
+dry sink and synthetic devices (30 s per phase; <code>JOYPRO_FORWARDER_SOAK=1</code> 5 minutes per phase,
+<code>JOYPRO_FORWARDER_EXE=&lt;release exe&gt;</code> for the numbers) against CPU, memory, handle and allocation budgets.</p>
+<h2 id="test-sandbox"><a class="anchor" href="#test-sandbox">#</a>Test sandbox</h2>
+<p>No test, gate run or smoke run may write into a real game folder, Saved Games, Documents or JoyPro's own folders of
+the PC (2.4.3: a test view model's export path defaulted to the real <code>Saved Games\DCS</code>, and &quot;Export first&quot; wrote into
+the user's <code>Config\Input</code>).</p>
+<ul>
+<li><strong>Engine.</strong> <code>JOYPRO_TEST_SANDBOX=&lt;root&gt;</code> makes the engine refuse every write outside <code>&lt;root&gt;</code>, the temp folder,
+<code>JOYPRO_DATA_DIR</code> and the folders listed in <code>JOYPRO_TEST_SANDBOX_ALLOW</code> (<code>;</code>-separated). Without its own
+<code>JOYPRO_DATA_DIR</code> or <code>JOYPRO_LOCALAPPDATA</code> the stand-in <code>%LOCALAPPDATA%</code> is <code>&lt;root&gt;\LocalAppData</code> (data folder
+<code>&lt;root&gt;\LocalAppData\JoyPro2</code>). A
+refused write throws before anything is touched, prints <code>[test-sandbox] JOYPRO_TEST_SANDBOX refused ...</code> on stderr,
+is appended to <code>&lt;root&gt;\sandbox-violations.log</code> (with the stack) and ends the command with exit code 77, also when a
+catch on the way swallowed the exception. The chokepoint is <code>engine\SandboxedIo.cs</code>: it declares <code>File</code>,
+<code>Directory</code>, <code>FileStream</code> and <code>StreamWriter</code> in the root namespace <code>JoyPro</code>, so C#'s name lookup takes them instead
+of System.IO's for every file write of the engine (all namespaces under <code>JoyPro</code>: exports of every game, backups,
+restore and undo export, strip-defaults and device-luas, sync apply, imports, settings, the support bundle, logs);
+reads pass straight through (<code>engine\TestSandbox.cs</code>). Picture renders (<code>Image.Save</code>) and zip extraction call the
+guard themselves. Game settings in the registry (Nuclear Option and Tiny Combat Arena's Unity PlayerPrefs, the
+registry restore of backups) are never written under the sandbox; <code>JOYPRO_TEST_REGISTRY_ROOT=&lt;key under HKCU&gt;</code>
+redirects them instead (tests use the fake-registry <code>.json</code> files). A new write in the engine needs nothing extra;
+only code that spells out <code>System.IO.File</code> / <code>System.IO.Directory</code> bypasses the guard, which only reads may do.</li>
+<li><strong>GUI tests.</strong> <code>TestEnvironment</code> (the module initializer) sets <code>JOYPRO_TEST_SANDBOX</code> to a fresh temp folder for every
+engine a test starts. The app's default game paths come from <code>Services\UserFolders.cs</code>, which under the sandbox
+returns stand-in folders inside it (<code>&lt;root&gt;\UserFolders\UserProfile\Saved Games\DCS</code>, Documents, Program Files), and
+the app does not take over game folders the engine finds on the PC (<code>AdoptEngineGamePaths</code>). Before the first test
+<code>RealFolderGuard</code> fingerprints (file list, size, time stamp; registry values hashed) <code>%USERPROFILE%\Saved Games</code>,
+<code>%LOCALAPPDATA%\JoyPro2</code>, <code>%APPDATA%\JoyPro2</code>, <code>%LOCALAPPDATA%\JoyPro</code> and every config location <code>engine games installs</code> finds on this PC; logs, tracks, screenshots and caches are left out. <code>RealFolderGuardTests</code> runs last
+(<code>RealFolderGuardLastOrderer</code>) and fails the run with the list of changed files, and when any engine of the run
+logged a refused write. While a JoyPro of the user runs, changes in the JoyPro folders are printed as warnings only.
+A filtered run without that test checks at process exit and writes the result to stderr and
+<code>%TEMP%\JoyPro2.Gui.Tests\real-folder-guard-*.txt</code>. <code>SandboxGuardTests</code> proves the refusal: a DCS export into a
+stand-in folder outside the sandbox and then into the real <code>Saved Games\DCS</code> ends with exit code 77 and changes no
+file.</li>
+<li><strong>Smoke test and gate.</strong> <code>engine_smoke_test.ps1</code> runs every engine with its own sandbox and fails when the run's
+<code>sandbox-violations.log</code> exists. The quality gate runs inside the GUI tests (same sandbox) and allows only its <code>-Out</code>
+folder besides temp (<code>JOYPRO_TEST_SANDBOX_ALLOW</code>), so its exports can reach only the copies in
+<code>&lt;Out&gt;\export-copies</code>.</li>
+</ul>
+<h2 id="speed"><a class="anchor" href="#speed">#</a>Speed</h2>
+<p>Nothing a person waits for should take more than a few seconds (interactive actions ≤ 2 s); the budgets are in
+<code>gui\JoyPro.Gui.Tests\QualityGate\Budgets.cs</code> and checked by the quality gate's I7.</p>
+<ul>
+<li>
+<p><strong>Engine server.</strong> The app runs its quick commands (relation editor, catalog, search, binds, layout titles, device and
+game lists, the DCS export: <code>Services\EngineServerCommands.cs</code>) in one long-running <code>engine serve</code> (engine <code>EngineServer.cs</code>, app
+<code>Services\EngineServerPool.cs</code>). Every command runs as in a process of its own: own arguments, environment variables,
+output and exit code, and a fresh copy of the profile as the file has it (<code>EngineProfileCache</code>: the profile is read
+once and copied per command by <code>ObjectGraphCloner</code>, 15 ms instead of 0.4-1.3 s; after the server's own save the copy is
+made &quot;as serialized&quot;, as a read of the file would give it). A profile older than the DB is corrected on load; the
+state the DB part of that correction made is kept too (<code>EngineLoadCorrectionCache</code>, per file, DB fingerprint, options
+and rules version), so the first change after &quot;profile load&quot; does not correct again; the device remap against the
+connected devices runs every time (<code>serve --self-test</code> compares a kept correction with one that runs and checks that a
+changed file or DB list runs it again). Kept between commands: the game lists, function map, search
+and suggestion indexes and the load corrections' lists; before every command the server checks the files they come
+from (<code>DataStamp</code>: name, size and time of the DB, function and layout catalog files) and answers &quot;stale&quot; when they
+changed, then the app starts a new one. The app also starts a new server after a refresh or another command that can
+change game data. Per-run state (backups, diagnostics, detent warnings, device and install detection) is reset before
+every command. The server warms up as the app starts, ends with the app (closed stdin, the app's process gone) or after
+20 idle minutes (<code>JOYPRO_SERVER_IDLE_MINUTES</code>). <code>JOYPRO_ENGINE_SERVER=off</code> runs every call in a process.</p>
+</li>
+<li>
+<p><strong>Checks.</strong> <code>gui\JoyPro.Gui.Tests\EngineServerTests.cs</code> runs a sequence of 20 commands (add, show, rename, group, bind,
+search, browse, suggest, remove, save) once in processes and once in the server and compares output, exit code and
+the saved profile byte for byte (<code>JOYPRO_SERVER_TEST_PROFILE=&lt;profile&gt;</code> also on a copy of a real profile), a game list
+changed on disk (a new server answers), and that no server outlives its use. <code>smoke\server.ps1</code> checks
+<code>engine serve --self-test</code> (the profile copy serializes to the same bytes as the profile read from the file, also after
+a save with removed entries and new ones afterwards), the same sequence through <code>engine serve --script</code> and the
+protocol. Development tools: <code>engine serve --script &lt;file&gt;</code> (one JSON argument array per line, each command timed;
+<code>JOYPRO_SCRIPT_OUT=&lt;folder&gt;</code> writes every result), <code>engine serve --diff-profiles &lt;a&gt; &lt;b&gt;</code> (where two profiles differ,
+also in shared instances) and <code>JOYPRO_SAMPLE_OUT=&lt;file&gt;</code> (a sampling profiler of the engine's main thread).</p>
+</li>
+<li>
+<p><strong>DCS export.</strong> The input files are read once, several at once (<code>RunFileCache</code>: a file the run wrote is taken from
+what it wrote, every hit checked by size and time stamp), parsed in parallel and merged in the usual order; the backup
+manifest is written once per run (a journal in between, read back after a crash); the unique relation name of an
+import is one lookup. A file that already holds exactly the bytes the export would write is neither backed up nor
+rewritten (a re-export rewrote and backed up every file, 4 of 5 of them unchanged: most of the time of the gate's
+export, I7 &quot;dcs export dry-run&quot;); the state record after the export hashes the files from memory, a clean profile's
+defaults are parsed once per run, and the connected devices are read once per run (the environment log, nuke and the
+import's device plan each read them again). <code>smoke\dcsexportmodes.ps1</code> checks that a repeated export rewrites no file
+and that its undo changes nothing. The output is byte for byte the old engine's (checked on a copy of a real Saved Games folder in
+merge, merge-overwrite and clean + nuke, and loaded with DCS's own <code>luae.exe</code>).</p>
+</li>
+<li>
+<p><strong>Load corrections.</strong> The DB fingerprint hashes only files new or changed since the last fingerprint
+(<code>&lt;data&gt;\Cache\db-file-hashes.tsv</code>, size and time stamp). A profile saved with an older DB searches a replacement
+for every action the DB no longer has (<code>CoreInternalDataManagement.cs</code>, <code>FindBestReplacement</code>): each distinct title of
+the DB is scored once, titles that cannot reach the best so far are dropped by their length and letter histogram,
+containment only where the letters allow it, and the edit distance is bit-parallel (Myers / Hyyroe). The engine server
+keeps the prepared lists and every result per DB, so a profile's corrections are searched once (profile load) and not
+again by the commands after it (Lay out with AI's preview, the Setup wizard's plan, sync diff). The result is exactly
+the old full search: <code>JOYPRO_CORRECTION_REFERENCE=1</code> scores every candidate the old way, and the correction reports
+(<code>--correction-report</code>) of both are compared on copies of real profiles (2298 + 228 replacement searches identical;
+the user's March 2025 profile 80 s -&gt; 2 s, the first Lay out with AI preview ~100 s -&gt; under 3 s).</p>
+</li>
+<li>
+<p><strong>HUD page live check in OBS.</strong> <code>HudObsLiveTests</code> (opt-in: <code>JOYPRO_HUD_LIVE=&lt;folder&gt;</code>) checks the real stream page
+server started by Start HUD in a sandbox with a fake device stream; <code>tools\obs_hud_live_check.ps1 -Obs</code> adds OBS
+(portable copy, a copy of the user's OBS settings, Browser Source picture via obs-websocket, the user's
+<code>%APPDATA%\obs-studio</code> mirrored and restored exactly). docs/hud.md &quot;Live check in OBS&quot;.</p>
+</li>
+<li>
+<p><strong>HUD soak (background cost while playing).</strong> Everything the HUD runs while the user plays must be unnoticeable
+(docs/hud.md &quot;Performance&quot;). <code>HudSoakTests</code> (opt-in: <code>JOYPRO_HUD_SOAK=&lt;minutes&gt;</code>, report with
+<code>JOYPRO_HUD_SOAK_OUT=&lt;folder&gt;</code> -&gt; <code>hud-soak.md</code>; in the quality gate as I12) drives a fake device stream (three
+devices, every axis moving, reported every 15 ms like the DirectInput poll, a button every half second) with the HUD
+on and one page of the stream server connected, in three phases: a baseline (the fake devices alone, the HUD off),
+the stream page only (the player's own HUD off) and the HUD laid out and drawn in a hidden root plus the stream page.
+It measures the whole test process (so the fake stream and the page reader are in it) after a warm-up: CPU in % of
+one core, managed allocations, managed heap and working set growth, HUD updates and page events per second, and one
+frame of the whole HUD drawn in software. Budgets (<code>HudSoak</code> in <code>HudSoakTests.cs</code>): stream page only &lt; 5 % of one core
+and &lt; 250 KB/s, HUD drawn + stream page &lt; 8 % and &lt; 1500 KB/s, heap growth &lt; 4 MB, working set growth &lt; 40 MB,
+updates and page events 5 .. 31 a second, a software frame &lt; 12 ms. Measured on the development PC (2026-10-31,
+4 minutes, other programs running):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>baseline</th>
+<th>stream page only</th>
+<th>HUD drawn + stream page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU (% of one core)</td>
+<td>3.87</td>
+<td>3.78</td>
+<td>2.24</td>
+</tr>
+<tr>
+<td>Allocations (KB/s)</td>
+<td>47</td>
+<td>58</td>
+<td>987</td>
+</tr>
+<tr>
+<td>Managed heap growth (MB)</td>
+<td>-0.08</td>
+<td>0.00</td>
+<td>-0.13</td>
+</tr>
+<tr>
+<td>Working set growth (MB)</td>
+<td>-1.0</td>
+<td>-1.5</td>
+<td>2.7</td>
+</tr>
+<tr>
+<td>HUD updates / page events per second</td>
+<td>0</td>
+<td>22.7</td>
+<td>22.3</td>
+</tr>
+<tr>
+<td>Stream page data (KB/s)</td>
+<td>0</td>
+<td>11.4</td>
+<td>11.2</td>
+</tr>
+</tbody>
+</table></div>
+<p>One software frame of the whole HUD: 3.3 ms. The HUD's own share is within the noise of the baseline (the fake
+stream's timers); the allocations of the drawn phase are Avalonia's layout and drawing of the changed widgets
+(JoyPro's own path allocates nothing per report: <code>TesterBatch250Tests.Hud_AxisReports_AllocateNothing</code>,
+<code>HudStreamerTests.Aircraft_...</code> for the aircraft widget). A first 1-minute run showed a working set step of ~49 MB
+right after the HUD was first drawn (Skia's caches filling); with the warm-up of 30 s it stays at 2.7 MB over 2
+minutes. Not covered: the GPU of a shown window and of OBS's Browser Source (the page draws in OBS's own process).</p>
+</li>
+<li>
+<p><strong>HUD tests.</strong> <code>HudStreamerTests</code>: 40 presets valid and using every shape, values kept in range, every HUD setting
+(style, a changed option, an own style, a widget's style, screen / stream ticks, element ticks, outputs, port, update
+rate) kept over a restart, a 2.5.0 <code>hud.json</code> keeping its look, style file export / import, the aircraft widget
+lighting the control of the pressed button and moving with its sources without allocating, the aircraft grips found
+and cut from a picture set, the stream page (transparent background, the layout and live state as events, a widget
+unticked for the stream leaving the page, another host name refused), nothing built without a page, the pump.
+<code>HudStreamerRenderTests</code> (<code>JOYPRO_HUD_RENDER_OUT=&lt;folder&gt;</code>, <code>JOYPRO_HUD_ENGINE=&lt;engine.exe&gt;</code> for this PC's devices,
+<code>JOYPRO_HUD_PICTURES</code> / <code>JOYPRO_HUD_AIRCRAFT</code> for the cockpit pictures, read only) renders the HUD in 14 presets, on
+a transparent background, the aircraft and device widgets, the designer at 1280 and 2267 in Light and Dark, and the
+stream page in a headless Edge (<code>stream-page-edge.png</code>, checked for a transparent background and drawn widgets).</p>
+</li>
+</ul>
+<h2 id="quality-gate"><a class="anchor" href="#quality-gate">#</a>Quality gate</h2>
+<p><code>powershell -File tools\quality_gate.ps1 -Profile &lt;profile.pr0file&gt; [-Out &lt;folder&gt;] [-Data user|shipped] [-Only I1,I5]</code>
+(opt-in, <code>JOYPRO_QUALITY_GATE=1</code>; about an hour on a big profile) runs invariant checks on real data through the real
+view model and the real engine, in <code>gui\JoyPro.Gui.Tests\QualityGate</code>: the game lists of this PC (a copy of
+<code>%LOCALAPPDATA%\JoyPro2\GameData</code>) or only the shipped ones (<code>-Data shipped</code>), and always a copy of the profile. It renders
+its pages in roots that are never shown (HiddenWindow: no window on the desktop, no focus taken) and writes only into <code>-Out</code>; exports run
+into copies of the game's config or as dry runs, and the real config files are fingerprinted before and after.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>What must hold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>I1</td>
+<td>the catalog shows actions for every game and every DCS aircraft (as many as its overview counts); every game chip and DCS aircraft filter of the search shows rows</td>
+</tr>
+<tr>
+<td>I2</td>
+<td>no catalog title is empty, the id, a lua key, an encoded/hex id, a snake_case identifier, has an unexplained abbreviation (&quot;Rb pitch&quot;, <code>ActionTexts.UnexplainedAbbreviation</code>) or is only a word and an axis letter; every action has a category, categories are words (DCS abbreviations are the module's own: a note)</td>
+</tr>
+<tr>
+<td>I3</td>
+<td>every game of the Start page and Settings &gt; Games has catalog actions, and a title of its own catalog finds it in the search</td>
+</tr>
+<tr>
+<td>I4</td>
+<td>pitch, roll, throttle, flaps, gear, engine rpm, fire, view, zoom find readable rows (no unexplained abbreviation outside DCS) in every game whose catalog has the word</td>
+</tr>
+<tr>
+<td>I5</td>
+<td>suggestions of typical relations (pitch, roll, throttle, gear, flaps over two games) are there after the second game's action and after the profile is opened again</td>
+</tr>
+<tr>
+<td>I6</td>
+<td>every relation of the profile shows readable titles in the editor, the binds peek and the layout table; the check's problems show no raw id (the profile's own relation and device names, whole or quoted, are the user's data; a raw id injected next to one is still caught)</td>
+</tr>
+<tr>
+<td>I7</td>
+<td>engine server start (a fresh server after the gate's first start; the first start right after the build has its own cold-start budget), profile load, the first Lay out with AI preview after it (rules only), relation open, 200 actions at once, save, suggestions, catalog, search, export per game, the Statistics page's <code>usage stats</code> (1 s) stay within the budgets of <code>QualityGate\Budgets.cs</code></td>
+</tr>
+<tr>
+<td>I8</td>
+<td>texts of the main pages have at least 3:1 contrast to their background in Light and Dark</td>
+</tr>
+<tr>
+<td>I9</td>
+<td>every game the UI names (games list, supported games page, badges, trailer) has an integration, catalog actions and a function map; labels are names, not abbreviations</td>
+</tr>
+<tr>
+<td>I10</td>
+<td>every page and the relation editor (empty, normal, large relation) at MinWidth, 1280x720 and 1920x1080, 100 % and 150 %, Light and Dark: no overlapping controls or chips, no text drawn over a control or chip it does not belong to, no cut-off text, no pre-filled search that finds nothing; also at 150 % and 200 % text size (Settings &gt; Appearance) and with a serif and a wide font at 150 % text, each with 150 % Windows scaling, in Dark; the Layout page also with the profile's devices as own layouts (long names, &quot;Your layout · N markers&quot; chips; the header names the picture in words, match at most 100 %)</td>
+</tr>
+<tr>
+<td>I11</td>
+<td>every phrase of <code>engine/tests/fixtures/phrases/phrases.json</code> (names, synonyms, slang, paraphrases, everyday sentences, German) finds its function offline: search box 95 %, catalog filter 90 %, JoyPro assistant 95 %, Manage / Edit with AI 90 %, By description 90 %, search top-row precision 90 %; the app's catalog filter on one phrase and one sentence per function 85 %; failures in <code>phrase-failures.txt</code></td>
+</tr>
+<tr>
+<td>I12</td>
+<td>opt-in (<code>-HudSoakMinutes &lt;n&gt;</code> / <code>JOYPRO_QUALITY_GATE_HUD_SOAK=&lt;n&gt;</code>; otherwise a note and no time spent): the HUD and the stream page stay within the HUD soak's budgets (&quot;Speed&quot;), report <code>hud-soak.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Output: <code>report.md</code> (findings by check, rule and game; timings), <code>findings.json</code>, <code>timings.csv</code>, <code>engine-calls.csv</code> (every
+engine run with its time) and the pictures of the contrast and layout checks. A finding fails its check; the script's
+exit code is 0 only without findings.</p>
+<p><code>-Website</code> also builds the website (<code>python website\build.py --check</code>): every GUI page and engine command must have
+its page or entry, and the number of controls and commands without any description must not grow beyond
+<code>website\data\completeness-baseline.json</code>; then <code>website\check_public.ps1</code> runs the public-content check of
+<code>tools\export_public.ps1</code> over the built pages (<a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/website/README.md">website/README.md</a>). The screenshots of the
+site come from the opt-in render <code>WebsiteScreenshotTests</code> (<code>JOYPRO_WEBSITE_SHOTS_OUT</code>).</p>
+<p>The engine smoke test dot-sources one part per game from <code>engine\tests\smoke\*.ps1</code>. The DB refresh parts (IL-2 Great
+Battles <code>il2.ps1</code>, Elite <code>elite.ps1</code>, War Thunder, MSFS, Nuclear Option, Arma Reforger <code>reforger.ps1</code>) build small synthetic game files, run the
+refresh in a temporary JoyPro folder (<code>JOYPRO_DATA_DIR</code>, install set with <code>JOYPRO_INSTALL_DETECTION=off</code>) and check
+that new actions come in (in <code>&lt;JOYPRO_DATA_DIR&gt;\GameData</code>), known titles stay and the shipped catalog and the program
+folder stay untouched (IL-2 and Elite also: a dry run and a second refresh write nothing). The whole smoke test runs
+with a temporary <code>JOYPRO_DATA_DIR</code> from its first command on: the engine copies the program folder's game lists into
+<code>&lt;data&gt;\GameData</code> on its first start, which must never be the user's <code>%LOCALAPPDATA%\JoyPro2</code>. <code>gamedata.ps1</code> covers that
+migration, a refresh into the game-data folder only, a simulated rebuild with older lists (the refreshed ones stay in
+use) and a newer program-folder list replacing the game-data copy (the old one kept under <code>GameData\Replaced</code>). <code>legacyids.ps1</code> loads a profile written before MSFS and X-Plane became one game per
+version (<code>tests\fixtures\legacy-ids\legacy-ids.pr0file</code>, saved by the engine of commit 70b83ec) and checks the migration
+of nodes, tuning scopes and game settings; <code>xplane.ps1</code> also covers X-Plane 11 and the install folders of both versions.</p>
+<p>The function map (docs/relation-builder.md#function-map) is tested on fixtures by <code>smoke\functionmap.ps1</code>: a few DCS,
+Star Citizen, War Thunder, Elite and Tiny Combat Arena actions in <code>tests\fixtures\function-map\DB</code> replace the game lists
+(<code>JOYPRO_ACTION_INDEX_DIR</code>), so it needs no real game data; a query table for <code>relations search</code> / <code>resolve</code> (names,
+synonyms, game terms, directions, descriptions, a typo), the map cache, suggestions from the map and Auto Group's map
+rows. On the real game lists <code>tools\relations\check-function-map.ps1</code> reports coverage, search quality and mapping
+precision (not part of the smoke test).</p>
+<p>Live progress of long commands (<code>--status</code>/<code>--progress</code>, engine/EngineProgress.cs): <code>smoke\progress.ps1</code> builds a fake
+DCS <code>bin\luae.exe</code> from <code>tests\fixtures\fake-luae\FakeLuae.cs</code> with the .NET Framework <code>csc.exe</code> and runs the headless
+<code>dcs refresh id</code> and <code>dcs refresh clean</code> on three modules with four profiles: one <code>[engine-progress]</code> line per module,
+profile and written file with an increasing count and the right total, none in plain output, only those with
+<code>--progress true</code> (the engine runs several luae.exe at once: the fake one takes only its run's profiles,
+<code>assignedProfiles</code>, and the count is summed over the runs; with <code>FAKE_LUAE_CRASH_ONCE</code> its first run crashes and
+both refreshes must still write every list); a cancel through <code>JOYPRO_CANCEL_FILE</code> mid-run exits with
+code 3, stops every luae.exe and writes no command list; a War Thunder <code>refresh-db</code> reports its three steps and a cancel leaves its catalog untouched. On the GUI side
+<code>BusyProgressTests</code> covers the parser, the busy view model (count, bar, estimate, details, cancel), a fake engine that
+streams its lines while the view model is watched, and an offscreen render of the busy area that checks that no text
+overlaps; with <code>JOYPRO_BUSY_PREVIEW=&lt;repo&gt;\docs\ui</code> it also renders the whole window (Start page area and the compact
+row above the status line) into <code>docs\ui\busy-progress-*.png</code>.</p>
+<p>Themes, text size and fonts (docs/ui/themes.md): <code>ThemeTests</code>, <code>TextScaleLayoutTests</code> (<code>JOYPRO_TEXTSCALE_OUT</code>),
+<code>AppearanceRenderTests</code> (<code>JOYPRO_APPEARANCE_OUT</code>), <code>LayoutDeviceCardTests</code> (<code>JOYPRO_LAYOUT_CARDS_OUT</code>).</p>
+<p>Readable colors: <code>ThemeContrastTests</code> renders every main page, the engine output panel, every settings section open and
+the dialogs (confirm, game setup, replace device, every setup wizard step) in the light and the dark theme and a theme of the user's own (<code>ThemeTests.SampleTheme</code>) in a hidden
+root and measures every visible text (also inside buttons, toggle buttons, chips and key caps) against the color the
+render shows behind it: at least 4.5:1, 3:1 for large text (24 px, or 18.66 px from SemiBold up); disabled controls are
+left out. <code>JOYPRO_CONTRAST_OUT=&lt;folder&gt;</code> keeps the renders, <code>contact-light.png</code> / <code>contact-dark.png</code> and
+<code>contrast-report.txt</code>. Colors come from the theme tokens in <code>Styles/Design.axaml</code> (<code>JP.WarnTextBrush</code>,
+<code>JP.DangerTextBrush</code>, <code>JP.OkTextBrush</code>, ...), never as fixed colors on text; the navy banner keeps the dark theme in both
+themes (<code>ThemeVariantScope</code>).</p>
+<p>Cheat sheet style (docs/ui/layout-redesign.md &quot;Sheet style&quot;): <code>SheetStyleTests</code> (presets and the base palettes, JSON and
+the sheet's <code>&quot;style&quot;</code>, the engine options, the global style and own presets surviving a restart, a device's own style
+saved in its sheet and removed again, &quot;Share layout...&quot; round trip, the real engine's sheet and the panel's preview
+sampled for header row, table and marker colours, no overlap of the panel at 1280x800 and 2267x1250 in both themes with
+a big sheet font and 1.5x UI text; <code>JOYPRO_SHEET_STYLE_OUT</code> keeps the renders) and the smoke part
+<code>engine\tests\smoke\sheetstyle.ps1</code>.</p>
+<p>Back / Forward (docs/ui/navigation.md): <code>NavigationHistoryTests</code> covers the history class (push, back, forward, the cap,
+duplicates, no push while restoring), the view model (page changes and &quot;Open both relations&quot; push; Back puts page,
+search, open cards and relation back) and a navigation render test in a hidden root: the Check list scrolled to a card,
+&quot;Open both relations&quot;, the list scrolled to the top while away, Back -&gt; the same card inside the scroll viewport again.
+It also renders the header at 1280x800, 1200x760 and 2267x1250 in both themes (no overlap, every button inside the
+header). <code>JOYPRO_NAV_OUT=&lt;folder&gt;</code> keeps the renders.</p>
+<p>The catalog refresh (<code>engine &lt;game&gt; refresh-db</code>) is tested on synthetic game files, each in a temporary JoyPro folder
+so the shipped catalog stays untouched: War Thunder (<code>smoke\warthunder.ps1</code>, vromfs archives), MSFS (<code>smoke\msfs.ps1</code>,
+presets + locPak; the aircraft list from <code>tests\fixtures\msfs\aircraft-install</code>: a 2020 Official package with
+<code>[FLTSIM.n]</code> titles, AI variant and livery, Community2024 packages (one packed, listed in <code>layout.json</code>, one 2024
+modular SimObject), a 2024 <code>Content.xml</code> with switched-off, livery, AI and shared packages; then <code>db planes</code>, a relation
+limited to an aircraft (<code>--node MSFS2024:&lt;action&gt;:&lt;aircraft&gt;</code>) that export skips without and writes with <code>--aircraft</code>), Nuclear Option (<code>smoke\nuclearoption.ps1</code>, resources.assets), Tiny Combat Arena (<code>smoke\tinycombatarena.ps1</code>: a synthetic <code>sharedassets1.assets</code> with the game's newer InputManager layout, plus scan / import / clean / nuke / merge on a fake registry built in the shape the game wrote: player &quot;Player&quot;, one map per device and mapper tab, buttons with axisRange 1, a hat element), G-Rebels (<code>smoke\grebels.ps1</code>: a synthetic UE 5.8 <code>SaveOptions.sav</code> with
+UE 5.4+ property tags, built by the script; scan, an in-place export that changes exactly three bytes, import, clean,
+nuke and a button in <code>EnhancedInputUserSettings.sav</code>), X4 (<code>smoke\x4.ps1</code>, .cat/.dat
+archives and extracted files), VTOL VR native and BYOJoystick (<code>smoke\vtolvr.ps1</code>, level0 and BYOJ_<seat>.xml, plus an
+export of the new action/target; there a second refresh must write nothing; then <code>vtolvr mod status|prepare</code> and the
+targets read from a stand-in <code>BYOJoystick.dll</code> the script compiles from <code>tests\fixtures\vtolvr\byoj-fake</code> in a fresh
+JoyPro folder), Arma 3 without a first start (<code>smoke\freshinstall.ps1</code>: a synthetic <code>Dta\bin.pbo</code> with a binarized
+config and a <code>languagecore_f.pbo</code> stringtable), Arma Reforger (<code>smoke\reforger.ps1</code>: three
+Enfusion PAK archives built by the script, stored and zlib entries, with chimeraInputCommon.conf, keyBindingMenu.conf
+and a string table with a continued text; plus a user preset found through <code>games config set</code>. Checks the flight
+contexts only, ActionRefs, the up/down rows of a stepping action, a whole-axis action, localized and rule titles, known
+rows unchanged, the shipped catalog untouched, a dry run and a second refresh writing nothing, and an export / scan of
+the new rows with the game's own filter).</p>
+<p>MSFS import of the user's own profiles (<code>smoke\msfsuserprofiles.ps1</code>, docs/games/msfs.md &quot;Import of your own
+profiles&quot;): stand-in user folders (<code>JOYPRO_TEST_MSFS_HOME</code>) with Microsoft Store save containers built by the script
+(index, container lists, GUID blobs: plain, zlib, an unreadable index), Steam remote folders and JoyPro's package; the
+report's layout (Store, no package) runs in a release-like program folder with an empty data folder, so the command list
+is built on demand. <code>gui\JoyPro.Gui.Tests\MsfsProfileImportTests.cs</code> covers the same with the real engine, and the
+journey scenario <code>msfs-store-import</code> renders the import wizard (best with a release-like <code>JOYPRO_JOURNEY_ENGINE</code>).
+<code>MsfsStoreWatcherEndToEndTests</code> runs the config watcher end to end on such a Store save: import / export record the
+sim, the GUI's own watcher, a stand-in sim process (a copy of <code>PING.EXE</code> in <code>&lt;home&gt;\XboxGames\Microsoft Flight Simulator 2024\Content</code>, or named by <code>JOYPRO_TEST_GAME_PROCESSES</code>), the sim's save (new GUID blob, <code>container.&lt;n+1&gt;</code>,
+<code>containers.index</code> deleted and written again, old files deleted), the prompt and the take-over (added and removed binds).</p>
+<p>IL-2 1946 (<code>smoke\il21946.ps1</code>), Cliffs of Dover / Blitz (<code>smoke\il2cod.ps1</code>) and FSX / FSX-SE / Prepar3D
+(<code>smoke\fsx.ps1</code>) run refresh-db in a temporary data root (JoyPro's own DB folders only), then scan, import, a round
+trip, merge / merge-overwrite / add / clean / nuke, the game's axis settings and a dry run on fixtures
+(<code>tests\fixtures\il21946</code>, <code>il2cod</code>, <code>fsx</code>) with synthetic content. The IL-2 1946 and Cliffs of Dover fixtures have the
+shape the installed games write (checked in the games 2026-10-12); the Cliffs of Dover part also checks Blitz's device
+ids (hash of the interface path, <code>devices.tsv</code> carries the paths), an older id of a device being rewritten, and the
+process guard (a <code>Launcher.exe</code> outside the game's folder, as Falcon BMS has one, does not block an export). FSX was
+written without the game; see its page.</p>
+<p>The game config watcher (<a href="../reference/sync-watcher.html">sync-watcher</a>) is tested by <code>smoke\sync.ps1</code> for DCS (diff.lua), War Thunder
+(machine.blk) and Star Citizen (actionmaps.xml): export, status unchanged, the file changed as the game would (a bind on
+an input two relations share, an axis tuning, a removed bind, and float / order / whitespace changes that must not
+count), diff with kinds and candidates, apply (existing relation, new relation, ignored), status unchanged and an empty
+diff afterwards. War Thunder also covers a game-wide setting (<code>changed-setting</code>), the config exported to a custom path
+in <code>sync status</code> and a disabled game; Nuclear Option (registry storage through its fake-registry .json) a bind moved to
+another button; IL-2 Great Battles a new bind and the force feedback power in current.devices; Arma 3, WARDOGS, X4
+(inputmap.xml and config.xml), Arma Reforger and VTOL VR native a game-wide setting each (settings-only export, an
+empty diff right after it, the value changed as the game writes it, apply). Its resource use (1000 writes, 200 re-creations, idle CPU, process wait, registry notification) is
+checked by <code>gui\JoyPro.Gui.Tests\GameConfigWatcherTests.cs</code>.</p>
+<p>Autosave and the profile history (<a href="../reference/profile-history.html">profile-history</a>): <code>smoke\history.ps1</code> runs the engine on temp
+profiles in its own <code>JOYPRO_DATA_DIR</code> (versions with what changed and <code>--history-note</code>, no temp file left by the atomic
+save, show / diff / undo / redo across runs, a change outside JoyPro kept as a version, restore and its undo, keep,
+checkpoint, prune, usage, a version before a DCS export, <code>JOYPRO_PROFILE_HISTORY=off</code>, and the cost on a 450-relation
+profile); <code>gui\JoyPro.Gui.Tests\ProfileHistoryTests.cs</code> covers the debounce, flush and atomic writes, the store with
+simulated timestamps for the retention, the size caps, kept versions, a 3 MB profile, auto-open and the view model's
+undo, History panel, drafts and profile switch. GUI tests set <code>JOYPRO_PROFILES_DIR</code> so &quot;New profile&quot; never writes to
+Documents.</p>
+<p>In-game tests of the integrations (each game started, its own controls menu checked) are run before a release; their results are in each game's page (<a href="../games/ref/README.html">games</a>).</p>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#test-sandbox">Test sandbox</a></li><li class="l2"><a href="#speed">Speed</a></li><li class="l2"><a href="#quality-gate">Quality gate</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

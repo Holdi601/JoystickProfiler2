@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>engine telemetry · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details open><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a class="current" href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Engine (CLI)</div><h1>engine telemetry </h1><div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span><button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button><button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div></div>
+<div class="content">
+<p class="lead">10 commands of <code>engine telemetry</code>. Each with every option and every value it takes, what it does, which GUI buttons use it, and an example.</p><div class="cmd-index"><ul><li><a href="#telemetry-games"><code>telemetry games</code></a></li><li><a href="#telemetry-config-show"><code>telemetry config show</code></a></li><li><a href="#telemetry-config-set"><code>telemetry config set</code></a></li><li><a href="#telemetry-sessions"><code>telemetry sessions</code></a></li><li><a href="#telemetry-show"><code>telemetry show</code></a></li><li><a href="#telemetry-export"><code>telemetry export</code></a></li><li><a href="#telemetry-preview"><code>telemetry preview</code></a></li><li><a href="#telemetry-delete"><code>telemetry delete</code></a></li><li><a href="#telemetry-recover"><code>telemetry recover</code></a></li><li><a href="#telemetry-record"><code>telemetry record</code></a></li></ul></div><article class="entry cli level-full" id="telemetry-games"><header><h3 class="eh"><a class="anchor" href="#telemetry-games">#</a><code>engine telemetry games</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry games</code></pre><p>Telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Lists the games whose telemetry JoyPro can record (like a flight recorder for each round, mission or flight), what
+JoyPro listens to for each one, whether a recording can become a Tacview file, and whether the game is recorded now.</p>
+<pre><code class="language-powershell">engine telemetry games --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Ten games: DCS World, IL-2 Great Battles, IL-2 Series: Korea, War Thunder, X-Plane 12, X-Plane 11, Microsoft Flight
+Simulator 2024 and 2020, Falcon BMS and Elite Dangerous.</li>
+<li>Per game: the way JoyPro reads it (for example <code>UDP 41992 (JoyPro's DCS hook)</code>, <code>HTTP 127.0.0.1:8111 (the game's local web server)</code>, SimConnect through your own <code>SimConnect.dll</code>, BMS's shared memory, Elite's <code>Status.json</code> and
+journal), the game's processes, ACMI yes or no (IL-2 and Elite send no position, so no Tacview export), and what has
+to be set up once (DCS: JoyPro's hook; IL-2: JoyPro's address in <code>startup.cfg</code>, both on the Force Feedback page,
+<a href="../cli/ffb.html#ffb-telemetry-setup"><code>engine ffb telemetry setup</code></a>).</li>
+<li>&quot;Recorded&quot; is true when recording is switched on and the game is not switched off for it
+(<a href="../cli/telemetry.html#telemetry-config-set"><code>engine telemetry config set</code></a>).</li>
+<li>Read-only; no option except the global <code class="opt">--text</code> (and <code class="opt">--folder</code>, which changes nothing here).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Enabled</code>, <code>Games</code> with <code>Id</code>, <code>Title</code>, <code>Transport</code>, <code>ProcessNames</code>, <code>Acmi</code>, <code>Setup</code>, <code>Recorded</code>), or
+with <code class="opt">--text</code> &quot;Telemetry recording is on|off. Games with telemetry: <n>&quot; and two lines per game (<code>[recorded]</code> behind
+the recorded ones).</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>Unknown telemetry games argument(s): ...</code>.</li>
+<li>Settings read from <code>%LOCALAPPDATA%\JoyPro2\Telemetry\telemetry-recording.json</code> (with <code>JOYPRO_DATA_DIR</code>:
+<code>&lt;data&gt;\Telemetry\</code>); a file that cannot be read means the defaults (recording off).</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-config-show"><code>engine telemetry config show</code></a>, <a href="../cli/telemetry.html#telemetry-record"><code>engine telemetry record</code></a>, <a href="../cli/ffb.html#ffb-telemetry-status"><code>engine ffb telemetry status</code></a>; reference
+<a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible.</p><p class="lbl">Example</p><pre><code>engine telemetry games --text</code></pre></article><article class="entry cli level-full" id="telemetry-config-show"><header><h3 class="eh"><a class="anchor" href="#telemetry-config-show">#</a><code>engine telemetry config show</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry config show</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Shows the telemetry recording settings: whether recording is on, where the sessions go, how much space they may take,
+how long they are kept, the values per second and the per-game switches. It is what Settings &gt; Telemetry recording
+in the GUI edits.</p>
+<pre><code class="language-powershell">engine telemetry config show --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>The values, with their defaults: <code>enabled</code> false, <code>folder</code> &quot;&quot; (= <code>&lt;data&gt;\Telemetry\Recordings</code>), <code>maxTotalMb</code>
+4096 (0 = no size cap), <code>keepDays</code> 0 (= keep), <code>sampleHz</code> 20 (0 = every frame the game sends), <code>keepRaw</code> true,
+<code>sessionTimeoutSeconds</code> 60, and <code>games</code> with <code>enabled</code> per game (a game without an entry is recorded when the
+global switch is on).</li>
+<li>Values out of range are shown clamped (for example the session timeout to 5..3600 s), as the recorder uses them.</li>
+<li>Read-only. <code>engine telemetry config</code> without <code>show</code> or <code>set</code> shows too.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>ConfigPath</code>, <code>Folder</code> = the recordings folder in use, <code>Config</code>, <code>Warnings</code>), or with <code class="opt">--text</code> the
+settings as indented JSON.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>Unknown telemetry config argument(s): ...</code>. A settings file that cannot be read gives the
+warning <code>The telemetry recording settings could not be read (...); the defaults apply.</code></li>
+<li>File: <code>%LOCALAPPDATA%\JoyPro2\Telemetry\telemetry-recording.json</code> (<code>&lt;data&gt;</code> = <code>JOYPRO_DATA_DIR</code> when set).</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-config-set"><code>engine telemetry config set</code></a>, <a href="../cli/telemetry.html#telemetry-games"><code>engine telemetry games</code></a>; reference <a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Shows the telemetry recording settings (&lt;data&gt;\Telemetry\telemetry-recording.json) with every default filled in.</p><p class="lbl">Example</p><pre><code>engine telemetry config show --text</code></pre></article><article class="entry cli level-full" id="telemetry-config-set"><header><h3 class="eh"><a class="anchor" href="#telemetry-config-set">#</a><code>engine telemetry config set</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry config set [--game &lt;game&gt;] --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=&lt;value&gt;...</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Changes the telemetry recording settings, for example switches recording on. Recording is off until you do this (or
+switch it on in Settings &gt; Telemetry recording); while it is off nothing is recorded or polled.</p>
+<pre><code class="language-powershell">engine telemetry config set --param enabled=true --param folder=&quot;D:\Recordings&quot; --param keep-days=30 --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>--param key=value</code>, as often as needed (<code>_</code> in a key counts as <code>-</code>):</li>
+</ul>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enabled</code></td>
+<td><code>true</code> or <code>false</code>: the global switch</td>
+</tr>
+<tr>
+<td><code>folder</code></td>
+<td>the recordings folder, any drive; empty (<code>folder=</code>) = the default <code>&lt;data&gt;\Telemetry\Recordings</code></td>
+</tr>
+<tr>
+<td><code>max-total-mb</code></td>
+<td>space for recordings in MB, 0 = no cap (at most 10000000)</td>
+</tr>
+<tr>
+<td><code>keep-days</code></td>
+<td>delete sessions older than this, 0 = keep (at most 100000)</td>
+</tr>
+<tr>
+<td><code>sample-hz</code></td>
+<td>frames per second written, 0 = every frame the game sends (at most 1000); events are always kept</td>
+</tr>
+<tr>
+<td><code>keep-raw</code></td>
+<td><code>true</code> or <code>false</code>: also keep what the game sent unprocessed</td>
+</tr>
+<tr>
+<td><code>session-timeout</code></td>
+<td>seconds without telemetry that end a session (5..3600; a longer pause starts a new one)</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li><code>--game &lt;game&gt;</code> switches one game: then only <code>--param enabled=true|false</code> is allowed. The game is a recording game
+id or a short name (<code>il2</code>, <code>korea</code>, <code>wt</code>, <code>xp12</code>, <code>xp11</code>, <code>msfs</code>, <code>bms</code>, <code>elite</code>; see <a href="../cli/telemetry.html#telemetry-games"><code>engine telemetry games</code></a>).</li>
+<li>Numbers are clamped to their range; the file is written once at the end, only when every parameter was valid.</li>
+<li>Safety: only the settings file changes; no recording is deleted here (the new space and age limits apply at the
+next session start, or now with <code>engine telemetry prune</code>, <a href="../cli/telemetry.html#telemetry-recover"><code>engine telemetry recover</code></a>). A running recorder of the GUI
+reads the file again when the GUI tells it to.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>ConfigPath</code>, <code>Changes</code>, <code>Warnings</code>, <code>Config</code>), or with <code class="opt">--text</code> &quot;Telemetry recording settings:
+<file>&quot; and one line per change.</li>
+<li>Exit code <code>0</code>; <code>1</code> (nothing written) with <code>telemetry config set needs --param key=value (...)</code>, <code>--param needs key=value: ...</code>, <code>&lt;key&gt; must be true or false.</code>, <code>&lt;key&gt; must be a number &gt;= 0.</code>, <code>Unknown telemetry setting '&lt;key&gt;' (...)</code>, <code>With --game only enabled=true|false can be set.</code>, <code>JoyPro records no telemetry of '&lt;game&gt;'. See: engine telemetry games.</code> or <code>Unknown telemetry config argument(s): ...</code>.</li>
+<li>File: <code>%LOCALAPPDATA%\JoyPro2\Telemetry\telemetry-recording.json</code> (<code>&lt;data&gt;</code> = <code>JOYPRO_DATA_DIR</code> when set),
+written through a temporary file.</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-config-show"><code>engine telemetry config show</code></a>, <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a>; reference <a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Sets telemetry recording settings: enabled, folder, max-total-mb, keep-days, sample-hz, keep-raw, session-timeout; with --game the game&#x27;s own enabled switch.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--game</code></td><td><code>&lt;game&gt;</code></td><td>Game filter value. Example: DCS or IL2Game.</td></tr><tr><td><code>--param</code></td><td><code>enabled</code> <code>folder</code> <code>max-total-mb</code> <code>keep-days</code> <code>sample-hz</code> <code>keep-raw</code> <code>session-timeout</code></td><td>A response model parameter as name=value, repeatable. Example: --param sensitivity=22 --param offset=10.</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine telemetry config set --param enabled
+engine telemetry config set --param folder
+engine telemetry config set --param max-total-mb
+engine telemetry config set --param keep-days
+engine telemetry config set --param sample-hz
+engine telemetry config set --param keep-raw
+engine telemetry config set --param session-timeout</code></pre></details><p class="lbl">Example</p><pre><code>engine telemetry config set --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=&lt;value&gt; --text</code></pre></article><article class="entry cli level-full" id="telemetry-sessions"><header><h3 class="eh"><a class="anchor" href="#telemetry-sessions">#</a><code>engine telemetry sessions</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry sessions [--game &lt;game&gt;] [--folder &lt;folder&gt;]</code></pre><p>Recorded sessions, newest first; alias: list</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Lists the recorded sessions, newest first: date, game, aircraft, duration and size. The number in front of each one
+can be used as <code>&lt;session&gt;</code> in the other telemetry commands.</p>
+<pre><code class="language-powershell">engine telemetry sessions --game DCS --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>--game &lt;game&gt;</code> shows the sessions of one game (a recording game id or short name, see <a href="../cli/telemetry.html#telemetry-games"><code>engine telemetry games</code></a>).</li>
+<li><code>--folder &lt;folder&gt;</code> lists another folder than the one of the settings (for example recordings copied from another
+PC).</li>
+<li>A session still being written is marked <code>[recording]</code>, one cut off by a crash <code>[unfinished]</code>
+(<a href="../cli/telemetry.html#telemetry-recover"><code>engine telemetry recover</code></a> finishes it).</li>
+<li>Read-only. <code>engine telemetry</code> alone, and <code>engine telemetry list</code>, do the same.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Folder</code>, <code>TotalBytes</code>, <code>Sessions</code> with <code>Path</code>, <code>FileName</code>, <code>Game</code>, <code>GameTitle</code>, <code>Created</code>,
+<code>CreatedLocal</code>, <code>DurationSeconds</code>, <code>Duration</code>, <code>SizeBytes</code>, <code>Size</code>, <code>Aircraft</code>, <code>Maps</code>, <code>Frames</code>, <code>Events</code>,
+<code>RawPackets</code>, <code>Channels</code>, <code>Complete</code>, <code>Recording</code>, <code>EndReason</code>, <code>Acmi</code>; then <code>Problems</code>, <code>Warnings</code>), or with
+<code class="opt">--text</code> &quot;Recorded sessions in <folder>: <n> (<size>)&quot; and one numbered line per session.</li>
+<li>Exit code <code>0</code> (a file that cannot be read is listed as a problem); <code>1</code> with <code>Unknown telemetry sessions argument(s): ...</code>. A <code class="opt">--game</code> JoyPro does not record lists nothing.</li>
+<li>Files: <code>*.jptel</code> in the folder, named like <code>2026-10-18_14-03-22_DCS.jptel</code> (local start time and game).</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a>, <a href="../cli/telemetry.html#telemetry-export"><code>engine telemetry export</code></a>, <a href="../cli/telemetry.html#telemetry-delete"><code>engine telemetry delete</code></a>; reference
+<a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Recorded sessions, newest first; alias: list.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--game</code></td><td><code>&lt;game&gt;</code></td><td>Game filter value. Example: DCS or IL2Game.</td></tr><tr><td><code>--folder</code></td><td><code>&lt;folder&gt;</code></td><td></td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine telemetry sessions --text</code></pre></article><article class="entry cli level-full" id="telemetry-show"><header><h3 class="eh"><a class="anchor" href="#telemetry-show">#</a><code>engine telemetry show</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry show &lt;session&gt; [--folder &lt;folder&gt;]</code></pre><p>&lt;session&gt; = path, file name, latest or a number of the list</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Shows one recorded session: game, aircraft, map, start, duration, size, what it holds (frames, events, raw data),
+why it ended, whether a Tacview export is possible, and its channels by category.</p>
+<pre><code class="language-powershell">engine telemetry show latest --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>&lt;session&gt;</code>: a path to a <code>.jptel</code> file, a file name in the recordings folder (with or without <code>.jptel</code>), <code>latest</code>,
+or a number of <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a> (1 = newest).</li>
+<li><code>--folder &lt;folder&gt;</code> looks in another folder than the one of the settings.</li>
+<li>The whole file is read once to count the events by kind. Read-only.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Session</code> as in the sessions list, <code>Header</code>, <code>Summary</code>, <code>Nav</code> = where the game's position and
+attitude are, <code>Channels</code> with <code>Key</code>, <code>Title</code>, <code>Unit</code>, <code>Category</code>, <code>Min</code>, <code>Max</code>, and <code>Events</code> = count per kind), or
+with <code class="opt">--text</code> a few lines (&quot;ACMI export: yes&quot; or &quot;no (no position in this game's telemetry)&quot;, the channels grouped
+by category with their units, the event kinds by count).</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>Which session? A path, a file name, &quot;latest&quot; or a number from: engine telemetry sessions --text</code>, <code>No recorded session '&lt;x&gt;' in &lt;folder&gt;.</code> or <code>Unknown telemetry show argument(s): ...</code>.</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-preview"><code>engine telemetry preview</code></a>, <a href="../cli/telemetry.html#telemetry-export"><code>engine telemetry export</code></a>; reference <a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> &lt;session&gt; = path, file name, latest or a number of the list.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--folder</code></td><td><code>&lt;folder&gt;</code></td><td></td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine telemetry show &lt;session&gt; --text</code></pre></article><article class="entry cli level-full" id="telemetry-export"><header><h3 class="eh"><a class="anchor" href="#telemetry-export">#</a><code>engine telemetry export</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry export &lt;session&gt; --format acmi|acmi-zip|csv [--to &lt;file or folder&gt;] [--max-hz &lt;n&gt;] [--no-per-channel]</code></pre><p>Tacview ACMI 2.2 / CSV</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Turns a recorded session into a file for Tacview (ACMI 2.2) or into CSV tables for a spreadsheet. The GUI's <strong>Export
+for Tacview (ACMI)</strong> and <strong>Export CSV</strong> in Settings &gt; Telemetry recording do the same.</p>
+<pre><code class="language-powershell">engine telemetry export latest --format acmi-zip --to &quot;C:\Users\Pilot\Documents\Tacview\last-flight.zip.acmi&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>&lt;session&gt;</code>: path, file name, <code>latest</code> or a number of <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a>; <code>--folder &lt;folder&gt;</code> looks in
+another folder.</li>
+<li><code class="opt">--format</code> (default <code>acmi-zip</code>):
+<ul>
+<li><code>acmi-zip</code>: a <code>.zip.acmi</code> (a zip with one <code>.txt.acmi</code>); <code>zip</code> and <code>zip.acmi</code> mean the same.</li>
+<li><code>acmi</code>: a plain <code>.txt.acmi</code>; <code>txt.acmi</code> and <code>text</code> mean the same.</li>
+<li><code>csv</code>: a folder with <code>&lt;session&gt;.csv</code> (time and every channel, one row per frame), <code>&lt;session&gt;-events.csv</code>,
+<code>&lt;session&gt;-channels.csv</code> (key, title, unit, category, range) and, unless <code class="opt">--no-per-channel</code>, one file per channel
+in <code>&lt;session&gt;-channels\</code> with time and value at every change.</li>
+</ul>
+</li>
+<li><code>--to &lt;file or folder&gt;</code>: where it goes (a file for ACMI, a folder for CSV). Default: <code>Exports\</code> beside the session,
+<code>&lt;session&gt;.zip.acmi</code>, <code>&lt;session&gt;.txt.acmi</code> or <code>&lt;session&gt;-csv\</code>. An existing file of that name is replaced.</li>
+<li><code>--max-hz &lt;n&gt;</code>: at most this many frames a second (ACMI default 20; CSV default every frame, and it thins only the
+main table, not the per-channel files). A value that is not a number means the default.</li>
+<li>ACMI needs a position: sessions of IL-2 and Elite Dangerous (and any session without a frame with a position) can
+only go to CSV. War Thunder has no map coordinates, so it is placed on a flat world around 0/0.</li>
+<li>Safety: the session itself is never changed; the ACMI file is written to a temporary file first.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Session</code>, <code>Format</code>, <code>Output</code>, <code>Files</code>, <code>Frames</code>, <code>Rows</code>, <code>Objects</code>, <code>Warnings</code>), or with <code class="opt">--text</code>
+&quot;Exported <file> as <format>: <target> (<n> rows, <n> other objects)&quot; and the warnings.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>--format acmi|acmi-zip|csv</code>, <code>This recording has no position (&lt;game&gt; does not send one): ACMI needs one. Export CSV instead.</code>, <code>This recording has no frame with a position ...</code>, a session that cannot be
+found (as for <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a>) or <code>Unknown telemetry export argument(s): ...</code>.</li>
+<li>The global <code class="opt">--out</code> is the engine's output file as with every command; the export target is <code class="opt">--to</code>.</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a>, <a href="../cli/telemetry.html#telemetry-preview"><code>engine telemetry preview</code></a>; reference <a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Writes the profile&#x27;s binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game&#x27;s files are backed up first (engine backups). Without a command list yet it first builds the list from the game.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--format</code></td><td><code>acmi</code> <code>acmi-zip</code> <code>csv</code></td><td>Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export.</td></tr><tr><td><code>--to</code></td><td><code>&lt;file or folder&gt;</code></td><td>The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.</td></tr><tr><td><code>--max-hz</code></td><td><code>&lt;n&gt;</code></td><td></td></tr><tr><td><code>--no-per-channel</code></td><td><span class="muted">switch (no value)</span></td><td></td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine telemetry export --format acmi
+engine telemetry export --format acmi-zip
+engine telemetry export --format csv</code></pre></details><p class="lbl">Example</p><pre><code>engine --profile &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; telemetry export --dry-run --text engine --profile &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; telemetry export --mode merge-overwrite --text</code></pre></article><article class="entry cli level-full" id="telemetry-preview"><header><h3 class="eh"><a class="anchor" href="#telemetry-preview">#</a><code>engine telemetry preview</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry preview &lt;session&gt; [--channel &lt;key&gt;]... [--points &lt;n&gt;]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Reads a few channels of a recorded session reduced to a short series each, for a small timeline. Without a choice it
+takes altitude, speed and G (or pitch, roll, throttle, angle of attack), as the timeline in Settings &gt; Telemetry
+recording does.</p>
+<pre><code class="language-powershell">engine telemetry preview latest --channel dcs.alt --channel dcs.ias --points 300 --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>&lt;session&gt;</code>: path, file name, <code>latest</code> or a number of <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a>; <code>--folder &lt;folder&gt;</code> looks in
+another folder.</li>
+<li><code>--channel &lt;key&gt;</code> (repeatable): the channels to read, by the keys <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a> lists. A key the session
+does not have is left out without a message. Without <code class="opt">--channel</code>: the first three channels with values among
+altitude, speed, G, pitch, roll, throttle and angle of attack, else the first channels of the session.</li>
+<li><code>--points &lt;n&gt;</code> (default 200, 4..5000; not a number = 200): about this many points per channel. Each time bucket
+keeps its minimum and maximum, so peaks stay visible.</li>
+<li>Read-only.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Session</code>, <code>Series</code> with <code>Key</code>, <code>Title</code>, <code>Unit</code>, <code>Min</code>, <code>Max</code>, <code>Times</code> in seconds from the session
+start, <code>Values</code>), or with <code class="opt">--text</code> one line per channel: &quot;<key> (<title>, <unit>): <n> points, <min> .. <max>&quot;.</li>
+<li>Exit code <code>0</code>; <code>1</code> for a session that cannot be found (as for <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a>) or <code>Unknown telemetry preview argument(s): ...</code>.</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a>, <a href="../cli/telemetry.html#telemetry-export"><code>engine telemetry export</code></a>; reference <a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> A few channels of a recorded session reduced to --points values each, for a timeline.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--channel</code></td><td><code>&lt;key&gt;</code></td><td></td></tr><tr><td><code>--points</code></td><td><code>&lt;n&gt;</code></td><td>Number of preview samples from -1 to 1. Example: --points 21.</td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine telemetry preview &lt;session&gt; --text</code></pre></article><article class="entry cli level-full" id="telemetry-delete"><header><h3 class="eh"><a class="anchor" href="#telemetry-delete">#</a><code>engine telemetry delete</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry delete &lt;session&gt;...</code></pre><p>Alias: remove</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Deletes recorded sessions. The GUI's <strong>Delete</strong> in Settings &gt; Telemetry recording does the same after asking; the
+command does not ask.</p>
+<pre><code class="language-powershell">engine telemetry delete 3 4 --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>One or more <code>&lt;session&gt;</code> values: path, file name, <code>latest</code> or a number of <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a> (the numbers
+refer to the list before anything is deleted). <code>--folder &lt;folder&gt;</code> looks in another folder. <code>remove</code> is the same
+command.</li>
+<li>Every session is looked up first: when one cannot be found nothing is deleted.</li>
+<li>Safety: a session being recorded right now is never deleted (it is listed as not deleted). Deleted files are gone,
+not in the recycle bin.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Deleted</code>, <code>Problems</code>), or with <code class="opt">--text</code> &quot;Deleted <n> session(s).&quot; with the files and a &quot;not deleted:&quot;
+line per problem (for example <code>&lt;file&gt; is being recorded right now.</code>).</li>
+<li>Exit code <code>0</code>; <code>1</code> when a session could not be deleted (the problems also go to the error output), without a
+session (<code>telemetry delete &lt;session&gt;... (a path, a file name, &quot;latest&quot; or a number)</code>), or when a session cannot be
+found (<code>No recorded session '&lt;x&gt;' in &lt;folder&gt;.</code>).</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a>, <a href="../cli/telemetry.html#telemetry-recover"><code>engine telemetry recover</code></a> (<code>prune</code> deletes by the retention settings).</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Deletes recorded sessions (alias: remove).</p><p class="lbl">Example</p><pre><code>engine telemetry delete &lt;session&gt; --text</code></pre></article><article class="entry cli level-full" id="telemetry-recover"><header><h3 class="eh"><a class="anchor" href="#telemetry-recover">#</a><code>engine telemetry recover</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry recover | prune</code></pre><p>Finish sessions cut off by a crash | apply the retention settings; exit code 1 when a session could not be read, finished or deleted</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Finishes sessions that were cut off by a crash or a killed process, so they can be shown and exported again
+(<code>engine telemetry recover</code>). <code>engine telemetry prune</code> applies the retention settings now: it deletes the sessions
+that are too old or do not fit into the space for recordings.</p>
+<pre><code class="language-powershell">engine telemetry recover --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>recover</code>: every <code>.jptel</code> in the folder without a summary that is not being written: the damaged tail is cut and
+the summary is written from the data. Complete sessions are left alone. The recorder does the same itself when it
+starts.</li>
+<li><code>prune</code>: first the sessions older than <code>keep-days</code> (0 = no age limit), then the oldest until the folder is at most
+<code>max-total-mb</code> (0 = no size limit). The recorder does the same before and after every session.</li>
+<li><code>--folder &lt;folder&gt;</code> works on another folder than the one of the settings (<code>prune</code> still uses the limits of the
+settings).</li>
+<li>Safety: the session being recorded is never touched by either. <code>prune</code> deletes files for good; set the limits with
+<a href="../cli/telemetry.html#telemetry-config-set"><code>engine telemetry config set</code></a> and look at <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a> first.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output of <code>recover</code>: JSON (<code>Folder</code>, <code>Recovered</code>, <code>Problems</code>), or with <code class="opt">--text</code> &quot;Finished <n> session(s) that were
+cut off.&quot; with the files and &quot;problem:&quot; lines.</li>
+<li>Output of <code>prune</code>: JSON (<code>Folder</code>, <code>Deleted</code>, <code>Problems</code>), or with <code class="opt">--text</code> &quot;Deleted <n> session(s) (size cap
+<size or none>, keep days <n or no limit>).&quot; with the files and &quot;problem:&quot; lines.</li>
+<li>Exit code <code>0</code>; <code>1</code> when a session could not be read, finished or deleted (the others are done; the problems are
+listed), or with <code>Unknown telemetry recover argument(s): ...</code> or <code>Unknown telemetry prune argument(s): ...</code>.</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-delete"><code>engine telemetry delete</code></a>, <a href="../cli/telemetry.html#telemetry-config-show"><code>engine telemetry config show</code></a>; reference <a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Finishes sessions cut off by a crash (telemetry recover) or applies the retention settings now (telemetry prune); exit code 1 when a session could not be read, finished or deleted.</p><p class="lbl">Example</p><pre><code>engine telemetry recover --text
+engine telemetry prune --text</code></pre></article><article class="entry cli level-full" id="telemetry-record"><header><h3 class="eh"><a class="anchor" href="#telemetry-record">#</a><code>engine telemetry record</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine telemetry record --game &lt;game&gt; [--seconds &lt;n&gt;] [--folder &lt;folder&gt;] [--sample-hz &lt;n&gt;] [--no-raw] [--no-game-check]</code></pre><p>Records now; it ends after --seconds, with Ctrl+C or when the game exits; --no-game-check: the game process is not watched</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Records the telemetry of one game now, in this window, also when recording is switched off in the settings. Start the
+game (or start this first and then the game); Ctrl+C ends the recording, and it also ends when the game
+exits.</p>
+<pre><code class="language-powershell">engine telemetry record --game DCS --seconds 600 --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>--game &lt;game&gt;</code> (required): a recording game id or short name (<a href="../cli/telemetry.html#telemetry-games"><code>engine telemetry games</code></a>). DCS and IL-2 need their
+one-time setup first (<a href="../cli/ffb.html#ffb-telemetry-setup"><code>engine ffb telemetry setup</code></a>).</li>
+<li><code>--seconds &lt;n&gt;</code>: stops after that time; without it, it runs until Ctrl+C.</li>
+<li><code>--folder &lt;folder&gt;</code>: writes the session there instead of the folder of the settings.</li>
+<li><code>--sample-hz &lt;n&gt;</code>: frames per second written (0 = every frame the game sends), instead of the setting.</li>
+<li><code class="opt">--no-raw</code>: does not keep what the game sent unprocessed.</li>
+<li><code class="opt">--no-game-check</code>: listens without the game's process. Without it, it waits for the game (&quot;waiting for DCS.exe /
+DCS_mt.exe&quot;) and stops when the game exits.</li>
+<li>It runs JoyPro's force feedback process (<code>JoyPro.Ffb.exe record --force</code>), which also does the GUI's automatic
+recordings. Only one process can listen on a game's telemetry port: do not run it while the GUI records or runs
+force feedback for the same game.</li>
+<li>Safety: only listens locally and writes the session file; nothing is sent anywhere and the game is not changed.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: a status line &quot;Recording <game> telemetry (Ctrl+C ends it): JoyPro.Ffb record ...&quot; and then the recorder's
+state lines (waiting, listening, recording with the session file and its frames, and the reason it ended); the
+exit code is the recorder's.</li>
+<li>Exit code <code>1</code> without a known <code class="opt">--game</code> (the usage line lists the ids), with <code>Unknown telemetry record argument(s): ...</code>, or with <code>JoyPro.Ffb.exe not found (&lt;path&gt;); it reads the games' telemetry. Set JOYPRO_FFB_EXE to its path.</code>
+(it is looked for in <code>ffb\</code> beside the engine's folder, or at <code>JOYPRO_FFB_EXE</code>).</li>
+<li>The session goes to <code>&lt;folder&gt;\&lt;date&gt;_&lt;time&gt;_&lt;game&gt;.jptel</code>; afterwards <a href="../cli/telemetry.html#telemetry-sessions"><code>engine telemetry sessions</code></a> lists it.</li>
+<li>Related: <a href="../cli/telemetry.html#telemetry-show"><code>engine telemetry show</code></a>, <a href="../cli/telemetry.html#telemetry-export"><code>engine telemetry export</code></a>, <a href="../cli/ffb.html#ffb-telemetry-status"><code>engine ffb telemetry status</code></a>; reference
+<a href="../reference/telemetry-recording.html">telemetry-recording</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Records now; it ends after --seconds, with Ctrl+C or when the game exits; --no-game-check: the game process is not watched.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--game</code></td><td><code>&lt;game&gt;</code></td><td>Game filter value. Example: DCS or IL2Game.</td></tr><tr><td><code>--seconds</code></td><td><code>&lt;n&gt;</code></td><td></td></tr><tr><td><code>--folder</code></td><td><code>&lt;folder&gt;</code></td><td></td></tr><tr><td><code>--sample-hz</code></td><td><code>&lt;n&gt;</code></td><td></td></tr><tr><td><code>--no-raw</code></td><td><span class="muted">switch (no value)</span></td><td></td></tr><tr><td><code>--no-game-check</code></td><td><span class="muted">switch (no value)</span></td><td></td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine telemetry record --game &lt;game&gt; --text</code></pre></article>
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

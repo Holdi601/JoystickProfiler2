@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relations page: search, tick, add (and the JoyPro assistant) · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a class="current" href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Relations page: search, tick, add (and the JoyPro assistant) </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/relation-builder.md">docs/relation-builder.md</a> in the repository (generated, always the current text).</p><p>A relation is one function, for example &quot;Throttle ALL&quot;. It holds that function's action in every game and aircraft
+(DCS F-16C &quot;Thrust&quot;, IL-2 &quot;Engines throttle control&quot;, Star Citizen &quot;Strafe forward / backward&quot; ...), all on one input
+of the stick. The Relations page builds it the way JoyPro 1 did: name it, search what it does over every game, tick what
+belongs, add. On top of that JoyPro suggests what else means the same, and the JoyPro assistant does it from a sentence.
+Binding the relation to a button or axis happens on the Binds page.</p>
+<p><img src="../assets/docs/docs-ui-relation-builder-1920-dark.webp" alt="The Relations page with an open relation" /></p>
+<h2 id="the-page"><a class="anchor" href="#the-page">#</a>The page</h2>
+<ul>
+<li><strong>Left:</strong> the relations (search, the <a href="#filters-relations-and-binds-pages">filter bar</a>, Ctrl/Shift for several,
+<code>Bulk changes</code>, <code>Groups</code>). Each card shows its bind as device, input and modifiers: <code>WarBRD · BTN 8 · Shift A</code> (the
+tooltip has the full device name); <code>not bound</code> when it has none.</li>
+<li><strong>Top right:</strong> <code>New relation</code> (&quot;Name it, then tick its actions.&quot;) and <code>Auto-build relations from all my actions...</code>
+(&quot;Builds relations for the whole profile: the same function of every aircraft and game together&quot;), <code>More</code> (refresh,
+import/export, next relation with suggestions, save).</li>
+<li><strong>The open relation:</strong> its name in a text box (edit in place: Enter or leaving the box renames, Esc cancels;
+<code>engine relations rename</code>), its kind (Axis / Button), its input (or <code>Not bound yet: Binds page</code>), the function chip
+(see <a href="#the-function-chip">The function chip</a>), <code>Suggest missing (n)</code>, <code>Expand with AI</code>, <code>Duplicate</code> (a menu:
+<code>Duplicate</code>, <code>Duplicate without bind</code> = <code>relations mass duplicate --no-bind</code>), delete; the row wraps in a narrow
+window. Below, <strong>Its actions</strong>: one row per game action with
+the game badge, the aircraft, the title and the kind, <code>x</code> removes it after &quot;Remove this action?&quot; (with <code>Do not ask again</code>; Settings &gt; Confirmations asks again). A click on a DCS action opens its aircraft (below).</li>
+<li><strong>Order of the actions:</strong> drag a card by its grip (a line shows where it lands), or Alt+Up / Alt+Down, or the card's
+context menu (Move up / down / to the top / to the bottom). The engine keeps the order in the profile
+(<code>relations item move &lt;relation&gt; --node game:id --to &lt;position&gt;|--up|--down</code>), one undo step per move.</li>
+<li><strong>Relation card context menu</strong> (right-click in the list): <code>Duplicate</code>, <code>Duplicate without bind</code>, <code>Delete</code>.</li>
+<li><strong>Many actions at once:</strong> <code>Add selected</code> and <code>Add all</code> send one engine call; single <code>Add</code> / <code>Dismiss</code> clicks in a
+row are sent together (one call per batch, one reload at the end). Outdated background reads (suggestions, search,
+aircraft of a relation that changed again) are dropped instead of queued.</li>
+<li><strong>No relation open:</strong> &quot;Pick a relation or make one&quot; and the four steps; they show only then (never over a relation's
+actions). A refresh of the relation list (after an edit, an undo, a save) keeps the open relation open; when it
+leaves the list (deleted, filtered out) its actions leave the editor with it.</li>
+<li><strong>Right, four panels:</strong> <code>Add actions</code> (with <code>Open catalog</code> next to the search), <code>Suggested for this relation (n)</code>,
+<code>Catalog</code>, <code>JoyPro assistant</code>; <code>More</code> &gt; <code>Suggest missing for every relation...</code> shows the review list there.</li>
+</ul>
+<h2 id="the-function-chip"><a class="anchor" href="#the-function-chip">#</a>The function chip</h2>
+<p>What the relation stands for in every aircraft and game, from the function catalog (<code>engine/EngineRelationPurpose.cs</code>,
+one rule for the chip, Suggest missing, AI fill and Auto Assign). A majority is not enough: many users keep relations
+per <strong>physical button position</strong>, like the real cockpit (&quot;Throttle - Boat - Aft&quot;: Magic in the M-2000C, the RWR
+lights in the Viggen, flaps in the F-5E, the drag chute in the F-4E), and one function over all of that is wrong.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Chip</th>
+<th>When (<code>relations suggest</code> <code>FunctionState</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Function: &lt;name&gt;</code> (green)</td>
+<td><code>set</code> (picked by the user), <code>named</code> (the relation is named after the function, Auto Group does so) or <code>covered</code>: at least 80 % of the switched-on actions the catalog knows are that function (a catalog substitute for it counts), and at least two of them (or its only action)</td>
+</tr>
+<tr>
+<td><code>Different functions per aircraft</code></td>
+<td><code>mixed</code>: the catalog knows its actions as different functions and none reaches 80 %. Tooltip: &quot;This relation is a button position: each aircraft uses it for its own function&quot;</td>
+</tr>
+<tr>
+<td><code>Function: none</code></td>
+<td><code>cleared</code>: the user picked &quot;None&quot;</td>
+</tr>
+<tr>
+<td><code>Set function</code></td>
+<td><code>unknown</code>: the catalog knows too little of it</td>
+</tr>
+</tbody>
+</table></div>
+<p>A click opens a small picker: a catalog function of the relation's kind (with a search box), <code>None: each aircraft uses it for its own function</code>, and <code>Automatic</code> (only after a choice). Saved in the profile (<code>Relation.Function</code>: slot id,
+<code>none</code>, or empty = automatic; Ctrl+Z undoes it). CLI: <code>relations function &lt;relation&gt; [--set &lt;function&gt;|--none|--auto]</code>,
+<code>relations function --list [--axis|--button] [--query text]</code>.</p>
+<p>A <code>mixed</code> or <code>cleared</code> relation gets no function-based suggestion: no catalog, style, function map or title
+suggestions (only the same DCS id in aircraft where it means the same, i.e. its variants); AI fill leaves it out
+(<code>ButtonPositions</code> in its result, &quot;left to you&quot;); Auto Assign places it without a function slot (the user's own layout
+first). The function map's meanings follow the same 80 % rule. Auto Group's learned style respects the user's choice
+(a set function claims the relation, <code>none</code> teaches nothing).</p>
+<h2 id="binds-page-what-the-relation-does"><a class="anchor" href="#binds-page-what-the-relation-does">#</a>Binds page: what the relation does</h2>
+<p>Under the selected row's header the Binds page shows a read-only peek at its relation (<code>MainWindowViewModel.BindPeek.cs</code>,
+<code>relations show</code>): <code>What it does: n actions in m games</code>, the actions grouped by game, each with its title, its
+aircraft count (a click shows the names) and axis / button, and <code>Open in Relations</code> (the relation editor with this
+relation). <code>Hide</code> / <code>Show</code> folds it; the state is remembered (<code>list-preferences.json</code> <code>BindPeekOpen</code>), folded it
+reads nothing.</p>
+<h2 id="filters-relations-and-binds-pages"><a class="anchor" href="#filters-relations-and-binds-pages">#</a>Filters (Relations and Binds pages)</h2>
+<p>Both pages have the same filter bar (<code>ListFilterViewModel</code>, <code>Views/Controls/ListFilterBar.axaml</code>), each with its own
+ticks, remembered in <code>&lt;settings&gt;\list-preferences.json</code> (the typed search is not remembered):</p>
+<ul>
+<li><strong>Search</strong> (Ctrl+F): every word somewhere in what the box next to it says (remembered per page with the ticks):
+<code>Name + actions</code> (default: the relation's name and the titles of its actions, from <code>engine relations list --titles</code>), <code>Name</code>, or <code>Everything</code> (also games, aircraft, groups, device, input and modifiers). Devices, games and
+aircraft are otherwise picked with their filters, so &quot;throttle&quot; does not list every relation bound on a device called
+&quot;... Throttle&quot;. The best fits come first: the relation called as the search, then names starting with it, then names
+with every word, then relations found by their actions (each part in the page's sort). The Binds page works the same.</li>
+<li><strong>Groups</strong>: tick groups (several: any of them), <code>No group</code> for relations without one.</li>
+<li><strong>Games</strong>: tick a game for every relation with a switched-on action of it; open it (<code>&gt;</code>) to tick only some of its
+aircraft (<code>All</code> / <code>None</code> act on the aircraft shown, so typing <code>A-10</code> and <code>All</code> ticks every A-10 version). DCS ticked,
+<code>None</code>, then A-10A, A-10C and A-10C II: only relations with an action for those aircraft. Games with one list (IL-2,
+Star Citizen ...) have no aircraft.</li>
+<li><strong>Devices</strong>: the devices of the binds (two of the same model keep a part of their id).</li>
+<li><strong>Bound / Not bound</strong> and <strong>Axes / Buttons</strong>: switches (a second click switches back to all).</li>
+<li><strong>Sort</strong> (the button right of the filters, <code>ListSortViewModel</code>, <code>Views/Controls/ListSortBar.axaml</code>): sort levels in
+order, each a key and a direction (<code>A to Z</code> / <code>Z to A</code>), with up / down / remove, <code>Add level</code> and <code>Name only</code>. Keys:
+name, device (as shown, alias-aware), input (natural: axes X, Y, Z, RX, RY, RZ, sliders, then <code>BTN 2</code> before
+<code>BTN 10</code>, then hats, then keys), axis / button, games, aircraft count, group, bound / not bound, modifiers (relations
+have no change date, so there is no &quot;last changed&quot;). Unbound rows go after the bound ones; equal rows go by name. No
+level = by name (the old order). Each list remembers its levels (<code>list-preferences.json</code> <code>Sorts</code>); it works on top of
+the filters and the search, Follow input and the selection stay.</li>
+</ul>
+<p>The filters combine (all must fit). Every tick shows how many relations it would show with the other filters as they
+are; ticks that would show nothing are dimmed. Under the bar the active filters are chips with x, <code>n of 524 shown</code> and
+<code>Clear all</code>. Opening a relation the filters hide (a new relation, &quot;Open&quot; in a review, Next relation with suggestions)
+clears them. The relations are filter subjects built once per list, so a filter change is set lookups: on the user's
+profile with 524 relations and 3 300 actions a change takes a few milliseconds (the journey test checks &lt; 300 ms).</p>
+<p>On the Relations page the whole block (filters, bound / axes switches, chips, sort and the search scope box) folds up
+under <strong>Filters</strong> (2.6.0; at 1280x800 it took a third of the narrow pane's height). Folded, the line under the header
+says what is on: the active filters, the search scope when it is not &quot;Name + actions&quot;, the sort when it is not by name,
+and <code>n of 524 shown</code> (<code>No filters · 524 in all</code> when nothing is on). Open / folded is remembered
+(<code>list-preferences.json</code> <code>RelationFiltersOpen</code>, open by default; <code>MainWindowViewModel.RelationFilterPanel.cs</code>).</p>
+<h2 id="browse-the-catalog"><a class="anchor" href="#browse-the-catalog">#</a>Browse the catalog</h2>
+<p><code>Open catalog</code> (next to the search) or the <code>Catalog</code> tab: not what a search finds, but everything a game or an aircraft
+has (<code>engine relations browse</code>). Pick the game (the profile's games first) and, for DCS, the aircraft (the profile's
+first; the open relation's own aircraft is picked when it opens). The actions come in the game's own categories (DCS
+<code>HOTAS</code>, <code>Landing gear panel</code> ...; an action in &quot;Control Stick; HOTAS&quot; is in both); games without categories of their
+own are grouped by JoyPro's function categories (&quot;Engine and power&quot;, &quot;Weapons&quot;). A category opens with a click, shows
+how many of its actions your relations use, and ticks all of its rows with its box. Each action shows <code>in this relation</code>, <code>in '&lt;relation&gt;'</code> and, when that relation is bound, <code>bound: WarBRD · BTN 8</code>. <code>Only free</code> hides what is used,
+the filter box opens the categories with a match. Ticked actions go in with <code>Add selected (n)</code> (or <code>Create relation with n actions</code>); a DCS action takes its ticked aircraft (the browsed one; its aircraft selector adds more with the same
+meaning). The open relation's kind decides what is listed (an axis relation: only axes). The list builds only the rows in view, so a filter or
+<code>Open all</code> on a big aircraft (the F-4E has 1635 actions) stays instant.</p>
+<p><strong>Sort</strong> (the catalog and the search results have the same sort bar as the Relations and Binds lists,
+<code>ListSortViewModel.ForActions</code>, remembered as <code>catalog</code> / <code>action-search</code>): game, aircraft, category, title, axis /
+button, last updated (the date of the game's command list; DCS: of the aircraft's DB file). No level = their own order
+(the catalog by the game's categories, the search best matches first). A first level <code>Category</code> orders the catalog's
+categories, a first level <code>Game</code> the search's games; the other levels order the rows inside. The search still shows
+each game's best matches (<code>Show n more</code> loads the rest); the levels order what is shown.</p>
+<p><strong>Titles are never raw ids or lua keys.</strong> Every title shown (relation cards, bind peek, catalog, search, layout titles
+and cheat sheets, sync changes, describe-group proposals) goes through one resolver (<code>engine/DcsCommandNames.cs</code>,
+shared by the engine and the GUI): the DB title; a DCS localization key in it (&quot;Input.SpitfireLFMkIX.pitch_minus&quot;,
+&quot;29Fulcrum:Inp:...&quot;) takes DCS's English text (<code>&lt;DCS&gt;\l10n\en\LC_MESSAGES\input.mo</code>); else the title the profile stored
+for the node (<code>relations show</code> lists it as <code>stored-title</code> lines); else the same command in a sibling DB file (<code>_easy</code>,
+<code>CW</code>); else a readable form of the key (&quot;Flaps 1&quot;). A command no list and no profile names says &quot;Command not in this
+aircraft's current list&quot;. See <a href="../games/ref/dcs.html">DCS</a> &quot;Command names&quot;. A key or id still finds the command (search,
+catalog filter): <code>pitch_minus</code>, <code>flaps_1</code>, <code>Input.SpitfireLFMkIX.pitch_minus</code>, <code>29Fulcrum:Inp:...</code> or a DCS command id
+such as <code>dnilp3007unilcd2vdnilvp-1vunil</code> list it by its readable title (<code>DcsCommandNames.KeyMatches</code>: the stored key, or
+the keys DCS's English catalog has for the title).</p>
+<p><strong>Readable names outside DCS</strong> (<code>engine/EngineReadableNames.cs</code>). The game lists keep the game's ids (the integrations
+use them); catalog, search, suggestions and the relation editor show:</p>
+<ul>
+<li>categories: a table per game where the game has group names of its own (MSFS contexts <code>AIRCRAFT</code> -&gt; &quot;Aircraft&quot;,
+<code>BASIC_CONTROL_HELICOPTER</code> -&gt; &quot;Basic controls: helicopter&quot;; Elite <code>ship_flight</code> -&gt; &quot;Ship: flight&quot;; Star Citizen action
+maps <code>spaceship_movement</code> -&gt; &quot;Flight: movement&quot;; X-Plane <code>FMS2</code> -&gt; &quot;FMS 2&quot;; VTOL VR <code>NumPad</code> -&gt; &quot;Number pad&quot;), else an
+id-like category as words (<code>flight_controls</code> -&gt; &quot;Flight controls&quot;, BMS <code>2.06 AUX COMM PANEL</code> -&gt; &quot;2.06 Aux Comm
+Panel&quot;); a readable one (&quot;Helicopter and plane&quot;) stays as the game writes it;</li>
+<li>titles: Star Citizen's own names from its <code>global.ini</code> (<code>engine starcitizen labels</code> builds <code>DB\StarCitizen\labels.tsv</code>
+from Data.p4k, read only, also after <code>db refresh-starcitizen</code>; without it <code>v_strafe_up</code> -&gt; &quot;Strafe up&quot;); two controls
+with the same game name are told apart by their id (&quot;Pitch&quot; / &quot;Pitch (mouse)&quot;); MSFS 2020 lists with raw event names
+take MSFS 2024's menu name of the event, else the name made from the event; underscores, run-together words
+(&quot;HeliBrakes&quot; -&gt; &quot;Heli Brakes&quot;) and titles in capitals (&quot;TOGGLE PUSHBACK&quot;) as words; abbreviations stay in capitals;</li>
+<li>JoyPro's own action texts (<code>engine/ActionTexts.cs</code>, shared with the GUI): <code>DB\Functions\ActionTexts\&lt;GameId&gt;.tsv</code>
+(<code>id&lt;TAB&gt;name&lt;TAB&gt;menu section&lt;TAB&gt;explanation</code>, written for JoyPro, shipped). The name stands in for a title that is
+no words: empty, the id, the id in words (&quot;Rb pitch&quot;) or a string-table key (IL-2 <code>inprb_pitch</code> -&gt; &quot;Mouse turret aim:
+up/down&quot;); for IL-2 Korea it always wins (its own text is not readable). The menu section is the category (IL-2 GB / Korea:
+the Key Mapping tabs). The explanation is the &quot;what it does&quot; line (source <code>joypro</code>, after the cockpit guide and the
+sim's own description, before the general text of the function). Tables: IL2Game, IL2Korea (every action), IL2CoD,
+IL2CoDBlitz, FalconBMS (the titles no game text explains). Correction tables (MSFS2024, StarCitizen, XPlane11,
+XPlane12; <code>ActionTexts.CorrectionGames</code>) only hold titles whose shorthand JoyPro writes out (&quot;EFB Back&quot; -&gt;
+&quot;Electronic Flight Bag (EFB): Back&quot;, &quot;Weapon preset qid&quot; -&gt; the game's QIDs, &quot;Rotate X Axis&quot; -&gt; &quot;Photo Mode Camera:
+Pan Left/Right Axis&quot;): their name always wins, the category stays the game's. Meanings come from the game's own
+descriptions; MSFS names a few events opposite to their id (UI_DISPLAY_CFD_OFF = &quot;CFD ON&quot;, ADF whole/fract,
+ENGINE_BYPASS): its menu name and description agree there, so JoyPro follows the menu. The function map cache and
+the DB refresh of IL-2 GB follow them;</li>
+<li>shorthand of the games' own titles written out (not DCS: its titles are the module's): &quot;Step Dn&quot; -&gt; &quot;Step Down&quot;,
+&quot;Rotor Gov&quot; -&gt; &quot;Rotor Governor&quot;, &quot;Fms&quot; -&gt; &quot;FMS&quot; (<code>ActionTexts.ExpandAbbreviations</code>);</li>
+<li><code>engine relations action-info --coverage [--all-examples]</code> counts per game the titles with an unexplained
+abbreviation (a 2-4 letter piece of the id or a word without vowels that is no known word or cockpit label:
+<code>ActionTexts.UnexplainedAbbreviation</code>) and titles that are only a word and an axis letter (&quot;Cursor X&quot;); quality gate
+I2/I4 fail on them outside DCS.</li>
+</ul>
+<p>Every button has a tooltip. No list on the page scrolls sideways: long titles end in &quot;...&quot;, aircraft lists show the
+first ones and <code>+n</code>, chips wrap. Tested at 1280x800 and 1920x1080 (<code>RelationBuilderRenderTests</code>).</p>
+<h2 id="make-a-relation-step-by-step"><a class="anchor" href="#make-a-relation-step-by-step">#</a>Make a relation, step by step</h2>
+<ol>
+<li><code>New relation</code> (Ctrl+N), type its name (<code>Throttle ALL</code>). Left empty, it is named after its first action.</li>
+<li><code>Add actions</code>: type what it does (<code>throttle</code>). The search runs while you type (300 ms after the last key) over every
+game and aircraft (<code>engine relations search &quot;&lt;words&gt;&quot; [--axis|--button] [--plane ...] --limit 400</code>). The engine knows
+synonyms: <code>throttle</code> also finds thrust and the helicopter collective, <code>flare</code> the countermeasure dispense switches.</li>
+<li>The rows come grouped by game (<code>DCS · 48 actions</code>), each with a tick box, the title (the words you typed marked),
+the aircraft, the kind, why it was found (&quot;same function: Throttle&quot;) and one tag when other relations have it
+switched on (for at least one of its aircraft; the engine's <code>InRelations</code> without the open relation; the same tag on
+the suggestions, from their <code>InOtherRelations</code>): none, <code>in '&lt;relation&gt;'</code> (a click opens it) or <code>in 3 relations</code> (a click lists them under the row, a name opens that relation).
+The search stays; <strong>Back to '<relation>'</strong> above the opened relation's name (and the header's Back, Alt+Left)
+returns to the relation and its search as they were (<code>builder-search</code> in the navigation entry). Actions already in
+the open relation are not shown at their rank: greyed, without a tick box, in a group <strong>Already in this relation</strong> at
+the bottom of every list (by game, by function, with game chips, after Show more, with or without the aircraft
+filter); Tick all shown and Add selected leave them out, and the header counts only what can be added (<code>10 actions in 1 game + 1 already in this relation</code>). Only the rows in view are built (a virtualizing list): a search over every
+game lists up to 160 rows. Each game's <strong>main control</strong> of the function comes first, marked <code>main control</code>; a title that
+does not name the function says it: <code>AXIS ELEVATOR SET — Pitch axis (elevator)</code>.</li>
+<li>Filters: <code>All</code> / <code>Axes</code> / <code>Buttons</code> (a relation holds one kind; an open relation with actions shows only its own,
+an empty one every kind), the game chips of the result with how many actions each game has (none ticked = every
+game, the best 12 rows of each: <code>--limit 200 --per-game 12</code>; a ticked chip searches that game again for all its
+rows; the first eight as chips, <code>+n more games</code> for the rest), and the aircraft picker. <code>By function</code> groups the
+rows by the function they are (the engine's <code>FunctionGroups</code>) instead of by game. Each row shows how it was found
+(<code>exact title</code>, <code>same function</code>, <code>synonym</code>, <code>described</code>, <code>word match</code>), and a typo offers <code>Did you mean: throttle?</code>.
+The search needs no open profile (the profile only marks which relations use a row). Under a game, <code>Show n more</code>
+loads the rest of that game's hits for the same search (<code>--game &lt;game&gt; --limit 400</code>), <code>Show less</code> folds them;
+<code>Expand all</code> / <code>Collapse all</code> above the list do every game. The state stays while the query, kind and aircraft stay
+the same; ticks survive expanding and collapsing.</li>
+<li>Tick what belongs: a row, or the box of a game for all or none of its rows; <code>Tick all shown</code>, <code>Clear ticks</code>. A DCS
+row adds only its ticked aircraft (<a href="#same-id-different-meaning">Same id, different meaning</a>).</li>
+<li><code>Create relation with n actions</code> (<code>engine relations add &lt;name&gt; --axis --node game:id:planes ...</code>). Axes and
+buttons together are refused with a hint. The new relation opens.</li>
+</ol>
+<p>For an open relation the same panel says <code>Add selected (n)</code> (<code>engine relations suggest apply &lt;relation&gt; --add game:id:planes ...</code>). Rows whose aircraft are all in the relation are marked <code>already in this relation</code> and cannot be
+ticked. Ticks survive a new search when the same action comes back. Every change can be undone with Ctrl+Z.</p>
+<h3 id="how-the-search-finds-things"><a class="anchor" href="#how-the-search-finds-things">#</a>How the search finds things</h3>
+<p>Like a search engine over every game and aircraft at once, built on the <a href="#function-map">function map</a>; one row per
+command and meaning, with every aircraft where the command means that and the relations that already use it.</p>
+<ul>
+<li><strong>Names and synonyms</strong>: <code>throttle</code> finds every game's throttle, <code>thrust</code> (DCS FC3), the helicopters' <code>collective</code>,
+Star Citizen's <code>strafe longitudinal</code>, Elite's <code>Forward Thrust Axis</code> and X4's <code>Accelerate</code>.</li>
+<li><strong>What it does</strong>: <code>make the plane go faster</code>, <code>drop countermeasures</code>, <code>talk to the tower</code>, <code>move sideways</code> (space),
+<code>lower the landing gear</code>, <code>look around</code>, <code>lock target</code>: the functions' plain-English descriptions (BM25 over names,
+synonyms, game terms and descriptions) and a lexicon of words that mean much the same (<code>drop</code> ~ <code>release</code> ~ <code>deploy</code>).</li>
+<li><strong>Directions</strong>: <code>gear up</code>, <code>tms aft</code>, <code>zoom in</code>, <code>trim nose up</code>: rows in that direction first, toggles and rows
+without a direction after, the opposite direction never.</li>
+<li><strong>Typos</strong>: one per word (two in long words); a misspelt word is corrected against every word JoyPro knows and the
+result says <code>Did you mean: throttle</code>.</li>
+<li><strong>Plain words</strong> still work for everything the map does not know: whole words, word starts (<code>disp</code> finds
+&quot;Dispense&quot;), the readable id and the game's category; rare words weigh more than common ones.</li>
+<li><strong>Titles with every word</strong> (2.6.0): every title that has all the typed words (whole words or word starts from three
+letters; <code>+</code>, <code>-</code>, brackets and punctuation of the query are only separators: <code>tacan channel (xx0x) - [inc]</code> is
+<code>tacan channel xx 0 x inc</code>; a <code>-</code> or <code>+</code> on its own is no direction either, only one glued to a word (<code>zoom-</code>) or the
+word itself; of titles with as many other words, a step or direction ([Inc], [Next]) before a fixed position (<code>- 0</code>)) is a hit, also when its words alone are generic (<code>master</code>, <code>reset</code>, <code>inc</code>). Unless the
+query names a function with all its words (<code>pitch</code>, <code>gear up</code>: that function's rows lead as below), the titles with
+every word as a whole word come before every row that only means the same (a word start alone does not lead: &quot;guns
+hot&quot; puts no &quot;HOTAS&quot; title first), the whole title typed first (<code>master reset</code> = <code>MASTER RESET</code>), then those
+with the fewest other words (<code>Literal</code> in the JSON). A DCS title's trailing tag says what the command does (<code>[Inc]</code>,
+<code>[Dec]</code>, <code>[Next]</code>, <code>[Toggle]</code>, <code>[CW]</code>); only seat and panel tags (<code>[FWD]</code>, <code>[SimPit]</code>, <code>[WSO]</code> ...) are dropped
+(before 2.6.0 every trailing tag was dropped and the dash before it read as &quot;minus&quot;: <code>[Inc]</code>, <code>[Next]</code> and
+<code>[Toggle]</code> were &quot;decrease&quot;).</li>
+<li><strong>Ranking</strong>: the exact title first, then the function by its own words (<code>Throttle Left</code>), then by a synonym or game
+term (<code>Collective</code>), then by what the query describes, then plain word matches. Rows of the function's natural kind
+(a throttle axis, a gear button) rank before the others. The function's <strong>primary axis</strong> leads its game (see
+<a href="#function-map">Function map</a>): <code>pitch</code> in MSFS is the elevator axis, then the helicopter cyclic, never the hot-air
+balloon's burner pitch above it; <code>throttle</code> in FSX is <code>Throttle axis (all engines)</code> before <code>Throttle 1 axis</code>.</li>
+<li><strong>Grouped</strong>: <code>Groups</code> (per game) and <code>FunctionGroups</code> (per function, then game). Within <code>--limit</code> every game with a
+function hit keeps its best rows, so a search over all games shows every game's throttle; <code>--per-game N</code> caps the
+rows of one game.</li>
+</ul>
+<h2 id="same-id-different-meaning"><a class="anchor" href="#same-id-different-meaning">#</a>Same id, different meaning</h2>
+<p>A DCS command id is no function of its own. <code>a2001cdnil</code> is &quot;Pitch&quot; in the jets, &quot;Flight Control Cyclic Pitch&quot; in the
+helicopters; a clickable cockpit id like <code>d3002pnilunilcd3vd1vpnilvunil</code> (device 3, command 3002) is &quot;Hydraulic
+Emergency Release Knob&quot; in the P-51D, &quot;Fuel Densitometer Selection Switch Cover - OPEN&quot; in the F-86F and &quot;Bomb control
+handle - PASSIVE&quot; in the La-7; <code>dnilp95u215...</code> is &quot;Trim: Nose Up&quot; in most jets and &quot;Trim: Nose Down&quot; on the F-16's
+HOTAS. On the development PC's lists (122 DCS aircraft lists, 24 472 ids) 10 839 ids are shared by several aircraft and
+3 289 of them mean something else in some aircraft (8 232 aircraft entries), 987 have near variants. The niche ones are
+the worst: cockpit switches, electrics, radios, magnetos, voice chat (<code>d1731...</code>: 20 meanings). Every other game has one
+list per game (one meaning per id); the same rules apply there and find nothing (<code>relations meanings</code>).</p>
+<p>So a search hit, a suggestion and a relation action are (id, aircraft), each aircraft with its own title and category
+(<code>engine\EngineIdMeanings.cs</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Compared to the row's meaning</th>
+<th>When</th>
+<th>Grouped</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>same</code></td>
+<td>normalised title (the game's tags and prefixes off, lower case, plural s off) and normalised category equal</td>
+<td>yes</td>
+</tr>
+<tr>
+<td><code>near</code></td>
+<td>same words in another order (<code>Pitch Trim Up</code> / <code>Trim pitch up</code>), the same title in another category, the same title with a note in brackets (<code>... (call radio menu)</code>), one plain word more or less, or up to two words more on one side (<code>Start dispensing</code> / <code>UV-26 Start Dispense</code>)</td>
+<td>yes, flagged <code>near</code> for review</td>
+</tr>
+<tr>
+<td><code>differs</code></td>
+<td>anything else; always when the titles are opposite directions (<code>Nose Up</code> / <code>Nose Down</code>), name other numbers (<code>Station 1</code> / <code>Station 2</code>) or differ in a direction word</td>
+<td>no: its own row, listed as &quot;same id, different meaning in n aircraft (left out)&quot;</td>
+</tr>
+</tbody>
+</table></div>
+<p>A row's head is its most common meaning; a relation action's meaning is the one whose title shares the most words with
+the relation's name, else the most common one. Modules that list only input names (<code>Input.SpitfireLFMkIX.uc_1</code>) compare
+as their twin list (<code>SpitfireLFMkIX_easy</code>: &quot;Undercarriage DOWN&quot;).</p>
+<p>Everything that builds relations keeps to it:</p>
+<ul>
+<li><strong>Search and resolve</strong>: one row per id and meaning (<code>Variants</code>, <code>Near</code>, <code>SameIdDifferent</code>, <code>MeaningNote</code> in the JSON);
+an aircraft whose own title names another function is not read as the catalog's function for an id that means
+different things (<code>CatalogAgainstTitle</code>).</li>
+<li><strong>Suggestions</strong>: the &quot;same id&quot; source proposes only aircraft where the id is <code>same</code> (90) or <code>near</code> (75) to the
+relation's own aircraft; no suggestion for an id the relation has with another meaning.</li>
+<li><strong>The assistant</strong>: its tools return one line per meaning, a line says &quot;same id means something else in n other
+aircraft (not in this line)&quot;, and the system prompt tells the model that ids are per aircraft.</li>
+<li><strong>Auto Group, Group by description, the setup wizard, <code>relations add --node DCS:&lt;id&gt;</code> without aircraft</strong>: an
+aircraft whose meaning differs from the node's (and whose own title the function map does not read as the same
+function and direction) is left out: in the node switched off, listed (<code>MeaningExcluded</code>, <code>MeaningNotes</code>), one tick
+brings it back. A node spec without aircraft takes the id's most common meaning.</li>
+<li><strong>Export</strong>: a node exports its bind only for its switched-on aircraft (<code>RelationItem.AIRCRAFT</code>, as in JoyPro 1).</li>
+</ul>
+<p><strong>In the GUI</strong> every DCS row of <code>Add actions</code> and every DCS action of the open relation has an aircraft selector:
+<code>a-10a, A-10C +69 more</code> / <code>82 of 84 aircraft · 14 aircraft use this command for something else (show)</code> (and
+<code>· n aircraft have another name for it</code> for another title of the same function); a click on the action itself, its chevron (v / ^) or that line opens it; closed, the card shows its one-line summary (game, aircraft). Every collapsible header of the app (Expanders, Settings sections) opens and closes from anywhere on its row, the chevron included (<code>Styles/DesignStyles.axaml</code>, <code>Styles/SettingsSection.axaml</code>).
+It lists every aircraft with that id in groups by what the id means there: <code>Same meaning: 'Pitch' (60)</code>, <code>Nearly the same (9)</code>, <code>Another name, does the same (14)</code> (a helicopter's <code>Flight Control Cyclic Pitch</code>: the function map reads it
+as pitch, no mixed meaning), <code>Not in its list (2)</code>, <code>Does something else here (its own name shown)</code>, each aircraft with its own
+title and category and a tick; <code>All</code>, <code>None</code>, <code>Only same meaning</code> (same and near), <code>Only same function</code> (also the
+other titles of the function), <code>Only same title</code>, <code>Invert</code> (on the shown aircraft), a filter box; Space toggles, Shift+click ticks a range. A search row starts with its same and near aircraft
+ticked and the other meanings unticked and adds only its ticked aircraft; an action's <code>Apply</code> saves its ticks in one
+step (<code>relations aircraft set</code>, one undo step) and the list stays open. Actions whose ticked aircraft mix meanings are
+flagged inside their card (<code>In 1 ticked aircraft this command is not '...' but something else</code>; only another function counts, not another title of the same function).
+Other games' actions show their title in the game (<code>Pitch axis</code>, <code>AXIS ELEVATOR SET</code>), not their id. Opening a
+relation puts its name into the <code>Add actions</code> search; a game's header counts like its chip (<code>12 of 44 actions</code>).
+Games with one list per game have no selector.</p>
+<p><img src="../assets/docs/docs-ui-relation-builder-aircraft-1920-dark.webp" alt="An action with its aircraft open, a search row with its aircraft, the profile check" /></p>
+<p><strong>Repair</strong>: <code>relations check-aircraft</code> finds actions with switched-on aircraft whose meaning differs from the action's;
+those the function map reads as the same function (<code>Cyclic Pitch</code> in a <code>Pitch</code> action) are listed but kept. The
+open relation shows a neutral question (blue, info icon; orange is kept for real problems) that counts only this
+relation, with a real example: <code>In some aircraft this command does something else. The 'Rudder' command of the AH-64D has another meaning in 35 aircraft (e.g. F-16C_50: 'Nosewheel steering'). Should this relation also apply there?</code>.
+<code>Show what this command does in the other 35 aircraft</code> opens the list: per aircraft its name, what the command is
+called there and a <code>use here</code> tick. <code>Only where it is 'Rudder'</code> switches the others off (<code>relations aircraft set --off</code>, one undo step per action; they stay listed), <code>Keep for all</code> keeps them, <code>Ask me later</code> hides the question
+until the next start. Kept aircraft (<code>Keep for all</code>, <code>use here</code>) are remembered in <code>list-preferences.json</code>
+(<code>KeptAircraft</code>: relation|game|id|plane) and not asked about again. The profile-wide number is the small link
+<code>Check all relations (n actions)</code> above the editor: it runs the check again and lists every flagged action (a click
+opens its relation) with <code>Switch them all off</code> (<code>--apply</code>, one undo step; one run per action when the user keeps
+aircraft). On the user's HoldiFeb23 profile (443 relations, 2 760 actions): 220 actions with differing
+aircraft, 165 actions in 129 relations to repair, 360 aircraft to switch off, 398 kept as the same function.</p>
+<h2 id="suggested-for-this-relation-no-ai"><a class="anchor" href="#suggested-for-this-relation-no-ai">#</a>Suggested for this relation (no AI)</h2>
+<p><code>engine relations suggest &lt;relation&gt; [--min high|medium|low] [--game g1|g2]</code>. Deterministic; the sources:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Score</th>
+<th>Example reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The function catalog (<code>DB/Functions</code>, checked against the manuals): the relation's function (<a href="#the-function-chip">The function chip</a>; none for a button position)</td>
+<td>95 when the function covers the relation, lower when the catalog knows only a few of its actions (substitutes: 70 to 45)</td>
+<td>&quot;Same function as F-16C_50 'Countermeasures Management Switch - Fwd'&quot;</td>
+</tr>
+<tr>
+<td>Your style: what you put on this function in aircraft that lack it (Auto Group's learned habits, at least two separate decisions in your own relations)</td>
+<td>80</td>
+<td>&quot;Your style: 'TMS Up' where 'CMS FWD' is missing&quot;</td>
+</tr>
+<tr>
+<td>The same DCS command id in more aircraft, only where it means the same there</td>
+<td>90 with the same title, 75 when near; never when it means something else</td>
+<td>&quot;Same command id as in F-16C_50, same title&quot;</td>
+</tr>
+<tr>
+<td>Similar titles in any game (never the opposite direction)</td>
+<td>70 / 55 / 40</td>
+<td>&quot;Title match: 'Countermeasures Dispense' (87%)&quot;</td>
+</tr>
+</tbody>
+</table></div>
+<p>Confidence: high from 85, medium from 55, else weak. Weak matches are hidden until <code>Also weak matches</code>.</p>
+<ul>
+<li><code>Add</code> takes one row, <code>Add all (n)</code> every row shown that no other relation uses, <code>x</code> dismisses one for good
+(<code>suggest apply --never</code>: kept in the relation switched off, never suggested again; <code>Dismissed for this relation</code>
+on the left lists them, <code>Restore</code> (<code>--remove</code>) takes one out).</li>
+<li><strong>Already in another relation</strong>: such a row says <code>Already in 'Flare'</code> and offers <code>Move here</code> (<code>--take</code>).</li>
+<li><strong>Looks wrong</strong>: entries an old auto-fill put into the relation, with <code>Move to</code> / <code>Remove</code>
+(<a href="../reference/suggest-additions.html#what-looks-wrong">Suggest additions</a>). Also a button in an axis relation (or an axis in a
+button relation: &quot;'UFC 3 Key' is a button in A-10C II; 'Pitch' is an axis relation&quot;), with <code>Move to</code> the button
+relation of its function.</li>
+<li><strong>Outliers seed nothing</strong>: an action of the other kind, or one the catalog files under a function no other action of
+the relation shares (the relation has a function of its own), says nothing about what the relation is: no suggestion
+comes from it, it only shows under <code>Looks wrong</code>. <code>check-aircraft</code> (&quot;Same id, different meaning&quot;) leaves actions of the
+other kind out of its count (<code>OtherKindNodes</code>).</li>
+<li>The relation's meaning is the union of its actions' functions, weighted (a function counts fully when the relation is
+named after it or when at least half of its actions are it). The header shows it.</li>
+<li>The panel belongs to the open relation only: opening another one clears the suggestions, <code>Looks wrong</code>, the
+dismissed list and the function chip at once (the engine run takes a while), and a row left over from the relation
+before never acts on the new one.</li>
+</ul>
+<h3 id="recommended-action"><a class="anchor" href="#recommended-action">#</a>Recommended action</h3>
+<p>Games often have two to four actions for one function (Elite &quot;Pitch Axis&quot; / &quot;(Alternate)&quot; / &quot;(Landing)&quot;, MSFS &quot;Elevator
+Axis&quot; / &quot;Elevator Set&quot; / &quot;Aileron / Elevator&quot;, Arma 3 plane and helicopter pitch, IL-2 Korea &quot;Pitch (Elevator)&quot; / &quot;Mc
+pitch&quot; / &quot;Rb pitch&quot;). Per game (DCS: per aircraft) one is <strong>Recommended</strong> (ranked first, ticked for <code>Add ticked</code>); the
+others sit collapsed under it (<code>+2 other actions in this game</code>), never ticked, each with one line <code>Differs: ...</code>.
+<code>EngineActionChoice</code> with the generic rules of <code>DB/Functions/action-variants.json</code> (nothing written per action):</p>
+<ul>
+<li>the recommended action: no variant rule fits, no word of its own the function does not explain, the function's
+canonical control (<code>PrimaryRank</code>), the higher score, the shorter title;</li>
+<li>variant rules (title or the game's category): trim, alternate set, landing mode, mouse, combined axis (<code>Aileron / Elevator</code>), gyroscope, another seat, view / camera, weapon aiming, propeller, reset, &quot;free&quot;; a rule whose words are the
+function's own (trim for <code>Pitch trim</code>) does not count;</li>
+<li>a word the game gives no meaning for: <code>variant ('Mc') - meaning not documented by the game</code> (never guessed), only
+when the action has every word of the recommended one and more (<code>Pitch Mc</code> next to <code>Pitch</code>); no rule and no such
+word: <code>the game does not say how it differs</code>, only for a real twin of the recommended action (the same words without
+axis/set/ex: MSFS <code>Elevator Set</code> next to <code>Elevator Axis</code>). Another control the function map merely groups with it
+(<code>Condition Lever 1 Axis</code> next to <code>Condition Lever Axis</code>) gets no hint;</li>
+<li>families: a helicopter (or ground vehicle) action next to a plane action of the same game is recommended too, <code>for helicopters</code> / <code>for planes</code> (space games: <code>for ships</code>);</li>
+<li>a game or aircraft the relation has an action for already gets no recommendation.</li>
+</ul>
+<p>Every row shows the game's readable name (<code>EngineActionInfo.Readable</code>: MSFS / FSX / P3D events whose list has no menu
+name get one from the event name, <code>KEY_AXIS_ELEVATOR_SET</code> -&gt; <code>Elevator Axis</code>; an id shown as its title gets its words),
+the function and the id small underneath, and what it does: the cockpit guide's &quot;What does it do?&quot; text of the control it
+is (through the cockpit pictures' commands), else the sim's own description (MSFS <code>en-US.locPak</code> <code>..._DESC</code>), else the
+general explanation of its function (<code>_templates.json</code>, by the function, <code>functionTemplates</code> in action-variants.json where
+the name alone would pick a wrong one), else nothing. The index is kept in <code>&lt;data&gt;\Cache\action-info.tsv</code>. The same marks
+and texts are in <code>relations search</code> (Add actions), <code>relations browse</code> (catalog) and the relation's nodes (tooltip).
+<code>engine relations action-info --coverage [--game g]</code> counts per game: readable names, explanations by source, functions
+with a recommended action that is no variant.</p>
+<ul>
+<li><code>More</code> → <code>Next relation with suggestions</code> (<code>suggest --all --min medium</code>) opens the next relation that can grow.</li>
+</ul>
+<h3 id="suggest-missing"><a class="anchor" href="#suggest-missing">#</a>Suggest missing</h3>
+<p><code>Suggest missing (n)</code> on the open relation opens the panel in sections (each suggestion knows what the relation lacks,
+<code>Missing</code> / <code>NewGame</code> / <code>NewPlanes</code> of <code>relations suggest</code>):</p>
+<ol>
+<li><strong>Games not in this relation yet</strong>: the same function in a game the relation has no switched-on action of.</li>
+<li><strong>Aircraft not in this relation yet</strong>: DCS actions for aircraft it has none for (<code>new for F-16C_50, FA-18C_hornet</code>).</li>
+<li><strong>Used in other relations</strong>: they fit but another relation has them (<code>Already in 'Flare'</code>, <code>Move here</code>); never added
+by <code>Add all</code> or <code>Add ticked</code>.</li>
+<li><strong>More for aircraft already in it</strong>: other actions of the function for aircraft the relation covers.</li>
+</ol>
+<p>High before medium before weak, then by score. Tick rows (or a section's box) and <code>Add ticked (n)</code>, or <code>Add</code> per row.
+The button's count is the free suggestions of sections 1 and 2.</p>
+<p><strong>For every relation</strong>: <code>More</code> → <code>Suggest missing for every relation...</code> (<code>relations suggest --all --missing --min medium --per-relation 25</code>; the fast sources only, about 18 s on 524 relations): per relation what it lacks that no other
+relation uses (&quot;5 new games · 12 more aircraft · 3 used elsewhere&quot;), new games first, a tick per row and per relation,
+<code>Add ticked (n)</code> (one <code>suggest apply</code> per relation, each one undo step), <code>Open</code> opens the relation with all its
+suggestions.</p>
+<h2 id="the-joypro-assistant"><a class="anchor" href="#the-joypro-assistant">#</a>The JoyPro assistant</h2>
+<p><code>engine relations assistant &quot;&lt;message&gt;&quot; [--relation &lt;name&gt;] [--llm auto|on|off] [--max-steps N] [--show-prompt]</code>.
+One sentence; JoyPro changes the relations <strong>at once</strong> (the page shows them right away) and answers with what it did:</p>
+<blockquote>
+<p>&quot;Throttle ALL&quot;: created · added DCS 48 aircraft, Star Citizen 2, IL-2 5 · now 160 actions</p>
+</blockquote>
+<p>with the steps it took (<code>What JoyPro did</code>), ids it rejected, and <strong>Undo this</strong>: one answer is one engine command, so
+one undo snapshot takes the whole answer back (Ctrl+Z works too). Relation names in the answer open the relation.
+<code>Expand with AI</code> on the open relation sends <code>--relation &lt;name&gt;</code>: &quot;this relation&quot; and &quot;it&quot; mean that one. Every game
+works the same way (game names, ship words, questions; see <a href="../reference/ai-plans.html#every-game">ai-plans.md</a>).</p>
+<h3 id="with-the-local-ai-model-a-tool-loop"><a class="anchor" href="#with-the-local-ai-model-a-tool-loop">#</a>With the local AI model: a tool loop</h3>
+<p>The model (the optional <a href="../reference/natural-language-grouping.html#optional-local-ai-model">local AI model</a>: the catalog model the
+user downloaded, or their own llama.cpp and GGUF) works only through JoyPro's tools. JoyPro starts the model once per
+answer (<code>EngineLlm.Session</code>: start, load, many requests, kill; a job object kills it with the engine) and loops:</p>
+<ol>
+<li>The model answers with exactly one JSON tool call. A GBNF grammar allows nothing else (one flat object per tool).</li>
+<li>JoyPro runs the tool on the profile and answers with <code>RESULT</code> lines (or <code>ERROR ...</code>).</li>
+<li>Until the model calls <code>done</code>, or 16 steps (<code>--max-steps</code>). Three answers that are no tool call in a row end the
+turn; the same call twice in a row is refused. Older results shrink to their first line when the conversation
+outgrows the context (16k for the user's own model, 12k for the large catalog model).</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What JoyPro does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;list_relations&quot;}</code></td>
+<td>the relations with kind, action count and games</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;show_relation&quot;,&quot;relation&quot;:&quot;NAME&quot;}</code></td>
+<td>the relation's actions as ids (<code>A&lt;n&gt;</code>) and a set id (<code>S&lt;n&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;resolve&quot;,&quot;query&quot;:&quot;WHAT IT DOES&quot;,&quot;kind&quot;:&quot;axis|button|any&quot;,&quot;games&quot;:[&quot;XPlane12&quot;]}</code> (games optional)</td>
+<td>the offline brain: <code>relations resolve</code> on the <a href="#function-map">function map</a>, every game's action of the functions the words name, with synonyms and game terms (<code>throttle</code> = thrust, collective, Star Citizen's strafe longitudinal); side actions left out (&quot;throttle&quot; never brings &quot;Throttle friction&quot;); the word search when the map knows none of the words</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;search&quot;,&quot;query&quot;:&quot;WORDS&quot;,&quot;kind&quot;:&quot;...&quot;,&quot;games&quot;:[&quot;DCS&quot;]}</code></td>
+<td>the word search over every game's titles (<code>relations search</code>)</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;suggest&quot;,&quot;relation&quot;:&quot;NAME&quot;,&quot;games&quot;:[&quot;StarCitizen&quot;]}</code></td>
+<td>the relation's suggestions with confidence and reason (<code>relations suggest</code>), only for those games when given (&quot;expand Roll with Star Citizen&quot;)</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;create_relation&quot;,&quot;name&quot;:&quot;NAME&quot;,&quot;kind&quot;:&quot;axis|button&quot;}</code></td>
+<td>a new, empty relation (refused when the name exists)</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;rename_relation&quot;,&quot;relation&quot;:&quot;NAME&quot;,&quot;new_name&quot;:&quot;NAME&quot;}</code></td>
+<td>renames it (the bind stays)</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;add_to_relation&quot;,&quot;relation&quot;:&quot;NAME&quot;,&quot;ids&quot;:[&quot;A3&quot;,&quot;S2&quot;]}</code></td>
+<td>adds the actions (<code>S&lt;n&gt;</code>: every action of that result)</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;remove_from_relation&quot;,&quot;relation&quot;:&quot;NAME&quot;,&quot;ids&quot;:[&quot;A4&quot;]}</code></td>
+<td>takes them out</td>
+</tr>
+<tr>
+<td><code>{&quot;tool&quot;:&quot;done&quot;,&quot;reply&quot;:&quot;...&quot;}</code></td>
+<td>ends the turn with a sentence for the user</td>
+</tr>
+</tbody>
+</table></div>
+<p>Result lines look like <code>A12 DCS F-16C_50, F-15C +17 | Thrust | axis | in 'Throttle'</code>; a result shows at most 45 lines
+plus the titles of the rest, and its set id covers all of them.</p>
+<p><strong>Checks:</strong> an id counts only when a <code>RESULT</code> of this turn showed it; anything else is rejected, listed in the answer
+and sent back to the model as an error. An axis into a button relation (or the other way round) is skipped. Nothing
+is deleted (there is no delete tool), a relation the turn created and left empty is dropped at the end, and an
+unknown relation name gets &quot;Did you mean ...&quot;.</p>
+<p><strong>The system prompt</strong> (<code>DB/Llm/models.json</code> → <code>relationAssistant.system</code>, with a built-in copy in
+<code>EngineRelationAssistant.DefaultSystemPrompt</code>) explains relations, lists the tools in the JSON form above and sets the
+rules: only ids from <code>RESULT</code> lines; only actions that do exactly what was asked, never buttons in an axis relation,
+no side actions sharing a word (trim, friction, cutoff, mixture, propeller, brakes, zoom, lateral or vertical thrust,
+mining, turret); add a whole set only when every line fits; throttle, thrust, power lever, helicopter collective and
+spaceship forward/backward thrust are axes, a twin's left and right throttle both belong to an all-throttle relation;
+create only what was asked, never touch other relations; be quick, then <code>done</code> in plain words; a DCS id belongs to its
+aircraft: each RESULT line is one meaning with only the aircraft where the id means that, and the aircraft a line says
+were left out (&quot;same id means something else in n other aircraft&quot;) are never added through it.
+<code>relationAssistant.example</code> is one worked conversation (a &quot;Gear&quot; relation) in the exact format of a real turn.
+<code>--show-prompt</code> prints the conversation and the grammar without running anything.</p>
+<h3 id="without-the-model-the-offline-brain"><a class="anchor" href="#without-the-model-the-offline-brain">#</a>Without the model: the offline brain</h3>
+<p>The same box understands simple commands with <code>resolve</code>; anything else is answered with what needs the model (and
+nothing changes):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Throttle ALL: all throttle axes</code></td>
+<td>creates &quot;Throttle ALL&quot; (axis, from the words) with every resolved action</td>
+</tr>
+<tr>
+<td><code>... into one relation called Throttle ALL including collectives and spaceship forward/backward thrusters</code></td>
+<td>the name ends at &quot;including&quot;; each part (thrust, collective, forward/backward thrust) is resolved and added</td>
+</tr>
+<tr>
+<td><code>create Gear with landing gear toggle</code></td>
+<td>same, for a button relation</td>
+</tr>
+<tr>
+<td><code>add the collectives [to Throttle]</code></td>
+<td>adds to the named or the open relation</td>
+</tr>
+<tr>
+<td><code>remove War Thunder [from Throttle]</code></td>
+<td>removes the relation's actions whose game, aircraft or title has the words</td>
+</tr>
+<tr>
+<td><code>rename [Throttle] to Throttle ALL</code></td>
+<td>renames the named or the open relation</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>--llm auto</code> (the GUI's default with the model switched on) uses the model when it is usable and falls back to the
+offline brain when it is not or does not start (the answer says why); <code>--llm on</code> fails without a usable model; <code>--llm off</code> never starts it.</p>
+<h2 id="auto-build-relations-from-all-my-actions-whole-profile"><a class="anchor" href="#auto-build-relations-from-all-my-actions-whole-profile">#</a>Auto-build relations from all my actions (whole profile)</h2>
+<p>The button's subtitle says what happens: a wizard opens in place of the open relation's view (it comes back with
+<code>Close and back to my relation</code> at the wizard's top). Leaving the Relations page closes the wizard, the AI panels
+and the new relation form, so the page always opens in its normal state.</p>
+<p><code>Auto-build relations from all my actions...</code> has <a href="../reference/auto-group.html">Auto Group</a> (by function, with presets) and
+<a href="../reference/natural-language-grouping.html">Group by description</a> (several relations from one sentence). Auto Assign (&quot;Put
+relations on my buttons automatically&quot;) is on the Binds page.</p>
+<h2 id="function-map"><a class="anchor" href="#function-map">#</a>Function map</h2>
+<p><code>DB/Functions/function-map.json</code> is JoyPro's own knowledge of what an action does (no AI, deterministic, shipped with
+JoyPro like the function catalog). 188 functions in 13 categories (flight controls, engine, weapons, countermeasures,
+HOTAS switches, sensors and displays, navigation and autopilot, communication, view, lights, systems, spaceship,
+simulator), each with:</p>
+<ul>
+<li><code>id</code>, <code>name</code>, <code>category</code>, <code>kind</code> (axis / button / both) and <code>only</code> (no other kind can be it);</li>
+<li><code>synonyms</code> (English, matched as whole words in titles, plural <code>s</code> ignored) and <code>terms</code> per game or class
+(<code>&quot;StarCitizen&quot;: [&quot;strafe longitudinal&quot;]</code>, <code>&quot;class:heli&quot;: [&quot;throttle&quot;]</code>, <code>&quot;class:space&quot;: [&quot;boost&quot;]</code>);</li>
+<li><code>not</code>: words that rule the function out (&quot;Throttle Cutoff&quot; is no throttle axis, &quot;CB ...&quot; is a circuit breaker);</li>
+<li><code>bare</code> and <code>context</code> (2.6.0): synonyms too general on their own count in a title only together with one of the
+context words. &quot;Lock&quot; is a target lock in &quot;Auto lock on nearest aircraft&quot;, &quot;Radar - STT Lock&quot; or &quot;Target toggle
+lock&quot;, but not in &quot;Ramp Control Sequence Valve Lock - LOCK&quot; (CH-47F), &quot;Droppable tank lock&quot; or &quot;Lock pilot body
+position&quot;; the same for &quot;unlock&quot;, &quot;reject&quot; and &quot;deselect&quot; of the target unlock. Searches are not affected (a typed
+&quot;lock&quot; still finds the target lock);</li>
+<li><code>dirs</code>: the function's direction words (<code>noseup</code> = &quot;nose up&quot;, &quot;aft&quot;, &quot;pull&quot;), <code>sided</code> (per engine or wheel), <code>keyed</code>
+(PTT 1, OSB 12, UFC 7);</li>
+<li><code>slots</code>: the function catalog's slots it stands for (<code>&quot;cms_fwd_start_program_or_just_flare&quot;: &quot;@0.85&quot;</code> for flares);</li>
+<li><code>related</code>: functions a search lists along with it; plus <code>describe</code> (plain-English phrases, slang, paraphrases and
+German: &quot;fast travel&quot;, &quot;go to hyperspace&quot;, &quot;drop the wheels&quot;, &quot;Fahrwerk ausfahren&quot;; matched in queries only, never in
+titles), <code>plain</code> (everyday sentences: words of the function's search document only), <code>lexicon</code> and <code>queryFiller</code>
+for described queries.</li>
+</ul>
+<p><strong>Words people use.</strong> Every function has a phrase set in <code>engine/tests/fixtures/phrases/phrases.json</code>: its name,
+synonyms, slang and paraphrases, two or three everyday sentences (&quot;the button that makes my ship go really far really
+fast&quot;) and German phrases (2232 in all). <code>describe</code> and <code>plain</code> carry them into the map. <code>engine relations phrase-check --file &lt;phrases.json&gt; [--entries search|catalog|assistant|plan|describe] [--functions ...] [--kinds ...]</code> checks every
+phrase offline on every entry point (the search box, the catalog filter, the JoyPro assistant, Manage / Edit with AI,
+By description): the function must come first (second for a phrase that may also mean another function,
+<code>ambiguous_with</code>), and the top rows of each game must be it (the opposite direction counts as wrong). The quality
+gate's I11 runs it (docs/testing.md). A sentence (&quot;open the thing so I can climb out&quot;) is read as a whole: a name that
+covers only a small part of it does not decide when another function's document fits the whole sentence clearly
+better. Typos count only for long words JoyPro does not know (&quot;warp&quot; never finds &quot;Warm Air&quot; or &quot;Warn&quot;), and a generic
+word (drive, set, system, mode) alone never makes a match. The catalog filter finds rows by meaning too (the search,
+restricted to the open list). By description and Manage / Edit with AI use the map where the word rules know nothing
+or something else: every function, not only the catalog's.</p>
+<p>Every action of every game list on the PC is mapped at run time: the function catalog where it knows the action (slot
+-&gt; function), the map's rules for everything else (a synonym or game term in the title or the game's readable id, the
+<code>not</code> words, axis or button, the aircraft class: helicopter, spaceship), one function where clear, up to three with
+weights where not. A catalog slot shared by several functions keeps a function only when the title has none of that
+function's <code>not</code> words: the slot <code>atc_engage</code> (F/A-18 &quot;ATC&quot; = auto throttle control) is also linked to the ATC request
+of Star Citizen, and MSFS &quot;Arm Auto Throttle&quot; read as &quot;ATC / docking request&quot; (2.2.6 report); &quot;auto throttle&quot; is one of
+the ATC request's <code>not</code> words, and the autothrottle's <code>not</code> words now have &quot;request&quot;, &quot;docking&quot;, &quot;air traffic&quot;
+(regression: <code>engine\tests\smoke\functionmap.ps1</code>, search &quot;atc&quot; in MSFS 2024). New games, aircraft and catalog refreshes are covered by the rules, not by a fixed table. The mapped
+index is kept in <code>&lt;data&gt;\Cache\function-map.bin</code> and rebuilt when a game list, <code>DB\Functions</code> or the engine changes.</p>
+<p><strong>Primary axes.</strong> An axis function (pitch, roll, yaw, throttle, mixture, brakes ...) has a canonical axis per game: an
+axis action whose title has nothing but the function's name, synonyms or game terms, axis words (<code>axis</code>, <code>set</code>,
+<code>control</code>, <code>joystick</code>, <code>all engines</code>, MSFS <code>EX1</code>), the two ends of the axis (<code>Pedals: left / right pedal</code>) and, for a
+function per engine or wheel, a side or engine number, and that mainly is this function (weight 0.9 or more). MSFS
+<code>AXIS ELEVATOR SET</code> / <code>Elevator Axis</code>, FSX <code>Elevator (pitch) axis</code>, DCS <code>Pitch</code>, IL-2 <code>Plane control: pitch</code>, Star
+Citizen <code>v pitch</code> are primary; a variant has a word of its own and is not: <code>AXIS BURNER PITCH SET</code> (balloon),
+<code>GYROSCOPE PITCH AXIS</code>, <code>SET CYCLIC LONGITUDINAL AXIS</code>, <code>Pitch Axis (Alternate)</code>, <code>Copilot pitch</code>, <code>inpmc_pitch</code>. Among
+primaries the name before later synonyms, the lever for all engines before one engine, and the function catalog's own
+pick before an axis only the rules found (MSFS <code>KEY_AXIS_ELEVATOR_SET</code> before the older <code>KEY_ELEVATOR_SET</code>). Search
+(<code>EngineFunctionMap.PrimaryRank</code>, <code>EngineRelationSearch</code>) puts the primary axis first in its game when the query is
+about that one function by its main word (<code>pitch</code>, <code>throttle</code>, <code>rudder</code>) or describes it; asked by a variant's word
+(<code>collective</code>, <code>elevator</code>) the rows with that word lead and the primary axis only leads the other synonym rows. A
+query about two functions (<code>cut the throttle</code>), with a direction (<code>pitch up</code>) or a related function gets no primary
+boost. <code>relations resolve</code> ranks the same way. The <code>not</code> words keep the look-alikes out of the flight axes altogether:
+balloon burner, gyroscope axes, flight director and AP pitch reference, ADI / horizon / boresight adjustment, STAB
+AUG, head tracker, turret, Star Citizen's character customizer and EVA, DCS vehicle pedals.</p>
+<p>On the lists of the development PC (80 327 actions of 31 games) 73 % of all actions map to a function (95 % of the
+FSX/P3D lists, 89 % of War Thunder, 84 % of Falcon BMS, 72 % of DCS; the rest are panel knobs, cameras and menus).
+<code>tools\relations\check-function-map.ps1</code> measures coverage, search quality on <code>tools\relations\search-eval.tsv</code> (218
+name, synonym, game-term, direction, described, held-out and typo queries; <code>pitch</code>, <code>roll</code>, <code>yaw</code>, <code>rudder</code> and
+<code>throttle</code> also name the first row of every game: 107 of 107 right on the development PC, 85 before the primary axes)
+and mapping precision on the hand-labelled <code>tools\relations\function-labels.tsv</code>.</p>
+<h2 id="engine-api"><a class="anchor" href="#engine-api">#</a>Engine API</h2>
+<p>The commands the GUI and the local-model layer call. All print JSON without <code>--text</code> (stdout, or the file of
+<code>--out</code>); all are read-only. <code>--profile</code> is optional: it only fills <code>InRelations</code> and the relation of <code>suggest</code>.
+A node spec for <code>relations add --node</code> / <code>suggest apply --add</code> is <code>Game:Id:Plane1|Plane2</code> (DCS: the aircraft; other
+games: the game id once).</p>
+<p><code>relations search &quot;&lt;words&gt;&quot; [--game g1|g2] [--plane p1|p2] [--category &lt;name&gt;] [--axis|--button] [--limit N] [--per-game N] [--batch &lt;file&gt;]</code> (exit 1 when there are neither words nor a category):</p>
+<pre><code class="language-json">{ &quot;Query&quot;: &quot;throtle&quot;, &quot;Category&quot;: &quot;&quot;, &quot;DidYouMean&quot;: &quot;throttle&quot;,
+  &quot;Functions&quot;: [&quot;Throttle&quot;, &quot;Helicopter engine throttle / power lever&quot;], &quot;FunctionIds&quot;: [&quot;throttle&quot;, &quot;engine_power_lever&quot;],
+  &quot;Resolved&quot;: [ { &quot;Id&quot;: &quot;throttle&quot;, &quot;Name&quot;: &quot;Throttle&quot;, &quot;Category&quot;: &quot;engine&quot;, &quot;Kind&quot;: &quot;axis&quot;, &quot;Dir&quot;: &quot;&quot;, &quot;Term&quot;: &quot;Throttle&quot;,
+                  &quot;Related&quot;: false, &quot;Described&quot;: false } ],
+  &quot;Results&quot;: [ { &quot;Game&quot;: &quot;DCS&quot;, &quot;Id&quot;: &quot;a2087cdnil&quot;, &quot;Title&quot;: &quot;Flight Control Collective&quot;, &quot;Category&quot;: &quot;&quot;, &quot;IsAxis&quot;: true,
+                 &quot;Planes&quot;: [&quot;CH-47F&quot;, &quot;UH-1H&quot;], &quot;Score&quot;: 850, &quot;Match&quot;: &quot;synonym&quot;, &quot;Why&quot;: &quot;Function 'Throttle axis' ('collective')&quot;,
+                 &quot;Function&quot;: &quot;throttle&quot;, &quot;Dir&quot;: &quot;&quot;, &quot;Term&quot;: &quot;collective&quot;, &quot;Functions&quot;: [&quot;throttle&quot;], &quot;Weight&quot;: 1.0,
+                 &quot;InRelations&quot;: [] } ],
+  &quot;Groups&quot;: [ { &quot;Game&quot;: &quot;DCS&quot;, &quot;Count&quot;: 16, &quot;Total&quot;: 760, &quot;Best&quot;: 1330, &quot;Functions&quot;: 16 } ],
+  &quot;FunctionGroups&quot;: [ { &quot;Function&quot;: &quot;throttle&quot;, &quot;Name&quot;: &quot;Throttle&quot;, &quot;Count&quot;: 70, &quot;Games&quot;: [&quot;DCS&quot;, &quot;WarThunder&quot;] } ],
+  &quot;Total&quot;: 1272, &quot;More&quot;: true, &quot;ElapsedMilliseconds&quot;: 101, &quot;LoadMilliseconds&quot;: 190, &quot;Warnings&quot;: [], &quot;Errors&quot;: [] }
+</code></pre>
+<ul>
+<li><code>Primary</code>: the function's main control in its game, asked for by the function's own words (MSFS <code>AXIS ELEVATOR SET</code>
+for <code>pitch</code>); it leads its game. <code>FunctionLabel</code>: what the row was found as (<code>Pitch axis (elevator)</code>, empty for word
+matches); <code>Display</code>: the title to show, with <code> — &lt;FunctionLabel&gt;</code> when the title does not name the function.</li>
+<li><code>Match</code>: <code>exact</code> (the title is the query), <code>function</code> (the query's function, by its own words), <code>synonym</code> (by a
+synonym or game term), <code>described</code> (the query describes the function), <code>words</code> (a plain word match), <code>category</code>.
+<code>Results</code> are ranked by <code>Score</code>; <code>Groups</code> / <code>FunctionGroups</code> give the order of the groups.</li>
+<li><code>Functions</code> of a row: every function the action is (weight 0.5 or more), <code>id</code> or <code>id:dir</code>.</li>
+<li>DCS rows (also of <code>resolve</code> and <code>suggest</code>): <code>Planes</code> are the aircraft where the id has the row's meaning; <code>Variants</code>
+lists every meaning of the id: <code>{ &quot;Title&quot;, &quot;Category&quot;, &quot;Match&quot;: &quot;same|near|differs&quot;, &quot;Note&quot;, &quot;Included&quot;, &quot;Planes&quot; }</code>
+(<code>Included</code>: in the row); <code>Near</code> and <code>SameIdDifferent</code> count the near aircraft and those left out, <code>MeaningNote</code> says
+it in words (&quot;same id, different meaning in 14 aircraft (left out)&quot;).</li>
+</ul>
+<p><code>relations browse [--game &lt;game&gt; [--plane p1|p2]] [--axis|--button]</code> (alias <code>relations catalog</code>): without a game every
+game with its aircraft (<code>Games: [{ Game, Actions, InRelations, Planes: [{ Plane, Actions, InRelations }] }]</code>); with a
+game (DCS: and its aircraft) every action as search rows (<code>Results</code>, the aircraft's own title and category, <code>Match</code>
+&quot;category&quot;, <code>InRelations</code>, <code>Variants</code>), <code>Categories: [{ Name, Count, InRelations }]</code> and <code>CategorySource</code> (&quot;game&quot;, or
+&quot;joypro&quot; for games without categories). The table header of a game list is no action.</p>
+<p><code>relations suggest --all --missing [--min ...] [--per-relation N]</code> (default 25, 0 = all): per relation (<code>Relations</code>)
+<code>IsAxis</code>, <code>Suggestions</code> (free missing ones), <code>NewGames</code>, <code>UsedElsewhere</code> and <code>Items</code> (the suggestions, new games first).
+Every suggestion of <code>relations suggest</code> also has <code>Missing</code> (&quot;game&quot;, &quot;aircraft&quot; or &quot;&quot;), <code>NewGame</code> and <code>NewPlanes</code>.</p>
+<p><code>relations aircraft &lt;relation&gt; [--node game:id]</code>: every action with every aircraft that has its id:</p>
+<pre><code class="language-json">{ &quot;Relation&quot;: &quot;Pitch&quot;, &quot;Changed&quot;: 0, &quot;Nodes&quot;: [ { &quot;Game&quot;: &quot;DCS&quot;, &quot;Id&quot;: &quot;a2001cdnil&quot;, &quot;Title&quot;: &quot;Pitch&quot;, &quot;Category&quot;: &quot;Flight Control&quot;,
+    &quot;Active&quot;: 3, &quot;Available&quot;: 4, &quot;Differs&quot;: 0, &quot;DiffersSameFunction&quot;: 0, &quot;Near&quot;: 0, &quot;Excluded&quot;: 1, &quot;Mixed&quot;: false, &quot;Badge&quot;: &quot;3 of 4 aircraft&quot;,
+    &quot;Aircraft&quot;: [ { &quot;Plane&quot;: &quot;UH-1H&quot;, &quot;Title&quot;: &quot;Collective&quot;, &quot;Category&quot;: &quot;Flight Control&quot;, &quot;State&quot;: &quot;off&quot;, &quot;Match&quot;: &quot;differs&quot;, &quot;Note&quot;: &quot;&quot;,
+                    &quot;SameFunction&quot;: false } ] } ], &quot;Errors&quot;: [] }
+</code></pre>
+<p><code>State</code>: <code>on</code>, <code>off</code> (in the action, switched off), <code>absent</code> (has the id, not in the action); <code>Match</code> against the
+action's meaning, <code>unknown</code> when the id is not in that aircraft's list. <code>relations aircraft set &lt;relation&gt; --node game:id [--on p1|p2] [--off p3]</code> changes one action's aircraft in one step (one undo step; <code>--on</code> also adds aircraft).</p>
+<p><strong>One action on in two relations.</strong> The same action of the same aircraft switched on in two relations is the same game
+command on two inputs (DCS writes both binds). The load correction's &quot;add the DB's other aircraft of an id&quot; step
+(<code>--auto-add-db-items</code>, runs when the profile's DB fingerprint differs: since 2.3.1 the fingerprint covers only the
+command lists the correction reads, DCS, IL-2 and Star Citizen, plus the version of the correction rules; before, JoyPro's
+own release data (device catalog, drawings, cockpits) counted too, so every update corrected every profile again; since
+2.6.0 a save of a command that loads without corrections, such as <code>devices exchange</code>, keeps the fingerprint the profile
+had instead of stamping the current one, so the next load still corrects) puts a new aircraft into a
+node switched on only when no other relation has that action of that aircraft on and, in DCS, its title of the id means
+what the node's switched-on aircraft mean (same / near / same function); otherwise it goes in switched off (&quot;left out&quot;).
+Before 2.3.1 it switched the aircraft on in every node of the id, so a profile could collect such duplicates without
+any user action (a tester's DCS import of 21 Oct added 330 aircraft, 77 of them duplicates such as the AH-64 force trim
+on a MFBB and a MOZA button).</p>
+<p><code>relations duplicates</code> lists them as cards per relation pair (<code>Groups</code>: the relations with device and input, the actions
+with their aircraft as the cockpit catalog names them, <code>Suggested</code> or <code>SuggestOff</code>, <code>Confidence</code> 0-100, <code>Reasons</code>) and as
+single actions (<code>Duplicates</code>, key <code>game|id|aircraft</code>). Fixes, each one profile version (one undo step):
+<code>--keep &lt;relation&gt; --keys &quot;k;k&quot;</code> (or <code>--node game:id --plane p1|p2</code>), <code>--off</code>, <code>--keep-both</code> (saved in the profile,
+<code>Pr0file.KeptDuplicates</code>: no warning while exactly these relations have it; <code>--forget-kept</code> warns again), <code>--rule suggested|name|first|device:&lt;kind&gt;|relation:&lt;words&gt; [--min-confidence N] [--apply]</code>, <code>--instruction &quot;&lt;words&gt;&quot; [--llm off|auto|on] [--apply]</code> (phrase rules: &quot;keep <words> in <relation words>&quot;, &quot;everything else in ...&quot;, &quot;switch off ...&quot;,
+&quot;prefer the throttle&quot;; the local AI model only rewrites what they do not understand into such phrases), <code>--changes &quot;key=&gt;relation;key=&gt;-&quot;</code> (a preview's ticked changes exactly as shown), <code>--keys-only</code> (only the keys, for the
+before/after comparison of imports). Without <code>--apply</code> a rule or instruction is a preview (<code>Changes</code>).</p>
+<p><strong>Confidence.</strong> The profile history decides first: going back from the newest version, the first one where only one of
+the relations had the action of the aircraft on is where it belongs (96), none of them (94: switch it off in all) - unless
+the version that brought the second one was the user's own edit of that relation (its label names it, or a small
+summary does; then only the reason &quot;you added it yourself&quot;). Without the history: a relation where the aircraft is alone
+in its node (the load correction never makes such a node), the relation's function (chip: set, named, covered) or what
+its name says (function map) against the action's function, the aircraft's meaning of the id against the node's other
+aircraft; a button position (&quot;Different functions per aircraft&quot;) is neutral; 92 only for &quot;alone here, means something
+else there&quot;, 85 for alone against not alone, else at most 80 by the lead. A relation pair the user kept before lowers it
+by 25. <code>relations duplicates --evaluate &lt;older.pr0file&gt; [--no-history]</code> measures it against the version before the
+duplicates came: on the tester's profile (81 duplicates, truth = his version of 21 Oct before the import) every
+suggestion is right at every threshold with the history; without it 22 of 22 at 90% and more, 23 of 23 at 85%, 24 of 26
+at 80% (the other 2 are right binds too: none of the relations had them, they stay in the one of their function); on two
+more profiles corrupted by the old load correction (414 and 194 duplicates) every suggestion at 85% and more is right.</p>
+<p><strong>Export page, &quot;Problems found by the check&quot;</strong> (<a href="../reference/ui-check.html">docs/ui/check.md</a>, Views/Controls/CheckProblemsPanel.axaml):
+since 2.5.0 every card in plain words - a short title (&quot;Same command on two buttons&quot;), the buttons as device · button with
+their relation (&quot;LEFT VPC Throttle MT-50 CM · BTN 9 ('A10 - DMS Down') ↔ VKB-Sim Gunfighter · BTN 16 ('Sensor Select
+Aft')&quot;), one sentence what happens in the game, aircraft -&gt; command (3 rows, &quot;Show all&quot;), &quot;Caused by: <history entry> on
+<date>&quot; when the profile history tells (<code>CausedBy</code>, <code>CausedSummary</code>, <code>CausedAt</code> of the group: the version that brought
+most of its actions into the second relation; one whose change names other relations only is skipped), one recommended
+fix (the suggestion), &quot;Keep only on X&quot; / &quot;Keep both&quot; / &quot;More&quot; (switch it off on both buttons), an &quot;Open '<relation>'&quot;
+button per relation that opens it with exactly the card's commands and aircraft marked (Back returns to the card), and
+the confidence with its reasons in the collapsed details. Only aircraft ticked in both relations count. A command the
+aircraft's current list no longer has is <code>Unknown</code> (its <code>Title</code> is the name the relation stored): the card says &quot;unknown
+command '...'&quot; and offers &quot;Remove the unknown command&quot; / &quot;Find similar&quot;. Fixes for many: &quot;Fix automatically when JoyPro
+is at least X% sure&quot; (slider, default 90, saved) with &quot;Fix the sure ones (n of m at X% or more)&quot;, &quot;Fix all with a rule&quot;,
+&quot;Fix with AI&quot; - each shows a preview of every change with a tick and applies the ticked ones in one step. &quot;Also right
+after imports and take-overs&quot; (off at first, saved) fixes the sure ones of an import at once. Imports (DCS, IL-2, Star
+Citizen, the other games) and watcher take-overs compare the duplicates before and after and say on the Relations page
+when they put actions into a second relation (&quot;Review them&quot; opens the check).</p>
+<h3 id="the-check-s-errors"><a class="anchor" href="#the-check-s-errors">#</a>The check's errors</h3>
+<p><code>relations conflicts [--keys &quot;k;k&quot;] [--keep &lt;relation&gt; | --keep-action &lt;id&gt; | --off | --keep-both | --remove-actions] [--include-kept]</code> (<code>engine/EngineCheckConflicts.cs</code>) gives profile validate's two errors in detail; validate prints the
+same lines from it:</p>
+<ul>
+<li><code>InputConflicts</code>: an input (device, input, modifiers) bound in several relations that all have an action of the same
+aircraft on (<code>Key</code> &quot;game:plane§device§input[§modifier]&quot;, <code>Message</code> = the validate line, <code>Sides</code>: each relation with its
+actions <code>{ Id, Title, Unknown }</code>). The app: &quot;One button does two things&quot;, one card per input and relation set with the
+aircraft in its table. <code>--keep &lt;relation&gt;</code> switches the aircraft off in the other relations of the conflict.</li>
+<li><code>ActionConflicts</code>: a relation with two actions of one aircraft (or game) on (<code>Key</code> &quot;game|plane|relation&quot;). The app:
+&quot;One button runs two commands&quot;. <code>--keep-action &lt;id&gt;</code> switches the relation's other actions of the game off for the
+aircraft; <code>--off</code> all of them. A game without aircraft lists (War Thunder, MSFS, Arma ...) names the game as the
+aircraft of all its actions; there actions of different vehicle classes (the function map's class: helicopter,
+spaceship, else fixed wing) are different vehicles, as the aircraft of DCS are: the plane's throttle and the
+helicopter's collective on one axis are no error (2.6.0). Only actions of the same class are, and the conflict lists
+just those. The same holds for <code>InputConflicts</code>: two relations on one input count only when they carry actions of
+the same vehicle class of such a game.</li>
+<li><code>--keep-both</code> saves &quot;input|<key>|<relations>&quot; / &quot;active|<key>|<ids>&quot; in <code>Pr0file.KeptDuplicates</code>: the check does not
+name it again while exactly these relations (actions) have it. <code>--remove-actions --keys &quot;game|id|plane;...&quot;</code> takes
+actions (unknown ones) out of every relation. Each fix is one profile version (one undo step).</li>
+</ul>
+<h3 id="dismissed-suggestions"><a class="anchor" href="#dismissed-suggestions">#</a>Dismissed suggestions</h3>
+<p><code>Pr0file.DismissedSuggestions</code> (&quot;relation<TAB>game<TAB>id<TAB>plane&quot;, <code>engine/EngineDismissedSuggestions.cs</code>): what the
+user dismissed for a relation. <code>relations suggest</code> does not propose it and lists it under <code>Dismissed</code>; Auto Group and the
+grouping in words keep it out of that relation; <code>suggest apply --remove</code> (Restore) takes it off the list; a renamed
+relation keeps it. Opening a profile (<code>profile load</code>) takes every action with no aircraft ticked out of its relation and
+puts its aircraft onto this list (before 2.5.0 a dismissed suggestion was such an action): one history step of its own
+(&quot;Removed 12 actions with no aircraft ticked from 9 relations&quot;), logged, Undo brings them back, nothing on the next
+load. An action with one aircraft ticked and every relation (also one without a bind) always stays.</p>
+<p><code>relations check-aircraft [--relation &lt;name&gt;] [--apply] [--include-same-function]</code>: <code>{ Relations, Nodes, AffectedNodes, AffectedRelations, AircraftToDrop, AircraftSameFunction, Applied, Dropped, Found: [ { Relation, Game, Id, Title, Category, Active, Available, Meanings: [variants], Drop: [planes], SameFunction: [planes] } ] }</code>. <code>--apply</code> switches the
+<code>Drop</code> aircraft off.</p>
+<p><code>relations meanings [--game g] [--top N]</code>: per game the lists, ids, ids shared by several lists, ids with another
+meaning in some (<code>Mixed</code>, <code>AircraftLeftOut</code>), ids with near variants, and the ids with the most meanings.</p>
+<ul>
+<li><code>--batch &lt;file&gt;</code>: one query per line (or the second column of a tab-separated line); prints a JSON array of results.</li>
+</ul>
+<p><code>relations resolve &quot;&lt;query&gt;&quot; [--game g1|g2] [--plane p1|p2] [--axis|--button] [--per-game N]</code> (default 25 per game,
+0 = all): the query as function ids and the matching actions, grouped by game, best game first. The local-model
+layer's tool:</p>
+<pre><code class="language-json">{ &quot;Query&quot;: &quot;drop countermeasures&quot;, &quot;DidYouMean&quot;: &quot;&quot;, &quot;Direction&quot;: &quot;&quot;, &quot;Extra&quot;: [],
+  &quot;Functions&quot;: [ { &quot;Id&quot;: &quot;cm_dispense&quot;, &quot;Name&quot;: &quot;Countermeasures dispense&quot;, &quot;Category&quot;: &quot;countermeasures&quot;, &quot;Kind&quot;: &quot;button&quot;,
+                   &quot;Dir&quot;: &quot;&quot;, &quot;Term&quot;: &quot;countermeasure&quot;, &quot;Score&quot;: 10, &quot;Related&quot;: false, &quot;Described&quot;: false, &quot;Synonyms&quot;: [&quot;...&quot;] } ],
+  &quot;Games&quot;: [ { &quot;Game&quot;: &quot;WarThunder&quot;, &quot;Count&quot;: 3, &quot;Actions&quot;: [ { &quot;Game&quot;: &quot;WarThunder&quot;, &quot;Id&quot;: &quot;ID_FLARES&quot;, &quot;Title&quot;: &quot;Fire countermeasures&quot;,
+      &quot;Category&quot;: &quot;Aircraft&quot;, &quot;IsAxis&quot;: false, &quot;Planes&quot;: [&quot;WarThunder&quot;], &quot;Function&quot;: &quot;cm_dispense&quot;, &quot;Dir&quot;: &quot;&quot;, &quot;Weight&quot;: 0.8,
+      &quot;Source&quot;: &quot;catalog&quot;, &quot;Term&quot;: &quot;countermeasure&quot;, &quot;Why&quot;: &quot;Same function: Countermeasures dispense (function catalog)&quot; } ] } ],
+  &quot;Total&quot;: 208, &quot;ElapsedMilliseconds&quot;: 12, &quot;Warnings&quot;: [], &quot;Errors&quot;: [] }
+</code></pre>
+<p><code>relations functions [--category &lt;id&gt;] [--query &quot;&lt;words&gt;&quot;] [--coverage] [--dump &lt;file.tsv&gt;]</code>: the map itself:</p>
+<pre><code class="language-json">{ &quot;Version&quot;: 1, &quot;Source&quot;: &quot;...\\DB\\Functions\\function-map.json&quot;,
+  &quot;Totals&quot;: { &quot;Functions&quot;: 188, &quot;Synonyms&quot;: 3625, &quot;Terms&quot;: 151, &quot;Actions&quot;: 80307, &quot;Mapped&quot;: 58820 },
+  &quot;Categories&quot;: { &quot;engine&quot;: &quot;Engine and power&quot; },
+  &quot;Functions&quot;: [ { &quot;Id&quot;: &quot;throttle&quot;, &quot;Name&quot;: &quot;Throttle&quot;, &quot;Category&quot;: &quot;engine&quot;, &quot;CategoryName&quot;: &quot;Engine and power&quot;, &quot;Kind&quot;: &quot;axis&quot;,
+                   &quot;Only&quot;: &quot;&quot;, &quot;Description&quot;: &quot;...&quot;, &quot;Synonyms&quot;: [&quot;throttle&quot;, &quot;thrust&quot;, &quot;collective&quot;], &quot;Terms&quot;: { &quot;StarCitizen&quot;: [&quot;strafe longitudinal&quot;] },
+                   &quot;Directions&quot;: [&quot;increase&quot;, &quot;decrease&quot;, &quot;max&quot;, &quot;min&quot;], &quot;Slots&quot;: [&quot;throttleleft:left&quot;], &quot;Related&quot;: [&quot;engine_power_lever&quot;],
+                   &quot;Actions&quot;: 1305, &quot;Games&quot;: { &quot;DCS&quot;: 760, &quot;WarThunder&quot;: 2 } } ],
+  &quot;Coverage&quot;: [ { &quot;Game&quot;: &quot;WarThunder&quot;, &quot;Planes&quot;: 1, &quot;Actions&quot;: 290, &quot;Mapped&quot;: 259, &quot;Catalog&quot;: 109, &quot;Rules&quot;: 150, &quot;Percent&quot;: 89.3,
+                  &quot;Functions&quot;: 79, &quot;Unmapped&quot;: [&quot;...&quot;] } ],
+  &quot;LoadMilliseconds&quot;: 190, &quot;ReadMilliseconds&quot;: 185, &quot;FromCache&quot;: true, &quot;ElapsedMilliseconds&quot;: 230, &quot;Warnings&quot;: [] }
+</code></pre>
+<p><code>relations suggest &lt;relation&gt;</code> (see <a href="#suggested-for-this-relation-no-ai">Suggested for this relation</a>) adds <code>MapFunctions</code> (what the
+relation is in the function map: <code>Id</code>, <code>Name</code>, <code>Dir</code>, <code>Weight</code>, <code>Reference</code>) and per suggestion <code>Function</code> (the map's
+function id when the map proposed it); <code>Source</code> is <code>function map</code> for those rows, their <code>Why</code> reads
+<code>Same function: Throttle axis</code>. <code>Dismissed</code>, <code>InOtherRelations</code> and <code>suggest apply</code> are unchanged.</p>
+<h2 id="tests"><a class="anchor" href="#tests">#</a>Tests</h2>
+<ul>
+<li>Engine: <code>engine/tests/smoke/functionmap.ps1</code> (the function map on fixtures: a query table for search / resolve
+with names, synonyms, game terms, directions, descriptions and a typo, the primary axis first in its game on MSFS 2024
+and FSX fixtures, as the GUI asks (<code>--limit 200 --per-game 12</code>, with and without <code>--axis</code>; balloon burner, gyroscope,
+prop pitch, AP / flight director pitch and trim not read as pitch), the map cache, suggestions from the map, Auto
+Group's map rows); real game lists (not in the smoke test): <code>powershell -File tools\relations\check-function-map.ps1 [-DataDir &lt;copy&gt;]</code> (coverage per game, search quality on <code>tools\relations\search-eval.tsv</code>, mapping precision on
+<code>tools\relations\function-labels.tsv</code>).</li>
+<li>Engine: <code>engine/tests/smoke/searchranking.ps1</code> (real game lists): <code>pitch</code>, <code>roll</code>, <code>yaw</code>, <code>throttle</code>, <code>brakes</code> with
+and without <code>--axis</code> as the GUI asks: the main control first and <code>Primary</code> in MSFS 2020 / 2024, X-Plane 11 / 12, DCS,
+FSX / P3D, IL-2, War Thunder and Falcon BMS; in every game the function's rows before the word matches; MSFS's
+<code>AXIS ELEVATOR SET — Pitch axis (elevator)</code>, the balloon's <code>BURNER PITCH INC</code> a plain word match.</li>
+<li>Engine: <code>engine/tests/smoke/peraircraft.ps1</code> (same id, different meaning, on fixtures in
+<code>engine\tests\fixtures\per-aircraft\DB</code> where <code>a2001cdnil</code> is &quot;Pitch&quot; in three jets and &quot;Collective&quot; in the UH-1H, a
+cockpit switch id is another switch per module, <code>dnilp95u215</code> is nose up / nose down, and <code>Pitch Trim Up</code> / <code>Trim pitch up</code> are near): the search splits and reports, resolve, suggest, the assistant, Auto Group and a node spec
+without aircraft leave the helicopter out, <code>relations aircraft [set]</code>, the DCS export writes only the selected
+aircraft, <code>relations check-aircraft</code> finds and repairs a mixed action.</li>
+<li>Engine: <code>engine/tests/smoke/relationbuilder.ps1</code> (suggestions, search, chat) and <code>relationassistant.ps1</code>: the
+offline commands (create and fill, rename, remove a game, a free sentence that needs the model, <code>--llm on</code> without a
+model, <code>--show-prompt</code>), and the tool loop through <code>engine llm fake-server</code> with a scripted conversation
+(<code>JOYPRO_LLM_FAKE_RESPONSE</code>, answers separated by a line <code>#next</code>): one model process for the whole turn, six
+requests, an invented id rejected, a button skipped in an axis relation, an invalid answer answered with an error,
+the step limit, a repeated call refused, an empty new relation dropped, the model process gone afterwards.</li>
+<li>GUI: <code>gui/JoyPro.Gui.Tests/RelationBuilderTests.cs</code> (search as you type over every game, game chips, ticks by row
+and by game, Add selected, a new relation from ticked axes, mixed kinds refused, rename in place, suggestions add /
+add all / dismiss / restore / move / misfits, the assistant applied at once with its summary, rejected ids and one
+Undo, Expand with AI, the offline path and &quot;needs the model&quot;, Auto Assign on the Binds page) and
+<code>AircraftSelectorTests.cs</code> (the aircraft selector: All / None / Only same title / Invert / filter, Shift+click ranges,
+the badge, a row that adds only its ticked aircraft, ticks kept over a new search, <code>Show n more</code> / <code>Show less</code> /
+<code>Collapse all</code>, an action's <code>Apply</code> in one engine run, the profile check notice and its repair) and
+<code>RelationBuilderRenderTests.cs</code> (the page at 1280x800 and 1920x1080: no horizontal scroll bar, every button inside
+the window, a refresh of the list keeps the relation and the steps never show over its actions; with
+<code>JOYPRO_UI_DESIGN_OUT</code> the pictures below). <code>RelationStudioRealProfileRenderTests.cs</code> renders a real profile through
+the real engine (opt-in: <code>JOYPRO_REL_REAL_OUT</code>, <code>JOYPRO_REL_REAL_ENGINE</code>, <code>JOYPRO_REL_REAL_PROFILE</code>, a copy is used).</li>
+</ul>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img src="../assets/docs/docs-ui-relation-builder-add-1280-dark.webp" alt="Add actions" /></td>
+<td><img src="../assets/docs/docs-ui-relation-builder-new-1280-dark.webp" alt="New relation" /></td>
+</tr>
+<tr>
+<td><img src="../assets/docs/docs-ui-relation-builder-assistant-1280-dark.webp" alt="The JoyPro assistant" /></td>
+<td><img src="../assets/docs/docs-ui-relation-builder-1920-light.webp" alt="Light theme" /></td>
+</tr>
+</tbody>
+</table></div>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#the-page">The page</a></li><li class="l2"><a href="#the-function-chip">The function chip</a></li><li class="l2"><a href="#binds-page-what-the-relation-does">Binds page: what the relation does</a></li><li class="l2"><a href="#filters-relations-and-binds-pages">Filters (Relations and Binds pages)</a></li><li class="l2"><a href="#browse-the-catalog">Browse the catalog</a></li><li class="l2"><a href="#make-a-relation-step-by-step">Make a relation, step by step</a></li><li class="l3"><a href="#how-the-search-finds-things">How the search finds things</a></li><li class="l2"><a href="#same-id-different-meaning">Same id, different meaning</a></li><li class="l2"><a href="#suggested-for-this-relation-no-ai">Suggested for this relation (no AI)</a></li><li class="l3"><a href="#recommended-action">Recommended action</a></li><li class="l3"><a href="#suggest-missing">Suggest missing</a></li><li class="l2"><a href="#the-joypro-assistant">The JoyPro assistant</a></li><li class="l3"><a href="#with-the-local-ai-model-a-tool-loop">With the local AI model: a tool loop</a></li><li class="l3"><a href="#without-the-model-the-offline-brain">Without the model: the offline brain</a></li><li class="l2"><a href="#auto-build-relations-from-all-my-actions-whole-profile">Auto-build relations from all my actions (whole profile)</a></li><li class="l2"><a href="#function-map">Function map</a></li><li class="l2"><a href="#engine-api">Engine API</a></li><li class="l3"><a href="#the-check-s-errors">The check&#x27;s errors</a></li><li class="l3"><a href="#dismissed-suggestions">Dismissed suggestions</a></li><li class="l2"><a href="#tests">Tests</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

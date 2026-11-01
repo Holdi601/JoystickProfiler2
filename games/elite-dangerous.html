@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elite Dangerous · JoyPro</title>
+<meta name="description" content="Elite Dangerous with JoyPro: import and export the Ship preset&#x27;s binds, the two inputs per action and the &quot;Not written&quot; marks, devices by USB id, invert, dead zone and throttle range, and the game&#x27;s yaw-into-roll and head look settings.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details open><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a class="current" href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Games</div><h1>Elite Dangerous </h1><div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span><button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button><button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div></div>
+<div class="content">
+<p>Elite Dangerous keeps its controls in presets, one <code>.binds</code> file each, and every action has two places for an input:
+Primary and Secondary. JoyPro reads the flight binds of your Ship preset into your profile and writes them back into
+the same file, in place. SRV, on-foot, camera and menu binds stay as they are. When both places of an action are
+taken, JoyPro says so instead of overwriting one.</p>
+<div class="video-slot" data-video="game-elite-dangerous"><div class="video-icon">&#9654;</div><div><strong>Video: Elite Dangerous: import, relations, export</strong><br>Coming later: one YouTube video per topic, recorded with the English interface, with subtitles in every language JoyPro speaks.</div></div>
+<div class="game-card"><details class="support-card" open><summary><strong>Elite Dangerous</strong> <span class="lvl lvl-native">native (its own bind files)</span></summary><dl class="facts"><dt>Support</dt><dd>native (its own bind files)</dd><dt>Engine command</dt><dd><a href="../cli/elite.html"><code>engine elite</code></a></dd><dt>Bind file</dt><dd><code>%LOCALAPPDATA%\Frontier Developments\Elite Dangerous\Options\Bindings\&lt;preset&gt;.4.x.binds</code> (XML)</dd><dt>Command list from</dt><dd>the stock and your <code>.binds</code>; <code>DeviceMappings.xml</code> of the install</dd><dt>In-game test</dt><dd>23/23 steps passed (2026-10-11)</dd></dl><ul class="features"><li class="yes"><span class="m">✓</span> Import</li><li class="yes"><span class="m">✓</span> Export</li><li class="yes"><span class="m">✓</span> Keyboard binds</li><li class="yes"><span class="m">✓</span> Modifiers</li><li class="yes"><span class="m">✓</span> Command list built on your PC</li><li class="yes"><span class="m">✓</span> Game watcher</li><li class="yes"><span class="m">✓</span> Axis curves and dead zones</li><li class="yes"><span class="m">✓</span> Game control settings</li><li class="no"><span class="m">✗</span> In-game force feedback settings</li><li class="no"><span class="m">✗</span> Force feedback from telemetry</li><li class="part"><span class="m">◐</span> Telemetry recording<span class="n">The game's telemetry has no world position: recorded and exported as CSV, no Tacview (ACMI) track.</span></li><li class="yes"><span class="m">✓</span> Virtual joystick (vJoy)</li><li class="part"><span class="m">◐</span> Virtual Xbox pad</li><li class="yes"><span class="m">✓</span> Virtual functions</li><li class="yes"><span class="m">✓</span> Setup wizard / Auto Assign</li><li class="yes"><span class="m">✓</span> Cockpits</li><li class="yes"><span class="m">✓</span> Cheat sheets</li><li class="yes"><span class="m">✓</span> In-game test</li></ul></details><p class="muted small">From the support matrix, generated from the engine's code: <a href="../games/support.html">all games</a>.</p></div>
+<div class="diagram"><pre class="mermaid">flowchart LR
+  S[&quot;StartPreset.4.start&lt;br/&gt;line 2 = Ship preset&quot;] --&gt; F[&quot;Custom.4.x.binds&lt;br/&gt;(newest x)&quot;]
+  P[&quot;Your profile&quot;] --&gt; E[&quot;engine elite export&quot;]
+  F --&gt; E
+  E --&gt; B{&quot;Action: Primary&lt;br/&gt;and Secondary&quot;}
+  B --&gt;|&quot;a place is free&lt;br/&gt;or already yours&quot;| W[&quot;Bind written&quot;]
+  B --&gt;|&quot;both places taken&quot;| N[&quot;Not written&lt;br/&gt;(mark in the Check)&quot;]
+  W --&gt; G[&quot;Elite: Options &gt; Controls&quot;]
+</pre></div>
+<section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<h2 id="what-joypro-does-for-elite-dangerous"><a class="anchor" href="#what-joypro-does-for-elite-dangerous">#</a>What JoyPro does for Elite Dangerous</h2>
+<ul>
+<li><strong>Import</strong>: the ship's flight binds on your sticks, throttles and panels come into your profile, with their invert
+and dead zone, and whether your throttle runs forward only or with reverse.</li>
+<li><strong>Relations</strong>: one relation is one function in every game. &quot;Landing gear&quot; can be the same switch in Elite, Star
+Citizen and DCS.</li>
+<li><strong>Export</strong>: JoyPro edits your Ship preset (<code>Custom.4.x.binds</code>) in place. Everything else in the file stays.</li>
+</ul>
+<h2 id="import-your-elite-binds"><a class="anchor" href="#import-your-elite-binds">#</a>Import your Elite binds</h2>
+<ol>
+<li>Open <strong>Start</strong>. If the Elite Dangerous card asks for a command list, press <strong>Build List</strong>: JoyPro collects the
+game's actions from its stock presets and the presets you saved (read only).</li>
+<li>Press <strong>Import</strong> on the Elite Dangerous card. Keep <strong>Add to my profile</strong>. Tick <strong>Also take the keyboard keys</strong> if
+you want your flight keys in JoyPro too.</li>
+<li>Press <strong>Import now</strong>. <strong>See my relations</strong> opens what came in.</li>
+</ol>
+<p>A bind that uses half of an axis as a button or as a modifier cannot be held by a JoyPro profile: the import skips it
+with a warning, and the export leaves it in the game.</p>
+<h2 id="build-and-check-relations"><a class="anchor" href="#build-and-check-relations">#</a>Build and check relations</h2>
+<p>Join the same function of your games with the <a href="../flows/relations.html">relations flow</a>. Then press <strong>Check</strong> on
+the Export page. Besides one button that does two things, the Check lists under <strong>Not written to the game</strong> every bind
+the last export had no place for, with <strong>Move to another button</strong> and <strong>Keep as is</strong>.</p>
+<h2 id="export-to-elite"><a class="anchor" href="#export-to-elite">#</a>Export to Elite</h2>
+<ol>
+<li><strong>Close Elite Dangerous.</strong> JoyPro refuses to write while the game runs.</li>
+<li>Open <strong>Export</strong> and tick the Elite Dangerous tile.</li>
+<li>Keep <strong>Replace on my devices</strong> with <strong>Also clear my other devices</strong> if JoyPro is where you set up your sticks.
+Press <strong>Export now</strong> on the tile.</li>
+<li>Read the result: binds that did not fit and half-axis binds JoyPro kept are named in plain words.</li>
+</ol>
+<figure class="shot"><a href="../assets/shots/export-light.webp"><img class="only-light" loading="lazy" src="../assets/shots/export-light.webp" alt="The Export page"></a><a href="../assets/shots/export-dark.webp"><img class="only-dark" loading="lazy" src="../assets/shots/export-dark.webp" alt="The Export page"></a><figcaption>The Export page</figcaption></figure>
+<div class="callout ingame"><div class="callout-title">In the game: What you see in Elite Dangerous</div>
+<p>Start the game and open <strong>Options &gt; Controls</strong>, then the ship controls. Your binds are in the Primary or Secondary
+column of each action, next to the keyboard keys you kept. Inverted axes show <strong>INVERTED</strong>, the throttle shows
+<strong>Forward only</strong> or <strong>Full range</strong> under its axis range, and the yaw-into-roll and head look rows show the values you
+set in JoyPro.</p>
+</div>
+<div class="picture-slot" data-picture="ingame-elite-dangerous-controls"><div class="picture-icon">&#128247;</div><div><strong>In-game picture follows: Elite Dangerous: the controls menu with the exported binds</strong><br>A screenshot from the game itself, taken during JoyPro's in-game test runs, comes here later.</div></div>
+<h2 id="what-you-do-yourself-in-elite"><a class="anchor" href="#what-you-do-yourself-in-elite">#</a>What you do yourself in Elite</h2>
+<ul>
+<li><strong>Save your controls once in the game.</strong> JoyPro writes only into a preset you saved yourself. If your Ship controls
+still use a stock preset (Generic Joystick, a HOTAS preset of the game), change one control in <strong>Options &gt;
+Controls</strong> (Ship), save, and close the game: Elite then creates <code>Custom.4.x.binds</code> and uses it.</li>
+<li><strong>Keep every device of the preset connected</strong> when you start the game. Elite ignores a whole preset that names a
+device it cannot find. JoyPro warns when your preset names a device that is not connected.</li>
+</ul>
+<h2 id="common-pitfalls"><a class="anchor" href="#common-pitfalls">#</a>Common pitfalls</h2>
+<ul>
+<li><strong>&quot;Elite Dangerous is running&quot;</strong>: quit the game and export again.</li>
+<li><strong>&quot;No free place in the game&quot;</strong>: Elite keeps two inputs per action. If a keyboard key holds one place and two of
+your relations put the action on two buttons, only the first button fits. Move the second one, or keep it as is.</li>
+<li><strong>Two identical sticks</strong>: Elite tells devices apart by their USB id only. Two connected devices of the same model
+cannot be matched to the game's index, so JoyPro skips both.</li>
+<li><strong>The game loaded another preset</strong>: a device of the preset was missing at start. Connect it, exchange it in JoyPro,
+or clear its binds in the game.</li>
+<li><strong>Hat diagonals</strong> do not exist in Elite: four directions per hat.</li>
+</ul>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<h2 id="files-joypro-reads-and-writes"><a class="anchor" href="#files-joypro-reads-and-writes">#</a>Files JoyPro reads and writes</h2>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>%LOCALAPPDATA%\Frontier Developments\Elite Dangerous\Options\Bindings\&lt;preset&gt;.4.&lt;minor&gt;.binds</code></td>
+<td>your preset (XML): every action with Primary and Secondary, axes with Binding, Inverted and Deadzone, and value settings such as ThrottleRange. JoyPro writes the newest minor version of the Ship preset.</td>
+</tr>
+<tr>
+<td><code>...\Bindings\StartPreset.4.start</code></td>
+<td>which preset each category uses (General, Ship, SRV, On Foot); read only</td>
+</tr>
+<tr>
+<td><code>...\Bindings\&lt;preset&gt;.4.&lt;minor&gt;.binds.joypro-meta.json</code></td>
+<td>JoyPro's names, groups, modifiers and tuning of the written binds, read back by the next import</td>
+</tr>
+<tr>
+<td><code>...\Bindings\&lt;preset&gt;.4.&lt;minor&gt;.binds.jpbak</code></td>
+<td>the copy from before the first write, plus JoyPro's versioned backup store</td>
+</tr>
+<tr>
+<td><code>&lt;install&gt;\Products\&lt;product&gt;\ControlSchemes\*.binds</code>, <code>DeviceMappings.xml</code></td>
+<td>the stock presets and the game's device names; read only</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>The file is edited as text: line endings, tabs, the declaration, duplicate elements, value settings, your keyboard
+layout and unknown elements stay byte for byte. JoyPro never writes to the install folder, never edits
+<code>StartPreset.4.start</code>, and never touches the files of the old 3.x client.</p>
+<p>Galaxy map actions belong to the General preset. JoyPro writes them only when General and Ship use the same file;
+otherwise they are skipped with a warning.</p>
+<h2 id="the-export-modes-in-elite"><a class="anchor" href="#the-export-modes-in-elite">#</a>The export modes in Elite</h2>
+<p>Every mode works on flight actions only and on the slots of connected joysticks.</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>What happens in the preset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Only add</strong></td>
+<td>A bind goes only into a free place. A bind whose input another flight action uses is not written and gets a mark &quot;Not written to the game&quot;.</td>
+</tr>
+<tr>
+<td><strong>Update, keep the game's binds</strong></td>
+<td>The place of another flight action on an input you use is released. Your bind goes into a free place first, so an action you moved keeps its old input while a place is free.</td>
+</tr>
+<tr>
+<td><strong>Update, my profile wins</strong></td>
+<td>As above, and every action you bind loses its other places on your joysticks (the keyboard only with the keyboard option).</td>
+</tr>
+<tr>
+<td><strong>Replace on my devices</strong></td>
+<td>On the devices you write, every flight place that holds a bind of that device and is not in your profile is emptied (<code>{NoDevice}</code>; an axis also gets Inverted 0 and Deadzone 0).</td>
+</tr>
+<tr>
+<td><strong>+ Also clear my other devices</strong></td>
+<td>The same for the flight places of connected joysticks the export does not use.</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>A place is never overwritten when it holds a keyboard key, a mouse or gamepad input, or a device JoyPro does not write.
+If no place is left, the bind is not written and the profile keeps a mark (&quot;Binds Not Written, No Free Place In The
+Game&quot;). The same holds for an axis action whose one place holds another axis of your profile.</p>
+<h2 id="what-is-never-touched"><a class="anchor" href="#what-is-never-touched">#</a>What is never touched</h2>
+<ul>
+<li>SRV, on-foot, camera, colonisation, UI and mouse actions, even though they sit in the same file.</li>
+<li>Keyboard, mouse and gamepad places; the keyboard is written only with the keyboard option and never cleared.</li>
+<li>Places of a device that is not connected, the import's ignored devices and the vJoy device JoyPro tunnels into.</li>
+<li>Half-axis binds and half-axis modifiers: the export leaves them and names each one, for example &quot;'Cycle Next Ship':
+kept the game's bind ... with ... RZ axis, positive half as modifier&quot;.</li>
+<li><code>&lt;Hold&gt;</code> and <code>&lt;ToggleOn&gt;</code> of an action stay as they are.</li>
+</ul>
+<h2 id="ships-curves-game-settings"><a class="anchor" href="#ships-curves-game-settings">#</a>Ships, curves, game settings</h2>
+<ul>
+<li><strong>Granularity</strong>: one Ship preset for every ship and fighter. The SRV and on-foot presets are not written.</li>
+<li><strong>Modifiers</strong>: up to three per place; keys, buttons of any device. JoyPro writes its modifiers as the game's
+<code>&lt;Modifier&gt;</code> entries.</li>
+<li><strong>Axis settings</strong>: invert and dead zone (0 to 1) per axis action; there is no saturation and no curve in Elite.
+Invert keeps DCS's direction in your relation: Elite counts pitch, throttle and the vertical thrusters the other way
+round, so the file's Inverted is your invert turned over for those axes. The throttle relation's <strong>Slider</strong> sets
+<strong>Throttle Axis Range</strong>: Slider = forward only, no Slider = full range with reverse (warning when several throttle
+relations disagree).</li>
+<li><strong>Game settings</strong>: yaw into roll (normal, flight assist off, landing), its sensitivity, the keyboard throttle
+increment, head look mode, increment, sensitivity, smoothing and reset on toggle. Set them in <strong>Settings &gt; Force
+feedback settings of the games</strong> (pick Elite Dangerous) or with <a href="../cli/ffb.html#ffb-set"><code>engine ffb set</code></a>. Only settings you set are written,
+in place; a setting missing from the file is reported, never added. Mouse, SRV and on-foot settings are not managed.</li>
+<li><strong>Force feedback</strong>: Elite has none for joysticks.</li>
+<li><strong>Telemetry recording</strong>: JoyPro can record <code>Status.json</code> and the journal (<code>Saved Games\Frontier Developments\Elite Dangerous</code>, read only) as a CSV session; the game gives no world position, so there is no
+Tacview track.</li>
+<li><strong>Watcher</strong>: a bind you change in the game's controls menu is noticed after the game closes; JoyPro asks whether to
+take it over. The game writes the preset only when you save in its controls menu.</li>
+<li><strong>HUD</strong>: the HUD finds the game by its process and shows your Elite binds.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<h2 id="inside-the-elite-integration"><a class="anchor" href="#inside-the-elite-integration">#</a>Inside the Elite integration</h2>
+<p>Code: <code>engine\Games\EliteDangerousIntegration.cs</code>, the axis model <code>engine\AxisModels\EliteDangerous.cs</code> and the
+settings model <code>engine\FfbModels\EliteDangerous.cs</code>.</p>
+<ul>
+<li><strong>Device ids</strong>: <code>%04X%04X</code>, the USB vendor id and product id in upper-case hex (<code>231D0125</code>). Devices listed in the
+install's <code>DeviceMappings.xml</code> are written by their symbolic name instead (<code>T16000M</code>, <code>ThrustMasterWarthogJoystick</code>,
+<code>VPCThrottle</code>, Alternatives included). JoyPro writes connected devices only. Identical devices would need the game's
+<code>DeviceIndex</code>, whose order is not documented: skipped.</li>
+<li><strong>Input names</strong>: <code>Joy_1</code> ... <code>Joy_N</code> buttons, <code>Joy_POV&lt;h&gt;Up/Right/Down/Left</code> (hats 1 to 4), <code>Joy_XAxis</code> ...
+<code>Joy_RZAxis</code>, <code>Joy_UAxis</code> / <code>Joy_VAxis</code> for the sliders, <code>Key_*</code> keyboard. <code>Pos_Joy_*</code> / <code>Neg_Joy_*</code> (half axes)
+are never created.</li>
+<li><strong>Invert</strong>: file <code>Inverted</code> = relation invert XOR the action's natural direction (1 for <code>PitchAxisRaw</code>,
+<code>ThrottleAxis</code>, <code>AheadThrust</code>, <code>VerticalThrustRaw</code>, their alternate and landing copies, <code>HeadLookPitchAxisRaw</code>,
+<code>CamTranslateYAxis</code>, <code>ExplorationFSSRadioTuningX_Raw</code>; 0 for every other axis). The import reads it back the same
+way. A device that reports an axis reversed needs invert in DCS too, and the XOR carries that over.</li>
+<li><strong>Command list</strong>: <a href="../cli/elite.html#elite-refresh-db"><code>engine elite refresh-db</code></a> reads the <code>.binds</code> the game wrote (they name every element it knows) and
+the stock presets, read only; only ship flight elements are added, known actions keep id and title.
+<a href="../cli/elite.html#elite-catalog"><code>engine elite catalog</code></a> lists it, <a href="../cli/elite.html#elite-paths"><code>engine elite paths</code></a> shows the files JoyPro found.</li>
+<li><strong>Import / export</strong>: <a href="../cli/elite.html#elite-import"><code>engine elite import</code></a> and <a href="../cli/elite.html#elite-scan"><code>engine elite scan</code></a>; <a href="../cli/elite.html#elite-export"><code>engine elite export</code></a> <code>--mode clean|add|merge|merge-overwrite --nuke-untouched-devices --include-keyboard --ignore-device &lt;d&gt; --dry-run</code>.</li>
+<li><strong>Game settings</strong>: <code>engine ffb set --device * --game EliteDangerous --param &lt;key&gt;=&lt;value&gt;</code> (<code>yawToRollMode</code>,
+<code>yawToRollSensitivity</code>, <code>throttleIncrement</code>, <code>headlookAccumulate</code>, ...).</li>
+</ul>
+<h3 id="known-limits"><a class="anchor" href="#known-limits">#</a>Known limits</h3>
+<ul>
+<li>Two identical devices are skipped; a missing device makes the game ignore the whole preset.</li>
+<li>The scale of the dead zone slider in the game's menu and how the game rescales outside the dead zone are not
+confirmed yet.</li>
+<li>Buttons: about 32 are reported by players; higher numbers have worked. Four hats, no diagonals.</li>
+<li>An action the file does not have is skipped with a warning (adding one is not confirmed yet).</li>
+<li>Tests: <code>engine\tests\smoke\elite.ps1</code>; in the game <code>tools\e2e\games\Elite.ps1</code> (binds and mode matrix) and
+<code>tools\e2e\games\EliteSettings.ps1</code> (invert direction, throttle range, game settings).</li>
+</ul>
+</section>
+<p class="source-note">All technical notes on this game (generated from the repository): <a href="../games/ref/elite-dangerous.html">elite-dangerous.md</a>.</p>
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#what-joypro-does-for-elite-dangerous">What JoyPro does for Elite Dangerous</a></li><li class="l2"><a href="#import-your-elite-binds">Import your Elite binds</a></li><li class="l2"><a href="#build-and-check-relations">Build and check relations</a></li><li class="l2"><a href="#export-to-elite">Export to Elite</a></li><li class="l2"><a href="#what-you-do-yourself-in-elite">What you do yourself in Elite</a></li><li class="l2"><a href="#common-pitfalls">Common pitfalls</a></li><li class="l2"><a href="#files-joypro-reads-and-writes">Files JoyPro reads and writes</a></li><li class="l2"><a href="#the-export-modes-in-elite">The export modes in Elite</a></li><li class="l2"><a href="#what-is-never-touched">What is never touched</a></li><li class="l2"><a href="#ships-curves-game-settings">Ships, curves, game settings</a></li><li class="l2"><a href="#inside-the-elite-integration">Inside the Elite integration</a></li><li class="l3"><a href="#known-limits">Known limits</a></li></ul></aside>
+</div>
+<script src="../assets/vendor/mermaid.min.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

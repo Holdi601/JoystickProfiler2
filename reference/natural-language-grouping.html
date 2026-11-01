@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Group by description · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a class="current" href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Group by description </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/natural-language-grouping.md">docs/natural-language-grouping.md</a> in the repository (generated, always the current text).</p><p>You write in English what belongs together, and JoyPro puts the matching commands of all aircraft and games into
+relations:</p>
+<ul>
+<li>
+<p>&quot;speed brake in and out on all jets&quot;</p>
+</li>
+<li>
+<p>&quot;put gear up/down of every DCS warbird&quot;</p>
+</li>
+<li>
+<p>&quot;all trim hat up actions for helicopters&quot;</p>
+</li>
+<li>
+<p>&quot;flaps for all MSFS airliners and IL-2 bombers&quot;</p>
+</li>
+<li>
+<p>&quot;CMS forward for all DCS jets except the A-10&quot;</p>
+</li>
+<li>
+<p>&quot;lower the gear and raise the flaps on the F-16 and the Hornet&quot;</p>
+</li>
+<li>
+<p>GUI: Relations → <strong>Auto-build relations from all my actions...</strong> → <strong>By description</strong> → type the description → <strong>Preview</strong> → untick what
+you do not want → <strong>Create</strong>.</p>
+</li>
+<li>
+<p>For one open relation, its chat box does the same per relation (<code>engine relations chat</code>, see
+<a href="../reference/relation-builder.html#say-it-in-words-local-ai-model">Relation editor</a>).</p>
+</li>
+<li>
+<p>CLI: <code>engine relations from-text &quot;&lt;request&gt;&quot; [--games g1|g2] [--planes p1|p2] [--llm off|auto|on] [--substitutes] [--select &lt;relation&gt;]... [--skip-node game:id:plane1|plane2]... [--name &lt;name&gt;] [--min-confidence 0..1] [--dry-run]</code>.</p>
+</li>
+</ul>
+<h2 id="how-it-works"><a class="anchor" href="#how-it-works">#</a>How it works</h2>
+<ol>
+<li>
+<p><strong>Offline rules (always on).</strong> A deterministic parser reads the request with the words in
+<code>DB/Functions/language.json</code>:</p>
+<ul>
+<li><strong>functions</strong> and their directions: speed brake/SB/airbrake/spoilers (out, in, toggle), gear/undercarriage (up,
+down, toggle), flaps (up, down, take-off, step), trim (nose up/down, left/right, reset, force trim), trim hat (hat
+up = nose down, as on the stick), CMS (forward/program/flare, aft/chaff, left, right, depress/ECM), TMS, DMS,
+master arm (on/off/toggle), NWS, canopy, tail hook, launch bar, wing fold, refuel probe, afterburner/AB/WEP,
+reverse thrust, drag chute, anti-skid, parking brake, wheel brakes, pitch/roll/rudder axes, throttle, zoom, TDC
+(axes, slew, depress), weapon release/pickle, trigger stages, gun/heater/MRM select, uncage, jettison, kneeboard,
+exterior/landing/navigation/anti-collision/formation lights, instrument/flood lights, flashlight, NVG, autopilot
+(on, off/disconnect, altitude/attitude hold, route, hover), radar (on, standby, lock, unlock, elevation,
+azimuth, TWS/RWS), sensor select (castle), china hat, waypoint next/previous, engine start/stop, APU,
+radiator, prop pitch/RPM, mixture/nozzle, tailwheel lock, comm switch/PTT/intercom/IFF, master caution, FBW
+disconnect, laser, HMD, targeting pod, seat change, master modes and crew AI;</li>
+<li><strong>games</strong>: DCS, MSFS (both MSFS 2020 and 2024; &quot;MSFS 2020&quot; / &quot;MSFS 2024&quot; for one), IL-2 (Great Battles), IL-2 Korea,
+War Thunder (WT), Falcon BMS, Star Citizen, X-Plane (11 and 12; &quot;X-Plane 11&quot; / &quot;XP12&quot; for one), Elite Dangerous,
+X4, VTOL VR, Nuclear Option, Arma 2/3/Reforger (&quot;Arma&quot; for all), WARDOGS, IL-2 1946, IL-2 Cliffs of Dover (and Blitz),
+Project Wingman, ACE COMBAT 7/8, Battlefield 6/2042, Tiny Combat Arena, G-Rebels, Hell Let Loose: Vietnam, FSX (SE),
+Prepar3D v4/v5/v6, with short names (&quot;msfs24&quot;, &quot;xp12&quot;, &quot;wt&quot;, &quot;sc&quot;, &quot;elite&quot;, &quot;bms&quot;, &quot;p3d&quot;) (a game word with
+<code>members</code> in language.json stands for several games);</li>
+<li><strong>space words</strong>: strafe up/down/left/right/forward/back, jump drive (FSD, frame shift, hyperspace, supercruise,
+quantum, travel drive), decoupled / flight assist, cruise control, shields, power distribution; &quot;boost&quot; is the
+afterburner / ship boost;</li>
+<li><strong>aircraft classes</strong>: jets, prop aircraft, turboprops, warbirds, helicopters, fixed wing, spaceships, airliners,
+general aviation; roles (fighters, bombers, attack, multirole, trainers, transports, attack/utility
+helicopters, aerobatic); eras (WW2, Korea, Cold War early/late, modern); carrier, VTOL and multi-crew aircraft;</li>
+<li><strong>aircraft names</strong>: catalog names (&quot;F-16C_50&quot;, &quot;f16&quot;, &quot;F-16&quot;), families (&quot;Mi-24&quot;, &quot;A-10&quot;) and nicknames
+(Viper, Hornet, Hog, Tomcat, Apache, Huey, Hind, Black Shark, Spitfire, Mustang, Dora, Corsair ...).</li>
+</ul>
+<p>Text is normalised (case, punctuation, &quot;f16&quot; = &quot;F-16&quot; = &quot;f 16&quot;, &quot;F/A-18&quot; = &quot;FA-18&quot;, &quot;A/G&quot; = &quot;A2G&quot;, plurals), the
+longest phrase wins (&quot;passenger jet&quot; is an airliner, &quot;trim hat&quot; beats &quot;trim&quot;). A direction belongs to the nearest
+function and counts for all words of that function (&quot;push to talk radio 1&quot; = Comm 1 only; &quot;lower the gear and
+raise the flaps&quot;). &quot;in&quot;, &quot;on&quot; and &quot;for&quot; before &quot;all&quot;, &quot;every&quot; or a game name are prepositions, not directions.
+Countermeasures are understood the way pilots say them: &quot;flares&quot;, &quot;pop flares&quot;, &quot;flare button&quot;, &quot;IR decoys&quot; = CMS
+forward (program / flare); &quot;chaff&quot;, &quot;radar decoys&quot; = CMS aft; &quot;countermeasures&quot;, &quot;CMS&quot;, &quot;CMDS&quot;, &quot;dispenser&quot;,
+&quot;decoys&quot;, &quot;ALE-47&quot; = all CMS directions; &quot;jammer&quot;/&quot;ECM&quot; = CMS depress. Filler words (&quot;pop&quot;, &quot;release&quot;, &quot;switch&quot;,
+&quot;hat&quot;, &quot;lever&quot;, &quot;system&quot;) do not count as not understood.
+&quot;except&quot;, &quot;without&quot;, &quot;but not&quot; start the part that removes aircraft. Classes of the same kind are alternatives
+(&quot;jets and helicopters&quot;), different kinds narrow (&quot;modern jets&quot;, &quot;WW2 fighters and bombers&quot;); a game before or
+after classes restricts them (&quot;MSFS airliners&quot;, &quot;jets and helicopters in DCS&quot;). No aircraft named = all
+aircraft and games. Without a direction a function takes its usual directions (speed brake: out, in, toggle).
+If no function word matches, JoyPro looks the words up in the catalog's function names, the control descriptions
+and what each function does (<code>function_info</code>, below); a word that names a function (&quot;bomb&quot; in &quot;bomb release&quot;)
+counts twice (lower confidence).
+<code>function_info</code> in <code>language.json</code> says for every function which cockpit system it belongs to, what it does on
+the aircraft and its close relatives (flares: CMS, chaff). The relatives are offered to the local model and named
+for aircraft that lack the asked function (&quot;has CMS Aft&quot;).</p>
+</li>
+<li>
+<p><strong>Function catalog.</strong> Every function is a slot of <code>DB/Functions/slots.json</code>; the per-game <code>&lt;Game&gt;.tsv</code> files give
+each aircraft's command for it (checked against the manuals). A game without a <code>&lt;Game&gt;.tsv</code> of its own (FSX, Prepar3D, IL-2 1946,
+Cliffs of Dover, Project Wingman, ACE COMBAT, Battlefield, Tiny Combat Arena, G-Rebels, Hell Let Loose: Vietnam, any
+game added later) gets a table derived from the <a href="../reference/relation-builder.html#function-map">function map</a>: per slot its best
+action of that function and direction, status <code>derived</code> (<code>EngineFunctionTable</code>); a slot a game's table leaves out
+takes the function map's action, with a lower confidence and the reason in the explanation. Only an aircraft's own commands are used;
+<code>--substitutes</code> also takes the catalog's stand-ins. DCS commands must exist in the local DCS database, the others
+in the game's catalog.</p>
+</li>
+<li>
+<p><strong>Proposals.</strong> One relation per function and direction, named after it and the aircraft (&quot;Speed Brake Out
+(jets)&quot;). Every node carries a <strong>confidence</strong> (catalog status x how well the aircraft fits x how the function was
+found) and an <strong>explanation</strong> per aircraft (what the control does in that cockpit, the game's own name and
+category of the command from its database, e.g. `F-16C_50: stick: CMS forward = &quot;Countermeasures Management Switch</p>
+<ul>
+<li>Fwd&quot; [Stick; HOTAS]`, the catalog status, why the aircraft is in the set). Aircraft in the set without that function are listed (&quot;has Speed Brake Toggle&quot;).
+Games whose binds are shared by all their aircraft (MSFS, X-Plane, War Thunder, IL-2 ...) are included when they
+have such aircraft, with lower confidence (&quot;MSFS binds are shared by all its aircraft; it also has jets&quot;).</li>
+</ul>
+</li>
+<li>
+<p><strong>Create.</strong> Like Auto Group: an existing relation of the same name gets the missing aircraft; a command you
+already use in another relation stays there (&quot;Kept&quot;); commands you switched off stay off; new relations get the
+group <code>FromText</code>; the profile is saved. <code>--select</code> creates only the named relations, <code>--skip-node</code> leaves out
+single commands; nodes below <code>--min-confidence</code> (default 0.5) are not added. <code>--dry-run</code> only shows.</p>
+</li>
+</ol>
+<p><code>engine relations from-text --check</code> tests <code>language.json</code> against the catalog (unknown slots, aircraft or games).</p>
+<h2 id="optional-local-ai-model"><a class="anchor" href="#optional-local-ai-model">#</a>Optional local AI model</h2>
+<p>The offline rules are enough for the usual phrasings. For unusual wording (&quot;the thing that slows the jet down&quot;,
+&quot;flares for the Turkey&quot;, &quot;decoys for Russian helicopters&quot;) an open-source language model can help. It is <strong>not part
+of JoyPro and not downloaded</strong> until you click Download, or you point JoyPro at a llama.cpp and model you already
+have.</p>
+<ul>
+<li>It only <strong>chooses</strong>: JoyPro gives it the request and numbered lists the offline matcher built, and the model answers
+with ids from these lists, forced by a GBNF grammar (<code>{&quot;note&quot;:&quot;...&quot;,&quot;functions&quot;:[...],&quot;include&quot;:[...],&quot;exclude&quot;:[...]}</code>,
+the note first: one sentence of what it understood before it picks). JoyPro checks every id against the lists and
+the catalogs and drops anything else; with no valid function or aircraft the offline result stays. Classes and
+games picked together narrow each other like in a request (WW2 + IL-2 = IL-2's WW2 aircraft); &quot;all&quot; counts only
+alone. The commands still come from the catalog.</li>
+<li><code>--llm auto</code> (the default once the model is on) asks it only when the offline rules found no function, used
+catalog words, or left words they did not understand; <code>--llm on</code> always asks; <code>--llm off</code> never.</li>
+<li>It runs <strong>only while you use it</strong>: JoyPro starts <code>llama-server</code> on 127.0.0.1 on a free port with one slot
+(<code>-np 1</code>) and waits until the model is loaded. From the command line the process is killed after the request (a
+Windows job object kills it with the engine, too). From the app (<code>JOYPRO_LLM_OWNER_PID</code>) the model stays loaded for
+the next request and the app stops it after the idle minutes (default 30, Settings &gt; Local AI; it only counts while JoyPro does no AI work: a request, an answer streaming in or a plan being made or applied holds it, and it starts again when the last one ends. A ui-settings.json of 2.2.17 or older with the old default 2 gets 30; another value the user chose stays), with <strong>Stop now</strong>,
+and when JoyPro ends (the app's kill-on-close job, also on a crash). <code>&lt;data&gt;\Llm\server.json</code> describes the running
+server; the panel and a chip next to the AI buttons show it with its video memory (<code>nvidia-smi</code>, else the working
+set). <code>engine llm server</code> shows it, <code>engine llm stop</code> ends it, <code>engine llm start</code> loads it now (Settings &gt; Local AI &gt;
+<strong>Start now</strong>; from the app it stays loaded until the idle stop).</li>
+<li><strong>One place, one status line</strong>: the whole setup (on/off, model, runtime, download, own files, Start now / Stop now,
+idle minutes) is <strong>Settings &gt; Local AI</strong>. Every AI action (Manage with AI, Edit with AI, Expand with AI, the JoyPro
+assistant, Group by description, AI fill) shows the same line, e.g. &quot;AI: on (Qwen3 8B) - not loaded right now, starts
+with your next request&quot; / &quot;AI: on (Qwen3 8B) - loaded, 5.3 GB, stops in 1:47&quot; / &quot;AI: off&quot;, with <strong>Turn on the local AI</strong>
+(a model is set up) or <strong>Set up the local AI</strong> and a <strong>Settings</strong> link. The app reads the setting (<code>engine llm status</code>)
+when an AI panel opens and before every AI request. Settings &gt; Components shows the same state (green check when set
+up and on).</li>
+<li><strong>Privacy</strong>: everything runs on your PC. The request never leaves it. The only network access is the download you
+start (Hugging Face for the model, GitHub for llama.cpp).</li>
+</ul>
+<h3 id="what-the-model-sees"><a class="anchor" href="#what-the-model-sees">#</a>What the model sees</h3>
+<p><code>engine relations from-text &quot;&lt;request&gt;&quot; --show-prompt [--prompt-model &lt;model&gt;|local]</code> prints the whole conversation
+and grammar without running a model.</p>
+<ul>
+<li>
+<p><strong>System prompt</strong> (<code>DB/Llm/models.json</code> <code>prompt.system</code>): JoyPro's task (group the same cockpit function of many
+aircraft so one button does it everywhere), the parts of the message, and the rules: match by meaning (flares = CMS
+forward, chaff = CMS aft, pickle = weapon release), a function without direction means its usual directions, a
+named direction only that one, keep the rules' aircraft unless they missed something, a single aircraft only when
+sure, class + game narrow each other, exclusions, note first, ids only.</p>
+</li>
+<li>
+<p><strong>Few-shot examples</strong> (<code>prompt.examples</code>): three turns in exactly the format of the real prompt with the expected
+answer (an aircraft nickname the rules do not know, an exclusion, a description without function word plus class +
+game).</p>
+</li>
+<li>
+<p><strong>The request</strong>, twice (top and bottom), and the <strong>rule-based reading</strong> (&quot;CMS Forward (Program / Flare) for
+F-16C_50; words not understood: rhino&quot;).</p>
+</li>
+<li>
+<p><strong>Functions</strong>: a heading per function with its cockpit system, other words for it and what it does on the
+aircraft (<code>function_info</code>), then one line per direction with button/axis, how many aircraft have it and example
+commands with the game's own name and the cockpit control:</p>
+<pre><code># Flares (countermeasures (CMS/CMDS dispenser); also: ir decoy, infrared decoy, heat decoy): drops flares (infrared
+  decoys against heat-seeking missiles); in most cockpits this is CMS forward or the flare button ...
+F1 CMS Forward (Program / Flare) [button; 57 aircraft; e.g. F-16C_50 &quot;Countermeasures Management Switch - Fwd&quot;
+  (stick: CMS forward), FA-18C_hornet &quot;Dispense Switch - Aft(FLARE)/Center(OFF)&quot; (throttle: dispense switch aft)]
+# Chaff (...)  F2 CMS Aft (Panic / Chaff) [...]
+# CMS (...)    F3 CMS Left, F4 CMS Right, F5 CMS Depress / ECM [...]
+</code></pre>
+<p>Candidates: what the rules read, every direction of the named functions, their relatives (&quot;flares&quot; brings the
+whole CMS hat and chaff), and, only when some words were not understood, catalog functions found by word search
+(at least 40 % of the best score).</p>
+</li>
+<li>
+<p><strong>Aircraft, classes and games</strong>: S1 all; the rules' reading (&quot;request: IL-2 warbirds&quot;); every class with its
+aircraft count and other words (&quot;attack helicopters (25 aircraft; also: gunship, attack helo)&quot;); every game (DCS
+modules with their own binds, the other games one bind set); single DCS aircraft with nicknames and kind
+(&quot;F-14 (DCS; tomcat, turkey; carrier, jet, multicrew, fighter, cold war late)&quot;) - those sharing a word with the
+request first, all of them only when some words were not understood.</p>
+</li>
+</ul>
+<p>Per model (<code>models.json</code>): context size, how many function and aircraft lines (<code>maxFunctions</code>, <code>maxScopes</code>),
+example commands per function (<code>examplesPerFunction</code>), few-shot examples (<code>fewShot</code>) and answer length
+(<code>maxTokens</code>). JoyPro estimates the prompt size (about 3.2 characters per token) and shrinks it until it fits the
+context minus the answer: fewer command examples, fewer few-shot examples, fewer single aircraft, fewer functions.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Context</th>
+<th>Functions / aircraft lines</th>
+<th>Command examples</th>
+<th>Few-shot</th>
+<th>Answer tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen2.5 0.5B</td>
+<td>2048</td>
+<td>10 / 40</td>
+<td>1</td>
+<td>1</td>
+<td>120</td>
+</tr>
+<tr>
+<td>Qwen2.5 1.5B</td>
+<td>4096</td>
+<td>16 / 70</td>
+<td>1</td>
+<td>2</td>
+<td>160</td>
+</tr>
+<tr>
+<td>Qwen3 4B</td>
+<td>6144</td>
+<td>24 / 100</td>
+<td>2</td>
+<td>3</td>
+<td>200</td>
+</tr>
+<tr>
+<td>Qwen3 8B</td>
+<td>8192</td>
+<td>32 / 140</td>
+<td>2</td>
+<td>3</td>
+<td>220</td>
+</tr>
+<tr>
+<td>your own GGUF</td>
+<td>8192 (<code>--context</code>)</td>
+<td>32 / 120</td>
+<td>2</td>
+<td>3</td>
+<td>240</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sampling for every model: greedy and repeatable (temperature 0, top-k 1, top-p 1, min-p 0, seed 7), <strong>no
+repetition penalty</strong> (ids, quotes and brackets repeat on purpose; older llama.cpp builds default to 1.1), no prompt
+cache; the grammar ends the answer after the closing brace. The catalog models get a ChatML prompt (<code>/completion</code>);
+Qwen3 runs in non-thinking mode (<code>/no_think</code> and an empty think block). Your own GGUF gets its own chat template from
+the server (<code>/v1/chat/completions</code> with the messages, <code>chat_template_kwargs: {&quot;enable_thinking&quot;: false}</code>); <code>--template chatml</code> forces ChatML.</p>
+<h3 id="model-choice"><a class="anchor" href="#model-choice">#</a>Model choice</h3>
+<p>JoyPro detects RAM (GlobalMemoryStatusEx), CPU cores and AVX/AVX2/AVX-512 (IsProcessorFeaturePresent) and the
+graphics cards with their memory (display adapter registry, 64-bit memory size), and recommends:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Hardware</th>
+<th>Model</th>
+<th>Download</th>
+<th>Runs on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPU with 8 GB or more, 8 GB RAM</td>
+<td>Qwen3 8B, Q4_K_M</td>
+<td>4.68 GB</td>
+<td>GPU (Vulkan build, all layers)</td>
+</tr>
+<tr>
+<td>GPU with 4 GB or more, 8 GB RAM</td>
+<td>Qwen3 4B, Q4_K_M</td>
+<td>2.33 GB</td>
+<td>GPU (Vulkan build, all layers)</td>
+</tr>
+<tr>
+<td>No such GPU, 16 GB RAM, 8 cores, AVX2</td>
+<td>Qwen3 4B, Q4_K_M</td>
+<td>2.33 GB</td>
+<td>CPU</td>
+</tr>
+<tr>
+<td>No such GPU, 8 GB RAM, AVX2</td>
+<td>Qwen2.5 1.5B Instruct, Q4_K_M</td>
+<td>1.04 GB</td>
+<td>CPU</td>
+</tr>
+<tr>
+<td>4 GB RAM or no AVX2</td>
+<td>Qwen2.5 0.5B Instruct, Q4_K_M</td>
+<td>469 MB</td>
+<td>CPU</td>
+</tr>
+<tr>
+<td>Less than 4 GB RAM</td>
+<td>none (offline rules only)</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table></div>
+<p>A graphics card counts with 2 GB of own memory or more; integrated graphics share the system memory and do not count
+even when they report a memory size (&quot;AMD Radeon(TM) Graphics&quot; of Ryzen CPUs, Intel UHD/Iris/HD Graphics). You can
+pick another model in the list. All four are Apache-2.0 (Qwen2.5 3B is left out: its license is not Apache).</p>
+<p>The runtime is llama.cpp (MIT). <strong>auto</strong> = the Vulkan build with a graphics card (NVIDIA, AMD, Intel Arc; about 60 MB
+and fast enough for one short answer), else the CPU build (about 30 MB). <strong>cuda</strong> (NVIDIA, optional) = the CUDA build
+plus the CUDA runtime DLLs of the same CUDA version (about 600 MB). <code>engine llm recommend --ram-gb 16 --vram-gb 0 --cores 4 --avx2 true</code> shows the choice for other hardware.</p>
+<h3 id="download-one-click"><a class="anchor" href="#download-one-click">#</a>Download (one click)</h3>
+<ul>
+<li>GUI: <strong>Settings &gt; Local AI</strong> (also from the <strong>Settings</strong> link of every AI status line and Settings &gt; Components &gt;
+<strong>Set up</strong>): the recommended model is preselected; read size and
+licenses (model and runtime), tick <strong>I accept</strong>, click <strong>Download and switch on</strong>. That one click downloads
+llama.cpp (the runtime chosen in <strong>Runtime</strong>: auto, vulkan, cuda or cpu) and the model with a progress bar, checks
+both SHA-256 checksums and switches the model on. <strong>Cancel download</strong> stops it, the next click resumes it.
+Choosing another model or runtime asks for consent again. <strong>Remove model</strong> deletes it.</li>
+<li>CLI: <code>engine llm status</code>, <code>engine llm download [&lt;model&gt;] --accept-license [--runtime auto|cpu|vulkan|cuda]</code>,
+<code>engine llm cancel</code>, <code>engine llm remove [&lt;model&gt;] [--all]</code>, <code>engine llm enable [&lt;model&gt;|local]</code>, <code>engine llm disable</code>. Without <code>--accept-license</code> the download only prints size, source and licenses.</li>
+<li>The model URL is pinned to a Hugging Face revision; size and SHA-256 are checked. llama.cpp comes from the
+official GitHub release; its SHA-256 is taken from the release metadata, and a release without one is refused.
+Downloads resume from <code>&lt;file&gt;.part</code> (HTTP Range); a file with a wrong checksum is deleted.</li>
+<li>Files: <code>%LOCALAPPDATA%\JoyPro2\Llm</code> (or <code>JOYPRO_DATA_DIR\Llm</code>): <code>models\</code>, <code>runtime\&lt;cpu|vulkan|cuda&gt;\</code>,
+<code>settings.json</code>, <code>download-progress.json</code>.</li>
+</ul>
+<h3 id="your-own-llama-cpp-and-model"><a class="anchor" href="#your-own-llama-cpp-and-model">#</a>Your own llama.cpp and model</h3>
+<p>If you already have llama.cpp and a GGUF model, nothing needs to be downloaded:</p>
+<ul>
+<li>GUI: <strong>Already have llama.cpp and a GGUF model?</strong> → <strong>Find on this PC</strong> fills in the <code>llama-server.exe</code> and the
+model that suit the hardware (or <strong>Browse...</strong>), <strong>Use these files</strong> switches the model on (until then the section
+says the files are not in use yet, and &quot;In use: ...&quot; names the model the next request starts). <strong>Stop using them</strong>
+forgets them.</li>
+<li>CLI: <code>engine llm find-local [--root &lt;folder&gt;]...</code> lists what it finds; <code>engine llm use-local [--server &lt;llama-server.exe&gt;] [--model &lt;file.gguf&gt;] [--gpu-layers auto|all|N] [--context N] [--template server|chatml]</code>
+uses them (without paths: what find-local recommends); <code>engine llm use-local --clear</code>.</li>
+<li>The search is read-only and limited in depth and time (25 s): the PATH, <code>llama.cpp</code>, <code>llama</code>, <code>AI</code>, <code>LLM</code>,
+<code>models</code> and <code>tools</code> folders on every fixed drive, <code>%USERPROFILE%\llama.cpp</code>, <code>models</code> and <code>Downloads</code>, the
+Hugging Face cache, LM Studio's model folders, JoyPro's own model folder and <code>JOYPRO_LLM_SEARCH</code> (folders separated
+by <code>;</code>). Vision projectors (<code>mmproj</code>), embedding/reranker and vocab files, later parts of split models and files
+under 50 MB are skipped; Ollama's internal <code>llama-server</code> is skipped (its blobs are no <code>.gguf</code> files).</li>
+<li>Best pair: the largest model that fits completely on the graphics card (file size x 1.1 + 1 GB), else the smallest
+that fits the memory; a <code>llama-server.exe</code> with a GPU backend (<code>ggml-cuda.dll</code>, <code>ggml-vulkan.dll</code>, ...) when there
+is a graphics card.</li>
+<li>JoyPro starts it with <code>-m</code>, <code>--host 127.0.0.1</code>, <code>--port</code>, <code>-c</code>, <code>-np 1</code> and <code>-ngl</code> only when you set GPU layers
+(else llama.cpp fits the layers to the free graphics memory itself).</li>
+</ul>
+<h3 id="real-model-check"><a class="anchor" href="#real-model-check">#</a>Real model check</h3>
+<p><code>engine/tests/manual/nlgroup_real_llm.ps1 -Server &lt;llama-server.exe&gt; -Model &lt;file.gguf&gt; [-RequestFile &lt;file&gt;]</code> runs
+every request offline and with the model (temporary data folder, nothing downloaded) and prints a table. It kills
+every llama process it started also on errors and checks with <code>tasklist</code> that none is left.</p>
+<p>Result on the developer's PC (RTX 5080 16 GB, <code>C:\llama.cpp</code> CUDA build 11430, <code>Qwen3.8-27B-UD-Q3_K_XL.gguf</code>, your-own-model
+path, <code>--llm on</code>; about 10-15 s per request including loading the 12 GB model; no llama process left afterwards):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Request</th>
+<th>Offline rules</th>
+<th>With the model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>flares</td>
+<td>CMS Forward (Program / Flare), all aircraft</td>
+<td>same</td>
+</tr>
+<tr>
+<td>chaff and flares on the F-16 and F/A-18</td>
+<td>CMS Aft + CMS Forward, F-16C_50 + FA-18C_hornet</td>
+<td>same</td>
+</tr>
+<tr>
+<td>speed brake for all jets</td>
+<td>Speed Brake Out/In/Toggle, jets</td>
+<td>same</td>
+</tr>
+<tr>
+<td>trim hat for warbirds in IL-2</td>
+<td>Trim Hat Up/Down/Left/Right, IL-2 warbirds</td>
+<td>same</td>
+</tr>
+<tr>
+<td>master arm</td>
+<td>Master Arm On/Off/Toggle, all aircraft</td>
+<td>same</td>
+</tr>
+<tr>
+<td>gear and flaps on helicopters</td>
+<td>Gear Up/Down/Toggle + 4 flap directions, helicopters</td>
+<td>same</td>
+</tr>
+<tr>
+<td>pop decoys on the Tomcat</td>
+<td>all 5 CMS directions, F-14 + F-14_RIO</td>
+<td>same</td>
+</tr>
+<tr>
+<td>the button that drops bombs for WW2 bombers</td>
+<td>Weapon Release, WW2 bombers</td>
+<td>same</td>
+</tr>
+<tr>
+<td>countermeasures on all helicopters except the Huey</td>
+<td>all 5 CMS directions, helicopters without UH-1H</td>
+<td>same</td>
+</tr>
+<tr>
+<td>air brake on the hog and the warthog</td>
+<td>Speed Brake Out/In/Toggle, A-10A/C/C II</td>
+<td>same</td>
+</tr>
+<tr>
+<td>the thing that slows the jet down in the air</td>
+<td>Speed Brake Out/In/Toggle (catalog words), jets</td>
+<td>same</td>
+</tr>
+<tr>
+<td>lower the hook and fold the wings on carrier jets</td>
+<td>Tail Hook Down + Wing Fold, carrier aircraft</td>
+<td>same</td>
+</tr>
+<tr>
+<td>flares for the Turkey</td>
+<td>CMS Forward, all aircraft (&quot;turkey&quot; not understood)</td>
+<td>CMS Forward, F-14 + F-14_RIO</td>
+</tr>
+<tr>
+<td>IR and radar decoys for Russian helicopters</td>
+<td>CMS Aft, all helicopters</td>
+<td>CMS Forward + CMS Aft, Ka-50, Mi-24P, Mi-8</td>
+</tr>
+<tr>
+<td>pickle and gun trigger in BMS</td>
+<td>Weapon Release + both trigger stages, Falcon BMS</td>
+<td>same</td>
+</tr>
+<tr>
+<td>switch the jammer on for all fighters</td>
+<td>CMS Depress / ECM, fighters</td>
+<td>same</td>
+</tr>
+<tr>
+<td>nose wheel steering on the bug</td>
+<td>Nosewheel Steering, all aircraft (&quot;bug&quot; not understood)</td>
+<td>Nosewheel Steering, A-10 (wrong: the Bug is the Hornet)</td>
+</tr>
+<tr>
+<td>chaff for the Hornet and the Tomcat but not the RIO seat</td>
+<td>CMS Aft + WSO/RIO Seat (wrong), FA-18C + both F-14 seats</td>
+<td>CMS Aft, FA-18C + F-14 without F-14_RIO</td>
+</tr>
+<tr>
+<td>radio 1 for all gunships</td>
+<td>Comm 1, attack helicopters</td>
+<td>Comm 1, attack aircraft (wrong)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The two wrong answers led to the last changes: &quot;bug&quot;, &quot;turkey&quot;, &quot;lawn dart&quot; are aircraft nicknames now (the rules
+know them), classes show their other words (&quot;attack helicopters ... also: gunship&quot;), and the system prompt tells the
+model to keep the rules' aircraft unless they missed something and to pick a single aircraft only when it is sure.</p>
+<h2 id="tests"><a class="anchor" href="#tests">#</a>Tests</h2>
+<p><code>engine/tests/smoke/nlgroup.ps1</code> (part of the engine smoke test): a table of phrasings across DCS, MSFS, IL-2, War
+Thunder and Falcon BMS with the expected functions and aircraft (including &quot;flares&quot; = CMS forward, &quot;chaff and flares
+on the F-16 and F/A-18&quot;, &quot;countermeasure dispenser for helicopters&quot; without a model); creation with
+<code>--select</code>/<code>--skip-node</code>, kept commands and a second run that adds nothing; <code>--show-prompt</code> (what flares do, the
+related CMS directions, the game's command names, nicknames, few-shot examples, grammar, the prompt fits the 8B
+context and is shrunk for the 0.5B model); the model path through <code>engine llm fake-server</code>
+(<code>JOYPRO_LLM_FAKE_RESPONSE</code>: greedy request without repetition penalty, canned answers with invented ids that must be
+dropped, invalid JSON that must fall back, class + game that must narrow, one process per request that is gone
+afterwards); your own llama.cpp (<code>find-local</code> with <code>--root</code>, mmproj skipped, <code>use-local</code>, the chat endpoint with
+messages and thinking off, <code>--clear</code>); the model choice for injected hardware; the downloader against the loopback
+stub (<code>JOYPRO_LLM_CATALOG</code>: consent, resume with HTTP Range, SHA-256 check, the CUDA build with its runtime archive,
+removal). No test downloads a model. GUI: <code>gui/JoyPro.Gui.Tests/DescribeGroupTests.cs</code> (one-click download with the
+chosen runtime, find and use your own llama.cpp). A real model: <code>engine/tests/manual/nlgroup_real_llm.ps1</code> (above).</p>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#how-it-works">How it works</a></li><li class="l2"><a href="#optional-local-ai-model">Optional local AI model</a></li><li class="l3"><a href="#what-the-model-sees">What the model sees</a></li><li class="l3"><a href="#model-choice">Model choice</a></li><li class="l3"><a href="#download-one-click">Download (one click)</a></li><li class="l3"><a href="#your-own-llama-cpp-and-model">Your own llama.cpp and model</a></li><li class="l3"><a href="#real-model-check">Real model check</a></li><li class="l2"><a href="#tests">Tests</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

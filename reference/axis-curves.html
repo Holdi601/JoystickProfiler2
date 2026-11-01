@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Axis curve manager · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a class="current" href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Axis curve manager </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/axis-curves.md">docs/axis-curves.md</a> in the repository (generated, always the current text).</p><p>Every axis relation has one set of axis values that all games get, the <strong>base</strong>: invert, slider, dead zone,
+saturation X/Y and curvature (one value) or an 11-point user curve. These are DCS's filter parameters and what JoyPro
+has always stored on the bind. On top of the base a relation can hold <strong>tuning per scope</strong>:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Example</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>plane:&lt;game&gt;:&lt;plane&gt;</code></td>
+<td><code>plane:DCS:F-16C_50</code></td>
+<td>one aircraft of one game</td>
+</tr>
+<tr>
+<td><code>game:&lt;game&gt;</code></td>
+<td><code>game:IL2Korea</code></td>
+<td>every aircraft of a game</td>
+</tr>
+<tr>
+<td><code>family:&lt;family&gt;</code></td>
+<td><code>family:il2</code></td>
+<td>games with the same response model and files (il2 = Great Battles + Korea, vtolvr, arma2 = Arma 2 + OA, xplane = X-Plane 11 + 12, msfs = MSFS 2020 + 2024)</td>
+</tr>
+<tr>
+<td><code>base</code></td>
+<td></td>
+<td>every game without its own tuning</td>
+</tr>
+</tbody>
+</table></div>
+<p>A game looks for the most specific scope: plane, then game, then family, then base. When it falls back to the base and
+its response model has parameters of its own (IL-2 Korea's exponent), JoyPro <strong>fits</strong> them to the base curve: the
+model's parameters that reproduce the base curve best (least squares on 20 points of the stick travel). So one curve
+set once is carried to every game as closely as each game can express it, and any game or aircraft can still get its
+own values.</p>
+<p>Storage: <code>Bind.TuningOverrides</code> (<code>[OptionalField] Dictionary&lt;string, string&gt;</code>), scope -&gt; <code>AxisTuning.Format()</code>
+(<code>inv=0;sl=0;dz=0.05;sx=1;sy=1;cv=0.2;n.sensitivity=22</code>). Framework types only, so JoyPro 1 still opens the profile
+(binary formatter version tolerance skips the unknown member).</p>
+<h2 id="response-models-engine-axistuning-cs"><a class="anchor" href="#response-models-engine-axistuning-cs">#</a>Response models (<code>engine/AxisTuning.cs</code>)</h2>
+<p>The file is plain math with no engine dependencies; the GUI links it for the live preview.</p>
+<ul>
+<li><strong>DCS</strong> (<code>dcs</code>), the formula of DCS's axis-tune widget (<code>bin\lua-gui_axes_tune.dll</code>; the widget only returns 0
+without a GUI, so JoyPro computes the curve itself):
+<ul>
+<li>centred axis: u = |x|; u &lt;= dead zone -&gt; 0; u &gt;= saturation X -&gt; saturation Y; else t = (u - dz) / (sx - dz),
+curvature k != 0: t = expm1(10 k t) / expm1(10 k); output = sy * t with the sign of x (invert flips it);</li>
+<li>user curve (11 values): natural cubic spline through the points at 0, 0.1, .. 1 instead of the curvature
+(output not scaled by saturation Y);</li>
+<li>slider: u = (x + 1) / 2, output = 2 f(u) - 1.</li>
+</ul>
+</li>
+<li><strong>IL-2 Series: Korea</strong> (<code>il2korea</code>), fitted to the tables the game compiles (see <code>docs/games/il2-korea.md</code>): dead
+zones, quadratic Bezier exponent, centre offset; matches the game to 1e-6 except the flat side of a centre offset
+(interpolated from measurements, &lt; 0.005).</li>
+<li><strong>IL-2 Great Battles</strong> (<code>il2</code>), fitted to 12 tables the game compiled into <code>current.map</code>
+(<code>tools\e2e\research\Il2GbCurves.ps1</code>): Korea's curve with exponent = 200 x <code>sensitivityBallance</code>; the dead
+zones (<code>centerDeadZone</code>, <code>sideDeadZone</code>, fractions of the half travel) snap to a 0.02 grid, towards the centre on the
+positive side and away from it on the negative side; error below 1e-4 (0.001 with all three set). The game shows
+0.5 balance and 0.25 dead zone as 100 %. Its &quot;fit&quot; of the base is what JoyPro has always written for centred axes:
+balance = curvature / 2, centre dead zone = dead zone / 4. Korea and Great Battles read each other's keys
+(<code>family:il2</code> may hold either; Korea's offset = 100 x <code>pitchShift</code>, its one-sided Low/High = 100 x low/high).
+<ul>
+<li>Pitch <code>pitchShift</code> (<code>global.pitch</code>): the output at the stick centre, Korea's curve with offset. Matches the game to
+1e-5 with a shift and a balance; with a shift and no balance, or with dead zones on the long side, the game's table
+deviates up to 0.008 / 0.019 (its points snap to round tenths; not modelled).</li>
+<li>One-sided axes (Slider; <code>highValuesDeadZone</code>, <code>lowValuesDeadZone</code>, shares of the whole travel): linear over the
+whole travel between the two dead zones, no curve, no grid (error 1e-5). The base's slider becomes low = dead zone,
+high = 1 - saturation X.</li>
+</ul>
+</li>
+<li><strong>War Thunder</strong> (<code>warthunder</code>, <code>engine\AxisModels\WarThunder.cs</code>): the Axis setup dialog's own preview formula
+(<code>axiscontrols.nut</code>): <code>v = x*kMul + kAdd</code> (after invert), sign taken before clamping to -1..1, dead zone
+<code>(|v| - innerDeadzone) / (1 - innerDeadzone)</code>, <code>y = sign * |v|^(1 + nonlinearity)</code>; then spread over
+rangeMin..rangeMax (inferred; a one-sided axis shows its 0..1 as -1..1). Also relative control (sensitivity, step) and
+keep value, which do not change the curve. Fit of the base: multiplier = 1 / saturation X, dead zone x multiplier
+(exact for the linear part), nonlinearity 0..3 by least squares; sliders get dead zone 0 and multiplier/correction
+that map the base's travel onto the whole range. Unverified in game (no machine.blk on this PC yet).</li>
+<li><strong>Microsoft Flight Simulator 2020/2024</strong> (<code>msfs</code>, <code>engine\AxisModels\Msfs.cs</code>): the device's Sensitivity page
+(sensitivity -/+, neutral, dead zone, extremity dead zone, reactivity; one set per physical axis) and per action no
+sensitivity curve (flag 1024) and axis override (flag 4096 + <code>&lt;Axis/&gt;</code>), in the file's units. The curve was measured in
+MSFS 2020 (2026-10-10, exact to 3e-4 on 84 points): the axis is evaluated mirrored (Sensitivity - on the positive stick
+half, zero point at -neutral), dead zone in stick units from that point, then v(1+s)/(1-s+2sv) with s = sensitivity/100
+(at most 0.99), the extremity dead zone caps the output at 1 - e; flag 1024 keeps the dead zone (not rescaled). Fit from
+the base: dead zone, extremity = 1 - saturation Y, one sensitivity for both halves (least squares); a slider base gives
+a linear page. Details: <code>docs/games/msfs.md</code>. <code>AxisModel.SharedPerAxisKeys</code>
+marks the per-device-axis keys: <code>binds tuning set</code> warns when another relation on the same device axis differs.</li>
+<li><strong>Falcon BMS</strong> (<code>bms</code>, <code>engine\AxisModels\FalconBMS.cs</code>): the launcher's dead zone and saturation steps (0-3) per
+physical axis, invert, one-sided axes without dead zone, and User.cfg's <code>g_nAxisExp_AXIS_*</code> / <code>g_nAxisSat_AXIS_*</code> for
+pitch, roll, yaw and cursor X/Y. Preview from the documented ints (DirectInput dead zone/saturation of the half
+travel) and the BMS forum's description of the curve (linear-to-cubic blend, less travel to full output): UNVERIFIED
+in game (<code>tools\e2e\games\BmsSettings.ps1</code>, 2026-10-09: 20/21, the launcher's files and Setup checked, entering the
+cockpit for the sweeps failed). The fit from the base takes the nearest steps only, no exponent.
+Game settings: <code>engine\FfbModels\FalconBMS.cs</code> (see <code>docs/games/falcon-bms.md</code>).</li>
+<li><strong>Star Citizen</strong> (<code>starcitizen</code>, <code>engine\AxisModels\StarCitizen.cs</code>): dead zone and saturation per device axis
+(<code>deviceoptions</code>), then per joystick slot and option group invert, exponent (1..3) or a 9-point curve (10..90 %,
+ends fixed), sensitivity; linear between dead zone and saturation, curve points joined by straight lines. Documented
+behaviour, not measured (unverified). Fit from the base: best exponent, else the curve; sliders fit to neutral. See
+<code>docs/games/starcitizen.md</code>.</li>
+<li><strong>Elite Dangerous</strong> (<code>elite</code>, <code>engine\AxisModels\EliteDangerous.cs</code>): per axis element invert and dead zone (0..1,
+file units; <code>platformDeadzone</code> = the game's <code>DefaultPlatformDeadzone</code> symbol); Slider on the throttle = Throttle Axis
+Range forward only. Invert is written XOR the element's stock direction (docs/games/elite-dangerous.md).</li>
+<li><strong>X-Plane 11/12</strong> (<code>xplane</code>, <code>engine\AxisModels\XPlane.cs</code>): X-Plane's per-axis response curve, stops (x, y) in 0..1
+with LINEAR (exact), CATMULL_ROM or CUBIC_AVG interpolation (all three measured in X-Plane 12.4), x = deflection magnitude on
+centred axes and travel on one-sided ones. The stops are explicit control points (<code>AxisTuning.ControlPoints</code>,
+Native <code>cpN</code>/<code>cpx&lt;i&gt;</code>/<code>cpy&lt;i&gt;</code>; imported curves, <code>--curve-points</code>) or come from dead zone (flat first stop),
+saturation, curvature or the 11-point user curve (11 equally spaced stops). The fit of the base samples the DCS
+curve into LINEAR stops (adaptive, error below 0.001). Also <code>interp</code>, <code>rangeType</code>/<code>rangePt0..2</code> (throttle/prop/mixture
+fixed ranges). Details: <code>docs/games/xplane.md</code>.</li>
+<li><strong>Arma 3</strong> (<code>arma3</code>, <code>engine\AxisModels\Arma3.cs</code>), read from arma3_x64.exe (see <code>docs/games/arma3.md</code>): per device
+and physical axis, DirectInput dead zone <code>deadZone</code> (0..0.1), then per half s = <code>sensitivityPos</code> / <code>sensitivityNeg</code>:
+s &gt;= 0: s v^(1/3) + (1 - s) v, s &lt; 0: |s| v^3 + (1 - |s|) v, times <code>steepness</code> (1.0/1.2/1.5/1.9/2.4/3.0), clamped
+to 1. No fit: the base is not written to Arma 3.</li>
+<li><strong>Arma 2 / OA</strong> (<code>arma2</code>, <code>engine\AxisModels\Arma2.cs</code>), from ArmA2OA.exe: v^(10^-p) per half after the fixed 7 %
+dead zone, p = <code>sensitivity</code> (the Customize slider as shown in game, file value 10^p, both halves). No fit.</li>
+<li><strong>Arma Reforger</strong> (<code>reforger</code>, <code>engine\AxisModels\ArmaReforger.cs</code>): the per-bind <code>InputFilterValue</code> <code>multiplier</code>
+(and <code>useInvert</code>); preview x * multiplier (not verified in the game).</li>
+<li><strong>WARDOGS</strong> (<code>wardogs</code>, <code>engine\AxisModels\Wardogs.cs</code>): per axis Sensitivity (0.1..2, 1 = unchanged) and DeadZone
+(0..0.5) in the HOTAS page's units, invert. Formula <strong>unverified</strong> (packed code, no preview in the game): invert,
+rescaled dead zone, times sensitivity, clipped at 1. Fit: base dead zone (not for sliders), sensitivity = slope from
+saturation; no curvature. See <code>docs/games/wardogs.md</code>.</li>
+<li><strong>VTOL VR BYOJoystick</strong> (<code>byoj</code>, <code>engine\AxisModels\VtolVr.cs</code>): invert and the mod's one <code>Deadzone</code> number, which is
+the multi-crew takeover threshold on stick/throttles (<code>takeover</code>, no effect on the response) and a cut without rescale
+on SOI slew / Articulate Tilt (<code>cut</code>); linear otherwise. <strong>VTOL VR native</strong> (<code>vtolnative</code>): invert and the toe brakes'
+Rewired <code>axisRange</code>. See <code>docs/games/vtol-vr.md</code>.</li>
+<li><strong>Generic</strong> (<code>generic</code>): invert and a linear dead zone, for games whose response JoyPro does not model yet.</li>
+</ul>
+<p>Arma's curves are per device axis, not per action: every relation exported to the same physical axis must agree; the
+export writes the first relation's values (by name) and warns about the others.</p>
+<p>Split games (2026-10-11): MSFS and X-Plane are one game per version now (<code>MSFS2020</code>/<code>MSFS2024</code>, <code>XPlane11</code>/<code>XPlane12</code>). A
+tuning stored for the single game (<code>game:MSFS</code>, <code>game:XPlane</code>) is moved to the new family (<code>family:msfs</code>, <code>family:xplane</code>)
+when the profile is loaded, so both versions keep using it; <code>plane:MSFS:&lt;p&gt;</code> goes to each version's plane scope
+(<code>engine\Games\LegacyGameIds.cs</code>).</p>
+<p>Split family <code>arma</code>: until 2026-10-05 <code>family:arma</code> held Arma 3, Arma 2 and OA together (generic model: only invert
+reached the files). Now Arma 3 has no family and Arma 2 / OA have <code>family:arma2</code>; a stored <code>family:arma</code> tuning is not
+migrated but still read as the last scope for all three games (after the game and the new family), so its invert keeps
+working; it has none of the new parameters, so it writes no curve. The GUI no longer offers it.</p>
+<h2 id="games"><a class="anchor" href="#games">#</a>Games</h2>
+<ul>
+<li>DCS: <code>plane:DCS:&lt;plane&gt;</code> -&gt; <code>game:DCS</code> -&gt; base, written per aircraft as the diff.lua <code>filter</code>. The import keeps a
+second aircraft's different filter as its plane tuning (it used to be dropped).</li>
+<li>IL-2 Korea: <code>general.pitch</code> (pitch) and <code>shared.responses</code> (other axes); imported as <code>game:IL2Korea</code> tuning.</li>
+<li>IL-2 Great Battles: <code>current.responses</code> (one row per action, all aircraft), from <code>game:IL2Game</code> -&gt; <code>family:il2</code> -&gt;
+base. The file has sections <code>type4Devices</code>, <code>type2Devices</code> (one-sided: actionId, highValuesDeadZone,
+lowValuesDeadZone) and <code>type1Devices</code> (centred: actionId, centerDeadZone, sensitivityBallance, sideDeadZone); the
+pitch file <code>global.pitch</code> has <code>type3Devices</code> (actionId, centerDeadZone, pitchShift, sensitivityBallance,
+sideDeadZone). Survey (<code>tools\e2e\research\Il2GbAxesSurvey.ps1</code>, every curve action of <code>[axiscurves]</code> in each section,
+compiled by the game): the game applies a row to its action whatever the section (the sections only tell its editor
+which form to show); type2 and type4 compile the same; a type2/type4 row wins over a type1 row; a <code>global.pitch</code> row
+wins over <code>current.responses</code>; a type3 row in <code>current.responses</code> does nothing. JoyPro writes a slider as a type2 row
+(type4 when the action already has one), pitch with a shift to <code>global.pitch</code> (only created then), everything else as
+type1, and each action in one section only: the game's own <code>type2</code> row <code>rpc_all_engines_throttles,0,0</code> used to stay
+in the file and override any throttle setting JoyPro wrote in type1; it is now left out when JoyPro writes the
+throttle (old-vs-new: that line is the only difference, same compiled result). Import reads all sections; a
+type2/type4 row is a slider. The import keeps a row in the base when the base reproduces it (as before) and as <code>game:IL2Game</code> tuning when
+it does not (both dead zones set, values beyond the base's range); re-importing a reproducible row drops that tuning.
+Settings &gt; Input devices (UI survey 2026-10-05: Control Mode, Tank Turret Control, mouse Sensitivity/Acceleration/
+Tank aim amplifier/Invert Y, Joystick Noise filter 0..1, Force Feedback Shaking/Feedback power in %, Enable) is
+saved on ACCEPT to <code>data\input\current.devices</code>, one URL query line (<code>ffEnabled=1&amp;ffShaking=1&amp;mouseAcceleration=0&amp; ffForce=1&amp;mouseSensitivity=4&amp;mouseInvertYAxis=0&amp;joystickFilter=0.13</code>), not to <code>startup.cfg</code> (unchanged by ACCEPT);
+<code>current.map</code> then compiles <code>use joy(1000.00,0.13);</code>. <code>engine ffb set --device * --game IL2Game</code> (enabled, force,
+amplitude = Shaking, joystickFilter; 0..1) edits that line in place and still writes <code>startup.cfg</code> [force_feedback];
+it does not create <code>current.devices</code> (the mouse keys have no known defaults) and warns instead. The game also
+rewrites <code>global.actions</code> on that ACCEPT. Checked in the game (2026-10-05): with <code>current.devices</code> from JoyPro
+(Shaking 0.6, power 0.7, filter 0.25) and <code>startup.cfg</code> at 1.0, the recompiled <code>current.map</code> had <code>use joy(1000.00,0.25)</code>
+and <code>[force_feedback]</code> force 0.7 / amplitude 0.6, and the page showed 0.25 / 60 % / 70 %: the game reads
+<code>current.devices</code>. An export without IL-2 binds still writes these settings.</li>
+<li>War Thunder: <code>game:WarThunder</code> -&gt; base (fitted), written to machine.blk <code>axes{}</code> as the game's diff against its base
+preset (<code>docs/games/war-thunder.md</code>); import fills every attribute with the value the game uses.</li>
+<li>MSFS 2020 / 2024: <code>game:MSFS2020</code> / <code>game:MSFS2024</code> -&gt; <code>family:msfs</code> -&gt; base (fitted), written to the device's Sensitivity page of the bound axis or, with <code>axisOverride</code>, to the action's own <code>&lt;Axis/&gt;</code> (<code>docs/games/msfs.md</code>).</li>
+<li>Star Citizen: <code>game:StarCitizen</code> -&gt; base, written to <code>actionmaps.xml</code> (option group of the action on its slot,
+<code>deviceoptions</code> of the physical axis) for the axis rebinds JoyPro writes; a relation without own settings leaves the
+game's values. Import stores the file's values as <code>game:StarCitizen</code> tuning. Several relations on one group or axis:
+the first by name wins (warning). Game-wide settings (attributes.xml): <code>engine ffb set --device * --game StarCitizen</code>. Details: <code>docs/games/starcitizen.md</code>.</li>
+<li>Elite Dangerous: <code>game:EliteDangerous</code> -&gt; base; <code>&lt;Inverted&gt;</code>/<code>&lt;Deadzone&gt;</code> per axis element, <code>&lt;ThrottleRange&gt;</code> from the
+throttle's Slider, game-wide options with <code>engine ffb set --device * --game EliteDangerous</code>.</li>
+<li>X4: no per-axis values in the game; the relations' invert (XOR X4's HOTAS default) and the throttle's Slider become
+the game-wide <code>invert_*</code> / <code>bidirectionalthrottle</code> params, dead zone and the rest via <code>engine ffb set --device * --game X4</code>
+(docs/games/x4.md &quot;Axis settings&quot;).</li>
+<li>X-Plane: <code>axis_response_curve&lt;axis&gt;</code> lines of the exported Joysticks.prf, imported as <code>game:XPlane12</code> / <code>game:XPlane11</code> tuning (<code>family:xplane</code> for both);
+control sensitivity, X-Plane 11 stability augmentation, flap detents and X-Plane 12's control-loaded flag are game settings
+(<code>engine ffb set --game XPlane12|XPlane11</code>). Null zone and centre are calibration and never written.</li>
+<li>Arma 3 / Arma 2 / OA: <code>JoysticksList</code> arrays of the profile (per device axis), imported as <code>game:&lt;game&gt;</code> tuning;
+device and game settings (mode, analog click, Arma 3's RTD options) through <code>engine ffb set --game Arma3|Arma2|Arma2OA</code>.
+Reforger: the axis filter in JoyPro's preset; order rules and game settings in the game's settings files
+(<code>docs/games/arma-reforger.md</code>). An export without binds of these games still writes their stored settings.</li>
+<li><code>binds tuning set --param</code> looks the key up in the scope's model first (several models have a <code>sensitivity</code> with
+different ranges) and also takes a model's own switches (<code>useInvert=1</code>).</li>
+<li>Registry games: the bridge passes the resolved tuning (<code>GameInputBinding.Tuning</code>); imported axis values (dead zones</li>
+<li>WARDOGS: <code>game:Wardogs</code> (no family), <code>Sensitivity</code>/<code>DeadZone</code> of each axis line of <code>GameUserSettings.ini</code>; game-wide
+Enable HOTAS / Self-Centering Collective via <code>engine ffb set --device * --game Wardogs</code> (no force feedback).</li>
+<li>VTOL VR: <code>game:VTOLVR</code> (BYOJ) / <code>game:VTOLVRNative</code> -&gt; <code>family:vtolvr</code>; Settings &gt; Controls (<code>gameSettings.cfg</code>,
+rudder options, VR dead zones and haptics) via <code>engine ffb set --device * --game VTOLVR</code>, written by the native export.</li>
+<li>An export of a profile without binds for a game with game-wide settings (<code>IGameWideSettings</code>) writes only those
+settings and leaves the binds in the game file alone.- Registry games: the bridge passes the resolved tuning (<code>GameInputBinding.Tuning</code>); imported axis values (dead zones
+etc.) become that game's tuning instead of the base, so one game's settings no longer leak into DCS.</li>
+</ul>
+<h2 id="detent-mode-one-throttle-for-all-aircraft"><a class="anchor" href="#detent-mode-one-throttle-for-all-aircraft">#</a>Detent mode (one throttle for all aircraft)</h2>
+<p>A throttle with an afterburner detent used to need one relation per afterburner start (each with its own curve). In
+detent mode one throttle relation serves every aircraft: per aircraft JoyPro bends the relation's curve so that the
+device's physical detent is exactly where that aircraft's afterburner starts (<code>engine\AxisDetents.cs</code>, math only, linked
+into the GUI; <code>engine\EngineAxisDetents*.cs</code>).</p>
+<ul>
+<li><strong>Gate data</strong>: <code>DB\Detents\throttle-gates.json</code> (shipped, JoyPro's own): per game and aircraft (DCS: the Config\Input
+folder name, aliases for _WSO/_RIO seats, <code>_easy</code> falls back to the aircraft; <code>*</code> = every aircraft of a game) the
+afterburner start on the game's throttle axis (0 idle .. 1 full), an idle cut-off region on the axis (<code>idleGate</code>),
+<code>noAfterburner</code>, source and confidence. Read from the game files (static analysis, 2026-10-17): F-14 / F-4E 0.70,
+F-15E 0.75 (cut-off 0.10), M-2000C 0.90 (cut-off 0.15) and the Mirage F1 0.59 are the defaults of the modules' own
+&quot;afterburner detent in axis percent&quot; options (high); F-16C 0.775, F/A-18C 0.77, MiG-29A (full fidelity) 0.675,
+F-5E 0.80 and JF-17 0.833 are the MIL marks of their Controls Indicator scripts (medium: assumes the lever follows the
+axis 1:1; if DCS stretches the axis over idle..max instead, 0.75 / 0.744 / 0.612, see the notes). FC3 jets, AJS 37
+and MiG-21 have no number in their files (their old curves in the profile give one). MiG-19P / F-100D switch the
+afterburner by a button. IL-2 (both) has no afterburner. Falcon BMS calibrates its own AB and idle detents in its
+setup (stored in <code>joystick.cal</code>), X-Plane per aircraft in the .acf (<code>acf/_go_to_burner_50_above_thro</code>); MSFS's
+aircraft files are not read.
+DCS also has hidden filter fields <code>hardwareDetent</code>, <code>hardwareDetentAB</code>, <code>hardwareDetentMax</code> (<code>Scripts\Input\ AxesTuneDialog.lua</code>, hidden in public builds); JoyPro does not use them.</li>
+<li><strong>Calibration</strong> per device axis (<code>Pr0file.AxisCalibrations</code>, <code>&quot;&lt;device&gt;|&lt;axis&gt;&quot;</code> -&gt; <code>idle=0.02;det=0.79;full=..;cut=..; src=wizard;at=&lt;date&gt;</code>, raw axis positions 0..1 as DirectInput reports them): idle (on the idle detent if the device
+has one), the afterburner detent, optionally full and the cut-off behind the idle detent. The direction (value rising
+or falling towards full) comes from idle vs. detent. The Binds page's wizard reads the axis live (capture service);
+<code>binds detent calibrate</code> stores it; every throttle relation on that axis uses it.</li>
+<li><strong>Settings</strong> of a relation: <code>Bind.TuningOverrides[&quot;detent&quot;]</code> (<code>on=1;noab=full;unknown=linear;margin=0.01; t.&lt;game&gt;:&lt;plane&gt;=ab:0.78|ab:0.78/idle:0.1|full|linear</code>), so copies, re-import metadata and the history carry it like the
+tuning scopes (<code>binds tuning show</code> does not list it as a scope). Per aircraft: its own value (<code>t.</code>), else the gate data,
+else <code>unknown</code> (default: the relation's curve). Aircraft without afterburner get full power at the detent (<code>noab=full</code>)
+or the relation's curve (<code>linear</code>).</li>
+<li><strong>The curve</strong>: the base curve gives the game throttle g(u) along the raw travel; a piecewise linear bend W maps
+g(detent) to the afterburner start minus the margin (resting in the detent stays just below the afterburner, 1 % by
+default), g(full) to 1, and with a calibrated cut-off g(idle) to the aircraft's idle gate (else flat zero in the
+cut-off). The relation's own curve shape is kept inside each segment. Game conventions (DCS thrust: -1 = full) and the
+relation's invert need not be known: the base's output at idle and full tells which way the game throttle rises.</li>
+<li><strong>Order</strong>: an aircraft's or game's own tuning scope wins, then detent mode, then the base (<code>BindTuning.Resolve</code>).</li>
+<li><strong>Per game</strong> (<code>DetentMath.Fit</code>, max. difference to the wanted curve in game throttle reported): DCS (per aircraft)
+dead zone + saturation when the curve is one straight line (full at the detent: exact), else the 11-point user curve
+(least squares, exact at the detent and on flat stretches; typically below 1.5 %). X-Plane: curve points (exact).
+Any other model: its own parameters searched on their grid (IL-2 full at the detent = a high dead zone: exact; an
+afterburner bend cannot be expressed there). Games with one curve for all aircraft get what most of the relation's
+aircraft of that game need (others listed). Above 2 % difference a warning, above 6 % the game keeps its normal curve
+(warning in <code>binds detent show</code>, the GUI and the export output).</li>
+<li><strong>Merge</strong> (<code>binds detent merge</code>): finds per device axis the throttle relations (name or DCS thrust axes 2004-2006),
+reads the device's detent from a relation that gives full power there and stays full (else from the gate data), keeps
+the relation with most aircraft that does not end at the detent (its bind and curve), adds the others' aircraft and
+removes them. Per aircraft its old throttle at the detent (+ margin) becomes its own afterburner start
+(<code>--ab-source game</code>: the gate data where it has one); a full-at-detent aircraft with gate data gets the gate data;
+aircraft without afterburner that flew past the detent keep the relation's curve. The merge is one history version of
+its own (<code>profile history undo</code>; the GUI's &quot;Undo merge&quot; restores the version it was made on).</li>
+<li><strong>GUI</strong>: Binds page, axis relation, &quot;Detent mode&quot;: on/off, no-afterburner rule, &quot;Calibrate detent...&quot; (idle, detent,
+full and cut-off with Confirm/Skip/Back on the live axis), &quot;Merge my throttle relations...&quot; (plan, Merge, Undo merge),
+and the aircraft groups (&quot;F-16C, F/A-18C: afterburner at 77 %&quot;) with a travel/throttle preview (detent line, afterburner
+band), the source, per game the method and error, and the afterburner start editable per group.</li>
+<li>Verified: unit tests <code>gui\JoyPro.Gui.Tests\DetentModeTests.cs</code> (math per model, panel, wizard, merge), smoke
+<code>engine\tests\smoke\detent.ps1</code> (gate data, merge/undo/redo, calibration checks, own values, DCS/X-Plane/IL-2 fits,
+DCS export and DCS's own Lua loading it), the user's March 2025 profile merged on a copy and exported into a copy of
+Saved Games\DCS (every written file loads in DCS's luae; per aircraft the throttle at the detent equals the old
+curve's), journey scenario <code>detent</code> (<code>UserJourneyTests</code>). Not flown in game yet.</li>
+</ul>
+<h2 id="adding-a-game-s-model"><a class="anchor" href="#adding-a-game-s-model">#</a>Adding a game's model</h2>
+<ul>
+<li>Axis model: <code>engine\AxisModels\&lt;Game&gt;.cs</code>, a static method marked <code>[GameAxisModel(&quot;&lt;game id&gt;&quot;)]</code> that returns the
+<code>AxisModel</code> (C# 7.3, math only; start the file with <code>#if NET</code> / <code>#nullable disable</code> / <code>#endif</code>). The engine compiles
+the folder by wildcard and the GUI links it for the preview.</li>
+<li>Game settings (force feedback and other game-wide control options, device <code>*</code>): <code>engine\FfbModels\&lt;Game&gt;.cs</code>, a
+static method marked <code>[GameFfbModel]</code> that returns the <code>FfbModel</code> (engine only).</li>
+<li>Smoke tests: <code>engine\tests\smoke\&lt;game&gt;.ps1</code>, dot-sourced by <code>engine_smoke_test.ps1</code> (Run-Engine, Assert-*,
+<code>$tempDir</code>, <code>$engineDir</code>).</li>
+<li>What each game offers and what JoyPro lacks: the author's private per-game survey notes (research 2026-10-05).</li>
+</ul>
+<h2 id="cli"><a class="anchor" href="#cli">#</a>CLI</h2>
+<p><code>engine binds tuning models | show | set | clear | preview</code> and <code>engine binds detent show | set | calibrate | uncalibrate | gates | merge</code> (see the CLI wiki).</p>
+<h2 id="verification"><a class="anchor" href="#verification">#</a>Verification</h2>
+<ul>
+<li>Smoke tests: scope storage, Korea import/export of the response files, inheritance fit, merge keeps a response
+changed in the game, DCS per-aircraft filters, IL-2 GB import/export of <code>current.responses</code> and family conversion.</li>
+<li>Old-vs-new: the IL-2 GB import and all export modes write the same files as before the <code>il2</code> model.</li>
+<li><code>engine\tests\smoke\arma.ps1</code>: Arma 3 arrays/settings/full-axis throttle, conflict warning, import round trip,
+settings-only export; Arma 2 OA sensitivity, family split, device switch; Reforger filter, order rules, game settings
+and the refusals. In game: <code>tools\e2e\games\Arma3Settings.ps1</code> (25/25 on 2026-10-10), <code>Arma2Settings.ps1</code> (Arma 2 17/17
+on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05).</li>
+<li>WARDOGS / VTOL VR: <code>engine\tests\smoke\wardogs.ps1</code>, <code>vtolvr.ps1</code> (import round trips, own values, fit, game-wide settings, settings-only export). In game: <code>tools\e2e\games\WardogsSettings.ps1</code> (36/36 on 2026-10-11, with the config watcher).</li>
+<li>In game: <code>tools\e2e\games\IL2KoreaCurves.ps1</code> exports random settings, starts Korea and compares the table it
+compiled with JoyPro's preview on all 101 points (max difference 4e-6 on the first run).</li>
+<li>In game: <code>tools\e2e\games\IL2GameCurves.ps1</code> does the same for Great Battles (roll in GB units, yaw as
+<code>family:il2</code> in Korea units, a one-sided throttle as a type2 row, pitch with a shift in <code>global.pitch</code>): 11/11, max
+difference 0.0004 (2026-10-05).</li>
+<li>In game: <code>tools\e2e\games\DCSCurves.ps1</code> (isolated <code>-w JoyProE2E</code>) exports random Su-25T plane tunings: pitch
+(dead zone, saturation X/Y, curvature), roll (11-point user curve, inverted), thrust (slider). DCS's Axis Tune panel
+shows the same numbers and Slider/Invert/User Curve boxes, and its live In/Out readout follows JoyPro's preview at
+10 vJoy positions per axis (first run 21/21). The readout is whole percent cut off rather than rounded, a slider
+shows 0..100, and Out is the response before Invert.</li>
+<li>X-Plane: <code>engine\tests\smoke\xplane.ps1</code> (import of every mode and a fixed range, byte-identical round trip, export
+on the right index, fit of the base, merge keeps a curve changed in the game, calibration unchanged, control
+settings). In game (prepared, not run yet): <code>tools\e2e\games\XPlaneCurves.ps1</code> compares X-Plane's processed axis
+values (Web API <code>sim/joystick/joy_mapped_axis_value</code>) with JoyPro's preview during a vJoy sweep.</li>
+<li>Calibration scripts: <code>tools\e2e\research\KoreaCurves.ps1</code>, <code>Il2GbCurves.ps1</code>.</li>
+<li>MSFS: smoke <code>engine\tests\smoke\msfs.ps1</code> (import/export of the Sensitivity page, overrides, flags, conflicts,
+merge). In game (prepared, not run yet): <code>tools\e2e\games\MsfsCurves.ps1</code> sweeps vJoy and reads ELEVATOR / AILERON /
+RUDDER POSITION and GENERAL ENG THROTTLE LEVER POSITION through <code>tools\e2e\MsfsSimVars</code> (read-only SimConnect with
+the sim's own <code>SimConnect.dll</code>), compares with the preview and saves <code>measurements.csv</code> for fitting.</li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#response-models-engine-axistuning-cs">Response models (engine/AxisTuning.cs)</a></li><li class="l2"><a href="#games">Games</a></li><li class="l2"><a href="#detent-mode-one-throttle-for-all-aircraft">Detent mode (one throttle for all aircraft)</a></li><li class="l2"><a href="#adding-a-game-s-model">Adding a game&#x27;s model</a></li><li class="l2"><a href="#cli">CLI</a></li><li class="l2"><a href="#verification">Verification</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

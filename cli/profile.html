@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>engine profile · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details open><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a class="current" href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Engine (CLI)</div><h1>engine profile </h1><div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span><button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button><button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div></div>
+<div class="content">
+<p class="lead">14 commands of <code>engine profile</code>. Each with every option and every value it takes, what it does, which GUI buttons use it, and an example.</p><div class="cmd-index"><ul><li><a href="#profile-summary"><code>profile summary</code></a></li><li><a href="#profile-load"><code>profile load</code></a></li><li><a href="#profile-save"><code>profile save</code></a></li><li><a href="#profile-new"><code>profile new</code></a></li><li><a href="#profile-save-last"><code>profile save-last</code></a></li><li><a href="#profile-validate"><code>profile validate</code></a></li><li><a href="#profile-game-state"><code>profile game-state</code></a></li><li><a href="#profile-games"><code>profile games</code></a></li><li><a href="#profile-merge"><code>profile merge</code></a></li><li><a href="#profile-history"><code>profile history</code></a></li><li><a href="#profile-history-show"><code>profile history show</code></a></li><li><a href="#profile-history-restore"><code>profile history restore</code></a></li><li><a href="#profile-history-keep"><code>profile history keep</code></a></li><li><a href="#profile-history-prune"><code>profile history prune</code></a></li></ul></div><article class="entry cli level-full" id="profile-summary"><header><h3 class="eh"><a class="anchor" href="#profile-summary">#</a><code>engine profile summary</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile summary</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Prints three counts of the profile: relations, binds and modifiers. Use it for a quick look whether the right profile
+is open and how big it is. The GUI's <strong>Profile Summary</strong> (Start page and Advanced page) runs it, and <strong>Reload</strong> in the
+profile bar runs it first.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile summary
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>No options. <code>engine profile</code> without an action is the same command.</li>
+<li>Without <code class="opt">--profile</code> the engine opens the last profile it opened (see <a href="../cli/profile.html#profile-load"><code>engine profile load</code></a>) and counts that one.</li>
+<li>Read-only: nothing is saved.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: always one text line, <code>relations=&lt;n&gt;, binds=&lt;n&gt;, modifiers=&lt;n&gt;</code>, on stdout (no JSON; <code class="opt">--text</code> and <code class="opt">--out</code>
+change nothing).</li>
+<li>Exit code <code>0</code>.</li>
+<li>Related: <a href="../cli/profile.html#profile-games"><code>engine profile games</code></a> (what an export writes per game), <a href="../cli/profile.html#profile-validate"><code>engine profile validate</code></a> (errors and warnings).</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Shows profile-focused counts and status.</p><p><span class="lbl">Used by the GUI</span> <a href="../gui/header.html#refreshall">Profile bar: Reload</a> · <a href="../gui/start.html#runprofilesummary">Start: Profile Summary</a> · <a href="../gui/advanced.html#runprofilesummary">Advanced: Profile Summary</a></p><p class="lbl">Example</p><pre><code>engine --profile &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; profile summary --text</code></pre></article><article class="entry cli level-full" id="profile-load"><header><h3 class="eh"><a class="anchor" href="#profile-load">#</a><code>engine profile load</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile load &lt;path.pr0file&gt;</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Opens a <code>.pr0file</code>, applies the load corrections and prints the counts of relations, binds and modifiers. The GUI runs
+it for <strong>Open profile...</strong> and <strong>Open last profile</strong> in the profile bar. The engine remembers the file, so a later
+command without <code class="opt">--profile</code> works on it.</p>
+<pre><code class="language-powershell">engine profile load &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>The path is required (<code>profile load requires a .pr0file path.</code>).</li>
+<li>The load corrections run (global <code class="opt">--load-corrections</code>, default <code>true</code>); <code>--correction-report &lt;file&gt;</code> writes their
+report (<code>.txt</code> / <code>.log</code> as text, otherwise JSON).</li>
+<li>Actions of a relation that have no aircraft ticked leave the relation and become its dismissed suggestions. When
+there are any, the profile file is saved at once as a history version of its own (&quot;Remove actions with no aircraft
+ticked&quot;), so one undo brings them back.</li>
+<li>The path is stored as the last opened profile in <code>engine.meta.json</code> (<code>Documents\JoyPro</code>, or <code>JOYPRO_DATA_DIR</code>).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: text lines <code>Loaded profile: &lt;path&gt;</code> and the counts as in <a href="../cli/profile.html#profile-summary"><code>engine profile summary</code></a>; no JSON.</li>
+<li>Exit code <code>0</code>; <code>1</code> when the path is missing or the file cannot be read.</li>
+<li>Related: <a href="../cli/profile.html#profile-save"><code>engine profile save</code></a>, <a href="../cli/profile.html#profile-new"><code>engine profile new</code></a>, <a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Loads a .pr0file into memory so later commands act on it.</p><p><span class="lbl">Used by the GUI</span> <a href="../gui/header.html#openlastprofile">Profile bar: Open last profile</a></p><p class="lbl">Example</p><pre><code>engine profile load &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27;</code></pre></article><article class="entry cli level-full" id="profile-save"><header><h3 class="eh"><a class="anchor" href="#profile-save">#</a><code>engine profile save</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile save &lt;path.pr0file&gt;</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Writes the loaded profile to the given <code>.pr0file</code>. JoyPro saves every change by itself; <strong>Save Profile</strong> on the
+Relations and Binds pages (and Ctrl+S) still runs this to write the file at once. The GUI also uses it to save a copy
+under a new name.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile save &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks copy.pr0file&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>The target path is required (<code>profile save requires a target .pr0file path.</code>). A missing folder is created; an
+existing file is overwritten.</li>
+<li>The save is a version in the target's profile history, like every save.</li>
+<li>The target becomes the last opened profile (<code>engine.meta.json</code>).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: <code>Saved profile: &lt;path&gt;</code> (text, no JSON). Exit code <code>0</code>, <code>1</code> on a missing path or a write error.</li>
+<li>Related: <a href="../cli/profile.html#profile-save-last"><code>engine profile save-last</code></a>, <a href="../cli/profile.html#profile-load"><code>engine profile load</code></a>, <a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Saves current in-memory profile state to a .pr0file.</p><p><span class="lbl">Used by the GUI</span> <a href="../gui/relations.html#saveprofile">Relations: Save Profile</a> · <a href="../gui/binds.html#saveprofile">Binds: Save Profile</a></p><p class="lbl">Example</p><pre><code>engine profile save &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27;</code></pre></article><article class="entry cli level-full" id="profile-new"><header><h3 class="eh"><a class="anchor" href="#profile-new">#</a><code>engine profile new</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile new &lt;path.pr0file&gt;</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Creates an empty profile file: no relations, binds or modifiers. The GUI's <strong>New profile</strong> runs it with a new file
+(<code>My profile.pr0file</code>, <code>My profile 2.pr0file</code>, ...) in <code>Documents\JoyPro2\profiles</code>. Fill it afterwards with an
+import, for example <a href="../cli/dcs.html#dcs-import"><code>engine dcs import</code></a>.</p>
+<pre><code class="language-powershell">engine profile new &quot;C:\Users\Pilot\Documents\JoyPro\New Setup.pr0file&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>&lt;path.pr0file&gt;</code> is required. Missing folders are created.</li>
+<li>An existing file of that name is overwritten without asking. Its old content is not lost: it stays in the profile
+history of that path as a version (<a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>, <code>restore</code> brings it back), unless the history is
+switched off.</li>
+<li>JoyPro's own settings (the meta settings) are kept; the new file becomes the last opened profile, so the next command
+without <code class="opt">--profile</code> opens it.</li>
+<li><code class="opt">--profile</code> is not changed by this command (it is only read first).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: <code>Created empty profile: &lt;path&gt;</code>; exit code <code>0</code>. Without a path: <code>profile new requires a target .pr0file path.</code>
+and exit code <code>1</code>.</li>
+<li>The file is written atomically (a temp file next to it, then swapped in).</li>
+<li>Related: <a href="../cli/profile.html#profile-load"><code>engine profile load</code></a>, <a href="../cli/profile.html#profile-save"><code>engine profile save</code></a>, <a href="../cli/profile.html#profile-summary"><code>engine profile summary</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Creates an empty profile and saves it to the given .pr0file (overwrites an existing file).</p><p class="lbl">Example</p><pre><code>engine profile new &#x27;C:\JoyPro\profiles\new_setup.pr0file&#x27;</code></pre></article><article class="entry cli level-full" id="profile-save-last"><header><h3 class="eh"><a class="anchor" href="#profile-save-last">#</a><code>engine profile save-last</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile save-last</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Writes the loaded profile into JoyPro's own last-profile file. The GUI's <strong>Save as last profile</strong> in the profile bar's
+<strong>Options</strong> panel runs it. Most people never need it: JoyPro saves your profile file by itself.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile save-last
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>No options. The file is <code>last.pr0file</code> in <code>Documents\JoyPro</code> (or <code>JOYPRO_DATA_DIR</code>), together with
+<code>engine.meta.json</code>.</li>
+<li><code>last.pr0file</code> has no profile history.</li>
+<li>A command without <code class="opt">--profile</code> opens the last opened profile; only when that file does not exist it opens
+<code>last.pr0file</code>.</li>
+<li><code>dcs import</code>, <code>il2 import</code> and <code>starcitizen import</code> do the same with <code class="opt">--save-last</code>.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: <code>Saved to last profile location.</code> (text). Exit code <code>0</code>.</li>
+<li>Related: <a href="../cli/profile.html#profile-save"><code>engine profile save</code></a>, <a href="../cli/profile.html#profile-load"><code>engine profile load</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Saves to JoyPro&#x27;s last-used profile path.</p><p><span class="lbl">Used by the GUI</span> <a href="../gui/header.html#savelastprofile">Profile bar: Save as last profile</a></p><p class="lbl">Example</p><pre><code>engine profile save-last</code></pre></article><article class="entry cli level-full" id="profile-validate"><header><h3 class="eh"><a class="anchor" href="#profile-validate">#</a><code>engine profile validate</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile validate [--fail-on-warnings true|false]</code></pre><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Checks your profile for problems: one button that does two things, two actions of one aircraft in one relation,
+unknown commands, modifier problems. It changes nothing. The Check's <strong>Check now</strong> runs it.</p>
+<pre><code class="language-powershell">engine profile validate --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>Errors: one input in two relations with an action of the same aircraft on (one button does two things), two actions
+of one aircraft on in one relation, unknown commands.</li>
+<li>Warnings: modifier problems and other findings that do not count as errors.</li>
+<li><code>--fail-on-warnings true</code> (default <code>false</code>) makes warnings fail the exit code too (for scripts).</li>
+<li>The GUI's Check builds its cards from this and the detailed reports of <a href="../cli/relations.html#relations-conflicts"><code>engine relations conflicts</code></a>,
+<a href="../cli/relations.html#relations-duplicates"><code>engine relations duplicates</code></a> and <a href="../cli/export-marks.html#export-marks-list"><code>engine export-marks list</code></a>.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON with the errors and warnings, or text with <code class="opt">--text</code>.</li>
+<li>Exit code <code>1</code> with <code>profile validation failed: errors = &lt;n&gt;.</code> when there are errors, or with
+<code>profile validation failed: warnings = &lt;n&gt; (--fail-on-warnings true).</code>; else <code>0</code>.</li>
+<li>Read-only; another argument fails with <code>Unknown profile validate argument(s)</code>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Validates the loaded profile and reports both warnings and errors across relation items, binds, modifiers, and active-node states.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--fail-on-warnings</code></td><td><code>true</code> <code>false</code></td><td>For profile validate: treat warnings as failure (non-zero exit) in addition to errors.</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine profile validate --fail-on-warnings true
+engine profile validate --fail-on-warnings false</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/check.html#applyduplicatepreview">Check: Apply the ticked ones</a> · <a href="../gui/relations.html#reviewnewduplicates">Relations: Review them</a> · <a href="../gui/relations.html#returntocheck">Relations: ReturnToCheckCommand</a> · <a href="../gui/check.html#validateprofile">Check: Check now</a> · <a href="../gui/export.html#validateprofile">Export: Validate Profile</a></p><p class="lbl">Example</p><pre><code>engine --profile &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; profile validate --text
+engine --profile &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; profile validate --fail-on-warnings true --text</code></pre><details><summary>How the options interact</summary><ul>
+<li>Validation always reports both warnings and errors.</li>
+<li>Default exit behavior fails only when errors exist.</li>
+<li>Set --fail-on-warnings true for CI or strict runs where warnings should also fail the command.</li>
+</ul>
+</details></article><article class="entry cli level-full" id="profile-game-state"><header><h3 class="eh"><a class="anchor" href="#profile-game-state">#</a><code>engine profile game-state</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile game-state --game &lt;id&gt; [--path &lt;config&gt;]</code></pre><p>Has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks &#x27;Import first?&#x27; before the first export</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Tells whether your profile has imported from or exported to a game, and whether the game has binds of its own. The GUI
+uses it to ask &quot;Import first?&quot; before the first export into a game that has its own binds.</p>
+<pre><code class="language-powershell">engine profile game-state --game DCS --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<p><code>--game &lt;id&gt;</code> is required; <code>--path &lt;config&gt;</code> checks another config folder than the detected one. Read-only.</p>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON or text with <code class="opt">--text</code>; without <code class="opt">--game</code>, or with another argument, it fails with the usage line.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-import"><code>engine dcs import</code></a>, <a href="../cli/sync.html#sync-pending"><code>engine sync pending</code></a>, <a href="../cli/games.html#games-installs"><code>engine games installs</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks &#x27;Import first?&#x27; before the first export.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--game</code></td><td><code>&lt;id&gt;</code></td><td>Game filter value. Example: DCS or IL2Game.</td></tr><tr><td><code>--path</code></td><td><code>&lt;config&gt;</code></td><td>Optional explicit path override. Use when you prefer option form over positional path.</td></tr></tbody></table></div><p><span class="lbl">Used by the GUI</span> <a href="../gui/export.html#exportselectedgames">Export: Export ticked games</a> · <a href="../gui/export.html#exportgamenow">Export: Export now</a></p><p class="lbl">Example</p><pre><code>engine profile game-state --game &lt;id&gt; --text</code></pre></article><article class="entry cli level-full" id="profile-games"><header><h3 class="eh"><a class="anchor" href="#profile-games">#</a><code>engine profile games</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile games</code></pre><p>Games and DCS aircraft the profile has relations for, with how many are bound: what each export writes</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Lists the games, and for DCS the aircraft, that the profile has relations for, with how many of them are bound. That
+is what an export to each game would write. The Export page builds its tiles from it (its <strong>Refresh</strong> runs it), and so
+does the export from a Start page card.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile games --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li>No options. Read-only.</li>
+<li>A relation counts once per game; it counts as bound when its bind has a button or an axis (the same test the
+exporters use).</li>
+<li>DCS: per aircraft that is ticked in the relation's DCS actions; an action with no aircraft ticked counts under
+<code>Default</code>.</li>
+<li>Per game also whether it is installed, its installation folder and whether you hid it
+(<a href="../cli/games.html#games-install-disable"><code>engine games install disable</code></a>). DCS comes first, then the games by name.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON with one entry per game (<code>GameId</code>, <code>Name</code>, <code>Exporter</code>, <code>Relations</code>, <code>Bound</code>, <code>Planes</code>, <code>Installed</code>,
+<code>InstallPath</code>, <code>Disabled</code>), or a text table with <code class="opt">--text</code>; <code class="opt">--out</code> writes it to a file.</li>
+<li>Exit code <code>0</code>.</li>
+<li>Related: <a href="../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>, <a href="../cli/games.html#games-installs"><code>engine games installs</code></a>, <a href="../cli/profile.html#profile-summary"><code>engine profile summary</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Games and DCS aircraft the profile has relations for, with how many are bound: what each export writes.</p><p><span class="lbl">Used by the GUI</span> <a href="../gui/start.html#exportgamecard">Start: Export</a> · <a href="../gui/export.html#refreshexportgames">Export: Refresh</a> · <a href="../gui/settings.html#refreshgameinstalls">Settings: Detect again</a> · <a href="../gui/settings.html#cleargameinstallfolder">Settings: Use detected</a></p><p class="lbl">Example</p><pre><code>engine profile games --text</code></pre></article><article class="entry cli level-full" id="profile-merge"><header><h3 class="eh"><a class="anchor" href="#profile-merge">#</a><code>engine profile merge</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile merge &lt;left.pr0file&gt; &lt;right.pr0file&gt; [&lt;more.pr0file&gt; ...] [--mode left|right|ask] [--overwrite-mode left|right|ask] [--save &lt;path.pr0file&gt;] [--save-profile &lt;path.pr0file&gt;]</code></pre><p>The files are merged left to right; a relation both have: right = the later file wins (default), left = the first file keeps it, ask = the console asks; --overwrite-mode is another name for --mode, --save-profile for --save</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Combines two or more profile files into one. Relations only one file has are added; where both have a relation of the
+same name, the mode decides which one wins. The GUI's <strong>Merge</strong> (profile bar, <strong>Options</strong> panel) and <strong>Merge Profile</strong>
+on the Relations and Binds pages run it with your profile as the left file; they ask first and keep a copy of your
+profile.</p>
+<pre><code class="language-powershell">engine profile merge &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; &quot;C:\Users\Pilot\Documents\JoyPro\Friend.pr0file&quot; --mode left --save &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot;
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code class="opt">--mode</code></th>
+<th>When both files have a relation of the same name and it differs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>right</code> (default; also <code>r</code>, <code>overwrite</code>, <code>keep-right</code>)</td>
+<td>the later file's relation and bind win</td>
+</tr>
+<tr>
+<td><code>left</code> (also <code>l</code>, <code>keep-left</code>)</td>
+<td>the first file's relation stays</td>
+</tr>
+<tr>
+<td><code>ask</code> (also <code>a</code>, <code>prompt</code>)</td>
+<td>the console asks per conflict; refused without an interactive console</td>
+</tr>
+</tbody>
+</table></div></div>
+<ul>
+<li>Files are merged from left to right: the first file is the base, every further file is merged into it.</li>
+<li>Relations are matched by name (case does not matter); identical ones are skipped.</li>
+<li>Also merged, with the same rule: device aliases and pictures, device IDs, aircraft aliases, modifier renames, the DCS
+force feedback settings, the force feedback settings of the games, the layout export and the last selected DCS
+folder.</li>
+<li><code>--save &lt;file&gt;</code> (also <code class="opt">--save-profile</code>) writes the result; <code class="opt">--overwrite-mode</code> is another name for <code class="opt">--mode</code>.</li>
+<li>With the global <code class="opt">--profile</code> the result is also auto-saved into that profile file. The source files are only read.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: text lines <code>Merged profiles: &lt;n&gt;</code>, <code>Conflict mode: &lt;mode&gt;</code>, <code>Conflicts: &lt;n&gt;</code>, <code>Resolved Left: &lt;n&gt;</code>,
+<code>Resolved Right: &lt;n&gt;</code>, the counts, and <code>Saved merged profile: &lt;path&gt;</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with fewer than two files (<code>profile merge requires at least two source files ...</code>), a missing file
+(<code>profile merge source does not exist: &lt;path&gt;</code>), an unknown mode (<code>... Use left|right|ask.</code>), both <code class="opt">--mode</code> and
+<code class="opt">--overwrite-mode</code>, or an unknown option.</li>
+<li>Related: <a href="../cli/profile.html#profile-history"><code>engine profile history</code></a> (undo), <a href="../cli/profile.html#profile-summary"><code>engine profile summary</code></a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Merges two or more .pr0file files from left to right into the loaded profile: relations only one file has are added; for a relation of the same name that differs, --mode decides (right = the later file wins, the default; left = the first file keeps it; ask = the console asks per conflict). Device aliases and pictures, aircraft aliases, modifier renames and the force feedback settings follow the same rule. The source files are only read; --save writes the result.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--mode</code></td><td><code>left</code> <code>right</code> <code>ask</code></td><td>What wins when two files have a relation of the same name that differs: right (default; also r, overwrite, keep-right) = the later file, left (also l, keep-left) = the first file, ask (also a, prompt) = the console asks per conflict (refused without an interactive console).</td></tr><tr><td><code>--overwrite-mode</code></td><td><code>left</code> <code>right</code> <code>ask</code></td><td>Another name for --mode (left|right|ask); give only one of them.</td></tr><tr><td><code>--save</code></td><td><code>&lt;path.pr0file&gt;</code></td><td>Write the merged profile to this .pr0file (the source files are only read).</td></tr><tr><td><code>--save-profile</code></td><td><code>&lt;path.pr0file&gt;</code></td><td>Another name for --save.</td></tr></tbody></table></div><details><summary>Every value as a command line</summary><pre><code>engine profile merge --mode left
+engine profile merge --mode right
+engine profile merge --mode ask
+engine profile merge --overwrite-mode left
+engine profile merge --overwrite-mode right
+engine profile merge --overwrite-mode ask</code></pre></details><p><span class="lbl">Used by the GUI</span> <a href="../gui/header.html#mergeprofile">Profile bar: Merge</a> · <a href="../gui/relations.html#mergeprofile">Relations: Merge Profile</a> · <a href="../gui/binds.html#mergeprofile">Binds: Merge Profile</a></p><p class="lbl">Example</p><pre><code>engine profile merge &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; &#x27;C:\JoyPro\profiles\friend.pr0file&#x27; --mode left --save &#x27;C:\JoyPro\profiles\merged.pr0file&#x27; --text</code></pre></article><article class="entry cli level-full" id="profile-history"><header><h3 class="eh"><a class="anchor" href="#profile-history">#</a><code>engine profile history</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile history [list]</code></pre><p>The versions of --profile, newest first: every save is one, kept in &lt;data&gt;\ProfileHistory; undo/redo state</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Lists the versions of your profile, newest first. Every save of the profile is one version, and so is the state before
+each import or export. The GUI's <strong>History</strong> in the top bar shows the same list.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile history --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>engine profile history</code> and <code>engine profile history list</code> are the same. <code class="opt">--profile</code> is required.</li>
+<li>Per version: number, local time, kind (<code>change</code>, <code>open</code>, <code>external</code>, <code>checkpoint</code>, <code>restore</code>, <code>undo</code>, <code>redo</code>), its
+name and what it changed in short, <code>[kept]</code> for a version the clean-up never removes and <code>[current]</code> for the version
+the profile is at.</li>
+<li>The list also tells whether undo and redo are possible and what they would take back or bring back.</li>
+<li>Read-only. The other actions: <a href="../cli/profile.html#profile-history-show"><code>engine profile history show</code></a> (and <code>diff</code>), <a href="../cli/profile.html#profile-history-restore"><code>engine profile history restore</code></a> (and
+<code>undo</code>, <code>redo</code>), <a href="../cli/profile.html#profile-history-keep"><code>engine profile history keep</code></a> (and <code>checkpoint</code>), <a href="../cli/profile.html#profile-history-prune"><code>engine profile history prune</code></a> (and <code>usage</code>).</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Profile</code>, <code>Folder</code>, <code>Cursor</code>, <code>CanUndo</code>, <code>UndoLabel</code>, <code>CanRedo</code>, <code>RedoLabel</code>, <code>Bytes</code>, <code>Kept</code>,
+<code>Versions</code> with <code>Id</code>, <code>Utc</code>, <code>Local</code>, <code>Kind</code>, <code>Label</code>, <code>Summary</code>, <code>Keep</code>, <code>Size</code>, <code>Parent</code>, <code>From</code>, <code>Current</code>), or
+text with <code class="opt">--text</code> (<code>History of &lt;file&gt;: &lt;n&gt; version(s), &lt;n&gt; kept, &lt;size&gt;</code>, one line per version).</li>
+<li>Exit code <code>1</code> with <code>engine profile history list needs --profile &lt;file&gt;.</code> or <code>Unknown profile history list argument(s): ...</code>.</li>
+<li>The history lives in <code>%LOCALAPPDATA%\JoyPro2\ProfileHistory\&lt;profile id&gt;\</code> (<code>history.json</code> and one compressed copy
+per distinct content). <code>JOYPRO_PROFILE_HISTORY=off</code> switches the recording off. See <a href="../reference/profile-history.html">profile-history</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> The versions of --profile, newest first: every save is one, kept in &lt;data&gt;\ProfileHistory, with the undo / redo state.</p><p class="lbl">Example</p><pre><code>engine profile history --text</code></pre></article><article class="entry cli level-full" id="profile-history-show"><header><h3 class="eh"><a class="anchor" href="#profile-history-show">#</a><code>engine profile history show</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile history show &lt;id&gt; | diff &lt;id&gt; [&lt;id&gt;|current]</code></pre><p>What a version changed / the changes between two versions</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Shows what one version of the profile changed, or with <code>diff</code> the changes between two versions: relations created or
+renamed, binds moved, modifiers, tuning and settings. The <strong>History</strong> panel's <strong>Details</strong> and <strong>Compare</strong> show the same.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile history show 12 --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>show &lt;id&gt;</code>: the changes of that version against the version it was made on.</li>
+<li><code>diff &lt;id&gt; [&lt;id&gt;|current]</code>: the changes from the first version to the second; without the second, to the version the
+profile is at now.</li>
+<li>A version is its number (<code>12</code> or <code>#12</code>), <code>latest</code> (the newest) or <code>current</code> (where the profile is now). The numbers
+come from <a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>.</li>
+<li>A version that was changed outside JoyPro (another program, an older JoyPro) has no details; the output says so.</li>
+<li>Read-only. <code class="opt">--profile</code> is required.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>From</code>, <code>To</code>, <code>Available</code>, <code>Summary</code>, <code>Changes</code>), or text with <code class="opt">--text</code>: for <code>show</code> the line
+<code>Version &lt;id&gt; | &lt;time&gt; | &lt;kind&gt;</code> (with <code>| kept</code>) and its description, for <code>diff</code> <code>Changes from version &lt;a&gt; to &lt;b&gt;:</code>,
+then one line per change, or <code>no change in relations, binds or settings</code>.</li>
+<li>Exit code <code>1</code> with the usage line (<code>engine profile history show &lt;version id&gt;</code>, <code>... diff &lt;version id&gt; [&lt;version id&gt;|current]</code>), <code>Version &lt;id&gt; is not in the history.</code> or <code>Unknown version: &lt;id&gt;</code>.</li>
+<li>Related: <a href="../cli/profile.html#profile-history-restore"><code>engine profile history restore</code></a>; <a href="../reference/profile-history.html">profile-history</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> What a version changed (show), or the changes between two versions or a version and the current profile (diff).</p><p class="lbl">Example</p><pre><code>engine profile history show &lt;id&gt; --text</code></pre></article><article class="entry cli level-full" id="profile-history-restore"><header><h3 class="eh"><a class="anchor" href="#profile-history-restore">#</a><code>engine profile history restore</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile history restore &lt;id&gt; | undo | redo</code></pre><p>Writes a version back into the profile; that is a version too, so it can be undone</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Puts an older version of the profile back, or takes the last change back (<code>undo</code>) and brings it back again (<code>redo</code>). The
+top bar's <strong>Undo</strong>, <strong>Redo</strong> and the <strong>History</strong> panel's <strong>Restore</strong> do the same.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile history restore 12 --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>restore &lt;id&gt;</code>: writes that version into the profile file. The restore is a version of its own, so <code>undo</code> returns to
+the state before it. It clears the redo list. A version is its number, <code>latest</code> or <code>current</code>.</li>
+<li><code>undo</code>: writes back the version the last change was made on; the undone version can come back with <code>redo</code>.</li>
+<li><code>redo</code>: writes back the newest undone version. Any new change clears what could be redone.</li>
+<li>Safety: before it writes, a profile file that was changed outside JoyPro is kept as a version of its own, so nothing
+is lost. A checkpoint before an export does not count as a change: <code>undo</code> after an export takes back your last edit,
+not the export.</li>
+<li>Only the profile file changes; the games keep their binds until the next export. <code class="opt">--profile</code> is required.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Action</code>, <code>Changed</code>, <code>Message</code>, <code>Version</code>), or the message with <code class="opt">--text</code>: <code>Restored the version of &lt;time&gt;.</code>, <code>Undone: &lt;description&gt;.</code>, <code>Redone: &lt;description&gt;.</code>, <code>The profile is already at this version.</code>, <code>Nothing to undo.</code>, <code>Nothing to redo.</code> or <code>This profile has no history yet.</code> (exit code <code>0</code>, <code>Changed</code> false for the last four).</li>
+<li>Exit code <code>1</code> with <code>engine profile history restore &lt;version id&gt; (a version of 'engine profile history list').</code> when
+the id is missing or not in the history, or <code>... needs --profile &lt;file&gt;.</code></li>
+<li>The engine does not save its loaded profile afterwards, so the restored file stays as written. Related:
+<a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>, <a href="../cli/support.html#support-unpack"><code>engine support unpack</code></a>; <a href="../reference/profile-history.html">profile-history</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Writes a version back into the profile (restore), or steps back / forward (undo / redo); that is a version too, so it can be undone.</p><p class="lbl">Example</p><pre><code>engine profile history restore &lt;id&gt; --text</code></pre></article><article class="entry cli level-full" id="profile-history-keep"><header><h3 class="eh"><a class="anchor" href="#profile-history-keep">#</a><code>engine profile history keep</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile history keep &lt;id&gt; [on|off] | checkpoint [--label &lt;text&gt;]</code></pre><p>A kept version is never cleaned up; a checkpoint keeps the profile as it is now</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Marks a version of the profile as kept, so the automatic clean-up never removes it, or keeps the profile as it is now as
+a named version (<code>checkpoint</code>). Use a checkpoint before a big change you may want to go back from.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile history checkpoint --label &quot;Before new throttle&quot; --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>keep &lt;id&gt; [on|off]</code>: <code>on</code> (or nothing) keeps the version; <code>off</code> (or <code>false</code>) lets the clean-up remove it again. Any
+other second word counts as on. A version is its number, <code>latest</code> or <code>current</code>.</li>
+<li><code>checkpoint [--label &lt;text&gt;]</code>: the profile file as it is now becomes a version of kind <code>checkpoint</code> named by the
+label (default <code>Checkpoint</code>). A checkpoint does not move the undo position. When the history is switched off,
+nothing is recorded and the output says so.</li>
+<li>Only the history changes, never the profile. <code class="opt">--profile</code> is required.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Action</code>, <code>Changed</code>, <code>Message</code>, <code>Version</code>), or the message with <code class="opt">--text</code>: <code>Version &lt;id&gt; is kept (never cleaned up).</code>, <code>Version &lt;id&gt; may be cleaned up again.</code>, <code>Kept as version &lt;id&gt;.</code> or <code>The profile history is switched off.</code></li>
+<li>Exit code <code>1</code> with <code>engine profile history keep &lt;version id&gt; [on|off]</code>, <code>Version &lt;id&gt; is not in the history.</code>, <code>The profile file does not exist: &lt;file&gt;</code> (checkpoint) or <code>... needs --profile &lt;file&gt;.</code></li>
+<li>Related: <a href="../cli/profile.html#profile-history-prune"><code>engine profile history prune</code></a>, <a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>; <a href="../reference/profile-history.html">profile-history</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> Keeps a version for good (on) or not (off), or keeps the profile as it is now as a checkpoint; kept versions are never cleaned up.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--label</code></td><td><code>&lt;text&gt;</code></td><td></td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine profile history keep &lt;id&gt; --text</code></pre></article><article class="entry cli level-full" id="profile-history-prune"><header><h3 class="eh"><a class="anchor" href="#profile-history-prune">#</a><code>engine profile history prune</code></h3><span class="badge full">written</span></header><pre class="sig"><code>engine profile history prune [--all] [--dry-run] | usage [--all]</code></pre><p>Clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total</p><div class="hand"><section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<p>Cleans up the profile history now, or shows how much room it takes (<code>usage</code>). JoyPro also cleans up by itself every
+6 hours, so you rarely need it; the <strong>History</strong> panel's <strong>Clean up</strong> does the same for all profiles.</p>
+<pre><code class="language-powershell">engine --profile &quot;C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file&quot; profile history prune --dry-run --text
+</code></pre>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<ul>
+<li><code>prune</code>: the history of <code class="opt">--profile</code>. It keeps every version of the last 24 hours, the newest of every hour up to 7
+days, of every day up to 60 days, of every week after that; then the oldest versions go until the history is under
+200 MB.</li>
+<li><code>prune --all</code>: every profile's history (no <code class="opt">--profile</code> needed), then the oldest versions of all profiles go until all
+histories together are under 1 GB.</li>
+<li>Never removed: kept versions (<a href="../cli/profile.html#profile-history-keep"><code>engine profile history keep</code></a>), the newest version, the version the profile is at and
+what can still be redone. Copies no version uses any more are deleted.</li>
+<li><code class="opt">--dry-run</code> lists what would go and removes nothing; with <code class="opt">--all</code> it counts the 1 GB step too.</li>
+<li><code>usage [--all]</code>: versions, kept versions and size of this profile's history (or of all); read-only.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<ul>
+<li>Output: JSON (<code>Action</code>, <code>Changed</code>, <code>Message</code>, <code>Removed</code>, <code>BytesBefore</code>, <code>BytesAfter</code>, <code>VersionsLeft</code>; for <code>usage</code>
+<code>Profiles</code>, <code>Versions</code>, <code>Kept</code>, <code>Bytes</code>), or text with <code class="opt">--text</code>: <code>Removed &lt;n&gt; version(s): &lt;size&gt; -&gt; &lt;size&gt;, &lt;n&gt; version(s) left.</code> (<code>Would remove</code> on a dry run) with one line per removed version; <code>Profile history: &lt;n&gt; version(s), &lt;n&gt; kept, &lt;size&gt; in &lt;folder&gt;</code>.</li>
+<li>Exit code <code>0</code>; <code>1</code> with <code>engine profile history prune needs --profile &lt;file&gt;.</code> when neither <code class="opt">--profile</code> nor <code class="opt">--all</code>
+is given.</li>
+<li>Folder: <code>%LOCALAPPDATA%\JoyPro2\ProfileHistory</code>. Related: <a href="../cli/profile.html#profile-history"><code>engine profile history</code></a>; <a href="../reference/profile-history.html">profile-history</a>.</li>
+</ul>
+</section>
+</div><p><span class="lbl">What it does</span> The clean-up: everything of 24 hours, one version per hour for 7 days, per day for 60 days, per week after; at most 200 MB per profile and, with --all, 1 GB for all profiles (the oldest versions of all profiles go first). --dry-run counts every step, the global cap included; usage shows the sizes.</p><div class="table-wrap"><table class="opts"><thead><tr><th>Option</th><th>Values</th><th>Meaning</th></tr></thead><tbody><tr><td><code>--all</code></td><td><span class="muted">switch (no value)</span></td><td>Apply operation to all matches (or select all relations/devices where supported).</td></tr><tr><td><code>--dry-run</code></td><td><span class="muted">switch (no value)</span></td><td>Report what the command would do; nothing is written or changed.</td></tr></tbody></table></div><p class="lbl">Example</p><pre><code>engine --profile &#x27;C:\JoyPro\profiles\pilot_main.pr0file&#x27; profile history prune --dry-run --text
+engine profile history prune --all --dry-run --text</code></pre></article>
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

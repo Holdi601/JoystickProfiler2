@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Virtual joystick mode (vJoy + HidHide) · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a class="current" href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Virtual joystick mode (vJoy + HidHide) </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/virtual-joystick.md">docs/virtual-joystick.md</a> in the repository (generated, always the current text).</p><p>Per game you choose: the game uses your <strong>physical devices</strong> (native, as always) or one <strong>virtual joystick</strong>
+(virtual). In virtual mode JoyPro puts every input that the game's relations use - axes, buttons, hats and the buttons
+of their modifiers, from all your sticks, throttles and panels - onto one vJoy device (more only when one is not
+enough: a vJoy device has at most 8 axes, 128 buttons and 4 hats; up to 16 devices). The export writes the game's
+binds to the vJoy device, <code>JoyPro.VJoy.exe</code> copies the physical inputs to it live, and HidHide hides the physical
+devices from that game, and only from that game.</p>
+<p>Why: some games take only a few joysticks (Arma Reforger: the first four that send input), pick up the wrong ones or
+renumber them when a device is added. With virtual mode the game sees one device whose inputs never move.</p>
+<p>Needs: <a href="https://github.com/jshafer817/vJoy">vJoy</a> 2.1.9 and <a href="https://github.com/nefarius/HidHide">HidHide</a> 1.5
+(both free). JoyPro configures both itself; each change asks Windows for administrator rights once. Not installed:
+the page's &quot;What this page needs&quot; (and Settings &gt; Components) installs the official, pinned and checked installers on
+the user's click (vJoy 2.1.9.1, HidHide 1.5.230, ViGEmBus 1.22.0; docs/components.md).</p>
+<h2 id="how-it-fits-together"><a class="anchor" href="#how-it-fits-together">#</a>How it fits together</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Where</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mapping table</td>
+<td>profile (<code>Pr0file.VirtualJoystick</code>, JSON)</td>
+<td>physical device + input -&gt; vJoy device + input; never reshuffled</td>
+</tr>
+<tr>
+<td><code>engine vjoy ...</code></td>
+<td><code>engine/EngineVJoy.cs</code>, <code>engine/VJoy/VJoyMapping.cs</code></td>
+<td>per-game mode, table, status, vJoy setup, HidHide session</td>
+</tr>
+<tr>
+<td>Export/import scope</td>
+<td><code>EngineVJoy.GameScope</code> around every game command</td>
+<td>the game's binds point at the vJoy slots while the game is exported, imported, scanned or synced</td>
+</tr>
+<tr>
+<td>HidHide session</td>
+<td><code>engine/VJoy/HidHideSession.cs</code> (also linked into the GUI)</td>
+<td>plan, journal, apply, verify, restore, crash recovery</td>
+</tr>
+<tr>
+<td>Forwarder</td>
+<td><code>gui/JoyPro.VJoy</code> (<code>&lt;GUI&gt;\vjoy\JoyPro.VJoy.exe</code>)</td>
+<td>DirectInput (non-exclusive) -&gt; vJoyInterface.dll, live</td>
+</tr>
+<tr>
+<td>GUI page</td>
+<td><code>Virtual Joystick</code> (bottom bar), <code>MainWindowViewModel.VirtualJoystick.cs</code></td>
+<td>toggles, status, table, Start/Test/Stop, live view</td>
+</tr>
+<tr>
+<td>Virtual functions</td>
+<td><code>engine/VJoy/VirtualFunctions.cs</code>, <code>VirtualFunctionRuntime.cs</code> (shared), <code>EngineVJoyFunctions.cs</code>, GUI <code>MainWindowViewModel.VirtualFunctions.cs</code>, <code>VirtualFunctionEditorViewModel.cs</code></td>
+<td>functions between the physical inputs and the virtual outputs, evaluated by the forwarder every pass</td>
+</tr>
+<tr>
+<td>Chaining and modes</td>
+<td><code>VfChain</code>, <code>VfModeSet</code> (VirtualFunctions.cs), the runtime; GUI <code>MainWindowViewModel.VirtualModes.cs</code>, <code>Views/Controls/VirtualFunctionGraphView.cs</code></td>
+<td>functions reading other functions' outputs; named modes with inheritance; the editable graph</td>
+</tr>
+<tr>
+<td>Gremlin import</td>
+<td><code>engine/VJoy/GremlinImport.cs</code>, <code>EngineVJoyGremlin.cs</code></td>
+<td>Joystick Gremlin R13/R14 profiles into functions and modes, with a report</td>
+</tr>
+<tr>
+<td>Game input limits</td>
+<td><code>engine/VJoy/GameInputLimits.cs</code></td>
+<td>what a game reads of one joystick; warnings above it</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="the-mapping-table"><a class="anchor" href="#the-mapping-table">#</a>The mapping table</h3>
+<ul>
+<li>Inputs: every relation with an active node of a game in virtual mode and a bind on a game controller (keyboard and
+mouse stay as they are), plus the modifier buttons of those binds. vJoy devices are never a source.</li>
+<li>A hat is one slot (its eight directions go along: <code>JOY_BTN_POV1_UR</code> on the stick becomes <code>JOY_BTN_POV2_UR</code> on vJoy if
+the stick's hat 1 sits on vJoy hat 2).</li>
+<li>New inputs get a slot in a fixed order (device name, then axes, buttons, hats by number). An axis keeps its own axis
+when it is free (X stays X), else the first free one; buttons and hats take the next free number. A physical device
+stays on the vJoy device it already uses where it fits.</li>
+<li>Existing slots never move. A slot no relation uses any more stays (<code>--prune</code> drops it, <code>--reset</code> starts over), so the
+game's binds are the same from run to run. One table serves all virtual games: a physical input has the same vJoy
+input in every game.</li>
+<li><code>engine vjoy settings --first-device N --last-device M</code> limits the vJoy devices JoyPro uses (default 1-16). JoyPro's
+in-game test kit (tools/e2e) uses vJoy device 1; virtual mode and the kit do not run at the same time.</li>
+</ul>
+<h3 id="export-import-sync"><a class="anchor" href="#export-import-sync">#</a>Export, import, sync</h3>
+<p>While a game in virtual mode is exported, imported, scanned or synced (<code>engine dcs|il2|sc|&lt;game&gt; export|import|scan</code>,
+<code>engine sync status|diff|apply|accept --game &lt;game&gt;</code>), every bind on a mapped physical input (and every modifier on a
+mapped button) points at its vJoy slot; afterwards the profile gets its physical devices back. Binds an import or a
+sync brings in on vJoy slots are turned back into the physical inputs. So the game file holds vJoy binds, the profile
+always holds your real devices. If the table needs a new slot during an export, it is given and saved. If a needed vJoy
+device is missing (not configured, or DirectInput does not list it), the export stops with a message instead of writing
+binds nobody can use.</p>
+<p>The vJoy device's identity in the games is its DirectInput name (<code>vJoy Device {GUID}</code>); vJoy numbers its devices by
+HID collection (<code>&amp;col01</code> = the first configured device). Games that tell devices apart only by name (for example
+WARDOGS, Arma Reforger) cannot tell several vJoy devices apart: keep such games within one vJoy device.</p>
+<h3 id="vjoy-devices-in-imports-2-5-0"><a class="anchor" href="#vjoy-devices-in-imports-2-5-0">#</a>vJoy devices in imports (2.5.0)</h3>
+<p>vJoy devices are imported and exported like any other device: a user may feed one on purpose (VoiceAttack, his own
+feeder) and bind it in the game; no default ignore list leaves them out. Only the vJoy device JoyPro tunnels into is
+JoyPro's own: Settings &quot;vJoy device JoyPro tunnels into&quot; (instance 1-16, default none) passes <code>--vjoy-tunnel &lt;n&gt;</code> to
+every import and scan (<code>engine dcs|il2|starcitizen import|scan</code>, <code>engine &lt;game&gt; import|scan</code>). The engine finds that instance's device the way the virtual mode does (the
+HID collection <code>&amp;col0n</code> against the configured vJoy devices, <code>EngineVJoy.ScanDevices</code>) and adds its <code>vJoy Device {GUID}</code> to the ignore list (registry games: its binds are dropped from the read); every other vJoy instance stays a
+normal device. When that vJoy device is not connected nothing is left out and the log says so. Checked by
+<code>engine\tests\smoke\vjoytunnel.ps1</code> (two fake vJoy devices: without the option both are imported, <code>--vjoy-tunnel 1</code>
+leaves out only device 1, <code>2</code> only device 2, <code>17</code> is refused).</p>
+<p>How the tokens of <code>--device</code> / <code>--ignore-device</code> of <code>dcs|il2|starcitizen import|scan</code> become device names
+(<code>Program.TryResolveDeviceFilters</code>, 2.6.0): an exact name of a profile, connected or game-listed device stays; a name
+without GUID (&quot;vJoy Device&quot;) becomes every device of that name; an ignored device that is not there stays as given
+(it never hides another device, such as another vJoy instance; a single other device of the same model that is not
+vJoy is added too); a selected device that is not there becomes one device, chosen deterministically, never the
+tunnel device, a real device before vJoy unless the token names vJoy. The message names the device (&quot;vJoy device 2&quot;,
+the model), the log keeps the full name. The IL-2 lookup reads devices.txt with the import's GUID conversion (the
+reversed last 8 bytes), and with <code>JOYPRO_FAKE_DEVICES</code> the fake devices are the connected ones. Before, a tunnel or
+ignored vJoy name could be swapped for another vJoy device (the live log: &quot;Multiple devices matched ... auto-selected
+vJoy Device {GUID}&quot;). Checked by <code>engine\tests\smoke\il2vjoy.ps1</code>.</p>
+<p>Exports (2.6.0): the GUI passes <code>--vjoy-tunnel</code> and the import's ignored devices (<code>--ignore-device</code>) to every export
+(<code>engine dcs|il2|starcitizen|&lt;game&gt; export</code>). Those devices are never cleared in any mode, like a device that is not
+connected: one rule in <code>GameCommands.RunExport</code> (<code>GameDeviceDirectory.MarkKept</code>, <code>GameDevice.Kept</code>) that every exporter
+checks where it releases binds (clean, nuke, &quot;my profile wins&quot;); IL-2 and Star Citizen take the same list. The device
+stays in the device list (slot and device order of the games do not change) and binds the profile itself has on it are
+still written. A game in virtual mode writes to the tunnel device, so there it is JoyPro's and is cleared as usual.
+Checked by <code>ExportKeptDevicesTests</code> (per game class a fake vJoy device holding game binds survives clean + nuke; without
+the option the same export clears it). Arma Reforger has no case there: the game never sees vJoy, so its export skips
+vJoy binds and gives vJoy no slot (<code>engine\tests\smoke\reforger.ps1</code> checks that).</p>
+<p><strong>One source of truth (2.6.0).</strong> The tunnel setting is also where virtual mode writes: the GUI passes <code>--vjoy-tunnel</code>
+to every <code>engine vjoy</code> command, and the engine makes that device the first vJoy device of the table
+(<code>EngineVJoy.ApplyTunnel</code>: <code>FirstDevice</code> = the tunnel device, saved with the next change). So the table's slots, the
+function outputs (an output without a device goes there), the forwarder, the exports (GameScope), the Gremlin import
+(its vJoy device moves there) and Battlefield's one joystick all use the tunnel device, and a VoiceAttack-fed vJoy
+below it is never written. Imports and scans leave the tunnel device out only for games in <strong>native</strong> mode; a game in
+virtual mode reads it, because its binds on JoyPro's slots are turned back into the physical inputs and its binds on
+function outputs are the profile's own (leaving it out would lose them). <code>engine vjoy status</code> reports <code>TunnelDevice</code>
+and <code>TunnelWarnings</code> (no tunnel device named while virtual mode writes one; a table that needs a second vJoy device,
+which imports of native games then read like any other); the page's Status card shows both. After changing the tunnel
+device, export the virtual games again (the slots move to the new device). Not covered: sync (<code>engine sync</code>) compares
+only the devices the profile uses and passes no tunnel; the nuke of IL-2, Star Citizen and the registry games' exports
+clears binds on every connected device it does not write, the tunnel device included (only DCS keeps it).</p>
+<h3 id="virtual-xbox-pad-mode-xbox-vigembus"><a class="anchor" href="#virtual-xbox-pad-mode-xbox-vigembus">#</a>Virtual Xbox pad (mode &quot;xbox&quot;, ViGEmBus)</h3>
+<p>For games that only read Xbox controllers (XInput) or only one device, a game can use a <strong>virtual Xbox 360 pad</strong>
+instead of vJoy: <code>engine vjoy mode &lt;game&gt; xbox</code> (GUI: &quot;Xbox pad&quot;). It needs the free ViGEmBus driver by Nefarius
+(BSD-3-Clause). JoyPro detects it (<code>engine vjoy status</code>: installed, running, version) and explains it; the GUI installs
+the official ViGEmBus 1.22.0 on the user's click and consent (docs/components.md). The engine never installs drivers,
+and no test touches the driver.</p>
+<ul>
+<li><strong>Per game its own table</strong> (<code>VJoySettings.XboxSlots[game]</code>, in the profile, stable like the vJoy table), because an
+XInput game takes one pad and has its own layout.</li>
+<li><strong>The game's layout first</strong>: when the game's catalog knows the default gamepad key of an action (5th column of
+<code>DB\&lt;Game&gt;\actions.tsv</code>, an Unreal FKey name such as <code>Gamepad_LeftX</code>, <code>Gamepad_LeftTriggerAxis</code>,
+<code>Gamepad_FaceButton_Bottom</code>, <code>Gamepad_LeftStick_Up</code>), the physical input of that relation is pinned to that control.
+Two axes on one control: the one moved last wins (a note says so). An input whose kind does not fit the control
+(a button on an action that sits on a stick axis) gets a free control and a note.</li>
+<li><strong>The rest in order</strong>: axes -&gt; left stick X/Y, right stick X/Y, left/right trigger; buttons -&gt; A B X Y LB RB Back
+Start LS RS, then the D-pad directions, then the triggers (pressed = fully pulled); a hat -&gt; the D-pad (diagonals
+included). Guide is never given (Windows opens the Game Bar on it). A button can also push a stick half
+(<code>XB_LX+</code>, <code>XB_LY-</code> ...) when the game's layout wants that. <strong>What does not fit is listed per game</strong> (status, plan,
+map, GUI mapping tab).</li>
+<li><strong>One axis on both triggers</strong> (<code>XB_TRIGGERS</code>): when one physical axis drives two actions of a relation that the layout
+puts on LT and RT (a collective on &quot;ascend&quot; and &quot;descend&quot;), the forwarder splits it at the axis centre: above it RT,
+below it LT, both up at the centre.</li>
+<li><strong>Reversed axes</strong>: <em>Invert</em> on the relation's bind reverses the pad axis (target suffix <code>~</code>, e.g. <code>XB_RX~</code>,
+<code>XB_TRIGGERS~</code>).</li>
+<li><strong>Layout chosen in the game</strong>: a game can give its gamepad layout itself (<code>IGameGamepadLayout</code>): Hell Let Loose:
+Vietnam reads the layout A/B/C picked in the game's settings, and <code>engine vjoy map</code> moves the pins when it changes.</li>
+<li><strong>Forwarding</strong>: <code>engine vjoy forwarder-config --xbox-game &lt;game&gt;</code> writes that game's table (the GUI passes the game that
+started; without it the first Xbox game). <code>JoyPro.VJoy run --xbox-sink vigem</code> creates the pad for the run (neutral at
+start and end, disconnected afterwards); <code>--xbox-sink dry</code> (default, tests, the GUI's Test button) writes nothing.
+The report is computed from the last state of every physical device: two buttons on one control combine, a pressed
+button on a stick half wins over the axis on that stick, triggers take the larger value; stick Y follows XInput (up
+= positive), so a physical stick pushed forward gives a positive Y. No allocation per pass.</li>
+<li><strong>When to start the pad</strong>: the general rule (start the virtual device before the game) is for vJoy, which games
+look for once at start. The Xbox pad games tested so far, Hell Let Loose: Vietnam and ACE COMBAT 8, want the pad
+created <strong>after</strong> their title screen shows: in the in-game runs of 2026-10-11 a pad that existed before the launch
+never reached Hell Let Loose: Vietnam (probably Steam Input or the game's startup taking the pads present at
+launch), while a pad connected while the game ran worked; <code>tools\e2e\games\HllVietnamXbox.ps1</code> and
+<code>AceCombat8Xbox.ps1</code> therefore create it once the title shows. JoyPro does not delay the pad by itself (Start by hand
+or the auto start, which creates it within about 3 s of the game's process): if such a game does not react to the
+pad, press Stop and Start once the title screen shows.</li>
+<li><strong>Export</strong>: games that can store gamepad binds (<code>IGameGamepadBinds</code>) get their binds on the virtual pad
+(<code>Xbox 360 Controller (JoyPro virtual pad)</code> with <code>XB_*</code> inputs). Games with fixed gamepad layouts (Hell Let Loose:
+Vietnam) keep their layout; JoyPro's table follows it, so nothing has to be written.</li>
+<li><strong>HidHide</strong>: as for vJoy - the physical devices of the Xbox games' tables are hidden from those games only. (An
+XInput-only game ignores DirectInput devices anyway; hiding keeps a real Xbox pad or a stick that pretends to be one
+out of the way.)</li>
+</ul>
+<p>Games of this class and how to add more: docs/games/one-device-games.md.</p>
+<h3 id="one-device-games-the-suggestion"><a class="anchor" href="#one-device-games-the-suggestion">#</a>One-device games: the suggestion</h3>
+<p>Games that read one joystick or only Xbox pads declare it (<code>IGameDeviceLimit</code>): Battlefield 6/2042 (one joystick,
+<code>virtual</code>), Hell Let Loose: Vietnam and ACE COMBAT 8 (no joystick, <code>xbox</code>).</p>
+<ul>
+<li><code>engine vjoy status</code> shows &quot;one-device game: <mode> suggested&quot; while such a game is native, and the status JSON has
+<code>SuggestedMode</code>, <code>MaxJoysticks</code> and <code>DeviceLimitNote</code> per game.</li>
+<li><code>engine vjoy mode &lt;game&gt; native</code> warns.</li>
+<li>The GUI's Games list shows the suggestion with a <strong>Use it</strong> button.</li>
+<li>An export in native mode warns when the binds use more joysticks than the game reads.</li>
+</ul>
+<p><strong>Axes a game must not see:</strong> a game can rule out vJoy axes (<code>AvoidVJoyAxes</code>). Battlefield takes a joystick with Rx/Ry
+for an Xbox pad and then hides its joystick page. While such a game is in virtual mode:</p>
+<ul>
+<li>the planner gives no new input those axes;</li>
+<li>a kept slot on one of them is flagged (move it with <code>engine vjoy map --reset</code>);</li>
+<li><code>configure-vjoy</code> sets the vJoy device up without them, e.g. <code>vJoyConfig 1 -f -a x y z rz sl0 sl1 ...</code>. This is the
+one case where a device loses something: an avoided axis the table does not use.</li>
+</ul>
+<h3 id="vjoy-configuration"><a class="anchor" href="#vjoy-configuration">#</a>vJoy configuration</h3>
+<p><code>engine vjoy status|plan</code> show per vJoy device what the table needs and what it has. <code>engine vjoy configure-vjoy</code>
+runs <code>vJoyConfig &lt;n&gt; -f -a x y z rx ry rz sl0 sl1 -b &lt;buttons&gt; -p &lt;hats&gt;</code> for each device that lacks something - one
+administrator prompt for all (several devices go through one elevated <code>engine vjoy elevated-run</code>). The new
+configuration is the union of what the device has and what the table needs (all eight axes as soon as one is used,
+buttons in steps of 32, continuous hats), so a device never gets smaller. Afterwards export the virtual games again:
+games may list a reconfigured vJoy device anew, and adding a second vJoy device can change the first one's DirectInput
+identity (it gets a HID collection number).</p>
+<p><strong>vJoy's maximum.</strong> A vJoy device offers up to 8 axes, 128 buttons and 4 hats (16 devices). JoyPro plans for that
+maximum: the table and the virtual functions use buttons 1-128; what the configured device lacks shows as &quot;needs&quot;
+(status, plan, the page). <code>engine vjoy configure-vjoy --max [--device N] [--dry-run]</code> (GUI: &quot;Set up vJoy for maximum&quot;
+on the Overview, shown while a device has less, asks first) gives every vJoy device JoyPro uses
+<code>vJoyConfig &lt;n&gt; -f -a x y z rx ry rz sl0 sl1 -b 128 -p 4</code> (force feedback kept; an axis a virtual game must not see,
+Battlefield's Rx/Ry, stays out unless the table uses it). <strong>Windows must restart</strong> before a vJoyConfig change takes
+effect (vJoy asks for it; on the development PC every change needed a restart); JoyPro never restarts Windows and the
+result says so. <code>engine vjoy status</code> reports <code>AtMaximum</code> per vJoy device. Tests only ever run the dry run.</p>
+<h3 id="what-a-game-reads-of-one-joystick"><a class="anchor" href="#what-a-game-reads-of-one-joystick">#</a>What a game reads of one joystick</h3>
+<p>JoyPro sets vJoy up for 128 buttons, but a game may read less: DirectInput's <code>DIJOYSTATE</code> has 32 buttons,
+<code>DIJOYSTATE2</code> 128; some games read one hat or none. <code>engine/VJoy/GameInputLimits.cs</code> keeps what is known per game, with
+the confidence (verified = JoyPro's game code enforces it or it was read from the game's files/binary, documented =
+the game's own docs or help, reported = players/forums) and the source; <code>engine vjoy limits [--game g]</code> lists it, the
+status JSON has <code>InputLimit</code> and <code>LimitWarnings</code> per game. Where a game's table slots or virtual function outputs lie
+above what it reads, the plan, <code>engine vjoy status</code>, <code>functions list|add</code> and the game's line on the page warn:
+&quot;Arma 2: Operation Arrowhead reads only the first 32 buttons of a joystick: the virtual function outputs on button 40 on
+vJoy 1 will not work there.&quot; Unknown limits never warn. Lower button numbers come first everywhere (slots and
+function outputs take the lowest free one), so such games keep working while the table is small.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Buttons</th>
+<th>Axes</th>
+<th>Hats</th>
+<th>Confidence</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS World</td>
+<td>128</td>
+<td>8</td>
+<td>4</td>
+<td>documented</td>
+<td></td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td>128</td>
+<td>8</td>
+<td>4</td>
+<td>documented</td>
+<td>128 since 5.204</td>
+</tr>
+<tr>
+<td>IL-2 Cliffs of Dover / Blitz</td>
+<td>128</td>
+<td>8</td>
+<td>1</td>
+<td>documented</td>
+<td>128 since 5.025; one hat per device in the file format</td>
+</tr>
+<tr>
+<td>IL-2 1946</td>
+<td>32</td>
+<td>8</td>
+<td>4</td>
+<td>reported</td>
+<td>4 hats shared by all devices</td>
+</tr>
+<tr>
+<td>Falcon BMS</td>
+<td>128</td>
+<td>8</td>
+<td>2</td>
+<td>documented</td>
+<td>128 with <code>g_nButtonsPerDevice 128</code> (4.37 launcher), else 32; two 8-way hats in all</td>
+</tr>
+<tr>
+<td>FSX / Prepar3D</td>
+<td>32</td>
+<td>8</td>
+<td>?</td>
+<td>reported</td>
+<td></td>
+</tr>
+<tr>
+<td>MSFS 2020/2024</td>
+<td>?</td>
+<td>8</td>
+<td>1 (4-way)</td>
+<td>documented</td>
+<td>more than 32 in the sim, SimConnect add-ons see 0-31; JoyPro writes one hat</td>
+</tr>
+<tr>
+<td>X-Plane 11/12</td>
+<td>160</td>
+<td>25</td>
+<td>1</td>
+<td>verified</td>
+<td>further hats become buttons</td>
+</tr>
+<tr>
+<td>ACE COMBAT 7</td>
+<td>32</td>
+<td>8</td>
+<td>4 (4-way)</td>
+<td>documented</td>
+<td>the game's Input.ini help</td>
+</tr>
+<tr>
+<td>Arma 2 / OA</td>
+<td>32</td>
+<td>8</td>
+<td>1</td>
+<td>verified</td>
+<td>DIJOYSTATE, reverse engineered</td>
+</tr>
+<tr>
+<td>X4: Foundations</td>
+<td>64</td>
+<td>8</td>
+<td>1</td>
+<td>verified</td>
+<td>from the game binary</td>
+</tr>
+<tr>
+<td>G-Rebels</td>
+<td>96</td>
+<td>24</td>
+<td>0</td>
+<td>documented</td>
+<td>Unreal's Raw Input plugin</td>
+</tr>
+<tr>
+<td>VTOL VR (BYOJoystick)</td>
+<td>128</td>
+<td>8</td>
+<td>4 (4-way)</td>
+<td>verified</td>
+<td></td>
+</tr>
+<tr>
+<td>ACE COMBAT 8, Hell Let Loose: Vietnam</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>documented</td>
+<td>XInput only: virtual Xbox pad</td>
+</tr>
+</tbody>
+</table></div>
+<p>Not known (no warning): Star Citizen (sources conflict), War Thunder, Arma 3, Arma Reforger, Battlefield 6/2042 (the
+enum has 36 buttons, players see about 18), Elite Dangerous (players report 32, Joy_41 worked on the development PC),
+IL-2 Korea, WARDOGS, the Rewired games (Nuclear Option, Tiny Combat Arena).</p>
+<h3 id="hidhide"><a class="anchor" href="#hidhide">#</a>HidHide</h3>
+<p>HidHide's configuration is global: a cloak switch, hidden devices (device instance paths) and a program list, which is
+an allow list (only listed programs see hidden devices) or, in inverse mode, a block list (only listed programs lose
+them). JoyPro:</p>
+<ul>
+<li>uses the <strong>block list</strong> with the executables of the virtual-mode games, so only those games stop seeing the physical
+devices; JoyPro's forwarder, JoyPro, SimHub, Discord and every other program keep seeing them;</li>
+<li>keeps an <strong>allow list</strong> the user already uses (inverse off, cloaking on, own entries): then JoyPro's forwarder and
+JoyPro are allowed and every other program loses the hidden devices while the session runs (the page says so);</li>
+<li><strong>parks</strong> the user's own entries when cloaking was off (dormant): they are taken off the lists for the session and
+put back exactly afterwards, so switching cloaking on does not wake up an old setup (for example a hidden vJoy or a
+blocked MSFS);</li>
+<li>never hides a vJoy device the games need (a hidden one is shown for the session and hidden again afterwards), and
+takes a trusted program (the forwarder, JoyPro) off a block list for the session;</li>
+<li>hides the physical devices by the instance path HidHide itself reports (<code>HidHideCLI --dev-gaming</code>), falling back to
+one derived from the HID path;</li>
+<li>finds the game executables in the game's installation (marker files and process names, a few levels deep), plus the
+ones set with <code>engine vjoy exe &lt;game&gt; --add &lt;path&gt;</code> and the running game's executable when the GUI starts for it.</li>
+</ul>
+<p>Reading HidHide: one <code>HidHideCLI</code> query per call (<code>--cloak-state</code>, <code>--inv-state</code>, <code>--app-list</code>, <code>--dev-list</code>; combined
+queries and <code>--dev-gaming</code> can hang without administrator rights), each with a time limit (<code>JOYPRO_HIDHIDE_TIMEOUT_MS</code>,
+default 8 s); a call that runs over is ended with its child processes, so no HidHideCLI is ever left running (a hung
+one makes every other HidHideCLI call fail with &quot;Access is denied&quot;). If another HidHideCLI is already running, JoyPro
+does not start one and says so. A part that cannot be read (time limit, &quot;Error code 0x0005 ... Access is denied&quot; - the
+hidden-device list needs administrator rights) is <strong>unknown</strong>, never &quot;off&quot; or &quot;empty&quot;: <code>engine vjoy status</code> shows it
+as unknown, a dry run says its plan is partial and which parts are missing, and a real session or restore stops with
+nothing changed. A journal whose &quot;previous&quot; lacks the inverse mode never has the inverse mode set back.</p>
+<p>Program entries HidHide itself cannot name: <code>HidHideCLI --app-list</code> prints an entry whose stored image path lies on a
+volume that is not mounted any more (volume numbers change when drives are added) as <code>--app-reg &quot;&quot;</code>, elevated or not.
+Such entries are part of a complete answer (2.6.0; before, they made the program list &quot;unknown&quot; and no session could
+start - the development PC has five): JoyPro counts them (<code>UnnamedApps</code> in the status JSON, &quot;(+N HidHide cannot
+name)&quot; in the text), leaves them as they are (they cannot be removed or added by path and name no program on a drive of
+this PC), says so in the plan, and checks after apply and restore that their number is the same.</p>
+<p>Changing HidHide is one elevated step (one UAC prompt; never bypassed): <code>apply-hidhide</code>, <code>restore-hidhide</code> and
+<code>recover</code> start the engine elevated (<code>engine vjoy elevated-hidhide</code>, the request passed on its command line, not in a
+file), and that process does everything: reads HidHide completely, resolves the device instance paths (<code>--dev-gaming</code>),
+writes the journal, runs all changes in one <code>HidHideCLI</code> call, reads back, compares and writes its result file for the
+caller. Nothing that needs the rights runs outside it. Before the change JoyPro writes a journal (<code>&lt;data&gt;\VirtualJoystick\hidhide-session.txt</code>, <code>&lt;data&gt;</code> = <code>JOYPRO_DATA_DIR</code> or
+<code>%LOCALAPPDATA%\JoyPro2</code>) with the state before, what it adds, what it parks and the owner process (the GUI's pid and
+start time). After the call it reads HidHide back and compares. Restore undoes exactly the journal's changes against
+the configuration found then (entries the user added meanwhile stay), cloaking off first, and moves the journal to
+<code>history\</code>. Order on apply: lists first, cloaking last; on restore: cloaking off first - so nothing is hidden while the
+lists are half done.</p>
+<p>Crash safety: a journal whose owner process is gone is <strong>stale</strong>. The GUI checks the journal when it starts and
+restores a stale session at once (<code>engine vjoy recover</code>, one prompt); <code>apply-hidhide</code> refuses while a stale session
+waits. Closing JoyPro stops the forwarder and restores HidHide through an engine process that outlives the window. If
+the prompt is declined, the next start does it. By hand: <code>engine vjoy restore-hidhide</code>, or in the HidHide client untick
+&quot;Enable device hiding&quot;.</p>
+<h2 id="virtual-functions"><a class="anchor" href="#virtual-functions">#</a>Virtual functions</h2>
+<p>Per game in virtual mode (vJoy or Xbox pad) the user adds functions that the forwarder evaluates every pass between
+the physical inputs and the virtual outputs - Joystick Gremlin-like features inside JoyPro's virtual mode.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Type id</th>
+<th>Name</th>
+<th>Inputs</th>
+<th>Outputs</th>
+<th>Settings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bands</code></td>
+<td>≡ Axis bands</td>
+<td>in (axis)</td>
+<td>band1..bandN (buttons, each hold / enter / leave / both)</td>
+<td>edges (N-1, 0..1), hysteresis, pulse length</td>
+</tr>
+<tr>
+<td><code>cycle</code></td>
+<td>↻ Button cycle</td>
+<td>next, prev (opt.), reset (opt.)</td>
+<td>step1..stepN</td>
+<td>pulse or hold (selector), wrap or stay, pulse length</td>
+</tr>
+<tr>
+<td><code>toggle</code></td>
+<td>◐ Toggle (latch)</td>
+<td>in</td>
+<td>out (latched)</td>
+<td>on or off at start</td>
+</tr>
+<tr>
+<td><code>switch</code></td>
+<td>⇅ Switch to on/off pulses</td>
+<td>in (maintained switch)</td>
+<td>on, off (pulses)</td>
+<td>pulse length, pulse the position at start</td>
+</tr>
+<tr>
+<td><code>presses</code></td>
+<td>⋯ Short / long / double press</td>
+<td>in</td>
+<td>short, long, double (all optional)</td>
+<td>long after, double within, long = pulse or hold</td>
+</tr>
+<tr>
+<td><code>shift</code></td>
+<td>⇧ Shift layer</td>
+<td>shift, in1..inN (any kind)</td>
+<td>out1..outN (shifted), base1..baseN (unshifted; default: the input's own slot)</td>
+<td>hold or toggle</td>
+</tr>
+<tr>
+<td><code>merge</code></td>
+<td>⋈ Merge two axes</td>
+<td>a, b (axes)</td>
+<td>out</td>
+<td>difference / sum / average / larger / smaller, invert A/B</td>
+</tr>
+<tr>
+<td><code>split</code></td>
+<td>⋔ Split an axis</td>
+<td>in</td>
+<td>low, high (axes)</td>
+<td>split point</td>
+</tr>
+<tr>
+<td><code>curve</code></td>
+<td>∿ Axis curve</td>
+<td>in</td>
+<td>out</td>
+<td>JoyPro's axis tuning (dead zone, saturation X/Y, curvature, invert, slider; <code>AxisModels.EvaluateDcs</code>)</td>
+</tr>
+<tr>
+<td><code>axis-buttons</code></td>
+<td>⇔ Axis ends to buttons</td>
+<td>in</td>
+<td>low, high (hold / enter / leave / both)</td>
+<td>end zone, hysteresis, pulse length</td>
+</tr>
+<tr>
+<td><code>axes-hat</code></td>
+<td>✛ Axes to hat</td>
+<td>x, y</td>
+<td>hat</td>
+<td>deflection, 4 or 8 ways</td>
+</tr>
+<tr>
+<td><code>buttons-axis</code></td>
+<td>± Buttons to axis</td>
+<td>up, down, centre (opt.)</td>
+<td>out (axis)</td>
+<td>speed (travel/s), start, spring back speed</td>
+</tr>
+<tr>
+<td><code>encoder</code></td>
+<td>⟳ Axis to encoder pulses</td>
+<td>in</td>
+<td>up, down</td>
+<td>step, pulse, gap, queue</td>
+</tr>
+<tr>
+<td><code>turbo</code></td>
+<td>» Turbo (repeat)</td>
+<td>in</td>
+<td>out</td>
+<td>pressed for, released for, while held or press on/press off</td>
+</tr>
+<tr>
+<td><code>macro</code></td>
+<td>▶ Macro</td>
+<td>trigger</td>
+<td>out1..outN, keys</td>
+<td>steps (after ms: tap/press/release an output or key, hold ms), once or repeat while held</td>
+</tr>
+<tr>
+<td><code>hat-buttons</code></td>
+<td>✣ Hat to buttons</td>
+<td>hat</td>
+<td>up, right, down, left, 4 diagonals (opt.)</td>
+<td>4 ways (a diagonal presses both neighbours) or 8</td>
+</tr>
+<tr>
+<td><code>buttons-hat</code></td>
+<td>⊕ Buttons to hat (8-way from 4 switches)</td>
+<td>up, right, down, left</td>
+<td>hat</td>
+<td>diagonal settle time</td>
+</tr>
+<tr>
+<td><code>remap</code></td>
+<td>→ Remap</td>
+<td>in (any)</td>
+<td>out1..out8 (follow the input; a button on an axis = full/rest, an axis on a button = past half)</td>
+<td>invert an axis</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>⇆ Mode switch</td>
+<td>in (button)</td>
+<td>-</td>
+<td>switch to / hold (temporary) / toggle / cycle / back; the target modes</td>
+</tr>
+</tbody>
+</table></div>
+<p>Inputs are physical inputs (<code>JOY_X</code> .. <code>JOY_SLIDER2</code>, <code>JOY_BTN&lt;n&gt;</code>, <code>POV&lt;n&gt;</code>, a hat direction <code>JOY_BTN_POV&lt;n&gt;_&lt;dir&gt;</code>) or
+another function's output (device <code>fn:&lt;id&gt;</code>, input the output's role, see &quot;Function chaining&quot;);
+outputs are vJoy inputs (<code>JOY_BTN&lt;n&gt;</code>, an axis, <code>POV&lt;n&gt;</code> on a vJoy device), controls of the virtual Xbox pad (<code>XB_A</code>,
+<code>XB_LT</code>, <code>XB_LX</code>, <code>XB_DPAD</code>, ...) or keys (<code>KEY_A</code>, <code>KEY_LCTRL</code>, <code>KEY_F1</code>, ... - <strong>only</strong> with the function's
+<code>Keyboard</code> switch on; keys go out through SendInput with scan codes and only with a real sink, never in a dry run or
+the GUI's Test).</p>
+<p><strong>Storage and planning.</strong> Functions live in the profile with the game's virtual-mode settings
+(<code>VJoySettings.Functions[game]</code>, ids <code>f1</code>, <code>f2</code>, ...). Their vJoy outputs are <strong>reserved</strong> in the table: the planner never
+gives them to a physical input, they count in what the vJoy device must offer (&quot;+ N function output(s)&quot;), and an output
+that collides with a slot or another function is flagged. New functions get free outputs (<code>functions add</code>, or an output
+set to <code>auto</code>): the lowest free button/axis/hat on devices first..last (vJoy's maximum assumed; an output above what the
+device has now says &quot;Set up vJoy for maximum&quot;, one above what the game reads says so too); on the Xbox pad free
+controls the game's pad table does not use. A shift layer's unshifted output defaults to the input's own slot, so the
+layer takes the input away from it while shifted. A function's output is bound in relations like any vJoy input
+(device <code>vJoy Device {GUID}</code>, input <code>JOY_BTN&lt;n&gt;</code>; the editor's &quot;Bind relation&quot; runs <code>engine binds set</code>); exports leave
+those binds as they are. The physical devices a function reads are hidden by HidHide like the table's.</p>
+<p><strong>Evaluation.</strong> <code>engine/VJoy/VirtualFunctions.cs</code> (model, catalog, tokens, resolution) and
+<code>engine/VJoy/VirtualFunctionRuntime.cs</code> (evaluation, simulator) are plain C# 7.3, compiled into the engine, JoyPro.VJoy
+and the GUI: the CLI test, the editor's preview and the forwarder run the same code. <code>forwarder-config</code> writes the
+functions resolved (source index, kind, index; vJoy device index) - of the game that started (<code>--game</code>, the GUI's auto
+start) or of every vJoy game and the Xbox game (Start by hand) - and adds their devices to the sources. The forwarder
+copies each changed device state into the runtime, calls <code>Tick</code> <strong>every pass</strong> (also without a change: pulses, turbo,
+macros, long presses and the incremental axis need the clock) and merges the outputs: every vJoy button, axis and hat a
+function owns is replaced by what the functions wrote (two functions on one button combine), the Xbox report likewise.
+Timing resolution is one pass (at 144 Hz 6 ms): a pulse lasts its length rounded up to passes, a macro press is held for
+at least one pass. A device that disappears releases the functions' buttons; Stop releases every key and output.
+Nothing is allocated per pass.</p>
+<p><strong>CLI.</strong> <code>engine vjoy functions types|list|add|set|remove|test</code> (<code>--json</code> by default, <code>--text</code>), see
+<code>engine/docs/ENGINE_CLI_WIKI.md</code>:</p>
+<pre><code>engine vjoy functions add --game DCS --type bands --name &quot;Throttle detents&quot; --input &quot;in=VPC Throttle {GUID}|JOY_Z&quot; --edges 0.05,0.95 --output band3=auto:enter
+engine vjoy functions set --game DCS --id f1 --param hysteresis=0.02 | --spec @function.json
+engine vjoy functions test --game DCS --id f1 [--stream &quot;0:in=0.5; 100:in=0.97&quot;] [--rate 240] [--duration 600]
+engine vjoy functions remove --game DCS --id f1
+</code></pre>
+<p><code>test</code> simulates (default stream per type: an axis sweep, presses, ...) and lists every output change; nothing goes to
+vJoy, the pad or the keyboard.</p>
+<p><strong>GUI.</strong> Virtual Joystick page, tab <strong>Functions</strong>: the types with icon and one line each, &quot;Add function&quot; (game, type),
+the list (outputs, state, live state), and the editor: name, on/off, keyboard output; a node view in the style of the
+force feedback editor (inputs -&gt; function -&gt; outputs, lit while an output fires); the axis band editor (the axis travel
+as a bar with the bands and their outputs, draggable edges, the hysteresis zones, the input marker); inputs (device,
+input), outputs (target, vJoy device, band mode, &quot;Bind relation&quot;), settings (sliders/choices), macro steps, the curve
+view; <strong>Try it</strong> runs the function in the editor (sliders, press buttons, hat directions; a timer only while it is on),
+and while Test or Start runs the forwarder's <code>fn</code> lines show the real state (LIVE). Save stores it through the engine.</p>
+<h3 id="function-chaining"><a class="anchor" href="#function-chaining">#</a>Function chaining</h3>
+<p>An input of a function can read another function's output instead of a physical input: <code>--input &quot;in=fn:f1|band2&quot;</code>
+(CLI), the input's device list in the editor (<code>⚙ f1 Throttle detents</code>, with that function's outputs as inputs), or a
+drag in the graph. Examples: an axis band that feeds a toggle, a curve that feeds a split, a tempo container whose long
+press starts a macro (the Gremlin import builds these). The runtime evaluates the functions in dependency order every
+pass (a function after the ones it reads), so a chained input sees the value of the same pass, without a pass of
+delay; every output keeps its value of the pass (<code>VfOut.Level</code>, <code>HatLevel</code>). An output that only feeds other functions
+needs no virtual target (it is &quot;internal&quot;: no vJoy button is used, the editor says &quot;feeds f2 only&quot;). Loops (a function
+reading itself, directly or through others) are refused by <code>functions add|set</code> (&quot;These functions would read each other
+in a loop: f1 &quot;A&quot; -&gt; f2 &quot;B&quot; -&gt; f1 &quot;A&quot;. Chain them one way only. Nothing was saved.&quot;) and by the graph before the engine is
+asked; the runtime leaves any loop out with that message. Removing a function clears the inputs that read it. A chained
+input is no device: it is not a forwarder source and HidHide hides nothing for it.</p>
+<h3 id="modes"><a class="anchor" href="#modes">#</a>Modes</h3>
+<p>Like Joystick Gremlin, a game's functions can have named <strong>modes</strong> (layers), e.g. Default, Combat, Landing; a mode may
+inherit from another (<code>engine vjoy modes add --game DCS --name Combat --parent Default</code>, <code>set --parent|--rename</code>,
+<code>remove</code>, <code>start</code>, <code>list</code>; GUI: the Modes card of the Functions tab). Stored per game (<code>VJoySettings.Modes[game]</code>, a
+<code>VfModeSet</code>); a function lists the modes it works in (<code>functions set --modes Combat,Landing</code>, the editor's &quot;Works in
+modes&quot;; none = every mode).</p>
+<ul>
+<li>A function in a mode also works in the modes that inherit from it, unless such a mode (or one closer in its line) has
+its own function on the same input; a function without modes works in every mode unless the current mode's line has
+its own function on that input. So &quot;button 1 -&gt; vJoy 1 everywhere, but vJoy 30 in Combat&quot; is two remaps: one without
+modes, one in Combat.</li>
+<li>A <strong>mode switch</strong> function (type <code>mode</code>) changes the mode: switch to a mode, hold it while the button is held (back
+on release; the switch keeps running in the held mode to see the release), toggle (the next press goes back), cycle
+through a list, back to the previous mode. Targets: <code>--switch-modes Landing</code> (the editor's &quot;Mode to switch to&quot;).</li>
+<li>A switch takes effect after the pass that asked for it. A function that becomes active starts from its inputs as they
+are (<code>Prime</code>): a button held through the switch is no new press, so one press never switches twice.</li>
+<li>Only the functions of the current mode run; the outputs they own are released while they do not run, so a remap in
+Combat that writes the input's own table slot takes the slot away in the other modes (Gremlin's per-mode remap).</li>
+<li>The forwarder starts each game in its start mode (<code>modes start</code>, else the first) and reports <code>mode &lt;game&gt; &lt;mode&gt;</code> at
+start and on every change; the page shows &quot;Mode now (live)&quot; and marks the running mode. Started by hand with several
+virtual games, each game keeps its own modes (one mode group per game).</li>
+</ul>
+<h3 id="editing-in-the-graph"><a class="anchor" href="#editing-in-the-graph">#</a>Editing in the graph</h3>
+<p>The Functions tab shows every function of the chosen game as a node (<code>VirtualFunctionGraphView</code>, the default view of
+the right side; &quot;Editor&quot; shows the function opened with Edit): columns by dependency, inputs on the left edge of a node
+with what they read, outputs on the right edge with their target, wires from an output to the inputs that read it, the
+modes each node works in. Drag from an output dot to an input dot of another function to connect (a wrong kind or a
+loop is refused with a message), click a wire (or the input it ends at) and then its × or Delete to disconnect, × on a
+node removes the function (asks first), double-click opens the editor. Physical inputs, outputs, settings, modes, macro
+steps and curves are edited in the editor's rows; &quot;Add function&quot; adds nodes. Every change goes through the engine.</p>
+<h3 id="coming-from-joystick-gremlin"><a class="anchor" href="#coming-from-joystick-gremlin">#</a>Coming from Joystick Gremlin</h3>
+<p><code>engine vjoy import-gremlin &lt;profile.xml&gt; --game &lt;game&gt; [--dry-run] [--replace] [--vjoy-device N]</code> (GUI: &quot;Import a
+Gremlin profile...&quot; on the Functions tab; a dry run shows its report first, Import saves) reads Joystick Gremlin R13
+profiles (profile version 9-13: <code>&lt;devices&gt;&lt;device&gt;&lt;mode&gt;&lt;button|axis|hat&gt;&lt;container&gt;&lt;action-set&gt;</code>) and R14 profiles
+(profile version 14: <code>&lt;inputs&gt;</code> bound to a root action of the <code>&lt;library&gt;</code>, <code>&lt;modes&gt;</code>), and makes the game's modes and
+virtual functions from them:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Gremlin</th>
+<th>JoyPro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>devices (by <code>device-guid</code>, else by name)</td>
+<td>the connected or known device with that DirectInput instance GUID, else by name; unknown: kept as <code>Name {GUID}</code> (listed)</td>
+</tr>
+<tr>
+<td>modes, <code>inherit</code>, start mode</td>
+<td>modes with their parents and the start mode (only when the profile has more than one mode)</td>
+</tr>
+<tr>
+<td>remap button / axis / hat -&gt; vJoy</td>
+<td><code>remap</code> (several remaps and keys on one input: one remap with several outputs)</td>
+</tr>
+<tr>
+<td>response curve + axis remap</td>
+<td><code>curve</code>: centre dead zone, saturation X, the spline sampled into an 11-point user curve; inverted when it falls</td>
+</tr>
+<tr>
+<td>map to keyboard</td>
+<td><code>remap</code> with key outputs (keyboard output on)</td>
+</tr>
+<tr>
+<td>macro (keys, pauses, vJoy buttons; repeat single / hold)</td>
+<td><code>macro</code> with steps, keyboard output on when it types</td>
+</tr>
+<tr>
+<td>switch / temporary / cycle / previous mode, change mode</td>
+<td><code>mode</code> (switch, hold, cycle, back)</td>
+</tr>
+<tr>
+<td>merged axis (average, sum, minimum, maximum)</td>
+<td><code>merge</code></td>
+</tr>
+<tr>
+<td>tempo container (short / long)</td>
+<td><code>presses</code>; a set that is not a lone button remap is chained to the long/short output</td>
+</tr>
+<tr>
+<td>double tap</td>
+<td><code>presses</code> with short and double</td>
+</tr>
+<tr>
+<td>chain container</td>
+<td><code>cycle</code> (pulse per step)</td>
+</tr>
+<tr>
+<td>smart toggle</td>
+<td><code>toggle</code></td>
+</tr>
+<tr>
+<td>hat buttons (4 / 8)</td>
+<td><code>hat-buttons</code></td>
+</tr>
+<tr>
+<td>axis range as a button (<code>virtual-button</code> limits)</td>
+<td><code>bands</code> with that band, chained to the set's actions</td>
+</tr>
+<tr>
+<td>hat directions as a button</td>
+<td>the input <code>JOY_BTN_POV&lt;n&gt;_&lt;dir&gt;</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Listed as <strong>not imported</strong> (never dropped silently): activation conditions (the actions are imported to run always),
+mouse actions, sounds and speech, pause/resume, user plugins (Python), keyboard devices and keyboard inputs, vJoy
+devices as inputs, a chain's timeout, macro steps on axes or the mouse, more than 8 outputs on one input, unknown
+actions and containers, devices that are not connected (imported on <code>Name {GUID}</code>). Listed as <strong>imported, but
+different</strong>: a relative axis remap (absolute), axis scaling, asymmetric dead zones or curves (one value for both
+sides), Bezier handles, a tempo &quot;on press&quot; (JoyPro fires the short press on release), the chain's step held while the
+button is held (a pulse), a smart toggle's long hold, macro repeat toggle / count, a hat virtual button with several
+directions, an axis range &quot;from one direction&quot;. Gremlin numbers a device's axes 1..8; JoyPro takes them as X, Y, Z, Rx,
+Ry, Rz, Slider 1, Slider 2, which is Gremlin's order when the device has all eight - check the axis inputs of a device
+with fewer axes. The vJoy outputs keep Gremlin's vJoy device unless <code>--vjoy-device</code> (or the tunnel device of
+Settings) moves them; outputs on a button the table already uses are warned about (bind the relations to the outputs
+like any vJoy button). The R14 reader follows R14's library structure (actions with typed <code>&lt;property&gt;</code> values and
+child action ids); anything it does not know is listed.</p>
+<p>What a Gremlin user does in JoyPro: set the game to vJoy, import the profile, bind the game's relations to the vJoy
+outputs (or keep the game's binds where they are: the outputs are the same vJoy buttons and axes), Start. HidHide and
+the forwarder replace Gremlin's own device hiding and its running in the background.</p>
+<p><strong>Performance</strong> (<code>JoyPro.VJoy bench</code>, release build, development PC, 4 synthetic sources changing every pass, 50
+functions of all types): 144 Hz: 9.7 us per pass on average (p99 29 us), 0.47 % of one core (table only: 0.31 %);
+240 Hz: 8.5 us average (p99 31 us), 0.31 % of one core; 0 bytes allocated in the loop. The GUI test
+<code>LoopBenchmarkWithFiftyFunctions</code> measures the same pass without the timer (about 4 us per pass).</p>
+<h2 id="the-forwarder-joypro-vjoy-exe"><a class="anchor" href="#the-forwarder-joypro-vjoy-exe">#</a>The forwarder (JoyPro.VJoy.exe)</h2>
+<pre><code>JoyPro.VJoy run --config &lt;file&gt; [--sink vjoy|dry] [--xbox-sink vigem|dry] [--rate Hz] [--mode event|poll] [--parent-pid N] [--protocol] [--monitor] [--duration s] [--vjoy-dll path]
+                [--priority below-normal|normal] [--stats-seconds N] [--fake-sources idle|stream|noisy]
+JoyPro.VJoy devices [--json]      (DirectInput game controllers with instance GUID and HID path; read-only)
+JoyPro.VJoy refresh-rate          (the fastest display's refresh rate, at least 60)
+JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (the loop with virtual functions and synthetic sources; no device, vJoy or key)
+</code></pre>
+<ul>
+<li>Reads every mapped device through DirectInput in non-exclusive background mode with JoyPro's data format (the first
+176 bytes of DIJOYSTATE2: X Y Z Rx Ry Rz Slider Slider by GUID, 4 POVs, 128 buttons - the numbering of JoyPro's and
+DCS's binds). <code>DIPROP_RANGE</code> is set to vJoy's axis range, so axis values go over 1:1; JoyPro's curves, dead zones and
+inversions stay in the game's settings.</li>
+<li><strong>At most one pass per period</strong> (the rate: default the fastest display's refresh rate, minimum 60 Hz; the period is
+exact, 144 Hz = 6.94 ms, a one-shot high-resolution waitable timer armed after every pass). A DirectInput change event
+that comes a period or more after the last pass runs a pass at once (a button goes out at once). A pass that found a
+change stops watching the change events until one period after it; the pass at the end of that period takes
+everything that came meanwhile. So a device that reports all the time - real sticks do while nobody touches them (on
+the development PC the VPC stick and throttle send 180 and 300 reports a second with changing values, the Crosswind
+250 and the WinWing panel 100 identical ones, a Rhino force feedback base up to 1000) - costs one pass and one
+wake-up per period, not one per report, and a button on another device waits at most one period. <code>--mode poll</code> uses
+the timer only.</li>
+<li><strong>A pass reads only the devices whose event fired</strong> (and DirectInput polled devices, <code>DIDC_POLLEDDEVICE</code>, which are
+also the only ones <code>Poll()</code> is called for). Every 100 ms a pass reads every device as a safety net for a missed
+event; a change found that way is counted in the stats line (<code>missed=</code>; 0 with the six real devices of the
+development PC).</li>
+<li><strong>Rests when nothing happens</strong>: when every device signals its changes, the last pass found no change and no virtual
+function needs the clock, the timer waits 100 ms (a safety poll); the next change event wakes the loop at once. A
+virtual function that waits for a time (a pulse end, the next turbo phase, a long press or double-press window, a
+macro step, a diagonal settle: <code>VfRuntime.NextDueUs</code>) sets the timer to that time instead of running every period;
+only a moving incremental axis, an encoder queue and a mode change need the very next pass. A resting setup costs
+10 passes a second. <code>--mode poll</code> never rests.</li>
+<li><strong>Performance (2.6.0 budgets, <code>ForwarderSoakTests</code>)</strong>: the real JoyPro.VJoy (release build, development PC, 144 Hz,
+dry sink, 4 synthetic devices, 52 virtual functions of every type incl. a chain and two modes), CPU from the
+process's cycle counter (<code>cycles-ms=</code>; Windows' process times, <code>cpu-ms=</code>, are sampled at the clock tick and charge a
+loop that runs for microseconds at random: 0.000 % or 0.5 % over 20 s): <strong>resting</strong> (nothing changes) 0.19 % of one
+core, 10 passes/s; <strong>every device changing every pass</strong> 0.52 %, 144 passes/s, 144 vJoy writes/s; <strong>noisy</strong> (one
+device signals a change 1000 times a second with noise on every axis, like a force feedback base nobody touches)
+0.56 %, 144 passes/s, 144 wake-ups/s; private bytes about 8 MB and handles flat (no growth), 0 bytes allocated by
+the loop in every phase (30 s per phase, after a 12 s warm-up). Budgets: resting 0.5 %, streaming 1.5 % of one core,
+memory growth at most 1 MB, handles at most +5, no loop allocation after warm-up, at most one pass per period and,
+noisy, one wake-up per pass.</li>
+<li><strong>Real devices</strong> (2026-11-01, the six connected devices of the development PC, the vJoy live test's table: 6 button
+slots, 23 virtual functions incl. a running turbo, a mode cycle and a moving incremental axis, 144 Hz, nobody
+touching anything, DCS not running): before the fix the event wake-ups of the noisy devices gave ~292 passes, ~580
+wake-ups and ~268 vJoy writes a second, every pass reading all six devices: 3.3 % of one core with the real vJoy sink, of which the loop thread 1.2 %. Now 144 passes, ~150
+wake-ups, ~132 vJoy writes and ~290 device reads a second: the loop thread costs 0.25-0.4 % with the dry sink and ~0.7 %
+with the real vJoy sink (an <code>UpdateVJD</code> costs ~25 us), the process 2.6 %. The rest is DirectInput itself: its own
+reading thread takes every HID report of every acquired device (~25 us each, mostly in the kernel), whether it
+changes anything or not - one resting device costs the process 0.07 % (VKB, 13 reports/s) to 0.7 % (VPC throttle
+300/s, Crosswind 250/s), JoyPro.VJoy with no device 0.17 %. That cost belongs to reading these devices at all: a game
+that reads them natively pays it in its own process, and in virtual mode HidHide hides them from the game, so it
+moves from the game to the forwarder rather than adding to it. Lowering it would need JoyPro's own HID reader that
+drains the reports once per period instead of DirectInput (not done: DirectInput's button and axis numbering is what
+the binds use).</li>
+<li><strong>Below normal priority</strong>: the process runs <code>BelowNormal</code> (its loop thread one step above the process, still below a
+game's normal threads), so the game always comes first; <code>--priority normal</code> for a test.</li>
+<li>Writes a vJoy device only when its position changed (<code>UpdateVJD</code> with the whole JOYSTICK_POSITION_V2). Neutral at
+start (axes centred, buttons up, hats centred) and at the end.</li>
+<li>No allocation per pass: native buffers, preallocated handles, structs; the stats line reports the loop thread's
+allocated bytes (stays at the startup value). ~35-40 MB working set, handles flat.</li>
+<li>A device that disappears releases its buttons and centres its hats (axes keep their last value); it is opened again
+when Windows reports a device change (WM_DEVICECHANGE), else once a minute (opening a missing device costs
+DirectInput a device scan).</li>
+<li>Ends on <code>stop</code> (stdin), when stdin closes (<code>--protocol</code>), when the parent process exits (<code>--parent-pid</code>), on Ctrl+C or
+after <code>--duration</code>. The default sink is <code>dry</code> (nothing goes to vJoy); only <code>--sink vjoy</code> uses the vJoy devices, and
+it refuses a vJoy device another feeder holds. <code>JOYPRO_VJOY_DRY=1</code> forces dry.</li>
+<li>Protocol lines: <code>ready ...</code> (with <code>priority=</code>), <code>source &lt;i&gt; connected|missing|lost &lt;device&gt;</code>, <code>mode &lt;game&gt; &lt;mode&gt;</code> (at
+start and on every change), <code>stats passes= hz= wakes= changes= writes= sources= loop-alloc= cpu-ms= ws-kb= handles= private-kb= gc-kb= idle= idle-switches=</code> plus <code>reads=</code> (device reads), <code>missed=</code> (changes only the safety read
+found), <code>cycles-ms=</code> (the process's CPU from its cycle counter) and <code>loop-ms=</code> (the loop thread's) (every second
+while the live view is on, else every 5 s, <code>--stats-seconds</code>;
+once at the end), <code>out &lt;id&gt; &lt;8 axes&gt; &lt;128 buttons hex&gt; &lt;4 hats&gt;</code> (15/s while the
+live view is on), <code>fn &lt;id&gt; &lt;first input 0..1000&gt; &lt;state&gt; &lt;outputs on, bit mask&gt;</code> per virtual function (15/s while the
+live view is on), <code>error ...</code>, <code>exit &lt;reason&gt;</code>. The ready line says <code>functions=&lt;n&gt;</code> (and <code>keys=on</code> when a function may
+type).</li>
+</ul>
+<h2 id="gui-virtual-joystick-page"><a class="anchor" href="#gui-virtual-joystick-page">#</a>GUI: Virtual Joystick page</h2>
+<ul>
+<li><strong>Overview</strong>: what it is and how to use it in plain words; status of vJoy (version, devices), HidHide (state) and
+JoyPro's session; <code>Set up vJoy for the table</code> (only when needed), <code>Restore HidHide</code> (when a session is active); &quot;What
+this page needs&quot;: the vJoy, HidHide and ViGEmBus cards of docs/components.md (status, license, one-click install); per
+game a Native/Virtual switch (the games of the profile and every game in virtual mode); options &quot;Hide the real
+devices&quot; (HidHide on/off) and &quot;Start and stop by itself when a game set to Virtual starts and ends&quot;.</li>
+<li><strong>Mapping</strong>: the table (physical input, virtual input, the relations that use it, state), <code>Update mapping</code>.</li>
+<li><strong>Functions</strong>: the virtual functions (see &quot;Virtual functions&quot;): left the types and &quot;Add function&quot;, the game's Modes
+(rename, inherits, at start, remove, add; the running mode live), &quot;Coming from Joystick Gremlin?&quot; (import with the
+report first) and the list (outputs, modes, what a function reads and feeds); right the graph of the game's functions
+(&quot;Editing in the graph&quot;) or the editor of one function. Overview also has &quot;Set up vJoy for maximum&quot; and, per game,
+what it reads of a joystick with the limit warnings; its Status card names the vJoy device JoyPro tunnels into.</li>
+<li><strong>Live test</strong>: bars for the eight axes, pressed buttons and hats of each vJoy device as the forwarder writes them, the
+forwarder's stats and log.</li>
+<li><code>Start</code>: updates the table, writes the forwarding table, hides the physical devices (one prompt), starts
+<code>JoyPro.VJoy --sink vjoy</code>. <code>Test</code>: the same without HidHide and with the dry sink (nothing changes). <code>Stop</code> and an
+unexpected end of the forwarder restore HidHide. vJoy: press Start before you start the game: games often look for
+devices only once at start. Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: press Start
+once the game's title screen shows (or Stop and Start there), see &quot;When to start the pad&quot; under &quot;Virtual Xbox pad&quot;.
+The page says so under Overview step 3 and in the tooltips of Start and of the auto start
+(<code>VirtualXboxPadTimingNote</code>): the game set to Xbox pad by name, nothing when neither is, a note naming both while the
+games are not loaded (<code>VirtualXboxPadTimingTests</code>).</li>
+<li>Auto start: only while it is on and a game is in virtual mode, JoyPro looks for the games' processes every 3 s and
+starts (with the running game's executable added to HidHide's list) and stops by itself.</li>
+</ul>
+<h2 id="cli"><a class="anchor" href="#cli">#</a>CLI</h2>
+<p>See <code>engine/docs/ENGINE_CLI_WIKI.md</code> (<code>engine vjoy ...</code>). <code>--dry-run</code> everywhere that changes something.
+<code>JOYPRO_VJOY_FAKE=&lt;folder&gt;</code> replaces vJoy and HidHide by files in that folder: <code>vjoy.txt</code> (<code>installed=&lt;version&gt;</code>,
+<code>device=&lt;n&gt; axes=x,y,... buttons=&lt;n&gt; povs=&lt;n&gt; discrete=&lt;n&gt; ffb=yes|no</code>), <code>hidhide-state.txt</code> (HidHideCLI's own
+format), <code>hidhide-gaming.json</code> (<code>--dev-gaming</code>), <code>hidhide-missing</code> (file: not installed), <code>hidhide-exit.txt</code> (exit code
+of the next apply, <code>-1223</code> = prompt declined, <code>-1460</code> = hung), <code>hidhide-deny.txt</code> / <code>hidhide-hang.txt</code> (parts
+<code>cloak</code>, <code>inverse</code>, <code>devices</code>, <code>apps</code> that are denied without administrator rights / never answer); the elevated step
+runs as a normal child process then. The calls JoyPro would run go to <code>hidhide-calls.txt</code> and <code>vjoyconfig-calls.txt</code>.
+<code>JOYPRO_HIDHIDE_CLI=&lt;exe&gt;</code> uses another HidHideCLI (the smoke test uses a script that hangs and denies).
+In <code>vjoy.txt</code>, <code>vigem=&lt;version&gt;</code> fakes an installed and running ViGEmBus (missing, empty or <code>vigem=no</code>: not installed).
+<code>JOYPRO_HLLV_SETTINGS=&lt;ini&gt;</code> replaces Hell Let Loose: Vietnam's <code>GameUserSettings.ini</code> (gamepad layout), and
+<code>JOYPRO_OODLE_DLL=none</code> keeps its catalog refresh from using any Oodle library (another game's is used only with the
+user's consent, <code>refresh-db --oodle-dll</code>; docs/games/hll-vietnam.md &quot;Oodle&quot;).</p>
+<h2 id="tests"><a class="anchor" href="#tests">#</a>Tests</h2>
+<ul>
+<li><code>engine/tests/smoke/vjoy.ps1</code> (part of the engine smoke test): table rules and stability, capacity over two vJoy
+devices, vjoy configure (dry run, one call, never again when it fits), DCS export to the vJoy device incl. modifier and
+hat, profile keeps the physical devices, import back to physical, missing vJoy stops the export, HidHide dry run,
+declined prompt, block list with parked entries and vJoy shown, exact restore, stale owner and recover, the user's
+allow list, denied/hanging HidHide reads (unknown, never &quot;off&quot;; nothing changed; session kept), a journal with an unknown inverse mode, the real CLI path with a stand-in that hangs and denies (time limit, ended with its children), the forwarder table, a dry JoyPro.VJoy run (no allocation in the loop), back to native.</li>
+<li><code>gui/JoyPro.Gui.Tests/VirtualJoystickTests.cs</code>: the HidHide state machine (enable/disable, crash of the owner, crash
+while applying, declined prompt, allow list, inverse switch, a second game, journal round trip, unreadable parts, partial dry run, unknown previous inverse mode) and the page against a
+fake engine that runs the same state machine (status, toggle, Test, Start/Stop, forwarder ending by itself, recovery at
+start, auto start, shutdown). <code>VirtualJoystickForwardingTests.cs</code>: the forwarding table (axes, buttons, hats, discrete
+hats, release, no allocation, JOYSTICK_POSITION_V2 layout).</li>
+<li>Virtual functions: <code>engine/tests/smoke/vjoy.ps1</code> section 7 (add with free outputs, reservation against the planner,
+test with the default and a given stream (pulse length), keys only with keyboard output, forwarder-config, a dry
+JoyPro.VJoy run with a function (<code>fn</code> lines, no allocation), per-game limit warnings, <code>limits</code>, <code>configure-vjoy --max</code>
+as a dry run only, remove). <code>gui/JoyPro.Gui.Tests/VirtualFunctionRuntimeTests.cs</code>: every function type with simulated
+input streams (band edges with hysteresis, enter/leave pulses, cycle wrap/back/reset/hold, toggle and switch,
+short/long/double timing, shift layers with frozen axes and latch, merge/split math, the curve, axes to hat, the
+incremental axis rate and spring, encoder pulses, turbo, macro timeline and keys, hat helpers), the merge into the
+vJoy positions (owned outputs, a shift layer over a slot) and the Xbox report, the forwarder table's JSON, no
+allocation per <code>Tick</code>, a loop benchmark. <code>VirtualFunctionsGuiTests.cs</code>: the Functions tab against a fake engine (list,
+add, edit, preview, save spec, live lines, bind, remove, set up for maximum, limits) and offscreen renders of the
+editors (<code>%TEMP%\JoyPro2.Gui.Tests\vjoy-functions</code>; the whole tab with <code>JOYPRO_VJOY_FUNCTIONS_PAGE_PREVIEW=1</code>).</li>
+<li>Joystick Gremlin parts: <code>VirtualFunctionChainModeTests</code> (a chained output in the same pass, order independent of the
+list, loops refused with the message, validation against the game, internal axes, remap, modes with inheritance and
+takeover, cycle / hold / back, a held button no new press, two games' modes, <code>NeedsClock</code>, <code>NextDueUs</code> (the time of
+the next turbo edge / long press / pulse end, and ticking only at input changes and at <code>NextDueUs</code> gives the same
+outputs as ticking every millisecond), no allocation per pass with chains and modes); <code>GremlinImportTests</code> (the fixtures <code>engine\tests\fixtures\gremlin\r13-basic.xml</code>, <code>r13-modes.xml</code>,
+<code>r14-profile.xml</code>, written from Gremlin's documented format: devices by GUID / name / not found, curves, keys,
+merged axes, every container, macros, axis ranges, mode changes, the report, the imported profile running with its
+modes, <code>--vjoy-device</code>, refusal of other XML); <code>VirtualFunctionGraphModesGuiTests</code> (the Modes card, the editor's modes
+and function sources, the graph's connect / refuse / disconnect / remove / open, the import's report before saving,
+<code>--vjoy-tunnel</code> on every vjoy command, renders of the tab at 1280 and 2267 in dark and light to
+<code>JOYPRO_VJOY_RENDER_OUT</code>); <code>engine\tests\smoke\vjoy.ps1</code> section 8 (modes CLI and a refused parent loop, chaining and a
+refused loop, forwarder-config with chain and modes, <code>mode DCS Default</code> and <code>priority=below-normal</code> from a dry run,
+import dry run / import / R14 / not a profile, the tunnel device in the status).</li>
+<li><code>ForwarderSoakTests</code> (the forwarder's cost, see &quot;Performance&quot; above): phases idle, stream and noisy (one synthetic
+device signalling 1000 times a second: at most one pass and one wake-up per period); always 30 s per phase;
+<code>JOYPRO_FORWARDER_SOAK=1</code> runs 5 minutes per phase (<code>JOYPRO_FORWARDER_SOAK_SECONDS</code>), <code>JOYPRO_FORWARDER_EXE</code> picks the build (release for the
+numbers).</li>
+<li>Nothing in the tests touches the real HidHide, vJoyConfig or a vJoy device: the GUI tests point every engine at a fake
+(<code>JOYPRO_VJOY_FAKE</code>) and start JoyPro.VJoy only with the dry sink and synthetic devices (<code>ForwarderSoakTests</code>).</li>
+</ul>
+<h2 id="limits-and-notes"><a class="anchor" href="#limits-and-notes">#</a>Limits and notes</h2>
+<ul>
+<li>Force feedback is not forwarded (vJoy's FFB would need a feedback loop back to the physical stick).</li>
+<li>Started by hand, the functions of every virtual game run at once (each game with its own modes, but a shift layer of
+one game also acts while another runs); auto start runs only the started game's.</li>
+<li>Verified live in DCS (2026-11-01, <code>tools\e2e\games\VJoyLive.ps1</code>, RunAll test <code>vjoy-live</code>, 58 of 59 checks): JoyPro's
+elevated HidHide step hid six flight devices from DCS only (dcs.log and the Controls page list the vJoy device and
+none of them; Wooting, HeadTracker, mouse stay), the export's binds show in the vJoy column, DCS's assignment panel
+caught a vJoy button pulsed by a chain of virtual functions running on real DirectInput sources (toggle on at start -&gt;
+turbo), a chained mode switch cycled the modes of an imported Gremlin R13 profile, a Combat-only remap followed the
+mode, a buttons-to-axis output moved, all 17 imported Gremlin functions ran; restore-hidhide put HidHide back exactly
+(cloak, inverse, 19 devices, programs incl. 5 HidHide cannot name) and DCS listed the devices again. Forwarder cost
+there: 6 real sources (noisy devices: event wake-ups gave ~290 passes/s at 144 Hz) with functions that change an
+output every pass: 2.8 % of one core with the dry sink, 3.8-5.9 % with the real vJoy sink - above the 1.5 % streaming
+budget. Fixed in 2.6.0 (one pass and one wake-up per period, only signalled devices read, timed functions wake the
+loop at their due time): see &quot;Real devices&quot; under &quot;The forwarder&quot;. The
+elevated step does not inherit <code>JOYPRO_DATA_DIR</code>: its log lines go to the user's own <code>%LOCALAPPDATA%\JoyPro2\Logs</code>.</li>
+<li>Not verified on hardware yet: keys from SendInput in a game, the vJoy maximum setup
+(needs a Windows restart; never run by the tests), modes and chains driven by a person on real devices, a real Gremlin user's profile
+(R14 especially: the reader follows its structure, the fixtures are written from the documented format), the idle
+rest with real devices (that every HID device signals its changes) and the forwarder at below normal priority while
+a game loads every core.</li>
+<li>Games that identify devices only by name or VID/PID cannot tell several vJoy devices apart.</li>
+<li>HidHide blocks by executable path: a game started through another executable (a launcher that stays the game) must
+be listed with <code>engine vjoy exe &lt;game&gt; --add</code>. Microsoft Store games live in protected folders JoyPro cannot list.</li>
+<li>Anti-cheat systems normally accept vJoy and HidHide (signed drivers), but a game may refuse virtual devices.</li>
+<li>4-way (discrete) vJoy hats are supported by the table, but JoyPro configures continuous hats; the discrete layout is
+not verified on a device yet.</li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#how-it-fits-together">How it fits together</a></li><li class="l3"><a href="#the-mapping-table">The mapping table</a></li><li class="l3"><a href="#export-import-sync">Export, import, sync</a></li><li class="l3"><a href="#vjoy-devices-in-imports-2-5-0">vJoy devices in imports (2.5.0)</a></li><li class="l3"><a href="#virtual-xbox-pad-mode-xbox-vigembus">Virtual Xbox pad (mode &quot;xbox&quot;, ViGEmBus)</a></li><li class="l3"><a href="#one-device-games-the-suggestion">One-device games: the suggestion</a></li><li class="l3"><a href="#vjoy-configuration">vJoy configuration</a></li><li class="l3"><a href="#what-a-game-reads-of-one-joystick">What a game reads of one joystick</a></li><li class="l3"><a href="#hidhide">HidHide</a></li><li class="l2"><a href="#virtual-functions">Virtual functions</a></li><li class="l3"><a href="#function-chaining">Function chaining</a></li><li class="l3"><a href="#modes">Modes</a></li><li class="l3"><a href="#editing-in-the-graph">Editing in the graph</a></li><li class="l3"><a href="#coming-from-joystick-gremlin">Coming from Joystick Gremlin</a></li><li class="l2"><a href="#the-forwarder-joypro-vjoy-exe">The forwarder (JoyPro.VJoy.exe)</a></li><li class="l2"><a href="#gui-virtual-joystick-page">GUI: Virtual Joystick page</a></li><li class="l2"><a href="#cli">CLI</a></li><li class="l2"><a href="#tests">Tests</a></li><li class="l2"><a href="#limits-and-notes">Limits and notes</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

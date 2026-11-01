@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Microsoft Flight Simulator 2024 · JoyPro</title>
+<meta name="description" content="MSFS 2024 with JoyPro: import your own profiles (Steam and Microsoft Store), export into the profiles the sim uses, JoyPro&#x27;s preset package in Community2024, the import files, per-aircraft relations and the Sensitivity page.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details open><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a class="current" href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Games</div><h1>Microsoft Flight Simulator 2024 </h1><div class="layer-switch" role="group" aria-label="Detail level"><span>Show:</span><button data-show="all" class="on">Everything</button><button data-show="beginner">Beginner</button><button data-show="advanced">Advanced</button><button data-show="technical">Technical</button></div></div>
+<div class="content">
+<p>MSFS 2024 keeps your controls in profiles, one per device and category (Airplanes and General), and remembers for
+every device and aircraft which profile it uses. JoyPro reads these profiles into one profile of its own and writes
+your binds back into exactly the profiles the sim uses, in the Steam and the Microsoft Store version. For aircraft the
+sim has not set up for a device yet, JoyPro adds its own presets as a small package in the sim's Community2024
+folder, and where it cannot write a profile it leaves you a file to import in the sim's Controls menu.</p>
+<div class="video-slot" data-video="game-msfs2024"><div class="video-icon">&#9654;</div><div><strong>Video: Microsoft Flight Simulator 2024: import, relations, export</strong><br>Coming later: one YouTube video per topic, recorded with the English interface, with subtitles in every language JoyPro speaks.</div></div>
+<div class="game-card"><details class="support-card" open><summary><strong>Microsoft Flight Simulator 2024</strong> <span class="lvl lvl-native">native (its own bind files)</span></summary><dl class="facts"><dt>Support</dt><dd>native (its own bind files)</dd><dt>Engine command</dt><dd><a href="../cli/msfs2024.html"><code>engine msfs2024</code></a></dd><dt>Bind file</dt><dd>your own profile the sim uses per device and category (Steam <code>remote\inputprofile_*</code> XML or the Microsoft Store save, <code>--user-profiles</code>) + JoyPro's Community package (<code>joypro-input-profiles</code>, one preset XML per device); import files in <code>Documents\JoyPro2\MSFS 2024 import files</code> where your profile cannot be written</dd><dt>Inputs the game reads</dt><dd>reads 8 axes, 1 hat (4 directions) per joystick (documented)</dd><dt>Command list from</dt><dd>Asobo's preset files, the flight events <code>fs-base\en-US.locPak</code> names, the installed aircraft</dd><dt>In-game test</dt><dd>26/26 steps passed (2026-10-11)</dd></dl><ul class="features"><li class="yes"><span class="m">✓</span> Import</li><li class="yes"><span class="m">✓</span> Export</li><li class="no"><span class="m">✗</span> Keyboard binds</li><li class="part"><span class="m">◐</span> Modifiers<span class="n">MSFS: modifier buttons of the same device only.</span></li><li class="yes"><span class="m">✓</span> Command list built on your PC</li><li class="yes"><span class="m">✓</span> Game watcher</li><li class="yes"><span class="m">✓</span> Axis curves and dead zones</li><li class="no"><span class="m">✗</span> Game control settings</li><li class="no"><span class="m">✗</span> In-game force feedback settings</li><li class="no"><span class="m">✗</span> Force feedback from telemetry</li><li class="yes"><span class="m">✓</span> Telemetry recording</li><li class="yes"><span class="m">✓</span> Virtual joystick (vJoy)</li><li class="part"><span class="m">◐</span> Virtual Xbox pad</li><li class="yes"><span class="m">✓</span> Virtual functions</li><li class="yes"><span class="m">✓</span> Setup wizard / Auto Assign</li><li class="yes"><span class="m">✓</span> Cockpits</li><li class="yes"><span class="m">✓</span> Cheat sheets</li><li class="yes"><span class="m">✓</span> In-game test</li></ul></details><p class="muted small">From the support matrix, generated from the engine's code: <a href="../games/support.html">all games</a>.</p></div>
+<div class="diagram"><pre class="mermaid">flowchart LR
+  P[&quot;Your profile&lt;br/&gt;(relations + binds)&quot;] --&gt; E[&quot;engine msfs2024 export&quot;]
+  E --&gt; U[&quot;Your own profiles&lt;br/&gt;Steam inputprofile_&amp;lt;n&amp;gt;&lt;br/&gt;or the Store save&quot;]
+  E --&gt; K[&quot;Community2024 /&lt;br/&gt;joypro-input-profiles&lt;br/&gt;(a preset per device)&quot;]
+  E --&gt; F[&quot;Documents / JoyPro2 /&lt;br/&gt;MSFS 2024 import files&quot;]
+  U --&gt; S[&quot;MSFS 2024:&lt;br/&gt;Settings &gt; Controls&quot;]
+  K --&gt;|&quot;aircraft not set up yet&quot;| S
+  F --&gt;|&quot;you: cogwheel, Import&quot;| S
+</pre></div>
+<section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">For beginners</div>
+<h2 id="what-joypro-does-for-msfs-2024"><a class="anchor" href="#what-joypro-does-for-msfs-2024">#</a>What JoyPro does for MSFS 2024</h2>
+<ul>
+<li><strong>Import</strong>: the profiles you made in the sim's Controls menu (Steam or Microsoft Store) come into your profile,
+flight binds and General binds (cameras, views, active pause and so on), with the axis settings of the Sensitivity
+page. A device you never changed in the sim brings the preset the sim ships for it, when the sim's own records show
+that it uses that preset.</li>
+<li><strong>Relations</strong>: one relation is one function. In MSFS 2024 a relation can be for all aircraft (the default) or only
+for the aircraft you tick, like in DCS.</li>
+<li><strong>Export</strong>: JoyPro writes your binds into the profile the sim uses for each device and category, writes its preset
+package for aircraft the sim has not set up yet, and writes an import file where it could not update your profile.</li>
+</ul>
+<h2 id="import-your-msfs-2024-binds"><a class="anchor" href="#import-your-msfs-2024-binds">#</a>Import your MSFS 2024 binds</h2>
+<ol>
+<li>Open <strong>Start</strong> and press <strong>Import</strong> on the Microsoft Flight Simulator 2024 card.</li>
+<li>Two options matter for MSFS, both off unless you tick them:
+<ul>
+<li><strong>Also import devices that are not connected</strong>: MSFS keeps the binds of every device it ever saw. Off: only the
+devices connected now.</li>
+<li><strong>Also import default presets the sim may not use</strong>: for devices whose use of a shipped preset the sim's records
+do not show. This can add binds the sim does not have.</li>
+</ul>
+</li>
+<li>Press <strong>Import now</strong> (or <strong>Look first</strong> to see what the sim has without changing your profile).</li>
+</ol>
+<p>Imported relations apply to all aircraft. When a bind exists only in the profiles of some aircraft, the
+<strong>Relations</strong> page shows a note after the import with <strong>Limit to these aircraft</strong> per relation, <strong>Limit all</strong> and
+<strong>Keep for all aircraft</strong>.</p>
+<figure class="shot"><a href="../assets/shots/start-light.webp"><img class="only-light" loading="lazy" src="../assets/shots/start-light.webp" alt="The Start page with your games"></a><a href="../assets/shots/start-dark.webp"><img class="only-dark" loading="lazy" src="../assets/shots/start-dark.webp" alt="The Start page with your games"></a><figcaption>The Start page with your games</figcaption></figure>
+<h2 id="build-and-check-relations"><a class="anchor" href="#build-and-check-relations">#</a>Build and check relations</h2>
+<p>On the <strong>Relations</strong> page an MSFS 2024 action shows the aircraft of the sim with checkmarks: every aircraft ticked
+means all aircraft. An action that exists only in some add-on aircraft says &quot;only for:&quot; with those aircraft, and adding
+it ticks just them. See the <a href="../flows/relations.html">relations flow</a>, then run the
+<a href="../flows/check.html">Check</a> on the Export page: it finds one button with two functions before the sim does.</p>
+<h2 id="export-to-msfs-2024"><a class="anchor" href="#export-to-msfs-2024">#</a>Export to MSFS 2024</h2>
+<ol>
+<li><strong>Close MSFS 2024.</strong> JoyPro refuses to write while the sim runs (in the Microsoft Store version also while its
+launch helper runs).</li>
+<li>Open <strong>Export</strong>. Under <em>Export to games</em> two ticks are for MSFS 2024:
+<ul>
+<li><strong>MSFS 2024: write into my MSFS profiles</strong> (on): the export updates the profile the sim uses for each device and
+category, backed up first.</li>
+<li><strong>MSFS 2024: import files for every device</strong> (off): an import file for every device and category, not only where
+JoyPro could not write your profile.</li>
+</ul>
+</li>
+<li>Keep <strong>Replace on my devices</strong> with <strong>Also clear my other devices</strong> if JoyPro is where you set up your devices, and
+press <strong>Export now</strong> on the MSFS 2024 tile.</li>
+</ol>
+<p>After the export the box <strong>Your MSFS 2024 profiles</strong> lists every profile JoyPro wrote, with its aircraft and the
+number of binds. When import files were written, a second box names them with <strong>Open folder</strong>.</p>
+<figure class="shot"><a href="../assets/shots/export-light.webp"><img class="only-light" loading="lazy" src="../assets/shots/export-light.webp" alt="The Export page"></a><a href="../assets/shots/export-dark.webp"><img class="only-dark" loading="lazy" src="../assets/shots/export-dark.webp" alt="The Export page"></a><figcaption>The Export page</figcaption></figure>
+<div class="callout ingame"><div class="callout-title">In the game: What you see in MSFS 2024</div>
+<p>Start the sim and open <strong>Settings &gt; Controls</strong>, then pick your device and the category (Airplanes or General). Your
+binds are in your own profile, under the sim's action names; the device page (<strong>Hardware Settings</strong> on the device's
+cogwheel) shows the axis curves JoyPro wrote. In an aircraft the sim has not set up for that device yet, the device
+starts with JoyPro's preset.</p>
+</div>
+<div class="picture-slot" data-picture="ingame-msfs2024-controls"><div class="picture-icon">&#128247;</div><div><strong>In-game picture follows: Microsoft Flight Simulator 2024: the controls menu with the exported binds</strong><br>A screenshot from the game itself, taken during JoyPro's in-game test runs, comes here later.</div></div>
+<h2 id="what-you-do-yourself-in-msfs-2024"><a class="anchor" href="#what-you-do-yourself-in-msfs-2024">#</a>What you do yourself in MSFS 2024</h2>
+<ul>
+<li><strong>Nothing</strong>, for every profile listed as updated in <strong>Your MSFS 2024 profiles</strong>.</li>
+<li><strong>Import files</strong>: when the export lists one, open <strong>Settings &gt; Controls</strong>, pick the device and the category
+(Airplanes or General), click the cogwheel of the profile (not the one of the preset), choose <strong>Import</strong> and select
+the file JoyPro wrote for that device and category. The sim takes a file only for the same device and category.
+When the file carries the name of your profile, the sim asks whether to overwrite it: confirm, and your profile has
+JoyPro's binds. Import a file again only when the export says it is new or changed.</li>
+<li><strong>Connect every device once before the first export</strong>: JoyPro needs the device's product ID for its preset.</li>
+<li><strong>One aircraft needs other binds than the others</strong>: give it its own profile in the sim (Controls, with that aircraft
+loaded: duplicate the profile), then export again. The export names every relation it could not place.</li>
+<li><strong>Xbox cloud question</strong>: if the sim or the Xbox app asks which save to keep, keep the one of this PC; the other one
+drops JoyPro's binds (export again then).</li>
+</ul>
+<h2 id="common-pitfalls"><a class="anchor" href="#common-pitfalls">#</a>Common pitfalls</h2>
+<ul>
+<li><strong>&quot;MSFS 2024 is running&quot;</strong>: close the sim; in the Microsoft Store version the sim's launch helper
+(<code>gamelaunchhelper.exe</code>) must be gone too.</li>
+<li><strong>Binds missing in one aircraft</strong>: that aircraft uses another profile of yours. Check the list <strong>Your MSFS 2024
+profiles</strong>; a line with &quot;import file&quot; means you import that file in the sim.</li>
+<li><strong>A relation was not written</strong>: it is limited to some aircraft, but the profile the sim uses there is shared with
+other aircraft. The warning names the profile and the aircraft.</li>
+<li><strong>A device has several profiles</strong>: import takes the one the sim's records name, else the newest, and names the
+others. Pick another one with <em>Game Profile</em> in the <em>Other Games</em> form on the Start page.</li>
+<li><strong>&quot;WRONG DEVICE&quot; while binding in the sim</strong>: a device that keeps sending values (some force feedback sticks) takes
+the sim's scan. This happens in the sim's own binding, not in JoyPro.</li>
+<li><strong>Reset to Defaults</strong> in the sim resets the presets of every device and aircraft; JoyPro never does it for you.</li>
+</ul>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">Advanced</div>
+<h2 id="files-joypro-reads-and-writes"><a class="anchor" href="#files-joypro-reads-and-writes">#</a>Files JoyPro reads and writes</h2>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;Steam&gt;\userdata\&lt;id&gt;\2537590\remote\inputprofile_&lt;n&gt;</code></td>
+<td>your own profile (Steam), plain XML without extension; written in place, Steam Cloud uploads it at the next sync</td>
+</tr>
+<tr>
+<td><code>%LOCALAPPDATA%\Packages\Microsoft.Limitless_8wekyb3d8bbwe\SystemAppData\wgs\&lt;user&gt;\</code></td>
+<td>the Microsoft Store save (<code>containers.index</code>, <code>container.&lt;n&gt;</code>, one blob per profile); JoyPro writes a new blob, a new container file and the index</td>
+</tr>
+<tr>
+<td><code>remote\profile_00</code> (Store: the container <code>profile_00</code>)</td>
+<td>the sim's device records: which profile or preset each device uses per aircraft. <strong>Read only</strong>, never written</td>
+</tr>
+<tr>
+<td><code>&lt;packages&gt;\Community2024\joypro-input-profiles\InputProfiles\Categories\Airplane\JoyPro_&lt;device&gt;_&lt;guid8&gt;_2024_Planes.xml</code></td>
+<td>JoyPro's preset of a device (flight actions), with <code>layout.json</code> and <code>manifest.json</code></td>
+</tr>
+<tr>
+<td><code>...\Categories\Transversal\JoyPro_&lt;device&gt;_&lt;guid8&gt;_2024_Transversal.xml</code></td>
+<td>JoyPro's preset of a device's General binds</td>
+</tr>
+<tr>
+<td><code>%USERPROFILE%\Documents\JoyPro2\MSFS 2024 import files\&lt;device&gt;_&lt;guid8&gt;_Airplanes.xml</code> / <code>_General.xml</code></td>
+<td>the import files, in the sim's own profile format</td>
+</tr>
+<tr>
+<td><code>&lt;install&gt;\Packages\fs-input-profiles</code>, <code>asobo-input-profiles-pc</code>, <code>fs-base\en-US.locPak</code></td>
+<td>the presets Asobo ships and the menu names: read only, for the command list and the default presets</td>
+</tr>
+<tr>
+<td><code>%LOCALAPPDATA%\JoyPro2\Ownership\MSFS</code>, <code>...\Backups\MSFS</code></td>
+<td>JoyPro's ownership data and backups, never in a synced folder</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><code>&lt;packages&gt;</code> is <code>InstalledPackagesPath</code> of <code>%APPDATA%\Microsoft Flight Simulator 2024\UserCfg.opt</code> (Store:
+<code>%LOCALAPPDATA%\Packages\Microsoft.Limitless_8wekyb3d8bbwe\LocalCache\UserCfg.opt</code>). Before every write the whole
+Store save folder or the Steam file goes into the backup set, so <strong>Undo last export</strong> puts the save back.</p>
+<h2 id="the-export-modes-in-msfs-2024"><a class="anchor" href="#the-export-modes-in-msfs-2024">#</a>The export modes in MSFS 2024</h2>
+<p>The modes work per profile (so per aircraft group) and only in the managed contexts.</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>What happens in your MSFS 2024 profiles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Only add</strong></td>
+<td>A bind is written only where no other action of that profile uses the input combination; otherwise it is listed as not written. Nothing is removed.</td>
+</tr>
+<tr>
+<td><strong>Update, keep the game's binds</strong></td>
+<td>The other action on your input combination loses it; everything else stays, also an action's old combination (an action has two: Primary and Secondary).</td>
+</tr>
+<tr>
+<td><strong>Update, my profile wins</strong></td>
+<td>As above, and every action you bind loses its other combinations, also in the profiles of other connected devices (those profiles are written too).</td>
+</tr>
+<tr>
+<td><strong>Replace on my devices</strong></td>
+<td>The profiles of the connected devices JoyPro writes keep only your binds.</td>
+</tr>
+<tr>
+<td><strong>+ Also clear my other devices</strong></td>
+<td>Never clears one of your own MSFS 2024 profiles.</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>A relation for all aircraft goes into every profile the sim's records name; a relation limited to aircraft goes only
+into profiles whose aircraft are all ticked. Limited relations never go into the preset package or the import files,
+because those apply to every aircraft.</p>
+<h2 id="what-is-never-touched"><a class="anchor" href="#what-is-never-touched">#</a>What is never touched</h2>
+<ul>
+<li>The menu, world map and developer contexts (<code>MENU</code>, <code>MENU_*</code>, <code>WORLDMAP_*</code>, <code>DEBUG</code>, <code>DEVMODE*</code>, <code>EDITOR_*</code>,
+<code>MISSION_FLOW_TOOLS</code>), in every mode.</li>
+<li>Keyboard, mouse and gamepad profiles (<code>GUID=&quot;{0}&quot;</code>): keyboard binds are not written in MSFS.</li>
+<li><code>profile_00</code>, the presets Asobo ships, aircraft-specific preset slots, and every other container of the Store save
+(logbooks, other titles).</li>
+<li>Devices that are not connected, the import's ignored devices and the vJoy device JoyPro tunnels into.</li>
+</ul>
+<h2 id="aircraft-curves-the-rest"><a class="anchor" href="#aircraft-curves-the-rest">#</a>Aircraft, curves, the rest</h2>
+<ul>
+<li><strong>Granularity</strong>: per device and category (Airplanes, General) and per profile; the sim chooses the profile per device
+and aircraft, JoyPro follows that choice.</li>
+<li><strong>Axis curves</strong>: the device's Sensitivity page, one set per physical axis: Sensitivity + and -, Neutral, Dead zone,
+Extremity dead zone, Reactivity, the no-curve flag and invert. A relation can give one action its own values (the
+per-action override of MSFS 2024). Relations on the same device axis share its page: the export writes the first
+relation's values and warns. See <a href="../reference/axis-curves.html">axis-curves</a>.</li>
+<li><strong>Force feedback</strong>: MSFS has none of its own.</li>
+<li><strong>Telemetry recording</strong>: through SimConnect, read only, with your own <code>SimConnect.dll</code> (JoyPro ships none): the
+Steam version of MSFS 2024 has none, so install the MSFS 2024 SDK or have MSFS 2020 installed (its copy works too).</li>
+<li><strong>HUD</strong>: the <a href="../gui/hud.html">HUD</a> finds the sim by its process and shows its binds.</li>
+<li><strong>Watcher</strong>: JoyPro watches its package, the Steam profiles and the Store save's <code>containers.index</code>; after the sim
+closes (the Store save waits 10 s after its last write) it asks whether to take your in-game changes over
+(<a href="../reference/sync-watcher.html">the watcher</a>).</li>
+<li><strong>Re-import</strong>: relation names, groups and tuning come back through JoyPro's metadata beside the files
+(<a href="../reference/reimport.html">re-import</a>).</li>
+<li><strong>Expert options</strong> (<em>Other Games</em> on the Start page): <strong>Game Profile</strong> (pick one profile when a device has several),
+<strong>Export Aircraft</strong> (also export the relations limited to one aircraft, for every aircraft), <strong>Write into my MSFS
+profiles</strong>, <strong>Also write MSFS import files for every device</strong>, a dry run.</li>
+</ul>
+</section>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">Technical internals</div>
+<h2 id="inside-the-msfs-2024-integration"><a class="anchor" href="#inside-the-msfs-2024-integration">#</a>Inside the MSFS 2024 integration</h2>
+<p>Code: <code>engine\Games\MsfsIntegration.cs</code> (one class for both sims), <code>MsfsIntegration.UserProfiles.cs</code> (the direct
+write), <code>MsfsIntegration.ImportFiles.cs</code>, <code>MsfsCommunityPackage.cs</code>, <code>MsfsUserProfiles.cs</code> (Steam and Store reading),
+<code>WgsContainers.cs</code> (the Store save), <code>MsfsSimProfile.cs</code> (the records in <code>profile_00</code>), <code>MsfsSimDefaults.cs</code>,
+<code>MsfsProfileFile.cs</code> (the line-based editor), <code>MsfsGameData.cs</code>, <code>MsfsAircraft.cs</code>, <code>engine\AxisModels\Msfs.cs</code>.</p>
+<ul>
+<li><strong>Format</strong>: an XML fragment (several top-level elements): <code>&lt;Version&gt;</code>, <code>&lt;FriendlyName&gt;</code>, <code>&lt;Device DeviceName GUID ProductID CompositeID HWVer&gt;</code> with <code>&lt;Axes&gt;</code> and <code>&lt;Context ContextName&gt;</code> / <code>&lt;Action ActionName Flag&gt;</code> /
+<code>&lt;Primary&gt;</code> / <code>&lt;Secondary&gt;</code> / <code>&lt;KEY Information&gt;code&lt;/KEY&gt;</code>. A 2024 profile lists every action of its contexts,
+unbound ones as empty <code>&lt;Action/&gt;</code>. Codes: button N = N-1, hat 256-259, L-axis X/Y/Z 1026/1042/1058, R-axis
+770/786/802, sliders 514/530. Flags: 2 digital, 4 axis, 128 invert, 1024 no sensitivity curve, 4096 per-action axis
+override. Only changed <code>&lt;Action&gt;</code> elements are rendered again.</li>
+<li><strong>Devices</strong>: a profile names its device by the DirectInput instance GUID (<code>GUID</code>), so no connected device is needed
+to read it. The sim matches a preset by the USB product ID (hex): JoyPro uses the one the sim noted in <code>profile_00</code>,
+else the USB PID (vJoy shows as product ID 0).</li>
+<li><strong>Which profile is active</strong>: per device and aircraft the records in <code>profile_00</code> hold a General slot and a category
+slot; an own profile there is <code>inputprofile_&lt;n&gt;</code>, which is the Steam file name and the Store container name.</li>
+<li><strong>Store save</strong>: written only when the index has the known layout (version 14, no conflict flag, the container
+listed once in a known state); then a new blob, <code>container.&lt;n+1&gt;</code>, the index last (temp file and replace), read back,
+and the old generation removed. Any failure puts everything back; anything unknown writes nothing and the import file
+carries the binds.</li>
+<li><strong>Command list</strong>: <a href="../cli/msfs2024.html#msfs2024-refresh-db"><code>engine msfs2024 refresh-db</code></a> reads Asobo's presets, every flight event <code>en-US.locPak</code> names, your
+General profiles and unpacked add-on packages (Community, Marketplace) with their aircraft; the aircraft list comes
+from the sim's content list. A fresh install builds the list at the first import.</li>
+<li><strong>Commands</strong>: <a href="../cli/msfs2024.html#msfs2024-paths"><code>engine msfs2024 paths</code></a>, <a href="../cli/msfs2024.html#msfs2024-catalog"><code>engine msfs2024 catalog</code></a>, <a href="../cli/msfs2024.html#msfs2024-scan"><code>engine msfs2024 scan</code></a>, <a href="../cli/msfs2024.html#msfs2024-import"><code>engine msfs2024 import</code></a>
+(<code>--game-profile</code>, <code>--include-disconnected</code>, <code>--include-sim-defaults</code>, <code>--limit-to-profile-aircraft</code>, <code>--replace</code>),
+<a href="../cli/msfs2024.html#msfs2024-export"><code>engine msfs2024 export</code></a> (<code>--mode</code>, <code>--nuke-untouched-devices</code>, <code>--dry-run</code>, <code>--aircraft &lt;key&gt;</code>; <code>--user-profiles false</code> and <code>--import-files</code> as the two Export page ticks); per-aircraft relations with
+<a href="../cli/relations.html#relations-aircraft-set"><code>engine relations aircraft set</code></a>; Undo with <a href="../cli/backups.html#backups-list"><code>engine backups restore</code></a>; the watcher with <a href="../cli/sync.html#sync-status"><code>engine sync status</code></a> and
+<a href="../cli/sync.html#sync-diff"><code>engine sync diff</code></a>. The old CLI name <code>engine msfs ...</code> still means MSFS 2024.</li>
+</ul>
+<h3 id="known-limits"><a class="anchor" href="#known-limits">#</a>Known limits</h3>
+<ul>
+<li>Aircraft-specific preset slots are not written (they come only with an aircraft's own package); JoyPro never writes
+<code>profile_00</code> (the file ends with a checksum).</li>
+<li>JoyPro's preset reaches only aircraft the sim has not set up for a device yet; elsewhere your own profile or an
+import file carries the binds.</li>
+<li>At most two input combinations per action; a third is reported. Half axes, hat diagonals and a second hat are not
+read or written. Modifiers: buttons of the same device only.</li>
+<li>Packed add-on packages (<code>.fsarchive</code>) are skipped; Store save paths over 260 characters are not read.</li>
+<li>A cloud copy (Steam Cloud, Xbox cloud) can win over JoyPro's write when another PC saved later.</li>
+<li>Tests: <code>engine\tests\smoke\msfs.ps1</code>, <code>smoke\msfsuserprofiles.ps1</code>, <code>gui\JoyPro.Gui.Tests\MsfsProfileImportTests.cs</code>
+(Steam and Store saves, per-aircraft profiles, rollback), <code>MsfsStoreWatcherEndToEndTests</code>; in the sim
+<code>tools\e2e\games\Msfs2024Settings.ps1</code> (presets, axes, buttons and the per-action curve in Controls).</li>
+</ul>
+</section>
+<p class="source-note">All technical notes on this game (generated from the repository): <a href="../games/ref/msfs.html">msfs.md</a>.</p>
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#what-joypro-does-for-msfs-2024">What JoyPro does for MSFS 2024</a></li><li class="l2"><a href="#import-your-msfs-2024-binds">Import your MSFS 2024 binds</a></li><li class="l2"><a href="#build-and-check-relations">Build and check relations</a></li><li class="l2"><a href="#export-to-msfs-2024">Export to MSFS 2024</a></li><li class="l2"><a href="#what-you-do-yourself-in-msfs-2024">What you do yourself in MSFS 2024</a></li><li class="l2"><a href="#common-pitfalls">Common pitfalls</a></li><li class="l2"><a href="#files-joypro-reads-and-writes">Files JoyPro reads and writes</a></li><li class="l2"><a href="#the-export-modes-in-msfs-2024">The export modes in MSFS 2024</a></li><li class="l2"><a href="#what-is-never-touched">What is never touched</a></li><li class="l2"><a href="#aircraft-curves-the-rest">Aircraft, curves, the rest</a></li><li class="l2"><a href="#inside-the-msfs-2024-integration">Inside the MSFS 2024 integration</a></li><li class="l3"><a href="#known-limits">Known limits</a></li></ul></aside>
+</div>
+<script src="../assets/vendor/mermaid.min.js"></script>
+<script src="../assets/site.js"></script>
+</body>
+</html>

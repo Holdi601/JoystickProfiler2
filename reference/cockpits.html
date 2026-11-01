@@ -1,0 +1,1530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cockpit database · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a class="current" href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Cockpit database </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/cockpits.md">docs/cockpits.md</a> in the repository (generated, always the current text).</p><p>JoyPro's reference of real and fictional cockpits, shown like the cockpit chapter of a flight manual: pick an aircraft,
+its version (block, tranche, lot, mark, ship) and seat, and read</p>
+<ul>
+<li>the <strong>overview</strong> of the cockpit with its numbered areas (HUD, front dash, consoles, throttles, stick ...);</li>
+<li>a page per <strong>grip</strong> (stick and throttle, cyclic and collective, yoke and quadrant, side-stick, hand controllers): JoyPro's
+drawing with numbered callouts and the <strong>HOTAS table</strong>: a row per control, direction, press (short, long, hold ...) and
+condition (on the ground / in the air), a column per <strong>mode or sensor of interest</strong> (TAD, TGP, HUD ...; NAV, A-A, A-G;
+SCM, NAV, quantum), colour-coded per control;</li>
+<li>a page per <strong>panel</strong> with JoyPro's drawing, numbered callouts and the numbered list (switch positions, what each does);</li>
+<li>where every item comes from (manual and page) and links to real photos.</li>
+</ul>
+<p>The <strong>Cockpits</strong> page in the bottom bar shows it; <code>engine cockpits ...</code> gives the same data to scripts and to the setup
+wizard (&quot;Use this layout&quot;).</p>
+<p><img src="../assets/docs/docs-cockpits-f-16-dark.webp" alt="F-16C Block 50 stick and throttle" /></p>
+<h2 id="what-is-in-it"><a class="anchor" href="#what-is-in-it">#</a>What is in it</h2>
+<ul>
+<li><code>EngineOnly_Runtime/DB/Cockpits/*.json</code>: the aircraft (format <code>joypro-cockpits</code>), one file per family of types
+(<code>jets-us.json</code>, <code>jets-europe.json</code>, <code>jets-russia.json</code>, <code>warbirds.json</code>, <code>helicopters.json</code>, <code>civil.json</code>,
+<code>space-games.json</code>, <code>fiction.json</code>, <code>spacecraft.json</code> ...).</li>
+<li><code>EngineOnly_Runtime/DB/Cockpits/drawings/*.json</code>: JoyPro's own schematic vector drawings of the grips (format
+<code>joypro-cockpit-drawing</code>), and the generic drawings every aircraft without its own drawing gets.</li>
+<li><code>EngineOnly_Runtime/DB/Cockpits/line-drawings/*.json</code>: JoyPro's own drawings of real cockpits (format
+<code>joypro-device-drawing</code>, <a href="../reference/device-reference.html#joypros-drawings">device-reference.md</a>): <code>&lt;variant&gt;.overview.json</code>,
+<code>&lt;variant&gt;.panel.&lt;panel id&gt;.json</code>, <code>&lt;variant&gt;.&lt;device&gt;.json</code> (a grip), and the older <code>&lt;aircraft&gt;.&lt;device&gt;.json</code>. Each
+carries the callout positions as <code>parts</code> (item number or control id -&gt; [x, y], 0..1 of the drawing). Read one at a time
+when a page needs it.</li>
+<li>Photos are <strong>addresses only</strong> (<code>photos</code> of an aircraft), shown after the user's consent, never in the repository or the
+release (see <a href="#photos">Photos</a>).</li>
+</ul>
+<p>It is JoyPro's own work and ships with JoyPro (<code>DB\Cockpits</code> is one of the shipped DB folders, <code>tools/ReleaseContent.psm1</code>;
+pictures inside it are refused).</p>
+<h2 id="format"><a class="anchor" href="#format">#</a>Format</h2>
+<pre><code class="language-json">{ &quot;format&quot;: &quot;joypro-cockpits&quot;, &quot;version&quot;: 1,
+  &quot;aircraft&quot;: [ {
+    &quot;id&quot;: &quot;f-16&quot;, &quot;name&quot;: &quot;F-16 Fighting Falcon&quot;, &quot;aliases&quot;: [&quot;Viper&quot;],
+    &quot;category&quot;: &quot;fixed-wing&quot;, &quot;fiction&quot;: false, &quot;franchise&quot;: &quot;&quot;,
+    &quot;maker&quot;: &quot;General Dynamics / Lockheed Martin&quot;, &quot;nations&quot;: [&quot;US&quot;], &quot;role&quot;: &quot;multirole&quot;, &quot;era&quot;: &quot;modern&quot;,
+    &quot;summary&quot;: &quot;One or two sentences.&quot;,
+    &quot;photos&quot;: [ { &quot;url&quot;: &quot;https://upload.wikimedia.org/...jpg&quot;, &quot;page&quot;: &quot;https://commons.wikimedia.org/wiki/File:...&quot;,
+                  &quot;view&quot;: &quot;cockpit&quot;, &quot;credit&quot;: &quot;U.S. Air Force photo&quot;, &quot;license&quot;: &quot;public-domain&quot;,
+                  &quot;variant&quot;: &quot;f-16c-block-50&quot;, &quot;caption&quot;: &quot;...&quot;, &quot;confidence&quot;: &quot;high&quot; } ],
+    &quot;links&quot;: [ { &quot;title&quot;: &quot;...&quot;, &quot;url&quot;: &quot;https://...&quot; } ],
+    &quot;variants&quot;: [ {
+      &quot;id&quot;: &quot;f-16c-block-50&quot;, &quot;name&quot;: &quot;F-16C Block 50/52&quot;, &quot;aliases&quot;: [&quot;Block 52&quot;], &quot;years&quot;: &quot;1991-&quot;,
+      &quot;inherits&quot;: &quot;&quot;, &quot;removeControls&quot;: [], &quot;seat&quot;: &quot;&quot;,
+      &quot;games&quot;: [ { &quot;game&quot;: &quot;DCS&quot;, &quot;plane&quot;: &quot;F-16C_50&quot; }, { &quot;game&quot;: &quot;FalconBMS&quot; } ],
+      &quot;drawings&quot;: { &quot;stick&quot;: &quot;f16-sidestick&quot;, &quot;throttle&quot;: &quot;f16-throttle&quot; },
+      &quot;controls&quot;: [ {
+        &quot;id&quot;: &quot;stick.hat.tms&quot;, &quot;device&quot;: &quot;stick&quot;, &quot;name&quot;: &quot;TMS (Target Management Switch)&quot;, &quot;type&quot;: &quot;hat4&quot;,
+        &quot;where&quot;: &quot;4-way hat at the top right of the grip head, forward thumb position&quot;, &quot;part&quot;: &quot;&quot;,
+        &quot;functions&quot;: [ { &quot;dir&quot;: &quot;up&quot;, &quot;text&quot;: &quot;Designate / lock target&quot;, &quot;fn&quot;: &quot;target_management_system_up&quot;, &quot;note&quot;: &quot;&quot; } ]
+      } ],
+      &quot;panels&quot;: [ { &quot;name&quot;: &quot;ICP and DED&quot;, &quot;area&quot;: &quot;glareshield&quot;, &quot;text&quot;: &quot;...&quot; } ],
+      &quot;cockpit&quot;: &quot;A paragraph about the cockpit around the pilot.&quot;,
+      &quot;notes&quot;: &quot;What differs from the other variants, what is uncertain.&quot;,
+      &quot;sources&quot;: [ { &quot;title&quot;: &quot;DCS F-16C Early Access Guide&quot;, &quot;url&quot;: &quot;https://...&quot;, &quot;kind&quot;: &quot;game-manual&quot;, &quot;covers&quot;: &quot;HOTAS&quot; } ],
+      &quot;confidence&quot;: &quot;high&quot;
+    } ]
+  } ] }
+</code></pre>
+<h3 id="version-2-the-manual-pages"><a class="anchor" href="#version-2-the-manual-pages">#</a>Version 2: the manual pages</h3>
+<p>Version 2 adds, per variant (all optional for the format; <code>cockpits check</code> asks every listed variant for an overview and
+numbered panels):</p>
+<pre><code class="language-json">{ &quot;id&quot;: &quot;a-10c-ii&quot;, &quot;seatOf&quot;: &quot;&quot;,
+  &quot;sources&quot;: [ { &quot;id&quot;: &quot;m1&quot;, &quot;title&quot;: &quot;DCS A-10C II Flight Manual (EN)&quot;, &quot;kind&quot;: &quot;game-manual&quot;,
+                 &quot;file&quot;: &quot;Mods/aircraft/A-10C_2/Doc/DCS A-10C II Flight Manual EN.pdf&quot;, &quot;covers&quot;: &quot;cockpit, HOTAS, panels&quot; } ],
+  &quot;modes&quot;: [ { &quot;id&quot;: &quot;tad&quot;, &quot;name&quot;: &quot;TAD&quot;, &quot;kind&quot;: &quot;soi&quot; }, { &quot;id&quot;: &quot;tgp&quot;, &quot;name&quot;: &quot;TGP&quot;, &quot;kind&quot;: &quot;soi&quot; }, { &quot;id&quot;: &quot;hud&quot;, &quot;name&quot;: &quot;HUD&quot;, &quot;kind&quot;: &quot;soi&quot; } ],
+  &quot;defaultMode&quot;: &quot;hud&quot;,
+  &quot;controls&quot;: [ { &quot;id&quot;: &quot;stick.hat.dms&quot;, &quot;device&quot;: &quot;stick&quot;, &quot;name&quot;: &quot;Data Management Switch (DMS)&quot;, &quot;type&quot;: &quot;hat4&quot;,
+                  &quot;where&quot;: &quot;...&quot;, &quot;n&quot;: 2, &quot;src&quot;: &quot;m1&quot;, &quot;page&quot;: &quot;108&quot;,
+                  &quot;functions&quot;: [
+                    { &quot;dir&quot;: &quot;fwd&quot;, &quot;press&quot;: &quot;short&quot;, &quot;by&quot;: { &quot;tad&quot;: &quot;TAD scale decrease&quot;, &quot;tgp&quot;: &quot;Zoom increase&quot;, &quot;hud&quot;: &quot;Steerpoint increment&quot; },
+                      &quot;fnBy&quot;: { &quot;hud&quot;: &quot;...&quot; }, &quot;src&quot;: &quot;m1&quot;, &quot;page&quot;: &quot;109&quot; },
+                    { &quot;dir&quot;: &quot;left&quot;, &quot;press&quot;: &quot;long&quot;, &quot;text&quot;: &quot;HMD on/off&quot; } ] } ],
+  &quot;overview&quot;: { &quot;drawing&quot;: &quot;a-10c-ii.overview&quot;, &quot;text&quot;: &quot;...&quot;,
+                &quot;areas&quot;: [ { &quot;n&quot;: 1, &quot;name&quot;: &quot;Heads Up Display (HUD)&quot;, &quot;area&quot;: &quot;glareshield&quot;, &quot;x&quot;: 0.46, &quot;y&quot;: 0.26,
+                             &quot;panels&quot;: [&quot;hud-area&quot;], &quot;src&quot;: &quot;m1&quot;, &quot;page&quot;: &quot;105&quot; } ] },
+  &quot;panels&quot;: [ { &quot;id&quot;: &quot;left-front-dash&quot;, &quot;name&quot;: &quot;Left Front Dash&quot;, &quot;area&quot;: &quot;front-left&quot;, &quot;text&quot;: &quot;...&quot;,
+                &quot;drawing&quot;: &quot;a-10c-ii.panel.left-front-dash&quot;, &quot;src&quot;: &quot;m1&quot;, &quot;page&quot;: &quot;113&quot;, &quot;confidence&quot;: &quot;high&quot;,
+                &quot;items&quot;: [ { &quot;n&quot;: 1, &quot;name&quot;: &quot;Left engine fire T-handle&quot;, &quot;type&quot;: &quot;handle&quot;, &quot;positions&quot;: [&quot;IN&quot;, &quot;PULLED&quot;],
+                             &quot;text&quot;: &quot;...&quot;, &quot;x&quot;: 0.76, &quot;y&quot;: 0.05, &quot;fn&quot;: &quot;&quot; } ] } ] }
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>modes</code></td>
+<td>the HOTAS table's columns: <code>id</code>, <code>name</code>, <code>kind</code> (<code>soi</code> sensor of interest, <code>master</code> master mode, <code>mode</code> flight or game mode, <code>condition</code>, <code>seat</code>). Without modes the table has one &quot;Function&quot; column</td>
+</tr>
+<tr>
+<td><code>defaultMode</code></td>
+<td>the column the one-column views, the search and the setup wizard read (default: the first mode)</td>
+</tr>
+<tr>
+<td>function <code>press</code></td>
+<td><code>short</code>, <code>long</code>, <code>press</code>, <code>hold</code>, <code>double</code>, <code>release</code>, or empty; a row is one direction, press and condition</td>
+</tr>
+<tr>
+<td>function <code>when</code></td>
+<td>a condition the row needs: <code>ground</code> / <code>air</code> (weight on wheels), a master mode, &quot;gear down&quot; ...</td>
+</tr>
+<tr>
+<td>function <code>by</code>, <code>fnBy</code></td>
+<td>the row's cell per mode (text, and the JoyPro function id where it maps); <code>&quot;&quot;</code> = no function in that mode. With modes, every row has <code>text</code> (the same in every mode) or a cell for every mode. Equal neighbouring cells are drawn as one</td>
+</tr>
+<tr>
+<td>control <code>n</code></td>
+<td>its callout number on the grip's page (the manual figure's number); else numbered in list order</td>
+</tr>
+<tr>
+<td><code>overview</code></td>
+<td>the cockpit's numbered areas (1..N), where each callout points on the overview drawing (<code>x</code>, <code>y</code> 0..1), the panels in each area; <code>drawing</code> names JoyPro's drawing of the cockpit (none: JoyPro's plan)</td>
+</tr>
+<tr>
+<td>panel <code>id</code>, <code>items</code></td>
+<td>panels have an id (the overview names them) and numbered items 1..N: <code>name</code>, <code>type</code> (<code>switch2</code>, <code>switch3</code>, <code>knob</code>, <code>selector</code>, <code>button</code>, <code>lever</code>, <code>handle</code>, <code>wheel</code>, <code>guard</code>, <code>gauge</code>, <code>display</code>, <code>light</code>, <code>indicator</code>, <code>keypad</code>, <code>rocker</code>, <code>hat</code>, <code>slider</code>, <code>encoder</code>, <code>pedal</code>, <code>other</code>), <code>positions</code>, <code>text</code>, <code>x</code>, <code>y</code> (where its callout points on the panel's drawing)</td>
+</tr>
+<tr>
+<td><code>seatOf</code></td>
+<td>a seat (CPG, WSO, RIO, operator) of another variant: the Cockpits page lists it under that version's seats</td>
+</tr>
+<tr>
+<td><code>src</code>, <code>page</code></td>
+<td>on controls, rows, areas, panels and items: the source id (<code>sources[].id</code>) and the page</td>
+</tr>
+<tr>
+<td>source <code>file</code></td>
+<td>a document that comes with a game, relative to its folder, where it has no web address; <code>kind</code> may be <code>game-files</code> (the game's own control lists)</td>
+</tr>
+</tbody>
+</table></div>
+<p>An inheriting variant takes its parent's modes, overview and panels unless it gives its own.</p>
+<h3 id="aircraft"><a class="anchor" href="#aircraft">#</a>Aircraft</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>lower case with dashes, unique (<code>f-16</code>, <code>eurofighter-typhoon</code>, <code>x-wing</code>)</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td><code>fixed-wing</code>, <code>helicopter</code> or <code>space</code></td>
+</tr>
+<tr>
+<td><code>fiction</code></td>
+<td><code>true</code> for craft of films, series and games (Star Wars, Battlestar Galactica, Star Citizen, Elite ...): no drawing of the design, see <a href="#licensing">Licensing</a></td>
+</tr>
+<tr>
+<td><code>franchise</code></td>
+<td>the work a fictional craft is from</td>
+</tr>
+<tr>
+<td><code>nations</code></td>
+<td>ISO-like short names (<code>US</code>, <code>UK</code>, <code>FR</code>, <code>DE</code>, <code>RU</code>, <code>SU</code> (Soviet Union), <code>CN</code>, <code>SE</code>, <code>IT</code>, <code>ES</code>, <code>JP</code> ...)</td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td><code>fighter</code>, <code>attack</code>, <code>multirole</code>, <code>interceptor</code>, <code>bomber</code>, <code>trainer</code>, <code>aerobatic</code>, <code>transport</code>, <code>airliner</code>, <code>ga</code> (general aviation), <code>business</code>, <code>helicopter-attack</code>, <code>helicopter-utility</code>, <code>helicopter-transport</code>, <code>helicopter-light</code>, <code>starfighter</code>, <code>freighter</code>, <code>explorer</code>, <code>capital</code>, <code>spacecraft</code></td>
+</tr>
+<tr>
+<td><code>era</code></td>
+<td><code>ww1</code>, <code>interwar</code>, <code>ww2</code>, <code>korea</code>, <code>cold-war-early</code> (to ~1965), <code>cold-war-late</code> (to ~1991), <code>modern</code>, <code>future</code></td>
+</tr>
+<tr>
+<td><code>hidden</code></td>
+<td>a template other variants inherit from (a game's default control scheme); not listed</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="variants"><a class="anchor" href="#variants">#</a>Variants</h3>
+<p>A variant is what has its own controls: a version (F-16A / F-16C), a block (Block 50), a tranche (Typhoon Tranche 1),
+a lot (F/A-18C Lot 20), a mark (Spitfire Mk IX), a seat (AH-64D pilot / CPG) or a ship.</p>
+<ul>
+<li><code>inherits</code>: the id of another variant (any aircraft). The variant starts from that one's data; its own fields replace
+the parent's, its controls replace the parent's control with the same id and add new ones, <code>removeControls</code> drops
+controls, <code>drawings</code> are merged, <code>sources</code> are joined.</li>
+<li><code>games</code>: where it is flown. <code>game</code> is JoyPro's game id (<code>DCS</code>, <code>FalconBMS</code>, <code>IL2Game</code>, <code>IL2Korea</code>, <code>MSFS2020</code>,
+<code>MSFS2024</code>, <code>XPlane11</code>, <code>XPlane12</code>, <code>WarThunder</code>, <code>StarCitizen</code>, <code>EliteDangerous</code>, <code>X4</code>, <code>VTOLVR</code>, <code>NuclearOption</code>,
+<code>ArmaReforger</code>, <code>Arma3</code>, <code>FSX</code>, <code>P3D5</code> ...), <code>plane</code> the game's own aircraft name where JoyPro's function tables know it
+(<code>DB/Functions/&lt;game&gt;.tsv</code>, column <code>plane</code>: <code>F-16C_50</code>, <code>FA-18C_hornet</code>, <code>AH-64D_BLK_II_PLT</code>); empty for games whose
+tables are per game.</li>
+<li><code>drawings</code>: device → drawing id. A device without one gets the generic drawing of its kind.</li>
+<li><code>confidence</code>: <code>high</code> (the controls come from the aircraft's or the game's manual), <code>medium</code> (consistent secondary
+sources), <code>low</code> (partly inferred; <code>notes</code> says what).</li>
+<li><code>sources</code>: at least one. <code>kind</code>: <code>manual</code> (flight manual, NATOPS, Dash-1 public excerpts), <code>game-manual</code> (DCS, BMS,
+IL-2, MSFS ...), <code>wikipedia</code>, <code>reference</code> (books, museums, official pages), <code>tutorial</code> (videos, community guides),
+<code>film</code> (the work itself).</li>
+</ul>
+<h3 id="controls"><a class="anchor" href="#controls">#</a>Controls</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>the control vocabulary's part id where there is one (<a href="../reference/devices.html#control-vocabulary">devices.md</a>): <code>stick.trigger</code>, <code>stick.weapon_release</code>, <code>stick.hat.trim|tms|dms|cms|N</code>, <code>stick.button.index_lower</code>, <code>stick.pinky.lever|button</code>, <code>stick.gimbal</code>, <code>throttle.hat.mic</code>, <code>throttle.speedbrake</code>, <code>throttle.boat</code>, <code>throttle.china</code>, <code>throttle.coolie</code>, <code>throttle.dogfight</code>, <code>throttle.cage</code>, <code>throttle.ministick</code>, <code>throttle.axis.main|left|right</code>, <code>collective.hat.N</code>, <code>yoke.hat.N</code> ...; else <code>&lt;device&gt;.&lt;kind&gt;.&lt;name&gt;</code> (<code>throttle.knob.man_rng</code>, <code>throttle.wheel.ant_elev</code>)</td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td><code>stick</code>, <code>throttle</code>, <code>cyclic</code>, <code>collective</code>, <code>yoke</code>, <code>sidestick</code>, <code>quadrant</code>, <code>rhc</code>, <code>thc</code> (spacecraft hand controllers), <code>pedals</code>, <code>panel</code></td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td><code>hat4</code>, <code>hat8</code>, <code>hat2</code>, <code>rocker</code>, <code>button</code>, <code>trigger</code>, <code>lever</code>, <code>paddle</code>, <code>switch2</code>, <code>switch3</code>, <code>slider</code>, <code>wheel</code>, <code>knob</code>, <code>encoder</code>, <code>selector</code>, <code>ministick</code>, <code>axis</code>, <code>gimbal</code>, <code>twist</code>, <code>detent</code>, <code>guard</code></td>
+</tr>
+<tr>
+<td><code>where</code></td>
+<td>position and role in words: &quot;4-way hat at the top right, under the thumb&quot;</td>
+</tr>
+<tr>
+<td><code>part</code></td>
+<td>the drawing's part it is drawn on when that differs from <code>id</code> (generic drawings)</td>
+</tr>
+<tr>
+<td><code>functions</code></td>
+<td>one per direction: <code>dir</code> (<code>up down left right press fwd aft center in out cw ccw stage1 stage2 x y pitch roll yaw axis long double hold pull push on off posN upleft upright downleft downright</code>, or empty for the only action), <code>text</code> (short, at most ~45 characters, shown in the table), <code>fn</code> (the JoyPro function id from <code>DB/Functions/slots.json</code>, empty when JoyPro has none), <code>note</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The stick side (stick, cyclic, yoke, side-stick, RHC) and the throttle side (throttle, collective, quadrant, THC) must
+each have at least one control: a fixed-wing aircraft has a stick and a throttle, a helicopter a cyclic and a
+collective, an airliner a yoke or side-stick and a quadrant.</p>
+<h3 id="panels"><a class="anchor" href="#panels">#</a>Panels</h3>
+<p><code>area</code>: <code>glareshield</code>, <code>front-left</code>, <code>front-center</code>, <code>front-right</code>, <code>left-console</code>, <code>right-console</code>, <code>center-pedestal</code>,
+<code>overhead</code>, <code>left-side</code>, <code>right-side</code>, <code>floor</code>, <code>rear</code>, <code>helmet</code>, <code>seat</code>. (The plan of area boxes the page drew from
+them is no longer shown, see &quot;What the pages show&quot;.)</p>
+<h2 id="what-the-pages-show-2026-10-25"><a class="anchor" href="#what-the-pages-show-2026-10-25">#</a>What the pages show (2026-10-25)</h2>
+<ul>
+<li>A variant with good pictures from a game (a set not rated low) shows those pictures and no drawing at all: no plan, no
+traced drawing, no schematic grip (a grip the game has no picture of keeps its HOTAS table without a picture).</li>
+<li>Without such pictures: no plan of area boxes and no traced line drawing (<code>line-drawings/</code>, <code>CockpitManualPages.TracedDrawings</code>
+is off); a grip page shows JoyPro's clean vector drawing of the grip (<code>drawings/</code>) with its HOTAS table; the overview and
+the panel pages are their numbered lists, next to the cockpit guide's tree.</li>
+<li>Pictures of the same aircraft from another game: the set is found by the catalog variant's games (<code>CockpitPictureSet.For</code>,
+rendered sets first: DCS, X-Plane 12, MSFS 2020, then MSFS 2024's screenshots ...), so the IL-2 Korea MiG-15bis and
+F-86F show DCS's pictures and an MSFS 2024 aircraft that is also an MSFS 2020 or X-Plane aircraft shows those; the page
+says where they come from (&quot;Pictures from X-Plane 12 ...&quot;). Only the variant itself counts (no loose name match).
+2026-10-25: IL-2 Korea 3 of 3 variants; MSFS 2024 29 of 55 from rendered sets, 35 with the MSFS 2024 screenshot packs
+as well; the 8 Rafale and Typhoon versions are War Thunder aircraft too (War Thunder's packs, not counted here); no
+pictures: A350, A380, 777-300ER, ATR 72, E175, E195, CRJ-700, CRJ-900, Pitts S-2S, R44, CH-47D, MH-60R.</li>
+<li>X-Plane's commands are listed by readable names (&quot;Gen 2 up&quot;, &quot;Battery 1 on (electrical)&quot;); the guide's tree shows the
+command ids as the tooltip.</li>
+</ul>
+<h2 id="drawings"><a class="anchor" href="#drawings">#</a>Drawings</h2>
+<pre><code class="language-json">{ &quot;format&quot;: &quot;joypro-cockpit-drawing&quot;, &quot;version&quot;: 1, &quot;id&quot;: &quot;f16-sidestick&quot;, &quot;kind&quot;: &quot;stick&quot;,
+  &quot;name&quot;: &quot;F-16 side-stick grip&quot;, &quot;view&quot;: &quot;the grip from behind and left, as the pilot sees it&quot;,
+  &quot;origin&quot;: &quot;JoyPro's own vector drawing ... not traced from a photo.&quot;, &quot;generic&quot;: false,
+  &quot;width&quot;: 800, &quot;height&quot;: 1000,
+  &quot;shapes&quot;: [ { &quot;kind&quot;: &quot;path&quot;, &quot;role&quot;: &quot;body&quot;, &quot;path&quot;: &quot;M284,320 C282,250 ... Z&quot; },
+              { &quot;kind&quot;: &quot;rect&quot;, &quot;role&quot;: &quot;bodyAlt&quot;, &quot;x&quot;: 110, &quot;y&quot;: 770, &quot;w&quot;: 620, &quot;h&quot;: 180, &quot;r&quot;: 28 },
+              { &quot;kind&quot;: &quot;ellipse&quot;, &quot;role&quot;: &quot;shadow&quot;, &quot;x&quot;: 420, &quot;y&quot;: 968, &quot;w&quot;: 330, &quot;h&quot;: 20 } ],
+  &quot;parts&quot;: [ { &quot;id&quot;: &quot;stick.hat.tms&quot;, &quot;type&quot;: &quot;hat4&quot;, &quot;x&quot;: 546, &quot;y&quot;: 282, &quot;r&quot;: 32, &quot;angle&quot;: 0 } ] }
+</code></pre>
+<ul>
+<li><code>shapes</code>: the silhouette in drawing units (the same primitives as the device drawings, <code>DeviceSchematic</code>): <code>path</code>
+(absolute <code>M L Q C Z</code> with <code>x,y</code> pairs), <code>rect</code> (x, y, w, h, r), <code>ellipse</code> (centre x, y, radii w, h), <code>line</code> (x, y to
+w, h), <code>text</code>. <code>role</code> picks the theme colours: <code>shadow</code>, <code>body</code>, <code>bodyAlt</code>, <code>face</code>, <code>screen</code>, <code>control</code>, <code>mark</code>, <code>hot</code>,
+<code>accent</code>, <code>line</code>, <code>label</code>.</li>
+<li><code>parts</code>: the controls, drawn by JoyPro in one consistent style (<code>CockpitSchematic.Glyph</code>): <code>hat4</code>, <code>hat8</code>, <code>hat2</code>,
+<code>rocker</code>, <code>button</code>, <code>release</code> (red), <code>trigger</code>, <code>lever</code>, <code>paddle</code>, <code>switch2</code>, <code>switch3</code>, <code>slider</code>, <code>wheel</code>, <code>knob</code>,
+<code>encoder</code>, <code>selector</code>, <code>ministick</code>, <code>gimbal</code>, <code>axis</code>, <code>twist</code>, <code>detent</code>, <code>guard</code>, <code>label</code>. <code>r</code> is the size, <code>angle</code>
+turns it (degrees). A control of a variant is drawn where the part with its id (or its <code>part</code>) is; the callout table's
+line goes there.</li>
+<li><code>aircraft</code>, <code>variants</code>, <code>except</code>, <code>device</code> (optional): where the drawing is used without the variants naming it. A
+device of a variant gets, in this order: the drawing the variant names (<code>drawings</code>), a drawing that lists the variant,
+one that lists the variant it inherits from, one that lists its aircraft (unless the variant is in <code>except</code>), else
+the generic drawing of its kind. <code>device</code> defaults to the drawing's <code>kind</code>. Fictional craft never get a non-generic
+drawing.</li>
+<li><code>generic: true</code>: a neutral drawing of a kind of device (<code>generic-stick</code>, <code>generic-throttle</code>, <code>generic-sidestick</code>,
+<code>generic-yoke</code>, <code>generic-quadrant</code>, <code>generic-cyclic</code>, <code>generic-collective</code>, <code>generic-space-stick</code>,
+<code>generic-space-throttle</code>, <code>generic-pedals</code>, <code>generic-panel</code>). On a generic drawing a control whose part the drawing
+does not have takes the next free part of a fitting kind (a hat on a hat, a lever on a lever), so every aircraft is
+shown with its controls in their listed order.</li>
+</ul>
+<p>How a schematic drawing (<code>drawings/</code>) is made: the shape of the real grip and the positions of its controls are
+reconstructed from the public descriptions (the aircraft's manual excerpts, the game manuals' HOTAS chapters, several
+photos looked at for proportions), then drawn freely as a clean silhouette in JoyPro's style with its own coordinates.
+No photo is traced, no manual figure copied. <code>engine cockpits render --drawing &lt;id&gt; --png &lt;file&gt;</code> shows a drawing with
+every part's id for checking.</p>
+<h3 id="line-drawings-of-real-grips"><a class="anchor" href="#line-drawings-of-real-grips">#</a>Line drawings of real grips</h3>
+<p><code>line-drawings/&lt;aircraft&gt;.&lt;device&gt;.json</code> (<code>aircraft</code>, <code>device</code>: stick, throttle, cyclic, collective, yoke) holds
+JoyPro's own line drawing of a real grip, in the same format as the device drawings. With a <code>parts</code> object (part id -&gt;
+[x, y], 0..1 of the drawing) placing at least half of a sheet's controls, the Cockpits page draws that sheet on the
+line drawing; without it, the drawing is shown under &quot;JoyPro's drawings&quot; above the photo links (no download, no
+consent). Fictional craft never get one. It is painted in the user's drawing style (Settings &gt; Drawings).</p>
+<p>The picture order of a sheet: JoyPro's line drawing with positions, else JoyPro's schematic drawing of the grip, else
+the generic drawing of its kind; the real photos are links shown after the user's consent.</p>
+<h2 id="callout-sheets"><a class="anchor" href="#callout-sheets">#</a>Callout sheets</h2>
+<p>The Cockpits page shows the manual pages (above); the callout sheets remain for <code>engine cockpits render</code> without
+<code>--page</code> and for the setup wizard's pictures. Every device of a variant is one sheet: the drawing, a table per control (title &quot;N  Name&quot;, one row per direction with
+the direction's icon and the function's text), thin orthogonal lines from the control to its table. It is the Layout
+page's callout layout (<code>CalloutLayouter</code>, <a href="../reference/device-reference.html#tables-and-lines-callout-sheets">device-reference.md</a>),
+so the tables never overlap and the lines do not cross tables. Controls the drawing has no part for are listed under
+&quot;Other controls&quot; without a line. Numbers run across the devices of a variant (stick 1-10, throttle 11-18).</p>
+<h2 id="the-cockpits-page"><a class="anchor" href="#the-cockpits-page">#</a>The Cockpits page</h2>
+<ul>
+<li><strong>Picker</strong> (left): search over names, aliases, variants, makers, franchises and game aircraft names; filters for the
+game, the era, the role, the nation and the kind (fixed-wing, helicopter, space, fiction); the variant (version /
+block / tranche) list of the picked aircraft. A version with several seats gets a <strong>Seat</strong> choice.</li>
+<li><strong>The manual</strong> (<code>CockpitManualPages</code>, <code>ManualPageView</code>): tabs for the <strong>Cockpit overview</strong> and each grip (Stick,
+Throttle, Cyclic, Collective ...), a <strong>Panels</strong> list with one page per panel, previous / next. The overview's areas
+lead to their panel (or grip) page with a click. A table cell shows the JoyPro function it maps to as a tooltip.</li>
+<li><strong>Search this cockpit</strong>: words over every control, row, cell, area and item of the variant; the hits are listed (page
+and text) and highlighted on the pages.</li>
+<li><strong>Export page (PNG)</strong> / <strong>All pages (PDF)</strong>: the pages in the user's drawing style (Settings &gt; Drawings) to
+<code>Documents\JoyPro2\Cockpits</code>. <code>engine cockpits render &lt;aircraft&gt; &lt;variant&gt; --page all|overview|stick|throttle|panels|panel:&lt;id&gt; --png &lt;file&gt; | --pdf &lt;file&gt;</code>
+makes the same pages from the command line.</li>
+<li>Below the pages: the notes, the photo links and the sources.</li>
+<li><strong>Photos</strong>: the aircraft's photo links. JoyPro asks before it loads any (&quot;JoyPro has photos of the <aircraft>
+cockpit on <site>. Download them and show them here?&quot; Yes / No / Always for cockpits / Never); see
+<a href="../reference/privacy.html#cockpit-photos">privacy.md</a>.</li>
+<li><strong>Compare with my setup</strong>: with a profile open, each function gets a mark in the HOTAS tables when a relation of the
+profile holds it for that game and aircraft (<code>engine cockpits compare</code>), with the relation's name and its input.</li>
+<li><strong>Use this layout</strong>: opens the setup wizard with the variant (below): its aircraft first in the priority list, and
+the plan reads this variant's layout for it.</li>
+</ul>
+<h2 id="the-cockpit-guide"><a class="anchor" href="#the-cockpit-guide">#</a>The cockpit guide</h2>
+<p>Every panel and every control of a cockpit explained in plain words, as a tree: <strong>area</strong> (a rough section only: left
+console, main panel, overhead, stick and throttle) &gt; <strong>panel</strong> (a real, named panel: &quot;ENG &amp; JET START control panel&quot;,
+&quot;Autopilot panel&quot;) &gt; <strong>control</strong> (every switch, button, knob, lever, with its positions). Each panel and control has
+&quot;What does it do?&quot; (what it does, as for someone who has never sat in a cockpit) and &quot;In the bigger picture&quot; (when and
+why the pilot uses it, what depends on it, where it comes in the start-up), the positions (OFF / BATT / MAIN PWR, each
+with what it does), the game's own name for it, the commands to bind it with, the open profile's relations that bind it
+(after <strong>Compare with my setup</strong>) and the source (manual and page).</p>
+<p>On the <strong>Cockpits</strong> page the guide sits next to the manual page (above it on a narrow window). A click on a control opens
+the page that shows it and marks its callout (a ring around the point, the list line highlighted); a click on a callout
+or a list line of a page selects its control in the tree and opens its explanation. The search box (&quot;battery&quot;,
+&quot;autopilot&quot;) filters the tree to the matching controls with their panels and areas and marks them on the pages. The
+printed pages keep the compact form: the game panels are titled by the guide's panels (&quot;ELEC control panel, EPU control
+panel&quot; instead of a camera view's &quot;Instrument Panel (3)&quot;), the callouts carry the guide's names, and each list line
+gives the first sentence of the explanation.</p>
+<h3 id="the-data-db-cockpits-guide"><a class="anchor" href="#the-data-db-cockpits-guide">#</a>The data (<code>DB/Cockpits/guide</code>)</h3>
+<p>Written offline (no AI at runtime) from the games' own control lists (the source sheets of the picture sets: DCS hint
+texts and command categories, X-Plane tooltips and commands, MSFS node and event names, IL-2 actions), the manuals
+that come with the games and JoyPro's catalog; shipped with JoyPro.</p>
+<pre><code class="language-json">{ &quot;format&quot;: &quot;joypro-cockpit-guide&quot;, &quot;version&quot;: 1, &quot;id&quot;: &quot;dcs-f-16c-50&quot;, &quot;title&quot;: &quot;F-16C Viper (DCS)&quot;,
+  &quot;variants&quot;: [&quot;f-16c-block-50&quot;], &quot;games&quot;: [&quot;DCS&quot;], &quot;sets&quot;: [&quot;DCS/F-16C_50&quot;],
+  &quot;sources&quot;: [ { &quot;id&quot;: &quot;m1&quot;, &quot;title&quot;: &quot;DCS F-16C Early Access Guide (EN)&quot;, &quot;file&quot;: &quot;Mods/aircraft/F-16C/Doc/...&quot; } ],
+  &quot;intro&quot;: &quot;What kind of aircraft, how its cockpit is laid out.&quot;,
+  &quot;areas&quot;: [ { &quot;id&quot;: &quot;left-console&quot;, &quot;where&quot;: &quot;left-console&quot;, &quot;name&quot;: &quot;Left console&quot;, &quot;text&quot;: &quot;...&quot;, &quot;seat&quot;: 0,
+    &quot;panels&quot;: [ { &quot;id&quot;: &quot;elec&quot;, &quot;name&quot;: &quot;ELEC control panel&quot;, &quot;db&quot;: &quot;elec-control-panel&quot;, &quot;text&quot;: &quot;...&quot;, &quot;context&quot;: &quot;...&quot;, &quot;src&quot;: &quot;m1&quot;, &quot;page&quot;: &quot;64&quot;,
+      &quot;controls&quot;: [ { &quot;id&quot;: &quot;main-pwr&quot;, &quot;name&quot;: &quot;MAIN PWR switch&quot;, &quot;type&quot;: &quot;switch3&quot;,
+                      &quot;match&quot;: [&quot;PTR-ELEC-TMB-MPWR-510&quot;, &quot;item:elec-control-panel:1&quot;],
+                      &quot;positions&quot;: [ { &quot;name&quot;: &quot;OFF&quot;, &quot;text&quot;: &quot;...&quot; }, { &quot;name&quot;: &quot;BATT&quot;, &quot;text&quot;: &quot;...&quot; }, { &quot;name&quot;: &quot;MAIN PWR&quot;, &quot;text&quot;: &quot;...&quot; } ],
+                      &quot;text&quot;: &quot;...&quot;, &quot;context&quot;: &quot;...&quot;, &quot;count&quot;: 0, &quot;fn&quot;: &quot;&quot; } ] } ] } ] }
+</code></pre>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>variants</code></td>
+<td>the catalog variants it explains (a guide may list a version's seats; the back seat's areas have <code>&quot;seat&quot;: 2</code>, areas without a seat are in every seat)</td>
+</tr>
+<tr>
+<td><code>inherits</code>, <code>remove</code></td>
+<td>starts from another guide (A-10C from A-10C II, Ka-50 BS2 from BS3, TF-51D from P-51D); its areas, panels and controls are replaced by id; <code>remove</code> drops <code>panel</code> or <code>panel/control</code> ids</td>
+</tr>
+<tr>
+<td><code>partOf</code></td>
+<td>a part file of a big guide (<code>dcs-a-10c-ii-part2.json</code>): its areas join the guide's</td>
+</tr>
+<tr>
+<td><code>common</code> + <code>games</code></td>
+<td>a shared guide of a game's common controls (IL-2's actions, MSFS's node names, X-Plane's commands): used for every variant of the game below its own guide; only its controls the cockpit has are shown</td>
+</tr>
+<tr>
+<td>area <code>where</code></td>
+<td><code>glareshield front-left front-center front-right left-console right-console center-pedestal overhead left-side right-side floor rear seat helmet hotas other</code></td>
+</tr>
+<tr>
+<td>panel <code>db</code></td>
+<td>the catalog panel it is (the catalog's items no guide control names are listed in it)</td>
+</tr>
+<tr>
+<td>control <code>type</code></td>
+<td><code>switch2 switch3 switch knob selector button lever handle wheel guard cover gauge display screen light indicator keypad rocker hat slider encoder pedal trigger axis other</code>; <code>count</code> for a group of alike controls (OSB 1-20)</td>
+</tr>
+<tr>
+<td><code>match</code></td>
+<td>the game controls it is: a glob of the picture callout id (<code>PNT-BTN-MFD-L-*</code>), <code>cmd:&lt;glob&gt;</code> (a command id or name of the callout: X-Plane commands, IL-2 actions, MSFS events), <code>label:&lt;text&gt;</code> (the callout's label), <code>item:&lt;catalog panel&gt;:&lt;n&gt;</code>, <code>control:&lt;catalog grip control id&gt;</code>. The first guide control (in file order) that matches a callout gets it</td>
+</tr>
+</tbody>
+</table></div>
+<p>Translations: <code>&lt;id&gt;.&lt;lang&gt;.json</code> (<code>joypro-cockpit-guide-text</code>: <code>title</code>, <code>intro</code>, <code>areas</code> / <code>panels</code> by id,
+<code>controls</code> by <code>panel/control</code> with <code>name</code>, <code>text</code>, <code>context</code> and <code>positions</code> by the English position name). The GUI
+uses the language of the user interface where there is one (German: <code>.de.json</code>), else English. Controls no guide
+explains (War Thunder, Nuclear Option, Star Citizen, aircraft without a guide yet) are listed under their game panel or
+catalog panel with the game's or catalog's name, the catalog's note and a general description of their kind of control
+(GUI texts, translated); the tree says &quot;not explained yet&quot;.</p>
+<p><strong>General explanations by function</strong> (<code>guide/_templates.json</code>, German <code>_templates.de.json</code>, format
+<code>joypro-cockpit-guide-templates</code>): for every control no guide explains (War Thunder, Nuclear Option, Star Citizen, Elite,
+X4, VTOL VR and the long tail of the others) the template with the longest of its <code>words</code> in the control's name (else
+in the catalog's note) gives the text and the bigger picture, with <code>{name}</code> replaced by the control's own name (&quot;landing
+gear&quot;, &quot;flaps&quot;, &quot;master arm&quot;, &quot;radio&quot;, &quot;trim&quot; ...); gauges, lights and screens get the template of what they are. The
+tree shows them as &quot;general description&quot;; a control without a matching template gets the GUI's sentence for its kind of
+control (switch, knob, button ...).</p>
+<p><strong>Animated controls</strong>: every control of the picture set's <code>controls</code> list (see <a href="#animated-controls">Animated controls</a>)
+is in the tree. One that is a callout joins its callout's node; one that is not (an animated part without a callout)
+gets a node of its own at the pictures it is visible on, matched to a guide control by its id, label or commands like a
+callout, else under its game panel with a general explanation. Its kind (<code>switch-3</code>, <code>rotary</code> ...) gives the type and
+its animation's positions the positions (&quot;Position 1 / 2 / 3&quot;) where no guide names them. New picture sets are read
+whenever the page shows a variant, so rebuilt sets show their animated controls without a JoyPro update.</p>
+<p>Rules (<code>CockpitGuideLibrary.Check</code>, part of <code>engine cockpits check</code>; <code>tools/cockpit_guide.py check</code>): ids, a name and
+both texts on every area, panel and control (lengths within bounds, no placeholder, no exclamation mark), no two
+controls with the same text or context in one seat, positions named once, each with its text, <code>switch2</code> with two and
+<code>switch3</code> with three positions, known types and variants, translations that name existing areas, panels, controls and
+positions.</p>
+<p>Writing more: <code>tools/cockpit_guide.py</code> (<code>check</code>, <code>coverage &lt;guide&gt; --pictures &lt;set&gt;</code> lists the game controls a guide does
+not explain yet, <code>stats</code>, <code>report --pictures &lt;root&gt;</code> the coverage of every picture set). The writers' brief (format,
+style guide, glossary of plain explanations) is kept with the maintainer's working files; its rules are the ones above:
+facts only from the game's labels, the manual and the catalog; a game control is tied to a guide control only when its
+label, commands or id say which it is; when unsure, say less.</p>
+<h3 id="coverage-2026-10-25-engine-cockpits-guide-coverage-game-g-no-pictures"><a class="anchor" href="#coverage-2026-10-25-engine-cockpits-guide-coverage-game-g-no-pictures">#</a>Coverage (2026-10-25, <code>engine cockpits guide --coverage [--game G] --no-pictures</code>)</h3>
+<p>Every catalog variant has its guide (462 / 462): the catalog's panel items and grip controls, 40,638 of 40,754 written out
+(81 with a general description). The game control schemes (Star Citizen, Elite Dangerous, X4, No Man's Sky, Star Wars:
+Squadrons, Nuclear Option, VTOL VR, WARDOGS) have a base guide for the game's hidden template variant plus a small guide
+per ship (its own intro and its own panel items, <code>inherits</code> the base); real versions of a type that has a guide in another
+game inherit it (War Thunder's F-16V from the DCS F-16C, the Mi-17 from the DCS Mi-8MTV2 ...) and add what differs.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Variants with a guide</th>
+<th>Catalog controls written out / in the tree</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS</td>
+<td>81 / 81</td>
+<td>17,464 / 17,568</td>
+</tr>
+<tr>
+<td>Falcon BMS</td>
+<td>17 / 17</td>
+<td>3,374 / 3,396</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td>66 / 66</td>
+<td>3,635 / 3,645</td>
+</tr>
+<tr>
+<td>MSFS 2020 / 2024</td>
+<td>51 / 51, 54 / 54</td>
+<td>3,247 / 3,259; 3,532 / 3,532</td>
+</tr>
+<tr>
+<td>X-Plane 12</td>
+<td>18 / 18</td>
+<td>1,046 / 1,046</td>
+</tr>
+<tr>
+<td>War Thunder</td>
+<td>155 / 155</td>
+<td>19,801 / 19,832</td>
+</tr>
+<tr>
+<td>Star Citizen / Elite Dangerous / X4</td>
+<td>42 / 42, 32 / 32, 21 / 21</td>
+<td>2,821, 1,891, 696 (all)</td>
+</tr>
+<tr>
+<td>Nuclear Option / VTOL VR</td>
+<td>13 / 13, 9 / 9</td>
+<td>351, 636 (all)</td>
+</tr>
+<tr>
+<td><strong>All</strong></td>
+<td><strong>462 / 462</strong></td>
+<td><strong>40,638 / 40,754</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The guide data: 1,591 areas, 3,487 panels, 19,694 guide controls, about 5.4 million characters of English.</p>
+<h3 id="coverage-with-the-picture-packs-2026-10-18-engine-cockpits-guide-coverage-game-g-with-every-picture-pack-installed"><a class="anchor" href="#coverage-with-the-picture-packs-2026-10-18-engine-cockpits-guide-coverage-game-g-with-every-picture-pack-installed">#</a>Coverage with the picture packs (2026-10-18, <code>engine cockpits guide --coverage [--game G]</code> with every picture pack installed)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Variants with a guide</th>
+<th>Controls written out / with a general description / in the tree</th>
+<th>Game controls explained</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS (48 cockpits, every module incl. Flaming Cliffs, SA342, A-4E)</td>
+<td>81 / 81</td>
+<td>17,464 / 69 / 17,568</td>
+<td>17,206 / 17,206</td>
+</tr>
+<tr>
+<td>Falcon BMS (F-16 blocks, Hornets, A-10A)</td>
+<td>17 / 17</td>
+<td>3,393 / 91 / 3,502</td>
+<td>(no pictures)</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles (117 cockpits)</td>
+<td>66 / 66</td>
+<td>4,906 / 4 / 4,916</td>
+<td>2,148 / 2,148</td>
+</tr>
+<tr>
+<td>MSFS 2020 / 2024</td>
+<td>49 / 51, 52 / 54</td>
+<td>3,772 / 581 / 5,017; 4,128 / 571 / 5,382</td>
+<td>9,043 / 9,906; 9,913 / 10,797</td>
+</tr>
+<tr>
+<td>X-Plane 12</td>
+<td>18 / 18</td>
+<td>1,543 / 1 / 1,553</td>
+<td>3,886 / 3,896</td>
+</tr>
+<tr>
+<td>War Thunder</td>
+<td>100 / 155 (shared variants)</td>
+<td>14,050 / 3,483 / 18,428</td>
+<td>8,714 / 8,801</td>
+</tr>
+<tr>
+<td>Nuclear Option / Star Citizen</td>
+<td>0</td>
+<td>general descriptions: 351 / 351, 2,296 / 2,821</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>All</strong></td>
+<td><strong>209 / 462</strong></td>
+<td><strong>28,347 written, 10,113 general / 41,457</strong></td>
+<td><strong>28,412 / 29,329</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>The guide data: 966 areas, 2,657 panels, 16,329 guide controls (groups of alike controls count once), about 4.6 million
+characters of English; German for the ten biggest DCS modules (F-16C, F/A-18C, A-10C II, AH-64D, F-15E, F-14, Ka-50 III
+and BS2, UH-1H, Mi-8MTV2, F-4E) and both MSFS shared guides (every MSFS aircraft's game controls).</p>
+<p><code>engine cockpits guide &lt;aircraft&gt; [&lt;variant&gt;] [--lang de] [--search words] [--no-pictures]</code> prints the tree (JSON, or
+text with <code>--text</code>); <code>--coverage [--game G]</code> the table above per variant; <code>engine cockpits compare</code> also lists every game command the profile binds (<code>Commands</code>), which the
+guide shows per control.</p>
+<p>Code: <code>engine/DeviceReference/CockpitGuide.cs</code> (format, library, rules, matching), <code>CockpitGuideTree.cs</code> (the tree of a
+variant), <code>CockpitManualPages</code> (the guide's names on the pages), <code>gui/JoyPro.Gui/ViewModels/CockpitsViewModel.Guide.cs</code>,
+<code>Views/CockpitsView.axaml</code>. Tests: <code>CockpitGuideTests</code> (the shipped guides' rules, the tree on a synthetic cockpit with
+pictures, seats, a shared guide and German, the pages, the page's selection and marks; opt-in render:
+<code>JOYPRO_GUIDE_RENDER_OUT</code>, <code>JOYPRO_GUIDE_PICTURES</code>, <code>JOYPRO_GUIDE_AIRCRAFT=f-16:f-16c-block-50:jfs;...</code>).</p>
+<h2 id="for-the-setup-wizard-and-scripts-api"><a class="anchor" href="#for-the-setup-wizard-and-scripts-api">#</a>For the setup wizard and scripts (API)</h2>
+<ul>
+<li><code>engine cockpits get &lt;aircraft&gt; [&lt;variant&gt;] [--json]</code> returns the resolved variant as <code>joypro-cockpit-layout</code>:
+<code>Aircraft</code>, <code>Variant</code>, <code>Games</code>, <code>Devices[]</code> (<code>Device</code>, <code>Title</code>, <code>Drawing</code>, <code>Generic</code>, <code>Controls[]</code> with <code>Id</code>, <code>Name</code>,
+<code>Type</code>, <code>Where</code>, <code>Part</code>, <code>Placed</code>, <code>X</code>, <code>Y</code> (0..1 on the drawing) and <code>Functions[]</code> with <code>Dir</code>, <code>Text</code>, <code>Fn</code>, <code>FnName</code>,
+<code>Vocabulary</code> (the control vocabulary id of that direction, e.g. <code>stick.hat.tms.up</code>, <code>stick.axis.pitch</code>) and <code>Actions[]</code>
+(<code>Game</code>, <code>Plane</code>, <code>Action</code>: the game's own command id from <code>DB/Functions/&lt;game&gt;.tsv</code>)), <code>Panels</code>, <code>Sources</code>, <code>Photos</code>,
+<code>Links</code>. The aircraft and the variant may be given by id, name or alias; a variant id alone also works
+(<code>engine cockpits get f-16c-block-50</code>).</li>
+<li>In the GUI: <code>CockpitsViewModel.UseLayoutRequested</code> (event, <code>CockpitLayoutRequest</code> with <code>AircraftId</code>, <code>VariantId</code>,
+<code>Games</code> and the CLI arguments) goes to <code>MainWindowViewModel.UseCockpitLayout</code>, which opens the setup wizard with it
+(<code>SetupWizardViewModel.UseCockpitLayout</code>; a wizard made later takes <code>PendingCockpitLayout</code> with
+<code>TakePendingCockpitLayout()</code>). The wizard puts the aircraft named in <code>Games</code> first in the priority list and asks the
+engine with the request's arguments (<code>cockpits get &lt;aircraft&gt; &lt;variant&gt; --json</code>) for that aircraft's <code>--cockpit-file</code>.</li>
+<li><code>cockpits get --json</code> also gives <code>Modes</code>, <code>DefaultMode</code>, the <code>Overview</code> (areas), the <code>Panels</code> with their <code>Items</code>, and
+per function <code>Press</code>, <code>When</code>, <code>By</code> and <code>FnBy</code>. A function's <code>Text</code> and <code>Fn</code> are the default mode's cell: the setup
+wizard places a function where the default mode has it (<code>SetupCockpits</code>).</li>
+<li><code>engine cockpits list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real]</code>,
+<code>search &lt;text&gt;</code> (aircraft and controls / functions: &quot;TMS&quot;, &quot;china hat&quot;), <code>compare &lt;aircraft&gt; [&lt;variant&gt;] [--game G]</code>
+(with <code>--profile</code>), <code>render &lt;aircraft&gt; [&lt;variant&gt;] --png &lt;file&gt; [--device d] [--style dark|light] [--print-width px]</code>
+(the callout sheets), <code>render ... --page &lt;page&gt; --png &lt;file&gt; | --pdf &lt;file&gt; [--scale s] [--highlight words]</code> (the manual
+pages), <code>photos [query] [--coverage]</code>, <code>coverage</code> (also the manual pages per game), <code>drawings</code>,
+<code>check [--structure]</code> (<code>--structure</code>: only what is wrong, not what is still missing).</li>
+</ul>
+<h2 id="pictures-from-your-games"><a class="anchor" href="#pictures-from-your-games">#</a>Pictures from your games</h2>
+<p><strong>Build pictures from my games</strong> on the Cockpits page (or <code>engine cockpits pictures build</code>) draws the cockpits of the
+games installed on this PC from the games' own files (the files listed per game below, read only). They are kept with
+the game data (<code>&lt;data&gt;\GameData\CockpitPictures\&lt;game&gt;\&lt;aircraft&gt;</code>) and are never part of the repository; the sets made
+for JoyPro's releases are offered as picture packs (see &quot;Picture packs&quot;). For MSFS 2024 the pictures are screenshots
+taken in the sim (see below). Wherever a variant's game has pictures, the manual pages show them in place of JoyPro's
+drawings:</p>
+<ul>
+<li><strong>Cockpit overview</strong>: the whole cockpit from behind the pilot's head. Its numbered callouts lead to the panels and
+the grips.</li>
+<li><strong>Stick / Throttle</strong>: the game's grip on its own. The HOTAS table is unchanged. A control has a callout where the model
+names a part for it (A-10C: <code>STICK-BTN-TMS</code>, <code>TRTL-R-HAT-SLEW</code>); controls the model has no part for are listed under
+the picture.</li>
+<li><strong>One page per panel</strong> (the game's own panels): a frontal picture with every clickable control numbered, and a
+numbered list with the game's own name for the control (DCS: the hint text of <code>clickabledata.lua</code>; X-Plane: the
+manipulator's tooltip). For DCS the list also gives the bindable commands of the same device and command number
+(JoyPro's DCS command list of the aircraft); for X-Plane it gives the command or dataref.</li>
+<li><strong>Picture from the game / JoyPro's drawing of it</strong>: either the render itself, or JoyPro's line drawing of it (outlines,
+details and the printed labels traced from the render, plus flat cel colours). The drawing is shown in the user's
+drawing style (Settings &gt; Drawings), like the device drawings.</li>
+</ul>
+<p>Where the callouts come from: they are computed from the model, never placed by hand. In DCS the clickable connector
+of each element (<code>PNT_...</code>/<code>PTR-...</code> in the cockpit EDM, named in <code>clickabledata.lua</code>) gives the place; the panel comes from the
+command list's category (&quot;Left Console; ENG &amp; JET START Control Panel&quot;), else the connector's panel token. In X-Plane
+the manipulator geometry of the cockpit objects gives the place. The grips are found by the animation arguments
+<code>mainpanel_init.lua</code> gives them (DCS), by the VR hand connectors (<code>STICK_HANDLE</code>, <code>THROTTLE_HANDLE</code>) or by node names, and by the
+yoke and throttle datarefs (X-Plane); the details are under &quot;Finding the grips&quot;.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>What is read</th>
+<th>State (2026-10-17)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS World</td>
+<td><code>Mods\aircraft\*</code>: entry.lua (aircraft, cockpit folder), <code>Entry\Views.lua</code> where a module keeps it there, mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives, also under <code>CoreMods\aircraft\&lt;module&gt;</code>)</td>
+<td>49 cockpit sets on the test PC (2026-10-25). The SA342 Gazelle's cockpit model is in <code>CoreMods\aircraft\SA342\Shapes</code> (found there since 2026-10-25); the F-14BU has no clickable data yet (overview only); the textures of the C-130J, F-14 and OH-58D are in <code>CoreMods\aircraft\&lt;module&gt;</code>. Opaque self-lit surfaces (<code>additive_self_illum_material</code> without blending) are drawn like plain ones since 2026-10-31: the C-130J's panel faces (overhead, pedestal, consoles: <code>PACK2</code>..<code>PACK5</code>, <code>VC_PAN_01</code>..<code>12</code>) are made of them and showed as grey plates without labels, and its throttle levers too (a throttle page since then; the set's mean rating 80 -&gt; 91, no picture left out); the light layers (additive or alpha blending, <code>bano</code>) stay out. The AJS37, F-16C, Ka-50 and P-47D pictures stay the same apart from small parts (the Ka-50's reserve attitude indicator scale). The F-100D's model has parts the reader places wrongly (big shards): its set is rated low and most of its panel pictures are left out</td>
+</tr>
+<tr>
+<td>X-Plane 12</td>
+<td><code>Aircraft\**\*.acf</code> (objects, pilot's eye) and the OBJ8 objects with their textures (DDS and PNG both top row first; the figures (pilot, crew and passenger objects, also in <code>crew\</code>/<code>pilot\</code> folders) left out, the pilot's panels kept)</td>
+<td>23 aircraft (every one in Aircraft; an AI-only <code>_AI</code> copy is left out). The displays are drawn by the sim at run time (black in the pictures)</td>
+</tr>
+<tr>
+<td>MSFS 2020</td>
+<td>the packages of <code>InstalledPackagesPath</code> (UserCfg.opt) without <code>.fsarchive</code> files: <code>model*\model.cfg</code> <code>interior=</code> -&gt; the interior xml (its first LOD's glTF, its behaviours) -&gt; the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by <code>ASOBO_primitive</code> StartIndex / BaseVertexIndex, <code>MSFT_texture_dds</code>), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset)</td>
+<td>57 interiors (every readable one of the test PC's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (<code>ELECTRICAL_Switch_Battery_Master</code>, older models <code>DEICESYSTEM_SWITCH_AIRFRAME</code>), with the behaviour template and its events where the xml names the node; the yoke (<code>HANDLING_Yoke_1</code>, <code>YOKE_LEFT</code>) and throttle are grips; where a model uses other names (2026-10-26) any part named as the stick, yoke, throttle or collective (<code>COCKPIT_yoke_pilot</code>, <code>Yoke1</code>, <code>joystick_l</code>, <code>ENGINE_Lever_Throttle_1_Visual</code>, <code>throttle_01</code>, <code>collective_grip_pilot</code>) or driven by a throttle, collective or yoke behaviour (also in the files the interior includes: the PC-6's <code>Prop_Lever</code>, <code>ASOBO_ROTORCRAFT_Collective_Template</code> of the Cabri) is one: the pilot's (nearest the eye, not <code>copilot</code>), the whole lever or yoke, without its rods, cables, base and the other pilot's grip. Every interior has both grips except the gliders (LS8, DG-1001: airbrake levers only), the Wright Flyer (no throttle) and the Bell 407 (its cyclic is a skinned mesh, which the reader does not pose). Packages with <code>.fsarchive</code> files are not read; the sim itself is not installed on the test PC</td>
+</tr>
+<tr>
+<td>MSFS 2024</td>
+<td>the models are not read (the aircraft packages hold <code>.fsc</code> / <code>.fsarchive</code> files). Screenshots in the sim instead: <code>tools\e2e\games\Msfs2024CockpitShots.ps1</code> (unattended; SimConnect through the sim's own client library <code>SimConnect_internal.dll</code>: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents)</td>
+<td>screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (<code>ELECTRICAL_Battery_1</code>), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page</td>
+</tr>
+<tr>
+<td>Nuclear Option</td>
+<td><code>NuclearOption_Data\resources.assets</code> (plain Unity 2022.3 data, JoyPro's own read-only reader): the aircraft prefabs' cockpit objects (interior, stick, throttle or collective, screens), the pilot's helmet camera as the eye, the textures from <code>resources.assets.resS</code>, the unit names of the aircraft definitions and the game's Rewired action list</td>
+<td>13 aircraft (every flyable one; 46 pictures, about a minute). The cockpits have no separate switches (painted on), so the callouts name the grips and the screens only; each grip page lists the game's &quot;Flight Controls&quot; actions (they bind to any button)</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td><code>data\*.gtp</code> (plain stored archives, read only): the plane scripts (<code>luascripts/worldobjects/planes/*.txt</code>: name, cockpit model, pilot seat as the eye), the cockpit <code>-c.mgm</code> models (JoyPro's own reader: node tree, geometry, skinned parts, the animations that tie the argument numbers to the parts), <code>-c.arg</code> argument names, DDS textures, the input actions and their English names (<code>swf/il2</code>)</td>
+<td>117 aircraft with a pilot's cockpit (about 1,070 pictures, 2,200 callouts; the 66 catalog variants find their set). Callouts: the parts the control arguments move, named by the game's input action where the argument is plainly that control (gear, flaps, throttle, mixture ...), else by the argument's own name. Not complete: CG-4A and Pe-2 ser.87 overviews are wrong (frames the reader does not follow), linkage rods the game places at run time are left out. Grips: the parts the pitch/roll arguments (406/407) and the throttle arguments (1100, 1200 ...) move; where that part is the frame the grip sits on (the WWI sticks on their torque tube, the Ju 52's column with the bar to both wheels, the Gotha's column; more than 1.2 m), the parts under it, the one with the buttons or nearest the eye (2026-10-26). The D.H.2 and the Nieuport 28 (Gnome Monosoupape: no throttle) get the fuel lever (mixture argument) as the throttle-hand lever; the CG-4A glider has none</td>
+</tr>
+<tr>
+<td>IL-2 Korea</td>
+<td>not read: JoyPro reads none of its archives with cockpit models (the archives it can read, <code>S16R!</code>, hold no cockpit model; searched for the cockpit node and texture names). Readable on disk: <code>data\input\general.actions</code> (JSON) and the mission files</td>
+<td>skipped; in-game screenshots (Quick Mission) would be the way, only while the PC is idle</td>
+</tr>
+<tr>
+<td>Star Citizen</td>
+<td>the game's data files, read only and never while the game runs: ship entities, seats, dashboards and grips, their interaction points (named with the game's own texts) and the flight actions of the default profile; the cabin from the ships' object containers (<code>.socpak</code>): their entities and their brushes (<code>.soc</code> chunk 0x0010 version 1: the model and material tables, then 208-byte records with the brush's box in the ship and its placement in the container as 3x4 doubles; drawn within 3.2 m like the hull); a variant's own hull model (<code>aegs_sabre_raven.cga</code>) before the base ship's</td>
+<td>149 cockpits (2026-10-26): cabin walls, floors and consoles of 135 ships (until then 129 ships noted their brushes as not drawn), real layer textures and metals (no ship notes an unreadable texture any more, 32 before; one set rated low, 44 before). Not drawn: a variant's separate canopy model (<code>aegs_sabre_raven_cockpit.cga</code>: its placement is not in the files JoyPro reads), the <code>.cdf</code> parts (glass, thrusters). 14 small ships have their cabin in the hull model only (Razor, Dragonfly, Vanduul, Xi'an). Some ships take a co-pilot's or an operator's seat as the pilot's (Constellation Aquila and Phoenix, Caterpillar): their overview shows that seat's view. Grips (2026-10-26): every grip-named node of the seat, the dashboard and (right in front of the pilot) the hull and cabin is tried, the topmost first; a stick support or yoke arm is a carrier, not a grip; handlebar and &quot;controller&quot; sticks and thrust controls count; a ship with two sticks (HOSAS) has its left stick as the throttle hand. 16 ships have no stick or throttle in a readable model (Origin 100i/315p/600i, Reliant Mako/Sen, Starfarer, the alien ships of Gatac, Banu, Xi'an, Aopoa; their controls are named generically or placed outside the files JoyPro reads)</td>
+</tr>
+<tr>
+<td>War Thunder</td>
+<td><code>content.hq\pkg_cockpits\res</code>, read only: the GRP2 packs (<code>*.grp</code>: the 1,197 <code>&lt;plane&gt;_cockpit</code> DynModels with their <code>_skeleton</code> node trees; DagorEngine's format: vertex declarations, packed positions with the model's unpack constants, meshoptimizer-packed indices, LOD 0's rigid meshes), <code>dynModelDesc.bin</code> (zstd, binary BLK: each model's materials and texture names) and the DxP2 texture packs (DDSx; the best of <code>$hq</code> / base / <code>$tq</code>). The vertex data and most textures are Oodle Leviathan packed: unpacked by the War Thunder Oodle helper <code>tools\wt-oodle</code> (a separate GPL-3 program, a C# port of parts of ooz with fixes; the engine starts it as a process, <code>JOYPRO_WT_OODLE</code> names it; without it War Thunder is skipped with a note). The eye is the pilot figure's head bone (<code>Bip01 Head01</code>); the grips are the model's <code>stick*</code> / <code>throttle*</code> nodes and the yokes (<code>shturval</code>, <code>column</code>); the callouts are the model's own control and instrument node names (<code>gears</code>, <code>flaps</code>, <code>airbrake_lever</code>, <code>mixture</code>, <code>speed</code>, <code>altitude_hour</code> ...; instruments carry the node name). Not read: <code>aces.vromfs.bin</code> (flight models, cockpit instruments, HUD, the factory HOTAS presets), <code>char</code>/<code>game</code>/<code>gui</code>/<code>lang</code>/<code>mis</code>/<code>webUi</code>/<code>wwdata</code> vromfs and every <code>grp_hdr.vromfs.bin</code></td>
+<td>1,197 cockpits on the test PC (9,274 pictures, about 25,000 callouts; about 4 hours at low priority). Environment cubemaps and some shared textures are not in the cockpit packs (flat colour); 42 cockpits have a texture in a format JoyPro does not decode (flat colour). 52 models have no pilot figure (mostly bomber cockpits made of their instruments): the eye is placed above and behind the stick (7) or behind the middle of the instruments (45). Users get the pictures as picture packs (the helper is not part of the release)</td>
+</tr>
+</tbody>
+</table></div>
+<p>The Lua files are read with DCS's own interpreter (<code>bin\luae.exe</code>) and small harness scripts that only print; nothing in
+a game folder is written. A build skips an aircraft whose pictures are newer than its model and were made for the same
+game version (<code>--force</code> makes them again). It takes about two seconds per picture; a big DCS module has 50 to 80 pictures.</p>
+<p><code>engine cockpits pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|WarThunder|StarCitizen|all] [--aircraft &lt;name&gt;,...] [--force] [--out &lt;folder&gt;]</code>,
+<code>engine cockpits pictures status</code>, <code>engine cockpits pictures check</code> (below), <code>engine cockpits render ... --pictures picture|drawing|none</code>. The format:
+<code>pictures.json</code> (<code>joypro-cockpit-pictures</code>): per view <code>id</code>, <code>kind</code> (overview, device, panel), <code>title</code>, <code>area</code>, <code>seat</code>,
+<code>image</code>, <code>drawing</code> (a <code>joypro-device-drawing</code>), <code>width</code>, <code>height</code>, and <code>callouts</code> (<code>n</code>, <code>id</code>, <code>label</code>, <code>x</code>, <code>y</code> 0..1 of
+the picture, <code>kind</code>, <code>device</code>, <code>commands</code>); <code>index.json</code> names the set of each of the game's aircraft names. The code is
+in <code>engine/CockpitPictures</code> (EDM, OBJ8, DDS/TGA/PNG readers, a software renderer, the line tracer, the view planner).</p>
+<h3 id="picture-quality"><a class="anchor" href="#picture-quality">#</a>Picture quality</h3>
+<p>Every picture goes through an automatic quality gate (<code>engine/CockpitPictures/PictureQuality.cs</code>, used by
+<code>PictureWriter</code> for every game). Measured on the picture: how much of the frame the model covers (for a grip: the box
+around what is drawn), the share of 8x8 blocks with visible detail (local contrast), the brightness entropy, the share of
+black; from the renderer: the share of textured pixels and of the view's callouts that are in the frame and not covered.
+A score of 0 to 100 (60 and more: good) and the problems (<code>little detail</code>, <code>one flat colour</code>, <code>mostly black</code>,
+<code>mostly empty</code>, <code>too small in the frame</code>, <code>untextured</code>, <code>controls hidden</code>, <code>camera inside the model</code>, <code>flat shapes</code>: more
+than 45 % of the picture's 8x8 blocks are one flat tone, big bare polygons such as the shards of a part the reader
+places wrongly; not judged on grips and screenshots). A grip on its own is not judged by untextured and needs only a
+little grain (10 % of its blocks, a panel 35 %): smooth plastic seen big is what a clean grip looks like (until 2026-10-26
+the untextured Star Citizen and MSFS throttles rated 0 to 40 and were left out).</p>
+<p>How the planner frames the pictures (<code>CockpitViews</code>):</p>
+<ul>
+<li>
+<p>A panel is seen face on: the direction comes from the model's own surfaces around its controls (area-weighted triangle
+normals, the controls' small parts left out), the plane through the controls only where the surfaces disagree. A row of
+knobs gives no plane: fitted to the knobs, the 737's overhead rows were seen along the panel's face, floating knobs
+without the panel. The picture is the right way round as the pilot reads the panel: a console seen from above has
+forward at the top, an overhead panel seen from below has aft at the top (with forward at the top, the 737's overhead
+labels were upside down until 2026-10-25); the pilot's right is on the right (<code>PanelPictures_AreTheRightWayRound</code>).</p>
+</li>
+<li>
+<p>A compact group (at most 30 cm, a keypad or a CDU with 60 keys) stays one picture whatever its count, and the parts of
+one panel that fit 30 cm together join again: split by the count, each half got the same minimum frame and the same
+picture several times. A clear gap (more than 8 cm) is where a big group is split first. Two named panels side by side
+keep their own pictures.</p>
+</li>
+<li>
+<p>Games that name no panels group their controls by the aircraft system their names say (<code>ControlSystems</code>): X-Plane's
+command paths (<code>sim/autopilot/...</code>, <code>laminar/B738/fuel/...</code>), MSFS's node and event names (<code>ELECTRICAL_Switch_Battery</code>).
+A picture is then &quot;Autopilot&quot;, &quot;Electrical&quot;, &quot;CDU (flight management)&quot;, &quot;Fuel&quot; ... (split by place), and a system with
+fewer than three controls stays with its place (&quot;Overhead panel&quot;).</p>
+</li>
+<li>
+<p>The overview is aimed at the panel and the consoles (the levers far below the eye pulled it onto the seat cushion),
+turned to the middle of what it shows and fitted to the controls within about twice their typical distance.</p>
+</li>
+<li>
+<p>A dark render gets its middle tones lifted (a gamma curve that brings the median to about 100) besides the exposure of
+its highlights.</p>
+</li>
+<li>
+<p>Star Citizen: a white diffuse without its texture is drawn neutral grey and untextured colours stay below a light grey
+(lit from the camera they were pure white); panel pictures of interaction points need a good score (60; 70 until the cabin textures of 2026-10-26).
+The layered (HardSurface) materials get their first layer's diffuse texture, tinted with the layer's tint and
+repeated with its UV tiling (painted panels, bare metal, carbon fibre: until 2026-10-26 one averaged flat colour, the
+Gladius looked untextured grey); a metal (black diffuse, bright specular, in a layer or a plain material) is drawn by
+its specular colour, dimmed, and keeps a tint's hue but not its darkness (drawn by the diffuse it was pure black: the
+Sabre's floor and the Gladius' steel parts); a plain material whose texture is a white mask gets its own diffuse.
+The wear layer, the blend layers, the normal maps and the vertex colours (dirt and wear masks, not colours) are not
+drawn. Archive entries with the second local header mark (<code>PK 3 20</code>) are read as well (until
+2026-10-26 the RSI ships' metals were flat colours). The overview leaves out only the seat's parts that reach up to the eye or lie behind it (back, head rest):
+the arm rests and the cushion stay. Without grips and dashboard it looks ahead from the seat.</p>
+</li>
+<li>
+<p>A grip much smaller than its frame is zoomed to what is drawn; a poor picture is made again with the planner's other
+cameras (a panel: more room around it, then the pilot's own view from the head; the overview: closer to the head, at
+the head, further back) and the best one is kept.</p>
+</li>
+<li>
+<p>A panel or grip picture that stays below 45 is left out (its overview callout goes too); the overview is always kept.</p>
+</li>
+<li>
+<p>A panel picture that looks like an earlier one (the same panel framed for another group of its controls) gives its
+callouts to that one (<code>merged</code>).</p>
+</li>
+<li>
+<p><code>pictures.json</code> gets <code>quality</code> (<code>score</code> of the overview, <code>mean</code>, <code>low</code>, <code>views</code>, <code>dropped</code>, <code>merged</code>) and, per view,
+<code>quality</code>, <code>problems</code> and <code>drawingReadable: false</code> where JoyPro's line drawing would be a mess (a poor picture, a busy
+perspective, a screenshot): the drawing mode shows the picture there.</p>
+</li>
+<li>
+<p>A set is <code>low</code> when its overview is below 45 or fewer than a third of its pictures are good. The Cockpits page then
+shows another game's set of the aircraft first (<code>CockpitPictureSet.For</code>; the picture packs: <code>&quot;low&quot;</code> in the manifest).</p>
+</li>
+<li>
+<p><code>engine cockpits pictures check [--game G] [--aircraft a,b] [--write] [--drop]</code> rates sets that are already there
+(screenshots, picture packs, older builds); <code>--write</code> keeps the ratings in <code>pictures.json</code>, <code>--drop</code> also leaves out
+the panel pictures below the gate. What only the renderer measured (camera inside, untextured, hidden controls) keeps
+the lower of the old and the new score.</p>
+</li>
+<li>
+<p>The build report names a set's verdict (&quot;low quality (overview 31/100); 4 unusable pictures left out; 2 duplicate
+pictures merged&quot;). <code>JOYPRO_PICTURE_KEEP_ALL=1</code> keeps every picture (to look at what the gate leaves out).</p>
+</li>
+</ul>
+<h3 id="grip-parts"><a class="anchor" href="#grip-parts">#</a>Grip parts</h3>
+<p>The named parts of a game's grips are checked against the aircraft's manual figures (<code>engine/CockpitPictures/GripParts.cs</code>):</p>
+<ul>
+<li>Fixes per model where the model's part names are wrong or say nothing: the DCS A-10C / A-10C II stick names its
+countermeasures switch <code>STICK-BTN-TMS</code> and its TMS <code>STICK-BTN-TARG</code> (Flight Manual, Figure 69): JoyPro calls them
+CMS and TMS; the MMCB, the NWS button, and the throttle's left throttle button, slew, coolie, mic, speed brake, boat
+switch and china hat get the manual's names (Figure 70).</li>
+<li>Left out: panel controls under a grip's node (<code>TUMB-PANTRTL-...</code>, the F-5E's <code>LVR-PANUHF-VOL</code>) and the modelling
+tool's names (<code>Helix004</code>, <code>NGon058</code>, <code>Details036</code>, <code>RUS08</code>).</li>
+<li>A part that does not sit on the grip's surface in the picture (a part known only by its node's pivot) is listed
+without a place (&quot;Not shown on the drawing&quot;) instead of being drawn beside the grip.</li>
+<li>The grip picture is taken from the side that shows most of its parts: besides the view from behind and the thumb's
+side, the front with the thumb's side (the trigger and the buttons on the front face, the A-10C's NWS button below the
+trigger), the profile and the other side are tried.</li>
+<li>The page places a catalog control on a game part only when the part shares a word of what the control is (its id,
+the first words of its name; general words such as &quot;weapon&quot; count less): the 172's &quot;A/P DISC / TRIM INT switch&quot; is no
+longer put on the elevator trim buttons.</li>
+<li><code>CockpitPictureQualityTests.OptIn_GripAudit</code> (<code>JOYPRO_CHECK_PICTURE_SETS=&lt;pictures root&gt;</code>) writes every grip control
+of every catalog variant with the game part it is placed on to <code>%TEMP%\joypro-grip-audit.tsv</code> for a review.</li>
+</ul>
+<h3 id="finding-the-grips-2026-10-26"><a class="anchor" href="#finding-the-grips-2026-10-26">#</a>Finding the grips (2026-10-26)</h3>
+<p>A helicopter's collective is the <code>throttle</code> grip in every game (as the UH-1H's always was). Never per aircraft; in order:</p>
+<ul>
+<li><strong>DCS</strong>: the grip arguments of <code>mainpanel_init.lua</code> (the harness reads options it does not know as &quot;not set&quot;: it
+stopped at <code>LockOn_Options.cockpit.mirrors</code>, so the P-51D, TF-51D and others had no stick gauges, and the MiG-19P took
+<code>difficulty.hideStick</code> as set), the VR hand connectors, the node names. For a kind still without a grip: the
+arguments of the handle nodes without meshes (<code>STICK_HANDLE1</code>, <code>THROTTLE_L_HANDLE1</code>, the La-7's
+<code>pilot_hand_throttle</code>) move the meshes of the grip within 25 cm of them (F-15E, OH-58D, C-101EB); then the names in
+the usual forms (<code>ENG_Lever_Throttle</code>, <code>PNT_254_Throttle</code>, <code>ruchka_rud02</code>, <code>RUD_DER</code>, <code>Baston_Palo</code>, <code>P_YOKE</code>,
+<code>manetta</code>, <code>ar_StickShaft_Roll</code>; buttons, locks, ghosts, links and bases are not grips); then the clickable connectors
+on a grip (<code>PNT_THROT_L</code>, the Gazelle's <code>PILOT-STICK-PA-PTR</code>, <code>COLLECTIVE-PTR</code>). A part of a grip (the P-51D's twist
+grip) climbs to the node its name says is the lever; a grip with its linkage (the F4U's elevator rod, the Mosquito's
+throttle rod) loses the long rods. A grip the resting pose hides is shown with its visibility argument (the JF-17's
+show / hide stick switch); materials named for the pilot's grip (<code>HB_F-4E_INT_PilotStick</code>) are drawn, the pilot's body
+is not.</li>
+<li><strong>X-Plane 12</strong>: the yoke / throttle datarefs, also the aircraft's own throttle datarefs (<code>laminar/md82/engine/throttle_left</code>,
+<code>laminar/CitX/throttle/ratio_L</code>, <code>throttle_jet_rev_ratio</code>) and a helicopter's collective (<code>prop_ratio</code> where the acf
+says <code>_is_helicopter</code>); never the rotor head's collective. The pilot's own cluster is kept before the size check
+(both yokes or sidesticks moved by one dataref were dropped as too big), a triangle run with both yokes or with the
+front and rear throttles and their rod is split into its parts.</li>
+<li><strong>War Thunder</strong>: <code>stick*</code>, <code>cyclic*</code>, the yokes <code>shturval</code> and <code>column</code>, <code>throttle*</code> / <code>collective*</code> (also
+<code>throttle1_1</code>); <code>stick_rhand</code> / <code>throttle_lhand</code> only where nothing else; a stick with its rods and cables (Re.2000,
+J20, Fokker D.VII, Arado 234) is trimmed to the parts nearest the pilot; a thin throttle lever that looks like a rod
+(C.202, Do 335) is kept where the model has no other throttle.</li>
+</ul>
+<p>Not found, because the model has no separate part for it (checked 2026-10-26): DCS I-16 (only generic names, no grip
+gauges, no hand connectors) and
+the OH-58D pilot's cyclic (only bones, no meshes; the CPO's cyclic is found); X-Plane ASK 21 (a glider: no throttle,
+its air brake lever is a panel callout); War Thunder: of the 206 sets that lacked a grip, 156 have no stick / yoke node
+and 185 no throttle / collective node at all (bombers, transports and helicopters whose yoke, throttle quadrant or
+collective is part of the static cockpit mesh: B-17, B-29, A-20, Blenheim, He 111, SB-2, the helicopters' collectives);
+the Firefly's and G4M1's throttles are long rods only, the Ki-96's grips are hand bones without meshes. Found but left
+out by the quality gate as untextured or plain (to come back with the gate's grip rules): DCS F-14BU, War Thunder
+AH-60, E13A, He 177, Me 264, MH-60L, Mi-8AMTSh, SB-2 sticks.</p>
+<h3 id="which-set-a-variant-gets"><a class="anchor" href="#which-set-a-variant-gets">#</a>Which set a variant gets</h3>
+<p>The game's aircraft names first (<code>DB/Cockpits</code> <code>games[].plane</code>), then the variant's id, aliases and name; a fuzzy match
+of names only when the variant names no aircraft of that game: a type number (two or more digits) and a word (the maker,
+the type's name) or a type designation (<code>c172</code>) must be shared, the avionics' numbers (<code>G1000</code>) do not count as the
+aircraft's, and the aircraft family's own names (<code>C172</code>) come last. No picture rather than a wrong one: the A350 no longer
+gets the King Air 350, the CRJ and the E195 no 172 G1000, the PA-28 no 172 seaplane (<code>Locate_NoNumberAloneMatchesAcrossFamilies</code>).
+A name several sets of a game share (X-Plane's 172, 172 G1000 and seaplane are all &quot;Cessna 172 SP&quot;) leads to the set
+without a special-version word (floats, skis, seaplane, AI).</p>
+<h3 id="animated-controls"><a class="anchor" href="#animated-controls">#</a>Animated controls</h3>
+<p><code>pictures.json</code> lists every control of the cockpit once under <code>&quot;controls&quot;</code> (a data addition; the pages do not show it
+yet): the callouts of the panel and grip pictures, the grips themselves (<code>grip:stick</code>, <code>grip:throttle</code>) and the model's
+other animated controls a reader adds without a callout (<code>CockpitScene.Controls</code>). Per control: <code>id</code>, <code>label</code>, <code>kind</code>
+(JoyPro's vocabulary: <code>button</code>, <code>switch-2</code>, <code>switch-3</code>, <code>switch-N</code>, <code>switch</code> (positions not known), <code>rotary</code>, <code>lever</code>,
+<code>axis</code>, <code>grip</code>, <code>hat</code>, <code>trigger</code>, <code>screen</code>, <code>cover</code>, <code>wheel</code>, <code>pedal</code>, <code>other</code>), <code>gameKind</code> (the game's own: DCS <code>TUMB</code>,
+X-Plane <code>axis_knob</code>, MSFS <code>Switch ASOBO_..._Template</code>), <code>panel</code>, <code>device</code>, <code>seat</code>, <code>animation</code> (<code>source</code>, <code>name</code>, <code>min</code>,
+<code>max</code>, <code>positions</code> where known), <code>commands</code> (the ids to bind) and <code>views</code> (<code>view</code>, <code>x</code>, <code>y</code> 0..1 on every picture it is
+visible on; <code>n</code> on the picture where it is a callout; elsewhere only where its surface is drawn at its place, not behind
+something). Where the animation comes from:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th><code>animation.source</code></th>
+<th>Range and positions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS World</td>
+<td><code>draw argument</code> (clickabledata.lua <code>arg</code>)</td>
+<td><code>arg_lim</code> (range), <code>arg_value</code> steps (a switch's positions)</td>
+</tr>
+<tr>
+<td>X-Plane 12</td>
+<td><code>dataref</code> / <code>command</code> (the manipulator)</td>
+<td>the manipulator's numbers (axis knobs, drag axes, toggles, pushes)</td>
+</tr>
+<tr>
+<td>MSFS 2020</td>
+<td><code>behaviour</code> (node and template) / <code>model node</code></td>
+<td>not in the open files</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td><code>animation argument</code></td>
+<td>the argument values of its animation keys (positions when 2 to 6)</td>
+</tr>
+<tr>
+<td>War Thunder</td>
+<td><code>animated node</code> (the skeleton's node)</td>
+<td>not in the open files</td>
+</tr>
+<tr>
+<td>Nuclear Option</td>
+<td><code>animated part</code> (the grips)</td>
+<td>not in the open files</td>
+</tr>
+<tr>
+<td>Star Citizen</td>
+<td><code>interaction point</code> / <code>model node</code></td>
+<td>not in the open files</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>CockpitPictureSet.Controls</code> (<code>CockpitPictureControl</code>, <code>CockpitPictureSpot</code>) reads them.</p>
+<p>What made the first X-Plane pictures unusable (2026-10-18): Laminar's DDS textures were sampled upside down (they are
+stored top row first like their PNGs), so every surface showed the wrong part of its texture; and static offsets without a
+dataref (<code>ANIM_trans x y z x y z</code>, <code>ANIM_rotate x y z r r</code>) were ignored, so the 737's levers and their callouts sat at the
+aircraft's origin and its panel pictures looked at the inside of the nose (mirrored). Panel pictures of a single control
+show at least 24 x 18 cm around it.</p>
+<h2 id="photos"><a class="anchor" href="#photos">#</a>Photos</h2>
+<p>Real photos are only linked: <code>photos[].url</code> (the picture) and <code>page</code> (where it is published, with its author and
+license). Preferred: Wikimedia Commons (most US military photos are public domain; others CC licences) and official
+pages (museums, manufacturers, air forces). For fictional craft the links point to the work's official or fan
+encyclopedia pages.</p>
+<ul>
+<li>The GUI downloads a photo only after the user's yes for that aircraft (<code>CockpitPhotoConsent</code>, built on
+<code>DevicePhotoConsent</code>: the answers are kept with the device photo answers under the key <code>cockpit:&lt;aircraft id&gt;</code>;
+&quot;Always for cockpits&quot; / &quot;Never for cockpits&quot; under <code>cockpit:*</code>; the global &quot;Never&quot; of the device photos also stops
+cockpit photos). It is cached in <code>%LOCALAPPDATA%\JoyPro2\DeviceImages</code> (<code>DeviceImageCache</code>) and shown with its credit
+and license. A Wikimedia Commons file is loaded as Wikimedia's 960 px thumbnail (what Wikimedia asks programs to
+use), the original only when the thumbnail fails.</li>
+<li>Downloads go one at a time per site, a little apart, with a user agent that names JoyPro, its version and its
+repository (Wikimedia's robot policy). A &quot;429 too many requests&quot; or &quot;503&quot; answer is tried again after the server's
+Retry-After (else 2, 4, 8 seconds; at most four tries); an answer that is not an image (an error page) is not a photo; a
+photo that failed is not remembered as missing. Until 2.1.0 the photos loaded at once with a bare &quot;JoyPro2&quot; agent and
+Wikimedia refused most after the first two (the 747: 2 of 5).</li>
+<li>Each photo card has <strong>Open the photo</strong> (the file itself in the browser, full size, to save from there) and <strong>Open
+the page</strong>; a photo that could not be loaded gets <strong>Try again</strong>. A link that is only a page (fiction, official pages)
+says so instead of failing.</li>
+<li><code>CockpitPictureQualityTests.OptIn_EveryCockpitPhotoLinkOpens</code> (<code>JOYPRO_CHECK_COCKPIT_PHOTOS=1</code>, network) loads every
+photo link of the database as the page does (2026-10-18: 348 of 348).</li>
+<li><code>py -3 tools/cockpit_db.py check-links [--only id,id]</code> asks every photo, page and link address once (HEAD, a one-byte
+ranged GET where a server refuses HEAD, a pause per site, retries after 429/503); offline it says so and passes. Sites
+that refuse programs (403, the fan wikis' bot protection) are listed apart: they open in a browser. 2026-10-25: 927 of
+958 answer, 31 refuse programs (fandom.com pages), none fail.</li>
+<li>Star Citizen ships: besides the official RSI ship page, each ship links its Star Citizen Wiki page (starcitizen.tools,
+community wiki under CC BY-SA 4.0: pictures of the ship and its cockpit, specifications); page links only.</li>
+<li><strong>The render from the game where the photo would be</strong> (2026-11-01): a craft only a game has (<code>fiction</code>: no real
+cockpit exists to photograph) or a variant without any photo address gets, as the first card under &quot;Photos&quot;, the
+cockpit JoyPro rendered on this PC from the game's files (&quot;Carrack: the cockpit rendered on this PC from the files of
+Star Citizen&quot;, &quot;Made by JoyPro from your game files; it stays on this PC ...&quot;). It is the set's overview, else its
+first grip picture, and only a picture the quality gate keeps (45 or more, like the manual's pages;
+<code>CockpitManualPages.RenderInsteadOfPhoto</code>); the manual's overview page is the same render. It is local: no question,
+no download, no &quot;Open the page&quot;; it follows the game chosen under &quot;Pictures from&quot; and appears right after &quot;Build
+pictures from my games&quot;. Games JoyPro reads cockpit models of: DCS, X-Plane 12, MSFS 2020, IL-2, Nuclear Option,
+Star Citizen, War Thunder (MSFS 2024: screenshots). Elite Dangerous, X4, Star Wars: Squadrons, No Man's Sky, VTOL VR
+and the film and series craft have no render (JoyPro reads no cockpit models of them), so they keep their page links.</li>
+<li>The engine never downloads a photo.</li>
+<li>The maintainer's private archive: see <a href="#photos-of-cockpits-no-game-has">Photos of cockpits no game has</a>.</li>
+</ul>
+<h2 id="photos-of-cockpits-no-game-has"><a class="anchor" href="#photos-of-cockpits-no-game-has">#</a>Photos of cockpits no game has</h2>
+<p>Where a game gives good pictures of a cockpit (see &quot;Pictures from your games&quot;), nothing else is needed. For the
+aircraft and ships no game has good pictures of (none at all, or a set rated low), JoyPro knows <strong>verified photos</strong>:
+photo addresses with a SHA-256 each, and JoyPro's own labels for the main panels as data.</p>
+<ul>
+<li><strong>On the Cockpits page</strong>: such a variant gets &quot;No game has pictures of this cockpit. Photos of the ... cockpit JoyPro
+knows: 2 (commons.wikimedia.org) ...&quot; with <strong>Download photos</strong>. One click downloads every photo of the aircraft (it
+counts as the yes for that aircraft), with a progress bar and Cancel, and says how many were downloaded and checked,
+how many came from the web archive's copy and which could not be downloaded. The manual then has a page per photo
+(&quot;Photo: Flight deck&quot;, after the overview): the photo as large as the page allows, JoyPro's numbered labels on top (a
+box near the panel, a line to a dot on it), the numbered list below (the label's note or the catalog panel's first
+sentence; a label that names a panel or grip leads to its page) and the photo's credit, licence and site. The photo
+cards under &quot;Photos&quot; show the downloaded photos from this PC, without asking again. A variant with good pictures from
+a game shows no photo page and no offer.</li>
+<li><strong>On this PC</strong>: <code>&lt;data&gt;\CockpitPhotos\&lt;aircraft&gt;\&lt;view&gt;-&lt;sha12&gt;.&lt;ext&gt;</code> with <code>index.json</code>, kept by the same store as the
+device reference photos (<code>ReferencePhotoStore</code>, <a href="../reference/device-reference.html#reference-photos-on-this-pc">device-reference.md</a>):
+the original address first, checked against <code>sha256</code> (or one of <code>sha256Alt</code>); when it fails or sends other bytes, the
+Wayback snapshot (<code>archive</code>, else the archive's newest capture), checked the same way; a photo the site changed and no
+archive has is kept as it is now and reported (&quot;its labels may not fit&quot;).</li>
+<li><strong>Shipped</strong>: only the addresses and JoyPro's labels. A Wikimedia Commons photo is recorded as its original file (the
+same bytes everywhere and in the web archive; drawn at most 2800 px wide); only a file over 7.5 MB or 6000 px is
+recorded as its 1920 px thumbnail. Wikimedia makes thumbnails in each of its data centres, and their bytes differ
+from place to place (a check from Europe and the web archive's capture from America got different files of the same
+size): such a download counts as changed, but the labels still fit, so the page only warns when the size differs.
+Other photos (makers, press, museums) are only addresses. The labels are never drawn into a picture.</li>
+</ul>
+<p>The photo fields (in the aircraft's <code>photos</code>, besides <code>url</code>, <code>page</code>, <code>view</code>, <code>credit</code>, <code>license</code>, <code>variant</code>, <code>caption</code>):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sha256</code></td>
+<td>the SHA-256 of the file at <code>url</code> (lower-case hex): makes the photo a verified one</td>
+</tr>
+<tr>
+<td><code>sha256Alt</code></td>
+<td>further hashes of the same pixels (a site re-encoded the file)</td>
+</tr>
+<tr>
+<td><code>archive</code></td>
+<td>its Wayback Machine snapshot (<code>https://web.archive.org/web/&lt;time&gt;id_/&lt;url&gt;</code>)</td>
+</tr>
+<tr>
+<td><code>width</code>, <code>height</code></td>
+<td>its size in pixels when recorded</td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td><code>commons</code>, <code>maker</code>, <code>press</code> or <code>museum</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>A photo with <code>variant</code> belongs to that variant (and its seats and the variants inheriting from it); one without is for
+every variant of the aircraft that needs photos.</p>
+<p>JoyPro's labels (<code>DB/Cockpits/photo-labels/&lt;aircraft&gt;.&lt;sha12&gt;.json</code>, one file per photo):</p>
+<pre><code class="language-json">{ &quot;format&quot;: &quot;joypro-cockpit-photo-labels&quot;, &quot;version&quot;: 1, &quot;aircraft&quot;: &quot;a350&quot;,
+  &quot;photo&quot;: { &quot;url&quot;: &quot;https://upload.wikimedia.org/wikipedia/commons/e/e0/Airbus_A-350_XWB_F-WWYB_cockpit_view.jpg&quot;, &quot;sha256&quot;: &quot;f83162...&quot; }, &quot;title&quot;: &quot;Flight deck&quot;,
+  &quot;source&quot;: &quot;JoyPro's labels, placed on the photo by looking at it (2026-10-31)&quot;,
+  &quot;labels&quot;: [ { &quot;n&quot;: 1, &quot;text&quot;: &quot;Glareshield: autopilot (FCU) and EFIS&quot;, &quot;x&quot;: 0.70, &quot;y&quot;: 0.215, &quot;panel&quot;: &quot;glareshield&quot; },
+              { &quot;n&quot;: 5, &quot;text&quot;: &quot;Nose wheel steering tiller&quot;, &quot;x&quot;: 0.27, &quot;y&quot;: 0.475,
+                &quot;note&quot;: &quot;A small hand wheel that steers the nose wheel while taxiing on the ground.&quot; } ] }
+</code></pre>
+<p><code>x</code>, <code>y</code>: the point the label marks (0..1 of the photo from the top left); <code>panel</code>: a catalog panel id of the variant,
+or a grip (<code>stick</code>, <code>throttle</code>, a device name), or <code>overview</code>; <code>note</code>: one plain sentence for a label without a catalog
+panel text. <code>cockpits check</code> (<code>CockpitPhotos.Check</code>): a verified photo has its address, a SHA-256, its size, credit and
+licence; a fictional craft has no Commons photo; labels are numbered 1..N once, 1 to 60 characters, inside the photo,
+name a panel or grip the aircraft has, and belong to a verified photo of their aircraft.</p>
+<h3 id="tools"><a class="anchor" href="#tools">#</a>Tools</h3>
+<ul>
+<li><code>py -3 tools/cockpit_photos.py needed</code> (or <code>engine cockpits photos --needed [--game G]</code>): every variant without good
+pictures from a game, why, and its verified photos.</li>
+<li><code>search &lt;words&gt;</code>: Wikimedia Commons files; <code>record &lt;aircraft&gt; &lt;Commons file page or address&gt; [--variant v] [--caption text] [--thumb]</code>: downloads the photo once (the original, or the thumbnail as above; no EXIF rotation: JoyPro draws
+the pixels as stored), records <code>url</code>, <code>sha256</code>, size,
+credit and licence (from the Commons file page) and keeps the bytes in the private archive.</li>
+<li><code>panels &lt;aircraft&gt; [variant]</code>, <code>label &lt;aircraft&gt; &lt;sha12&gt; list | title &lt;text&gt; | add &lt;n&gt; &lt;x&gt; &lt;y&gt; &lt;text&gt; [--panel id] [--note text] | move &lt;n&gt; &lt;x&gt; &lt;y&gt; | remove &lt;n&gt;</code>: the labels; <code>preview &lt;aircraft&gt; [variant] &lt;sha12&gt;</code> renders the photo
+page (<code>engine cockpits render &lt;aircraft&gt; &lt;variant&gt; --page photo:&lt;sha12&gt; --photos &lt;archive folder&gt;</code>).</li>
+<li><code>check</code>: every verified photo alive / changed / dead, and for the others whether the snapshot has the recorded
+content; <code>snapshots [--record] [--save-page-now] [--all]</code>: finds a Wayback snapshot with the recorded content (CDX,
+matched by the digest of the private archive's copy without downloading the captures, then the captures compared,
+then the availability API), records it as <code>archive</code>, and asks Save Page Now for the ones the archive does not have
+yet (one request every 20 s; after &quot;too many requests&quot; it waits 5, then 10 minutes); <code>--all</code> also checks every
+recorded snapshot against the recorded bytes and replaces one that has other bytes.</li>
+<li><code>engine cockpits render ... --page photos|photo|photo:&lt;sha12&gt; [--photos &lt;folder&gt;|none]</code>: the photo pages (default
+folder: the GUI's downloads); <code>engine cockpits photos --verified</code>: the verified photos with their hashes and labels.</li>
+</ul>
+<h3 id="the-private-photo-archive-maintainer"><a class="anchor" href="#the-private-photo-archive-maintainer">#</a>The private photo archive (maintainer)</h3>
+<p><code>tools\backup_cockpit_photos.ps1 [-Target &lt;folder outside the repository&gt;] [-Verified] [-Aircraft id] [-Refresh]</code>
+(default target <code>JOYPRO_COCKPIT_PHOTO_ARCHIVE</code>, else <code>..\JoyPro2-private\cockpit-photos</code>) keeps a copy of every linked
+photo, so that a photo whose address and snapshot are both gone can still be recovered and its labels checked: files by
+content (<code>sha256\&lt;sha256&gt;.&lt;ext&gt;</code>, where <code>cockpit_photos.py record</code> puts its downloads too) and <code>manifest.json</code> (one line
+per aircraft and address: aircraft, view, variant, url, page, credit, license, source, archive, origin (original /
+archive), changed, date, sha256, bytes, recordedSha256, file). A verified photo is checked against its hash and comes
+from its snapshot when the address fails. Incremental; neither the build nor the release reads it, and no archived file
+is ever published. Older backups (<code>&lt;aircraft&gt;\&lt;view&gt;-&lt;sha12&gt;.&lt;ext&gt;</code>) move into the content store on the next run.</p>
+<h3 id="first-batch-2026-10-31"><a class="anchor" href="#first-batch-2026-10-31">#</a>First batch (2026-10-31)</h3>
+<p><code>cockpits photos --needed</code>: 178 variants without good pictures from a game: 122 fictional (film and series craft, Elite
+Dangerous, X4, No Man's Sky, Star Wars: Squadrons, VTOL VR, WARDOGS, Tiny Combat Arena: games JoyPro reads no pictures
+of, or no real cockpit), 56 real, plus the Star Citizen ships whose renders are rated low. 40 of them now have verified
+photos with labels (37 photos, 260 labels):</p>
+<ul>
+<li>Airliners and civil: A350-900, A380-800, 777-300ER, 727-200 (and its flight engineer's station), ATR 72-600, Q400,
+E175, E195, CRJ-700 / -900, Pitts S-2S, R44.</li>
+<li>Helicopters: UH-1Y, OH-58A, CH-47D, UH-60M, NH90, SA 330 Puma.</li>
+<li>Jets: Hawk T2 (Mk 127), MiG-31, Su-35S (exhibition stand), F-35A/B/C (mock-up), F-22A.</li>
+<li>Spacecraft: Mercury, Gemini, Apollo CM and LM (simulator), Space Shuttle (forward and aft flight deck), Soyuz MS,
+X-15, Crew Dragon (cabin mock-up), Buran.</li>
+<li>Star Citizen (renders rated low; the maker's own pictures, address only): Vulture, Ares, Aurora.</li>
+</ul>
+<h3 id="second-batch-2026-11-01"><a class="anchor" href="#second-batch-2026-11-01">#</a>Second batch (2026-11-01)</h3>
+<ul>
+<li>MH-60R / MH-60S (<code>uh-60</code>, variant <code>mh-60r-s</code>): 3 photos from Wikimedia Commons (U.S. Navy, public domain) with 15
+labels: the MH-60S cockpit in flight (displays, standby instruments, keysets, centre and overhead consoles), the
+MH-60R cockpit in flight over the Gulf of Alaska, and the MH-60R centre console with the stabilator and dipping-sonar
+controls between the two keysets. Their web archive snapshots were made with Save Page Now (2026-11-01, see below).</li>
+<li>Rafale (C, B, M, F4): Commons has no photo of a Rafale's cockpit panels (only people climbing in, the canopy from
+outside, a HUD selfie and the Rafale A prototype), so none was added.</li>
+<li>Star Citizen (Gladius, Carrack, Mercury Star Runner, C2 Hercules, Nomad, Defender): Commons has no picture of
+their cockpits, so none was added; the Star Citizen Wiki stays a page link. Their render from the game stands where
+the photo would be (below).</li>
+<li><code>snapshots --all --record --save-page-now</code> 2026-11-01: every one of the 40 verified photos has a pinned Wayback
+snapshot with its recorded bytes. 37 had one, each checked by the CDX digest of the private archive's copy (all 37
+kept); the 3 MH-60 photos had no capture, Save Page Now made one of each, and each was downloaded and compared with
+the recorded SHA-256 before it was recorded. <code>CockpitPhotoTests.ShippedPhotos_AreVerifiedWithLabelsOnThePhoto</code> now
+requires the snapshot of every verified photo.</li>
+<li><code>check</code> 2026-11-01: 40 of 40 verified photos alive with their recorded bytes; <code>cockpit_db.py check-links</code>: 950 of
+980 addresses answer, 30 refuse programs (fandom.com pages), none fail.</li>
+</ul>
+<p>Still without a usable photo (Commons has no cockpit photo of a real one, and no maker or museum picture was found):
+SA342 Mistral, Rafale, Hawk T1 / Mk 100, Alpha Jet, J-10, MiG-25, Su-57, Yak-130, F-16 Block 30 / F-16D, Soyuz TM,
+Pe-2 series 87 (IL-2 set rated low).</p>
+<p>The Star Citizen Carrack, Nomad, Defender, C2 Hercules, Mercury Star Runner and Gladius have no real cockpit (no photo
+exists), but JoyPro renders each of them on the user's PC from Star Citizen's files, and the render stands where the
+photo would be (see <a href="#photos">Photos</a>). Checked 2026-11-01 with the current reader (<code>engine cockpits pictures build --game StarCitizen</code>, rated by the quality gate): Gladius 100 (7 pictures: overview, stick, throttle, 4 panels), Carrack
+95 (overview, both sticks), Defender 100 (overview only: its dashboard model cannot be read and no stick or throttle is
+found by part name), Nomad 60 (overview, stick, throttle, overhead), Mercury Star Runner 100 (overview, yoke, 2 side
+panels), C2 Hercules 93 (the A2/C2/M2 Starlifter share one set: overview, yoke, 3 panels). Sets made before 2026-10-26
+(cabin and consoles not drawn yet) rated the Carrack, Nomad and Defender 0 and the Hercules 27, so their overview was
+left out; &quot;Build pictures from my games&quot; with the current version makes them again where the game was updated since,
+<code>engine cockpits pictures build --game StarCitizen --force</code> in any case.</p>
+<h2 id="licensing"><a class="anchor" href="#licensing">#</a>Licensing</h2>
+<ul>
+<li>Real aircraft: the schematic drawings (<code>drawings/</code>) are JoyPro's own reconstructions of the grip's shape and its
+control layout (functional facts: which switch is where and what it does), drawn in JoyPro's style. They are not
+traced from photos and do not copy a manual's figure. The line drawings (<code>line-drawings/</code>) are JoyPro's own drawings
+of the cockpits, panels and grips. No manual page, figure or photo is in the repository or the release.</li>
+<li>Fictional craft (films, series, games): <strong>no drawing of their design</strong>. They get the generic stick and throttle with
+their function list only, plus links (<a data-private="1">licensing-audit.md</a>, P7).</li>
+<li>Names of aircraft, franchises and makers are used to say what is described (nominative use); no logos.</li>
+<li>Text is JoyPro's own wording. Facts come from the listed sources; no source text is copied beyond short control
+labels.</li>
+</ul>
+<h2 id="growing-the-database"><a class="anchor" href="#growing-the-database">#</a>Growing the database</h2>
+<p><code>tools/cockpit_db.py</code> (Python 3, no packages):</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>functions [query]</code></td>
+<td>JoyPro's function ids (<code>DB/Functions/slots.json</code>)</td>
+</tr>
+<tr>
+<td><code>seed &lt;plane&gt; [--game G]</code></td>
+<td>the HOTAS rows JoyPro's function tables already have for a game aircraft (DCS: physical control text per function)</td>
+</tr>
+<tr>
+<td><code>ids [query]</code></td>
+<td>aircraft and variant ids already in the database</td>
+</tr>
+<tr>
+<td><code>check [draft.json ...]</code></td>
+<td>the database plus the drafts through <code>engine cockpits check</code> (only the drafts' problems are printed)</td>
+</tr>
+<tr>
+<td><code>check --patch &lt;patch.json&gt; ... [--all] [--structure]</code></td>
+<td>the database with patches applied (a temporary copy), the patched variants' problems</td>
+</tr>
+<tr>
+<td><code>patch &lt;patch.json&gt; ...</code></td>
+<td>applies patches (<code>{&quot;format&quot;: &quot;joypro-cockpit-patch&quot;, &quot;variants&quot;: {&quot;&lt;id&gt;&quot;: {fields}}, &quot;aircraft&quot;: {...}, &quot;newVariants&quot;: {&quot;&lt;aircraft&gt;&quot;: [...]}, &quot;newAircraft&quot;: {&quot;&lt;file.json&gt;&quot;: [...]}}</code>; a field given replaces the variant's field, <code>null</code> removes it)</td>
+</tr>
+<tr>
+<td><code>pages &lt;aircraft&gt; [variant] [--page ...] [--out dir] [--dark] [--patch p.json]</code></td>
+<td>the manual pages as PNG for a look</td>
+</tr>
+<tr>
+<td><code>merge &lt;draft.json&gt; --into &lt;file.json&gt; [--replace]</code></td>
+<td>adds the drafts' aircraft (or new variants of an aircraft already in the file)</td>
+</tr>
+<tr>
+<td><code>render &lt;aircraft&gt; [variant] [--out &lt;folder&gt;] [--light]</code>, <code>render --drawing &lt;id&gt;</code></td>
+<td>the sheets as a PNG for a look</td>
+</tr>
+<tr>
+<td><code>get &lt;aircraft&gt; [variant]</code></td>
+<td>a variant with its controls, ids, types and where each is drawn</td>
+</tr>
+<tr>
+<td><code>photos-merge &lt;photos.json&gt; ...</code></td>
+<td>adds verified photo links (<code>{&quot;format&quot;: &quot;joypro-cockpit-photos&quot;, &quot;photos&quot;: {&quot;&lt;aircraft&gt;&quot;: [ ... ]}}</code>); an address already listed is skipped</td>
+</tr>
+<tr>
+<td><code>coverage</code>, <code>drawings</code></td>
+<td>numbers (also every control no drawing shows); drawings with their parts</td>
+</tr>
+</tbody>
+</table></div>
+<p>The procedure per batch (also the brief for research helpers):</p>
+<ol>
+<li>Take a list of types; check <code>ids</code> so nothing is added twice. One aircraft entry per type family (all F-16 versions
+in <code>f-16</code>), one variant per version that has its own controls.</li>
+<li>For each variant find the HOTAS description: the game manual's HOTAS chapter (DCS, BMS, IL-2, MSFS), the public
+flight-manual excerpts, the manufacturer's or air force's pages, then tutorials. For a DCS module run <code>seed</code> first: it
+lists the function ids JoyPro already maps to that module's stick and throttle, with the physical control in words.</li>
+<li>Write the controls: vocabulary ids, device, type, where, and one function per direction with a short text and the
+function id (<code>functions &lt;word&gt;</code> finds it; empty when there is none, never a guess).</li>
+<li>Panels briefly, the cockpit paragraph, notes (differences to the other variants; what is uncertain), sources with
+working https addresses, confidence.</li>
+<li><code>check &lt;draft&gt;</code> until it reports no problem, then <code>merge</code>. <code>render</code> a few for a look.</li>
+<li>Drawings are made separately (see <a href="#drawings">Drawings</a>); a new drawing's part ids are the controls' ids of the
+variants that use it. <code>check</code> reports a part a variant names that the drawing lacks.</li>
+</ol>
+<h2 id="coverage-2026-10-13-engine-cockpits-coverage"><a class="anchor" href="#coverage-2026-10-13-engine-cockpits-coverage">#</a>Coverage (2026-10-13, <code>engine cockpits coverage</code>)</h2>
+<p>Every listed variant (462, plus 9 hidden game templates) has its manual pages: an overview with numbered areas, the
+grips with their HOTAS tables and numbered panels; <code>cockpits check</code> reports no problem.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Variants</th>
+<th>HOTAS rows</th>
+<th>Variants with mode columns / columns</th>
+<th>Panels</th>
+<th>Numbered items</th>
+<th>JoyPro's drawings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS (every module on the test PC, all versions and seats)</td>
+<td>81</td>
+<td>2654</td>
+<td>30 / 104</td>
+<td>1223</td>
+<td>9981</td>
+<td>505</td>
+</tr>
+<tr>
+<td>Falcon BMS (F-16 blocks, Hornets, A-10)</td>
+<td>17</td>
+<td>993</td>
+<td>16 / 50</td>
+<td>413</td>
+<td>2413</td>
+<td>211</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles / IL-2 Korea</td>
+<td>66 / 2</td>
+<td>974 / 44</td>
+<td>–</td>
+<td>364 / 32</td>
+<td>2968 / 287</td>
+<td>149 / 26</td>
+</tr>
+<tr>
+<td>War Thunder (type level)</td>
+<td>155</td>
+<td>4309</td>
+<td>43 / 125</td>
+<td>1532</td>
+<td>12507</td>
+<td>539</td>
+</tr>
+<tr>
+<td>MSFS 2020 / 2024</td>
+<td>51 / 54</td>
+<td>1214 / 1323</td>
+<td>5 / 15, 9 / 23</td>
+<td>288 / 295</td>
+<td>2561 / 2837</td>
+<td>2 / 2</td>
+</tr>
+<tr>
+<td>X-Plane 11 / 12, FSX, Prepar3D</td>
+<td>14 / 18, 12, 14</td>
+<td>335 / 437, 266, 340</td>
+<td>–</td>
+<td>71 / 93, 59, 70</td>
+<td>579 / 808, 492, 592</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Star Citizen / Elite Dangerous / X4</td>
+<td>42 / 32 / 21</td>
+<td>2184 / 2112 / 588</td>
+<td>42 / 294, 32 / 160, 21 / 84</td>
+<td>276 / 224 / 105</td>
+<td>1351 / 1027 / 318</td>
+<td>none (fiction)</td>
+</tr>
+<tr>
+<td>VTOL VR / Nuclear Option / WARDOGS / Tiny Combat Arena</td>
+<td>9 / 13 / 6 / 1</td>
+<td>147 / 253 / 90 / 15</td>
+<td>7 / 19, –</td>
+<td>104 / 37 / 13 / 4</td>
+<td>560 / 137 / 50 / 10</td>
+<td>none (game designs)</td>
+</tr>
+<tr>
+<td>Arma 2 / 2 OA / 3 / Reforger</td>
+<td>12 / 7 / 3 / 3</td>
+<td>317 / 263 / 67 / 76</td>
+<td>2 / 6, 2 / 7, 1 / 2, 2 / 4</td>
+<td>102 / 119 / 23 / 34</td>
+<td>745 / 881 / 174 / 327</td>
+<td>39 / 104 / 8 / 21</td>
+</tr>
+<tr>
+<td>Real types outside the games (spacecraft, F-35 ...)</td>
+<td>26</td>
+<td>306</td>
+<td>–</td>
+<td>108</td>
+<td>402</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Fiction (films and series, Star Wars: Squadrons, No Man's Sky)</td>
+<td>44</td>
+<td>402</td>
+<td>8 / 32</td>
+<td>139</td>
+<td>400</td>
+<td>none</td>
+</tr>
+<tr>
+<td><strong>All</strong></td>
+<td><strong>462</strong></td>
+<td><strong>13075</strong></td>
+<td><strong>170 / 775</strong></td>
+<td><strong>3495</strong></td>
+<td><strong>24486</strong></td>
+<td><strong>778</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>(Variants count in every game they are flown in.)</p>
+<h3 id="before-version-2"><a class="anchor" href="#before-version-2">#</a>Before version 2</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Aircraft</th>
+<th>Variants</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fixed-wing (jets, warbirds, WWI, airliners, business and light aircraft, transports)</td>
+<td>121</td>
+<td>235</td>
+</tr>
+<tr>
+<td>Helicopters (military and civil)</td>
+<td>21</td>
+<td>46</td>
+</tr>
+<tr>
+<td>Real spacecraft (Space Shuttle, Apollo CM/LM, Soyuz, Gemini, Mercury, X-15, Crew Dragon, Buran)</td>
+<td>8</td>
+<td>13</td>
+</tr>
+<tr>
+<td>Fiction: film and series craft (Star Wars, BSG, Babylon 5, Firefly, The Expanse, Interstellar, Aliens, Avatar, Airwolf, Blue Thunder, Firefox, Darkstar, Halo) and game ships (Star Citizen, Elite Dangerous, X4, VTOL VR, Nuclear Option, WARDOGS, Tiny Combat Arena)</td>
+<td>70</td>
+<td>152</td>
+</tr>
+<tr>
+<td><strong>Listed in all</strong> (plus 6 hidden game templates)</td>
+<td><strong>220</strong></td>
+<td><strong>446</strong></td>
+</tr>
+</tbody>
+</table></div>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Game</th>
+<th>Aircraft</th>
+<th>Variants</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS (every flyable module; menu-only slots excepted)</td>
+<td>44</td>
+<td>77</td>
+</tr>
+<tr>
+<td>Falcon BMS (F-16 blocks, Hornets, A-10)</td>
+<td>3</td>
+<td>17</td>
+</tr>
+<tr>
+<td>IL-2 Great Battles / IL-2 Korea</td>
+<td>41 / 2</td>
+<td>66 / 2</td>
+</tr>
+<tr>
+<td>War Thunder (type level)</td>
+<td>74</td>
+<td>151</td>
+</tr>
+<tr>
+<td>MSFS 2020 / 2024</td>
+<td>38 / 40</td>
+<td>51 / 54</td>
+</tr>
+<tr>
+<td>X-Plane 11 / 12</td>
+<td>12 / 13</td>
+<td>14 / 18</td>
+</tr>
+<tr>
+<td>FSX / Prepar3D</td>
+<td>11 / 10</td>
+<td>12 / 14</td>
+</tr>
+<tr>
+<td>Star Citizen / Elite Dangerous / X4</td>
+<td>12 / 7 / 6</td>
+<td>42 / 32 / 21</td>
+</tr>
+<tr>
+<td>VTOL VR / Nuclear Option / WARDOGS / Tiny Combat Arena</td>
+<td>6 / 13 / 3 / 1</td>
+<td>9 / 13 / 6 / 1</td>
+</tr>
+<tr>
+<td>Arma 2 / 2 OA / 3 / Reforger</td>
+<td>10 / 7 / 3 / 2</td>
+<td>12 / 7 / 3 / 3</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Drawings: 280 (269 of real grips, 11 generic); 284 variants show JoyPro's drawing of the real grip; every control of
+every variant is drawn (no &quot;Other controls&quot;). Real devices still on a generic drawing: 24 (back seats with their own
+grips, A-4, Harrier GR.3 / Sea Harrier, AH-64A, A-10A, B727, ATR 72, Baron, three WWI throttles).</li>
+<li>Functions: 9978 rows, 8283 with a JoyPro function id. Confidence: 61 variants high, 181 medium, 204 low (types without
+public HOTAS documentation; the variant's notes say what is inferred).</li>
+<li>Photos: 477 links for 165 aircraft (real aircraft: Wikimedia Commons with credit and license, a few makers' pages;
+fiction: page links only).</li>
+</ul>
+<h2 id="tests"><a class="anchor" href="#tests">#</a>Tests</h2>
+<ul>
+<li><code>dotnet test gui/JoyPro.Gui.Tests --filter CockpitDatabaseTests</code>: the setup wizard reads the database and the answer of <code>cockpits get</code>; Commons photos load as thumbnails; every variant has stick-side and throttle-side
+controls, every function id exists, every variant has a source and a confidence, every drawing's paths are valid and
+its parts inside, fictional craft use only generic drawings and photos are https links; every variant's sheets build
+without overlapping tables; the Cockpits page renders offscreen with a few aircraft (drawings only, no photo is
+downloaded), and so do the manual pages of a few variants (<code>JOYPRO_COCKPITS_PREVIEW</code> names a folder to keep them); a
+synthetic version-2 variant checks the modes, the rows with short / long presses and ground / air, the merged cells,
+the overview's links, the numbered panels, the seats and the problems <code>check</code> reports.</li>
+<li><code>engine\tests\smoke\cockpits.ps1</code>: <code>cockpits check</code>, <code>list</code> with filters, <code>search</code>, <code>get</code> (JSON for the wizard,
+vocabulary and game actions), <code>render</code> (PNG), <code>compare</code> on a profile, <code>photos --coverage</code>.</li>
+<li><code>dotnet test gui/JoyPro.Gui.Tests --filter CockpitPicturePackTests</code>: the picture packs (below).</li>
+<li><code>CockpitPictureTests.Page_ShowsTheGameRender_WhereAPhoto_WouldBe_ForACraftOnlyAGameHas</code> and
+<code>RenderInsteadOfPhoto_TakesTheOverview_ElseAGrip_OnlyAKeptPicture</code>: the Star Citizen Carrack gets its render as the
+first card under &quot;Photos&quot; after &quot;Build pictures from my games&quot; (no question, no page link, the same render on the
+manual's overview), also after answering the photo question; a real aircraft only when no photo address of the
+variant is known; a picture the quality gate drops never stands in.</li>
+<li><code>dotnet test gui/JoyPro.Gui.Tests --filter CockpitPhotoTests</code>: the shipped verified photos and their labels, the
+rules of <code>check</code> (a label off the photo, an unknown panel, a label file without its photo), &quot;Download photos&quot; against
+a fake server (SHA-256 check, a changed photo from the web archive's copy, a dead one reported, Cancel, the consent,
+the photo page afterwards), the photo page (every dot on its point, the boxes inside the photo and apart, the links,
+the credit with author, licence and site) and no photo page where a game has good pictures. Opt-in render:
+<code>JOYPRO_COCKPIT_PHOTO_RENDER=&lt;out&gt;</code>, <code>JOYPRO_COCKPIT_PHOTO_ARCHIVE=&lt;archive&gt;</code>, <code>JOYPRO_COCKPIT_PHOTO_AIRCRAFT=a350,uh-60:uh-60m</code>
+(the Cockpits tab before and after the download, 1280 px and large, light and dark). Code:
+<code>engine/DeviceReference/CockpitPhotos.cs</code>, <code>CockpitManualPages.PhotoPage</code>, <code>CockpitsViewModel.VerifiedPhotos.cs</code>.</li>
+<li><code>dotnet test gui/JoyPro.Gui.Tests --filter CockpitPictureQualityTests</code>: the quality gate (flat, black, empty, untextured,
+hidden controls, a grip too small in its frame, duplicates), a poor panel left out and a duplicate merged, the X-Plane
+static offsets, a low-quality set giving way to another game's set (also for the packs), the drawing mode showing the
+picture where the drawing is unreadable, every picture of a set opening (<code>JOYPRO_CHECK_PICTURE_SETS=&lt;root&gt;</code>: every
+set of a pictures root), the photo downloads after 429 with an honest user agent (<code>JOYPRO_CHECK_COCKPIT_PHOTOS=1</code>: every
+photo link of the database, network). The journey shows the 737 from X-Plane 12 with &quot;Pictures from&quot; MSFS 2024 and the
+747's photos from a local stand-in that answers 429 first.</li>
+</ul>
+<h2 id="picture-packs"><a class="anchor" href="#picture-packs">#</a>Picture packs</h2>
+<p>The cockpit pictures the maintainer rendered from the games (&quot;Pictures from your games&quot; above) are also published, so
+that a user who cannot build them (game not installed, MSFS 2024, too slow a PC) still gets them. They are <strong>release
+assets</strong> of the GitHub release <code>cockpit-pictures-v1</code> (one zip per aircraft set plus <code>manifest.json</code>), never part of the
+repository or of JoyPro's release package. The rights stay with the games' owners (<code>CREDITS.txt</code> in each pack;
+<code>NOTICE.md</code>, <code>THIRD_PARTY_NOTICES.md</code> section 2).</p>
+<ul>
+<li><strong>Cockpits page</strong>: an aircraft (variant) without pictures from the user's games that has a pack gets &quot;Download
+pictures for {aircraft} ({size} MB)?&quot; (Download / Not now; &quot;Not now&quot; holds for the session). Settings &gt; Privacy &gt;
+&quot;Cockpit pictures from JoyPro's releases&quot;: <strong>Ask</strong> (default), <strong>Always download</strong> (no question), <strong>Never</strong> (JoyPro
+does not even read the list). &quot;Picture packs from JoyPro's releases&quot; (expander) lists the release's games with
+their count and size: &quot;Download pictures for all my aircraft&quot; (the catalog variants of the installed games) or
+&quot;Download all of this game&quot;; both ask first with the total size. A download shows its bytes and can be cancelled;
+a pack that does not match its SHA-256 is not installed (&quot;does not match its checksum&quot;). &quot;Build pictures from my
+games&quot; stays.</li>
+<li><strong>On disk</strong>: the zip is checked, unpacked into <code>&lt;data&gt;\GameData\CockpitPictures\.downloads</code> and moved to
+<code>&lt;game&gt;\&lt;set&gt;</code>; the game's <code>index.json</code> gets the pack's aircraft names (a name that already leads to another set on
+this PC keeps it); <code>pack.json</code> in the set folder keeps the pack's id, version, checksum and the pictures' build time.
+A newer version in the manifest replaces an installed pack; a set built on this PC that is at least as new as the
+pack's pictures is kept unless asked (the &quot;force&quot; of <code>CockpitPicturePacks.DownloadAsync</code>); an older one is replaced.
+A later build on this PC writes a new <code>pictures.json</code>, and the set counts as built on this PC again.</li>
+<li><strong>Feed</strong>: <code>https://github.com/Holdi601/JoystickProfiler2/releases/download/cockpit-pictures-v1/manifest.json</code>, read
+only when needed and kept for the session (after a failure again two minutes later). <code>JOYPRO_COCKPIT_PICTURE_FEED</code>
+names another one: a folder, a <code>file://</code> address or an http(s) folder or <code>manifest.json</code> (tests, checking a pack
+release before it is published). The code: <code>gui/JoyPro.Gui/Services/CockpitPicturePacks.cs</code>,
+<code>ViewModels/CockpitsViewModel.PicturePacks.cs</code>.</li>
+<li><strong>Several feeds</strong> (a GitHub release takes at most 1000 assets): a manifest's <code>&quot;feeds&quot;</code> names the release tags of
+further manifests (text or <code>{&quot;tag&quot;: ...}</code>; letters, digits, <code>.</code>, <code>_</code>, <code>-</code>). The main release names
+<code>cockpit-pictures-wt-v1</code> (War Thunder, 1,197 packs), which names its second part <code>cockpit-pictures-wt-v1-part2</code>.
+The GUI reads them all (the further feeds' own <code>&quot;feeds&quot;</code> too, each tag once, at most 16) and lists their packs as
+one; a game and set comes from the first feed that has it; each asset is downloaded from its own release
+(<code>.../download/&lt;tag&gt;/&lt;asset&gt;</code>). A tag resolves next to the feed: on the web the release <code>&lt;tag&gt;</code> next to it; in a
+local folder the folder <code>&lt;tag&gt;</code> in it or next to it, else the folder next to it whose <code>manifest.json</code> has that
+<code>&quot;tag&quot;</code> (so <code>%JOYPRO_RELEASE_DIR%\cockpit-packs</code> finds <code>cockpit-packs-wt</code>). A further feed that cannot be read is
+left out (&quot;1 part of the picture packs could not be read ...&quot; under the expander) and read again two minutes later;
+only the main feed's failure fails the list.</li>
+<li><strong>Pictures</strong>: JPEG (quality 90, at most 1600 px on the long side). A picture with transparent parts gets
+<code>&lt;name&gt;.mask.png</code> (8-bit grey, 255 = opaque) and <code>&quot;mask&quot;</code> next to <code>&quot;image&quot;</code> in <code>pictures.json</code>; the GUI
+(<code>ManualPageView.LoadPicture</code>) and the engine (<code>EngineManualPageRenderer.LoadPicture</code>) draw the JPEG with it. Without
+a mask a JPEG is drawn opaque; PNG pictures work as before. The page's source line says &quot;Picture rendered from <game>
+with JoyPro (picture pack version N)&quot;.</li>
+<li><strong>Building a release</strong>: <code>powershell -File tools\build_cockpit_packs.ps1 [-Source &lt;pictures root&gt;] [-Out &lt;folder&gt;] [-Game DCS,XPlane12] [-Quality 90] [-MaxSide 1600] [-Tag cockpit-pictures-v1] [-Feeds &lt;tag&gt;,...] [-MaxAssets 1000] [-ManifestOnly] [-Force] [-Only &lt;game&gt;/&lt;set&gt;,...]</code> (default source <code>&lt;data&gt;\GameData\CockpitPictures</code>, outside the repository). The main
+release (default tag, output <code>%JOYPRO_RELEASE_DIR%\cockpit-packs</code>, or <code>-Out</code>) has every game except War Thunder and names
+<code>cockpit-pictures-wt-v1</code> in <code>&quot;feeds&quot;</code> (<code>-Feeds</code> gives others); <code>-Tag cockpit-pictures-wt-v1</code> builds War Thunder
+into <code>%JOYPRO_RELEASE_DIR%\cockpit-packs-wt</code>. It writes one zip per set (asset names of letters, digits, <code>-</code>, <code>_</code>,
+<code>.</code>; each below 2 GB) and <code>manifest.json</code>: <code>format</code> <code>joypro-cockpit-packs</code>, <code>packVersion</code> 1, <code>tag</code>, <code>feeds</code>,
+<code>packs[]</code> with <code>id</code> (<code>&lt;game&gt;/&lt;set&gt;</code>), <code>game</code>, <code>set</code>, <code>planes</code>, <code>asset</code>, <code>size</code>, <code>sha256</code>, <code>version</code>, <code>built</code>,
+<code>picturesBuilt</code>, <code>sourceHash</code>. More than <code>MaxAssets - 1</code> packs (999 with the manifest) are split: the rest goes to
+<code>&lt;Out&gt;\&lt;Tag&gt;-part2</code> (its own <code>manifest.json</code>, tag <code>&lt;Tag&gt;-part2</code>), named in the first part's <code>&quot;feeds&quot;</code>; a pack keeps
+its part while that part has room. A set whose files did not change keeps its zip and version; a changed one gets
+the next version. <code>-ManifestOnly</code> writes the manifests again from the zips that are there (new feeds, a new split)
+without reading the pictures. <code>-Only DCS/Ka-50,XPlane12/*</code> builds only these sets again (a named set that is not in
+the source any more is left out); every other pack of the manifests stays as it is (zip, version, part). The script prints each release's asset count and size and uploads nothing: create the
+releases and attach each folder's zips and <code>manifest.json</code> by hand (<code>gh release upload &lt;tag&gt; &lt;folder&gt;\*.zip &lt;folder&gt;\manifest.json --clobber</code>). Before uploading, <code>set JOYPRO_CHECK_PICTURE_FEED=&lt;main folder&gt;</code> and the opt-in
+test <code>OptIn_LocalRelease_EveryFeedAndEveryAssetIsThere</code> reads every feed and checks every zip.</li>
+<li>Tests (<code>CockpitPicturePackTests</code>): the manifest (unsafe packs left out, a newer pack format refused), the feed
+addresses, several feeds (local folders and a localhost web feed, a loop, a missing feed, the page's list), the
+build tool's split into parts, <code>-ManifestOnly</code> and <code>-Only</code>, a checksum mismatch, where a pack goes with <code>pack.json</code> and the index, a zip with paths or other file
+types, the version rule, the setting, the page against a localhost feed (offer, download, Not now, Always, Never,
+all my aircraft, one game), the bytes and Cancel, and the build tool on a synthetic set (JPEG and mask, installed and
+drawn with its transparency). The journey (<code>UserJourneyTests</code>) shows the offer and the downloaded F-16 pictures
+(<code>JOYPRO_JOURNEY_PICTURE_FEED</code>: a pack folder; else a feed of the synthetic test cockpit).</li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#what-is-in-it">What is in it</a></li><li class="l2"><a href="#format">Format</a></li><li class="l3"><a href="#version-2-the-manual-pages">Version 2: the manual pages</a></li><li class="l3"><a href="#aircraft">Aircraft</a></li><li class="l3"><a href="#variants">Variants</a></li><li class="l3"><a href="#controls">Controls</a></li><li class="l3"><a href="#panels">Panels</a></li><li class="l2"><a href="#what-the-pages-show-2026-10-25">What the pages show (2026-10-25)</a></li><li class="l2"><a href="#drawings">Drawings</a></li><li class="l3"><a href="#line-drawings-of-real-grips">Line drawings of real grips</a></li><li class="l2"><a href="#callout-sheets">Callout sheets</a></li><li class="l2"><a href="#the-cockpits-page">The Cockpits page</a></li><li class="l2"><a href="#the-cockpit-guide">The cockpit guide</a></li><li class="l3"><a href="#the-data-db-cockpits-guide">The data (DB/Cockpits/guide)</a></li><li class="l3"><a href="#coverage-2026-10-25-engine-cockpits-guide-coverage-game-g-no-pictures">Coverage (2026-10-25, engine cockpits guide --coverage [--game G] --no-pictures)</a></li><li class="l3"><a href="#coverage-with-the-picture-packs-2026-10-18-engine-cockpits-guide-coverage-game-g-with-every-picture-pack-installed">Coverage with the picture packs (2026-10-18, engine cockpits guide --coverage [--game G] with every picture pack installed)</a></li><li class="l2"><a href="#for-the-setup-wizard-and-scripts-api">For the setup wizard and scripts (API)</a></li><li class="l2"><a href="#pictures-from-your-games">Pictures from your games</a></li><li class="l3"><a href="#picture-quality">Picture quality</a></li><li class="l3"><a href="#grip-parts">Grip parts</a></li><li class="l3"><a href="#finding-the-grips-2026-10-26">Finding the grips (2026-10-26)</a></li><li class="l3"><a href="#which-set-a-variant-gets">Which set a variant gets</a></li><li class="l3"><a href="#animated-controls">Animated controls</a></li><li class="l2"><a href="#photos">Photos</a></li><li class="l2"><a href="#photos-of-cockpits-no-game-has">Photos of cockpits no game has</a></li><li class="l3"><a href="#tools">Tools</a></li><li class="l3"><a href="#the-private-photo-archive-maintainer">The private photo archive (maintainer)</a></li><li class="l3"><a href="#first-batch-2026-10-31">First batch (2026-10-31)</a></li><li class="l3"><a href="#second-batch-2026-11-01">Second batch (2026-11-01)</a></li><li class="l2"><a href="#licensing">Licensing</a></li><li class="l2"><a href="#growing-the-database">Growing the database</a></li><li class="l2"><a href="#coverage-2026-10-13-engine-cockpits-coverage">Coverage (2026-10-13, engine cockpits coverage)</a></li><li class="l3"><a href="#before-version-2">Before version 2</a></li><li class="l2"><a href="#tests">Tests</a></li><li class="l2"><a href="#picture-packs">Picture packs</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

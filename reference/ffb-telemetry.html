@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Telemetry force feedback (JoyPro.Ffb) · JoyPro</title>
+<meta name="description" content="JoyPro 2: one profile for all your devices, in every flight and space game.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/site.css">
+<script>(function(){try{var q=new URLSearchParams(location.search).get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+</head>
+<body data-root="../">
+<header class="topbar">
+  <button class="menu-btn" aria-label="Menu" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../index.html"><img src="../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="Search buttons, commands, games..." autocomplete="off" aria-label="Search"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <button class="theme-btn" aria-label="Light or dark">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open><summary>Start</summary><ul><li><a href="../index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open><summary>Getting started</summary><ul><li><a href="../getting-started/install.html" title="Download and install">Download and install</a></li><li><a href="../getting-started/first-start.html" title="First start">First start</a></li><li><a href="../getting-started/first-steps.html" title="Your first profile in 10 minutes">Your first profile in 10 minutes</a></li></ul></details><details open><summary>Main flows</summary><ul><li><a href="../flows/import.html" title="Import a game">Import a game</a></li><li><a href="../flows/relations.html" title="Build relations">Build relations</a></li><li><a href="../flows/export.html" title="Export to your games">Export to your games</a></li><li><a href="../flows/check.html" title="The Check">The Check</a></li></ul></details><details><summary>GUI pages</summary><ul><li><a href="../gui/header.html" title="Profile bar">Profile bar</a></li><li><a href="../gui/start.html" title="Start">Start</a></li><li><a href="../gui/relations.html" title="Relations">Relations</a></li><li><a href="../gui/binds.html" title="Binds">Binds</a></li><li><a href="../gui/modifiers.html" title="Modifiers">Modifiers</a></li><li><a href="../gui/layout.html" title="Layout">Layout</a></li><li><a href="../gui/export.html" title="Export">Export</a></li><li><a href="../gui/check.html" title="Check">Check</a></li><li><a href="../gui/hud.html" title="HUD">HUD</a></li><li><a href="../gui/ffb.html" title="Force Feedback">Force Feedback</a></li><li><a href="../gui/vjoy.html" title="Virtual Joystick">Virtual Joystick</a></li><li><a href="../gui/cockpits.html" title="Cockpits">Cockpits</a></li><li><a href="../gui/statistics.html" title="Statistics">Statistics</a></li><li><a href="../gui/settings.html" title="Settings">Settings</a></li><li><a href="../gui/advanced.html" title="Advanced">Advanced</a></li><li><a href="../gui/output.html" title="Output">Output</a></li><li><a href="../gui/overlays.html" title="Dialogs and notices">Dialogs and notices</a></li><li><a href="../gui/first-start.html" title="First-start setup">First-start setup</a></li><li><a href="../gui/setup-wizard.html" title="Setup wizard">Setup wizard</a></li></ul></details><details><summary>Games</summary><ul><li><a href="../games/index.html" title="Games">All games</a></li><li><a href="../games/support.html" title="Game support">Game support</a></li><li><a href="../games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../games/fsx-p3d.html" title="FSX and Prepar3D">FSX and Prepar3D</a></li><li><a href="../games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../games/arma2.html" title="Arma 2 and Operation Arrowhead">Arma 2 and Operation Arrowhead</a></li><li><a href="../games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../games/other-games.html" title="Other games (documented only)">Other games (documented only)</a></li></ul></details><details><summary>Engine (CLI)</summary><ul><li><a href="../cli/index.html" title="Engine command line">Engine command line</a></li><li><a href="../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a></li><li><a href="../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a></li><li><a href="../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a></li><li><a href="../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a></li><li><a href="../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a></li><li><a href="../cli/arrange.html" title="engine arrange">engine arrange</a></li><li><a href="../cli/backups.html" title="engine backups">engine backups</a></li><li><a href="../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a></li><li><a href="../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a></li><li><a href="../cli/binds.html" title="engine binds">engine binds</a></li><li><a href="../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a></li><li><a href="../cli/cockpits.html" title="engine cockpits">engine cockpits</a></li><li><a href="../cli/db.html" title="engine db">engine db</a></li><li><a href="../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a></li><li><a href="../cli/devices.html" title="engine devices">engine devices</a></li><li><a href="../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a></li><li><a href="../cli/export-marks.html" title="engine export-marks">engine export-marks</a></li><li><a href="../cli/ffb.html" title="engine ffb">engine ffb</a></li><li><a href="../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a></li><li><a href="../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a></li><li><a href="../cli/games.html" title="engine games">engine games</a></li><li><a href="../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a></li><li><a href="../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a></li><li><a href="../cli/hud.html" title="engine hud">engine hud</a></li><li><a href="../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a></li><li><a href="../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a></li><li><a href="../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a></li><li><a href="../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a></li><li><a href="../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a></li><li><a href="../cli/layout.html" title="engine layout">engine layout</a></li><li><a href="../cli/llm.html" title="engine llm">engine llm</a></li><li><a href="../cli/media.html" title="engine media">engine media</a></li><li><a href="../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a></li><li><a href="../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a></li><li><a href="../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a></li><li><a href="../cli/overlay.html" title="engine overlay">engine overlay</a></li><li><a href="../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a></li><li><a href="../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a></li><li><a href="../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a></li><li><a href="../cli/profile.html" title="engine profile">engine profile</a></li><li><a href="../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a></li><li><a href="../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a></li><li><a href="../cli/relations.html" title="engine relations">engine relations</a></li><li><a href="../cli/setup.html" title="engine setup">engine setup</a></li><li><a href="../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a></li><li><a href="../cli/summary.html" title="engine summary">engine summary</a></li><li><a href="../cli/support.html" title="engine support">engine support</a></li><li><a href="../cli/sync.html" title="engine sync">engine sync</a></li><li><a href="../cli/telemetry.html" title="engine telemetry">engine telemetry</a></li><li><a href="../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a></li><li><a href="../cli/usage.html" title="engine usage">engine usage</a></li><li><a href="../cli/version.html" title="engine version">engine version</a></li><li><a href="../cli/vjoy.html" title="engine vjoy">engine vjoy</a></li><li><a href="../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a></li><li><a href="../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a></li><li><a href="../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a></li><li><a href="../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a></li><li><a href="../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a></li><li><a href="../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a></li><li><a href="../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a></li></ul></details><details open><summary>Reference</summary><ul><li><a href="../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a></li><li><a href="../reference/auto-assign.html" title="Auto Assign">Auto Assign</a></li><li><a href="../reference/auto-group.html" title="Auto Group">Auto Group</a></li><li><a href="../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a></li><li><a href="../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a></li><li><a href="../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a></li><li><a href="../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a></li><li><a href="../reference/cockpits.html" title="Cockpit database">Cockpit database</a></li><li><a href="../reference/devices.html" title="Device catalog (`DB/Devices`)">Device catalog</a></li><li><a href="../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a></li><li><a href="../reference/export.html" title="Export">Export</a></li><li><a href="../reference/backups.html" title="Game config backups">Game config backups</a></li><li><a href="../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a></li><li><a href="../reference/natural-language-grouping.html" title="Group by description">Group by description</a></li><li><a href="../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a></li><li><a href="../reference/hud.html" title="HUD">HUD</a></li><li><a href="../reference/installs.html" title="Installed games">Installed games</a></li><li><a href="../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a></li><li><a href="../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a></li><li><a href="../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a></li><li><a href="../reference/localization.html" title="Localization">Localization</a></li><li><a href="../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a></li><li><a href="../reference/components.html" title="Optional components (one-click install)">Optional components</a></li><li><a href="../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a></li><li><a href="../reference/privacy.html" title="Privacy">Privacy</a></li><li><a href="../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a></li><li><a href="../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a></li><li><a href="../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a></li><li><a href="../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a></li><li><a class="current" href="../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a></li><li><a href="../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a></li><li><a href="../reference/testing.html" title="Testing JoyPro2">Testing JoyPro2</a></li><li><a href="../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a></li><li><a href="../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a></li><li><a href="../reference/updates.html" title="Version and updates">Version and updates</a></li><li><a href="../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a></li></ul></details><details><summary>Game reference</summary><ul><li><a href="../games/ref/README.html" title="Game integration reference">Game integration reference</a></li><li><a href="../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a></li><li><a href="../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a></li><li><a href="../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a></li><li><a href="../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a></li><li><a href="../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a></li><li><a href="../games/ref/dcs.html" title="DCS World">DCS World</a></li><li><a href="../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a></li><li><a href="../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a></li><li><a href="../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a></li><li><a href="../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a></li><li><a href="../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a></li><li><a href="../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a></li><li><a href="../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a></li><li><a href="../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a></li><li><a href="../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a></li><li><a href="../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by `tools\e2e\games\MsfsCurves.ps1`: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by `tools\e2e\games\Msfs2024Settings.ps1`: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a></li><li><a href="../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a></li><li><a href="../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a></li><li><a href="../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a></li><li><a href="../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a></li><li><a href="../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a></li><li><a href="../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a></li><li><a href="../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a></li><li><a href="../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a></li><li><a href="../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a></li><li><a href="../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a></li><li><a href="../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a></li><li><a href="../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a></li></ul></details><details><summary>Help</summary><ul><li><a href="../faq.html" title="Help and troubleshooting">Help and troubleshooting</a></li></ul></details><details><summary>Project</summary><ul><li><a href="../project/jp1-vs-jp2.html" title="From JoyPro 1 to JoyPro 2">From JoyPro 1 to JoyPro 2</a></li><li><a href="../project/about.html" title="About, licence and community">About, licence and community</a></li><li><a href="../project/wiki-status.html" title="Wiki status">Wiki status</a></li></ul></details><details><summary>Release notes</summary><ul><li><a href="../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a></li><li><a href="../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a></li><li><a href="../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a></li><li><a href="../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a></li><li><a href="../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a></li><li><a href="../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a></li><li><a href="../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a></li><li><a href="../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a></li><li><a href="../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a></li><li><a href="../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a></li><li><a href="../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a></li><li><a href="../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a></li><li><a href="../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a></li><li><a href="../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a></li><li><a href="../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a></li><li><a href="../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a></li><li><a href="../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a></li><li><a href="../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a></li><li><a href="../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a></li><li><a href="../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a></li><li><a href="../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a></li><li><a href="../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a></li><li><a href="../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a></li><li><a href="../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a></li><li><a href="../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a></li><li><a href="../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a></li><li><a href="../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a></li><li><a href="../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a></li><li><a href="../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a></li></ul></details></nav>
+<main>
+<div class="page-head"><div class="crumb">Reference</div><h1>Telemetry force feedback (JoyPro.Ffb) </h1></div>
+<div class="content">
+<p class="source-note">From <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/docs/ffb-telemetry.md">docs/ffb-telemetry.md</a> in the repository (generated, always the current text).</p><p>(Recording the telemetry of a session, Tacview export: <a href="../reference/telemetry-recording.html">telemetry-recording.md</a>. It uses the
+same sources and runs in the same process while force feedback runs.)</p>
+<p>JoyPro reads live telemetry from the game you fly and turns it into force feedback on a DirectInput force feedback
+stick (for example the VPforce Rhino): stall buffet, G-force stick weight, gear and flap rumble, gun bursts, runway
+rumble, a centring spring that stiffens with airspeed and follows the trim (the game's, and JoyPro's own stick trim
+on buttons or a hat of any device). What the stick does is a node graph you can
+edit; the built-in graph covers the effects above. Phase 1 supports DCS World, IL-2 Great Battles / IL-2 Korea and War
+Thunder; MSFS and X-Plane are researched below.</p>
+<p>This is JoyPro's own implementation. No code of VPforce TelemFFB or any other project was used; the protocol facts
+below come from the games' own documentation and the public sources listed at the end. The graph design (telemetry
+nodes with min/max normalisation, group nodes, Bezier curve nodes, output nodes with values at 0 % and 100 % input,
+&quot;strongest wins&quot; per actuator, gating &quot;only while the game runs&quot;) comes from the user's own Forza haptics app
+(<code>ForzaHaptics.Tester</code>: SignalGraph, BlueprintEditor, GameWatch).</p>
+<h2 id="where-things-are"><a class="anchor" href="#where-things-are">#</a>Where things are</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graph engine, telemetry sources, host, settings model</td>
+<td><code>gui/JoyPro.Ffb.Core</code> (net9 library)</td>
+</tr>
+<tr>
+<td>The process (DirectInput output, dry sink, simulator)</td>
+<td><code>gui/JoyPro.Ffb</code> (<code>JoyPro.Ffb.exe</code>, net9.0-windows)</td>
+</tr>
+<tr>
+<td>Settings and game setup on the command line</td>
+<td><code>engine ffb telemetry ...</code> (<code>engine/EngineFfbTelemetry.cs</code>)</td>
+</tr>
+<tr>
+<td>GUI page (settings, setup buttons, node editor, telemetry inspector)</td>
+<td><code>gui/JoyPro.Gui</code> (Force feedback (telemetry))</td>
+</tr>
+<tr>
+<td>Settings file</td>
+<td><code>&lt;data&gt;\Ffb\Telemetry\telemetry-ffb.json</code></td>
+</tr>
+<tr>
+<td>Graph files</td>
+<td><code>&lt;data&gt;\Ffb\Telemetry\Graphs\*.jpffb.json</code></td>
+</tr>
+<tr>
+<td>Last status of the process</td>
+<td><code>&lt;data&gt;\Ffb\Telemetry\status.json</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>&lt;data&gt;</code> is <code>JOYPRO_DATA_DIR</code>, else <code>%LOCALAPPDATA%\JoyPro2</code> (the engine's data folder).</p>
+<p>The page's game list leaves out the games hidden in Settings &gt; Games (2.6.0, <code>VisibleFfbTelemetryGames</code>); a hidden
+game is not looked for either, so JoyPro.Ffb never starts for it. Its settings stay in the settings file.</p>
+<h2 id="how-it-runs"><a class="anchor" href="#how-it-runs">#</a>How it runs</h2>
+<pre><code>game ──UDP/HTTP──&gt; source (DCS lines | IL-2 packets | War Thunder JSON)
+                     └─&gt; normalised aircraft model &quot;ac.*&quot; (+ derived: gear moving, firing, ground roll ...)
+                           └─&gt; graph (telemetry → group/curve/maths → effect outputs)
+                                 └─&gt; mixer (strongest per slot, effect switches, strength, hard force cap)
+                                       └─&gt; DirectInput device (or the dry sink in tests)
+</code></pre>
+<ul>
+<li><strong>Only while a game runs.</strong> The GUI checks for a supported game process every 5 s, and only while the feature is
+switched on; then it starts <code>JoyPro.Ffb run --game &lt;id&gt; --game-pid &lt;pid&gt; --parent-pid &lt;gui&gt; --protocol</code>. The process
+follows the game through its process handle (a kernel wait, no polling) and ends when the game, or JoyPro, ends.</li>
+<li><strong>Only while telemetry arrives.</strong> Without fresh telemetry (menus, pause, the hook not installed) the force loop sends
+ONE STOP ALL, releases the device and then leaves it alone (the Forza app's rule: re-zeroing every tick would fight
+other programs). Exception: with &quot;JoyPro provides the centring spring&quot; (setting <code>centringSpring</code>, default on) and the
+device already JoyPro's, only the springs are kept (the last ones, with their trim, plus a plain spring on an axis
+without one), refreshed about once a second; everything else stops. Springs are passive, and a stick whose own
+spring is switched off must not go slack while the game pauses. The status line says why: <code>idle - waiting for DCS.exe</code>, <code>idle - no telemetry on UDP 41992</code>, <code>idle - the multiplayer server does not allow ownship export</code>,
+<code>active - F-16C_50</code>, <code>stopped after an error: ...</code>.</li>
+<li><strong>The force loop</strong> runs at 50 Hz (setting <code>tickRateHz</code>) on a high-resolution waitable timer while forces are sent
+(no busy wait, no raised system timer resolution). Without telemetry it blocks on an event the next telemetry frame
+sets: no CPU at all.</li>
+<li><strong>Every force is finite; springs are not restarted.</strong> Constant and periodic effects are downloaded with a duration
+of 0.3 s and restarted every 0.15 s; between restarts only changed parameters go to the device (a USB HID stick
+takes about 1000 reports a second; this keeps JoyPro far below that). Periodic effects restart at the phase they
+reached, so the waveform is not reset. If the process hangs or is killed, the device ends them on its own within
+0.3 s. Condition effects (spring, damper, friction) only resist the hand, so they run with an infinite duration,
+are started once and only get their changed parameters (<code>SetParameters(DIEP_TYPESPECIFICPARAMS)</code>, no DIEP_START):
+a restarted spring drops its force for a moment and jitters. A killed process loses its exclusive acquisition and
+DirectInput stops its effects (verified on the Rhino for the forces; to re-check for springs, see below).</li>
+<li><strong>STOP ALL</strong> on: telemetry timeout (<code>timeoutSeconds</code>, default 0.5 s), game exit, JoyPro exit, stdin closed, &quot;stop&quot;,
+Ctrl+C / console close / shutdown (PosixSignalRegistration), process exit and unhandled exceptions, and any error in
+a tick (which also switches the output off until it is enabled again).</li>
+<li><strong>Hard force cap</strong> (<code>maxForce</code>, default 60 %): per axis the effects are scaled together so that even their worst case
+(sum of peak forces) stays within the cap. The user's strength (global × game × aircraft) applies before the cap.</li>
+<li><strong>Exclusive device access</strong> only while forces are sent: the device is acquired (exclusive, background) on the first
+update and released with the STOP ALL. The game's own force feedback must be switched off for that stick (DCS: the
+aircraft's FFB option / Axis Tune &quot;FFB&quot;; IL-2: Settings &gt; Input devices &gt; force feedback off; War Thunder: force
+feedback off), otherwise the game holds the device and JoyPro reports <code>DirectInput Acquire failed</code>.</li>
+</ul>
+<h3 id="process-protocol-gui-joypro-ffb"><a class="anchor" href="#process-protocol-gui-joypro-ffb">#</a>Process protocol (GUI ↔ JoyPro.Ffb)</h3>
+<p><code>JoyPro.Ffb run ... --protocol</code> writes JSON lines to stdout and reads commands from stdin
+(<code>gui/JoyPro.Ffb.Core/Host/HostProtocol.cs</code>):</p>
+<pre><code>{&quot;type&quot;:&quot;status&quot;,&quot;state&quot;:&quot;active&quot;,&quot;reason&quot;:&quot;active - F-16C_50&quot;,&quot;game&quot;:&quot;DCS&quot;,&quot;aircraft&quot;:&quot;F-16C_50&quot;,&quot;graph&quot;:&quot;Flight (built-in)&quot;,&quot;frames&quot;:1234,&quot;endpoint&quot;:&quot;UDP 41992&quot;,&quot;device&quot;:&quot;VPforce Rhino FFB Joystick&quot;}
+{&quot;type&quot;:&quot;telemetry&quot;,&quot;time&quot;:12.3,&quot;values&quot;:{&quot;ac.ias&quot;:154.2,...}}     5 Hz, only after &quot;watch on&quot;
+{&quot;type&quot;:&quot;nodes&quot;,&quot;values&quot;:{&quot;n1a2b3c4d5e6&quot;:0.42,...}}                 5 Hz, only after &quot;watch on&quot;
+{&quot;type&quot;:&quot;exit&quot;,&quot;reason&quot;:&quot;game exited&quot;}
+stdin: &quot;watch on&quot; | &quot;watch off&quot; | &quot;reload&quot; | &quot;stop&quot;     (end of stdin = stop)
+</code></pre>
+<p>Other commands: <code>JoyPro.Ffb devices [--json]</code> (read-only list of force feedback devices, their force axes and
+effects: nothing is acquired or sent), <code>JoyPro.Ffb preset</code> (the built-in graph as JSON), <code>JoyPro.Ffb simulate</code>
+(the synthetic test flight, see Tests), <code>JoyPro.Ffb test [--device {guid}] [--parent-pid N]</code> (the direction test's
+process, below). <code>JOYPRO_FFB_DRY=1</code> forces the dry sink.</p>
+<p><code>JoyPro.Ffb test</code> reads one command per stdin line and answers one JSON line each (<code>{&quot;type&quot;:&quot;ok&quot;}</code>,
+<code>{&quot;type&quot;:&quot;position&quot;,&quot;valid&quot;:true,&quot;x&quot;:..,&quot;y&quot;:..}</code>, <code>{&quot;type&quot;:&quot;error&quot;,&quot;message&quot;:..}</code>): <code>invert X Y</code> (0/1),
+<code>push X|Y magnitude</code>, <code>spring k cx cy</code>, <code>conditions combined|separate|restart</code> (spring layout, see &quot;Condition
+effects&quot;), <code>pos</code>, <code>stop</code>, <code>quit</code>. Forces are clamped to 25 %, a push ends by itself after 4 s and a spring after 30 s
+without a new command; end of stdin, <code>quit</code>, the GUI exiting (<code>--parent-pid</code>), Ctrl+C and process exit all release the
+device.</p>
+<p><strong>Logs</strong> (<code>&lt;data&gt;\Logs</code>, docs/logging.md): <code>JoyPro.Ffb test</code> writes every stdin command and its answer (incl. every
+<code>pos</code> reading) and every device call with its values and HRESULT (category <code>FfbTest</code>): acquire / autocenter / STOP ALL
+/ actuators on, each effect created or updated (type, axes, magnitude or centre / coefficient / saturation, and the
+device values after the invert, e.g. <code>Spring X+Y X: offset 0, ...; Y: offset -3500, ...</code>), stops and the release
+sequence. <code>JoyPro.Ffb run</code> logs the same device calls at debug level, at most one line a second per kind. The GUI log
+has the direction test's steps, the user's clicks and answers (category <code>FfbWizard</code>) and, at debug level, each test
+command with its answer.</p>
+<h3 id="resources-measured-2026-10-11-debug-build-dcs-stream-at-60-hz-every-effect-on"><a class="anchor" href="#resources-measured-2026-10-11-debug-build-dcs-stream-at-60-hz-every-effect-on">#</a>Resources (measured 2026-10-11, Debug build, DCS stream at 60 Hz, every effect on)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU while forces run</td>
+<td>~1.5 % of one core</td>
+</tr>
+<tr>
+<td>CPU without telemetry (game in a menu)</td>
+<td>0 (no measurable CPU time in 10 s)</td>
+</tr>
+<tr>
+<td>Private memory</td>
+<td>~17 MB, flat over 60 s (live managed heap &lt; 1 MB)</td>
+</tr>
+<tr>
+<td>Working set</td>
+<td>~43 MB</td>
+</tr>
+<tr>
+<td>Threads / handles</td>
+<td>11-16 / ~310, flat</td>
+</tr>
+<tr>
+<td>GUI side</td>
+<td><code>Process.GetProcessesByName</code> every 5 s while the feature is on (a few ms), nothing while it is off</td>
+</tr>
+</tbody>
+</table></div>
+<p>The process allocates about 1 MB/s while forces run (telemetry frames are small immutable dictionaries). The runtime
+config sets a 64 MB heap hard limit, which makes the GC collect every few seconds; with the default budget the heap
+grew to ~58 MB between collections (<code>System.GC.Gen0Size</code> is not read by .NET 9).</p>
+<h2 id="the-graph"><a class="anchor" href="#the-graph">#</a>The graph</h2>
+<p>Values flow through the graph as numbers, normalised to 0..1 by convention (signed -1..1 where a direction matters,
+e.g. trim). Node kinds (<code>NodeKind</code>):</p>
+<ul>
+<li><strong>Constant</strong> (with Active switch: a test value without the game), <strong>Telemetry</strong> (any key of the current game, with
+min/max normalisation, absolute value, invert; a missing key reads 0 and &quot;valid&quot; 0 - also when inverted),
+<strong>Group</strong> (any number of wires: maximum, minimum, average, clamped sum), <strong>Curve</strong> (multi-segment cubic Bezier).</li>
+<li>Maths (add, multiply, scale/offset, clamp, abs, min, max, select) and stateful nodes (low pass, slew limit,
+derivative, counter delta to events, envelope, threshold with hysteresis), vectors.</li>
+<li><strong>Outputs</strong> (effects): constant force (axis, direction, bipolar), periodic (sine/square/triangle/saw; strength and/or
+frequency mapped from the input with values at 0 % and 100 %, optional frequency input, pulsed bursts with pulse
+rate and duty cycle), spring (stiffness from the input, centre offset input e.g. trim, saturation), damper, friction.
+Every output takes any number of wires (&quot;in&quot;, merged by its input mode), has an effect name (for the switches), a
+slot 0..3 and &quot;silent at zero&quot;. Outputs of the same type on the same axis and slot compete: the strongest wins (as
+several outputs on one actuator in the Forza app); different slots add up (and are capped together).</li>
+<li><strong>Direction:</strong> <strong>Invert</strong> (flips the sign of a value; a switch turns it off), the constant force's &quot;Invert direction&quot;
+(saved as <code>negative</code>) and the spring's &quot;Invert centre&quot; (trim moves the other way). These change what one effect
+does; the device-wide direction is the device's invert X / Y (see &quot;Direction, invert and the direction test&quot;).</li>
+<li><strong>Input:</strong> <strong>Device button / hat</strong> (<code>held</code> 0/1, <code>pressed</code> one event per press; any device: the stick itself when the
+device is empty, otherwise &quot;Name {instance guid}&quot; as the &quot;press the button now&quot; capture names it; input <code>JOY_BTN5</code>
+or <code>JOY_BTN_POV1_U</code>, a straight hat direction also counts on its diagonals), <strong>Stick position</strong> (the force feedback
+stick's x / y, -1..1, right and towards the pilot positive, plus <code>valid</code>), <strong>Trim</strong> (see &quot;Trim&quot;).</li>
+</ul>
+<p>Buttons of other devices (a throttle hat, a button box) are read with DirectInput in the background, non-exclusive
+(<code>gui/JoyPro.Ffb/DirectInputInputs.cs</code>): opened when a node first asks, polled once per tick on the force loop, looked
+for again every 3 s while missing. The stick's own buttons and position use a second, non-exclusive instance of the
+same device, so they also work while JoyPro's forces are off. Axes are read with a range of -10000..10000.</p>
+<p>Graphs are JSON (<code>*.jpffb.json</code>, format <code>joypro-ffb-graph</code>), per game and optionally per aircraft (settings <code>graph</code>).
+Loading a graph never switches output on.</p>
+<h3 id="built-in-graph-ffbpresets-flight"><a class="anchor" href="#built-in-graph-ffbpresets-flight">#</a>Built-in graph (<code>FfbPresets.Flight()</code>)</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Effect name</th>
+<th>Input (normalised model)</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>buffet</code></td>
+<td>AoA 10..20 deg through an ease-in curve, max with the stall warning, × airborne (IAS 20..35 m/s)</td>
+<td>periodic sine, both axes, slot 0, 5..45 %, 9..14 Hz</td>
+</tr>
+<tr>
+<td><code>gforce</code></td>
+<td>G 1.5..9, low pass 0.15 s</td>
+<td>constant force pushing forward (Y), 0..35 %</td>
+</tr>
+<tr>
+<td><code>gear</code></td>
+<td>gear moving</td>
+<td>periodic triangle 16 Hz, 15 %, slot 1</td>
+</tr>
+<tr>
+<td><code>flaps</code></td>
+<td>flaps moving</td>
+<td>periodic sine 22 Hz, 10 %, slot 1 (gear wins while both move)</td>
+</tr>
+<tr>
+<td><code>speedbrake</code></td>
+<td>speed brake out × airspeed 50..250 m/s</td>
+<td>periodic sine 12 Hz, 3..20 %, slot 1</td>
+</tr>
+<tr>
+<td><code>runway</code></td>
+<td>ground roll 1..60 m/s</td>
+<td>periodic triangle 8..24 Hz, 4..22 %, slot 2</td>
+</tr>
+<tr>
+<td><code>shake</code></td>
+<td>IL-2 cockpit shake amplitude (its own frequency)</td>
+<td>periodic sine, 0..30 %, slot 2</td>
+</tr>
+<tr>
+<td><code>guns</code></td>
+<td>guns firing</td>
+<td>square 25 Hz pulsed 12 times a second (45 % duty), 35 %, Y, slot 3</td>
+</tr>
+<tr>
+<td><code>hits</code></td>
+<td>hit taken (IL-2)</td>
+<td>sideways jolt, 30 %</td>
+</tr>
+<tr>
+<td><code>spring</code></td>
+<td>base stiffness 0.2 + airspeed 30..250 m/s × 0.5; centre = game trim × 0.5 (War Thunder) + JoyPro's stick trim</td>
+<td>spring per axis, up to 50 %, saturation 50 %</td>
+</tr>
+</tbody>
+</table></div>
+<p>The built-in graph also has the stick trim: a Trim node with six button nodes (<code>Trim: to stick position</code>,
+<code>Trim: nose down (hat up)</code>, <code>Trim: nose up (hat down)</code>, <code>Trim: left</code>, <code>Trim: right</code>, <code>Trim: reset</code>), unassigned until
+the user picks the buttons (editor: select the Trim node, &quot;Assign trim buttons&quot;). Its x / y are added to the game's
+trim and go into the roll and pitch springs' centre.</p>
+<h2 id="trim"><a class="anchor" href="#trim">#</a>Trim</h2>
+<p><code>TrimNode</code> (<code>gui/JoyPro.Ffb.Core/Graph/Nodes.Input.cs</code>) keeps the springs' centre:</p>
+<ul>
+<li><strong>To stick position</strong> (&quot;here&quot;): the centre jumps to where the stick is (its own position, read non-exclusively).
+While the button is held the centre follows the stick, so the spring lets go (a helicopter's force trim release);
+when it is let go the centre stays. Without a position (device not readable) the press is ignored.</li>
+<li><strong>Four trim buttons / a hat</strong> (up, down, left, right): one step per press (<code>Step</code>, default 2 % of the travel), held
+longer than <code>RepeatDelay</code> (0.35 s) it repeats at <code>RepeatRate</code> (10 steps a second; 0 = no repeat). Up = nose down =
+the centre moves forward (away from the pilot, negative Y); <code>InvertX</code> / <code>InvertY</code> turn the buttons around.</li>
+<li><strong>Reset</strong>: back to the middle.</li>
+<li><code>Limit</code> (80 %) caps the centre; <code>MoveRate</code> (1.5 travel/s; 0 = at once) limits how fast the centre moves after a reset
+or a big step, so the stick does not jump.</li>
+<li>The trim survives a telemetry gap or pause (the graph's Reset keeps it; a button held across the gap does not fire
+again); a new graph (aircraft change) or a restart starts from the middle. While the telemetry pauses, the held
+springs keep the trimmed centre (with &quot;JoyPro provides the centring spring&quot;).</li>
+</ul>
+<p>Trim only moves the stick when the device obeys DirectInput springs: on the VPforce Rhino the Configurator's own spring
+must be off (see &quot;Hardware findings&quot;).</p>
+<h2 id="direction-invert-and-the-direction-test"><a class="anchor" href="#direction-invert-and-the-direction-test">#</a>Direction, invert and the direction test</h2>
+<p>JoyPro's convention: a positive force pushes to the positive end of the axis, right on X and towards the pilot on Y;
+positions use the same (DirectInput: right and pulled back are positive). How a device maps that is its invert X / Y,
+saved per device (<code>devices</code> in the config, by instance guid; a device without an entry uses the global
+<code>invertX</code>/<code>invertY</code>). The backend flips forces and the spring centre with it.</p>
+<p>The page's <strong>Direction test</strong> (<code>FfbDirectionWizard</code>, <code>gui/JoyPro.Ffb.Core/Host/FfbDirectionWizard.cs</code>, run through
+<code>JoyPro.Ffb test</code>) does it with the user, one announced step at a time (each waits for &quot;Ready&quot;, Cancel stops every
+force at any time):</p>
+<ol>
+<li>Push RIGHT for 2 s (20 %, inverts off: the raw direction) -&gt; &quot;Which way did the stick move?&quot; right / left / it did
+not move. Left = invert X.</li>
+<li>Push FORWARD for 2 s -&gt; forward / back / did not move. Back = invert Y (the Rhino's case).
+&quot;Did not move&quot; keeps that axis's invert and says what to check.</li>
+<li>Centring spring (with the found inverts, 25 % at most): &quot;move the stick and let go: does it spring back?&quot;</li>
+<li>Trim: the spring's centre moves 35 % forward for 2.5 s; JoyPro reads the stick position before and after and shows
+the measured movement -&gt; &quot;did the stick move forward and stay there?&quot;
+If 3 or 4 fail: on a VPforce stick the Configurator hint (below), otherwise a general note about the device's own
+spring.
+At the end the found inverts are saved for the device (and globally). The test refuses to start while JoyPro.Ffb runs
+for a game (it needs the stick to itself). &quot;Repeat this step&quot; (shown with every question) stops the forces and
+announces the same push / spring / trim check again; &quot;Start over&quot; stops everything and goes back to the first step
+(after the end of a test it starts a fresh test process). &quot;Start&quot; and &quot;Ready&quot; are separate buttons with fixed texts:
+one button whose text changed from &quot;Start&quot; to &quot;Ready&quot; showed &quot;Read&quot; in the first hardware test.</li>
+</ol>
+<h2 id="hardware-findings-vpforce-rhino-2026-10-11-positions-read-with-winmm-hands-off"><a class="anchor" href="#hardware-findings-vpforce-rhino-2026-10-11-positions-read-with-winmm-hands-off">#</a>Hardware findings (VPforce Rhino, 2026-10-11, positions read with winmm, hands off)</h2>
+<ul>
+<li>
+<p>Direction: X matches JoyPro's convention; Y is reversed (a negative Y force pushed back towards the pilot).
+<code>invertY=true</code> fixes it (verified: -Y with invertY pushed forward). Other sticks may differ, hence the per-device
+invert and the direction test; single effects can be turned around in the graph (Invert node / switches).</p>
+</li>
+<li>
+<p>The VPforce Configurator's Effects tab, box at the top left, checkbox <strong>&quot;Spring&quot;</strong> (+ &quot;Apply Settings&quot;) is a
+firmware spring. With it ON, a DirectInput spring (centre 0.5, coefficient 1, saturation 0.3) did nothing at all
+(Y stayed at -0.014 for 14 s), with or without DIPROP_AUTOCENTER off; constant forces and periodic effects still
+act. With it OFF, JoyPro's spring with a trimmed centre moved the stick to the centre within 0.6 s - and after
+JoyPro released the device the stick was slack, because the firmware spring is the user's own setting (not caused
+by JoyPro; an earlier note blaming the release was confounded by this setting).</p>
+</li>
+<li>
+<p>The spring's centre offset follows the force invert on this device (without invertY a positive centre went forward),
+so the backend applies the same sign to the centre.</p>
+</li>
+<li>
+<p>So: DIPROP_AUTOCENTER does not control this firmware spring; JoyPro cannot (and does not try to) change VPforce
+firmware settings. For trim and centring from JoyPro: untick &quot;Spring&quot; in the Configurator; JoyPro then centres the
+stick itself while it owns it (&quot;JoyPro provides the centring spring&quot;). Keep it ticked to use the stick's own spring
+(no trim from JoyPro; then switch the JoyPro option off, so JoyPro sends no springs). The page and the direction
+test show this hint for VPforce devices (VID FFFF PID 2055, or &quot;VPforce&quot; in the name).</p>
+</li>
+<li>
+<p>Re-test 2 (Configurator spring off, <code>JoyPro.Ffb test</code>, single-axis springs): <code>spring 0.8 0 0</code> centred X (from
+-0.92 to -0.04); <code>spring 0.8 0 -0.35</code> (Y centre 35 % forward) did NOT move Y, but moved X to -0.16 - the Y offset
+acted on X. The bytes JoyPro sends name the right axis (checked by <code>DirectInputLayoutTests</code>: Y effect = offset 4, its
+DICONDITION has the -3500 offset), so the device (or the PID driver) applies the condition block of a single-axis
+Y effect to X - plausibly firmware that stores conditions by parameter block (block 0 = X) regardless of the
+effect's axis. Hence the combined layout below, as games send a 2-axis spring.</p>
+</li>
+</ul>
+<h2 id="condition-effects-spring-damper-friction-layout-on-the-device"><a class="anchor" href="#condition-effects-spring-damper-friction-layout-on-the-device">#</a>Condition effects (spring, damper, friction): layout on the device</h2>
+<p><code>DirectInputLayout</code> (<code>gui/JoyPro.Ffb.Core/Output/DirectInputLayout.cs</code>) writes the DIEFFECT bytes and is tested
+without a device. Axes are named by their offset in JoyPro's data format (DIEFF_OBJECTOFFSETS): X = 0, Y = 4.</p>
+<ul>
+<li><strong>combined</strong> (default): one effect per condition type and slot for both axes: cAxes 2, rgdwAxes {0, 4},
+rglDirection {0, 0}, two DICONDITIONs, X's first, Y's second (an axis without that effect gets an all-zero block).
+Infinite, started once, changes only with DIEP_TYPESPECIFICPARAMS.</li>
+<li><strong>separate</strong>: one single-axis effect per axis (cAxes 1, direction 1), infinite, changes without restart (the
+version of the first re-test).</li>
+<li><strong>restart</strong>: one single-axis effect per axis with a 0.3 s duration, restarted with DIEP_DURATION |
+DIEP_TYPESPECIFICPARAMS | DIEP_START (the very first version, which moved Y to a trimmed centre in the morning test).</li>
+</ul>
+<p>For a hardware A/B test: <code>JoyPro.Ffb test</code> command <code>conditions combined|separate|restart</code>, or
+<code>JoyPro.Ffb run ... --conditions separate</code>. The log shows the exact blocks sent for each layout.</p>
+<h2 id="acquire-and-release-how-joypro-hands-the-device-back"><a class="anchor" href="#acquire-and-release-how-joypro-hands-the-device-back">#</a>Acquire and release (how JoyPro hands the device back)</h2>
+<p>DirectInput, as captured on USB by the Wine developers (Wine's <code>dinput/joystick_hid.c</code> follows it): an exclusive
+<code>Acquire</code> sends a PID &quot;Device Reset&quot; (the device's startup state: its default centring on, if it has one) and, when
+DIPROP_AUTOCENTER is off, &quot;Stop All Effects&quot; (that is what &quot;autocenter off&quot; means for a PID device); an exclusive
+<code>Unacquire</code> sends &quot;Device Reset&quot; again. DISFFC_RESET = Device Reset, DISFFC_STOPALL = Stop All Effects,
+DISFFC_SETACTUATORSON/OFF = Enable/Disable Actuators, DISFFC_PAUSE/CONTINUE = Pause/Continue. DIPROP_AUTOCENTER can
+only change while the device is not acquired.</p>
+<p>JoyPro (<code>DirectInputFfbBackend</code>):</p>
+<ul>
+<li>Acquire: DIPROP_AUTOCENTER off (before Acquire), Acquire (exclusive, background), STOP ALL, ACTUATORS ON. No RESET
+after Acquire: on PID devices a reset brings the default centring back, which would fight JoyPro's spring.</li>
+<li>Release (telemetry gone without the centring option, game exit, JoyPro exit, errors): STOP ALL, stop and unload
+every effect, RESET while still acquired (the device's startup state), Unacquire (DirectInput resets it again),
+DIPROP_AUTOCENTER on (the default for the next program). This is the standard way to hand a device back; whether the
+stick then centres depends on the device's own default spring (on the Rhino: the Configurator's &quot;Spring&quot;).</li>
+<li>While JoyPro owns the device and &quot;JoyPro provides the centring spring&quot; is on, it never leaves the stick slack: the
+graph's springs, a plain spring (stiffness <code>centringStiffness</code>, default 30 %, saturation 50 %) on every axis without
+one, and the held springs during telemetry pauses. Switched off, JoyPro sends no springs at all.</li>
+</ul>
+<h2 id="normalised-aircraft-model-ac"><a class="anchor" href="#normalised-aircraft-model-ac">#</a>Normalised aircraft model (&quot;ac.*&quot;)</h2>
+<p>Every source fills the same keys (SI units), so one graph works in every game. A key the game does not send stays
+absent (the node reads 0). Raw game keys (<code>dcs.*</code>, <code>il2.*</code>, <code>wt.*</code>) are available too.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Unit</th>
+<th>DCS</th>
+<th>IL-2</th>
+<th>War Thunder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ac.ias / ac.tas / ac.mach</td>
+<td>m/s, -</td>
+<td>LoGetIndicatedAirSpeed / TrueAirSpeed / MachNumber</td>
+<td>EAS</td>
+<td>&quot;IAS, km/h&quot; / &quot;TAS, km/h&quot; / &quot;M&quot;</td>
+</tr>
+<tr>
+<td>ac.aoa / ac.aos</td>
+<td>deg</td>
+<td>LoGetAngleOfAttack / AngleOfSideSlip (rad)</td>
+<td>AOA / AOS (rad)</td>
+<td>&quot;AoA, deg&quot; / &quot;AoS, deg&quot;</td>
+</tr>
+<tr>
+<td>ac.g</td>
+<td>G</td>
+<td>LoGetAccelerationUnits().y</td>
+<td>|ACCELERATION| / g</td>
+<td>&quot;Ny&quot;</td>
+</tr>
+<tr>
+<td>ac.vs, ac.agl, ac.alt</td>
+<td>m/s, m</td>
+<td>LoGetVerticalVelocity, AGL, ASL</td>
+<td>VERTICAL_SPEED, AGL</td>
+<td>&quot;Vy, m/s&quot;, &quot;H, m&quot;</td>
+</tr>
+<tr>
+<td>ac.gear / ac.flaps / ac.speedbrake</td>
+<td>0..1</td>
+<td>LoGetMechInfo gear/flaps/speedbrakes .value</td>
+<td>LGEARS_STATE (mean), FLAPS, AIR_BRAKES</td>
+<td>&quot;gear, %&quot;, &quot;flaps, %&quot;, &quot;airbrake, %&quot;</td>
+</tr>
+<tr>
+<td>ac.gear_moving, ac.flaps_moving, ac.speedbrake_moving</td>
+<td>0/1</td>
+<td>derived: changed within 0.3 s (a jump of more than half the travel in one frame is a new aircraft, not movement)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ac.on_ground</td>
+<td>0/1</td>
+<td>gear strut rods compressed</td>
+<td>LGEARS_PRESS &gt; 0</td>
+<td>radio altimeter &lt; 3 m, gear down, Vy ≈ 0 (heuristic)</td>
+</tr>
+<tr>
+<td>ac.ground_speed / ac.ground_roll</td>
+<td>m/s</td>
+<td>horizontal velocity / derived (0 in the air)</td>
+<td>EAS</td>
+<td>IAS</td>
+</tr>
+<tr>
+<td>ac.ammo / ac.rounds_fired / ac.firing</td>
+<td>rounds, 0/1</td>
+<td>LoGetPayloadInfo().Cannon.shells counting down</td>
+<td>GUN_FIRE events (one per bullet)</td>
+<td>&quot;ammo_counterN&quot; (only cockpits with a round counter)</td>
+</tr>
+<tr>
+<td>ac.stall_warning</td>
+<td>0/1</td>
+<td>LoGetMCPState().StallSignalization</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ac.hits / ac.hit</td>
+<td>count, pulse</td>
+<td>-</td>
+<td>HIT + DAMAGE events</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ac.damage</td>
+<td>count</td>
+<td>LoGetMCPState() failures</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ac.trim_pitch</td>
+<td>-1..1</td>
+<td>- (not exported)</td>
+<td>-</td>
+<td>&quot;trimmer&quot; (cockpits that show it; range to verify)</td>
+</tr>
+<tr>
+<td>ac.shake_amp / ac.shake_freq</td>
+<td>0..1, Hz</td>
+<td>-</td>
+<td>COCKPIT_SHAKE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>ac.rpm</td>
+<td>0..1</td>
+<td>LoGetEngineInfo().RPM</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="games"><a class="anchor" href="#games">#</a>Games</h2>
+<h3 id="dcs-world-implemented"><a class="anchor" href="#dcs-world-implemented">#</a>DCS World (implemented)</h3>
+<ul>
+<li><strong>What:</strong> the export API (<code>Scripts\Export.lua</code> of the install documents it; <code>API\Sim_ControlAPI.md</code>): IAS/TAS (m/s),
+AoA/AoS (rad), acceleration in G (y = normal load), vertical speed, AGL/ASL, angular velocity, <code>LoGetMechInfo()</code>
+(gear/flaps/speed brake value and status, gear strut <code>rod</code> per wheel = weight on wheels, control surface positions),
+<code>LoGetPayloadInfo().Cannon.shells</code>, <code>LoGetMCPState()</code> (StallSignalization and failure flags), <code>LoGetEngineInfo()</code>.
+Trim is not exported generically (only per-module cockpit/draw arguments).</li>
+<li><strong>Rate:</strong> the hook runs every simulation frame (<code>onSimulationFrame</code>) and sends at most 100 lines per second of model
+time; nothing while paused (model time stands still), so a pause silences the stick through the timeout.</li>
+<li><strong>How it is enabled:</strong> <code>engine ffb telemetry setup dcs</code> writes <code>Saved Games\DCS*\Scripts\Hooks\JoyProFfb.lua</code>
+(every DCS Saved Games folder, or <code>--path</code>). DCS loads Hooks scripts itself, each in its own Lua environment, and
+the export functions are available there as <code>Export.Lo*</code>. So <code>Export.lua</code> is not changed at all and other tools
+(SRS, Tacview, DCS-BIOS, TelemFFB, SimShaker) keep working exactly as before. The hook only reads, sends UDP to
+127.0.0.1:41992 (setting <code>port</code>), never waits, and is wrapped in <code>pcall</code>. Idempotent; refuses to overwrite a file it
+did not write; backed up (<code>engine backups</code>); <code>--remove</code> deletes it. DCS must be closed (it loads hooks at start).</li>
+<li><strong>Line protocol:</strong> <code>plane &lt;unit type&gt;</code> (aircraft change, every 5 s), <code>exit</code> (mission end), <code>noexport</code> (multiplayer
+server forbids ownship export), and <code>t=12.34;ias=154.2;aoa=0.081;g=3.42;...</code> (<code>DcsTelemetryProtocol</code>).
+Hook version 2 (for telemetry recording) keeps these keys and adds: position and attitude every frame
+(<code>lat</code>/<code>lon</code>/<code>alt_msl</code>, <code>heading</code>/<code>true_pitch</code>/<code>true_bank</code> from <code>LoGetSelfData()</code>, <code>pos_x/y/z</code>, velocity
+<code>vx/vy/vz</code>, and the ADI <code>pitch</code>/<code>bank</code>/<code>yaw</code> the protocol always listed); a <code>slow t=...;...</code> line 10 times a second
+(engine temperatures, fuel flow and quantity in kg, hydraulics, control surfaces, wheel brakes, canopy, hook, stores,
+chaff/flares, the <code>LoGetMCPState()</code> flags one by one, radar altimeter, magnetic heading, ILS deviations, wind, ACS
+requirements, targets and the first locked target; route and wingmen once a second) that the source adds to the
+following frames; <code>start</code>; <code>info key=text</code> session facts (map, mission, mission date/time, pilot, unit, group,
+coalition, game version); <code>objs</code>/<code>obj</code>/<code>objend</code> (the other objects once a second, only when the server allows
+object export); <code>ev &lt;name&gt; &lt;text&gt;</code> (onGameEvent, pause/resume, navigation mode changes) and <code>msg</code> (chat). The Lua
+source is <code>engine\DcsHooks\JoyProFfb.lua</code> (embedded in the engine). An installed version-1 hook shows as &quot;outdated&quot;
+in the setup status; Install (or <code>engine ffb telemetry setup dcs</code>) replaces it, DCS reads it at its next start.
+<code>DcsRecordingTelemetryTests</code> runs the hook in DCS's own <code>bin\luae.exe</code> (Lua 5.1) with stubbed DCS tables and parses
+what it sends (skipped without a DCS install; <code>JOYPRO_DCS_LUAE</code>, <code>JOYPRO_DCS_HOOK_FILE</code> to test an installed copy).</li>
+<li><strong>Multiplayer:</strong> the ownship functions only work when the server allows player export
+(<code>LoIsOwnshipExportAllowed()</code>, server setting &quot;Allow player export&quot;); otherwise the hook says <code>noexport</code> and the
+status line explains it.</li>
+</ul>
+<h3 id="il-2-great-battles-and-il-2-korea-implemented"><a class="anchor" href="#il-2-great-battles-and-il-2-korea-implemented">#</a>IL-2 Great Battles and IL-2 Korea (implemented)</h3>
+<ul>
+<li><strong>What:</strong> the &quot;telemetrydevice&quot; UDP output (<code>&lt;game&gt;\Doc\UDP_Output\Il2_TeleOutput</code>, rev. 1.21; packet id
+0x54000101): indicators ENG_RPM/MP/SHAKE, LGEARS_STATE, LGEARS_PRESS (gear pressure = weight on wheels), EAS (m/s),
+AOA and AOS (rad), ACCELERATION (vector incl. gravity), COCKPIT_SHAKE (Hz, amplitude), AGL, FLAPS, AIR_BRAKES,
+VERTICAL_SPEED; events SET_FOCUS (aircraft name), GUN_FIRE (one per bullet), HIT, DAMAGE, EXPLOSION, DROP_BOMB,
+ROCKET_LAUNCH, server and client data. The separate &quot;motiondevice&quot; output (packet id 0x494C0100: Euler angles, body
+rotation rates and accelerations) and the &quot;ffbdevice&quot; output are parsed too but not needed by the built-in graph.</li>
+<li><strong>Rate:</strong> 50 Hz / <code>decimation</code> (setup writes decimation 1 = 50 Hz when it creates the section).</li>
+<li><strong>How it is enabled:</strong> <code>engine ffb telemetry setup il2</code> (or <code>il2korea</code>) edits <code>&lt;game&gt;\data\startup.cfg</code>:
+<code>[KEY = telemetrydevice]</code> takes several targets (<code>addr</code>, <code>addr1</code>, ... as &quot;IP:port&quot;), so JoyPro adds ONE line
+<code>addrN = &quot;127.0.0.1:41994&quot;</code> after the other tools' addresses and never changes them (no fan-out needed). Without a
+section it adds one (<code>addr = &quot;127.0.0.1:41994&quot;</code>, decimation 1, enable true, port 41994); a disabled output is
+switched on and the old value remembered. What was changed is recorded in <code>&lt;data&gt;\Ffb\Telemetry\il2-setup.json</code>, so
+<code>--remove</code> restores the file byte for byte. Backed up; idempotent; the game must be closed. The motion device is
+not touched (it has one target per the documentation; other tools use it).</li>
+<li><strong>Multiplayer:</strong> the telemetry output is used online by other tools; no official statement found.</li>
+</ul>
+<h3 id="war-thunder-implemented"><a class="anchor" href="#war-thunder-implemented">#</a>War Thunder (implemented)</h3>
+<ul>
+<li><strong>What:</strong> the game's local web server, on by default while the game runs: <code>http://127.0.0.1:8111/state</code> (flight
+model: &quot;valid&quot;, &quot;IAS, km/h&quot;, &quot;TAS, km/h&quot;, &quot;M&quot;, &quot;AoA, deg&quot;, &quot;AoS, deg&quot;, &quot;Ny&quot;, &quot;Vy, m/s&quot;, &quot;H, m&quot;, &quot;Wx, deg/s&quot;,
+&quot;gear, %&quot;, &quot;flaps, %&quot;, &quot;airbrake, %&quot;, control surfaces, engine values per engine) and <code>/indicators</code> (cockpit gauges:
+&quot;type&quot; = vehicle, &quot;speed&quot;, &quot;g_meter&quot;, &quot;gears&quot;, &quot;trimmer&quot;, &quot;radio_altitude&quot;, &quot;ammo_counterN&quot;, ... - only what the
+cockpit has). Outside a battle both say <code>{&quot;valid&quot;: false}</code>. No stall warning, no damage, no weight on wheels, no
+generic gun field.</li>
+<li><strong>Rate:</strong> JoyPro polls /state at 20 Hz (setting <code>pollHz</code>, 1..60) and /indicators every second request, only while
+aces.exe runs and the feature is on; if the server does not answer it retries every 2 s. The game's own web page
+polls every 500 ms; community tools poll every 250 ms; no rate limit is documented.</li>
+<li><strong>How it is enabled:</strong> nothing to set up. Settings <code>url</code> must stay on this PC.</li>
+<li><strong>Recording extras</strong> (<code>WarThunderTelemetrySource.RecordExtras</code>, off for force feedback; the session recorder
+switches it on through <code>WarThunderTelemetryFeed.RecordExtras</code>): while /state is valid, one extra request per poll
+period after /state: <code>/map_info.json</code> every 10 s (map_min/map_max in m, grid_steps, grid_zero = top left corner,
+map_generation, valid), <code>/map_obj.json</code> at 2 Hz (type, icon, color, x/y 0..1 of the map picture with y down, dx/dy,
+airfields sx/sy/ex/ey), <code>/hudmsg?lastEvt=&amp;lastDmg=</code> at 1 Hz (events/damage with id, msg, time), <code>/mission.json</code>
+every 5 s (objectives with primary, status, text). Field names checked in the game's own page (webUi.vromfs.bin;
+the page polls all of them every 500 ms). Frame keys added: <code>wt.map.x_m</code> (east), <code>wt.map.y_m</code> (north),
+<code>wt.map.heading_deg</code>, <code>wt.att.roll_deg</code> / <code>wt.att.pitch_deg</code> (artificial horizon gauge, sign decided from the
+turn direction and flight path + AoA, default inverted). <code>/gamechat</code> and <code>/map.img</code> are never requested.</li>
+</ul>
+<h3 id="msfs-2020-2024-telemetry-recording-source-no-force-feedback-effects-yet"><a class="anchor" href="#msfs-2020-2024-telemetry-recording-source-no-force-feedback-effects-yet">#</a>MSFS 2020 / 2024 (telemetry recording source; no force feedback effects yet)</h3>
+<p>Implemented for the telemetry recording (<code>gui/JoyPro.Ffb.Core/Telemetry/Msfs</code>, docs/telemetry-recording.md): a
+read-only native SimConnect client that loads the user's own <code>SimConnect.dll</code> with NativeLibrary (never shipped),
+213 FLOAT64 simvars as <code>msfs.&lt;name&gt;</code> keys (98 tagged/changed-only at sim-frame rate, interval adapted to about 20 Hz;
+115 once per second), 8 strings (TITLE, ATC ID, ...), system events and a 1 Hz traffic snapshot. Not verified
+against a running sim yet. The research notes below still apply.</p>
+<p>SimConnect (<code>Microsoft.FlightSimulator.SimConnect.dll</code> from the SDK + native <code>SimConnect.dll</code>, x64):
+<code>SimConnect_RequestDataOnSimObject</code> with <code>SIMCONNECT_PERIOD_SIM_FRAME</code> (every sim frame) or VISUAL_FRAME/SECOND,
+optional <code>SIMCONNECT_DATA_REQUEST_FLAG_CHANGED</code>. Useful simvars: AIRSPEED INDICATED/TRUE (knots), INCIDENCE ALPHA/BETA
+(rad), STALL ALPHA, STALL WARNING (bool), G FORCE, ACCELERATION BODY X/Y/Z (ft/s²), ROTATION VELOCITY BODY X/Y/Z,
+GEAR POSITION:n / GEAR TOTAL PCT EXTENDED, GEAR IS ON GROUND:n, CONTACT POINT COMPRESSION:n, SIM ON GROUND, GROUND
+VELOCITY (knots), SURFACE TYPE, FLAPS HANDLE PERCENT, TRAILING EDGE FLAPS LEFT PERCENT, SPOILERS LEFT POSITION,
+ELEVATOR TRIM POSITION (rad) / ELEVATOR TRIM PCT, AILERON/RUDDER TRIM PCT, DESIGN SPEED VS0/VS1 (to normalise stall
+per aircraft). Simvar names are the same in 2020 and 2024; facility structures differ (load the SimConnect DLL that
+matches the running exe if facilities are ever needed). Enabling: nothing in the sim (SimConnect is always on locally).</p>
+<h3 id="x-plane-11-12-telemetry-source-done-no-force-feedback-graph-yet"><a class="anchor" href="#x-plane-11-12-telemetry-source-done-no-force-feedback-graph-yet">#</a>X-Plane 11 / 12 (telemetry source done, no force feedback graph yet)</h3>
+<p>The source and its UDP feed exist for telemetry recording (<code>gui/JoyPro.Ffb.Core/Telemetry/XPlane</code>, keys <code>xp.*</code>,
+see docs/telemetry-recording.md); the force feedback process does not use it yet (no <code>ac.*</code> deriver for X-Plane).</p>
+<p>UDP on port 49000 (&quot;Exchanging Data with X-Plane.rtfd&quot; in the install's Instructions folder): request
+<code>&quot;RREF\0&quot;</code> + <code>int freq</code> + <code>int index</code> + <code>char path[400]</code> (413 bytes; freq 0 unsubscribes; array elements as
+<code>path[i]</code>); X-Plane answers to the sender's address with <code>&quot;RREF&quot;</code> + 1 byte + n × (int index, float value), at most 183
+pairs per packet. Datarefs: sim/flightmodel/position/indicated_airspeed (kias), true_airspeed (m/s),
+sim/flightmodel2/misc/AoA_angle_degrees, sim/flightmodel/position/alpha/beta (deg), sim/flightmodel/forces/g_nrml,
+sim/cockpit2/annunciators/stall_warning (+ stall_warning_ratio), sim/flightmodel2/gear/deploy_ratio[10],
+sim/flightmodel2/gear/on_ground[10], tire_vertical_deflection_mtr[10], sim/cockpit2/controls/flap_system_deploy_ratio,
+sim/cockpit2/controls/elevator_trim / aileron_trim / rudder_trim (-1..1), sim/flightmodel2/controls/speedbrake_ratio,
+sim/flightmodel/position/groundspeed, sim/weapons/firing[25], sim/weapons/bul_rounds[25], sim/time/paused. The
+X-Plane 12 Web API (REST/WebSocket on 8086) updates at ~10 Hz: too slow for force feedback. In X-Plane 12, Settings &gt;
+Network can block incoming UDP.</p>
+<h2 id="ports"><a class="anchor" href="#ports">#</a>Ports</h2>
+<p>JoyPro: DCS 41992 (overlay hook: 1992), IL-2 41994, War Thunder 8111 (the game's). Avoided: TelemFFB 34380 (DCS),
+34385 (IL-2), 34386 (IL-2 Korea), 34390 (X-Plane); IL-2 defaults 4321/4322; SimShaker 29373; Tacview 42674/42675;
+DCS-BIOS 5010/7778; SRS 5002-5003, 5068-5069, 7080/7082, 9040, 9084-9087; X-Plane 49000/49707/8086. All ports are
+settings.</p>
+<h2 id="settings-and-command-line"><a class="anchor" href="#settings-and-command-line">#</a>Settings and command line</h2>
+<pre><code>engine ffb telemetry status [--text]
+engine ffb telemetry effects
+engine ffb telemetry config show
+engine ffb telemetry config set --param enabled=true --param max-force=0.6 --param device={AD5168C0-...}
+engine ffb telemetry config set --game DCS --param graph=my-dcs.jpffb.json --param strength=0.8
+engine ffb telemetry config set --game DCS --plane F-16C_50 --param graph=viper.jpffb.json
+engine ffb telemetry config set --game IL2Game --effect buffet --param enabled=false
+engine ffb telemetry config clear --game DCS --plane F-16C_50
+engine ffb telemetry config set --device {AD5168C0-...} --param invert-y=true
+engine ffb telemetry config clear --device {AD5168C0-...}
+engine ffb telemetry setup dcs|il2|il2korea|warthunder [--remove] [--dry-run] [--path &lt;folder&gt;]
+</code></pre>
+<p>Global keys: enabled, device (DirectInput instance GUID; empty = the first device with force axes, so vJoy is not
+picked), device-name, strength (0..1), max-force (0..1, default 0.6), invert-x, invert-y (devices without their own
+entry), tick-rate (10..200), timeout (0.1..5 s), centring-spring (true = JoyPro provides the centring spring, default),
+centring-stiffness (0..1, default 0.3). Per device (<code>--device {guid}</code>): invert-x, invert-y. Per game: enabled, port,
+graph, strength (0..2), url, poll-hz. Per aircraft (DCS unit type, IL-2 focus object, War Thunder vehicle): graph,
+strength. Per effect: enabled, strength (0..2). The GUI saves the direction for the picked device and globally.
+A running JoyPro.Ffb takes a new invert on its next start (the effects' directions are set when they are created).</p>
+<h2 id="tests-no-hardware-movement"><a class="anchor" href="#tests-no-hardware-movement">#</a>Tests (no hardware movement)</h2>
+<ul>
+<li><code>dotnet test gui/JoyPro.Ffb.Core.Tests</code>: graph, nodes, persistence, runtime safety rules, IL-2 packets, and
+<code>TelemetryFlightTests</code>: the synthetic flight (<code>SyntheticFlight</code>: cruise, pull to 22 deg AoA, gear down, guns,
+landing roll) as DCS lines, IL-2 packets and War Thunder JSON through the real sources, the normalised model, the
+built-in graph and the mixer: buffet only above 10 deg AoA and growing with it; gear rumble only while the gear
+moves; pulsed gun bursts only while firing; runway rumble only on the ground, weaker as it slows; IL-2 hit jolt;
+switched-off effects stay off; the cap holds at every update with several effects at once; one STOP ALL on
+telemetry timeout and nothing until telemetry returns; the host over loopback UDP follows a game process and stops
+when it is killed; War Thunder polling of a local HTTP stub, <code>valid: false</code> gives no frames, no requests after stop;
+an idle runtime does ~1 loop check per second instead of 100. <code>TrimInvertTests</code>: input names, hat diagonals, device
+matching, Invert node and switches, button nodes, stick position, trim (steps, repeat rate, limit, here/follow,
+reset, invert, move rate, kept over a reset), the built-in graph's trim wiring, centring modes (plain spring, off,
+springs held with their trim during a pause, STOP ALL on disable), config round trip. <code>DirectionWizardTests</code>: the
+test's state machine with a fake output (inverts from the answers, forces always stopped, cancel in every step,
+output errors, the VPforce / general hints).</li>
+<li><code>dotnet test gui/JoyPro.Gui.Tests</code> (<code>FfbTrimDirectionTests</code>): the page's direction test with a fake output, the
+VPforce hint, centring and per-device invert settings to the engine, the test process protocol against a fake
+process, the editor's palette, labels, &quot;press the button now&quot; and &quot;Assign trim buttons&quot;.</li>
+<li><code>engine/tests/smoke/ffbtelemetry.ps1</code> (part of <code>engine/tests/engine_smoke_test.ps1</code>, ~2 min): the CLI settings and
+setup on temp copies (DCS hook with an existing Export.lua that must stay byte-identical, a foreign file that must not
+be overwritten, port change -&gt; update; IL-2 startup.cfg with and without another tool's telemetry section, CRLF kept,
+motion device untouched, remove restores byte for byte), then <code>JoyPro.Ffb run --sink dry</code> against
+<code>JoyPro.Ffb simulate</code> for DCS, IL-2 and War Thunder at once, a telemetry gap, a game process that is killed, and the
+60 s resource run (budget: &lt; 5 % of a core active, &lt; 0.5 % idle, private memory after a 21 s warm-up: median of 43-61 s less than 3 MB above the median of 21-39 s and under 40 MB, handles &lt; +25,
+threads &lt; +5, compared the same way; effect lengths with a tolerance from the measured lateness of the run), and the telemetry gap with &quot;JoyPro provides the centring spring&quot; (only springs, on both axes, no
+STOP ALL until the end).</li>
+</ul>
+<h2 id="hardware-re-test-of-this-change-manual-on-the-real-rhino-not-part-of-the-automated-tests"><a class="anchor" href="#hardware-re-test-of-this-change-manual-on-the-real-rhino-not-part-of-the-automated-tests">#</a>Hardware re-test of this change (manual, on the real Rhino; not part of the automated tests)</h2>
+<ol>
+<li>VPforce Configurator: note the settings; untick Effects &gt; &quot;Spring&quot;, Apply. Emergency stop within reach.</li>
+<li>JoyPro page: Refresh devices, pick the Rhino; the VPforce hint shows. Start the <strong>Direction test</strong>: Start -&gt; Ready:
+the stick goes RIGHT -&gt; answer; Ready: FORWARD -&gt; answer &quot;Back&quot; expected while invert Y is not set yet (saved
+inverts: X off, Y on). Spring step: move the stick, let go: it springs back. Trim step: the stick moves forward
+about a third and stays; the measured value is shown (negative = forward). Cancel once mid-push: the force stops
+at once.</li>
+<li>Same with the Configurator &quot;Spring&quot; ticked: the spring and trim steps should fail and show the hint.</li>
+<li>Editor: select &quot;Stick trim&quot;, &quot;Assign trim buttons&quot;: press the trim-here button, the hat up/down/left/right and a
+reset button (a throttle hat works too). Save the graph and pick it for DCS.</li>
+<li><code>JoyPro.Ffb run --game DCS --no-game-check</code> + <code>JoyPro.Ffb simulate --game DCS --port 41992 --seconds 30</code> (or DCS):
+hat up moves the centre forward in steps, holding it repeats; hold trim-here, move the stick, let go: it stays
+there; reset returns it slowly. The spring must not jitter or pulse (no restarts).</li>
+<li>Let the simulator end (telemetry stops): the stick keeps its trimmed spring (held), no slack. Then end JoyPro.Ffb
+(Ctrl+C): released; with the Configurator spring off the stick is slack now (expected), with it on it centres.</li>
+<li>Kill JoyPro.Ffb with Task Manager while a spring and a force run: the force must stop at once; check that the spring
+also ends (the exclusive acquisition is lost). If the spring stays, report it (it would need a watchdog).</li>
+</ol>
+<h3 id="re-test-3-the-y-spring-centre-after-the-y-offset-acted-on-x"><a class="anchor" href="#re-test-3-the-y-spring-centre-after-the-y-offset-acted-on-x">#</a>Re-test 3: the Y spring centre (after &quot;the Y offset acted on X&quot;)</h3>
+<p>Configurator spring off, hands off, positions with winmm. <code>JoyPro.Ffb test --device {rhino}</code> and type:</p>
+<ol>
+<li><code>invert 0 1</code>, <code>spring 0.8 0 0</code> (wait 2 s, <code>pos</code>), <code>spring 0.8 0 -0.35</code> (wait 2 s, <code>pos</code>): with the combined layout
+Y should move forward (by about a third) and X stay centred; <code>spring 0.8 0.3 0</code>: X moves right, Y stays.</li>
+<li>If Y still does not move: <code>stop</code>, <code>conditions separate</code>, repeat 1; then <code>conditions restart</code>, repeat 1. Note which
+layout moves the right axis; the log (<code>ffb-&lt;date&gt;.log</code>, category FfbTest) has every block sent.</li>
+<li>GUI: the direction test's buttons read &quot;Start&quot; / &quot;Ready&quot; in full (100 % and 150 % scaling); &quot;Repeat this step&quot; repeats
+the push / spring / trim; &quot;Start over&quot; goes back to the beginning. The GUI log lists the steps and answers.</li>
+</ol>
+<h2 id="first-hardware-test-needs-the-user"><a class="anchor" href="#first-hardware-test-needs-the-user">#</a>First hardware test (needs the user)</h2>
+<p>Nothing in this phase has sent a force to a real device; the DirectInput sign convention and the behaviour of the
+Rhino on a killed process are unverified. Proposed procedure:</p>
+<ol>
+<li>Close the game. In VPforce Configurator note the current settings; keep its emergency stop / the Rhino's power
+switch within reach. The abort key for the test is closing JoyPro.Ffb (Ctrl+C in its console, or
+<code>Stop-Process -Name JoyPro.Ffb</code>), which sends STOP ALL.</li>
+<li><code>JoyPro.Ffb devices</code> and set <code>device</code> to the Rhino's instance GUID; set <code>max-force=0.15</code>, <code>strength=0.5</code>.</li>
+<li>Hands OFF the stick: <code>JoyPro.Ffb run --game DCS --no-game-check</code> and <code>JoyPro.Ffb simulate --game DCS --port 41992 --seconds 30</code>. Watch: buffet at 3-5 s, gear rumble at 6-7 s, gun bursts at 7-8 s, runway at 8-10 s, nothing after
+the simulator ends (STOP ALL after 0.5 s). Check the G weight pushes FORWARD; if not, set <code>invert-y=true</code>
+(and <code>invert-x</code> for the roll spring/jolt).</li>
+<li>Kill the process with Task Manager while forces run: the stick must go slack within ~0.3 s (finite effect
+durations). If not, report it - the backend would need infinite durations plus a watchdog instead.</li>
+<li>Hands ON the stick, repeat 3 with <code>max-force=0.3</code>, then 0.6.</li>
+<li>In DCS (game FFB off for the Rhino): install the hook, fly; check the status line and the inspector. Then IL-2 and
+War Thunder the same way.</li>
+</ol>
+<h3 id="result-of-the-first-hardware-test-2026-10-11-vpforce-rhino-synthetic-dcs-flight-cap-0-3-strength-1"><a class="anchor" href="#result-of-the-first-hardware-test-2026-10-11-vpforce-rhino-synthetic-dcs-flight-cap-0-3-strength-1">#</a>Result of the first hardware test (2026-10-11, VPforce Rhino, synthetic DCS flight, cap 0.3, strength 1)</h3>
+<ul>
+<li>Vibration and rumble effects (buffet, gear, guns, runway) were felt by the user; the host reported no DirectInput
+error. A process killed with Stop-Process mid-run: the stick was slack at once (finite effect durations work).</li>
+<li>The first two runs (cap 0.15, strength 0.5) moved nothing: the Rhino rested off centre without its own spring
+(motors apparently inactive at that moment); measured with winmm joyGetPosEx (a read-only position logger).</li>
+<li>Not felt yet: a steady pull (G weight) or the trim spring, so the force direction (<code>invert-x</code>/<code>invert-y</code>) is still
+to be checked in the game.</li>
+</ul>
+<h2 id="open-points"><a class="anchor" href="#open-points">#</a>Open points</h2>
+<ul>
+<li>Live verification of all three games (hook loads in DCS hooks state, IL-2 keeps the added lines when it rewrites
+startup.cfg, War Thunder &quot;trimmer&quot; range and sign, the radio-altimeter on-ground heuristic).</li>
+<li>Re-test on the Rhino (see &quot;Hardware re-test of this change&quot;): infinite springs after a killed process, trim and the
+held springs. DIPROP_AUTOCENTER is switched off while JoyPro owns the device and on again on release (it does not
+control the VPforce Configurator's spring).</li>
+<li>DCS trim and stall warnings for modules that do not use LoGetMCPState; per-module draw arguments could add them.</li>
+<li>MSFS (SimConnect) and X-Plane (RREF) sources; per-aircraft AoA thresholds (e.g. from MSFS STALL ALPHA).</li>
+</ul>
+<h2 id="sources"><a class="anchor" href="#sources">#</a>Sources</h2>
+<ul>
+<li>DCS: <code>&lt;DCS&gt;\Scripts\Export.lua</code> (function list and units), <code>&lt;DCS&gt;\API\Sim_ControlAPI.md</code> (Hooks, <code>Export.Lo*</code>, export
+permissions); https://wiki.hoggitworld.com/view/DCS_Export_Script</li>
+<li>IL-2: <code>&lt;IL-2 Korea&gt;\Doc\UDP_Output\Il2_TeleOutput.odt</code> (rev. 1.21), <code>Il2_MotionOutput.odt</code>, <code>IL2_ffbOutput.doc</code>;
+https://forum.il2sturmovik.com/topic/72958-key-telemetrydevice-what-are-the-packet_id-outputs/ ,
+https://forum.il2sturmovik.com/topic/44048-motion-support-for-il-2/ ,
+https://forum.il2sturmovik.com/topic/91259-vpforce-startupcfg-query/</li>
+<li>War Thunder: the game's own local page <code>http://127.0.0.1:8111</code> (served by the running game: <code>/state</code>, <code>/indicators</code>),
+https://forum.warthunder.com/t/weapon-and-ammunition-info-in-localhost/345655 , sample
+answers in public repositories (lucasvmx/WarTelemetry, Ktpls/wtutility; key names only).</li>
+<li>MSFS: https://docs.flightsimulator.com/msfs2024/flighting/programming-apis/simvars/aircraft-simvars/aircraft-flight-model-variables/index.md ,
+.../aircraft-brake-and-landing-gear-variables/index.md , .../aircraft-control-variables/index.md ,
+https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObject.htm ,
+https://devsupport.flightsimulator.com/t/2020-2024-compatible-microsoft-flightsimulator-simconnect-dll/11844</li>
+<li>X-Plane: <code>&lt;X-Plane 12&gt;\Instructions\Exchanging Data with X-Plane.rtfd</code>, <code>Resources\plugins\DataRefs.txt</code>;
+https://developer.x-plane.com/article/x-plane-web-api/</li>
+<li>Ports of other tools: https://github.com/walmis/VPforce-TelemFFB (README; port numbers only),
+https://github.com/ciribob/DCS-SimpleRadioStandalone (port constants), Tacview and DCS-BIOS documentation.</li>
+<li>DirectInput: the DirectX SDK documentation of IDirectInputDevice8::CreateEffect, DIEFFECT, DIPERIODIC, DICONDITION,
+SetCooperativeLevel, SendForceFeedbackCommand (https://learn.microsoft.com/en-us/previous-versions/windows/desktop/ee416842(v=vs.85)),
+&quot;Device Properties&quot; (DIPROP_AUTOCENTER, properties only change while unacquired:
+https://msdn.microsoft.com/en-us/library/ee416595(v=vs.85)), &quot;Creating the DirectInput Force-Feedback Device&quot;
+(https://learn.microsoft.com/en-us/previous-versions/ee418821(v=vs.85)).</li>
+<li>What DirectInput sends on Acquire / Unacquire / DISFFC_* (USB captures of Windows, as implemented by Wine; read for
+the behaviour only): Wine <code>dlls/dinput/joystick_hid.c</code> (https://github.com/wine-mirror/wine) and the merge request
+&quot;dinput: implement DIPROP_AUTOCENTER&quot; (https://gitlab.winehq.org/wine/wine/-/merge_requests/4830). USB HID PID 1.0
+&quot;Device Control&quot; usages (Enable/Disable Actuators, Stop All Effects, Device Reset, Device Pause/Continue).</li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro is free software under the <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">Source</a> · Generated from the source; <a href="../project/wiki-status.html">wiki status</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">On this page</div><ul><li class="l2"><a href="#where-things-are">Where things are</a></li><li class="l2"><a href="#how-it-runs">How it runs</a></li><li class="l3"><a href="#process-protocol-gui-joypro-ffb">Process protocol (GUI ↔ JoyPro.Ffb)</a></li><li class="l3"><a href="#resources-measured-2026-10-11-debug-build-dcs-stream-at-60-hz-every-effect-on">Resources (measured 2026-10-11, Debug build, DCS stream at 60 Hz, every effect on)</a></li><li class="l2"><a href="#the-graph">The graph</a></li><li class="l3"><a href="#built-in-graph-ffbpresets-flight">Built-in graph (FfbPresets.Flight())</a></li><li class="l2"><a href="#trim">Trim</a></li><li class="l2"><a href="#direction-invert-and-the-direction-test">Direction, invert and the direction test</a></li><li class="l2"><a href="#hardware-findings-vpforce-rhino-2026-10-11-positions-read-with-winmm-hands-off">Hardware findings (VPforce Rhino, 2026-10-11, positions read with winmm, hands off)</a></li><li class="l2"><a href="#condition-effects-spring-damper-friction-layout-on-the-device">Condition effects (spring, damper, friction): layout on the device</a></li><li class="l2"><a href="#acquire-and-release-how-joypro-hands-the-device-back">Acquire and release (how JoyPro hands the device back)</a></li><li class="l2"><a href="#normalised-aircraft-model-ac">Normalised aircraft model (&quot;ac.*&quot;)</a></li><li class="l2"><a href="#games">Games</a></li><li class="l3"><a href="#dcs-world-implemented">DCS World (implemented)</a></li><li class="l3"><a href="#il-2-great-battles-and-il-2-korea-implemented">IL-2 Great Battles and IL-2 Korea (implemented)</a></li><li class="l3"><a href="#war-thunder-implemented">War Thunder (implemented)</a></li><li class="l3"><a href="#msfs-2020-2024-telemetry-recording-source-no-force-feedback-effects-yet">MSFS 2020 / 2024 (telemetry recording source; no force feedback effects yet)</a></li><li class="l3"><a href="#x-plane-11-12-telemetry-source-done-no-force-feedback-graph-yet">X-Plane 11 / 12 (telemetry source done, no force feedback graph yet)</a></li><li class="l2"><a href="#ports">Ports</a></li><li class="l2"><a href="#settings-and-command-line">Settings and command line</a></li><li class="l2"><a href="#tests-no-hardware-movement">Tests (no hardware movement)</a></li><li class="l2"><a href="#hardware-re-test-of-this-change-manual-on-the-real-rhino-not-part-of-the-automated-tests">Hardware re-test of this change (manual, on the real Rhino; not part of the automated tests)</a></li><li class="l3"><a href="#re-test-3-the-y-spring-centre-after-the-y-offset-acted-on-x">Re-test 3: the Y spring centre (after &quot;the Y offset acted on X&quot;)</a></li><li class="l2"><a href="#first-hardware-test-needs-the-user">First hardware test (needs the user)</a></li><li class="l3"><a href="#result-of-the-first-hardware-test-2026-10-11-vpforce-rhino-synthetic-dcs-flight-cap-0-3-strength-1">Result of the first hardware test (2026-10-11, VPforce Rhino, synthetic DCS flight, cap 0.3, strength 1)</a></li><li class="l2"><a href="#open-points">Open points</a></li><li class="l2"><a href="#sources">Sources</a></li></ul></aside>
+</div>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>
