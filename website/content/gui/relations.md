@@ -116,7 +116,7 @@ the same DCS id where it means the same.
 <!-- entry: BindSelectedRelationCommand -->
 Opens the Binds page with this relation selected, ready to record its button or axis.
 
-<!-- entry: bind:Row.IsChecked -->
+<!-- entry: bind:Item.Row.IsChecked -->
 Catalog: ticks one action of the game or aircraft. **Add** at the bottom of the catalog puts the ticked actions into
 the open relation (or a new one). A **main** chip marks the one action to take for the function (its main control,
 not a variant); a used action shows which relations have it already.
