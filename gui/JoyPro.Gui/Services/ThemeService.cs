@@ -231,6 +231,10 @@ public static class ThemeService
         new("ButtonForeground", "ButtonBackground", 4.5, "JP.SurfaceBrush"),
         new("ButtonForeground", "ButtonBackgroundPointerOver", 4.5, "JP.SurfaceBrush"),
         new("ButtonForeground", "ButtonBackgroundPressed", 4.5, "JP.SurfaceBrush"),
+        // A switched-off button, check box or radio button stays readable (3:1, WCAG's minimum for UI parts).
+        new("ButtonForegroundDisabled", "ButtonBackgroundDisabled", 3.0, "JP.SurfaceBrush"),
+        new("ButtonForegroundDisabled", "JP.SurfaceBrush", 3.0),
+        new("ButtonForegroundDisabled", "CardTintBrush", 3.0, "JP.SurfaceBrush"),
         new("JP.Chip.GameTextBrush", "JP.Chip.GameBrush", 4.5, "JP.SurfaceBrush"),
         new("JP.Chip.AircraftTextBrush", "JP.Chip.AircraftBrush", 4.5, "JP.SurfaceBrush"),
         new("JP.Chip.DeviceTextBrush", "JP.Chip.DeviceBrush", 4.5, "JP.SurfaceBrush"),
@@ -261,9 +265,23 @@ public static class ThemeService
         ("ExpanderHeaderBorderBrushPressed", "JP.BorderStrongBrush", 0),
         ("ExpanderContentBackground", "JP.SurfaceAltBrush", 0),
         ("ExpanderContentBorderBrush", "JP.BorderBrush", 0),
+        // Switched-off toggles, check boxes and radio buttons look like a switched-off button (readable, 2.5.1).
+        ("ToggleButtonBackgroundDisabled", "ButtonBackgroundDisabled", 0),
+        ("ToggleButtonForegroundDisabled", "ButtonForegroundDisabled", 0),
+        ("RepeatButtonBackgroundDisabled", "ButtonBackgroundDisabled", 0),
+        ("RepeatButtonForegroundDisabled", "ButtonForegroundDisabled", 0),
+        ("AccentButtonBackgroundDisabled", "ButtonBackgroundDisabled", 0),
+        ("AccentButtonForegroundDisabled", "ButtonForegroundDisabled", 0),
+        ("CheckBoxForegroundUncheckedDisabled", "ButtonForegroundDisabled", 0),
+        ("CheckBoxForegroundCheckedDisabled", "ButtonForegroundDisabled", 0),
+        ("CheckBoxForegroundIndeterminateDisabled", "ButtonForegroundDisabled", 0),
+        ("RadioButtonForegroundDisabled", "ButtonForegroundDisabled", 0),
         ("ListBoxItemBackgroundSelectedPointerOver", "ListBoxItemBackgroundSelected", 0.06),
         ("ListBoxItemBackgroundSelectedPressed", "ListBoxItemBackgroundSelected", -0.04),
     ];
+
+    // The keys made from the tokens (their defaults are written in Design.axaml like the tokens').
+    public static IEnumerable<string> DerivedKeys => Derived.Select(d => d.Key);
 
     private static ResourceDictionary? overrides;
 

@@ -1,7 +1,8 @@
 # Builds the device photo list of a release (docs/device-reference.md "The photo list in the releases"): the files of
 # EngineOnly_Runtime\DB\DevicePhotos (the photo addresses with their SHA-256, _sources.json with the list's "version")
 # plus _hosts.json (the makers' hosts of every catalog model, from DB\Devices) as one zip, and manifest.json
-# ("joypro-device-photos": version, tag, asset, size, sha256, built, photos). JoyPro downloads it from the release
+# ("joypro-device-photos": version, tag, asset, size, sha256, built, photos, archived = photos with a Wayback snapshot,
+# the fallback when an address fails; a snapshot that is not a raw Wayback capture stops the build). JoyPro downloads it from the release
 # "joypro-device-photos" (never marked latest) at most once a day and uses it instead of its shipped list when the
 # version is higher. This script only writes the output folder and uploads nothing.
 #
@@ -44,12 +45,21 @@ $stage = Join-Path ([IO.Path]::GetTempPath()) ("joypro-photo-list-" + [Guid]::Ne
 New-Item -ItemType Directory -Force $stage | Out-Null
 try {
     $count = 0
+    $archived = 0
+    $badArchive = @()
     foreach ($file in Get-ChildItem $photos -Filter *.json) {
         Copy-Item $file.FullName (Join-Path $stage $file.Name)
         if (-not $file.Name.StartsWith("_")) {
-            $count += @((Get-Content $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json).photos).Count
+            $list = @((Get-Content $file.FullName -Raw -Encoding UTF8 | ConvertFrom-Json).photos)
+            $count += $list.Count
+            # The web archive fallback: a raw Wayback capture (https://web.archive.org/web/<time>id_/<address>).
+            foreach ($p in $list | Where-Object { $_.archive }) {
+                if ([string]$p.archive -match '^https://web\.archive\.org/web/\d{1,14}(id|im)_/https?://') { $archived++ }
+                else { $badArchive += "$($p.model): $($p.archive)" }
+            }
         }
     }
+    if ($badArchive.Count -gt 0) { throw ("Not a raw Wayback capture (archive):`n" + ($badArchive -join "`n")) }
     $hostsJson = [ordered]@{ format = "joypro-photo-hosts"; models = $hosts } | ConvertTo-Json -Depth 5
     [IO.File]::WriteAllText((Join-Path $stage "_hosts.json"), $hostsJson, (New-Object Text.UTF8Encoding $false))
 
@@ -62,12 +72,12 @@ try {
     $size = (Get-Item $zip).Length
     $manifest = [ordered]@{
         format = "joypro-device-photos"; version = $version; tag = $Tag; asset = $asset; size = $size; sha256 = $sha
-        built = (Get-Date).ToUniversalTime().ToString("o"); photos = $count
+        built = (Get-Date).ToUniversalTime().ToString("o"); photos = $count; archived = $archived
     }
     [IO.File]::WriteAllText((Join-Path $outFull "manifest.json"), ($manifest | ConvertTo-Json), (New-Object Text.UTF8Encoding $false))
     # Older zips of the folder are not part of the release any more.
     Get-ChildItem $outFull -Filter "device-photos-v*.zip" | Where-Object { $_.Name -ne $asset } | Remove-Item
-    Write-Host ("Device photo list v{0}: {1} photos, {2:N0} KB -> {3}" -f $version, $count, ($size / 1KB), $outFull)
+    Write-Host ("Device photo list v{0}: {1} photos ({2} with a web archive snapshot as the fallback), {3:N0} KB -> {4}" -f $version, $count, $archived, ($size / 1KB), $outFull)
     Write-Host ("Upload {0} and manifest.json to the release '{1}' (gh release upload {1} ... --clobber; keep it --latest=false)." -f $asset, $Tag)
 }
 finally {

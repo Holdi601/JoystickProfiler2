@@ -49,7 +49,10 @@ public sealed partial class CockpitsViewModel
             picturesRoot = value;
             RefreshPicturesStatus();
             if (Variant != null)
+            {
                 BuildPages();
+                RefreshGameRender();
+            }
         }
     }
 
@@ -83,7 +86,10 @@ public sealed partial class CockpitsViewModel
     partial void OnGamePictureSourceIndexChanged(int value)
     {
         if (!fillingSources && value >= 0)
+        {
             BuildPages();
+            RefreshGameRender();
+        }
     }
 
     private string SourceName(CockpitPictureSet s)
@@ -179,6 +185,7 @@ public sealed partial class CockpitsViewModel
         {
             IsBuildingPictures = false;
             BuildPages();
+            RefreshGameRender();
         }
     }
 }

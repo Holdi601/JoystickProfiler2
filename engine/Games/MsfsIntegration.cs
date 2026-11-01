@@ -179,8 +179,9 @@ namespace JoyPro.Engine.Games
 
         // MSFS 2020: the Steam remote folders (app 1250410) with input profiles. MSFS 2024: JoyPro's preset package in
         // the Community2024 folder (created by the first export), then the Steam remote folders of app 2537590.
-        // MSFS 2024 also lists the Steam remote folders and the Store save folder (wgs), which import reads; MSFS 2020
-        // lists its Steam remote folders, then the Store save folder (read only: import and scan).
+        // MSFS 2024 also lists the Steam remote folders and the Store save folder (wgs), which import reads (the export
+        // to the package writes the profiles there that the sim uses); MSFS 2020 lists its Steam remote folders, then
+        // the Store save folder (read only: import and scan).
         public List<string> DiscoverConfigPaths(List<string> warnings)
         {
             List<string> paths = new List<string>();
@@ -1119,11 +1120,12 @@ namespace JoyPro.Engine.Games
         {
             GameIoResult result = new GameIoResult();
             // The Microsoft Store keeps the profiles in its save containers, which get new file names on every save
-            // and sync with the Xbox cloud: read only.
+            // and sync with the Xbox cloud, so the save folder is never an export target: MSFS 2020's Store profiles are
+            // read only; MSFS 2024's are written by the export to the package (WriteUserProfilesOf2024, through WgsWriter).
             if (MsfsUserProfiles.WgsFolderOf(request.ConfigPath) != null || MsfsUserProfiles.IsStorePath(request.ConfigPath))
             {
                 result.Errors.Add(sim == 2024
-                    ? "The Microsoft Store profiles of MSFS 2024 are read only for JoyPro. Export to JoyPro's preset package instead (the Community2024 folder, see 'engine msfs2024 paths'); the Store version loads it too."
+                    ? "The Microsoft Store save folder of MSFS 2024 cannot be an export path. Export to JoyPro's preset package instead (the Community2024 folder, see 'engine msfs2024 paths'): that export also writes the Store profiles the sim uses for each device and category."
                     : "The Microsoft Store profiles of MSFS 2020 are read only for JoyPro: JoyPro imports them, but can only export to the Steam version's profiles.");
                 return result;
             }
@@ -1365,8 +1367,9 @@ namespace JoyPro.Engine.Games
         // JoyPro clears binds only in profiles of connected devices (the import leaves the others out).
         private static bool OwnsDevice(GameExportRequest request, Guid device)
         {
+            // (never a device JoyPro never clears: the vJoy device it tunnels into, an ignored device)
             GameDevice connected = request.Devices == null ? null : request.Devices.FindByInstanceGuid(device);
-            return connected != null && connected.Connected;
+            return connected != null && connected.Connected && !connected.Kept;
         }
 
         private ExportSkippedBind SkippedMultiBind(MsfsProfileFile profile, MsfsWanted wanted, string gameAction)
@@ -1509,7 +1512,9 @@ namespace JoyPro.Engine.Games
                 List<MsfsWanted> wantedForAction;
                 if (wanted.TryGetValue(action.Name, out wantedForAction))
                     placed.Add(placedPrefix + action.Name);
-                bool overwrite = owns && replaceOwned && profileActions != null && profileActions.Contains(action.Name);
+                // "My profile wins" only: clean clears the profiles it writes (above) and leaves the others alone, as in
+                // every game.
+                bool overwrite = owns && request.Mode == GameExportMode.MergeOverwrite && profileActions != null && profileActions.Contains(action.Name);
                 UpdateAction(profile, action, cataloged, wantedForAction ?? new List<MsfsWanted>(), request.Mode, clean, overwrite, conflict, takenBy, ownedBefore, owned, deviceRequests, result);
             }
 

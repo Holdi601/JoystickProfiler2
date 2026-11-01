@@ -626,8 +626,11 @@ namespace JoyPro.Engine.Games
             if (replaceOwned)
             {
                 // "My profile wins": every axis use and command the profile binds loses its other inputs on connected
-                // devices, so a moved bind fully moves. Inputs JoyPro wrote before count like any other bind.
-                ReleaseOtherInputs(context, wanted, result);
+                // devices, so a moved bind fully moves. Inputs JoyPro wrote before count like any other bind. Clean
+                // clears only the devices it writes (below), as in every game; an axis use still moves in every mode
+                // but add (X-Plane ignores a use two axes share).
+                if (request.Mode == GameExportMode.MergeOverwrite)
+                    ReleaseOtherInputs(context, wanted, result);
                 owned.Clear();
             }
             if (request.Mode == GameExportMode.Clean || request.NukeUnusedDevices)
@@ -747,8 +750,7 @@ namespace JoyPro.Engine.Games
             int released = 0;
             foreach (XpSlot slot in context.Slots)
             {
-                string problem;
-                if (DeviceForSlot(context, slot, out problem) == null)
+                if (!OwnedSlot(context, slot))
                     continue;
                 for (int index = slot.Index * AxesPerSlot; index < (slot.Index + 1) * AxesPerSlot; index++)
                 {
@@ -773,13 +775,21 @@ namespace JoyPro.Engine.Games
         }
 
         // Axes of connected devices (not the profile's own) that have the target's use.
+        // A slot JoyPro may release inputs of: its device is connected and not one JoyPro never clears (the vJoy device it
+        // tunnels into, an ignored device).
+        private static bool OwnedSlot(XpContext context, XpSlot slot)
+        {
+            string problem;
+            GameDevice device = DeviceForSlot(context, slot, out problem);
+            return device != null && !device.Kept;
+        }
+
         private static List<int> OtherAxesWithUse(XpContext context, XpTarget target, Dictionary<string, XpTarget> wanted)
         {
             List<int> others = new List<int>();
             foreach (XpSlot slot in context.Slots)
             {
-                string problem;
-                if (DeviceForSlot(context, slot, out problem) == null)
+                if (!OwnedSlot(context, slot))
                     continue;
                 for (int index = slot.Index * AxesPerSlot; index < (slot.Index + 1) * AxesPerSlot; index++)
                 {
@@ -814,8 +824,7 @@ namespace JoyPro.Engine.Games
         {
             foreach (XpSlot slot in context.Slots)
             {
-                string problem;
-                if (DeviceForSlot(context, slot, out problem) == null)
+                if (!OwnedSlot(context, slot))
                     continue;
                 int firstAxis = slot.Index * AxesPerSlot;
                 int firstButton = slot.Index * ButtonsPerSlot;

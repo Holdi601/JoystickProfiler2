@@ -147,6 +147,15 @@ public sealed partial class CockpitPhotoItem : ObservableObject
 
     public string Credit { get; init; } = string.Empty;
 
+    // A verified photo (a SHA-256 on record): downloaded through the photo store, shown from this PC afterwards.
+    public CockpitPhoto? Verified { get; init; }
+
+    // The cockpit JoyPro rendered on this PC from the game's own files, where a photo would be (a craft only a game
+    // has, or no photo file known): local, nothing to open on the web.
+    public bool IsRender { get; init; }
+
+    public bool CanOpenPage => !IsRender;
+
     [ObservableProperty] private Bitmap? image;
 
     [ObservableProperty] private string status = string.Empty;
@@ -283,13 +292,24 @@ public sealed partial class CockpitsViewModel : ObservableObject
 
     public bool HasPhotos => Aircraft?.Photos.Count > 0;
 
-    public bool AskPhotos => HasPhotos && CockpitPhotoConsent.For(Aircraft?.Id) == PhotoConsentState.Ask;
+    // The render from the game stands in the photos (CockpitPhotoItem.IsRender).
+    public bool HasRenderPhoto => Photos.Any(p => p.IsRender);
+
+    // The photos' section is shown: photo links or the render from the game.
+    public bool HasPhotoArea => HasPhotos || HasRenderPhoto;
+
+    // The question is for the photo links "Download photos" does not cover (the verified photos have their own button).
+    public bool AskPhotos => HasPhotos && CockpitPhotoConsent.For(Aircraft?.Id) == PhotoConsentState.Ask &&
+                             Aircraft!.Photos.Any(p => !VerifiedPhotos.Contains(p));
 
     public bool PhotosDenied => HasPhotos && CockpitPhotoConsent.For(Aircraft?.Id) == PhotoConsentState.Denied;
 
     public string PhotoQuestion => Aircraft == null ? string.Empty : CockpitPhotoConsent.Question(Aircraft.Name, Aircraft.Photos.Select(p => p.Url.Length > 0 ? p.Url : p.Page));
 
-    public string PhotoHeader => Aircraft == null ? T("Photos") : T("Photos ({0} links)", Aircraft.Photos.Count.ToString(CultureInfo.InvariantCulture));
+    public string PhotoHeader => Aircraft == null ? T("Photos")
+        : HasRenderPhoto && Aircraft.Photos.Count == 0 ? T("Photos (the picture from the game)")
+        : HasRenderPhoto ? T("Photos ({0} links and the picture from the game)", Aircraft.Photos.Count.ToString(CultureInfo.InvariantCulture))
+        : T("Photos ({0} links)", Aircraft.Photos.Count.ToString(CultureInfo.InvariantCulture));
 
     public int Count => AircraftList.Count;
 
@@ -473,6 +493,7 @@ public sealed partial class CockpitsViewModel : ObservableObject
         Sources.Clear();
         Photos.Clear();
         PhotoStatus = string.Empty;
+        PhotoDownloadStatus = string.Empty;
         CockpitVariant? v = Variant;
         if (catalog != null && v != null)
         {
@@ -485,19 +506,22 @@ public sealed partial class CockpitsViewModel : ObservableObject
                 Sources.Add(new CockpitLinkItem { Title = l.Title, Url = l.Url, Detail = T("Link") });
             // No plan of area boxes (the user's verdict): the pictures from the games or the guide's tree show the cockpit.
             Plan = null;
-            PhotoLoad = LoadPhotosAsync();
         }
         else
         {
             Plan = null;
         }
+        // The pages first: they find the game's pictures, which decide whether the verified photos are needed.
         BuildPages();
+        RefreshPhotoOffer();
+        if (catalog != null && v != null)
+            PhotoLoad = LoadPhotosAsync();
         PackCheck = CheckPicturePackAsync();
         foreach (string name in new[]
                  {
                      nameof(HasVariant), nameof(HasNoVariant), nameof(Title), nameof(Summary), nameof(Facts), nameof(IsFiction), nameof(FictionNote),
                      nameof(CockpitText), nameof(HasCockpitText), nameof(Notes), nameof(HasNotes), nameof(HasPanels), nameof(HasPhotos), nameof(AskPhotos),
-                     nameof(PhotosDenied), nameof(PhotoQuestion), nameof(PhotoHeader)
+                     nameof(PhotosDenied), nameof(PhotoQuestion), nameof(PhotoHeader), nameof(HasRenderPhoto), nameof(HasPhotoArea)
                  })
             OnPropertyChanged(name);
     }
@@ -582,10 +606,12 @@ public sealed partial class CockpitsViewModel : ObservableObject
     {
         CockpitAircraft? aircraft = Aircraft;
         CockpitVariant? variant = Variant;
+        RefreshGameRender();
         if (aircraft == null || aircraft.Photos.Count == 0)
             return;
+        List<CockpitPhoto> verified = VerifiedPhotos;
         List<CockpitPhoto> photos = aircraft.Photos
-            .OrderBy(p => p.Variant.Length > 0 && variant != null && string.Equals(p.Variant, variant.Id, StringComparison.OrdinalIgnoreCase) ? 0 : p.Variant.Length == 0 ? 1 : 2)
+            .OrderBy(p => verified.Contains(p) ? 0 : p.Variant.Length > 0 && variant != null && string.Equals(p.Variant, variant.Id, StringComparison.OrdinalIgnoreCase) ? 1 : p.Variant.Length == 0 ? 2 : 3)
             .ToList();
         foreach (CockpitPhoto p in photos)
         {
@@ -594,25 +620,43 @@ public sealed partial class CockpitsViewModel : ObservableObject
                 Url = p.Url,
                 Page = p.Page,
                 Caption = (p.Caption.Length > 0 ? p.Caption : p.View) + (p.Variant.Length > 0 ? " (" + p.Variant + ")" : string.Empty),
-                Credit = string.Join(" · ", new[] { p.Credit, p.License, DevicePhotoConsent.SiteOf(p.Page.Length > 0 ? p.Page : p.Url) }.Where(s => !string.IsNullOrWhiteSpace(s)))
+                Credit = string.Join(" · ", new[] { p.Credit, CockpitManualPages.LicenceName(p.License), DevicePhotoConsent.SiteOf(p.Page.Length > 0 ? p.Page : p.Url) }.Where(s => !string.IsNullOrWhiteSpace(s))),
+                Verified = p.Verified ? p : null
             });
+        }
+        // The verified photos already on this PC (the user downloaded them): shown without asking again.
+        int shown = 0;
+        foreach (CockpitPhotoItem item in Photos.Where(i => i.Verified != null).ToList())
+        {
+            string? local = PhotoStore.FileOf(item.Url);
+            if (local == null)
+                continue;
+            item.Image = LoadLocalPhoto(local);
+            if (item.Image != null)
+                shown++;
         }
         if (!CockpitPhotoConsent.Allows(aircraft.Id))
         {
-            PhotoStatus = PhotosDenied ? T("Photos are off for this aircraft (Settings > Privacy, or answer again below). The links open in your browser.") : string.Empty;
+            PhotoStatus = PhotosDenied ? T("Photos are off for this aircraft (Settings > Privacy, or answer again below). The links open in your browser.")
+                : shown > 0 ? PhotoCountText(shown) : string.Empty;
             return;
         }
         if (!DeviceImageCache.InternetPicturesEnabled || DeviceImageCache.InternetPicturesBlocked)
         {
-            PhotoStatus = T("Pictures from the internet are switched off.");
+            PhotoStatus = shown > 0 ? PhotoCountText(shown) : T("Pictures from the internet are switched off.");
             return;
         }
         PhotoStatus = T("Loading the photos...");
         int loadedCount = 0;
-        foreach (CockpitPhotoItem item in Photos.ToList())
+        foreach (CockpitPhotoItem item in Photos.Where(i => !i.IsRender).ToList())
         {
             if (aircraft != Aircraft)
                 break;
+            if (item.Image != null)
+            {
+                loadedCount++;
+                continue;
+            }
             if (!item.HasPhoto)
             {
                 item.Status = T("Only a page about it (open the page).");
@@ -631,10 +675,43 @@ public sealed partial class CockpitsViewModel : ObservableObject
 
     private string PhotoCountText(int loaded)
     {
-        int photoCount = Photos.Count(p => p.HasPhoto);
-        return photoCount == Photos.Count
+        List<CockpitPhotoItem> links = Photos.Where(p => !p.IsRender).ToList();
+        int photoCount = links.Count(p => p.HasPhoto);
+        return photoCount == links.Count
             ? T("{0} of {1} photos shown (stored only on this PC).", loaded, photoCount)
-            : T("{0} of {1} photos shown (stored only on this PC); {2} only link to a page.", loaded, photoCount, Photos.Count - photoCount);
+            : T("{0} of {1} photos shown (stored only on this PC); {2} only link to a page.", loaded, photoCount, links.Count - photoCount);
+    }
+
+    // Where no real cockpit can be photographed (a craft only a game has: Star Citizen, Nuclear Option) or no photo file
+    // of the variant is known, the cockpit JoyPro rendered on this PC from the game's own files stands first among the
+    // photos (CockpitManualPages.RenderInsteadOfPhoto: the overview, else a grip). Local only: no consent, no download.
+    public void RefreshGameRender()
+    {
+        foreach (CockpitPhotoItem old in Photos.Where(p => p.IsRender).ToList())
+            Photos.Remove(old);
+        CockpitAircraft? aircraft = Aircraft;
+        CockpitVariant? variant = Variant;
+        CockpitPictureSet? set = GamePictures;
+        CockpitPictureView? view = null;
+        if (aircraft != null && variant != null && set != null &&
+            (aircraft.Fiction || !aircraft.Photos.Any(p => p.Url.Length > 0 && (p.Variant.Length == 0 || string.Equals(p.Variant, variant.Id, StringComparison.OrdinalIgnoreCase)))))
+            view = CockpitManualPages.RenderInsteadOfPhoto(set, variant);
+        Bitmap? image = view == null ? null : LoadLocalPhoto(view.Image);
+        if (view != null && image != null)
+        {
+            string game = CockpitManualPages.GameName(set!.Game);
+            Photos.Insert(0, new CockpitPhotoItem
+            {
+                IsRender = true,
+                Image = image,
+                Caption = set.FromPack ? T("{0}: the cockpit rendered from {1} (picture pack)", set.Plane, game) : T("{0}: the cockpit rendered on this PC from the files of {1}", set.Plane, game),
+                Credit = aircraft!.Fiction ? T("Made by JoyPro from your game files; it stays on this PC. A craft only a game has: there is no real cockpit to photograph.")
+                    : T("Made by JoyPro from your game files; it stays on this PC.")
+            });
+        }
+        OnPropertyChanged(nameof(HasRenderPhoto));
+        OnPropertyChanged(nameof(HasPhotoArea));
+        OnPropertyChanged(nameof(PhotoHeader));
     }
 
     // One photo: Wikimedia's thumbnail (what Wikimedia asks programs to use), else the file itself; one download at a
@@ -643,6 +720,20 @@ public sealed partial class CockpitsViewModel : ObservableObject
     {
         item.Failed = false;
         item.Status = string.Empty;
+        // A verified photo goes through the photo store: checked against its SHA-256, else the web archive's copy.
+        if (item.Verified != null)
+        {
+            ReferencePhotoStore.PhotoResult result = await PhotoStore.EnsureAsync(Aircraft?.Id ?? string.Empty, AsDevicePhoto(Aircraft, item.Verified));
+            item.Image = result.File == null ? null : LoadLocalPhoto(result.File);
+            item.Failed = item.Image == null;
+            item.Status = item.Image == null ? T("Could not load the photo. Try again, or open the photo or its page in your browser.") : string.Empty;
+            if (item.Image != null)
+            {
+                RefreshPhotoOffer();
+                BuildPages();
+            }
+            return item.Image != null;
+        }
         string? thumb = CommonsThumbnail(item.Url, 960);
         Bitmap? bitmap = thumb == null ? null : await DeviceImageCache.LoadAsync(thumb, 640);
         bitmap ??= await DeviceImageCache.LoadAsync(item.Url, 640);
@@ -661,6 +752,20 @@ public sealed partial class CockpitsViewModel : ObservableObject
         await LoadPhotoAsync(item);
         if (aircraft == Aircraft)
             PhotoStatus = PhotoCountText(Photos.Count(p => p.Image != null));
+    }
+
+    // A photo file of this PC as a card picture (640 px wide), or null.
+    private static Bitmap? LoadLocalPhoto(string file)
+    {
+        try
+        {
+            using System.IO.FileStream stream = System.IO.File.OpenRead(file);
+            return Bitmap.DecodeToWidth(stream, 640);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     // https://upload.wikimedia.org/wikipedia/commons/a/ab/Name.jpg -> .../commons/thumb/a/ab/Name.jpg/960px-Name.jpg

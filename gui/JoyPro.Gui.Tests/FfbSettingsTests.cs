@@ -23,7 +23,7 @@ public sealed class FfbSettingsTests
     private const string StickB = "Stick B {00000000-0000-0000-0000-0000000000B2}";
 
     [Fact]
-    public async Task Expanding_LoadsTheModelsAndTheStoredValues()
+    public Task Expanding_LoadsTheModelsAndTheStoredValues() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         MainWindowViewModel vm = await CreateLoadedVmAsync(fake);
@@ -60,10 +60,10 @@ public sealed class FfbSettingsTests
         Assert.Contains("1 of 8", vm.FfbStatus);
         Assert.True(vm.CanClearFfb);
         Assert.False(vm.CanApplyFfb);
-    }
+    });
 
     [Fact]
-    public async Task KoreaApply_SendsOnlyTheChangedValues_ForTheWholeGame()
+    public Task KoreaApply_SendsOnlyTheChangedValues_ForTheWholeGame() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         MainWindowViewModel vm = await CreateLoadedVmAsync(fake);
@@ -91,10 +91,10 @@ public sealed class FfbSettingsTests
         Assert.Equal(150, Editor(vm, "ffForceFactorMax").Value);
         Assert.False(Editor(vm, "ffEnabled").IsOn);
         Assert.False(vm.FfbHasEdits);
-    }
+    });
 
     [Fact]
-    public async Task InvalidValues_AreNotSent_AndRevertRestores()
+    public Task InvalidValues_AreNotSent_AndRevertRestores() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         MainWindowViewModel vm = await CreateLoadedVmAsync(fake);
@@ -115,10 +115,10 @@ public sealed class FfbSettingsTests
         Assert.Equal(100, factorMin.Value);
         Assert.False(vm.FfbHasEdits);
         Assert.Empty(fake.Calls);
-    }
+    });
 
     [Fact]
-    public async Task Clear_DropsTheScope_AndUnsetDropsOneValue()
+    public Task Clear_DropsTheScope_AndUnsetDropsOneValue() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         fake.Entries["*|game:IL2Korea"] = "ffForce=80;joyFilter=10";
@@ -141,10 +141,10 @@ public sealed class FfbSettingsTests
         Assert.False(fake.Entries.ContainsKey("*|game:IL2Korea"));
         Assert.False(vm.CanClearFfb);
         Assert.All(vm.FfbEditors, e => Assert.False(e.IsStored));
-    }
+    });
 
     [Fact]
-    public async Task Dcs_IsSetPerDeviceAndAircraft()
+    public Task Dcs_IsSetPerDeviceAndAircraft() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         fake.Entries[StickA + "|game:DCS"] = "trimmer=0.7";
@@ -193,10 +193,10 @@ public sealed class FfbSettingsTests
         Assert.True(Seq(clear, "ffb", "clear", "--device", StickA, "--game", "DCS", "--plane", "F-16C_50"));
         Assert.True(fake.Entries.ContainsKey(StickA + "|game:DCS"));
         Assert.Equal("From all aircraft", Editor(vm, "trimmer").SourceText);
-    }
+    });
 
     [Fact]
-    public async Task Dcs_WithoutDevice_AsksForOne()
+    public Task Dcs_WithoutDevice_AsksForOne() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         MainWindowViewModel vm = await CreateLoadedVmAsync(fake);
@@ -211,10 +211,10 @@ public sealed class FfbSettingsTests
         Assert.Empty(vm.FfbEditors);
         Assert.StartsWith("Pick a device", vm.FfbStatus);
         Assert.False(vm.CanApplyFfb);
-    }
+    });
 
     [Fact]
-    public async Task AnotherProfile_DropsTheShownValues_UntilReloaded()
+    public Task AnotherProfile_DropsTheShownValues_UntilReloaded() => UiThread.RunAsync(async () =>
     {
         FfbFakeEngine fake = new();
         MainWindowViewModel vm = await CreateLoadedVmAsync(fake);
@@ -234,7 +234,7 @@ public sealed class FfbSettingsTests
         Assert.True(vm.FfbLoaded);
         Assert.All(vm.FfbEditors, e => Assert.False(e.IsStored));
         Assert.Contains(fake.Calls, c => Seq(c, "ffb", "show") && c.Contains(vm.ProfilePath));
-    }
+    });
 
     [Fact]
     public void ParseFfbModels_ReadsEveryParameter()

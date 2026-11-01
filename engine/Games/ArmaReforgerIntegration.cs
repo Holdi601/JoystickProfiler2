@@ -155,7 +155,7 @@ namespace JoyPro.Engine.Games
                 {
                     ReforgerOrderRule rule = Rules.FirstOrDefault(r => r.Slot == slot);
                     if (rule != null)
-                        return devices.Devices.FirstOrDefault(d => RuleMatches(rule.NameContains, d));
+                        return devices.Devices.FirstOrDefault(d => RuleMatches(rule.NameContains, d) && !IsVJoy(d));
                 }
                 List<GameDevice> sorted = GameOrder(devices.Devices.Where(d => d.Connected || d.EnumerationIndex >= 0));
                 return slot >= 0 && slot < sorted.Count ? sorted[slot] : null;
@@ -168,7 +168,24 @@ namespace JoyPro.Engine.Games
         // device overwrites entry 3. Without order rules entry i is joystick i, so the VID/PID order is the best guess.
         private static List<GameDevice> GameOrder(IEnumerable<GameDevice> devices)
         {
-            return devices.OrderBy(d => d.HasVidPid ? d.VendorId : int.MaxValue).ThenBy(d => d.ProductId).ThenBy(d => d.EnumerationIndex).ToList();
+            // A vJoy device never joins the game's table (four starts, docs/games/arma-reforger.md): it takes no slot.
+            return devices.Where(d => !IsVJoy(d)).OrderBy(d => d.HasVidPid ? d.VendorId : int.MaxValue).ThenBy(d => d.ProductId).ThenBy(d => d.EnumerationIndex).ToList();
+        }
+
+        // vJoy (VID 1234 / PID BEAD, or by name): Arma Reforger never detected one, so JoyPro gives it no slot and
+        // writes none of its binds.
+        private static bool IsVJoy(GameDevice device)
+        {
+            if (device == null)
+                return false;
+            if (device.HasVidPid && device.VendorId == 0x1234 && device.ProductId == 0xBEAD)
+                return true;
+            return IsVJoyName(device.JoyProName) || IsVJoyName(device.HidProductString);
+        }
+
+        private static bool IsVJoyName(string name)
+        {
+            return (name ?? string.Empty).IndexOf("vjoy", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         // The name an order rule matches: Reforger names a device "<HID manufacturer> <HID product>" (1.9, seen in game:
@@ -534,7 +551,7 @@ namespace JoyPro.Engine.Games
             List<GameDevice> used = request.Bindings
                 .Where(b => !b.IsKeyboard)
                 .Select(b => request.Devices == null ? null : request.Devices.FindByJoyProName(b.Device))
-                .Where(d => d != null)
+                .Where(d => d != null && !IsVJoy(d))
                 .Distinct()
                 .OrderBy(d => d.EnumerationIndex)
                 .ToList();
@@ -655,6 +672,11 @@ namespace JoyPro.Engine.Games
                 if (!FfbSettings.Resolve(InternalDataManagement.FfbOverrides, device.JoyProName, GameId, null).TryGetValue(ArmaReforgerSettingsModel.JoystickSlot, out value) || value < 0)
                     continue;
                 int slot = (int)Math.Round(value);
+                if (IsVJoy(device))
+                {
+                    warnings.Add("joystickSlot of '" + device.JoyProName + "' ignored: Arma Reforger does not see vJoy devices.");
+                    continue;
+                }
                 if (slot >= SlotCount)
                 {
                     warnings.Add("joystickSlot " + slot.ToString(CultureInfo.InvariantCulture) + " of '" + device.JoyProName + "' ignored: Arma Reforger has slots 0 to " + (SlotCount - 1).ToString(CultureInfo.InvariantCulture) + " only.");
@@ -728,8 +750,8 @@ namespace JoyPro.Engine.Games
 
         // A preset source of a flight action stays unless
         //  - the profile puts another flight action on its joystick input (a conflict; not in "only add"),
-        //  - merge-overwrite / clean: the profile binds this action and it is another joystick input of it on a connected
-        //    device (a moved action fully moves),
+        //  - merge-overwrite: the profile binds this action and it is another joystick input of it on a connected device
+        //    (a moved action fully moves; clean leaves the devices it does not write alone, as in every game),
         //  - its device is released: clean releases the devices the export writes, nuke the connected devices it does
         //    not use.
         // Keyboard, mouse and gamepad sources and joysticks that are not connected always stay.
@@ -745,7 +767,10 @@ namespace JoyPro.Engine.Games
             string device = DeviceForSlot(slots, slot, request.Devices, new List<string>());
             if (device.Length == 0)
                 return true;
-            if (profileBinds && (request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean))
+            // The vJoy device JoyPro tunnels into and the ignored devices are never cleared.
+            if (request.Devices.IsKept(device))
+                return true;
+            if (profileBinds && request.Mode == GameExportMode.MergeOverwrite)
                 return false;
             return !(usedDevices.Contains(device) ? request.Mode == GameExportMode.Clean : request.NukeUnusedDevices);
         }
@@ -773,6 +798,8 @@ namespace JoyPro.Engine.Games
                 return "combos with modifiers are not supported in JoyPro's Reforger preset yet.";
 
             GameDevice device = devices == null ? null : devices.FindByJoyProName(binding.Device);
+            if (IsVJoy(device) || (device == null && IsVJoyName(binding.Device)))
+                return "Arma Reforger does not see vJoy devices (the game never detected one), so this bind is not written; bind it to a real device.";
             if (device == null)
                 return "device '" + binding.Device + "' is not connected; its joystickN slot is unknown.";
             int slot;

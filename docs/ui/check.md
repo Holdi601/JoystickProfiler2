@@ -22,7 +22,7 @@ Errors first (red, with their own icon), then warnings (amber), then notes:
 | Other errors | error | the rest of the check's errors (a modifier button that is also a normal button, ...) |
 | Same command on two buttons | warning | one command of an aircraft is on in two relations: the game gets it on two buttons |
 | Copied relations | warning | an import made copies of a relation on the same button |
-| Not written to the game | warning | "Only add" left a bind out: the game already uses the button for something else |
+| Not written to the game | warning | "Only add" left a bind out: the game already uses the button for something else; or the game has no free place for another input of the command (Elite: Primary and Secondary in use) |
 | Notes | note | harmless, worth a look |
 
 The counts at the top count cards ("To look at: 9 errors, 167 warnings, 0 notes"). The search finds cards by relation,
@@ -41,12 +41,15 @@ confidence") also groups the cards under a header (the relation, the aircraft) w
 5. **Caused by**: the profile history's entry that brought it, when the history tells ("Caused by: Manage with AI (366
    relation changes) on 21.10.2026"). A history entry whose change names other relations only is not taken (the
    history thins out old versions).
-6. **The fixes**: one recommended fix as the accent button (JoyPro's suggestion: "✓ Keep only on VKB-Sim Gunfighter ·
-   BTN 16"), the other fixes ("Keep only on ...", "Keep both"), and "More ▾" (switch it off on both buttons, remove an
+6. **The fixes**: one recommended fix as the accent button with a tick (JoyPro's suggestion: "Keep only on VKB-Sim
+   Gunfighter · BTN 16"), the other fixes ("Keep only on ...", "Keep both"), and "More" with a down arrow (the tick and
+   the arrow are drawn icons since 2.6.0: the ✓ and ▾ characters came from a fallback font whose taller line made
+   those buttons higher than their neighbours) (switch it off on both buttons, remove an
    unknown command, find similar). Every fix is one undo step.
 7. **Open '<relation>' (<button>)**: one button per relation. The relation opens with exactly the card's commands marked
-   (tinted) and scrolled into view, their aircraft list open with the card's aircraft marked. Back (header, Alt+Left)
-   returns to the Check at the card.
+   (tinted) and scrolled into view, their aircraft list open with the card's aircraft marked. **Back to the check**
+   above the relation's name (since 2.6.0; it stays while that relation is open) and Back (header, Alt+Left) return to
+   the Check at the card; after a change in the relation the check runs again.
 8. **Details** (collapsed): how sure JoyPro is and why ("96% sure: keep it only on ...", "It was only in 'Trim Right'
    before"), where an unknown command came from.
 
@@ -54,14 +57,21 @@ Fixes per kind:
 
 | Card | Recommended | Others | More |
 |---|---|---|---|
-| Same command on two buttons | the suggestion (keep it on one button, or switch it off) | Keep only on X, Keep both | Switch it off on both buttons, unknown commands |
+| Same command on two buttons | the suggestion (keep it on one button, or switch it off) | Keep only on X, Keep both, Replace 'command' on X with... (one per button; under More when the card has several commands) | Switch it off on both buttons, unknown commands |
 | One button does two things | - | Keep only 'X' on this button (the aircraft is switched off in the other relations), Keep both (it is intended) | Move 'X' to another button, Switch off all of them, unknown commands |
 | One button runs two commands | - | Keep only 'A' (the other commands of the relation are switched off for these aircraft), Keep both | Move one to another button, Switch all of them off, unknown commands |
-| Not written to the game | Export with 'Update' to replace it | Move to another button, Keep as is | - |
+| Not written to the game | Export with 'Update' to replace it (not for "no free place") | Move to another button, Keep as is | - |
 | Copied relations | Merge into one | - | Merge all copied relations |
 
 "Keep both" is saved in the profile (`KeptDuplicates`); the check does not show it again while exactly these relations
 (commands) have it.
+
+"Replace 'X' on <button> with..." (2.6.0) is for a button that should do something else, e.g. the F-4E's "TACAN
+Channel (xx0x) - [Dec]" on both COMM 2 CW and CCW where CW should be [Inc]: the relation opens (the card's command
+marked), **Add actions** searches for the command's name without its direction ("TACAN Channel (xx0x)") with the card's
+aircraft as the filter, and a banner says what is replaced (Cancel ends it). The Add button reads "Replace with the
+ticked (n)": the ticked action goes in and the old command leaves for those aircraft in one engine call (`relations
+suggest apply <relation> --add ... --remove game:id:planes`, one Ctrl+Z). Back to the check then shows the check again.
 
 ## Unknown commands
 
@@ -82,7 +92,7 @@ markers - always stays. Undo brings the actions back.
 ## Speed
 
 A page of cards per section (5 of the rich cards, 25 of the light ones), "Show more" for the next; the light card
-shows its relations as one "Open a relation ▾" menu when there are more than two; "More ▾" and the details are made
+shows its relations as one "Open a relation" menu when there are more than two; "More" and the details are made
 only when opened. `CheckResponsivenessTests` (3000 errors, 900 duplicate cards) keeps every step under 400 ms.
 
 ## Tests

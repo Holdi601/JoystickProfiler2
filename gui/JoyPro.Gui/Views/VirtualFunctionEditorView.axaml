@@ -94,7 +94,50 @@
             <Button Content="+" Command="{Binding AddCountCommand}" MinWidth="32" />
         </StackPanel>
 
-        <TextBlock Text="{l:T 'Inputs (your devices)'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
+        <!-- Modes (layers): where the function works; a mode switch's target modes. -->
+        <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding HasModes}">
+            <StackPanel Spacing="4">
+                <TextBlock Text="{l:T 'Works in modes'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
+                <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="{DynamicResource JP.FontSize.12}"
+                           Text="{l:T 'None ticked: every mode, unless a mode has its own function on the same input. A mode also gets the functions of the mode it inherits from.'}" />
+                <ItemsControl ItemsSource="{Binding ModeChoices}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:VfModeChoice">
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" Margin="0,0,14,0" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="{Binding ModesSummary}" TextWrapping="Wrap" FontWeight="SemiBold" />
+            </StackPanel>
+        </Border>
+        <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="8" IsVisible="{Binding ShowSwitchModes}">
+            <StackPanel Spacing="4">
+                <TextBlock Text="{l:T 'Mode to switch to'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
+                <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="{DynamicResource JP.FontSize.12}"
+                           Text="{l:T 'Switch to, Hold and Toggle use the first ticked mode; Cycle goes through every ticked mode in this order; Back needs none.'}" />
+                <ItemsControl ItemsSource="{Binding SwitchModeChoices}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:VfModeChoice">
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Name}" Margin="0,0,14,0" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+        <TextBlock IsVisible="{Binding ShowNoModesNote}" TextWrapping="Wrap" Foreground="{DynamicResource JP.WarnTextBrush}"
+                   Text="{l:T 'This game has no modes yet: add them under Modes on the left, then pick the mode this button switches to.'}" />
+
+        <TextBlock Text="{l:T 'Inputs (your devices or another function)'}" FontSize="{DynamicResource JP.FontSize.15}" FontWeight="SemiBold" />
         <ItemsControl ItemsSource="{Binding Inputs}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="models:VfInputRoleItem">
@@ -132,7 +175,10 @@
                             <Ellipse Fill="{DynamicResource JP.Dot.OkBrush}" IsVisible="{Binding IsOn}" />
                             <Ellipse Fill="{DynamicResource JP.Dot.OffBrush}" IsVisible="{Binding !IsOn}" />
                         </Panel>
-                        <TextBlock Grid.Column="1" Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding ChainNote}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" IsVisible="{Binding HasChainNote}" TextWrapping="Wrap" />
+                        </StackPanel>
                         <ComboBox Grid.Column="2" ItemsSource="{Binding Targets}" SelectedItem="{Binding Target}" HorizontalAlignment="Stretch" MaxDropDownHeight="320"
                                   ToolTip.Tip="{l:T 'JOY_BTN30 = vJoy button 30, JOY_Z = vJoy Z axis, POV2 = vJoy hat 2, XB_ = the virtual Xbox pad, KEY_ = a keyboard key (with Keyboard output on).'}" />
                         <ComboBox Grid.Column="3" ItemsSource="{Binding Devices}" SelectedItem="{Binding VJoyDevice}" IsVisible="{Binding IsVJoyTarget}" ToolTip.Tip="{l:T 'vJoy device'}" />

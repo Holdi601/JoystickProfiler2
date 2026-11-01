@@ -104,9 +104,13 @@ public sealed partial class MsfsProfileImportTests : IDisposable
         Assert.Contains("n.sensitivityPlus=35", tuning);
         Assert.Contains("n.axisOverride=1", tuning);
 
+        // The Store save folder is no export path (docs/games/msfs.md): the export to JoyPro's package writes the
+        // Store profiles the sim uses, so a refused export points there and does not call them read only any more.
         (int exportCode, string export) = Engine(home, "--profile", Path.Combine(root, "p.pr0file"), "msfs2024", "export", wgs, "--text");
         Assert.NotEqual(0, exportCode);
-        Assert.Contains("read only", export);
+        Assert.Contains("The Microsoft Store save folder of MSFS 2024 cannot be an export path.", export);
+        Assert.Contains("that export also writes the Store profiles the sim uses for each device and category", export);
+        Assert.DoesNotContain("read only", export);
     }
 
     // The 2.2.1 report (MSFS 2024): a VPC VMAX Prime Throttle with three airplane axes and five General binds (cockpit

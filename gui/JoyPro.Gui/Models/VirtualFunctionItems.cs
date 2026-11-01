@@ -12,12 +12,86 @@ namespace JoyPro.Gui.Models;
 // Virtual functions on the Virtual Joystick page (docs/virtual-joystick.md "Virtual functions"): the list rows, the
 // type picker and the editor's rows (inputs, outputs, parameters, band edges, macro steps).
 
-// A physical game controller for the input pickers (engine vjoy status "InputDevices").
-public sealed record VfDeviceOption(string Device, string Name, IReadOnlyList<string> Axes, int Buttons, int Hats)
+// A physical game controller for the input pickers (engine vjoy status "InputDevices"), or another function of the
+// game whose outputs an input can read (function chaining: Device "fn:<id>", Chain = output role -> kind).
+public sealed record VfDeviceOption(string Device, string Name, IReadOnlyList<string> Axes, int Buttons, int Hats, IReadOnlyDictionary<string, string>? Chain = null)
 {
     public string Display => Name.Length > 0 ? Name : Device;
 
+    public bool IsFunction => Chain != null;
+
     public override string ToString() => Display;
+
+    // The outputs of a function as an input source ("⚙ f2 Throttle detents").
+    public static VfDeviceOption ForFunction(VirtualFunction function)
+    {
+        Dictionary<string, string> chain = new(StringComparer.OrdinalIgnoreCase);
+        foreach (VfRoleInfo role in VirtualFunctionCatalog.ExpandOutputs(function))
+            chain[role.Role.ToUpperInvariant()] = VirtualFunctionCatalog.OutputKind(function, role.Role);
+        string name = function.Name.Length > 0 ? function.Name : VirtualFunctionCatalog.Get(function.Type)?.Name ?? function.Type;
+        return new VfDeviceOption(VfChain.Device(function.Id), T("⚙ {0} {1}", function.Id, name), [], 0, 0, chain);
+    }
+}
+
+// A mode (layer) of a game's functions on the Functions tab (engine vjoy modes).
+public sealed partial class VfModeItem : ObservableObject
+{
+    public VfModeItem(string name, string parent, bool start, IReadOnlyList<string> parentOptions)
+    {
+        Name = name;
+        ParentOptions = parentOptions;
+        this.parent = parent.Length == 0 ? None : parent;
+        IsStart = start;
+        editName = name;
+    }
+
+    public static string None => T("(inherits nothing)");
+
+    public string Name { get; }
+
+    public IReadOnlyList<string> ParentOptions { get; }
+
+    public bool IsStart { get; }
+
+    public string StartText => IsStart ? T("at start") : string.Empty;
+
+    // The forwarder runs this mode now (live "mode" lines).
+    [ObservableProperty]
+    private bool isCurrent;
+
+    [ObservableProperty]
+    private string parent;
+
+    // A new name typed in the row (Rename).
+    [ObservableProperty]
+    private string editName;
+
+    public string ParentName => Parent == None ? string.Empty : Parent;
+
+    // The page runs engine vjoy modes set --parent when the user picks another parent.
+    public Action<VfModeItem>? ParentChanged { get; set; }
+
+    partial void OnParentChanged(string value) => ParentChanged?.Invoke(this);
+}
+
+// A mode in the editor's "Works in" or mode switch target list.
+public sealed partial class VfModeChoice : ObservableObject
+{
+    private readonly Action changed;
+
+    public VfModeChoice(string name, bool isChecked, Action changed)
+    {
+        Name = name;
+        this.isChecked = isChecked;
+        this.changed = changed;
+    }
+
+    public string Name { get; }
+
+    [ObservableProperty]
+    private bool isChecked;
+
+    partial void OnIsCheckedChanged(bool value) => changed();
 }
 
 // One function type in the "Add function" picker.
@@ -41,7 +115,8 @@ public sealed class VfTypeOption
 // One function in the page's list.
 public sealed partial class VirtualFunctionListItem : ObservableObject
 {
-    public VirtualFunctionListItem(string game, string gameName, VirtualFunction function, IReadOnlyList<string> problems, IReadOnlyList<string> warnings, IReadOnlyList<string> outputs)
+    public VirtualFunctionListItem(string game, string gameName, VirtualFunction function, IReadOnlyList<string> problems, IReadOnlyList<string> warnings, IReadOnlyList<string> outputs,
+        string modesText = "", IReadOnlyList<string>? readBy = null)
     {
         Game = game;
         GameName = gameName;
@@ -49,6 +124,14 @@ public sealed partial class VirtualFunctionListItem : ObservableObject
         Problems = problems;
         Warnings = warnings;
         OutputsText = outputs.Count == 0 ? T("no outputs yet") : string.Join(", ", outputs);
+        ModesText = modesText.Length == 0 ? string.Empty : T("Modes: {0}", modesText);
+        List<string> chain = [];
+        List<string> reads = function.Inputs.Where(VfChain.IsChain).Select(i => VfChain.FunctionId(i) + " " + VfChain.Role(i)).ToList();
+        if (reads.Count > 0)
+            chain.Add(T("reads {0}", string.Join(", ", reads)));
+        if (readBy != null && readBy.Count > 0)
+            chain.Add(T("feeds {0}", string.Join(", ", readBy)));
+        ChainText = string.Join("; ", chain);
         VfTypeInfo? type = VirtualFunctionCatalog.Get(function.Type);
         TypeName = type?.Name ?? function.Type;
         Icon = type?.Icon ?? "?";
@@ -74,6 +157,12 @@ public sealed partial class VirtualFunctionListItem : ObservableObject
     public bool Enabled => Function.Enabled;
 
     public string OutputsText { get; }
+
+    // "Modes: Combat, Landing (inherited)" (empty without modes).
+    public string ModesText { get; }
+
+    // Function chaining: "reads f1 band2; feeds f4".
+    public string ChainText { get; }
 
     public IReadOnlyList<string> Problems { get; }
 
@@ -111,7 +200,11 @@ public sealed partial class VfInputRoleItem : ObservableObject
         Optional = role.Optional;
         List<VfDeviceOption> options = devices.ToList();
         if (current != null && current.Device.Length > 0 && options.All(d => !string.Equals(d.Device, current.Device, StringComparison.OrdinalIgnoreCase)))
-            options.Add(new VfDeviceOption(current.Device, T("{0} (not connected)", DeviceName(current.Device)), VfTokens.AxisTokens, 128, 4));
+        {
+            options.Add(VfChain.IsChainDevice(current.Device)
+                ? new VfDeviceOption(current.Device, T("⚙ {0} (function not found)", VfChain.FunctionId(current)), [], 0, 0, new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { [current.Input] = role.Kind == "any" ? "button" : role.Kind })
+                : new VfDeviceOption(current.Device, T("{0} (not connected)", DeviceName(current.Device)), VfTokens.AxisTokens, 128, 4));
+        }
         Devices = options;
         loading = true;
         SelectedDevice = current == null ? null : options.FirstOrDefault(d => string.Equals(d.Device, current.Device, StringComparison.OrdinalIgnoreCase));
@@ -160,6 +253,8 @@ public sealed partial class VfInputRoleItem : ObservableObject
     {
         get
         {
+            if (SelectedInput != null && SelectedDevice?.Chain != null && SelectedDevice.Chain.TryGetValue(SelectedInput, out string? chained))
+                return chained;
             if (SelectedInput != null && VfTokens.TryParseInput(SelectedInput, out string kind, out _, out _))
                 return kind;
             return Kind == "any" ? "button" : Kind;
@@ -185,6 +280,7 @@ public sealed partial class VfInputRoleItem : ObservableObject
 
     partial void OnSelectedDeviceChanged(VfDeviceOption? value)
     {
+        OnPropertyChanged(nameof(IsChained));
         if (loading)
             return;
         InputOptions = BuildInputs(value);
@@ -214,9 +310,22 @@ public sealed partial class VfInputRoleItem : ObservableObject
 
     partial void OnPreviewHatIndexChanged(int value) => PreviewChanged?.Invoke();
 
+    // Reads another function's output (function chaining).
+    public bool IsChained => SelectedDevice?.IsFunction == true;
+
     private IReadOnlyList<string> BuildInputs(VfDeviceOption? device)
     {
         List<string> list = [];
+        if (device?.Chain != null)
+        {
+            // The function's outputs whose kind fits the role (a hat direction role takes buttons).
+            foreach (KeyValuePair<string, string> output in device.Chain)
+            {
+                if (Kind == "any" || output.Value == Kind)
+                    list.Add(output.Key);
+            }
+            return list;
+        }
         IReadOnlyList<string> axes = device?.Axes ?? VfTokens.AxisTokens;
         int buttons = device == null || device.Buttons <= 0 ? 32 : Math.Min(128, device.Buttons);
         int hats = device == null ? 1 : Math.Min(4, device.Hats);
@@ -321,6 +430,14 @@ public sealed partial class VfOutputRoleItem : ObservableObject
 
     [ObservableProperty]
     private string valueText = string.Empty;
+
+    // Function chaining: the functions that read this output ("feeds f4"); with no target it feeds them only.
+    [ObservableProperty]
+    private string chainNote = string.Empty;
+
+    public bool HasChainNote => ChainNote.Length > 0;
+
+    partial void OnChainNoteChanged(string value) => OnPropertyChanged(nameof(HasChainNote));
 
     public string TargetToken => Target == None ? string.Empty : Target;
 

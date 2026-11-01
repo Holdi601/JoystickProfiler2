@@ -250,6 +250,7 @@ public sealed class LayoutRedesignRenderTests
             list.AutoScrollToSelectedItem = false;
             list.ItemsPanel = new Avalonia.Controls.Templates.FuncTemplate<Panel?>(() => new StackPanel());
         }
+        RenderPanels.UnvirtualizeItemsControls(main);
         for (int pass = 0; pass < 6; pass++)
         {
             main.Measure(size);

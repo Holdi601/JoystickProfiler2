@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <Version>2.5.0</Version>
+    <Version>2.6.0</Version>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -19,6 +19,8 @@
     <AvaloniaResource Include="Assets\**" />
     <!-- Third-party notices for an About / Licenses view (Services\ThirdPartyNotices.cs, THIRD_PARTY_NOTICES.md). -->
     <EmbeddedResource Include="Resources\ThirdPartyNotices.txt" LogicalName="JoyPro.Gui.ThirdPartyNotices.txt" />
+    <!-- The HUD page for OBS's Browser Source (Services\HudStreamServer.cs, docs/hud.md "Streamer mode"). -->
+    <EmbeddedResource Include="Resources\hud-stream.html" LogicalName="JoyPro.Gui.HudStream.html" />
     <!-- The GUI's texts per language (docs/localization.md): Localization\Strings\<code>.json, English is the key. -->
     <EmbeddedResource Include="Localization\Strings\*.json" LogicalName="JoyPro.Gui.Localization.%(Filename).json" />
     <!-- The engine's axis response models (plain C# 7.3 math) for the curve manager's live preview. -->

@@ -161,6 +161,13 @@ namespace JoyPro.Engine.Games
             public GameDevice Device;
         }
 
+        // A block of a device JoyPro never clears (GameDevice.Kept).
+        private static bool KeptMap(Dictionary<FsxChild, MapDevice> mapOf, FsxChild child)
+        {
+            MapDevice entry;
+            return mapOf.TryGetValue(child, out entry) && entry.Device != null && entry.Device.Kept;
+        }
+
         private static bool IsDeviceMap(FsxMap map, out string name, out Guid guid)
         {
             name = map.Name;
@@ -581,11 +588,13 @@ namespace JoyPro.Engine.Games
                 }
             }
 
-            // "My profile wins" (clean, merge-overwrite): an event the profile binds loses its other inputs, so a moved
-            // bind fully moves. Only inputs JoyPro owns in this export: connected devices (the maps above) and the
-            // keyboard when the export includes it. Inputs JoyPro wrote before count like any other bind of the sim.
+            // "My profile wins" (merge-overwrite): an event the profile binds loses its other inputs, so a moved bind
+            // fully moves. Only inputs JoyPro owns in this export: connected devices (the maps above) and the keyboard
+            // when the export includes it. Inputs JoyPro wrote before count like any other bind of the sim. Clean clears
+            // only the devices it writes (below), as in every game.
             if (overwrite)
             {
+                bool moves = request.Mode == GameExportMode.MergeOverwrite;
                 HashSet<string> profileEvents = new HashSet<string>(wanted.Values.Select(w => w.Binding.ActionId), StringComparer.OrdinalIgnoreCase);
                 foreach (KeyValuePair<string, FsxChild> e in existing)
                 {
@@ -595,8 +604,9 @@ namespace JoyPro.Engine.Games
                             GameOwnershipStore.Add(newOwned, e.Value.Event, e.Key);
                         continue;
                     }
-                    // An input of the profile is rewritten in place below.
-                    if (wanted.ContainsKey(e.Key) || e.Value.Removed || !profileEvents.Contains(e.Value.Event ?? string.Empty))
+                    // An input of the profile is rewritten in place below. A device JoyPro never clears (the vJoy device
+                    // it tunnels into, an ignored device) keeps its binds.
+                    if (!moves || wanted.ContainsKey(e.Key) || e.Value.Removed || !profileEvents.Contains(e.Value.Event ?? string.Empty) || KeptMap(mapOf, e.Value))
                         continue;
                     file.Remove(e.Value);
                 }
@@ -607,7 +617,7 @@ namespace JoyPro.Engine.Games
             int released = 0;
             foreach (KeyValuePair<string, FsxChild> e in existing.Where(x => !x.Key.StartsWith("KEYBOARD|", StringComparison.Ordinal)))
             {
-                if (e.Value.Removed || wanted.ContainsKey(e.Key))
+                if (e.Value.Removed || wanted.ContainsKey(e.Key) || KeptMap(mapOf, e.Value))
                     continue;
                 bool used = usedDevices.Contains(DeviceToken(mapOf[e.Value].Device));
                 if ((used && request.Mode == GameExportMode.Clean) || (!used && request.NukeUnusedDevices))

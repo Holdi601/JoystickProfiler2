@@ -187,6 +187,7 @@ public sealed class SetupWizardRenderTests
             list.AutoScrollToSelectedItem = false;
             list.ItemsPanel = new Avalonia.Controls.Templates.FuncTemplate<Panel?>(() => new StackPanel());
         }
+        RenderPanels.UnvirtualizeItemsControls(window);
         for (int pass = 0; pass < 6; pass++)
         {
             window.Measure(size);
@@ -239,7 +240,7 @@ public sealed class SetupWizardRenderTests
     }
 
     // Answers like the engine: devices and aircraft of a small setup, a plan made by the planner itself.
-    private sealed class FakeSetupEngine
+    internal sealed class FakeSetupEngine
     {
         public List<List<string>> Calls { get; } = [];
 
@@ -281,6 +282,35 @@ public sealed class SetupWizardRenderTests
             return inputs;
         }
 
+        // JoyPro's drawings of the setup's models (docs/device-reference): the review step shows the device's sheet.
+        private static readonly (string Device, string Drawing)[] Drawings =
+        [
+            (Vkb, "schematic-vkb-gunfighter-mcg-pro.png"),
+            (Panel, "schematic-winwing-f18-takeoff-panel.png")
+        ];
+
+        private static string Sheets(IReadOnlyList<string> args)
+        {
+            int at = args.ToList().IndexOf("--out-dir");
+            string? folder = at >= 0 && at + 1 < args.Count ? args[at + 1] : null;
+            string? docs = FindRepoFile(Path.Combine("docs", "device-reference", Drawings[0].Drawing)) is { } first ? Path.GetDirectoryName(first) : null;
+            List<object> sheets = [];
+            if (folder != null && docs != null)
+            {
+                Directory.CreateDirectory(folder);
+                foreach ((string device, string drawing) in Drawings)
+                {
+                    string source = Path.Combine(docs, drawing);
+                    if (!File.Exists(source))
+                        continue;
+                    string file = Path.Combine(folder, drawing);
+                    File.Copy(source, file, true);
+                    sheets.Add(new Dictionary<string, object> { { "Device", device }, { "File", file } });
+                }
+            }
+            return MiniJson.Write(new Dictionary<string, object> { { "Sheets", sheets } }, false);
+        }
+
         public Task<EngineCommandResult?> RunAsync(IReadOnlyList<string> args, bool includeProfile, bool mutatesProfile, string label, bool quiet)
         {
             Calls.Add(args.ToList());
@@ -306,7 +336,7 @@ public sealed class SetupWizardRenderTests
                     output = SetupPlanJson.Write(plan, false);
                     break;
                 case "render":
-                    output = "{\"Sheets\":[]}";
+                    output = Sheets(args);
                     break;
                 case "apply":
                     ApplyMutates = mutatesProfile;

@@ -16,6 +16,11 @@ namespace JoyPro.Engine
         // 0: none (the default).
         public static int Instance { get; private set; }
 
+        // The command works on a game in virtual mode: its binds on JoyPro's vJoy slots are turned back into the
+        // physical inputs (EngineVJoy.GameScope) and its binds on function outputs are JoyPro's own, so nothing is left
+        // out of the read (leaving the tunnel device out would lose those binds).
+        public static bool VirtualGame { get; set; }
+
         private static List<string> resolved;
         private static readonly List<string> notes = new List<string>();
 
@@ -29,6 +34,7 @@ namespace JoyPro.Engine
         {
             error = string.Empty;
             Instance = 0;
+            VirtualGame = false;
             resolved = null;
             notes.Clear();
             string value = (raw ?? string.Empty).Trim();
@@ -50,6 +56,13 @@ namespace JoyPro.Engine
         {
             if (Instance == 0)
                 return new List<string>();
+            if (VirtualGame)
+            {
+                string note = "vJoy device " + Instance.ToString(CultureInfo.InvariantCulture) + " (the one JoyPro tunnels into) is read for this game in virtual mode: its binds on JoyPro's slots become your devices again.";
+                if (!notes.Contains(note))
+                    notes.Add(note);
+                return new List<string>();
+            }
             if (resolved != null)
                 return new List<string>(resolved);
             resolved = new List<string>();

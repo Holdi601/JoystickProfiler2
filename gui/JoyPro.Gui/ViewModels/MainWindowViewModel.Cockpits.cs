@@ -7,7 +7,7 @@ namespace JoyPro.Gui.ViewModels;
 
 // The Cockpits page in the bottom bar (docs/cockpits.md): the cockpit database as a reference. Its own view model
 // (CockpitsViewModel); the main window only switches to it, runs "engine cockpits compare" with the open profile and
-// keeps the last "Use this layout" for the setup wizard.
+// hands "Use this layout" to the setup wizard (it opens with that cockpit's layout for its aircraft).
 public sealed partial class MainWindowViewModel
 {
     private CockpitsViewModel? cockpits;
@@ -19,12 +19,7 @@ public sealed partial class MainWindowViewModel
             if (cockpits == null)
             {
                 cockpits = new CockpitsViewModel { CompareRunner = RunCockpitCompareAsync, PictureBuilder = RunCockpitPicturesAsync, IsGameInstalled = IsGameInstalled };
-                cockpits.UseLayoutRequested += (_, request) =>
-                {
-                    PendingCockpitLayout = request;
-                    StatusText = T("Cockpit layout picked: {0} {1} (engine {2}).", request.AircraftName, request.VariantName, string.Join(" ", request.EngineArguments));
-                    CockpitLayoutRequested?.Invoke(this, request);
-                };
+                cockpits.UseLayoutRequested += (_, request) => UseCockpitLayout(request);
             }
             return cockpits;
         }
@@ -35,7 +30,7 @@ public sealed partial class MainWindowViewModel
     // The last "Use this layout" of the Cockpits page, until the setup wizard takes it (TakePendingCockpitLayout).
     public CockpitLayoutRequest? PendingCockpitLayout { get; private set; }
 
-    // Raised on "Use this layout"; the setup wizard listens.
+    // Raised on "Use this layout" (before the setup wizard opens with it).
     public event EventHandler<CockpitLayoutRequest>? CockpitLayoutRequested;
 
     public CockpitLayoutRequest? TakePendingCockpitLayout()
@@ -43,6 +38,18 @@ public sealed partial class MainWindowViewModel
         CockpitLayoutRequest? request = PendingCockpitLayout;
         PendingCockpitLayout = null;
         return request;
+    }
+
+    // "Use this layout": the setup wizard opens with the variant (a wizard still open before Apply takes it; a new one
+    // takes it when it is made, CreateSetupWizard).
+    internal void UseCockpitLayout(CockpitLayoutRequest request)
+    {
+        PendingCockpitLayout = request;
+        CockpitLayoutRequested?.Invoke(this, request);
+        if (SetupWizard != null && !SetupWizard.Applied)
+            SetupWizard.UseCockpitLayout(TakePendingCockpitLayout()!);
+        OpenSetupWizard();
+        StatusText = T("Cockpit layout picked: {0} {1}. The setup wizard uses it for this aircraft.", request.AircraftName, request.VariantName);
     }
 
     [RelayCommand]

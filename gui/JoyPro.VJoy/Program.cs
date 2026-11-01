@@ -50,7 +50,8 @@ internal static class Program
 
     private static int Help()
     {
-        Console.WriteLine("JoyPro.VJoy run --config <file> [--sink vjoy|dry] [--xbox-sink vigem|dry] [--rate Hz] [--parent-pid N] [--protocol] [--monitor] [--duration seconds] [--vjoy-dll path]");
+        Console.WriteLine("JoyPro.VJoy run --config <file> [--sink vjoy|dry] [--xbox-sink vigem|dry] [--rate Hz] [--mode event|poll] [--parent-pid N] [--protocol] [--monitor] [--duration seconds] [--vjoy-dll path]");
+        Console.WriteLine("                [--priority below-normal|normal] [--stats-seconds N] [--fake-sources idle|stream|noisy]   (fake sources: synthetic devices for measurements)");
         Console.WriteLine("JoyPro.VJoy devices [--json]");
         Console.WriteLine("JoyPro.VJoy refresh-rate");
         Console.WriteLine("JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (the loop with virtual functions, no devices)");
@@ -91,8 +92,31 @@ internal static class Program
         var mode = (Value(args, "--mode") ?? "event").ToLowerInvariant();
         if (mode is not ("event" or "poll"))
             throw new ArgumentException("--mode takes event or poll.");
+        // Measurements only: synthetic devices instead of DirectInput (docs/virtual-joystick.md "Performance").
+        var fakeSources = Value(args, "--fake-sources")?.ToLowerInvariant();
+        if (fakeSources is not (null or "idle" or "stream" or "noisy"))
+            throw new ArgumentException("--fake-sources takes idle, stream or noisy.");
+        // The stats line: every second while the live view is on, else every 5 s (and once at the end).
+        var statsSeconds = Int(Value(args, "--stats-seconds"));
+        var priority = (Value(args, "--priority") ?? "below-normal").ToLowerInvariant();
+        if (priority is not ("below-normal" or "normal"))
+            throw new ArgumentException("--priority takes below-normal or normal.");
         if (args.Count > 0)
             throw new ArgumentException("Unknown argument(s): " + string.Join(" ", args));
+
+        // The game comes first: the forwarder runs below normal priority (its loop thread one step above the process,
+        // still below the game's normal threads).
+        if (priority == "below-normal")
+        {
+            try
+            {
+                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
+            }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException or NotSupportedException)
+            {
+                Console.Error.WriteLine("Cannot lower the priority: " + ex.Message);
+            }
+        }
 
         ForwarderConfig config;
         try
@@ -159,7 +183,7 @@ internal static class Program
         var realKeys = (sink.Name == "vjoy" || xboxSink?.Name == "vigem") && Environment.Is64BitProcess &&
                        config.Functions.Any(f => f.Enabled && f.Keyboard);
         IVfKeySink keys = realKeys ? new SendInputKeySink() : new DryKeySink();
-        using var forwarder = new Forwarder(config, sink, rate, parentPid, Emit, xboxSink, keys) { PollOnly = mode == "poll" };
+        using var forwarder = new Forwarder(config, sink, rate, parentPid, Emit, xboxSink, keys, fakeSources) { PollOnly = mode == "poll" };
         var exit = new ManualResetEventSlim();
         try
         {
@@ -176,6 +200,7 @@ internal static class Program
              " devices=" + string.Join(",", config.VJoyDevices) + " sources=" + forwarder.ConnectedSources.ToString(CultureInfo.InvariantCulture) + "/" + forwarder.SourceCount.ToString(CultureInfo.InvariantCulture) +
              " slots=" + forwarder.Table.SlotCount.ToString(CultureInfo.InvariantCulture) +
              " functions=" + (forwarder.Functions?.Functions.Length ?? 0).ToString(CultureInfo.InvariantCulture) + (realKeys ? " keys=on" : string.Empty) +
+             " priority=" + priority + (fakeSources is null ? "" : " fake-sources=" + fakeSources) +
              (forwarder.Xbox is null ? "" : " xbox=" + (xboxSink?.Name ?? "") + ":" + forwarder.Xbox.SlotCount.ToString(CultureInfo.InvariantCulture) + (config.XboxGame.Length > 0 ? ":" + config.XboxGame : "")) + " axis-range=" + sink.AxisMin.ToString(CultureInfo.InvariantCulture) + ".." + sink.AxisMax.ToString(CultureInfo.InvariantCulture));
 
         var monitorOn = monitor ? 1 : 0;
@@ -203,7 +228,9 @@ internal static class Program
                     string? line;
                     while ((line = Console.In.ReadLine()) != null)
                     {
-                        switch (line.Trim().ToLowerInvariant())
+                        // A caller whose stdin encoding is UTF-8 with a preamble (Windows PowerShell, a console on
+                        // code page 65001) puts a BOM in front of the first line: "monitor on" was ignored that way.
+                        switch (line.Trim().TrimStart('﻿').Trim().ToLowerInvariant())
                         {
                             case "stop":
                                 Stop("stop");
@@ -232,10 +259,27 @@ internal static class Program
         var started = Stopwatch.StartNew();
         var lastStats = 0L;
         var lastPasses = 0L;
-        while (!exit.Wait(66))
+        // Modes: "mode <game> <mode>" at start and on every change (the page shows the current mode).
+        var modeChanges = new long[forwarder.Functions?.ModeGroupCount ?? 0];
+        for (var g = 0; g < modeChanges.Length; g++)
+        {
+            modeChanges[g] = forwarder.Functions!.ModeChanges(g);
+            Emit("mode " + forwarder.Functions.ModeGroupName(g) + " " + forwarder.Functions.CurrentModeName(g));
+        }
+
+        // The reporting thread wakes 15 times a second only while the live view is on, else every 500 ms.
+        while (!exit.Wait(Volatile.Read(ref monitorOn) == 1 ? 66 : 500))
         {
             while (forwarder.TryTakeEvent(out var message))
                 Emit(message);
+            for (var g = 0; g < modeChanges.Length; g++)
+            {
+                var changes = forwarder.Functions!.ModeChanges(g);
+                if (changes == modeChanges[g])
+                    continue;
+                modeChanges[g] = changes;
+                Emit("mode " + forwarder.Functions.ModeGroupName(g) + " " + forwarder.Functions.CurrentModeName(g));
+            }
             if (Volatile.Read(ref monitorOn) == 1)
             {
                 forwarder.CopyPositions(positions);
@@ -253,35 +297,48 @@ internal static class Program
 
             if (forwarder.Wait(0))
                 break; // the loop ended by itself (parent exited)
-            if (started.ElapsedMilliseconds - lastStats >= 1000)
-            {
-                var passes = forwarder.Passes;
-                var seconds = (started.ElapsedMilliseconds - lastStats) / 1000.0;
-                lastStats = started.ElapsedMilliseconds;
-                Emit("stats passes=" + passes.ToString(CultureInfo.InvariantCulture) +
-                     " hz=" + ((passes - lastPasses) / seconds).ToString("0", CultureInfo.InvariantCulture) +
-                     " wakes=" + forwarder.Wakes.ToString(CultureInfo.InvariantCulture) +
-                     " changes=" + forwarder.Changes.ToString(CultureInfo.InvariantCulture) +
-                     " writes=" + forwarder.Writes.ToString(CultureInfo.InvariantCulture) +
-                     " sources=" + forwarder.ConnectedSources.ToString(CultureInfo.InvariantCulture) + "/" + forwarder.SourceCount.ToString(CultureInfo.InvariantCulture) +
-                     " loop-alloc=" + forwarder.LoopAllocatedBytes.ToString(CultureInfo.InvariantCulture) +
-                     " cpu-ms=" + process.TotalProcessorTime.TotalMilliseconds.ToString("0", CultureInfo.InvariantCulture) +
-                     " ws-kb=" + (Environment.WorkingSet / 1024).ToString(CultureInfo.InvariantCulture) +
-                     " handles=" + HandleCount().ToString(CultureInfo.InvariantCulture));
-                lastPasses = passes;
-            }
+            var statsPeriod = statsSeconds is int s && s > 0 ? s * 1000L : Volatile.Read(ref monitorOn) == 1 ? 1000L : 5000L;
+            if (started.ElapsedMilliseconds - lastStats >= statsPeriod)
+                EmitStats();
 
             if (duration is int limit && started.Elapsed.TotalSeconds >= limit)
                 Stop("duration");
         }
 
         forwarder.Wait(3000);
+        EmitStats();
         var reason = forwarder.ExitReason;
         forwarder.Dispose();
         sink.Dispose();
         xboxSink?.Dispose();
         Emit("exit " + reason);
         return 0;
+
+        void EmitStats()
+        {
+            var passes = forwarder.Passes;
+            var seconds = Math.Max(0.001, (started.ElapsedMilliseconds - lastStats) / 1000.0);
+            lastStats = started.ElapsedMilliseconds;
+            Emit("stats passes=" + passes.ToString(CultureInfo.InvariantCulture) +
+                 " hz=" + ((passes - lastPasses) / seconds).ToString("0", CultureInfo.InvariantCulture) +
+                 " wakes=" + forwarder.Wakes.ToString(CultureInfo.InvariantCulture) +
+                 " changes=" + forwarder.Changes.ToString(CultureInfo.InvariantCulture) +
+                 " writes=" + forwarder.Writes.ToString(CultureInfo.InvariantCulture) +
+                 " reads=" + forwarder.Reads.ToString(CultureInfo.InvariantCulture) +
+                 " missed=" + forwarder.Missed.ToString(CultureInfo.InvariantCulture) +
+                 " sources=" + forwarder.ConnectedSources.ToString(CultureInfo.InvariantCulture) + "/" + forwarder.SourceCount.ToString(CultureInfo.InvariantCulture) +
+                 " loop-alloc=" + forwarder.LoopAllocatedBytes.ToString(CultureInfo.InvariantCulture) +
+                 " cpu-ms=" + process.TotalProcessorTime.TotalMilliseconds.ToString("0", CultureInfo.InvariantCulture) +
+                 " cycles-ms=" + Native.ProcessCycleMs().ToString(CultureInfo.InvariantCulture) +
+                 " loop-ms=" + forwarder.LoopCpuMs.ToString(CultureInfo.InvariantCulture) +
+                 " ws-kb=" + (Environment.WorkingSet / 1024).ToString(CultureInfo.InvariantCulture) +
+                 " handles=" + HandleCount().ToString(CultureInfo.InvariantCulture) +
+                 " private-kb=" + (PrivateBytes() / 1024).ToString(CultureInfo.InvariantCulture) +
+                 " gc-kb=" + (GC.GetTotalMemory(false) / 1024).ToString(CultureInfo.InvariantCulture) +
+                 " idle=" + (forwarder.Idle ? "1" : "0") +
+                 " idle-switches=" + forwarder.IdleSwitches.ToString(CultureInfo.InvariantCulture));
+            lastPasses = passes;
+        }
     }
 
     internal static string DescribeFunction(VfFunction function, StringBuilder sb)
@@ -398,6 +455,32 @@ internal static class Program
 
     // GetProcessHandleCount: Process.HandleCount would snapshot every process of the PC each time.
     private static uint HandleCount() => GetProcessHandleCount(GetCurrentProcess(), out var count) ? count : 0;
+
+    // The process's private bytes (GetProcessMemoryInfo: Process.PrivateMemorySize64 would snapshot every process).
+    private static long PrivateBytes()
+    {
+        var counters = new ProcessMemoryCounters { Size = (uint)Marshal.SizeOf<ProcessMemoryCounters>() };
+        return GetProcessMemoryInfo(GetCurrentProcess(), ref counters, counters.Size) ? (long)counters.PrivateUsage : 0;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ProcessMemoryCounters
+    {
+        public uint Size;
+        public uint PageFaultCount;
+        public UIntPtr PeakWorkingSetSize;
+        public UIntPtr WorkingSetSize;
+        public UIntPtr QuotaPeakPagedPoolUsage;
+        public UIntPtr QuotaPagedPoolUsage;
+        public UIntPtr QuotaPeakNonPagedPoolUsage;
+        public UIntPtr QuotaNonPagedPoolUsage;
+        public UIntPtr PagefileUsage;
+        public UIntPtr PeakPagefileUsage;
+        public UIntPtr PrivateUsage;
+    }
+
+    [DllImport("psapi.dll", SetLastError = true)]
+    private static extern bool GetProcessMemoryInfo(IntPtr process, ref ProcessMemoryCounters counters, uint size);
 
     [DllImport("kernel32.dll")]
     private static extern IntPtr GetCurrentProcess();

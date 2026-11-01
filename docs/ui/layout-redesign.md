@@ -6,8 +6,7 @@ The Layout page and "Bind on the picture" (Bind Studio) are built around one pic
   JoyPro's drawing, with a marker on every part and a legend.
 - It also shows the device's **layout file**: a `.layout` with label markers, tables and lines, which the cheat sheets
   use.
-- The device reference view (`DeviceReferenceView`) draws its picture with the same control, so there is only one
-  canvas.
+- The Layout page and Bind Studio draw the device reference with the same control, so there is only one canvas.
 
 ## Pages
 
@@ -192,7 +191,7 @@ The order is described in [device-reference.md](../device-reference.md#2-picture
 ## The canvas contract
 
 `gui/JoyPro.Gui/Views/Controls/DeviceMarkerCanvas.cs` (`Border x:Name="DeviceReferenceHost"` on the Layout page,
-`VisualAssignCanvas` in Bind Studio, `Canvas` inside `DeviceReferenceView`).
+`VisualAssignCanvas` in Bind Studio).
 
 ### Properties
 

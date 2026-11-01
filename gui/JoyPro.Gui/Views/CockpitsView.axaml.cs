@@ -57,7 +57,16 @@ public partial class CockpitsView : UserControl
         GuideList.InvalidateArrange();
     }
 
-    // The guide next to or above the page by the width the page column gets (the picker takes about 345 px).
+    // The guide next to or above the page by the width the page column gets (the picker takes about 345 px). Decided
+    // when the view is measured, so the page is measured where it is shown (decided only in the arrange, the page kept
+    // the height it measured beside the guide and was drawn over the notes below it, 2.5.1); the arrange checks again.
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        if (!double.IsInfinity(availableSize.Width))
+            Arrange(availableSize.Width - 345);
+        return base.MeasureOverride(availableSize);
+    }
+
     protected override Size ArrangeOverride(Size finalSize)
     {
         Arrange(finalSize.Width - 345);
@@ -71,13 +80,16 @@ public partial class CockpitsView : UserControl
         return size;
     }
 
-    // Side by side (guide 430 px, the page beside it) or stacked (the guide above the page, shorter).
-    private bool stacked;
+    // Side by side (guide 430 px, the page beside it) or stacked (the guide above the page, shorter). Applied once per
+    // change: stacked, the old check never matched (one column), so every arrange set the columns and rows again and
+    // the page was arranged with the size it measured beside the guide; drawn at the full width it ran over the notes
+    // below it (2.5.1).
+    private bool? stacked;
 
     private void Arrange(double width)
     {
         bool stack = width > 0 && width < StackBelow;
-        if (stack == stacked && GuideSplit.ColumnDefinitions.Count == 2)
+        if (stacked == stack)
             return;
         stacked = stack;
         GuideSplit.ColumnDefinitions = stack ? new ColumnDefinitions("*") : new ColumnDefinitions("430,*");

@@ -40,6 +40,9 @@ public sealed partial class MainWindowViewModel
             CurrentStage = UiStage.Export;
         });
         wizard.UseSettings(wizardSettings, WizardSettingsChanged);
+        // "Use this layout" on the Cockpits page before the wizard was made.
+        if (TakePendingCockpitLayout() is { } cockpit)
+            wizard.UseCockpitLayout(cockpit);
         return wizard;
     }
 

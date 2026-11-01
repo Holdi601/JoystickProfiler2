@@ -26,6 +26,12 @@ public sealed partial class MainWindowViewModel
 
     public ObservableCollection<CatalogCategoryItem> CatalogCategories { get; } = [];
 
+    // What the catalog list shows, as one list: each shown category (CatalogCategoryItem), then the rows shown under it
+    // when it is open (CatalogEntryRow). The view builds only the items in view: a filter's first letter opens every
+    // category with a match, which on a big aircraft (F-4E: 1635 actions, 3561 rows with the ones in several categories)
+    // built every row at once and froze the window for minutes (tester report on 2.5.0).
+    public RangeObservableCollection<object> CatalogEntries { get; } = [];
+
     private readonly List<CatalogRowItem> catalogRows = [];
     // The engine's category order (the catalog's own order).
     private readonly List<string> catalogCategoryOrder = [];
@@ -366,7 +372,7 @@ public sealed partial class MainWindowViewModel
         foreach (CatalogRowItem row in catalogRows)
             row.Row.PropertyChanged += OnCatalogRowChanged;
         // The rows of the open relation are known before the categories are ordered by what matters for it.
-        MarkBuilderRowsInRelation();
+        RefreshBuilderRowsInRelation();
         CatalogCategories.Clear();
         Dictionary<string, List<CatalogRowItem>> byCategory = new(StringComparer.OrdinalIgnoreCase);
         foreach (CatalogRowItem row in rows)
@@ -404,7 +410,7 @@ public sealed partial class MainWindowViewModel
                 CatalogCategories.Add(category);
             }
         }
-        MarkBuilderRowsInRelation();
+        RefreshBuilderRowsInRelation();
         ApplyCatalogFilter();
         OnPropertyChanged(nameof(HasCatalogRows));
         OnCatalogCheckedChanged();
@@ -459,27 +465,33 @@ public sealed partial class MainWindowViewModel
         bool filtering = words.Length > 0;
         // The engine's meaning matches count for this text only.
         HashSet<string> meaning = string.Equals(catalogMeaningText, (CatalogFilterText ?? string.Empty).Trim(), StringComparison.Ordinal) ? catalogMeaningKeys : [];
+        // DCS's English names only for words that name a command by its key ("flaps_1"); read once per filter, not per
+        // row and word (each read asked the disk whether the DCS folder is there).
+        IDictionary<string, string>? english = words.Any(JoyPro.Engine.DcsCommandNames.LooksLikeKeyQuery) ? DcsEnglishNames() : null;
+        List<object> entries = [];
         foreach (CatalogCategoryItem category in CatalogCategories)
         {
             bool nameHit = filtering && words.All(w => category.Name.Contains(w, StringComparison.OrdinalIgnoreCase));
             List<CatalogRowItem> matching = category.Rows.Where(r => (!CatalogOnlyFree || !r.IsUsed) &&
                 (!filtering || nameHit || meaning.Contains(r.Row.Game + "|" + r.Row.Id) || words.All(w => (r.Row.Title + " " + r.Row.Id).Contains(w, StringComparison.OrdinalIgnoreCase) ||
-                                        (r.Row.Game == "DCS" && JoyPro.Engine.DcsCommandNames.KeyMatches(w, r.Row.Title, DcsEnglishNames()))))).ToList();
+                                        (english != null && r.Row.Game == "DCS" && JoyPro.Engine.DcsCommandNames.KeyMatches(w, r.Row.Title, english))))).ToList();
             category.Matching = matching.Count;
             category.IsVisible = matching.Count > 0;
             if (filtering && matching.Count > 0)
                 category.IsExpanded = true;
             FillCategoryRows(category, matching);
+            if (!category.IsVisible)
+                continue;
+            entries.Add(category);
+            foreach (CatalogRowItem row in category.VisibleRows)
+                entries.Add(category.EntryOf(row));
         }
+        CatalogEntries.ReplaceAll(entries);
     }
 
     private static void FillCategoryRows(CatalogCategoryItem category, List<CatalogRowItem> matching)
     {
-        category.VisibleRows.Clear();
-        if (!category.IsExpanded)
-            return;
-        foreach (CatalogRowItem row in matching)
-            category.VisibleRows.Add(row);
+        category.VisibleRows.ReplaceAll(category.IsExpanded ? matching : []);
     }
 
     [RelayCommand]
@@ -519,7 +531,7 @@ public sealed partial class MainWindowViewModel
     {
         List<BuilderSearchResultItem> chosen = catalogRows.Select(r => r.Row).Where(r => r.IsChecked && r.CanCheck).Distinct().ToList();
         await AddBuilderRowsAsync(chosen, text => CatalogStatus = text, seedSearch: false);
-        MarkBuilderRowsInRelation();
+        RefreshBuilderRowsInRelation();
         foreach (CatalogCategoryItem category in CatalogCategories)
             category.RefreshTick();
     }

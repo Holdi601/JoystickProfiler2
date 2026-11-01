@@ -39,6 +39,12 @@
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
             <Setter Property="Foreground" Value="{DynamicResource JP.TextMutedBrush}" />
         </Style>
+        <!-- The arrow of a button that opens a menu ("More", "Open a relation"): a path the size of the text's x-height -->
+        <Style Selector="PathIcon.menuChevron">
+            <Setter Property="Width" Value="10" />
+            <Setter Property="Height" Value="10" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
     </UserControl.Styles>
     <StackPanel Spacing="8">
         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
@@ -187,7 +193,12 @@
                                             <TextBlock Text="{Binding Sentence}" TextWrapping="Wrap" IsVisible="{Binding PlainShowsSentence}" />
                                             <!-- Its fixes and one "Open" per relation, light: thousands of these cards can come -->
                                             <Button Classes="small ghost" HorizontalAlignment="Left" IsVisible="{Binding PlainShowsOpenMenu}" Click="OpenMenuClicked"
-                                                    Content="{l:T 'Open a relation ▾'}" ToolTip.Tip="{l:T 'Opens one of the relations with the actions of this card marked; Back returns here.'}" />
+                                                    ToolTip.Tip="{l:T 'Opens one of the relations with the actions of this card marked; Back returns here.'}">
+                                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                                    <TextBlock Text="{l:T 'Open a relation'}" VerticalAlignment="Center" />
+                                                    <PathIcon Classes="menuChevron" Data="{StaticResource Icon.ChevronDown}" />
+                                                </StackPanel>
+                                            </Button>
                                             <ItemsControl ItemsSource="{Binding PlainButtons}" IsVisible="{Binding PlainShowsButtons}">
                                                 <ItemsControl.ItemsPanel>
                                                     <ItemsPanelTemplate>
@@ -264,14 +275,25 @@
                                                             <ItemsControl.ItemTemplate>
                                                                 <DataTemplate x:DataType="models:CheckFix">
                                                                     <Button Classes="small" Classes.accent="{Binding IsRecommended}" Command="{Binding Command}" ToolTip.Tip="{Binding Tip}">
-                                                                        <TextBlock Text="{Binding RecommendedLabel}" TextWrapping="Wrap" MaxWidth="420" />
+                                                                        <!-- The tick is a path like "More"'s arrow: the ✓ character comes from a fallback font
+                                                                             whose taller line made the recommended button higher than the others -->
+                                                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                                                            <PathIcon Classes="menuChevron" Data="{StaticResource Icon.Check}" IsVisible="{Binding IsRecommended}" />
+                                                                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" MaxWidth="420" VerticalAlignment="Center" />
+                                                                        </StackPanel>
                                                                     </Button>
                                                                 </DataTemplate>
                                                             </ItemsControl.ItemTemplate>
                                                         </ItemsControl>
                                                         <!-- "More": a menu of the other fixes, made when it opens (CheckProblemsPanel.axaml.cs) -->
-                                                        <Button Classes="small" IsVisible="{Binding HasMoreFixes}" ToolTip.Tip="{l:T 'More ways to fix it'}" Click="MoreFixesClicked"
-                                                                Content="{l:T 'More ▾'}" />
+                                                        <!-- The arrow is a path, not the ▾ character: no text font has it, and the fallback font's taller line made this
+                                                             button a few pixels higher than its neighbours. -->
+                                                        <Button Classes="small" IsVisible="{Binding HasMoreFixes}" ToolTip.Tip="{l:T 'More ways to fix it'}" Click="MoreFixesClicked">
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <TextBlock Text="{l:T 'More'}" VerticalAlignment="Center" />
+                                                                <PathIcon Classes="menuChevron" Data="{StaticResource Icon.ChevronDown}" />
+                                                            </StackPanel>
+                                                        </Button>
                                                     </WrapPanel>
                                                     <!-- One "Open" per relation: it opens with this card's commands and aircraft marked; Back returns here -->
                                                     <ItemsControl ItemsSource="{Binding OpenButtons}" IsVisible="{Binding HasOpenButtons}">

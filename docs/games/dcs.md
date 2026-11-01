@@ -193,10 +193,11 @@ The modes, per device file of an exported aircraft (an input is device, key and 
   function on an input the profile uses (`Game Binds On Taken Buttons Removed`). The profile's tuning wins on its own
   binds. A moved action keeps its old input.
 - `merge-overwrite` ("Update, my profile wins", the engine's default when `--mode` is left out) does what merge does,
-  and every action the profile binds in the aircraft keeps only the profile's inputs: on the written devices, on the
-  aircraft's other device files and on connected devices without a file (their DCS defaults count too), not on the
-  import's ignored devices or the vJoy tunnel; the keyboard only when it is exported (`Other Buttons Of Profile Actions
-  Removed`).
+  and every action the profile binds in the aircraft keeps only the profile's inputs: on the written devices and in the
+  aircraft's device files of the other **connected** devices (`Other Buttons Of Profile Actions Removed`). Not touched:
+  the files of other devices that are not connected (2.6.0; up to 2.5.0 they lost the profile's actions too),
+  connected devices without a file (they keep DCS's defaults; nuke clears those), the import's ignored devices and the
+  vJoy tunnel; the keyboard only when it is exported.
 - `clean` ("Replace on my devices", the GUI's default with nuke since 2.5.0): the written devices get exactly the
   profile's binds in the exported aircraft. Only with `--clean-all-aircraft true` (default false since 2.5.0, GUI "DCS:
   my devices lose the DCS default binds in every other aircraft too", off) they also lose their binds and DCS defaults

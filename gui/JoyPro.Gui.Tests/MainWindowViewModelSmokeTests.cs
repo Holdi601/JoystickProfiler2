@@ -382,8 +382,8 @@ public sealed class MainWindowViewModelSmokeTests
         IReadOnlyList<string> reload = Assert.Single(fake.Calls, c => ContainsSequence(c, "hud", "devices"));
         Assert.True(ContainsSequence(reload, "--grip", "Base {00000000-0000-0000-0000-0000000000B3}=grip-a"));
 
-        vm.HudAccent = "#F59E0B";
-        Assert.Equal(Avalonia.Media.Color.Parse("#F59E0B"), vm.HudContext.AccentColor);
+        vm.SetHudAccentCommand.Execute("#F59E0B");
+        Assert.Equal(Avalonia.Media.Color.Parse("#F59E0B"), vm.HudContext.Look.AccentColor);
 
         vm.GoStartCommand.Execute(null);
         Assert.False(vm.IsHudStage);
@@ -2736,7 +2736,7 @@ public sealed class MainWindowViewModelSmokeTests
     }
 
     [Fact]
-    public async Task AllViewModelCommands_ExecuteWithoutThrowing()
+    public Task AllViewModelCommands_ExecuteWithoutThrowing() => UiThread.RunAsync(async () =>
     {
         FakeEngineCliClient fake = new();
         MainWindowViewModel vm = CreateVm(fake);
@@ -2788,7 +2788,7 @@ public sealed class MainWindowViewModelSmokeTests
         Assert.True(
             failures.Count == 0,
             "Command execution failures:" + Environment.NewLine + string.Join(Environment.NewLine, failures));
-    }
+    });
 
     private static MainWindowViewModel CreateVm(FakeEngineCliClient fake, FakeJoystickCaptureService? captureService = null)
     {
@@ -2864,9 +2864,36 @@ public sealed class MainWindowViewModelSmokeTests
         return false;
     }
 
+    // Engine calls of a fake: added from any thread, read as a snapshot.
+    private sealed class CallLog : IEnumerable<IReadOnlyList<string>>
+    {
+        private readonly List<IReadOnlyList<string>> calls = [];
+
+        public void Add(IReadOnlyList<string> call)
+        {
+            lock (calls)
+                calls.Add(call);
+        }
+
+        public void Clear()
+        {
+            lock (calls)
+                calls.Clear();
+        }
+
+        public IEnumerator<IReadOnlyList<string>> GetEnumerator()
+        {
+            lock (calls)
+                return calls.ToList().GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
     private sealed class FakeEngineCliClient : IEngineCliClient
     {
-        public List<IReadOnlyList<string>> Calls { get; } = [];
+        // The view model also calls the engine from background work while a test looks at the calls.
+        public CallLog Calls { get; } = new();
         public bool UseMismatchedModifierNameScenario { get; set; }
         public bool UseCorruptedModifierDelimiterScenario { get; set; }
         public bool UseMultiSortScenario { get; set; }

@@ -20,6 +20,9 @@ namespace JoyPro.Engine
             public long Length;
             public DateTime WriteUtc;
             public string Text;
+            // The file's bytes are exactly Text as UTF-8 without byte order mark (what WriteAllText writes): Holds and
+            // TryGetBytes may then work on the text instead of the disk.
+            public bool Exact;
         }
 
         private static readonly ConcurrentDictionary<string, Entry> Texts = new ConcurrentDictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
@@ -62,9 +65,54 @@ namespace JoyPro.Engine
             FileInfo before = new FileInfo(key);
             DateTime writeUtc = before.LastWriteTimeUtc;
             long length = before.Exists ? before.Length : -1;
-            string text = File.ReadAllText(key);
-            Texts[key] = new Entry { Length = length, WriteUtc = writeUtc, Text = text };
+            byte[] bytes = File.ReadAllBytes(key);
+            // Decoded as File.ReadAllText decodes (UTF-8, or the encoding of a byte order mark).
+            string text;
+            using (StreamReader reader = new StreamReader(new MemoryStream(bytes, false), Encoding.UTF8, true))
+                text = reader.ReadToEnd();
+            Texts[key] = new Entry { Length = length, WriteUtc = writeUtc, Text = text, Exact = IsUtf8Of(text, bytes) };
             return text;
+        }
+
+        private static bool IsUtf8Of(string text, byte[] bytes)
+        {
+            if (Utf8NoBom.GetByteCount(text) != bytes.Length)
+                return false;
+            byte[] encoded = Utf8NoBom.GetBytes(text);
+            for (int i = 0; i < encoded.Length; i++)
+            {
+                if (encoded[i] != bytes[i])
+                    return false;
+            }
+            return true;
+        }
+
+        // The entry of a file whose bytes are exactly its text and that is unchanged since this run read or wrote it.
+        private static Entry ExactEntry(string key)
+        {
+            Entry entry;
+            if (!Texts.TryGetValue(key, out entry) || !entry.Exact)
+                return null;
+            FileInfo info = new FileInfo(key);
+            return info.Exists && entry.Length == info.Length && entry.WriteUtc == info.LastWriteTimeUtc ? entry : null;
+        }
+
+        // Whether the file already holds exactly the bytes WriteAllText(path, text) would write, known from this run's
+        // read or write of it. False when the run has not read it: the caller writes.
+        public static bool Holds(string path, string text)
+        {
+            if (text == null)
+                return false;
+            Entry entry = ExactEntry(Key(path));
+            return entry != null && string.Equals(entry.Text, text, StringComparison.Ordinal);
+        }
+
+        // The file's bytes without reading the disk again, when this run read or wrote it and it is unchanged since.
+        public static bool TryGetBytes(string path, out byte[] bytes)
+        {
+            Entry entry = ExactEntry(Key(path));
+            bytes = entry == null ? null : Utf8NoBom.GetBytes(entry.Text);
+            return bytes != null;
         }
 
         // File.WriteAllText(path, text, UTF-8 without BOM), remembered as what a later read of it returns.
@@ -95,7 +143,7 @@ namespace JoyPro.Engine
                     return;
                 }
                 decoded = Utf8NoBom.GetString(bytes);
-                Texts[key] = new Entry { Length = info.Length, WriteUtc = info.LastWriteTimeUtc, Text = decoded };
+                Texts[key] = new Entry { Length = info.Length, WriteUtc = info.LastWriteTimeUtc, Text = decoded, Exact = true };
             }
             catch (Exception)
             {

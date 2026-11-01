@@ -156,3 +156,41 @@ finally {
     $env:JOYPRO_DATA_DIR = $erPreviousData
     $env:JOYPRO_INSTALL_DETECTION = $erPreviousDetection
 }
+
+# Two relations put one action on two buttons while the game keeps a keyboard key on it (Elite has two slots per action,
+# Primary and Secondary): only one button fits. The export says which bind was not written and why (SkippedTakenInputs,
+# Reason no-free-slot), the profile keeps it as an export mark for the Check, and the clean export names the half-axis
+# modifier bind it keeps in plain words.
+$esSlotDir = Join-Path $tempDir "elite-slots"
+$esSlotBinds = Join-Path $esSlotDir "Custom.4.2.binds"
+$esSlotProfile = Join-Path $tempDir "elite-slots.pr0file"
+New-Item -Path $esSlotDir -ItemType Directory -Force | Out-Null
+Copy-Item -Path (Join-Path $engineDir "tests\fixtures\elite\*") -Destination $esSlotDir -Force
+$previousFakeDevices = $env:JOYPRO_FAKE_DEVICES
+$env:JOYPRO_FAKE_DEVICES = Join-Path $engineDir "tests\fixtures\bms\devices.tsv"
+try {
+    $esStick = "Smoke Stick {11111111-2222-3333-4444-555555555555}"
+    Run-Engine @("--profile", $esSlotProfile, "relations", "add", "Fire A", "--button", "--node", "EliteDangerous:PrimaryFire", "--device", $esStick, "--input", "JOY_BTN7", "--text") | Out-Null
+    Run-Engine @("--profile", $esSlotProfile, "relations", "add", "Fire B", "--button", "--node", "EliteDangerous:PrimaryFire", "--device", $esStick, "--input", "JOY_BTN8", "--text") | Out-Null
+    $esSlot = Run-Engine @("--profile", $esSlotProfile, "elite", "export", "--path", $esSlotBinds, "--mode", "clean", "--text")
+    Assert-True ($esSlot.ExitCode -eq 0) ("elite export of one action on two buttons failed: " + $esSlot.Output)
+    $esSlotText = [IO.File]::ReadAllText($esSlotBinds)
+    Assert-Match $esSlotText "<PrimaryFire>\r\n\t\t<Primary Device=`"Keyboard`" Key=`"Key_Space`" />\r\n\t\t<Secondary Device=`"12345678`" Key=`"Joy_7`" />" "the first button takes the free slot next to the kept keyboard key."
+    Assert-NotMatch $esSlotText "Joy_8" "the second button has no slot left and must not overwrite the first one."
+    Assert-Match $esSlot.Output "(?m)^Bindings Written:\s+1\s*$" ("the export must count only the bind it wrote: " + $esSlot.Output)
+    Assert-Match $esSlot.Output "Binds Not Written, No Free Place In The Game:\s+- Fire B \(Primary Fire\) on Smoke Stick \{[^}]+\} JOY_BTN8: not written.*Primary: keyboard key Space; Secondary: Smoke Stick button 7 \(relation 'Fire A'\)" ("the export must say which bind was not written and what holds the slots: " + $esSlot.Output)
+    Assert-Match $esSlot.Output "'Cycle Next Ship': kept the game's bind Smoke Stick hat 1 right with Smoke Stick RZ axis, positive half as modifier\. Elite can use half of an axis as a modifier; a JoyPro profile cannot hold that" ("the clean export must name the kept half-axis modifier bind in plain words: " + $esSlot.Output)
+    $esMarks = Run-Engine @("--profile", $esSlotProfile, "export-marks", "list", "--game", "EliteDangerous", "--text")
+    Assert-Match $esMarks.Output "EliteDangerous: Fire B \(Primary Fire\) on Smoke Stick \{[^}]+\} JOY_BTN8 - no free place: Primary: keyboard key Space" ("the profile must keep the bind that was not written for the Check: " + $esMarks.Output)
+    $esMarksJson = Run-Engine @("--profile", $esSlotProfile, "export-marks", "list", "--game", "EliteDangerous")
+    Assert-Match $esMarksJson.Output '"Reason":\s*"no-free-slot"' ("the export mark carries its reason: " + $esMarksJson.Output)
+    # With the second relation gone the bind fits: the mark clears.
+    Run-Engine @("--profile", $esSlotProfile, "relations", "mass", "delete", "--relation", "Fire B", "--text") | Out-Null
+    $esSlotAgain = Run-Engine @("--profile", $esSlotProfile, "elite", "export", "--path", $esSlotBinds, "--mode", "clean", "--text")
+    Assert-NotMatch $esSlotAgain.Output "No Free Place" ("one button per action fits: " + $esSlotAgain.Output)
+    $esMarksAfter = Run-Engine @("--profile", $esSlotProfile, "export-marks", "list", "--game", "EliteDangerous", "--text")
+    Assert-Match $esMarksAfter.Output "\): 0" ("the mark clears when the bind is written or gone: " + $esMarksAfter.Output)
+}
+finally {
+    $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices
+}

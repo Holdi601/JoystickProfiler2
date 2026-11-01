@@ -613,7 +613,8 @@ public sealed class VirtualFunctionRuntimeTests(ITestOutputHelper output)
             VfSimulator sim = new(function);
             Assert.True(sim.Problems.Count == 0, type.Id + ": " + string.Join(" ", sim.Problems));
             List<VfEvent> events = sim.Run(VfSimulator.ParseStream(stream), Rate, duration);
-            Assert.True(events.Count > 0, type.Id + " gave no output for its default stream");
+            // A mode switch has no outputs: it changes the mode (VirtualFunctionChainModeTests).
+            Assert.True(events.Count > 0 || type.Id == VirtualFunctionCatalog.ModeSwitch, type.Id + " gave no output for its default stream");
             Assert.False(string.IsNullOrEmpty(type.Icon));
             Assert.False(string.IsNullOrEmpty(type.Summary));
         }

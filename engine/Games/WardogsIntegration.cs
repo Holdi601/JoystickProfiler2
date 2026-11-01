@@ -166,8 +166,6 @@ namespace JoyPro.Engine.Games
                 return Finish(section, request, result);
             }
 
-            if (!settings.ContainsKey("enableHotas"))
-                WarnIfHotasDisabled(section, result.Warnings);
             RepairIdentifiers(section, request.Devices, result);
 
             string axisIndexKey;
@@ -209,8 +207,10 @@ namespace JoyPro.Engine.Games
                 if (TryBuildIdentifier(device, request.Devices, section, out identifier, new List<string>()))
                     usedIdentifiers.Add(identifier);
             }
-            // Nuke releases only devices JoyPro can identify (connected); a device that is not connected is never cleared.
+            // Nuke releases only devices JoyPro can identify (connected); a device that is not connected is never cleared,
+            // nor one JoyPro never clears (the vJoy device it tunnels into, an ignored device).
             Func<string, bool> release = identifier => identifier.Length > 0 &&
+                !request.Devices.IsKept(ResolveDevice(identifier, request.Devices, new List<string>())) &&
                 (usedIdentifiers.Contains(identifier) ? request.Mode == GameExportMode.Clean
                     : request.NukeUnusedDevices && ResolveDevice(identifier, request.Devices, new List<string>()).Length > 0);
 
@@ -253,8 +253,13 @@ namespace JoyPro.Engine.Games
             if (result.Errors.Count > 0)
                 return result;
             ApplyGameSettings(section, settings, result);
+            // The switch as the export leaves it: turned on for the binds just written, so the "is False" warning only
+            // comes when it stays off (no binds written).
             if (!settings.ContainsKey("enableHotas"))
+            {
                 EnableHotasForBinds(section, result.BindingsWritten, result);
+                WarnIfHotasDisabled(section, result.Warnings);
+            }
             else if (settings["enableHotas"] == 0 && result.BindingsWritten > 0)
                 result.Warnings.Add("'Enable HOTAS' is off in the profile's WARDOGS settings: the game ignores the joystick binds until it is on.");
             return Finish(section, request, result);

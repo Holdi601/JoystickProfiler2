@@ -473,6 +473,9 @@ namespace JoyPro.Engine.Games
             // as JoyPro names it ("<device>|<input>").
             Dictionary<int, string> inputOf = new Dictionary<int, string>();
             Dictionary<int, string> deviceOf = new Dictionary<int, string>();
+            // Mappings of a device JoyPro never clears (the vJoy device it tunnels into, an ignored device): never
+            // released by clean, nuke or "my profile wins".
+            HashSet<int> keptLines = new HashSet<int>();
             List<PwMapping> mappings = ini.Mappings();
             foreach (PwMapping m in mappings.Where(m => request.Catalog.Contains(m.Name) && IsJoystickKey(m.Key)))
             {
@@ -483,6 +486,8 @@ namespace JoyPro.Engine.Games
                     continue;
                 inputOf[m.Line] = device.JoyProName + "|" + token;
                 deviceOf[m.Line] = device.JoyProName;
+                if (device.Kept)
+                    keptLines.Add(m.Line);
             }
             Func<GameInputBinding, string> wantedInput = b => b.Device + "|" + b.Input;
             HashSet<string> wantedPairs = new HashSet<string>(resolved.Select(r => request.Catalog.Find(r.Key.ActionId).Id + "#" + wantedInput(r.Key)), StringComparer.OrdinalIgnoreCase);
@@ -493,7 +498,7 @@ namespace JoyPro.Engine.Games
             // Clean: the other joystick mappings of the devices JoyPro writes go (a flight-only game). Nuke: also those of
             // the other connected devices.
             int released = 0;
-            foreach (PwMapping m in mappings.Where(m => inputOf.ContainsKey(m.Line) && !wantedHere(m)))
+            foreach (PwMapping m in mappings.Where(m => inputOf.ContainsKey(m.Line) && !wantedHere(m) && !keptLines.Contains(m.Line)))
             {
                 bool written = writtenDevices.Contains(deviceOf[m.Line]);
                 if ((written && request.Mode == GameExportMode.Clean) || (!written && request.NukeUnusedDevices))
@@ -510,7 +515,7 @@ namespace JoyPro.Engine.Games
             if (request.Mode == GameExportMode.MergeOverwrite)
             {
                 HashSet<string> bound = new HashSet<string>(resolved.Select(r => request.Catalog.Find(r.Key.ActionId).Id), StringComparer.OrdinalIgnoreCase);
-                foreach (PwMapping m in mappings.Where(m => inputOf.ContainsKey(m.Line) && bound.Contains(m.Name) && !unwritten.Contains(m.Name) && !wantedHere(m)))
+                foreach (PwMapping m in mappings.Where(m => inputOf.ContainsKey(m.Line) && bound.Contains(m.Name) && !unwritten.Contains(m.Name) && !wantedHere(m) && !keptLines.Contains(m.Line)))
                 {
                     if (remove.Add(m.Line))
                         result.Steps.Add(m.Name + ": the game's " + UnQuote(m.Key) + " removed (the profile binds it elsewhere).");

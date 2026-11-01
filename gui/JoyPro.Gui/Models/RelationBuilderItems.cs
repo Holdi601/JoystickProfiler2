@@ -18,9 +18,38 @@ public sealed record MsfsAircraftOnlyBind(string Relation, string ActionId, stri
 // The relation editor (Relations page, MainWindowViewModel.RelationBuilder.cs): what fits the open relation, the actions
 // found by the search, the chat's proposed changes and the game filter chips.
 
+// An action that other relations have switched on: one tag in Add actions and in the suggestions ("in 'X'" opens it,
+// "in 3 relations" lists them; MainWindowViewModel.OpenOtherRelationsTagAsync).
+public interface IOtherRelationsTag
+{
+    IReadOnlyList<string> OtherRelations { get; }
+
+    bool HasSeveralOtherRelations { get; }
+
+    bool IsOtherRelationsExpanded { get; set; }
+}
+
+internal static class OtherRelationsWords
+{
+    // "in 'Button CP2 B1'" or "in 3 relations".
+    public static string Tag(IReadOnlyList<string> relations) => relations.Count switch
+    {
+        0 => string.Empty,
+        1 => T("in '{0}'", relations[0]),
+        _ => Plural("in {0} relation", "in {0} relations", relations.Count)
+    };
+
+    public static string Tip(IReadOnlyList<string> relations) => relations.Count switch
+    {
+        0 => string.Empty,
+        1 => T("Also switched on in '{0}'. Click to open that relation.", relations[0]),
+        _ => T("Also switched on in: {0}. Click to list them; a name opens that relation.", string.Join(", ", relations))
+    };
+}
+
 // One action that fits the open relation (engine relations suggest): one command of a game, with every aircraft that has
 // it, the confidence, the short reason and the relation that already uses it (if any).
-public sealed partial class BuilderSuggestionItem : ObservableObject
+public sealed partial class BuilderSuggestionItem : ObservableObject, IOtherRelationsTag
 {
     public BuilderSuggestionItem(string game, string id, string title, IReadOnlyList<string> planes, string confidence, int score,
         string why, IReadOnlyList<string> reasons, IReadOnlyList<string> otherRelations)
@@ -74,6 +103,21 @@ public sealed partial class BuilderSuggestionItem : ObservableObject
 
     // "Already in 'Flare'": the command is bound through another relation; Move here takes it over.
     public string ConflictText => HasConflict ? T("Already in '{0}'", string.Join("', '", OtherRelations)) : string.Empty;
+
+    // The same tag as in Add actions (the other relations that have it switched on).
+    public bool HasOtherRelations => OtherRelations.Count > 0;
+
+    public bool HasSeveralOtherRelations => OtherRelations.Count > 1;
+
+    public string OtherRelationsTag => OtherRelationsWords.Tag(OtherRelations);
+
+    public string OtherRelationsTip => OtherRelationsWords.Tip(OtherRelations);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowOtherRelationsList))]
+    private bool isOtherRelationsExpanded;
+
+    public bool ShowOtherRelationsList => IsOtherRelationsExpanded && HasSeveralOtherRelations;
 
     public string Where => BuilderText.Where(Game, Planes);
 
@@ -256,7 +300,7 @@ public sealed partial class SuggestionSectionItem : ObservableObject
 
 // One action found by the search over every game (engine relations search): a row with a tick box; several ticked rows
 // go into the relation with one "Add selected".
-public sealed partial class BuilderSearchResultItem : ObservableObject
+public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRelationsTag
 {
     public BuilderSearchResultItem(string game, string id, string title, string category, bool isAxis, IReadOnlyList<string> planes, IReadOnlyList<string> inRelations, string why)
     {
@@ -267,6 +311,7 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
         IsAxis = isAxis;
         Planes = planes;
         InRelations = inRelations;
+        otherRelations = OtherOf(string.Empty);
         Why = why;
         foreach (string plane in planes.Take(4))
             PlanePictures.Add(new PlaneChoice(plane));
@@ -298,9 +343,57 @@ public sealed partial class BuilderSearchResultItem : ObservableObject
 
     public string PlanesTooltip => Game == "DCS" ? string.Join(", ", Planes) : DisplayText.Game(Game) + (Category.Length > 0 ? " · " + Category : string.Empty);
 
-    public string InOtherRelationsText => IsInOpenRelation ? T("already in this relation") : IsInRelation ? T("also in '{0}'", string.Join("', '", InRelations)) : string.Empty;
+    public string InOtherRelationsText => IsInOpenRelation ? T("already in this relation") : string.Empty;
 
     public bool HasNote => InOtherRelationsText.Length > 0;
+
+    // ---- Used in other relations: one tag (docs/relation-builder.md "Make a relation, step by step") ----
+
+    // The open relation (MarkBuilderRowsInRelation): it is not "another" relation.
+    private string openRelationName = string.Empty;
+
+    private IReadOnlyList<string> otherRelations;
+
+    public string OpenRelationName
+    {
+        get => openRelationName;
+        set
+        {
+            string name = value ?? string.Empty;
+            if (string.Equals(openRelationName, name, System.StringComparison.Ordinal))
+                return;
+            openRelationName = name;
+            otherRelations = OtherOf(name);
+            OnPropertyChanged(nameof(OtherRelations));
+            OnPropertyChanged(nameof(HasOtherRelations));
+            OnPropertyChanged(nameof(HasSeveralOtherRelations));
+            OnPropertyChanged(nameof(OtherRelationsTag));
+            OnPropertyChanged(nameof(OtherRelationsTip));
+            OnPropertyChanged(nameof(ShowOtherRelationsList));
+        }
+    }
+
+    private IReadOnlyList<string> OtherOf(string open) =>
+        InRelations.Where(r => !string.Equals(r, open, System.StringComparison.OrdinalIgnoreCase)).Distinct(System.StringComparer.OrdinalIgnoreCase).ToList();
+
+    // The other relations that have it switched on (for at least one of its aircraft), by name.
+    public IReadOnlyList<string> OtherRelations => otherRelations;
+
+    public bool HasOtherRelations => otherRelations.Count > 0;
+
+    public bool HasSeveralOtherRelations => otherRelations.Count > 1;
+
+    // "in 'Button CP2 B1'" or "in 3 relations" (a click lists them).
+    public string OtherRelationsTag => OtherRelationsWords.Tag(otherRelations);
+
+    public string OtherRelationsTip => OtherRelationsWords.Tip(otherRelations);
+
+    // The names of the other relations, listed under the row (several only).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowOtherRelationsList))]
+    private bool isOtherRelationsExpanded;
+
+    public bool ShowOtherRelationsList => IsOtherRelationsExpanded && HasSeveralOtherRelations;
 
     // How the engine found it (relations search "Match"): exact, function, synonym, described, words, category.
     public string Match { get; init; } = string.Empty;
@@ -490,6 +583,10 @@ public sealed partial class BuilderSearchGroupItem : ObservableObject
         Sync();
     }
 
+    // The actions of the search already in the open relation: greyed at the bottom of the list, nothing to tick.
+    public static BuilderSearchGroupItem InRelation(IReadOnlyList<BuilderSearchResultItem> rows) =>
+        new(string.Empty, rows, 0, T("Already in this relation")) { IsInRelationGroup = true };
+
     public string Game { get; }
 
     public IReadOnlyList<BuilderSearchResultItem> Rows { get; }
@@ -498,7 +595,11 @@ public sealed partial class BuilderSearchGroupItem : ObservableObject
 
     private readonly string functionLabel;
 
+    public bool IsInRelationGroup { get; private init; }
+
     public bool IsGame => functionLabel.Length == 0;
+
+    public bool IsFunctionGroup => !IsGame && !IsInRelationGroup;
 
     public string Label => IsGame ? DisplayText.Game(Game) : functionLabel;
 

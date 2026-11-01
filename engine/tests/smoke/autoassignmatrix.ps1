@@ -26,6 +26,19 @@ try {
         $amCheck = Run-Engine @("setup", "check", "--plan", $amPlanFile, "--text")
         Assert-True ($amCheck.ExitCode -eq 0) ("setup check failed for " + $amSet + ": " + $amCheck.Output)
         Assert-Match $amCheck.Output "(?m)^Checks: all passed" ("a plan of " + $amSet + " broke a rule: " + $amCheck.Output)
+        if ($amSet -eq "stick-throttle") {
+            # A plan that breaks a rule (two functions of the same aircraft on one button): setup check ends with 1.
+            $amJson = Get-Content -Path $amPlanFile -Raw | ConvertFrom-Json
+            $amButtons = @($amJson.Relations | Where-Object { -not $_.IsAxis -and $_.Input -match '^JOY_BTN\d+$' -and [string]::IsNullOrEmpty($_.Modifier) -and [string]::IsNullOrEmpty($_.Phase) })
+            Assert-True ($amButtons.Count -ge 2) "the stick-throttle plan has fewer than two plain button binds."
+            $amButtons[1].Input = $amButtons[0].Input
+            $amButtons[1].Device = $amButtons[0].Device
+            $amBadPlan = Join-Path $amDir "stick-throttle-conflict.json"
+            [System.IO.File]::WriteAllText($amBadPlan, ($amJson | ConvertTo-Json -Depth 30))
+            $amBadCheck = Run-Engine @("setup", "check", "--plan", $amBadPlan, "--text")
+            Assert-True ($amBadCheck.ExitCode -eq 1) ("setup check must end with exit code 1 when a rule fails. Output: " + $amBadCheck.Output)
+            Assert-NotMatch $amBadCheck.Output "(?m)^Checks: all passed" ("the plan with two functions on one button passed: " + $amBadCheck.Output)
+        }
         if ($amSet -eq "pit-panels-mfds") {
             Assert-Match $amPlan.Output "JOY_BTN\d+ \(mfd\.left\.osb\.T1\) => MFD__LEFT__T1" "the left MFD's T1 key did not get the left MFD's T1 function."
             Assert-Match $amPlan.Output "`"LDG GEAR UP`"\) => GearIn" "gear up did not follow the take-off panel's label."

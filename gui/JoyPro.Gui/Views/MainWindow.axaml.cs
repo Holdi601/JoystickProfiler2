@@ -140,7 +140,8 @@ public partial class MainWindow : Window
         await vm.LoadProfileCommand.ExecuteAsync(null);
     }
 
-    private static readonly FilePickerFileType ProfileFileType = new("JoyPro Profile") { Patterns = ["*.pr0file"] };
+    // Made where shown: the type's name is in the user's language.
+    private static FilePickerFileType ProfileFileType => new(T("JoyPro profile")) { Patterns = ["*.pr0file"] };
 
     // More > Save as...: a copy under another name, JoyPro works on the copy from then on.
     private async void SaveProfileAsClicked(object? sender, RoutedEventArgs e)
@@ -212,7 +213,7 @@ public partial class MainWindow : Window
     {
         if (DataContext is not MainWindowViewModel vm)
             return;
-        string? path = await PickSingleFileAsync("Choose llama-server.exe", "llama.cpp server", "llama-server.exe");
+        string? path = await PickSingleFileAsync(T("Choose llama-server.exe"), "llama.cpp server", "llama-server.exe");
         if (!string.IsNullOrWhiteSpace(path))
             vm.LlmLocalServerPath = path;
     }
@@ -556,6 +557,7 @@ public partial class MainWindow : Window
             observedViewModel.GameChangesOffered -= OnGameChangesOffered;
             observedViewModel.ShutdownRequested -= OnShutdownRequested;
             observedViewModel.HudArrangeRequested -= OnHudArrangeRequested;
+            observedViewModel.CopyTextRequested -= OnCopyTextRequested;
             observedViewModel.GameSetupRequested -= OnGameSetupRequested;
             observedViewModel.ReplaceDeviceDialogRequested -= OnReplaceDeviceDialogRequested;
             observedViewModel.SetupWizardRequested -= OnSetupWizardRequested;
@@ -590,6 +592,8 @@ public partial class MainWindow : Window
             observedViewModel.GameChangesOffered += OnGameChangesOffered;
             observedViewModel.ShutdownRequested += OnShutdownRequested;
             observedViewModel.OverlayPresenter ??= new OverlayPresenter();
+            observedViewModel.HudStreamPresenter ??= new OverlayPresenter(stream: true);
+            observedViewModel.CopyTextRequested += OnCopyTextRequested;
             observedViewModel.HudArrangeRequested += OnHudArrangeRequested;
             observedViewModel.GameSetupRequested += OnGameSetupRequested;
             observedViewModel.ReplaceDeviceDialogRequested += OnReplaceDeviceDialogRequested;
@@ -651,6 +655,53 @@ public partial class MainWindow : Window
                     vm.ArrangeHudWidgets(sizes);
             }
         }, DispatcherPriority.Background);
+    }
+
+    // "Copy" next to the stream page's address (HUD page).
+    private async void OnCopyTextRequested(object? sender, string text)
+    {
+        try
+        {
+            if (Clipboard != null)
+                await Clipboard.SetTextAsync(text);
+        }
+        catch (Exception)
+        {
+            // The address stays visible to copy by hand.
+        }
+    }
+
+    private static readonly FilePickerFileType HudStyleFileType = new("JoyPro HUD style") { Patterns = ["*.joypro-hudstyle.json", "*.json"] };
+
+    private async void ImportHudStyleClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm)
+            return;
+        IReadOnlyList<IStorageFile> files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = T("Import a HUD style"),
+            AllowMultiple = false,
+            FileTypeFilter = [HudStyleFileType]
+        });
+        string? path = files.FirstOrDefault()?.TryGetLocalPath();
+        if (path != null)
+            vm.ImportHudStyle(path);
+    }
+
+    private async void ExportHudStyleClicked(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel vm)
+            return;
+        IStorageFile? file = await StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = T("Export the HUD style"),
+            SuggestedFileName = vm.SuggestedHudStyleFileName,
+            DefaultExtension = "json",
+            FileTypeChoices = [HudStyleFileType]
+        });
+        string? path = file?.TryGetLocalPath();
+        if (path != null)
+            vm.ExportHudStyle(path);
     }
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -776,8 +827,10 @@ public partial class MainWindow : Window
         if (!IsVisible)
             return true;
         ConfirmWindow dialog = new(request);
-        WindowFit.ToScreen(dialog, this);
-        return await dialog.ShowDialog<bool>(this);
+        // Asked from a dialog of its own (Replace device's Move binds): the question goes on top of that dialog.
+        Window owner = OwnedWindows.LastOrDefault(w => w.IsVisible && w.IsActive) ?? this;
+        WindowFit.ToScreen(dialog, owner);
+        return await dialog.ShowDialog<bool>(owner);
     }
 
     // A tab of the Settings page, a link to Settings > Local AI or the version in the corner: once the page is laid out,

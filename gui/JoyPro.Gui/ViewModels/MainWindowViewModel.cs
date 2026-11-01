@@ -1070,6 +1070,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         InitializeSheetStyle(loadPersistedUiSettings);
         LayoutEditorTables.CollectionChanged += (_, e) => ApplySheetStyleToNewItems(e.NewItems);
         LayoutEditorConnectors.CollectionChanged += (_, e) => ApplySheetStyleToNewItems(e.NewItems);
+        // The Layout page's switches and the cheat-sheet options are saved at every change (MainWindowViewModel.LayoutUiSettings.cs).
+        PropertyChanged += SaveOnPersistedLayoutChange;
         if (loadPersistedUiSettings)
         {
             LoadUiSettings();
@@ -1126,6 +1128,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     partial void OnCurrentStageChanged(UiStage value)
     {
+        OnCheckReturnStateChanged();
         OnPropertyChanged(nameof(IsStartStage));
         BusyProgress.OnStartPage = value == UiStage.Start;
         if (value != UiStage.Start)
@@ -1873,6 +1876,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
     partial void OnSelectedRelationChanged(RelationListItem? value)
     {
+        OnCheckReturnStateChanged(relationChanged: true);
         // The list is filled again and the same relation comes back (RebuildVisibleRelations): nothing to load.
         if (rebuildingVisibleRelations)
             return;
@@ -2428,6 +2432,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         layoutEditorConnectorSourcePoint = null;
         layoutEditorContextDevice = string.Empty;
         layoutTemplateByDevice.Clear();
+        ForgetLayoutPick(null);
         LayoutEditorSourcePath = string.Empty;
         LayoutEditorOutputPath = string.Empty;
         LayoutEditorNewToken = string.Empty;
@@ -3238,8 +3243,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         if (removeResult?.ExitCode != 0)
             return;
 
+        // The same action with other aircraft: it was in the relation already, so the engine's check of a new action
+        // (in the game's list, of the relation's kind) is skipped (--force); another action is checked.
+        List<string> addArgs = ["relations", "item", "add", SelectedRelation.Name, "--node", newSpec];
+        if (string.Equals(editingRelationNode.Id, nodeId, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(NormalizeRelationGameToken(editingRelationNode.Game), nodeGame, StringComparison.OrdinalIgnoreCase))
+            addArgs.Add("--force");
         EngineCommandResult? addResult = await RunEngineAsync(
-            ["relations", "item", "add", SelectedRelation.Name, "--node", newSpec],
+            addArgs,
             includeProfile: true,
             mutatesProfile: true,
             busyLabel: N("Adding edited node..."));
@@ -3486,8 +3497,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        // The file replaces every relation and bind of the profile (engine relations import --replace): asked first.
+        if (!await ConfirmAsync(T("Replace all relations and binds?"),
+                T("The file's relations and binds replace all relations and binds of the profile; relations that are not in the file are removed. Undo brings them back."),
+                "Replace", isDanger: true))
+            return;
+
         EngineCommandResult? result = await RunEngineAsync(
-            ["relations", "import", RelationImportPath.Trim()],
+            ["relations", "import", RelationImportPath.Trim(), "--replace"],
             includeProfile: true,
             mutatesProfile: true,
             busyLabel: N("Importing relations..."));
@@ -5687,8 +5704,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        // The file replaces every bind of the profile (engine binds import --replace): asked first.
+        if (!await ConfirmAsync(T("Replace all binds?"),
+                T("The file's binds replace all binds of the profile; relations without a bind in the file lose theirs. Undo brings them back."),
+                "Replace", isDanger: true))
+            return;
+
         EngineCommandResult? result = await RunEngineAsync(
-            ["binds", "import", BindsImportPath.Trim()],
+            ["binds", "import", BindsImportPath.Trim(), "--replace"],
             includeProfile: true,
             mutatesProfile: true,
             busyLabel: N("Importing binds..."));
@@ -6088,13 +6111,18 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             .ToList();
 
         foreach (LayoutSuggestionItem item in selected)
+        {
             RememberLayoutDeviceMapping(item.Device, item.LayoutPath);
+            if (item.LayoutPath.EndsWith(".layout", StringComparison.OrdinalIgnoreCase))
+                RememberLayoutPick(item.Device ?? string.Empty, NormalizeUiPath(item.LayoutPath));
+        }
 
         RebuildLayoutDeviceOptions(BuildLayoutDeviceCandidates());
         SetLayoutDeviceSelections(deviceNames);
         UpdateLayoutMapInputFromRememberedMappings(deviceNames);
 
-        LayoutSuggestStatus = T("The cheat sheets use the picked picture for {0}{1}", selected.Count.ToString(CultureInfo.InvariantCulture), (selected.Count == 1 ? " device." : " devices."));
+        SaveUiSettings();
+        LayoutSuggestStatus = T("The cheat sheets use the picked pictures (kept for the next start): {0}", string.Join(", ", selected.Select(s => DeviceDisplayName(s.Device ?? string.Empty)).Distinct()));
     }
 
     [RelayCommand]
@@ -6587,9 +6615,14 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         LayoutEditorStatus = T("Connector source point cleared.");
     }
 
+    // Set by SaveLayoutEditorTemplateAsync: the last save went through (the PNG export checks this state, never the
+    // status text, which is in the user's language).
+    private bool layoutEditorTemplateSaveOk;
+
     [RelayCommand]
     private async Task SaveLayoutEditorTemplateAsync()
     {
+        layoutEditorTemplateSaveOk = false;
         if (!CanSaveLayoutEditorTemplate)
         {
             LayoutEditorStatus = T("Set source and output paths before saving.");
@@ -6709,6 +6742,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             {
                 LayoutEditorStatus = T("Saved template, but save payload could not be parsed.");
                 StatusText = T("Layout template saved.");
+                layoutEditorTemplateSaveOk = true;
                 return;
             }
 
@@ -6716,6 +6750,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             LayoutEditorStatus =
                 T("Saved {0} marker(s), {1} table(s), {2} connector(s) to {3}.", saveDoc.MarkerCount.ToString(CultureInfo.InvariantCulture), saveDoc.TableCount.ToString(CultureInfo.InvariantCulture), saveDoc.ConnectorCount.ToString(CultureInfo.InvariantCulture), LayoutEditorOutputPath);
             StatusText = T("Layout template saved.");
+            layoutEditorTemplateSaveOk = true;
             LayoutEditorSourcePath = LayoutEditorOutputPath;
             string contextDevice = ResolveLayoutEditorContextDevice();
             RememberLayoutDeviceMapping(contextDevice, LayoutEditorOutputPath);
@@ -6907,8 +6942,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 string previousStatus = StatusText;
                 StatusText = T("Auto-saving current layout editor changes before PNG export...");
                 await SaveLayoutEditorTemplateAsync();
-                // If save failed, SaveLayoutEditorTemplateAsync reports a non-success status. Stop export in that case.
-                if (!string.Equals(StatusText, "Layout template saved.", StringComparison.OrdinalIgnoreCase))
+                // A failed save stops the export (its status says why).
+                if (!layoutEditorTemplateSaveOk)
                 {
                     if (!string.IsNullOrWhiteSpace(previousStatus))
                         StatusText = previousStatus;
@@ -6923,22 +6958,33 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         List<string> selectedDevices = BuildEffectiveLayoutDeviceFilter();
         List<string> missingLayoutDevices = [];
+        int devicesWithLayout = 0;
         foreach (string device in selectedDevices)
         {
-            args.AddRange(["--device", device]);
             string layoutPath = await ResolveCheatSheetLayoutAsync(device);
             if (layoutPath.Length == 0)
             {
                 missingLayoutDevices.Add(device);
+                // "Skip devices without a picture" also leaves out a ticked device without one.
+                if (!LayoutSkipMissing)
+                    args.AddRange(["--device", device]);
                 continue;
             }
 
-            args.AddRange(["--layout-map", device + "=" + layoutPath]);
+            args.AddRange(["--device", device, "--layout-map", device + "=" + layoutPath]);
+            devicesWithLayout++;
         }
 
         UpdateLayoutMapInputFromRememberedMappings(selectedDevices);
 
-        if (missingLayoutDevices.Count > 0)
+        if (missingLayoutDevices.Count > 0 && LayoutSkipMissing && devicesWithLayout == 0)
+        {
+            CheatSheetStatus = T("No picture with markers yet for: {0}. Pick the device under Device pictures first (or untick it).", string.Join(", ", missingLayoutDevices.Select(DeviceDisplayName)));
+            StatusText = CheatSheetStatus;
+            return;
+        }
+
+        if (missingLayoutDevices.Count > 0 && !LayoutSkipMissing)
         {
             string deviceList = string.Join(", ", missingLayoutDevices);
             StatusText = T("Layout export blocked: missing layout template for device(s): {0}", deviceList);
@@ -7082,9 +7128,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         args.AddRange(["--clean-all-aircraft", ExportDcsCleanAllAircraft ? "true" : "false"]);
         // The devices the import leaves out (ignored ones, the vJoy device JoyPro tunnels into) are never cleared by
         // nuke or "my profile wins".
-        foreach (string ignored in BuildEffectiveImportIgnoredDeviceFilter())
-            args.AddRange(["--ignore-device", ignored]);
-        AddVJoyTunnelArgs(args);
+        AddExportKeptDeviceArgs(args);
         if (planes != null && planes.Count > 0)
             args.AddRange(["--planes", string.Join("|", planes)]);
         return await RunEngineAsync(args, includeProfile: true, mutatesProfile: false,
@@ -7101,6 +7145,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.AddRange(["--path", ExportIl2Path.Trim()]);
         args.AddRange(["--mode", EffectiveExportMode]);
         args.AddRange(["--nuke-untouched-devices", ExportNukeUntouchedDevices ? "true" : "false"]);
+        AddExportKeptDeviceArgs(args);
         return await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Exporting IL-2..."));
     }
 
@@ -7166,6 +7211,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         args.AddRange(["--prefer-local-order", ExportStarCitizenPreferLocalOrder ? "true" : "false"]);
         args.AddRange(["--include-keyboard", ImportStarCitizenIncludeKeyboard ? "true" : "false"]);
         args.AddRange(["--nuke-untouched-devices", ExportNukeUntouchedDevices ? "true" : "false"]);
+        AddExportKeptDeviceArgs(args);
         return await RunEngineAsync(args, includeProfile: true, mutatesProfile: false, busyLabel: N("Exporting Star Citizen..."));
     }
 
@@ -7589,7 +7635,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
     private async Task DcsDefaultsRestoreAsync()
     {
         if (!await ConfirmAsync(T("Put back the device files an older JoyPro moved?"),
-                "The default files an older JoyPro moved into Saved Games\\DCS\\BACKUP_JOYSTICK_DEFAULTS go back into DCS. Close DCS first.", T("Put back")))
+                T("The default files an older JoyPro moved into Saved Games\\DCS\\BACKUP_JOYSTICK_DEFAULTS go back into DCS. Close DCS first."), T("Put back")))
             return;
         List<string> args = ["dcs", "defaults", "restore"];
         if (!string.IsNullOrWhiteSpace(DcsSavedGamesPath))
@@ -8078,6 +8124,20 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         Func<bool>? stillWanted = null)
     {
         List<string> commandList = commandArgs as List<string> ?? commandArgs.ToList();
+        // Virtual mode writes into the vJoy device JoyPro tunnels into (Settings): every engine vjoy command gets it, so
+        // the table, the function outputs, the forwarder and the Gremlin import use that device (docs/virtual-joystick.md).
+        if (commandList.Count > 0 && commandList[0] == "vjoy" && VJoyTunnelDevice is >= 1 and <= 16 && !commandList.Contains("--vjoy-tunnel"))
+        {
+            commandList = [.. commandList];
+            AddVJoyTunnelArgs(commandList);
+        }
+        // Settings > Games "read War Thunder's archives" off: every War Thunder command that may build or refresh the
+        // command list (refresh-db, and scan / import / export, which build it on a fresh install) says so.
+        if (NeedsNoGameArchivesFlag(commandList, ReadWarThunderArchives))
+        {
+            commandList = [.. commandList];
+            commandList.Add("--no-game-archives");
+        }
         commandArgs = commandList;
         // Edits the profile does not have yet go in before an export or import reads it (docs/profile-history.md).
         if (!background && IsExportOrImportCommand(commandList) && NeedsAutosaveFlush)
@@ -12262,6 +12322,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             ApplyAutoPlacement(state.AutoPlacement);
             ApplySettingsLayout(state.SettingsSectionOrder, state.SettingsSectionsOpen);
             ApplyNavPageLayout(state.NavPageOrder, state.HiddenNavPages);
+            ApplyLayoutUiSettings(state.Layout);
+            if (state.DcsStripSkipUiLayer is bool keepUiLayer)
+                SetDcsStripSkipUiLayerQuietly(keepUiLayer);
             ShowStatisticsPage = state.ShowStatisticsPage;
             UseUsageStyle = state.UsageStyle ?? true;
             SupportIncludeProfile = state.SupportIncludeProfile ?? true;
@@ -12340,6 +12403,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 AutoPlacement = AutoPlacementForSave(),
                 NavPageOrder = NavPageOrderForSave(),
                 HiddenNavPages = HiddenNavPagesForSave(),
+                Layout = LayoutUiSettingsForSave(),
+                DcsStripSkipUiLayer = DcsStripSkipUiLayer,
                 ShowStatisticsPage = ShowStatisticsPage,
                 UsageStyle = UseUsageStyle,
                 SupportIncludeProfile = SupportIncludeProfile,
@@ -12511,9 +12576,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         public bool CloseToTray { get; set; }
 
-        // War Thunder's command list is read from the game's packed archives (on by default since the user approved it
-        // on 2026-10-12; a new key, so the old opt-in "AllowWarThunderArchives" = false of earlier builds is not taken
-        // as the user turning it off).
+        // War Thunder's command list is read from the game's packed archives (on by default since 2026-10-12; a new key,
+        // so the old opt-in "AllowWarThunderArchives" = false of earlier builds is not taken as the user turning it off).
         public bool ReadWarThunderArchives { get; set; } = true;
 
         // Binds page: pressing a button selects its relation (on by default).
@@ -12621,6 +12685,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // Settings > Report a problem: the support file holds the open profile, its history and the games' bind files
         // (null: on).
         public bool? SupportIncludeProfile { get; set; }
+
+        // The Layout page's switches, the picks of Apply Selected and the cheat-sheet options (MainWindowViewModel.LayoutUiSettings.cs).
+        public LayoutUiSettings? Layout { get; set; }
+
+        // Settings > DCS defaults "Keep the UI layer's default binds": the choice while stripping is off (while it is on,
+        // the engine's state has it).
+        public bool? DcsStripSkipUiLayer { get; set; }
     }
 
     private sealed class LayoutTemplateInspectDocument

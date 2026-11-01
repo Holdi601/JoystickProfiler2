@@ -39,7 +39,17 @@ WARDOGS. `--planes` also takes a game id (`StarCitizen`, `X4`, `EliteDangerous`,
   `--replace` removes those first. Your own relations are never removed.
 - **In the GUI** the preview is a list (new and extended relations with their actions and aircraft, what was kept) and
   `Apply` asks first with the counts.
-- **Disabled entries**: a command you switched off for an aircraft stays off ("Kept Disabled By You").
+- **Disabled entries**: a command switched off for an aircraft in a relation stays off in that relation ("Kept
+  Disabled By You"), and so does a suggestion you dismissed there (`DismissedSuggestions`). Since 2.6.0 that holds
+  only for that relation: JoyPro itself switches an aircraft off in one relation when two relations carry the same
+  command, so the aircraft may still be placed in the relation of its function.
+- **Shared buttons** (2.6.0): relations on the same device input with the same modifiers ("HOTAS slots") never end up
+  with the same aircraft on in two of them, or one press would run both (the check's "one input does two things"). The
+  relation the aircraft already has there stays; the new placement is left out and listed under "Kept"
+  (`KeptForButtonConflicts`, "Left Out, Button Already Used For The Aircraft"). A conflict you kept with "keep both"
+  is allowed.
+- **Your action first** (2.6.0): a DCS aircraft that already has an action on in one of your relations gets no second
+  one there (`KeptYourAction`), also when the catalog calls your action something else (TDC depress on Radar Lock).
 - **Unknown commands**: commands or aircraft the local DCS database does not know yet are skipped. Refresh the DCS
   database to include them.
 - **Input layers**: the catalog also covers the layers that are not aircraft: `Default`, the `NS430` GPS,
@@ -53,7 +63,9 @@ WARDOGS. `--planes` also takes a game id (`StarCitizen`, `X4`, `EliteDangerous`,
 - `aircraft.json`: wing type, era and variants.
 - `<Game>.tsv` (`DCS.tsv`, `StarCitizen.tsv`, `FalconBMS.tsv` ...): aircraft (or game), function, command, status,
   HOTAS position, frequency and control.
-- `<Game>.rejected.tsv`: old profile entries the manuals or game docs proved wrong.
+- `<Game>.rejected.tsv`: old profile entries the manuals or game docs proved wrong. They are for guesses: a catalog
+  substitute or a function map row on that list is not used. What you put into your own relations is your style and
+  counts even when the list rejects it (2.6.0).
 
 Every aircraft was checked against its own manual. The catalog is shipped with updates, so new aircraft arrive
 through the updater; no AI is involved at runtime.
@@ -72,7 +84,8 @@ If an aircraft lacks a function, Auto Group can fill the slot with a substitute 
 `--no-substitutes`). It picks the substitute in this order:
 
 1. **Your habit.** It looks at what you put on that function in other aircraft. It needs at least two separate
-   decisions; entries the manuals rejected and kneeboard placeholders do not count. The preview lists these under
+   decisions; kneeboard placeholders do not count (your deliberate substitutes count even where `<Game>.rejected.tsv`
+   rejects the command for the function: since 2.6.0 the rejected lists only keep catalog guesses out). The preview lists these under
    "Learned From Your Profile".
 2. **The catalog's substitute.** This is a function at the same physical position.
 

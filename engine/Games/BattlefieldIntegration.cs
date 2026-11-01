@@ -79,8 +79,13 @@ namespace JoyPro.Engine.Games
 
         public List<string> DiscoverConfigPaths(List<string> warnings)
         {
+            return ProfilesIn(SettingsRoot(), warnings);
+        }
+
+        // The settings profiles with binds in a folder and below, the multiplayer one first, then the newest.
+        private List<string> ProfilesIn(string root, List<string> warnings)
+        {
             List<string> found = new List<string>();
-            string root = SettingsRoot();
             if (!Directory.Exists(root))
                 return found;
             try
@@ -121,10 +126,12 @@ namespace JoyPro.Engine.Games
         public GameCatalog RefreshCatalog(string sourcePath, GameCatalog current, GameIoResult result)
         {
             string path = sourcePath;
-            if (string.IsNullOrWhiteSpace(path) || Directory.Exists(path))
+            if (string.IsNullOrWhiteSpace(path))
+                path = DiscoverConfigPaths(result.Warnings).FirstOrDefault();
+            else if (Directory.Exists(path))
             {
-                List<string> found = DiscoverConfigPaths(result.Warnings);
-                path = found.FirstOrDefault();
+                // --path <folder>: the profile with binds in that folder (or below it), the multiplayer one first.
+                path = ProfilesIn(path, result.Warnings).FirstOrDefault();
             }
             if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
             {
@@ -228,7 +235,10 @@ namespace JoyPro.Engine.Games
             bool virtualMode = EngineVJoy.LoadSettings().IsVirtual(GameId);
             if (virtualMode)
             {
-                GameDevice vjoy = connected.FirstOrDefault(d => EngineVJoy.IsVJoyName(d.JoyProName));
+                // The vJoy device virtual mode writes (the tunnel device), not one another program feeds.
+                string own = EngineVJoy.OwnVJoyDeviceName();
+                GameDevice vjoy = connected.FirstOrDefault(d => own.Length > 0 && string.Equals(d.JoyProName, own, StringComparison.OrdinalIgnoreCase))
+                                  ?? connected.FirstOrDefault(d => EngineVJoy.IsVJoyName(d.JoyProName));
                 if (vjoy != null)
                     return vjoy.JoyProName;
                 warnings.Add("Virtual mode: no vJoy device is connected; the joystick binds are read for the first game controller.");
@@ -425,6 +435,8 @@ namespace JoyPro.Engine.Games
                 // joystick when it gets binds, the keyboard when keyboard keys are exported (keys of button actions that
                 // JoyPro can read).
                 bool keys = keyboard.Count > 0 && request.IncludeKeyboard;
+                // (never the slots of a device JoyPro never clears: the vJoy device it tunnels into, an ignored device)
+                bool joystickReleased = joystick.Count > 0 && !request.Devices.IsKept(joystick[0].Device);
                 foreach (GameAction action in request.Catalog.Actions)
                 {
                     string category, concept;
@@ -432,7 +444,7 @@ namespace JoyPro.Engine.Games
                         continue;
                     foreach (BattlefieldSlot slot in profile.Slots(category, concept))
                     {
-                        if (slot.Type == TypeJoystick && joystick.Count > 0)
+                        if (slot.Type == TypeJoystick && joystickReleased)
                         {
                             profile.Set(slot, "axis", UnboundAxis);
                             profile.Set(slot, "button", UnboundButton);
@@ -447,9 +459,9 @@ namespace JoyPro.Engine.Games
             }
 
             // "Only add" skips a bind on an input another flight action of the same vehicle uses (no multi-bind); the other
-            // modes free that slot (a conflict). Merge-overwrite and clean also free the other slots of an action the
-            // profile binds (keyboard ones only with --include-keyboard), so a moved action fully moves. Soldier and
-            // ground vehicle binds never count.
+            // modes free that slot (a conflict). Merge-overwrite also frees the other slots of an action the profile binds
+            // (keyboard ones only with --include-keyboard), so a moved action fully moves; clean frees only the slots of
+            // the devices it writes (above). Soldier and ground vehicle binds never count.
             Dictionary<string, string> gameInputs = GameInputs(profile, request.Catalog, map);
             Func<GameInputBinding, string> otherUser = b =>
             {
@@ -704,9 +716,10 @@ namespace JoyPro.Engine.Games
         }
 
         // Merge, merge-overwrite, clean: a flight action's slot on an input the profile gives another action is freed
-        // (a conflict). Merge-overwrite and clean: an action the profile binds loses its other slots on the joystick
-        // (codes JoyPro's table reads, with a game controller connected) and, with --include-keyboard, its keyboard keys (button actions:
-        // keys on an axis are not read by the import, so they stay).
+        // (a conflict). Merge-overwrite: an action the profile binds loses its other slots on the joystick (codes
+        // JoyPro's table reads, with a game controller connected) and, with --include-keyboard, its keyboard keys (button
+        // actions: keys on an axis are not read by the import, so they stay). Clean leaves a device it does not write
+        // alone, as in every game.
         private void FreeConflicts(BattlefieldProfile profile, GameExportRequest request, List<GameInputBinding> bindings, BattlefieldJoystickMap map)
         {
             Dictionary<string, string> wanted = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -726,8 +739,9 @@ namespace JoyPro.Engine.Games
                         wanted[key] = action.Id;
                 }
             }
-            bool moves = request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean;
-            bool joystickOwned = moves && JoystickDevice(request.Devices, new List<string>()).Length > 0;
+            bool moves = request.Mode == GameExportMode.MergeOverwrite;
+            string joystickOwner = moves ? JoystickDevice(request.Devices, new List<string>()) : string.Empty;
+            bool joystickOwned = joystickOwner.Length > 0 && !request.Devices.IsKept(joystickOwner);
             foreach (GameAction action in request.Catalog.Actions)
             {
                 string category, concept;

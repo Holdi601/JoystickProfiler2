@@ -192,6 +192,8 @@ public sealed partial class MainWindowViewModel
             RebuildVisibleRegistryGames();
             RebuildVisibleDbGames();
             RebuildVisibleFfbGames();
+            RebuildVisibleFfbTelemetryGames();
+            RebuildVisibleTelemetryRecordingGames();
             // The Relations and Binds pages' game chips, the catalog and the action search leave hidden games out.
             if (listFiltersInitialized)
             {
@@ -239,9 +241,7 @@ public sealed partial class MainWindowViewModel
                 (dcs.Overridden || string.IsNullOrWhiteSpace(DcsInstallPath) || !Directory.Exists(DcsInstallPath)))
                 DcsInstallPath = dcs.InstallPath;
             string config = dcs.FirstConfigPath;
-            if (config.Length > 0 && Directory.Exists(config) && !string.Equals(config, DcsSavedGamesPath, StringComparison.OrdinalIgnoreCase) &&
-                (!IsHandPath(nameof(DcsSavedGamesPath)) || !Directory.Exists(DcsSavedGamesPath)) &&
-                (dcs.ConfigOverridden || !Directory.Exists(DcsSavedGamesPath) || string.Equals(DcsSavedGamesPath, lastAdoptedDcsConfig, StringComparison.OrdinalIgnoreCase)))
+            if (AdoptsDcsConfig(config, DcsSavedGamesPath, IsHandPath(nameof(DcsSavedGamesPath)), dcs.ConfigOverridden, lastAdoptedDcsConfig, dcs.Installed ? dcs.InstallPath : string.Empty))
             {
                 string previous = DcsSavedGamesPath;
                 DcsSavedGamesPath = config;
@@ -268,6 +268,62 @@ public sealed partial class MainWindowViewModel
                     ExportStarCitizenPath = config;
                 lastAdoptedStarCitizenConfig = config;
             }
+        }
+    }
+
+    // Whether the GUI's DCS folder (Saved Games) becomes the engine's first DCS config folder: the user linked a config
+    // location, the GUI's folder does not exist, it was taken from the engine before, or it holds no DCS binds while the
+    // engine's folder does and is the one of the installed DCS (Saved Games\DCS.openbeta for an OpenBeta install). The
+    // last one: a PC with both Saved Games\DCS (no binds) and Saved Games\DCS.openbeta (the binds of its OpenBeta
+    // install) kept Saved Games\DCS, so imports found no binds and an export would have gone where that DCS does not read
+    // (tester report on 2.5.0). A folder the user set by hand stays while it exists.
+    internal static bool AdoptsDcsConfig(string config, string current, bool currentIsHandPath, bool configOverridden, string lastAdopted, string installPath = "")
+    {
+        config = config ?? string.Empty;
+        current = current ?? string.Empty;
+        if (config.Length == 0 || !Directory.Exists(config) || string.Equals(config, current, StringComparison.OrdinalIgnoreCase))
+            return false;
+        bool currentExists = current.Length > 0 && Directory.Exists(current);
+        if (currentIsHandPath && currentExists)
+            return false;
+        if (configOverridden || !currentExists || string.Equals(current, lastAdopted, StringComparison.OrdinalIgnoreCase))
+            return true;
+        string own = DcsSavedGamesFolderName(installPath);
+        return own.Length > 0 && string.Equals(Path.GetFileName(Path.TrimEndingDirectorySeparator(config)), own, StringComparison.OrdinalIgnoreCase) &&
+               !DcsFolderHasBinds(current) && DcsFolderHasBinds(config);
+    }
+
+    // The Saved Games folder an installed DCS uses: "DCS.<variant>" with the install's dcs_variant.txt ("openbeta"),
+    // "DCS.openbeta" for an install folder named OpenBeta, else "DCS"; empty without an install folder.
+    internal static string DcsSavedGamesFolderName(string installPath)
+    {
+        string install = (installPath ?? string.Empty).Trim();
+        if (install.Length == 0 || !Directory.Exists(install))
+            return string.Empty;
+        try
+        {
+            string variantFile = Path.Combine(install, "dcs_variant.txt");
+            string variant = File.Exists(variantFile) ? File.ReadAllText(variantFile).Trim() : string.Empty;
+            if (variant.Length > 0 && variant.IndexOfAny(Path.GetInvalidFileNameChars()) < 0)
+                return "DCS." + variant;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+        }
+        return Path.GetFileName(Path.TrimEndingDirectorySeparator(install)).Contains("openbeta", StringComparison.OrdinalIgnoreCase) ? "DCS.openbeta" : "DCS";
+    }
+
+    // A DCS Saved Games folder with binds: Config\Input holds a .diff.lua (as the engine's import looks for them).
+    internal static bool DcsFolderHasBinds(string folder)
+    {
+        try
+        {
+            string input = Path.Combine(folder, "Config", "Input");
+            return Directory.Exists(input) && Directory.EnumerateFiles(input, "*.diff.lua", SearchOption.AllDirectories).Any();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
+        {
+            return false;
         }
     }
 

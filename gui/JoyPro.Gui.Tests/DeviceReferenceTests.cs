@@ -1098,29 +1098,6 @@ public sealed class DeviceReferenceTests : IDisposable
                 AvaloniaRenderThread.Wait(Done(vm.ShowAsync(model, catalog.BaseOf(model), string.Empty, "preview", generic: false)));
                 RenderCanvas(vm, Path.Combine(outDir, "schematic-" + id + ".png"), ThemeVariant.Dark, 640);
             }
-
-            // The whole control: picture, markers and legend with the binds of a profile (dark and light).
-            DeviceReferenceViewModel warthog = new() { VendorPhotosEnabled = false };
-            AvaloniaRenderThread.Wait(Done(warthog.ShowDeviceAsync(new DeviceProbe { VidPid = "044F:0402", ProductName = "HOTAS Warthog Joystick" }, "Joystick - HOTAS Warthog {00000000-0000-0000-0000-000000000001}")));
-            warthog.SetBindings(new Dictionary<string, string>
-            {
-                ["JOY_BTN1"] = "Gun Trigger, First Detent",
-                ["JOY_BTN2"] = "Weapon Release",
-                ["JOY_BTN6"] = "Gun Trigger, Second Detent",
-                ["JOY_BTN7"] = "TMS Up",
-                ["JOY_BTN9"] = "TMS Down",
-                ["JOY_BTN_POV1_U"] = "Trim Nose Down"
-            });
-            warthog.SelectedMarker = warthog.Markers.FirstOrDefault(m => m.Id == "stick.hat.tms");
-            foreach (ThemeVariant theme in new[] { ThemeVariant.Dark, ThemeVariant.Light })
-                RenderView(warthog, Path.Combine(outDir, "view-warthog-" + (theme == ThemeVariant.Dark ? "dark" : "light") + ".png"), theme, ReferenceLegendPlacement.Right);
-
-            // An unknown device with the marker assistant waiting for a press.
-            DeviceReferenceViewModel unknown = new() { VendorPhotosEnabled = false, CaptureService = new FakeCapture() };
-            AvaloniaRenderThread.Wait(Done(unknown.ShowDeviceAsync(new DeviceProbe { ProductName = "Home Cockpit Box", Buttons = 12, Hats = 1, Axes = ["JOY_X", "JOY_Y"] }, "Home Cockpit Box {11111111-0000-0000-0000-000000000001}")));
-            unknown.OpenAssistantCommand.Execute(null);
-            unknown.Assistant!.Found("JOY_BTN5");
-            RenderView(unknown, Path.Combine(outDir, "view-assistant-dark.png"), ThemeVariant.Dark, ReferenceLegendPlacement.Bottom);
         });
     }
 
@@ -1137,7 +1114,7 @@ public sealed class DeviceReferenceTests : IDisposable
         bitmap.Save(file);
     }
 
-    // The picture canvas bound like DeviceReferenceView binds it, without the zoom bar.
+    // The picture canvas bound like the Layout page binds it, without the zoom bar.
     private static DeviceMarkerCanvas PictureCanvasOf(DeviceReferenceViewModel vm) => new()
     {
         Source = vm.CanvasPhoto,
@@ -1150,29 +1127,6 @@ public sealed class DeviceReferenceTests : IDisposable
         ShowCommands = false,
         ShowChrome = false
     };
-
-    private static void RenderView(DeviceReferenceViewModel vm, string file, ThemeVariant theme, ReferenceLegendPlacement placement)
-    {
-        Size size = placement == ReferenceLegendPlacement.Right ? new Size(1180, 860) : new Size(900, 1200);
-        DeviceReferenceView view = new() { DataContext = vm, LegendPlacement = placement, Margin = new Thickness(16) };
-        ThemeVariantScope host = new()
-        {
-            Width = size.Width,
-            Height = size.Height,
-            RequestedThemeVariant = theme,
-            Child = new Border { Background = new SolidColorBrush(Color.Parse(theme == ThemeVariant.Dark ? "#0B1220" : "#EEF2F7")), Child = view }
-        };
-        Window window = new() { Content = host, Width = size.Width, Height = size.Height, RequestedThemeVariant = theme };
-        window.Measure(size);
-        window.Arrange(new Rect(size));
-        AvaloniaRenderThread.Pump();
-        host.Measure(size);
-        host.Arrange(new Rect(size));
-        using RenderTargetBitmap bitmap = new(new PixelSize((int)size.Width, (int)size.Height));
-        bitmap.Render(host);
-        bitmap.Save(file);
-        window.Content = null;
-    }
 
     // ------------------------------------------------------------------ helpers
 

@@ -35,25 +35,31 @@ public static class SerbianScript
         "VKB", "Winwing", "Logitech", "Saitek", "Honeycomb", "TrackIR", "Oodle", "Hell", "Let", "Loose", "Vietnam", "WARDOGS",
         "Sturmovik", "Battle", "Stalingrad", "Great", "Battles", "Cliffs", "Dover", "Plane", "X", "Plane", "XPlane", "Ace", "Combat",
         "Elite:", "Tray", "Spitfire", "VID", "PID", "HID", "USB", "FFB", "DirectInput", "XInput", "AI", "PNG", "PDF", "CSV", "JSON",
-        "Lua", "UAC", "IP", "CPU", "MB", "GB", "OK", "PC", "UI", "ID", "Escape", "Esc", "Ctrl", "Alt", "Shift", "Enter", "Tab"
+        "Lua", "UAC", "IP", "CPU", "MB", "GB", "OK", "PC", "UI", "ID", "Escape", "Esc", "Ctrl", "Alt", "Shift", "Enter", "Tab",
+        "Up", "Down", "Left", "Right", "Home", "Space", "Del",
+        // The games' own words in file texts and folder paths: "combos = nil", "Config > Input", Falcon BMS "User\Config"
+        "combos", "nil", "Config", "Input", "User"
     };
 
-    private static readonly Regex Token = new(@"\{[^}]*\}|https?://\S+|[A-Za-z]:\\\S*|\S+\.(?:exe|dll|json|lua|xml|ini|cfg|png|jpg|txt|log|md|vromfs\.bin|bin)\b|[\p{L}\p{N}_'’-]+|.", RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex Token = new(@"\{[^}]*\}|https?://\S+|[A-Za-z]:\\\S*|\S+\.(?:exe|dll|json|lua|xml|ini|cfg|png|jpg|txt|log|md|vromfs\.bin|bin|bak)\b|[\p{L}\p{N}_'’-]+|.", RegexOptions.Compiled | RegexOptions.Singleline);
 
     public static string ToCyrillic(string latin)
     {
         StringBuilder sb = new(latin.Length);
+        string previous = string.Empty, beforePrevious = string.Empty;
         foreach (Match m in Token.Matches(latin))
         {
             string t = m.Value;
             if (t.Length == 0)
                 continue;
-            if (!char.IsLetter(t[0]) || KeepAsLatin(t))
-            {
+            // The key of a key combination ("Ctrl+Z", "Ctrl+Shift+F") is a key name, no Serbian letter.
+            bool key = previous == "+" && beforePrevious is "Ctrl" or "Alt" or "Shift" && t.Length == 1;
+            if (key || !char.IsLetter(t[0]) || KeepAsLatin(t))
                 sb.Append(t);
-                continue;
-            }
-            sb.Append(Word(t));
+            else
+                sb.Append(Word(t));
+            beforePrevious = previous;
+            previous = t;
         }
         return sb.ToString();
     }

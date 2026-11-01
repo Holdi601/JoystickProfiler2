@@ -116,10 +116,19 @@ public sealed partial class MainWindowViewModel
     }
 
     // Settings > Games: JoyPro unpacks War Thunder's archives (gui.vromfs.bin, lang.vromfs.bin) to read the full command
-    // list. On by default (the user approved it on 2026-10-12); Gaijin's EULA restricts unpacking game files, so it can
-    // be turned off, and then JoyPro uses its own list of the War Thunder actions it knows (docs/games/war-thunder.md).
+    // list. On by default; it can be turned off, and then JoyPro uses its own list of the War Thunder actions it knows
+    // (docs/games/war-thunder.md).
     [ObservableProperty]
     private bool readWarThunderArchives = true;
+
+    // "warthunder|wt refresh-db|scan|import|export" while archive reading is off and the flag is not there yet.
+    internal static bool NeedsNoGameArchivesFlag(IReadOnlyList<string> command, bool readArchives)
+    {
+        if (readArchives || command.Count < 2 || command.Contains("--no-game-archives", StringComparer.OrdinalIgnoreCase))
+            return false;
+        bool warThunder = string.Equals(command[0], "warthunder", StringComparison.OrdinalIgnoreCase) || string.Equals(command[0], "wt", StringComparison.OrdinalIgnoreCase);
+        return warThunder && command[1].ToLowerInvariant() is "refresh-db" or "scan" or "import" or "export";
+    }
 
     partial void OnReadWarThunderArchivesChanged(bool value)
     {

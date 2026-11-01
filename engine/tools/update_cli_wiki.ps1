@@ -120,7 +120,8 @@ function Get-CommandKey {
         if ([string]::IsNullOrWhiteSpace($token)) {
             continue
         }
-        if ($token.StartsWith("<") -or $token.StartsWith("[") -or $token.StartsWith("(")) {
+        # The command's name ends at its first argument, option, alternative or quoted value.
+        if ($token.StartsWith("<") -or $token.StartsWith("[") -or $token.StartsWith("(") -or $token.StartsWith("--") -or $token -eq "|" -or $token.StartsWith('"')) {
             break
         }
         [void]$keyTokens.Add($token)
@@ -129,9 +130,33 @@ function Get-CommandKey {
     return ($keyTokens -join " ")
 }
 
+# The description the help line carries itself: the text in parentheses after two or more spaces at the end of the
+# line ("engine usage stats [--top <n>]   (everything for the Statistics page ...)"). Empty when there is none.
+function Get-InlineHelpDescription {
+    param(
+        [string]$CommandLine
+    )
+
+    $line = (To-NonNullString $CommandLine).TrimEnd()
+    $m = [regex]::Match($line, "\s{2,}\((.+)\)$")
+    if (-not $m.Success) {
+        return ""
+    }
+    $text = $m.Groups[1].Value.Trim()
+    if ($text.Length -eq 0) {
+        return ""
+    }
+    $text = $text.Substring(0, 1).ToUpperInvariant() + $text.Substring(1)
+    if (-not $text.EndsWith(".")) {
+        $text = $text + "."
+    }
+    return $text
+}
+
 function Get-CommandSummaryForDocs {
     param(
-        [string]$CommandKey
+        [string]$CommandKey,
+        [string]$CommandLine = ""
     )
 
     $key = (To-NonNullString $CommandKey).Trim().ToLowerInvariant()
@@ -146,13 +171,13 @@ function Get-CommandSummaryForDocs {
         "dcs scan" { return "Parses DCS input files and previews what would be imported, without applying changes." }
         "dcs import" { return "Parses DCS input files and applies results to the in-memory profile." }
         "dcs export" { return "Writes current profile mappings back to DCS-compatible files." }
-        "dcs defaults cut" { return "Backs up joystick defaults and removes stick-specific defaults from DCS game-folder aircraft input files." }
-        "dcs defaults restore" { return "Restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS back into DCS game-folder aircraft input files." }
+        "dcs defaults cut" { return "The older way to take DCS's device default files out of the installation (the GUI uses dcs device-luas remove): in every <install>\Mods\aircraft\<module>\Input\<input>\joystick folder every file except default.lua is moved into BACKUP_JOYSTICK_DEFAULTS, and default.lua is copied there. Refused while DCS or DCS_updater runs; --dry-run only counts." }
+        "dcs defaults restore" { return "Copies the files of BACKUP_JOYSTICK_DEFAULTS back into the DCS installation's Mods\aircraft folders. Refused while DCS or DCS_updater runs; --dry-run only counts." }
         "dcs strip-defaults" { return "Switches DCS's default joystick binds off in the DCS installation (every joystick profile lua wrapped, combos = nil, original kept as <file>.nocombo.bak), or restores the originals; status and auto (re-apply after a DCS update)." }
         "dcs device-luas" { return "Moves the device-specific default files of the DCS installation into JoyPro's backup folder so DCS uses default.lua for every device, or puts them back." }
         "dcs verify-clean" { return "Runs DCS's own input code (luae.exe) on a copy of a Saved Games input folder and lists every DCS default bind still active on the joysticks." }
-        "dcs refresh clean" { return "Automates DCS Controls -> Clear All flow and rebuilds JoyPro clean-profile baseline files." }
-        "dcs refresh id" { return "Automates DCS Controls -> Make HTML flow and refreshes DB HTML files from exported layouts." }
+        "dcs refresh clean" { return "Rebuilds JoyPro's DCS clean profiles (the default binds DCS gives every device type). By default DCS's own Lua (luae.exe) does it without starting DCS; only --headless-lua false starts DCS and clicks Controls -> Clear All." }
+        "dcs refresh id" { return "Rebuilds JoyPro's DCS command lists (DB HTML per aircraft). By default DCS's own Lua (luae.exe) writes them without starting DCS; only --headless-lua false starts DCS and clicks Controls -> Make HTML per aircraft." }
         "dcs refresh preview-clicks" { return "Shows where DCS XML/OCR click anchors resolve on your current screen and writes an annotated preview image." }
         "dcs ffb list" { return "Lists DCS force-feedback inversion/swap settings per device from your profile/device context." }
         "dcs ffb set" { return "Creates or updates DCS force-feedback settings (invert X/Y, swap axis) for one device." }
@@ -160,9 +185,9 @@ function Get-CommandSummaryForDocs {
         "il2 scan" { return "Parses IL2 input files and previews import results." }
         "il2 import" { return "Parses IL2 input files and applies results to the in-memory profile." }
         "il2 export" { return "Exports current profile mappings to IL2-compatible files." }
-        "db summary" { return "Shows DB health/coverage summary for clean profile data." }
+        "db summary" { return "Compares each DCS aircraft command list (DB\DCS\*.html) with its clean profile (CleanProfile; with the keyboard check, --keyboard / --no-keyboard, also KeyboardCleanProfile) and counts the matches, alias matches and missing ones; an optional filter word limits it to aircraft whose name or file contains it." }
         "db list" { return "Lists DB entries, optionally filtered." }
-        "db check" { return "Validates DB completeness and reports missing required data." }
+        "db check" { return "The same comparison as db summary plus the list of DCS aircraft without a clean profile; fails (exit 1) when one is missing (with --strict-names also on alias matches). An optional filter word limits it." }
         "db games" { return "Lists available game names from DB catalog." }
         "db planes" { return "Lists plane/module names from DB catalog." }
         "db paths" { return "Shows the program folder (JoyPro's own data), the game-data folder <data>\GameData (lists built from your games) and, per game folder, where it is read from (game-data or program) and its recorded game build (docs/installs.md, Game data)." }
@@ -181,7 +206,7 @@ function Get-CommandSummaryForDocs {
         "relations group add" { return "Adds group tags to a relation." }
         "relations group remove" { return "Removes group tags from a relation." }
         "relations group rename" { return "Renames a group across all relations that currently use it." }
-        "relations item add" { return "Adds node targets to an existing relation." }
+        "relations item add" { return "Adds actions (node targets) to an existing relation. An action its game's list does not have, or an axis in a button relation (or the other way round), is refused unless --force." }
         "relations item remove" { return "Removes node targets from an existing relation." }
         "relations item enable" { return "Enables selected node targets on a relation." }
         "relations item disable" { return "Disables selected node targets on a relation." }
@@ -193,8 +218,8 @@ function Get-CommandSummaryForDocs {
         "relations mass add-postfix" { return "Adds a postfix to many relation names at once." }
         "relations mass remove-part" { return "Removes a substring from many relation names at once." }
         "relations mass export" { return "Exports selected relations in legacy .rl or JSON format." }
-        "relations export" { return "Exports relations to JSON." }
-        "relations import" { return "Imports relations from JSON." }
+        "relations export" { return "Writes every relation with its bind to a JSON file (a missing folder is created); a filter word writes only the matching relations. With --text the file is the readable view, which relations import cannot read." }
+        "relations import" { return "Reads a relations JSON file (from relations export): its relations and binds replace all of the profile's. A file that lacks some of the profile's relations (a filtered export, relations mass export) is refused unless --replace, which removes them; profile history undo brings them back. A file that is not a relations document ends with a clear error." }
         "relations edit" { return "Opens relations JSON in an external editor for round-trip editing." }
         "binds list" { return "Lists bind entries (hardware mapping layer)." }
         "binds show" { return "Shows one bind in detail." }
@@ -205,7 +230,7 @@ function Get-CommandSummaryForDocs {
         "binds modifier remove" { return "Removes one or more modifiers (or all) from a bind." }
         "binds modifier rename" { return "Renames a modifier across all binds, or only one selected bind." }
         "binds unbind" { return "Removes bind links by input token (DCS or IL2 format)." }
-        "binds tuning models" { return "Lists the axis response models (DCS, IL-2 Korea, generic) and their parameters." }
+        "binds tuning models" { return "Lists the axis response models and their parameters: DCS, IL-2 Great Battles, IL-2 Korea, the per-game models (Arma 2 / 3 / Reforger, Elite, BMS, FSX, IL-2 1946, Cliffs of Dover, MSFS, Project Wingman, Star Citizen, VTOL VR, WARDOGS, War Thunder, X-Plane) and the generic one." }
         "ffb models" { return "Lists the games whose force feedback settings JoyPro manages and their settings (DCS ffDiffs per device and aircraft, IL-2 startup.cfg game-wide)." }
         "ffb show" { return "Lists the stored force feedback settings; with --device and --game, what that device gets in the game (and aircraft)." }
         "ffb set" { return "Sets force feedback settings of a device (or * for game-wide ones) for a game or one aircraft; written on the next export of that game." }
@@ -213,7 +238,7 @@ function Get-CommandSummaryForDocs {
         "ffb telemetry status" { return "JoyPro's own telemetry force feedback (JoyPro.Ffb): the settings, per game whether its telemetry is set up and the game runs, the JoyPro.Ffb process and its last status line." }
         "ffb telemetry effects" { return "Lists the effect names of the built-in force feedback graph (buffet, gforce, gear, flaps, speedbrake, runway, guns, hits, shake, spring) that the per-game switches refer to." }
         "ffb telemetry config show" { return "Shows the telemetry force feedback settings file (<data>\Ffb\Telemetry\telemetry-ffb.json) with every default filled in." }
-        "ffb telemetry config set" { return "Sets telemetry force feedback settings: global (enabled, device, strength, max-force = the hard force cap, invert-x/y, tick-rate, timeout), per game (enabled, port, graph, strength, url, poll-hz), per aircraft (graph, strength) or per effect (enabled, strength)." }
+        "ffb telemetry config set" { return "Sets telemetry force feedback settings: global (enabled, device, device-name, strength, max-force = the hard force cap, invert-x/y, tick-rate, timeout, centring-spring, centring-stiffness), per device (--device: invert-x, invert-y), per game (enabled, port, graph, strength, url, poll-hz), per aircraft (graph, strength) or per effect (enabled, strength)." }
         "ffb telemetry config clear" { return "Resets a scope of the telemetry force feedback settings to the defaults (a game, an aircraft, an effect, or everything)." }
         "ffb telemetry setup dcs|il2|il2korea|warthunder" { return "Sets a game up to send telemetry to JoyPro: DCS gets Saved Games\DCS*\Scripts\Hooks\JoyProFfb.lua (Export.lua is not touched), IL-2 one addrN line in [KEY = telemetrydevice] of data\startup.cfg; War Thunder needs nothing. Backed up; --remove undoes it; --dry-run lists the changes." }
         "binds tuning show" { return "Shows the axis tuning of a bind per scope (base, game, plane, family) and, with --game, what that game (and plane) uses." }
@@ -226,8 +251,8 @@ function Get-CommandSummaryForDocs {
         "binds detent uncalibrate" { return "Removes the detent calibration of the bound device axis." }
         "binds detent gates" { return "Lists the shipped throttle gate data (DB\Detents\throttle-gates.json): per aircraft where its afterburner and idle cut-off are on the game's throttle axis, with source and confidence." }
         "binds detent merge" { return "Merges per-aircraft throttle relations of one device axis into one relation in detent mode: the device's detent and each aircraft's afterburner start are read from the old curves. Without --apply only the plan; profile history undo takes a merge back." }
-        "binds export" { return "Exports binds to JSON." }
-        "binds import" { return "Imports binds from JSON." }
+        "binds export" { return "Writes every bind to a JSON file (a missing folder is created); a filter word writes only the matching binds. With --text the file is the readable view, which binds import cannot read." }
+        "binds import" { return "Reads a binds JSON file (from binds export): its binds replace all binds of the profile. A file without the binds of some relations (a filtered export) is refused unless --replace, which unbinds them; profile history undo brings them back. A file that is not a binds document ends with a clear error." }
         "binds edit" { return "Opens binds JSON in an external editor for round-trip editing." }
         "sync status" { return "Per game the config files (or registry values) JoyPro manages, their fingerprint and whether the game changed them since JoyPro's last export, accept or apply (docs/sync-watcher.md)." }
         "sync accept" { return "Marks the game's current config as known without importing anything." }
@@ -242,23 +267,112 @@ function Get-CommandSummaryForDocs {
         "vjoy settings" { return "Which vJoy devices JoyPro may use (--first-device/--last-device), the GUI's auto start, and whether HidHide hides the physical devices." }
         "vjoy exe" { return "Lists (and adds/removes) the game executables HidHide blocks in virtual mode: found in the game's installation, plus your own." }
         "vjoy forwarder-config" { return "Writes the mapping table for JoyPro.VJoy.exe, the process that forwards the physical inputs to vJoy." }
-        "vjoy configure-vjoy" { return "Runs vJoyConfig (one administrator prompt) for the vJoy devices that lack axes, buttons or hats for the table; never makes a device smaller." }
+        "vjoy configure-vjoy" { return "Runs vJoyConfig (one administrator prompt) for the vJoy devices that lack axes, buttons or hats for the table, or with --max sets vJoy's maximum. A device keeps what it has, except axes a virtual-mode game must not see (e.g. Battlefield's Rx/Ry), which are left out unless the table uses them." }
         "vjoy apply-hidhide" { return "Hides the mapped physical devices from the virtual-mode games only (HidHide block list; an existing allow list of the user is kept), never hides vJoy, parks dormant entries. One administrator prompt; the journal is written first." }
         "vjoy restore-hidhide" { return "Undoes exactly JoyPro's HidHide changes and gives HidHide its previous state back (one administrator prompt)." }
         "vjoy recover" { return "Restores a HidHide session whose owner (the GUI) is gone, e.g. after a crash; --force also while the owner runs." }
+        "profile merge" { return "Merges two or more .pr0file files from left to right into the loaded profile: relations only one file has are added; for a relation of the same name that differs, --mode decides (right = the later file wins, the default; left = the first file keeps it; ask = the console asks per conflict). Device aliases and pictures, aircraft aliases, modifier renames and the force feedback settings follow the same rule. The source files are only read; --save writes the result." }
+        "db refresh-starcitizen" { return "Builds JoyPro's Star Citizen command list (DB\StarCitizen) from the game's action maps (a given source, the named installation, else every detected installation and, with --include-user-profiles, the players' actionmaps.xml); writes it only at the end, a dry run writes nothing." }
+        "layout template-inspect" { return "Reads a .layout file or picture and lists its joystick name, font, colour, preview picture and marker positions (sorted top to bottom), at most --max-markers of them (default 2000)." }
+        "relations function" { return "The function a relation stands for (set, named, covered, mixed or unknown) and how sure JoyPro is; --set picks a catalog function, --none says it has none, --auto goes back to automatic. With --list: the catalog functions to pick from (id and name), filtered by --axis / --button and --query." }
+        "relations auto-group" { return "Groups the same function of all DCS aircraft and the other games into relations (function catalog DB/Functions plus the function map). Existing relations of the same name get the missing aircraft, commands already used in another relation stay there; --replace first removes the relations tagged AutoGroup (an earlier Auto Group) and their binds, your other relations stay." }
+        "relations browse" { return "What exists: every game with its aircraft; with --game (DCS: and --plane) every action of the game's list by its categories, with the relations that use each." }
+        "relations assistant" { return "The JoyPro assistant: creates, fills, renames and trims relations from a sentence and applies it at once; with the local AI model through checked tools, without it simple commands." }
+        "relations plan ask" { return "Manage / Edit with AI: turns a request into a plan of relation steps (create, delete, rename, add, remove, aircraft, groups, tuning, fill, check), each checked against the profile and the catalog. Offline rules first, the local model when they do not cover the request (--llm). A question gets JoyPro's answer and no steps. Nothing changes." }
+        "relations plan apply" { return "Runs a plan's steps (from relations plan ask, as a file or JSON text), or only the numbered ones with --only, in one history step; --dry-run reports without changing the profile." }
+        "relations ai-matrix" { return "Test of every AI path of the Relations page (assistant, Manage / Edit with AI, fill, by description, chat) with typical requests for every game, on the loaded profile in memory; each answer is judged (actions of the named game only, readable, an answer at all). Nothing is saved." }
+        "relations phrase-check" { return "Offline test of the phrases in a JSON file (names, synonyms, slang, sentences, German): does each one find its function on every entry point (search, catalog, assistant, plan, describe)? Nothing changes; exit 1 when the run has errors." }
+        "llm enable" { return "Switches the local AI model on (optionally choosing a downloaded model, or local = your own llama.cpp and GGUF) or off (llm disable, which takes no model and keeps the chosen one). It is used by relations from-text, the assistant, relations chat, relations duplicates --instruction, arrange ask and relations plan." }
+        "llm download" { return "Downloads a model (positional or --model; default: the chosen model, else the recommended one) and llama.cpp's server, checks their SHA-256 and switches the model on; without --accept-license only the size and licenses are shown." }
+        "setup plan" { return "Setup wizard: plans relations and binds for the important functions of the chosen games' aircraft on your devices (priorities, modifier budget, realism, phase layers); deterministic for a --seed. Writes nothing to the profile; --out-plan saves the plan for setup check, apply and render." }
+        "setup render" { return "Draws a callout sheet per device of a saved plan into --out-dir; with --aircraft only the binds that cover that aircraft, labelled with its function names. The --drawing-* options paint JoyPro's drawings of the devices (default: the GUI's settings)." }
+        "setup check" { return "Checks a saved plan against the rules every plan keeps (conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers); exit code 1 when a rule fails." }
+        "cockpits" { return "The cockpit database (DB/Cockpits): stick and throttle of real and fictional aircraft per variant with their functions; list, search, get, check, render (sheets or the Cockpits page's manual pages), compare with the profile, photos, coverage, drawings, the cockpit guide and the pictures built from your installed games." }
+        "devices kb" { return "The device catalog Auto Assign uses: list (devices whose id, name or maker contains every word of the query), show <id> (its axes and controls), identify (how the connected devices were recognised, grip choices)." }
+        "devices replace" { return "Moves the binds and modifiers of one device to another, input by input: same = the same input ids, layout = by the part on the device (device catalog), auto (default) = same for the same product, else layout. --merge decides where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins. --old/--from and --new/--to name the devices instead of the positions; --dry-run previews." }
+        "devices alias list" { return "Names of your own for devices (display only; exports use the real device): list them, set one, or clear one." }
+        "devices auto-remap" { return "A profile device that is not connected gets the connected device of the same product with a new GUID (alias: remap); --dry-run previews." }
+        "devices reference" { return "Device reference pictures (docs/device-reference.md): list and identify catalog models, show JoyPro's schematic, check and list photo references, add one (photo-add), check the curated marker positions (layout-check, exit code 1 on a problem), JoyPro's own drawings (drawings), whether every input has a position (completeness), a game's grip rendered for a drawing (mesh-render) and, experimental, where the controls of a device photo probably are (detect)." }
+        "export-marks dismiss" { return "'Keep as is' for the marks of an 'Only add' export: the Check shows no card for them. --game takes the game id or an alias (il2, wt); --aircraft limits it to that aircraft's marks. When no open mark matches, the output says so." }
+        "db fingerprint" { return "Prints the fingerprint of the game lists JoyPro reads (DB): a load of a profile compares it to decide whether the DB correction pass must run." }
+        "version" { return "Prints the engine's version." }
+        "backups list" { return "The backup sets every export makes of the game files it changes (newest 30 per game): list them, show one, or restore one (latest = the newest of --game). A restore removes files the export created and backs up the current files first, so it can be undone; --dry-run shows what it would do." }
+        "layout suggest" { return "Suggests a layout picture with markers for devices (connected or in the profile) from the layout catalog and JoyPro 1 layouts; --apply true saves the ones scoring at least --apply-min-score into the profile; --backdrop uses a picture of your own." }
+        "layout template-save" { return "Writes a .layout file from a picture or .layout: the markers, tables and connectors from JSON (files or inline); --replace-all true replaces the existing ones instead of adding." }
+        "relations suggest" { return "Proposes what a relation is still missing, each with the reason: the functions of its commands, your style, the function map, the same DCS command id in more aircraft, similar titles in any game. Also lists what you dismissed. --all lists every relation with suggestions; --all --missing per relation the free actions of games and aircraft it lacks." }
+        "relations suggest apply" { return "Carries out decisions on a relation's suggestions: --add adds commands, --never dismisses them (added switched off, never proposed again; --remove restores), --take moves a command another relation uses into this one, --remove / --move fix entries that look wrong." }
+        "relations search" { return "Finds actions of every game and aircraft through the function map: names, synonyms and game terms, what a query describes, a direction, typos and plain title words; grouped by game and function. --category alone lists a whole category of a game's list; --batch runs one query per line." }
+        "relations resolve" { return "Reads a query as function ids (with direction) and lists the matching actions of every game, grouped by game." }
+        "relations functions" { return "Lists the function map: ids, names, synonyms, game terms, slots and how many actions of each game are each function; --coverage per game, --dump writes every action with its functions to a file." }
+        "relations chat" { return "Changes one relation from a sentence: offline rules and the relation's suggestions give numbered candidates, the optional local model picks from them, JoyPro checks every id and prints the proposed adds and removes; --apply applies them." }
+        "relations rename" { return "Gives one relation a new name; its bind and actions stay." }
+        "relations aircraft" { return "Every action of the relation with every aircraft that has its id: on, off or not in it, each aircraft's own title and category of the id and whether it means the same as the action. --node game:id[:aircraft] shows one action (an aircraft part only names the node)." }
+        "relations aircraft set" { return "One action's aircraft selection in one step (one undo step): --on switches aircraft on (adds them), --off switches them off, --only ticks exactly these." }
+        "relations check-aircraft" { return "Actions with switched-on aircraft where the same id means something else than in the others; --apply switches those aircraft off (they stay listed)." }
+        "relations duplicates" { return "Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step)." }
+        "relations conflicts" { return "The check's errors in detail: an input bound in several relations that have an action of the same aircraft on, and a relation with two actions of one aircraft on; --keep, --keep-action, --off, --keep-both or --remove-actions fix them (one undo step each)." }
+        "relations merge-copies" { return "Merges relations an import copied ('<name>__N' with the same device, input and modifiers as '<name>') back into one: aircraft, groups and per-aircraft tuning; one undo step. --dry-run lists them only." }
+        "relations meanings" { return "Per game: ids shared by several aircraft lists and how many of them mean something else in some aircraft." }
+        "relations action-info" { return "Per game: actions with a readable name, titles with unexplained abbreviations, explanations and functions with a recommended action." }
+        "relations from-text" { return "Group by description: offline rules pick the functions and aircraft of a request, the function catalog gives the commands, each with a confidence; the optional local model may re-pick from the offline candidates. --check tests the vocabulary, --show-prompt prints the model's prompt only." }
+        "relations auto-assign" { return "Binds the relations to the best physical controls of your devices (device catalog, function positions); existing binds stay unless --overwrite; at most 2 modifier layers; one device per hand; --explain lists the best candidates of a relation; --dry-run previews." }
+        "relations pair" { return "Whether two action titles are twins, opposites or different (for the recommended-action hints)." }
+        "relations item move" { return "Moves one action of a relation to another place in its list (--to <position> from 1, --up or --down)." }
+        "relations item move-to-input" { return "Moves one action to another button: it joins the relation on that input, else a new relation; --if-taken decides when the aircraft has another action there; --dry-run previews." }
+        "llm status|recommend" { return "The hardware, the model JoyPro recommends for it (size, quantization, GPU or CPU), downloaded models and runtime; the options replace detected values (what-if)." }
+        "llm find-local" { return "Looks for a llama-server.exe and GGUF models already on this PC (read-only) and names the pair that suits the hardware." }
+        "llm use-local" { return "Uses your own llama.cpp server and GGUF model instead of a download (without paths: what find-local recommends) and switches the model on; --clear forgets them." }
+        "llm fake-server" { return "A test stub that answers like llama-server and serves files with HTTP Range (no model involved)." }
+        "setup devices" { return "Setup wizard: the connected devices with the proposed role and the rules the plan follows; --role, --grip and --add-device change them." }
+        "arrange ask" { return "Lay out with AI: turns your preferences in words into the preferences JoyPro understood and every change of binds, axis curves, force feedback and the virtual joystick, as a preview (nothing is saved)." }
+        "telemetry config show" { return "Shows the telemetry recording settings (<data>\Telemetry\telemetry-recording.json) with every default filled in." }
+        "telemetry config set" { return "Sets telemetry recording settings: enabled, folder, max-total-mb, keep-days, sample-hz, keep-raw, session-timeout; with --game the game's own enabled switch." }
+        "telemetry preview" { return "A few channels of a recorded session reduced to --points values each, for a timeline." }
+        "telemetry delete" { return "Deletes recorded sessions (alias: remove)." }
+        "telemetry recover" { return "Finishes sessions cut off by a crash (telemetry recover) or applies the retention settings now (telemetry prune); exit code 1 when a session could not be read, finished or deleted." }
+        "profile history" { return "The versions of --profile, newest first: every save is one, kept in <data>\ProfileHistory, with the undo / redo state." }
+        "profile history show" { return "What a version changed (show), or the changes between two versions or a version and the current profile (diff)." }
+        "profile history restore" { return "Writes a version back into the profile (restore), or steps back / forward (undo / redo); that is a version too, so it can be undone." }
+        "profile history keep" { return "Keeps a version for good (on) or not (off), or keeps the profile as it is now as a checkpoint; kept versions are never cleaned up." }
+        "profile history prune" { return "The clean-up: everything of 24 hours, one version per hour for 7 days, per day for 60 days, per week after; at most 200 MB per profile and, with --all, 1 GB for all profiles (the oldest versions of all profiles go first). --dry-run counts every step, the global cap included; usage shows the sizes." }
+        "usage harvest" { return "Reads what the games logged since the last time into the usage store (<data>\Usage); --full reads everything again, --dry-run reports only." }
+        "usage sources" { return "Where JoyPro reads usage per game, and the logs the watcher follows live." }
+        "usage ranking" { return "The most used games and aircraft / ships / vehicles; with --profile the profile's binds are the weak fallback." }
+        "usage stats" { return "Everything for the Statistics page; with --profile also binds per device, growth and the oldest unused bind." }
+        "usage pin|unpin|exclude|include" { return "Your choices on the ranking: pinned = the model for new aircraft of its class, excluded = never counts. The game must be known and the aircraft / ship in the ranking (or already pinned / excluded)." }
+        "usage backups" { return "Lists the usage store's daily backups (usage backups) or puts one day back (usage restore <day>, a day the list shows)." }
+        "games install set" { return "Your installation folder of a game (e.g. a portable install): it then counts as installed and detection never replaces it; clear removes it." }
+        "games install disable" { return "Games you do not have: they count as not installed and the GUI hides them; enable undoes it." }
+        "games config set" { return "Your config location of a game (e.g. Saved Games\DCS.openbeta): it comes first wherever JoyPro looks for the game's controls; clear removes it. Not for games that keep their controls in the installation." }
+        "media" { return "Official pictures for the GUI: game covers (Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon) and DCS aircraft pictures from the modules; sources lists the web source per game. Warnings show in the JSON and the --text output." }
+        "overlay map" { return "The bound buttons with modifiers and titles of a game (and aircraft or DCS unit type), for the overlay; an unknown --game is warned about. Warnings show in the JSON and the --text output." }
+        "starcitizen labels" { return "The game's own names of the controls, read from global.ini in Data.p4k; --dry-run reads and reports only." }
+        "vjoy functions types" { return "Lists the virtual function types (axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axes to hat, macros, remaps, mode switch and more)." }
+        "vjoy functions list" { return "The virtual functions per game with inputs, outputs (bind device and input), problems, limit warnings and the physical devices for inputs." }
+        "vjoy functions add" { return "Adds a virtual function to a game: inputs (devices or other functions' outputs), outputs (left empty: free vJoy or Xbox pad controls are reserved), parameters, modes; loops are refused; --dry-run previews." }
+        "vjoy functions set" { return "Changes a virtual function (same options as add, --enabled on|off; --spec replaces it); --dry-run previews." }
+        "vjoy functions remove" { return "Removes a virtual function; its outputs are free again and inputs of other functions that read it are cleared; --dry-run previews." }
+        "vjoy functions test" { return "Simulates a function with the forwarder's evaluation and lists every output change; nothing goes to vJoy, the pad or the keyboard." }
+        "vjoy modes list|add|set|remove|start" { return "The modes (layers) of a game's virtual functions: a mode inherits the functions of its parent unless it has its own on that input; start = the mode the forwarder starts in; --dry-run previews." }
+        "vjoy import-gremlin" { return "Imports a Joystick Gremlin R13/R14 profile into a game's virtual functions and modes and lists what JoyPro cannot do and what differs; --replace starts over, --dry-run previews." }
+        "vjoy limits" { return "What each game reads of one joystick (buttons, axes, hats) with confidence and source; vJoy offers 128 buttons, 8 axes and 4 hats." }
         default {
             # Registry games (engine <game> paths|catalog|scan|import|export|refresh-db) share one command family.
             if ($key -match "^\S+ (paths|catalog|scan|import|export|refresh-db)$") {
                 switch ($Matches[1]) {
-                    "paths" { return "Lists the config files of this game found on this machine." }
-                    "catalog" { return "Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv)." }
-                    "scan" { return "Reads the game's control file and shows the joystick binds it contains, without changing the profile." }
-                    "import" { return "Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list)." }
-                    "export" { return "Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first." }
-                    "refresh-db" { return "Updates this game's action catalog from the game or its files." }
+                    "paths" { return "Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini)." }
+                    "catalog" { return "Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>." }
+                    "scan" { return "Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it." }
+                    "import" { return "Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game." }
+                    "export" { return "Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game." }
+                    "refresh-db" { return (Get-InlineHelpDescription $CommandLine) }
                 }
             }
-            return "Runs this command operation."
+            $inline = Get-InlineHelpDescription $CommandLine
+            if ($inline.Length -gt 0) {
+                return $inline
+            }
+            throw ("No description for 'engine " + $key + "': add it to Get-CommandSummaryForDocs or to the help line.")
         }
     }
 }
@@ -286,6 +400,323 @@ function Get-ArgumentTokensForCommandLine {
     }
 
     return $tokens
+}
+
+# What an argument means in one command, where the shared description (Get-ArgumentDocLine) would be wrong there.
+# Returns $null when the shared description fits.
+function Get-CommandArgumentDocLine {
+    param(
+        [string]$CommandKey,
+        [string]$Token
+    )
+
+    $key = (To-NonNullString $CommandKey).Trim().ToLowerInvariant()
+    $token = (To-NonNullString $Token).Trim().ToLowerInvariant()
+
+    switch ($key) {
+        "relations import" {
+            switch ($token) {
+                "--replace" { return "Import also when the file lacks some of the profile's relations: they are removed (the file's relations replace all of the profile's). Without it such a file is refused." }
+                "<path.json>" { return "The relations file of engine relations export (JSON; a --text export cannot be read). Example: C:\JoyPro\exports\relations.json." }
+            }
+        }
+        "binds import" {
+            switch ($token) {
+                "--replace" { return "Import also when the file lacks the binds of some relations: those relations lose their bind (the file's binds replace all of the profile's). Without it such a file is refused." }
+                "<path.json>" { return "The binds file of engine binds export (JSON; a --text export cannot be read). Example: C:\JoyPro\exports\binds.json." }
+            }
+        }
+        "relations export" {
+            switch ($token) {
+                "filter" { return "Only the relations whose name contains this text are written (case-insensitive). Example: Gear." }
+                "<path.json>" { return "The file to write (an existing one is overwritten, a missing folder is created). Example: C:\JoyPro\exports\relations.json." }
+            }
+        }
+        "binds export" {
+            switch ($token) {
+                "filter" { return "Only the binds whose relation name contains this text are written (case-insensitive). Example: Throttle." }
+                "<path.json>" { return "The file to write (an existing one is overwritten, a missing folder is created). Example: C:\JoyPro\exports\binds.json." }
+            }
+        }
+        "relations item add" {
+            switch ($token) {
+                "--force" { return "Add the actions even when their game's list does not have them or they are of the other kind (axis / button) than the relation." }
+            }
+        }
+        "relations aircraft" {
+            switch ($token) {
+                "--node" { return "Only this action: game:id; an aircraft part (game:id:F-16C_50 or game:id:a|b) only names the node, the report lists every aircraft. Example: --node DCS:d3001pnilunilcdnilvdnilvpnilvunil." }
+            }
+        }
+        "export-marks dismiss" {
+            switch ($token) {
+                "--game" { return "The game of the marks: its id or an alias (IL2Game or il2, WarThunder or wt). Example: --game DCS." }
+                "--relation" { return "The relation whose marks are kept as they are. Example: --relation 'Gear Toggle'." }
+                "--aircraft" { return "Only the marks of this aircraft (default: all of the relation's marks in the game). Example: --aircraft F-16C_50." }
+            }
+        }
+        "devices replace" {
+            switch ($token) {
+                "--old" { return "The old device instead of the first position (also --from)." }
+                "--new" { return "The new device instead of the second position (also --to)." }
+                "--mode" { return "How inputs are matched: same = the same input ids, layout = by the part on the device (device catalog), auto (default) = same for the same product, else layout." }
+                "--map" { return "Your own match for one input, OLD=NEW (NEW = none leaves the input out); repeatable. Example: --map JOY_BTN3=JOY_BTN5." }
+                "--merge" { return "Where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins (the old one stays on the old device), replace = the old device's bind wins (the new device's bind there is removed)." }
+                "--grip" { return "The grip on a base (device or VID:PID = grip id), for the layout match." }
+                "--dry-run" { return "Show the plan (every input's match); the profile is not changed." }
+            }
+        }
+        "dcs defaults cut" {
+            switch ($token) {
+                "--dry-run" { return "Count the files that would be moved or copied; nothing is changed (also while DCS runs)." }
+            }
+        }
+        "dcs defaults restore" {
+            switch ($token) {
+                "--dry-run" { return "Count the files that would be copied back; nothing is changed (also while DCS runs)." }
+            }
+        }
+        "dcs strip-defaults" {
+            switch ($token) {
+                "--dry-run" { return "List the files that would be patched or restored; nothing is changed." }
+                "--status" { return "Show the state (the same as the action status)." }
+            }
+        }
+        "dcs device-luas" {
+            switch ($token) {
+                "--dry-run" { return "List the files that would be moved or put back; nothing is changed." }
+                "--remove" { return "Move the device files away (the same as the action remove)." }
+                "--status" { return "List the device files and where they are (the same as the action list)." }
+            }
+        }
+        "profile merge" {
+            switch ($token) {
+                "--mode" { return "What wins when two files have a relation of the same name that differs: right (default; also r, overwrite, keep-right) = the later file, left (also l, keep-left) = the first file, ask (also a, prompt) = the console asks per conflict (refused without an interactive console)." }
+                "--overwrite-mode" { return "Another name for --mode (left|right|ask); give only one of them." }
+                "--save" { return "Write the merged profile to this .pr0file (the source files are only read)." }
+                "--save-profile" { return "Another name for --save." }
+                "<left.pr0file>" { return "The first profile: the base everything else is merged into." }
+                "<right.pr0file>" { return "The second profile, merged into the first." }
+                "<more.pr0file>" { return "Further profiles, merged in this order." }
+            }
+        }
+        "db refresh-starcitizen" {
+            switch ($token) {
+                "--install-path" { return "The Star Citizen installation folder (e.g. C:\Program Files\Roberts Space Industries\StarCitizen); default: the one JoyPro finds." }
+                "--path" { return "Same as --install-path (used when --install-path is not given)." }
+                "--source" { return "A file or folder with the game's action map (e.g. an extracted defaultProfile.xml), read first." }
+                "--branch" { return "Read only this game branch (e.g. LIVE or PTU)." }
+                "--db-path" { return "Write the command list into this folder instead of JoyPro's game-data folder." }
+                "--include-user-profiles" { return "When no installation is named, also take the players' actionmaps.xml as sources (true/false, default true)." }
+                "--dry-run" { return "true (a bare flag is true): report what the list would hold; nothing is written (default false)." }
+                "<install-or-source-path>" { return "The installation folder, or a file with an action map (then read like --source)." }
+            }
+        }
+        "dcs refresh clean" {
+            switch ($token) {
+                "--headless-lua" { return "true (default): DCS's own Lua (luae.exe) builds the clean profiles in temporary folders, DCS is not started and Config\Input is not changed. false: DCS starts in a window and JoyPro clicks through its menus (the legacy click flow)." }
+                "--confirm" { return "Ask 'Type yes' before the run in an interactive console (true, default); false runs without asking." }
+                "--launch" { return "Click flow only (--headless-lua false): start DCS (true, default) or use a running DCS (false)." }
+                "--dry-run" { return "Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS." }
+            }
+        }
+        "dcs refresh id" {
+            switch ($token) {
+                "--headless-lua" { return "true (default): DCS's own Lua (luae.exe) writes the per-aircraft command lists, DCS is not started. false: DCS starts in a window and JoyPro clicks Make HTML per aircraft (the legacy click flow)." }
+                "--confirm" { return "Ask 'Type yes' before the run in an interactive console (true, default); false runs without asking." }
+                "--launch" { return "Click flow only (--headless-lua false): start DCS (true, default) or use a running DCS (false)." }
+                "--dry-run" { return "Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS." }
+            }
+        }
+        "relations auto-group" {
+            switch ($token) {
+                "--replace" { return "First remove the relations tagged AutoGroup (made by an earlier Auto Group) and their binds; every other relation stays." }
+                "--dry-run" { return "Show what Auto Group would create and change; the profile is not changed." }
+            }
+        }
+        "relations function" {
+            switch ($token) {
+                "--list" { return "List the catalog functions --set can pick (id and name, sorted by name) instead of showing a relation's function." }
+                "--query" { return "With --list: only functions whose name or id contains every word. Example: --query gear." }
+                "--axis" { return "With --list: only axis functions." }
+                "--button" { return "With --list: only button functions." }
+                "<relation>" { return "The relation whose function is shown or set. Example: Gear Toggle." }
+            }
+        }
+        "relations browse" {
+            switch ($token) {
+                "--axis" { return "Only axis actions." }
+                "--button" { return "Only button actions." }
+                "--game" { return "The game whose list is shown by its categories. Example: DCS." }
+                "--plane" { return "DCS: the aircraft (p1|p2) whose actions are shown. Example: F-16C_50." }
+            }
+        }
+        "relations search" {
+            switch ($token) {
+                "--axis" { return "Only axis actions." }
+                "--button" { return "Only button actions." }
+            }
+        }
+        "relations resolve" {
+            switch ($token) {
+                "--axis" { return "Only axis actions." }
+                "--button" { return "Only button actions." }
+            }
+        }
+        "relations assistant" {
+            switch ($token) {
+                "--relation" { return "The relation the message is about (focus): the assistant works on it when the message names none. Example: --relation 'Throttle ALL'." }
+            }
+        }
+        "relations chat" {
+            switch ($token) {
+                "--relation" { return "The relation to change (instead of the positional name)." }
+            }
+        }
+        "relations suggest" {
+            switch ($token) {
+                "--relation" { return "The relation to get suggestions for (instead of the positional name)." }
+            }
+        }
+        "relations plan ask" {
+            switch ($token) {
+                "--relation" { return "Plan only for this relation (Edit with AI on one relation)." }
+                "--llm" { return "auto (default): offline rules, the local model when they do not cover the request; on: always ask the model; off: offline rules only." }
+            }
+        }
+        "relations plan apply" {
+            switch ($token) {
+                "--relation" { return "The relation the plan was made for (Edit with AI); a step that would change another relation gets an error." }
+                "--file" { return "The plan as a JSON file (from relations plan ask); else the JSON is given as text." }
+                "--only" { return "Run only these steps, numbered from 0. Example: --only 0,2." }
+                "--dry-run" { return "Report what the steps would do; the profile is not changed." }
+            }
+        }
+        "relations ai-matrix" {
+            switch ($token) {
+                "--games" { return "Only these games (g1|g2); default: every game." }
+                "--paths" { return "Only these AI paths (p1|p2); default: all." }
+                "--examples" { return "Show each answer cut to N characters (0 = no answers)." }
+            }
+        }
+        "relations phrase-check" {
+            switch ($token) {
+                "--file" { return "The phrase file (JSON), e.g. engine\tests\fixtures\phrases\phrases.json." }
+                "--entries" { return "Only these entry points: search, catalog, assistant, plan, describe." }
+                "--functions" { return "Only these function ids (id1|id2)." }
+                "--kinds" { return "Only these phrase kinds: phrases, descriptions, de." }
+                "--failures" { return "How many failures are listed (default 40)." }
+            }
+        }
+        "llm download" {
+            switch ($token) {
+                "--model" { return "The model id to download (same as the positional <model>); default: the chosen model, else the recommended one." }
+            }
+        }
+        "setup plan" {
+            switch ($token) {
+                "--games" { return "The games to set up (needed), comma-separated. Example: --games DCS,IL2Game." }
+                "--priorities" { return "Aircraft in order of importance: '>' starts the next row, '|' (or '=') joins aircraft of one row. Example: --priorities 'F-16C_50>FA-18C_hornet|A-10C_2'." }
+                "--priority" { return "One more row of equally important aircraft (repeatable). Example: --priority 'AV8BNA|F-14B'." }
+                "--modifiers" { return "How many modifier buttons the plan may use, 0..8 (default 0)." }
+                "--prefer-fewer" { return "Use a modifier only when the essential functions do not fit (default)." }
+                "--use-all-modifiers" { return "Use the whole modifier budget." }
+                "--out-plan" { return "Save the plan (JSON) here for setup check, apply and render; --plan-file is another name." }
+                "--plan-file" { return "Another name for --out-plan." }
+                "--realism" { return "0 = group by function, 1 = like the real aircraft's HOTAS (cockpit database or knowledge map); 0..1 or 0..100 %." }
+                "--seed" { return "The seed of the plan's local search (default 1): the same seed gives the same plan." }
+                "--replace-existing" { return "Lay out your bound relations again; without it they keep their binds." }
+                "--phase-layers" { return "Two combat phases on a latched mode switch: on, off or auto (default: when the inputs are too few for one phase)." }
+                "--cockpit-file" { return "A cockpit entry (JSON, e.g. from engine cockpits get --json) used besides DB/Cockpits; repeatable." }
+                "--role" { return "The role of a device (device or VID:PID = role), as for setup devices." }
+                "--grip" { return "The grip on a base (device = grip id), as for setup devices." }
+                "--add-device" { return "A catalog device to plan with although it is not connected." }
+            }
+        }
+        "setup render" {
+            switch ($token) {
+                "--aircraft" { return "Only the binds that cover this aircraft, labelled with its function names (default: every bind with the relation names)." }
+                "--width" { return "Width of each sheet in pixels (default 1800)." }
+            }
+        }
+        "cockpits" {
+            switch ($token) {
+                "--game" { return "list / compare / guide --coverage / pictures check: only this game. pictures build: DCS, XPlane12, MSFS2020, IL2Game, NuclearOption, WarThunder, StarCitizen or all." }
+                "--structure" { return "check: list only what is wrong, not what is still missing." }
+                "--page" { return "render: the Cockpits page's manual pages: all, overview, stick, throttle, <device>, panels, panel:<id>, photos, photo." }
+                "--pdf" { return "render --page: also write the pages as one PDF." }
+                "--scale" { return "render --page: scale of the pages (0.1..4, default 1)." }
+                "--highlight" { return "render --page: mark the controls these words name." }
+                "--pictures" { return "render --page: picture (default, the pictures from your games), drawing or none." }
+                "--photos" { return "render --page: folder of the verified cockpit photos (default: the GUI's downloads), or none." }
+            }
+        }
+        "binds unbind" {
+            switch ($token) {
+                "--game" { return "Only relations with an action of this game; any game id (DCS, IL2Game, StarCitizen, MSFS2024, ...)." }
+                "--format" { return "How the input is written: dcs (default, JOY_BTN1) or il2 (joy0_b0)." }
+            }
+        }
+        "binds tuning set" {
+            switch ($token) {
+                "--param" { return "A model parameter as name=value, repeatable; game, plane and family scopes only (the base scope does not keep it). Example: --param sensitivity=22." }
+                "--curve-points" { return "Free curve points x:y in 0..1 (or none); game, plane and family scopes only. Example: --curve-points 0:0,0.4:0.3,1:1." }
+            }
+        }
+        "vjoy restore-hidhide" {
+            switch ($token) {
+                "--force" { return "Accepted like for vjoy recover; restore-hidhide restores even while the session's owner runs, so it changes nothing here." }
+            }
+        }
+        "ffb set" {
+            switch ($token) {
+                "--device" { return "The device whose settings these are, or * for the game-wide settings." }
+                "--game" { return "The game the settings are for (engine ffb models lists them). Example: DCS or IL2Game." }
+                "--plane" { return "Only this aircraft (a per-aircraft scope); default: the whole game." }
+                "--param" { return "A force feedback setting as name=value, repeatable (engine ffb models lists the names and ranges). Written on the next export of the game." }
+            }
+        }
+        "ffb clear" {
+            switch ($token) {
+                "--device" { return "The device whose settings are removed, or * for the game-wide settings." }
+                "--game" { return "The game the settings are for. Example: DCS." }
+                "--plane" { return "Only this aircraft's settings; default: the game's." }
+                "--param" { return "Remove only this setting (repeatable); without it the whole scope is removed." }
+            }
+        }
+    }
+
+    # Registry games (engine <game> scan|import|export|refresh-db).
+    if ($key -match "^(msfs2024|msfs2020) (scan|import)$" -and $token -eq "--include-disconnected") {
+        return "MSFS: also the devices the sim has profiles for that are not connected now (default: connected devices only)."
+    }
+    if ($key -match "^warthunder (scan|import|export|refresh-db)$") {
+        switch ($token) {
+            "--no-game-archives" { return "Do not read War Thunder's packed archives (gui.vromfs.bin) for the command list: JoyPro's own list of the actions it knows is used (GUI: Settings > Games). scan, import and export build the list only when there is none yet." }
+            "--read-game-archives" { return "true (default) reads the game's archives for the full command list, false is the same as --no-game-archives." }
+        }
+    }
+    if ($key -match "^\S+ (scan|import|export)$" -and $key -notmatch "^(dcs|il2|starcitizen|relations|binds) ") {
+        switch ($token) {
+            "<config-path>" { return "The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine " + $key.Split(' ')[0] + " paths lists first." }
+        }
+    }
+    if ($key -match "^\S+ refresh-db$" -and $token -eq "--path") {
+        return "Same as <source-path>: the game's installation or a file of the game to read the actions from."
+    }
+    if ($key -match "^\S+ export$" -and $key -notmatch "^(dcs|il2|starcitizen|relations|binds) " -and $token -eq "--dry-run") {
+        return "Report what the export would write; the game's files are not changed."
+    }
+    if ($key -match "^\S+ (scan|import)$" -and $key -notmatch "^(dcs|il2|starcitizen|relations|binds) ") {
+        switch ($token) {
+            "--ignore-device" { return "Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'." }
+            "--ignore-devices" { return "Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'." }
+        }
+    }
+    if ($key -match "^msfs2024 import$" -and $token -eq "--limit-to-profile-aircraft") {
+        return "Binds the sim has only in some aircraft's profiles are limited to those aircraft at once (default: imported for all aircraft and listed)."
+    }
+    return $null
 }
 
 function Get-ArgumentDocLine {
@@ -337,6 +768,11 @@ function Get-ArgumentDocLine {
         "--correction-auto-threshold" { return "Global option: numeric score threshold (0..200) to auto-apply relation-item remaps." }
         "--confirm-corrections" { return "Global option: prompt (true) or auto-accept (false) medium-confidence item remaps." }
         "--correction-report" { return "Global option: write load correction report to .json or .txt/.log path." }
+        "--history-note" { return "Global option: the name of this change in the profile history (default: the command's name)." }
+        "<text>" { return "Free text. Example: 'Throttle curves for helicopters'." }
+        "--vjoy-tunnel" { return "Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out." }
+        "<1-16>" { return "A vJoy device number from 1 to 16, or none. Example: 2." }
+        "--usage-style" { return "Global option: on (default) lets Auto Assign, Auto Group, the Setup wizard and Lay out with AI follow your most used aircraft for new ones (usage ranking); off does not." }
         "--path" { return "Optional explicit path override. Use when you prefer option form over positional path." }
         "--install-path" { return "DCS install path override (root folder that contains Mods\\aircraft)." }
         "--restore" { return "dcs strip-defaults / device-luas: put the original DCS files back (same as the restore action)." }
@@ -352,7 +788,12 @@ function Get-ArgumentDocLine {
         "--ocr" { return "Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false)." }
         "--launch" { return "Start DCS automatically before refresh automation (true/false)." }
         "--keep-running" { return "Leave DCS running after refresh command completes (true/false)." }
-        "--dry-run" { return "Plan mode only: do not click, launch, or change files; report what would run." }
+        "--dry-run" { return "Report what the command would do; nothing is written or changed." }
+        "--drawing-style" { return "JoyPro's drawings of the devices: lines (line art) or cel (shaded). Default: the GUI's setting." }
+        "--drawing-preset" { return "The colours of JoyPro's drawings: joypro, manual, blueprint, print or custom (then --drawing-ink / --drawing-paper / --drawing-accent). Default: the GUI's setting." }
+        "--drawing-ink" { return "Line colour of JoyPro's drawings (#RRGGBB, preset custom)." }
+        "--drawing-paper" { return "Paper colour of JoyPro's drawings (#RRGGBB, preset custom)." }
+        "--drawing-accent" { return "Accent colour of JoyPro's drawings (#RRGGBB, preset custom)." }
         "--menu-wait-seconds" { return "Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45." }
         "--ocr-menu-timeout-seconds" { return "OCR max wait for DCS main menu template detection. Example: --ocr-menu-timeout-seconds 600." }
         "--settle-seconds" { return "Post-click settle wait for DCS file writes. Example: --settle-seconds 60." }
@@ -381,7 +822,7 @@ function Get-ArgumentDocLine {
         "--device" { return "Include one device per flag. Example: --device LEFT VPC Throttle." }
         "--devices" { return "Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle." }
         "--ignore-device" { return "Exclude one device per flag. Example: --ignore-device Keyboard." }
-        "--ignore-devices" { return "Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse." }
+        "--ignore-devices" { return "Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse." }
         "--include-defaults" { return "Include defaults in DCS import/scan." }
         "--import-inverted" { return "Include axis inversion settings." }
         "--import-slider" { return "Include DCS slider axis setting." }
@@ -398,6 +839,8 @@ function Get-ArgumentDocLine {
         "--keep-keyboard-defaults" { return "DCS export only: keep existing keyboard defaults/keyboard diff files untouched (true/false)." }
         "--nuke-untouched-devices" { return "DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false)." }
         "--aircraft" { return "MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft." }
+        "--user-profiles" { return "MSFS 2024 export only: write your own profiles the sim uses for each device and category (Steam remote folder or Microsoft Store save, backed up first); default true, false writes only JoyPro's package presets and the import files." }
+        "--import-files" { return "MSFS 2024 export only: write an import file (Documents\JoyPro2\MSFS 2024 import files) for every device and category, not only where your own profile could not be written." }
         "--keyboard" { return "Include keyboard clean-profile checks for supported DB commands." }
         "--no-keyboard" { return "Disable keyboard clean-profile checks for supported DB commands." }
         "--strict-names" { return "For DB summary/list/check: require exact clean filename match (no alias fallback accepted)."}
@@ -440,7 +883,7 @@ function Get-ArgumentDocLine {
         "--id" { return "Node ID. Example: --id d3007pnilu3007cd16vd1vpnilvu0." }
         "--all" { return "Apply operation to all matches (or select all relations/devices where supported)." }
         "--format" { return "Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export." }
-        "<config-path>" { return "Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini." }
+        "<config-path>" { return "The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine <game> paths lists first." }
         "<source-path>" { return "Path to read actions from (game install or control file); optional." }
         "--replace" { return "For game import: start from an empty relation list instead of merging into the loaded profile." }
         "--markdown" { return "For games support: print the Markdown page (docs/games/support.md) instead of JSON." }
@@ -488,18 +931,22 @@ function Get-CommandInteractionNotes {
     }
     if ($key -eq "dcs defaults cut") {
         [void]$notes.Add("If paths are omitted, the command tries to auto-detect DCS Saved Games and install locations.")
-        [void]$notes.Add("Copies `default.lua` to backup and moves non-default joystick files into backup.")
+        [void]$notes.Add("Only the joystick folders under Mods\\aircraft of the installation: every file except `default.lua` is moved into the backup, `default.lua` is copied.")
+        [void]$notes.Add("Refused while DCS or DCS_updater runs; --dry-run counts the files and changes nothing.")
+        [void]$notes.Add("The GUI uses dcs device-luas remove instead (it keeps files other Lua files refer to and the UI layer).")
         [void]$notes.Add("Default backup location is `<saved-games>\\BACKUP_JOYSTICK_DEFAULTS` unless --backup-path is provided.")
     }
     if ($key -eq "dcs defaults restore") {
         [void]$notes.Add("If paths are omitted, the command tries to auto-detect DCS Saved Games and install locations.")
         [void]$notes.Add("Restores files by copying backup aircraft input folders back into `Mods\\aircraft`.")
+        [void]$notes.Add("Refused while DCS or DCS_updater runs; --dry-run counts the files and changes nothing.")
         [void]$notes.Add("Default backup location is `<saved-games>\\BACKUP_JOYSTICK_DEFAULTS` unless --backup-path is provided.")
     }
     if ($key -eq "dcs strip-defaults") {
         [void]$notes.Add("Off by default. Patched DCS files fail the integrity check of multiplayer servers that enforce it.")
         [void]$notes.Add("Same marker (-- [[DCS_STRIP_JOYSTICK_DEFAULTS v1]]) and backup name as the community strip script; either one restores the other's files.")
-        [void]$notes.Add("apply remembers the switch; JoyPro re-applies it at its start (auto) and before every DCS list refresh. restore switches it off.")
+        [void]$notes.Add("apply remembers the switch; JoyPro re-applies it at its start (auto) and before every headless DCS list refresh (dcs refresh clean and dcs refresh id; the click flow does not). restore switches it off.")
+        [void]$notes.Add("--status shows the state (as status); --remove is refused here (use --restore, or dcs device-luas remove).")
         [void]$notes.Add("Never touches Saved Games\\DCS\\Config\\Input. Refused while DCS or DCS_updater runs.")
     }
     if ($key -eq "dcs device-luas") {
@@ -512,15 +959,16 @@ function Get-CommandInteractionNotes {
     }
     if ($key -eq "dcs refresh clean") {
         [void]$notes.Add("Requires DCS Saved Games and install paths (auto-detect is attempted when omitted).")
-        [void]$notes.Add("Without --ocr, XML click anchors from Clicks.xml are used; with --ocr, template image matching is used.")
+        [void]$notes.Add("Default (--headless-lua true): DCS is not started; --plane/--planes limit the aircraft; the click options below are ignored with a warning.")
+        [void]$notes.Add("Only with --headless-lua false: DCS starts (--launch) and JoyPro clicks through its menus. Without --ocr, XML click anchors from Clicks.xml are used; with --ocr, template image matching is used.")
         [void]$notes.Add("--dry-run skips launch/click/file changes and reports planned steps only.")
-        [void]$notes.Add("--default-stick prefers <name>.diff.lua when rebuilding CleanProfile output.")
-        [void]$notes.Add("--window-left/top/width/height and --gui-scale control non-OCR click coordinate resolution.")
+        [void]$notes.Add("--default-stick prefers <name>.diff.lua when rebuilding CleanProfile output (click flow).")
+        [void]$notes.Add("--window-left/top/width/height and --gui-scale control non-OCR click coordinate resolution (click flow).")
     }
     if ($key -eq "dcs refresh id") {
         [void]$notes.Add("Requires DCS Saved Games and install paths (auto-detect is attempted when omitted).")
-        [void]$notes.Add("Exports per-module HTML from DCS and copies the largest non-keyboard/mouse/trackir HTML per plane into DB\\DCS.")
-        [void]$notes.Add("--modules-to-scan adds extra loop count on top of detected install/instance module counts.")
+        [void]$notes.Add("Default (--headless-lua true): DCS is not started; DCS's Lua writes the per-aircraft HTML lists, JoyPro copies them into DB\\DCS.")
+        [void]$notes.Add("Only with --headless-lua false: DCS starts, exports per-module HTML and JoyPro copies the largest non-keyboard/mouse/trackir HTML per plane into DB\\DCS; --modules-to-scan adds extra loop count on top of detected install/instance module counts.")
         [void]$notes.Add("--dry-run skips launch/click/file changes and reports planned steps only.")
     }
     if ($key -eq "dcs refresh preview-clicks") {
@@ -632,6 +1080,22 @@ function Get-CommandInteractionNotes {
         [void]$notes.Add("Default behavior removes the entire bind from that relation.")
         [void]$notes.Add("Use --input-only to keep bind metadata and clear only button/axis input.")
     }
+    if ($key -match "^\S+ (scan|import)$" -and $key -notmatch "^(dcs|il2|starcitizen|relations|binds) ") {
+        [void]$notes.Add("--ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).")
+    }
+    if ($key -eq "relations import" -or $key -eq "binds import") {
+        [void]$notes.Add("The import replaces everything of its kind in the profile; a partial file (a filtered export, relations mass export) needs --replace. profile merge adds relations instead.")
+        [void]$notes.Add("The GUI asks before it imports and then passes --replace.")
+    }
+    if ($key -eq "relations export" -or $key -eq "binds export") {
+        [void]$notes.Add("A filter word makes a partial file: importing it with --replace removes everything the file does not have.")
+    }
+    if ($key -match "^msfs2020 (scan|import|export)$") {
+        [void]$notes.Add("--limit-to-profile-aircraft, --user-profiles and --import-files are MSFS 2024 options: given to MSFS 2020 they change nothing and the result says so.")
+    }
+    if ($key -eq "binds tuning set") {
+        [void]$notes.Add("--scope base keeps invert, slider, dead zone, saturation and curvature; --param and --curve-points are not stored there (the result says so): set them on a game, plane or family scope.")
+    }
     if ($key -eq "binds unbind") {
         [void]$notes.Add("Positional value supports device::input shorthand.")
         [void]$notes.Add("If matches are ambiguous, use --all or narrow with --device / --game.")
@@ -640,13 +1104,50 @@ function Get-CommandInteractionNotes {
     return $notes
 }
 
+# The command as the help line writes it, without its description and optional parts: the form to type, with the
+# placeholders of what it needs ("engine telemetry preview <session> [--channel <key>]..." -> "engine telemetry preview
+# <session> --text").
+function Get-SyntaxExample {
+    param(
+        [string]$CommandLine
+    )
+
+    $line = (To-NonNullString $CommandLine).Trim()
+    $line = [regex]::Replace($line, "\s{2,}\(.*$", "")
+    # Alternatives of whole commands ("a | b"): the first one.
+    $line = ($line -split "\s\|\s")[0]
+    # Optional parts, innermost first.
+    for ($i = 0; $i -lt 10 -and $line.Contains("["); $i++) {
+        $line = [regex]::Replace($line, "\[[^\[\]]*\]", "")
+    }
+    $line = [regex]::Replace($line, "\.\.\.", "")
+    $line = [regex]::Replace($line, "\s+", " ").Trim()
+    if (-not $line.StartsWith("engine ")) {
+        $line = "engine " + $line
+    }
+    return $line + " --text"
+}
+
 function Get-ExampleCommand {
     param(
-        [string]$CommandKey
+        [string]$CommandKey,
+        [string]$CommandLine = ""
     )
 
     $key = (To-NonNullString $CommandKey).Trim().ToLowerInvariant()
     switch ($key) {
+        "relations export" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations export 'C:\JoyPro\exports\relations.json'", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations export 'C:\JoyPro\exports\gear.json' Gear") }
+        "relations import" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations import 'C:\JoyPro\exports\relations.json'", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations import 'C:\JoyPro\exports\gear.json' --replace") }
+        "binds export" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds export 'C:\JoyPro\exports\binds.json'") }
+        "binds import" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds import 'C:\JoyPro\exports\binds.json'", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds import 'C:\JoyPro\exports\throttle-binds.json' --replace") }
+        "devices replace" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace 'Old Stick' 'New Stick' --dry-run --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace --from 'Old Stick' --to 'New Stick' --mode layout --merge keep --text") }
+        "export-marks dismiss" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' export-marks dismiss --game il2 --relation 'Gear Toggle' --text") }
+        "dcs defaults cut" { return @("engine dcs defaults cut 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --dry-run --text", "engine dcs defaults cut 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --text") }
+        "relations aircraft" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations aircraft 'Gear Toggle' --node DCS:d3001pnilunilcdnilvdnilvpnilvunil:F-16C_50 --text") }
+        "usage pin|unpin|exclude|include" { return @("engine usage pin DCS F-16C_50 --text", "engine usage exclude StarCitizen RSI_Polaris --text") }
+        "usage backups" { return @("engine usage backups --text", "engine usage restore 2026-10-31 --text") }
+        "telemetry recover" { return @("engine telemetry recover --text", "engine telemetry prune --text") }
+        "profile history prune" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile history prune --dry-run --text", "engine profile history prune --all --dry-run --text") }
         "summary" { return @("engine summary --text") }
         "games support" { return @("engine games support --text", "engine games support --markdown --notes docs\games\support-notes.json --out docs\games\support.md", "engine games support --html --out 'C:\JoyPro\supported-games.html'") }
         "profile summary" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile summary --text") }
@@ -663,8 +1164,15 @@ function Get-ExampleCommand {
         "dcs strip-defaults" { return @("engine dcs strip-defaults apply --dry-run --text", "engine dcs strip-defaults apply --skip-ui-layer --text", "engine dcs strip-defaults status --text", "engine dcs strip-defaults --restore --text") }
         "dcs device-luas" { return @("engine dcs device-luas list --text", "engine dcs device-luas remove --text", "engine dcs device-luas restore --text") }
         "dcs verify-clean" { return @("engine dcs verify-clean 'C:\Users\Pilot\Saved Games\DCS' --text", "engine dcs verify-clean --planes 'FA-18C_hornet' --include-disconnected true --text") }
-        "dcs refresh clean" { return @("engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --ocr false --preview-clicks --preview-image 'C:\JoyPro\logs\dcs_refresh_clean_preview.png' --confirm false --text") }
-        "dcs refresh id" { return @("engine dcs refresh id 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --ocr true --modules-to-scan 0 --confirm false --text") }
+        "dcs refresh clean" { return @("engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --confirm false --text", "engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --plane F-16C_50 --dry-run --text", "engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --headless-lua false --ocr false --preview-clicks --preview-image 'C:\JoyPro\logs\dcs_refresh_clean_preview.png' --confirm false --text") }
+        "dcs refresh id" { return @("engine dcs refresh id 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --plane F-16C_50 --confirm false --text", "engine dcs refresh id 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --headless-lua false --ocr true --modules-to-scan 0 --confirm false --text") }
+        "profile merge" { return @("engine profile merge 'C:\JoyPro\profiles\pilot_main.pr0file' 'C:\JoyPro\profiles\friend.pr0file' --mode left --save 'C:\JoyPro\profiles\merged.pr0file' --text") }
+        "relations plan ask" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations plan ask 'fill the F-4E Phantom II into my relations' --llm off --text") }
+        "relations plan apply" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations plan apply --file 'C:\JoyPro\plan.json' --only 0,2 --dry-run --text") }
+        "relations function" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations function 'Gear Toggle' --text", "engine relations function --list --button --query gear --text") }
+        "setup plan" { return @("engine setup plan --games DCS --priorities 'F-16C_50>FA-18C_hornet' --modifiers 1 --realism 0.5 --out-plan 'C:\JoyPro\setup-plan.json' --text") }
+        "setup render" { return @("engine setup render --plan 'C:\JoyPro\setup-plan.json' --out-dir 'C:\JoyPro\sheets' --aircraft F-16C_50 --text") }
+        "devices kb" { return @("engine devices kb list vkb gladiator --text", "engine devices kb identify --text") }
         "dcs refresh preview-clicks" { return @("engine dcs refresh preview-clicks --ocr false --window-left 0 --window-top 0 --window-width 2560 --window-height 1440 --preview-image 'C:\JoyPro\logs\dcs_click_preview.png' --text") }
         "dcs ffb list" { return @("engine dcs ffb list --text", "engine dcs ffb list --device 'VKB Gladiator NXT' --confirm false --text") }
         "dcs ffb set" { return @("engine dcs ffb set 'VKB Gladiator NXT' --invert-x true --invert-y false --swap-axis false --text") }
@@ -672,9 +1180,9 @@ function Get-ExampleCommand {
         "il2 scan" { return @("engine il2 scan 'D:\Games\IL-2 Sturmovik Great Battles' --ignore-device 'Keyboard' --text") }
         "il2 import" { return @("engine il2 import 'D:\Games\IL-2 Sturmovik Great Battles' --devices 'VKB Gladiator NXT,LEFT VPC Throttle' --save-last --text") }
         "il2 export" { return @("engine il2 export 'D:\Games\IL-2 Sturmovik Great Battles' --mode merge-overwrite --text") }
-        "db summary" { return @("engine db summary --keyboard --text") }
+        "db summary" { return @("engine db summary --keyboard --text", "engine db summary F-16 --text") }
         "db list" { return @("engine db list 'A-10' --missing --text") }
-        "db check" { return @("engine db check --text") }
+        "db check" { return @("engine db check --text", "engine db check A-10 --strict-names --text") }
         "db games" { return @("engine db games --text") }
         "db planes" { return @("engine db planes --game DCS 'A-10' --text") }
         "devices list" { return @("engine devices list --connected --text", "engine devices list --profile-devices --text") }
@@ -765,7 +1273,7 @@ function Get-ExampleCommand {
                     "refresh-db" { return @("engine " + $area + " refresh-db --text") }
                 }
             }
-            return @("engine --help")
+            return @(Get-SyntaxExample $CommandLine)
         }
     }
 }
@@ -850,6 +1358,9 @@ function Get-GlobalOptionExample {
         "--correction-auto-threshold" { return "engine --correction-auto-threshold 98 profile load 'C:\JoyPro\profiles\legacy.pr0file'" }
         "--confirm-corrections" { return "engine --confirm-corrections false profile load 'C:\JoyPro\profiles\legacy.pr0file'" }
         "--correction-report" { return "engine --correction-report 'C:\JoyPro\logs\load_corrections.json' profile load 'C:\JoyPro\profiles\legacy.pr0file'" }
+        "--history-note" { return "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --history-note 'Gear on the stick' binds set 'Gear Toggle' --input JOY_BTN5 --text" }
+        "--vjoy-tunnel" { return "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --vjoy-tunnel 1 warthunder import --text" }
+        "--usage-style" { return "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --usage-style off relations auto-assign --dry-run --text" }
         default { return "engine --help" }
     }
 }
@@ -916,7 +1427,7 @@ function Build-ExpandedCommandDocs {
 
         $key = Get-CommandKey -CommandLine $syntax
         [void]$lines.Add("### " + $tick + $syntax + $tick)
-        [void]$lines.Add("What it does: $(Get-CommandSummaryForDocs -CommandKey $key)")
+        [void]$lines.Add("What it does: $(Get-CommandSummaryForDocs -CommandKey $key -CommandLine $syntax)")
         [void]$lines.Add("")
         [void]$lines.Add("Arguments and example values:")
 
@@ -926,7 +1437,11 @@ function Build-ExpandedCommandDocs {
         }
         else {
             foreach ($token in $argTokens) {
-                [void]$lines.Add("- " + $tick + $token + $tick + ": " + (Get-ArgumentDocLine -Token $token))
+                $doc = Get-CommandArgumentDocLine -CommandKey $key -Token $token
+                if ($null -eq $doc) {
+                    $doc = Get-ArgumentDocLine -Token $token
+                }
+                [void]$lines.Add("- " + $tick + $token + $tick + ": " + $doc)
             }
         }
 
@@ -942,7 +1457,7 @@ function Build-ExpandedCommandDocs {
         [void]$lines.Add("")
         [void]$lines.Add("Examples:")
         [void]$lines.Add('```powershell')
-        $examples = Get-ExampleCommand -CommandKey $key
+        $examples = Get-ExampleCommand -CommandKey $key -CommandLine $syntax
         foreach ($example in $examples) {
             [void]$lines.Add($example)
         }

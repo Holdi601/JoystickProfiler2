@@ -343,6 +343,8 @@ namespace JoyPro.Engine
                 string modifiers = entry.Modifiers.Count == 0 ? string.Empty : " + " + string.Join(" + ", entry.Modifiers.Select(m => m.Name));
                 sb.AppendLine("  - " + entry.Device + " " + entry.Input + modifiers + ": " + entry.Relation + (entry.Title.Length > 0 ? " (" + entry.Title + ")" : string.Empty));
             }
+            foreach (string warning in map.Warnings ?? new List<string>())
+                sb.AppendLine("Warning: " + warning);
             return sb.ToString().TrimEnd();
         }
 

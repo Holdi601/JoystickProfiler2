@@ -148,6 +148,26 @@ try {
     $emUndone = Get-EmHashes $emSaved
     Assert-SetEquivalent @($emUndone.Keys | ForEach-Object { $_ + "=" + $emUndone[$_] }) @($emBefore.Keys | ForEach-Object { $_ + "=" + $emBefore[$_] }) "undo export after clean + nuke must restore every file byte for byte."
 
+    # --- the same export again: no file is rewritten or backed up, undo stays with that export ------------------------
+    # (A re-export used to rewrite and back up every file with the bytes it already had: most of a big export's time.)
+    $emAgain = Run-Engine @("--profile", $emProfile, "--remap-missing-devices", "false", "dcs", "export", "--path", $emSaved, "--mode", "clean", "--nuke-untouched-devices", "true", "--text")
+    Assert-True ($emAgain.ExitCode -eq 0) ("dcs export clean+nuke before the repeat failed: " + $emAgain.Output)
+    $emAgainHashes = Get-EmHashes $emSaved
+    $emAgainTimes = @{}
+    Get-ChildItem -Path $emSaved -Recurse -File | ForEach-Object { $emAgainTimes[$_.FullName] = $_.LastWriteTimeUtc.Ticks }
+    $emRepeat = Run-Engine @("--profile", $emProfile, "--remap-missing-devices", "false", "dcs", "export", "--path", $emSaved, "--mode", "clean", "--nuke-untouched-devices", "true", "--text")
+    Assert-True ($emRepeat.ExitCode -eq 0) ("repeated dcs export failed: " + $emRepeat.Output)
+    Assert-Match $emRepeat.Output "Files Written: [1-9]" "the repeated export still lists the files it manages as written."
+    $emRepeatTimes = @(Get-ChildItem -Path $emSaved -Recurse -File | Where-Object { $emAgainTimes[$_.FullName] -ne $_.LastWriteTimeUtc.Ticks } | ForEach-Object { $_.Name })
+    Assert-True ($emRepeatTimes.Count -eq 0) ("a repeated export must not rewrite a file that already has its content: " + ($emRepeatTimes -join ", "))
+    $emRepeatSets = (Run-Engine @("backups", "list", "--game", "DCS")).Output | ConvertFrom-Json
+    $emRepeatSet = $emRepeatSets | Select-Object -First 1
+    Assert-True ($null -ne $emRepeatSet -and $emRepeatSet.Command -match "dcs export" -and @($emRepeatSet.Files).Count -eq 0) ("the repeated export has its own backup set, without files: " + ($emRepeatSet | ConvertTo-Json -Depth 3 -Compress))
+    $emRepeatUndo = Run-Engine @("backups", "restore", "latest", "--game", "DCS", "--text")
+    Assert-True ($emRepeatUndo.ExitCode -eq 0) ("undo of the repeated export failed: " + $emRepeatUndo.Output)
+    $emRepeatUndone = Get-EmHashes $emSaved
+    Assert-SetEquivalent @($emRepeatUndone.Keys | ForEach-Object { $_ + "=" + $emRepeatUndone[$_] }) @($emAgainHashes.Keys | ForEach-Object { $_ + "=" + $emAgainHashes[$_] }) "undo of an export that changed nothing changes nothing (never an older export)."
+
     # --- changed tuning of a default ---------------------------------------------------------------------------------
     $emPitch = Find-EmRelation $emProfile "Smoke Mode Stick" "JOY_Y"
     Assert-True (-not [string]::IsNullOrWhiteSpace($emPitch)) "the stick's Pitch default relation exists."
@@ -202,6 +222,12 @@ try {
 
     Copy-Item -LiteralPath $emProfileCopy -Destination $emProfile -Force
     $emSavedO = New-EmSaved "overwrite"
+    # A device that is not connected and has no binds in the profile (only its file) holds the profile's CMS too:
+    # merge-overwrite takes the profile's actions off the other devices' files only on connected devices ("only
+    # connected joysticks count"), so its file stays byte for byte.
+    $emLostO = Join-Path $emSavedO "Config\Input\SmokeModes\joystick\Smoke Mode Lost {44444444-0000-0000-0000-000000000005}.diff.lua"
+    Write-EmFile $emLostO @((New-EmEntry "d_cms" "CMS" "added" @("JOY_BTN4")))
+    $emLostOBefore = (Get-FileHash -LiteralPath $emLostO -Algorithm SHA256).Hash
     $emOver = Run-Engine @("--profile", $emProfile, "--remap-missing-devices", "false", "dcs", "export", "--path", $emSavedO, "--mode", "merge-overwrite", "--text")
     Assert-True ($emOver.ExitCode -eq 0) ("export merge-overwrite failed: " + $emOver.Output)
     $emStickO = [System.IO.File]::ReadAllText((Join-Path $emSavedO ("Config\Input\SmokeModes\joystick\" + $emStick + ".diff.lua")))
@@ -209,6 +235,8 @@ try {
     $emBoxO = [System.IO.File]::ReadAllText((Join-Path $emSavedO ("Config\Input\SmokeModes\joystick\" + $emBox + ".diff.lua")))
     Assert-True ($emBoxO -notmatch '"JOY_BTN8"') "merge-overwrite takes the profile's CMS off its other button on another device."
     Assert-Match $emOver.Output "Other Buttons Of Profile Actions Removed \(Profile Wins\):\s+[1-9]" "merge-overwrite reports the other buttons it removed."
+    Assert-True ((Get-FileHash -LiteralPath $emLostO -Algorithm SHA256).Hash -eq $emLostOBefore) "merge-overwrite must not take the profile's CMS off the file of a device that is not connected (only connected joysticks count)."
+    Assert-True (-not (Test-Path -LiteralPath ($emLostO.Substring(0, $emLostO.Length - ".diff.lua".Length) + ".jp"))) "merge-overwrite must not write a JoyPro copy for a device that is not connected."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $emPreviousFake

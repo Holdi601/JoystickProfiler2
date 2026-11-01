@@ -280,39 +280,170 @@ internal sealed class SendInputKeySink : IVfKeySink
     private static extern uint SendInput(uint count, ref KeyboardInput input, int size);
 }
 
-/// <summary>One physical device read through DirectInput (non-exclusive, background: the device stays usable by everyone).</summary>
-internal sealed class DirectInputSource : IDisposable
+/// <summary>What a source needs to open: DirectInput, the hidden window, the data format and vJoy's axis range.</summary>
+internal sealed class SourceContext
 {
+    public Native.IDirectInput8W? DirectInput { get; init; }
+    public IntPtr Window { get; init; }
+    public IntPtr DataFormat { get; init; }
+    public int AxisMin { get; init; }
+    public int AxisMax { get; init; }
+}
+
+/// <summary>A physical device the forwarder reads (DirectInput, or a synthetic stream for measurements).</summary>
+internal abstract class InputSource : IDisposable
+{
+    protected InputSource(int index, ForwarderSource source)
+    {
+        Index = index;
+        Source = source;
+        Event = Native.CreateEventW(IntPtr.Zero, false, false, IntPtr.Zero);
+    }
+
+    public int Index { get; }
+    public ForwarderSource Source { get; }
+    public IntPtr Event { get; protected set; }
+    public bool Connected { get; protected set; }
+    public long NextRetry { get; set; }
+    public string LastError { get; protected set; } = "";
+
+    /// <summary>The device signals every change through <see cref="Event"/>, so the forwarder may wait for it instead
+    /// of polling (false: a polled device, read at the rate).</summary>
+    public bool SignalsChanges { get; protected set; } = true;
+
+    /// <summary>The forwarder waits for <see cref="Event"/> (false: more than 64 handles, or poll mode: read every pass).</summary>
+    public bool Waited { get; set; }
+
+    /// <summary>The event woke the loop and was consumed by that wait: the next pass reads the device.</summary>
+    public bool Pending { get; set; }
+
+    public abstract ReadOnlySpan<byte> State { get; }
+
+    public abstract bool Open(SourceContext context);
+
+    /// <summary>Reads the state: 1 = changed, 0 = unchanged, &lt; 0 = error (device lost).</summary>
+    public abstract int Read();
+
+    public abstract void CloseDevice();
+
+    public virtual void Dispose()
+    {
+        CloseDevice();
+        if (Event != IntPtr.Zero)
+            Native.CloseHandle(Event);
+    }
+}
+
+/// <summary>
+/// A synthetic device for measurements (JoyPro.VJoy run --fake-sources idle|stream|noisy): "idle" never changes and
+/// signals changes like a HID device (the forwarder may rest), "stream" moves every axis and toggles buttons and hats on
+/// every read like a polled device (the forwarder works at the rate). "noisy" is what real sticks do while nobody touches
+/// them: the first device signals a change 1000 times a second (a high-resolution timer as its event, like a 1000 Hz
+/// force feedback base) with 0.1 % noise on every axis, the others rest. No device, no DirectInput.
+/// </summary>
+internal sealed class FakeSource : InputSource
+{
+    private readonly byte[] _state = new byte[ForwardingTable.StateSize];
+    private readonly bool _stream;
+    private readonly bool _noisy;
+    private long _reads;
+    private bool _first = true;
+
+    public FakeSource(int index, ForwarderSource source, string mode) : base(index, source)
+    {
+        _stream = string.Equals(mode, "stream", StringComparison.OrdinalIgnoreCase);
+        _noisy = index == 0 && string.Equals(mode, "noisy", StringComparison.OrdinalIgnoreCase);
+        SignalsChanges = !_stream;
+        VfRuntime.Neutral(_state);
+        if (_noisy)
+        {
+            // A synchronization timer (auto reset, like DirectInput's event) instead of the event.
+            var timer = Native.CreateWaitableTimerExW(IntPtr.Zero, IntPtr.Zero, Native.CreateWaitableTimerHighResolution, Native.TimerAllAccess);
+            if (timer != IntPtr.Zero)
+            {
+                Native.CloseHandle(Event);
+                Event = timer;
+            }
+        }
+    }
+
+    public override ReadOnlySpan<byte> State => _state;
+
+    public override bool Open(SourceContext context)
+    {
+        Connected = true;
+        _first = true;
+        if (_noisy)
+        {
+            long due = -10_000;
+            Native.SetWaitableTimer(Event, ref due, 1, IntPtr.Zero, IntPtr.Zero, false);
+        }
+
+        return true;
+    }
+
+    public override int Read()
+    {
+        if (_stream)
+        {
+            VfBenchmark.Drive(_state, Index, _reads++, 0, 32767);
+            return 1;
+        }
+
+        if (_noisy)
+        {
+            // Every axis at the centre + 0/33 (0.1 % noise on every report: enough to reach the vJoy outputs through
+            // the functions' curves, so every pass also writes).
+            var noise = 16384 + 33 * (int)(_reads++ & 1);
+            for (var axis = 0; axis < 8; axis++)
+                BitConverter.TryWriteBytes(_state.AsSpan(axis * 4, 4), noise);
+            return 1;
+        }
+
+        if (!_first)
+            return 0;
+        _first = false;
+        return 1;
+    }
+
+    public override void CloseDevice()
+    {
+        if (_noisy && Event != IntPtr.Zero)
+            Native.CancelWaitableTimer(Event);
+        Connected = false;
+    }
+}
+
+/// <summary>One physical device read through DirectInput (non-exclusive, background: the device stays usable by everyone).</summary>
+internal sealed class DirectInputSource : InputSource
+{
+    private const uint PolledDevice = 0x00000002;      // DIDC_POLLEDDEVICE
+    private const uint PolledDataFormat = 0x00000008;  // DIDC_POLLEDDATAFORMAT
     private IntPtr _current;
     private IntPtr _previous;
     private Native.IDirectInputDevice8W? _device;
     private bool _forceNext;
 
-    public DirectInputSource(int index, ForwarderSource source)
+    public DirectInputSource(int index, ForwarderSource source) : base(index, source)
     {
-        Index = index;
-        Source = source;
-        Event = Native.CreateEventW(IntPtr.Zero, false, false, IntPtr.Zero);
         _current = Marshal.AllocHGlobal(ForwardingTable.StateSize);
         _previous = Marshal.AllocHGlobal(ForwardingTable.StateSize);
         Clear(_current);
         Clear(_previous);
     }
 
-    public int Index { get; }
-    public ForwarderSource Source { get; }
-    public IntPtr Event { get; }
-    public bool Connected { get; private set; }
-    public long NextRetry { get; set; }
-    public string LastError { get; private set; } = "";
+    public override unsafe ReadOnlySpan<byte> State => new((void*)_current, ForwardingTable.StateSize);
 
-    public unsafe ReadOnlySpan<byte> State => new((void*)_current, ForwardingTable.StateSize);
-
-    public bool Open(Native.IDirectInput8W directInput, IntPtr window, IntPtr dataFormat, int axisMin, int axisMax)
+    public override bool Open(SourceContext context)
     {
         CloseDevice();
+        var directInput = context.DirectInput;
+        var window = context.Window;
+        var dataFormat = context.DataFormat;
+        var axisMin = context.AxisMin;
+        var axisMax = context.AxisMax;
         var guid = Source.InstanceGuid;
-        if (guid == Guid.Empty || directInput.CreateDevice(ref guid, out var device, IntPtr.Zero) < 0 || device is null)
+        if (directInput is null || guid == Guid.Empty || directInput.CreateDevice(ref guid, out var device, IntPtr.Zero) < 0 || device is null)
         {
             LastError = "not connected";
             return false;
@@ -346,6 +477,21 @@ internal sealed class DirectInputSource : IDisposable
             Marshal.FreeHGlobal(range);
         }
 
+        // A device that must be polled sends no change events: the forwarder keeps reading it at the rate.
+        var caps = Marshal.AllocHGlobal(44);
+        try
+        {
+            for (var i = 0; i < 44; i += 4)
+                Marshal.WriteInt32(caps, i, 0);
+            Marshal.WriteInt32(caps, 0, 44);   // DIDEVCAPS.dwSize
+            var flags = device.GetCapabilities(caps) >= 0 ? (uint)Marshal.ReadInt32(caps, 4) : PolledDevice;
+            SignalsChanges = (flags & (PolledDevice | PolledDataFormat)) == 0;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(caps);
+        }
+
         device.SetEventNotification(Event);
         hr = device.Acquire();
         Connected = hr >= 0;
@@ -355,12 +501,14 @@ internal sealed class DirectInputSource : IDisposable
     }
 
     /// <summary>Reads the state: 1 = changed, 0 = unchanged, &lt; 0 = DirectInput error (device lost).</summary>
-    public unsafe int Read()
+    public override unsafe int Read()
     {
         var device = _device;
         if (device is null)
             return -1;
-        device.Poll();
+        // Poll only a polled device (for every other one DirectInput says "no effect": a call for nothing).
+        if (!SignalsChanges)
+            device.Poll();
         var hr = device.GetDeviceState(ForwardingTable.StateSize, _current);
         if (hr == Native.DiErrInputLost || hr == Native.DiErrNotAcquired)
         {
@@ -387,7 +535,7 @@ internal sealed class DirectInputSource : IDisposable
         return 1;
     }
 
-    public void CloseDevice()
+    public override void CloseDevice()
     {
         Connected = false;
         if (_device is null)
@@ -412,11 +560,9 @@ internal sealed class DirectInputSource : IDisposable
         _device = null;
     }
 
-    public void Dispose()
+    public override void Dispose()
     {
-        CloseDevice();
-        if (Event != IntPtr.Zero)
-            Native.CloseHandle(Event);
+        base.Dispose();
         if (_current != IntPtr.Zero)
             Marshal.FreeHGlobal(_current);
         if (_previous != IntPtr.Zero)
@@ -438,14 +584,22 @@ internal sealed class DirectInputSource : IDisposable
 /// The forwarding loop: reads every mapped physical device and writes the vJoy devices.
 /// </summary>
 /// <remarks>
-/// - Wakes on DirectInput's change events (a button press goes out at once) and on a high-resolution timer at
-///   <c>rateHz</c> (at least the fastest display's refresh rate, 60 Hz minimum) as the poll for devices without
-///   events. Event wake-ups closer together than half a timer period wait for the next tick, so a device that reports
-///   1000 times a second (or a noisy force feedback stick) costs at most two passes per period.
-/// - A vJoy device is written only when its position changed.
+/// - At most one pass per period (<c>rateHz</c>: at least the fastest display's refresh rate, 60 Hz minimum; the
+///   period is exact, a one-shot high-resolution timer armed after every pass). A change event that comes when the last
+///   pass is a period or more ago runs a pass at once (a button press goes out at once). A pass that found a change
+///   stops watching the change events until one period after it: the pass at the end of that period takes everything
+///   that came meanwhile. So a device that reports 1000 times a second (a noisy force feedback base, a stick that
+///   changes by one count all the time) costs one pass and one wake-up per period, not one per report.
+/// - A pass reads only the devices whose event fired (and polled devices); every <see cref="IdlePeriodMs"/> it reads
+///   every device as a safety net for a missed event (counted in the stats line: <c>missed=</c>).
+/// - A vJoy device is written only when its position changed, so at most once per period.
 /// - Nothing is allocated per pass: native buffers, preallocated handle arrays, structs; the loop thread's allocation
 ///   counter is reported in the stats line (it stays flat).
 /// - A device that disappears releases its buttons and centres its hats; it is opened again every 2 s.
+/// - Idle: when every device signals its changes, no virtual function needs the clock and the last pass found no
+///   change, the timer waits <see cref="IdlePeriodMs"/> (a safety poll); the next change event wakes the loop at once.
+///   A virtual function that waits for a time (a long press, a pulse, a turbo phase, a macro step) sets the timer to
+///   that time, not to every period.
 /// </remarks>
 internal sealed class Forwarder : IDisposable
 {
@@ -458,10 +612,17 @@ internal sealed class Forwarder : IDisposable
     private readonly VfRuntime? _functions;
     private readonly long _startTicks = Stopwatch.GetTimestamp();
     private readonly double _microsPerTick = 1_000_000.0 / Stopwatch.Frequency;
+    private readonly double _hundredNsPerTick = 10_000_000.0 / Stopwatch.Frequency;
     private readonly int _rateHz;
     private readonly int _parentPid;
     private readonly Action<string> _output;
-    private readonly DirectInputSource[] _sources;
+    /// <summary>The timer period while idle (a safety poll for a missed change event).</summary>
+    public const int IdlePeriodMs = 100;
+    private readonly InputSource[] _sources;
+    private readonly string? _fakeSources;
+    private long _idleSwitches;
+    private long _idlePasses;
+    private volatile bool _idle;
     private readonly VJoyPosition[] _sent;
     private readonly object _gate = new();
     private readonly IntPtr _stopEvent;
@@ -477,13 +638,17 @@ internal sealed class Forwarder : IDisposable
     private long _wakes;
     private long _writes;
     private long _changes;
+    private long _reads;
+    private long _missed;
+    private IntPtr _loopThread;
     private long _allocated;
     private long _allocatedAtStart;
     private volatile string _exitReason = "stopped";
     private readonly System.Collections.Concurrent.ConcurrentQueue<string> _events = new();
 
-    public Forwarder(ForwarderConfig config, IVJoySink sink, int rateHz, int parentPid, Action<string> output, IXboxSink? xboxSink = null, IVfKeySink? keys = null)
+    public Forwarder(ForwarderConfig config, IVJoySink sink, int rateHz, int parentPid, Action<string> output, IXboxSink? xboxSink = null, IVfKeySink? keys = null, string? fakeSources = null)
     {
+        _fakeSources = fakeSources;
         _sink = sink;
         if (config.UsesXbox && xboxSink is not null)
         {
@@ -496,11 +661,11 @@ internal sealed class Forwarder : IDisposable
         _table = new ForwardingTable(config, sink.AxisMin, sink.AxisMax, sink.DiscreteHats);
         if (config.Functions.Count > 0)
         {
-            _functions = new VfRuntime(config.Functions, config.Sources.Count, _table.DeviceIds.Length, sink.AxisMin, sink.AxisMax, keys);
+            _functions = new VfRuntime(config.Functions, config.Sources.Count, _table.DeviceIds.Length, sink.AxisMin, sink.AxisMax, keys, config.Modes);
             foreach (var problem in _functions.Problems)
                 _events.Enqueue("error function: " + problem);
         }
-        _sources = config.Sources.Select((s, i) => new DirectInputSource(i, s)).ToArray();
+        _sources = config.Sources.Select((s, i) => fakeSources is null ? (InputSource)new DirectInputSource(i, s) : new FakeSource(i, s, fakeSources)).ToArray();
         _sent = new VJoyPosition[_table.DeviceIds.Length];
         _stopEvent = Native.CreateEventW(IntPtr.Zero, true, false, IntPtr.Zero);
         _timer = Native.CreateWaitableTimerExW(IntPtr.Zero, IntPtr.Zero, Native.CreateWaitableTimerHighResolution, Native.TimerAllAccess);
@@ -521,20 +686,64 @@ internal sealed class Forwarder : IDisposable
     public bool PollOnly { get; init; }
     public long Writes => Interlocked.Read(ref _writes);
     public long Changes => Interlocked.Read(ref _changes);
+    /// <summary>Device reads (GetDeviceState).</summary>
+    public long Reads => Interlocked.Read(ref _reads);
+    /// <summary>Safety reads that found a change whose event never came (should stay 0).</summary>
+    public long Missed => Interlocked.Read(ref _missed);
+
+    /// <summary>CPU time of the loop thread in ms from its cycle counter (exact), -1 when unknown.</summary>
+    public long LoopCpuMs
+    {
+        get
+        {
+            var thread = _loopThread;
+            return thread != IntPtr.Zero && Native.CyclesPerMs > 0 && Native.QueryThreadCycleTime(thread, out var cycles) ? (long)(cycles / Native.CyclesPerMs) : -1;
+        }
+    }
     public long LoopAllocatedBytes => Interlocked.Read(ref _allocated);
     public string ExitReason => _exitReason;
     public int ConnectedSources => _sources.Count(s => s.Connected);
     public int SourceCount => _sources.Length;
+    /// <summary>The loop rests (slow safety poll) because nothing changes and nothing needs the clock.</summary>
+    public bool Idle => _idle;
+    public long IdleSwitches => Interlocked.Read(ref _idleSwitches);
+    public long IdlePasses => Interlocked.Read(ref _idlePasses);
+
+    // One context for every open: the loop retries a missing device once a minute, and a new context per retry was the
+    // only allocation in the loop (48 bytes a minute, seen in the vJoy live test 2026-11-01 with a source that is not
+    // connected). Rebuilt only when DirectInput, the window or the data format change.
+    private SourceContext? _context;
+
+    private SourceContext Context()
+    {
+        var window = _window?.Handle ?? IntPtr.Zero;
+        var context = _context;
+        if (context is not null && ReferenceEquals(context.DirectInput, _directInput) && context.Window == window && context.DataFormat == _dataFormat)
+            return context;
+        return _context = new SourceContext
+        {
+            DirectInput = _directInput,
+            Window = window,
+            DataFormat = _dataFormat,
+            AxisMin = _table.AxisMin,
+            AxisMax = _table.AxisMax
+        };
+    }
 
     /// <summary>Opens DirectInput and the devices; the vJoy sink must be open already.</summary>
     public void Start()
     {
         _window = HiddenWindow.Create(() => Interlocked.Exchange(ref _devicesChangedAt, Stopwatch.GetTimestamp()));
-        _directInput = CreateDirectInput();
-        _dataFormat = BuildDataFormat();
+        if (_fakeSources is null)
+        {
+            _directInput = CreateDirectInput();
+            _dataFormat = BuildDataFormat();
+        }
+
+        var context = Context();
         foreach (var source in _sources)
         {
-            var ok = source.Open(_directInput, _window.Handle, _dataFormat, _table.AxisMin, _table.AxisMax);
+            var ok = source.Open(context);
             _output("source " + source.Index.ToString(CultureInfo.InvariantCulture) + " " + (ok ? "connected" : "missing") + " " + source.Source.Device + (ok ? "" : " (" + source.LastError + ")"));
             if (!ok)
                 source.NextRetry = Stopwatch.GetTimestamp() + Stopwatch.Frequency * 60;
@@ -585,9 +794,10 @@ internal sealed class Forwarder : IDisposable
     private unsafe void Loop()
     {
         _allocatedAtStart = GC.GetAllocatedBytesForCurrentThread();
-        var periodMs = PeriodMs;
-        long due = -(long)periodMs * 10_000;
-        Native.SetWaitableTimer(_timer, ref due, periodMs, IntPtr.Zero, IntPtr.Zero, false);
+        _loopThread = Native.OpenThread(Native.ThreadQueryLimitedInformation, false, Native.GetCurrentThreadId());
+        // The period exactly (144 Hz: 6.94 ms), in Stopwatch ticks; the safety poll while resting.
+        var period = Math.Max(1, Stopwatch.Frequency / _rateHz);
+        var safety = Stopwatch.Frequency * IdlePeriodMs / 1000;
         var fixedHandles = _parentHandle != IntPtr.Zero ? 3 : 2;
         var count = PollOnly ? fixedHandles : Math.Min(64, fixedHandles + _sources.Length);
         var handles = new IntPtr[count];
@@ -596,14 +806,30 @@ internal sealed class Forwarder : IDisposable
         if (_parentHandle != IntPtr.Zero)
             handles[2] = _parentHandle;
         for (var i = 0; i < count - fixedHandles; i++)
+        {
             handles[fixedHandles + i] = _sources[i].Event;
-        var minEventGap = Stopwatch.Frequency / (2L * _rateHz);
-        var lastPass = 0L;
+            _sources[i].Waited = true;
+        }
+
+        foreach (var source in _sources)
+            source.Pending = source.Connected; // their state at start
+
+        // The first pass reads every device (their state at start), one period after the start.
+        var start = Stopwatch.GetTimestamp();
+        var lastPass = start - period;
+        // When the timer is due (Stopwatch ticks): a timer pass counts from there, not from the (later) wake-up, so
+        // the rate holds exactly (no drift by the wake-up latency).
+        var timerDue = start + period;
+        var lastFull = start - safety;
+        var blind = true;
+        var resting = false;
+        Arm(period);
         fixed (IntPtr* pointer = handles)
         {
             while (true)
             {
-                var wait = Native.WaitForMultipleObjects((uint)count, pointer, false, Native.Infinite);
+                // Blind: only stop, timer and parent; the change events wait for the pass at the end of the period.
+                var wait = Native.WaitForMultipleObjects((uint)(blind ? fixedHandles : count), pointer, false, Native.Infinite);
                 if (wait == Native.WaitObject0)
                     break;
                 if (wait == Native.WaitFailed)
@@ -620,11 +846,46 @@ internal sealed class Forwarder : IDisposable
 
                 Interlocked.Increment(ref _wakes);
                 var now = Stopwatch.GetTimestamp();
-                var deviceEvent = wait >= Native.WaitObject0 + (uint)fixedHandles;
-                if (deviceEvent && now - lastPass < minEventGap)
-                    continue; // the next timer tick takes it
-                lastPass = now;
-                Pass(now);
+                if (wait >= Native.WaitObject0 + (uint)fixedHandles && wait < Native.WaitObject0 + (uint)count)
+                {
+                    // The wait consumed the (auto reset) event: remember it for the pass.
+                    _sources[wait - Native.WaitObject0 - (uint)fixedHandles].Pending = true;
+                    if (now - lastPass < period)
+                    {
+                        // Less than a period after the last pass: the pass at its end takes this change.
+                        blind = true;
+                        timerDue = lastPass + period;
+                        Arm(timerDue - now);
+                        continue;
+                    }
+                }
+
+                var full = PollOnly || now - lastFull >= safety;
+                if (full)
+                    lastFull = now;
+                var changed = Pass(now, full);
+                lastPass = wait == Native.WaitObject0 + 1 && now >= timerDue && now - timerDue < period ? timerDue : now;
+                if (resting)
+                    Interlocked.Increment(ref _idlePasses);
+
+                // Next pass: one period after a change (blind meanwhile) or while polled devices / the clock need it;
+                // at a virtual function's next due time; else the safety poll (a change event wakes the loop at once).
+                if (changed || PollOnly || AnyPolledSource())
+                    timerDue = lastPass + period;
+                else
+                    timerDue = FunctionsDue(now, lastPass + period, lastPass + safety);
+                var next = timerDue - lastPass;
+                blind = changed;
+                var rest = next > period;
+                if (rest != resting)
+                {
+                    resting = rest;
+                    Interlocked.Increment(ref _idleSwitches);
+                }
+
+                _idle = next >= safety;
+
+                Arm(timerDue - Stopwatch.GetTimestamp());
                 Interlocked.Exchange(ref _allocated, GC.GetAllocatedBytesForCurrentThread() - _allocatedAtStart);
             }
         }
@@ -649,7 +910,40 @@ internal sealed class Forwarder : IDisposable
         }
     }
 
-    private void Pass(long now)
+    // One shot: the timer fires once, after `ticks` Stopwatch ticks (at least 100 ns); every wake-up arms it again.
+    private void Arm(long ticks)
+    {
+        long due = -Math.Max(1, (long)(ticks * _hundredNsPerTick));
+        Native.SetWaitableTimer(_timer, ref due, 0, IntPtr.Zero, IntPtr.Zero, false);
+    }
+
+    // When (Stopwatch ticks) the next pass is due for the virtual functions: the next period while one changes every
+    // pass (a moving axis), the time of the next pulse end / turbo phase / long press / macro step, else the safety
+    // poll; never before the next period, never after the safety poll.
+    private long FunctionsDue(long now, long earliest, long latest)
+    {
+        var functions = _functions;
+        if (functions is null || !functions.NeedsClock || functions.NextDueUs == long.MaxValue)
+            return latest;
+        // + 50 us: the pass must come at or after the due time, never just before it (a period late then).
+        var due = now + (long)((functions.NextDueUs - functions.LastTickUs + 50) / _microsPerTick);
+        return Math.Clamp(due, earliest, latest);
+    }
+
+    private bool AnyPolledSource()
+    {
+        for (var i = 0; i < _sources.Length; i++)
+        {
+            if (_sources[i].Connected && (!_sources[i].SignalsChanges || !_sources[i].Waited))
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>One pass: reads the devices whose event fired (every device when <paramref name="full"/>), runs the
+    /// virtual functions and writes what changed. True when a device changed (or was lost / came back).</summary>
+    private bool Pass(long now, bool full)
     {
         Interlocked.Increment(ref _passes);
         var changed = false;
@@ -663,11 +957,25 @@ internal sealed class Forwarder : IDisposable
                 // (WM_DEVICECHANGE), else once a minute.
                 if (now - Interlocked.Read(ref _devicesChangedAt) < Stopwatch.Frequency * 10 && source.NextRetry - now > Stopwatch.Frequency)
                     source.NextRetry = now;
-                if (now >= source.NextRetry)
-                    Reconnect(source, now);
+                if (now >= source.NextRetry && Reconnect(source, now))
+                {
+                    source.Pending = true; // read in the next pass, one period from now
+                    changed = true;
+                }
                 continue;
             }
 
+            var signalled = true;
+            if (source.Waited && source.SignalsChanges)
+            {
+                // The event fired (woke the loop, or fired while the loop did not watch): consume it.
+                signalled = source.Pending || Native.WaitForSingleObject(source.Event, 0) == Native.WaitObject0;
+                source.Pending = false;
+                if (!signalled && !full)
+                    continue;
+            }
+
+            Interlocked.Increment(ref _reads);
             var result = source.Read();
             if (result < 0)
             {
@@ -686,6 +994,8 @@ internal sealed class Forwarder : IDisposable
 
             if (result > 0)
             {
+                if (!signalled)
+                    Interlocked.Increment(ref _missed);
                 lock (_gate)
                 {
                     _table.Apply(i, source.State);
@@ -699,7 +1009,8 @@ internal sealed class Forwarder : IDisposable
 
         if (changed)
             Interlocked.Increment(ref _changes);
-        // Virtual functions run every pass (pulses, turbo, macros and long presses need the clock, not only changes).
+        // Virtual functions run every pass (pulses, turbo, macros and long presses need the clock, not only changes;
+        // the loop comes back at their next due time).
         if (_functions is not null)
         {
             lock (_gate)
@@ -711,7 +1022,7 @@ internal sealed class Forwarder : IDisposable
             }
         }
         else if (!changed)
-            return;
+            return false;
         lock (_gate)
         {
             for (var d = 0; d < _sent.Length; d++)
@@ -735,16 +1046,22 @@ internal sealed class Forwarder : IDisposable
                 }
             }
         }
+
+        return changed;
     }
 
-    private void Reconnect(DirectInputSource source, long now)
+    private bool Reconnect(InputSource source, long now)
     {
-        if (_directInput is null || _window is null)
-            return;
-        if (source.Open(_directInput, _window.Handle, _dataFormat, _table.AxisMin, _table.AxisMax))
+        if (_window is null)
+            return false;
+        if (source.Open(Context()))
+        {
             _events.Enqueue("source " + source.Index.ToString(CultureInfo.InvariantCulture) + " connected " + source.Source.Device);
-        else
-            source.NextRetry = now + Stopwatch.Frequency * (now - Interlocked.Read(ref _devicesChangedAt) < Stopwatch.Frequency * 10 ? 1 : 60);
+            return true;
+        }
+
+        source.NextRetry = now + Stopwatch.Frequency * (now - Interlocked.Read(ref _devicesChangedAt) < Stopwatch.Frequency * 10 ? 1 : 60);
+        return false;
     }
 
     private static bool SameReport(ref XboxReport a, ref XboxReport b) =>
@@ -871,6 +1188,12 @@ internal sealed class Forwarder : IDisposable
             Native.timeEndPeriod(1);
         if (_parentHandle != IntPtr.Zero)
             Native.CloseHandle(_parentHandle);
+        if (_loopThread != IntPtr.Zero)
+        {
+            Native.CloseHandle(_loopThread);
+            _loopThread = IntPtr.Zero;
+        }
+
         if (_timer != IntPtr.Zero)
             Native.CloseHandle(_timer);
         if (_stopEvent != IntPtr.Zero)

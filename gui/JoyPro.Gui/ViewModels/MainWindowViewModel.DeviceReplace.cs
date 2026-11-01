@@ -451,13 +451,22 @@ public partial class MainWindowViewModel
         return list;
     }
 
-    // Moves the binds (one change in the history). True when it was applied (the window closes).
+    // Moves the binds (one change in the history). Asks first and keeps a copy of the profile next to it, as Exchange
+    // Device and Remove do. True when it was applied (the window closes).
     internal async Task<bool> ApplyReplaceDeviceAsync()
     {
         if (!CanApplyReplace || string.IsNullOrWhiteSpace(ReplaceOldDevice) || string.IsNullOrWhiteSpace(ReplaceNewDevice))
             return false;
         string oldName = DeviceRemapNoticeItem.ShortName(ReplaceOldDevice);
         string newName = DeviceRemapNoticeItem.ShortName(ReplaceNewDevice);
+        if (!await ConfirmAsync(T("Move the binds of {0}?", oldName),
+                T("The binds and modifiers of {0} move to {1} as the preview shows. A copy of your profile is kept next to it first.", oldName, newName),
+                T("Move binds")))
+        {
+            ReplaceStatus = T("Cancelled: {0}.", T("Move the binds of {0}?", oldName));
+            return false;
+        }
+        BackupProfileBeforeChange("before-device-replace");
         List<string> args = ReplaceArgs(dryRun: false, withChoices: true);
         if (ReplaceNeedsMerge)
         {

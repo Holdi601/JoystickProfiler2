@@ -1,4 +1,4 @@
-# War Thunder (experimental, not tested on a real install)
+# War Thunder (experimental; verified in game 2026-10-10 by `tools\e2e\games\WarThunderSettings.ps1`: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)
 
 ## Files
 - Current controls: `%USERPROFILE%\Documents\My Games\WarThunder\Saves\<gaijinUserId>\production\machine.blk` (`Saves\last\production\` when not logged in). Same path for the Gaijin launcher and Steam (app 236390). [OBS]
@@ -124,7 +124,7 @@ Where the action list lives in the installed game: `gui.vromfs.bin` (`scripts/co
 - `Saves\<uid>\production\machine.blk` (controls, settings{}, gui_options{}) and `global.blk` are synced with the Gaijin server: machine.blk per account and machine (`machine.id`), global.blk per account. `Saves\last` is a copy from before the login; `Saves\lastlogin.blk` names the account (`uid:i64=`), which JoyPro picks first.
 - At login the game compares the file's first line `version:i=N` with the server's (`online_storage::process_gblk_meta_with_type`): server higher: the server copy replaces the file; equal version and same content: nothing; equal version, other content: the file is uploaded (version + 1); server lower: the file is uploaded. The game raises the version on each local save. The game's own log (`.game_logs\*.clog`) records the decision ("ver is newer local ver", "is differ local ver", "force save local settings").
 - JoyPro's export keeps the version (equal version, new content: the file wins; seen in game). Restoring an older copy lowers it, and then the server's newer copy comes back at the next login. `engine backups restore` therefore gives a restored machine.blk/global.blk the version above the file it replaces (`WarThunderCloudVersion`); copy a `.jpbak` back by hand only together with such a version.
-- In-game check: `tools\e2e\games\WarThunderSettings.ps1` (unattended): binds (vJoy axes 2 and 7), the Axis setup dialogs of pitch and throttle and the Controls page values against what JoyPro wrote.
+- In-game check (29/29 on 2026-10-10; the watcher runs of 2026-10-11 were 32/34 and 31/32: a WEP-hold change not seen, one sensitivity read back off by one): `tools\e2e\games\WarThunderSettings.ps1` (unattended): binds (vJoy axes 2 and 7), the Axis setup dialogs of pitch and throttle and the Controls page values against what JoyPro wrote.
 
 ## JoyPro implementation (`engine warthunder ...`)
 - Files: `machine.blk` (`content{controls{}}`) or an exported controls preset (`controls{}` at the top); text BLK only.
@@ -138,7 +138,7 @@ Where the action list lives in the installed game: `gui.vromfs.bin` (`scripts/co
   - `add` writes a shortcut only when no other cataloged ID uses that input (else it is skipped and listed as a skipped multi-bind); it never removes a block or replaces a bound axis.
   - `merge` writes the profile's shortcuts beside the ID's other shortcuts and removes only conflicts (an axis of another cataloged ID on the profile's axis gets `axisId -1`).
   - `merge-overwrite` = merge + the profile's IDs lose their other shortcuts on connected devices War Thunder lists (keyboard only with `--include-keyboard`; mouse and devices that are not connected stay).
-  - `clean` = merge-overwrite + releases the other cataloged shortcuts/axes of the devices the export writes; `--nuke-untouched-devices` releases those of connected devices without binds in the export.
+  - `clean` = merge + releases the other cataloged shortcuts/axes of the devices the export writes (other devices keep theirs, as in every game; up to 2.5.0 clean also took the profile's IDs off other devices like merge-overwrite); `--nuke-untouched-devices` releases those of connected devices without binds in the export.
   - No ownership file any more: JoyPro's earlier shortcuts count like the game's (an old `machine.blk.joypro.json` is ignored).
   - An empty `ID_X{}` marker is replaced when JoyPro binds the ID. An ID missing from the file gets a warning, because JoyPro's shortcut then replaces the base preset's default.
 - Release packages ship neither `actions.tsv` nor `base-presets.tsv` (no game data, THIRD_PARTY_NOTICES.md 1.4). Without the base

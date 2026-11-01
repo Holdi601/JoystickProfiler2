@@ -425,6 +425,17 @@ internal sealed class VfFakeEngine : IEngineCliClient
 
     public List<IReadOnlyList<string>> Calls { get; } = [];
 
+    // engine vjoy modes: the DCS modes (VirtualFunctionGraphModesGuiTests).
+    public VfModeSet Modes { get; } = new() { Group = "DCS" };
+
+    // The status's Settings.TunnelDevice (the GUI's --vjoy-tunnel arrives in the calls).
+    public int TunnelDevice { get; set; }
+
+    // The answer of engine vjoy import-gremlin (null: a canned report).
+    public string? GremlinAnswer { get; set; }
+
+    public List<VirtualFunction> FunctionsOf(string game) => functions.TryGetValue(game, out List<VirtualFunction>? list) ? list : functions[game] = [];
+
     public static VirtualFunction Detents()
     {
         VirtualFunction function = VirtualFunctionCatalog.Create(VirtualFunctionCatalog.Bands, "Throttle detents");
@@ -498,6 +509,21 @@ internal sealed class VfFakeEngine : IEngineCliClient
                     }
                     if (args.Contains("--enabled"))
                         list[index].Enabled = Value(args, "--enabled") == "on";
+                    if (args.Contains("--input"))
+                    {
+                        // role=<device>|<input> or role= (the graph's connect / disconnect).
+                        string value = Value(args, "--input");
+                        string role = value[..value.IndexOf('=')];
+                        string rest = value[(value.IndexOf('=') + 1)..];
+                        VfInput input = list[index].InputOf(role) ?? new VfInput { Role = role };
+                        if (!list[index].Inputs.Contains(input))
+                            list[index].Inputs.Add(input);
+                        input.Device = rest.Length == 0 ? string.Empty : rest[..rest.LastIndexOf('|')];
+                        input.Input = rest.Length == 0 ? string.Empty : rest[(rest.LastIndexOf('|') + 1)..];
+                        string loop = VfChain.LoopProblem(list);
+                        if (loop.Length > 0)
+                            return (1, loop);
+                    }
                     return (0, Json(new { Message = "Updated the function " + id + "." }));
                 }
                 if (action == "remove")
@@ -507,6 +533,40 @@ internal sealed class VfFakeEngine : IEngineCliClient
                 }
                 return (0, "{}");
             }
+            case "modes":
+            {
+                string action = args[at + 2];
+                string name = args.Contains("--name") ? Value(args, "--name") : string.Empty;
+                if (action == "add")
+                    Modes.Modes.Add(new VfMode { Name = name, Parent = args.Contains("--parent") ? Value(args, "--parent") : string.Empty });
+                else if (action == "remove")
+                    Modes.Modes.RemoveAll(m => m.Name == name);
+                else if (action == "start")
+                    Modes.Start = name;
+                else if (action == "set")
+                {
+                    VfMode mode = Modes.Find(name)!;
+                    if (args.Contains("--parent"))
+                        mode.Parent = Value(args, "--parent");
+                    if (args.Contains("--rename"))
+                        mode.Name = Value(args, "--rename");
+                }
+                Modes.Normalize();
+                return (0, Json(new { Message = "Modes of DCS World changed.", Modes = Modes.Modes }));
+            }
+            case "import-gremlin":
+                return (0, GremlinAnswer ?? Json(new
+                {
+                    Message = (args.Contains("--dry-run") ? "Dry run: would import" : "Imported") + " 3 virtual function(s) and 2 mode(s) for DCS World from profile.xml (Joystick Gremlin R13 (profile version 9)).",
+                    Format = "Joystick Gremlin R13 (profile version 9)",
+                    Devices = new[] { new { GremlinName = "VKB Stick", GremlinGuid = "{11111111-2222-3333-4444-000000000001}", JoyProDevice = VirtualFunctionsGuiTests.Stick, Match = "guid" },
+                                      new { GremlinName = "Saitek Pro Flight Rudder Pedals", GremlinGuid = "{BBBBBBBB-0000-0000-0000-00000000CAFE}", JoyProDevice = "Saitek Pro Flight Rudder Pedals {BBBBBBBB-0000-0000-0000-00000000CAFE}", Match = "none" } },
+                    Modes = new[] { new { Name = "Default", Parent = "" }, new { Name = "Combat", Parent = "Default" } },
+                    Functions = new[] { new { Id = "f2" }, new { Id = "f3" }, new { Id = "f4" } },
+                    NotImported = new[] { "VKB Stick button 3 (mode Default): the action \"map-to-mouse\" - JoyPro's virtual functions send no mouse input.", "User plugins (1): Python scripts cannot run in JoyPro; rebuild what they do with virtual functions." },
+                    Notes = new[] { "VKB Stick button 8 (mode Combat): each chain step is a pulse of 80 ms (Gremlin held it while the button was held)." },
+                    Warnings = Array.Empty<string>()
+                }));
             default:
                 return (0, Json(new { Message = "ok" }));
         }
@@ -525,11 +585,16 @@ internal sealed class VfFakeEngine : IEngineCliClient
             },
             HidHide = new { Installed = true, Version = "1.5.230.0", CloakOn = false, InverseOn = true, Devices = Array.Empty<string>(), Apps = Array.Empty<string>(), Unreadable = Array.Empty<string>() },
             Session = new { Phase = "none", Stale = false },
-            Settings = new { FirstDevice = 1, LastDevice = 16, AutoStart = false, HideDevices = true },
+            Settings = new
+            {
+                FirstDevice = TunnelDevice > 0 ? TunnelDevice : 1, LastDevice = 16, AutoStart = false, HideDevices = true, TunnelDevice,
+                TunnelWarnings = TunnelDevice > 0 ? Array.Empty<string>() : new[] { "Virtual mode writes vJoy 1, but Settings names no \"vJoy device JoyPro tunnels into\": imports of games in native mode read that device like any other. Choose vJoy 1 there." }
+            },
             Games = new object[]
             {
                 new { Id = "DCS", Name = "DCS World", Mode = "virtual", Relations = 12, ProcessNames = new[] { "DCS" }, Exes = Array.Empty<string>(),
-                      InputLimit = Limit("reads 128 buttons, 8 axes, 4 hats per joystick (documented)", true), LimitWarnings = Array.Empty<string>(), Functions = functions["DCS"].Count },
+                      InputLimit = Limit("reads 128 buttons, 8 axes, 4 hats per joystick (documented)", true), LimitWarnings = Array.Empty<string>(), Functions = functions["DCS"].Count,
+                      Modes = Modes.Modes, StartMode = Modes.Start },
                 new { Id = "Arma2OA", Name = "Arma 2: Operation Arrowhead", Mode = "virtual", Relations = 3, ProcessNames = new[] { "arma2oa" }, Exes = Array.Empty<string>(),
                       InputLimit = Limit("reads 32 buttons, 8 axes, 1 hat per joystick (verified)", true),
                       LimitWarnings = new[] { "Arma 2: Operation Arrowhead reads only the first 32 buttons of a joystick: the inputs on buttons 33, 40 on vJoy 1 will not work there." }, Functions = 0 },
@@ -543,7 +608,9 @@ internal sealed class VfFakeEngine : IEngineCliClient
                 Function = f,
                 Outputs = f.Outputs.Select(o => new { o.Role, o.Target, Describe = o.Target.Length == 0 ? "none" : "vJoy 1 " + VfTokens.Describe(o.Target) }).ToArray(),
                 Problems = Array.Empty<string>(),
-                Warnings = Array.Empty<string>()
+                Warnings = Array.Empty<string>(),
+                ModesText = Modes.Modes.Count == 0 ? string.Empty : Modes.Describe(f, g.Value),
+                ReadBy = g.Value.Where(o => VfChain.DependsOn(o).Contains(f.Id)).Select(o => o.Id).ToArray()
             })).ToArray(),
             InputDevices = new object[]
             {

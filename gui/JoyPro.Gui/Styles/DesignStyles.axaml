@@ -26,6 +26,23 @@
     <Style Selector="Expander /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
         <Setter Property="IsHitTestVisible" Value="False" />
     </Style>
+    <!-- A compact expander in a narrow pane (the Relations page's filters): a low header, a small chevron, the content
+         straight on the pane's surface without its own frame -->
+    <Style Selector="Expander.compact">
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="0,6,0,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Expander.compact /template/ ToggleButton#ExpanderHeader">
+        <Setter Property="Padding" Value="8,4,0,4" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <Style Selector="Expander.compact /template/ ToggleButton#ExpanderHeader /template/ Border#ExpandCollapseChevronBorder">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Margin" Value="4,0,6,0" />
+    </Style>
 
     <!-- Surfaces -->
     <Style Selector="Border.surface">
@@ -579,7 +596,7 @@
         <Setter Property="Foreground" Value="{DynamicResource JP.OnAccentTextBrush}" />
     </Style>
 
-    <!-- The device picture region (DeviceMarkerCanvas / DeviceReferenceView host) and labels floating on it -->
+    <!-- The device picture region (DeviceMarkerCanvas host) and labels floating on it -->
     <Style Selector="Border.canvasHost">
         <Setter Property="Background" Value="{DynamicResource JP.SurfaceAltBrush}" />
         <Setter Property="ClipToBounds" Value="True" />

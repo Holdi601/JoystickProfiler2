@@ -494,8 +494,8 @@ namespace JoyPro.Engine.Games
         // Keeps existing codes in place (so unchanged lines stay byte-identical); keyboard and mouse codes are never
         // touched. A joystick code of the action goes when
         //  - the profile puts it on another action of the same vehicle (a conflict; every mode but "only add"),
-        //  - merge-overwrite / clean: the profile binds this action and the code is another input of it on a connected
-        //    joystick (a moved action fully moves),
+        //  - merge-overwrite: the profile binds this action and the code is another input of it on a connected joystick
+        //    (a moved action fully moves; clean leaves the joysticks it does not write alone, as in every game),
         //  - its device is released: clean releases the devices the export writes, nuke the connected devices it does
         //    not use (a device that is not connected is never cleared).
         // On a full-axis action the order of the two halves is the direction, so JoyPro's codes go to the end in the
@@ -511,8 +511,8 @@ namespace JoyPro.Engine.Games
                 bool joystick = ArmaCode.TryDecode(code, true, out decoded);
                 bool other = joystick && !wanted.Contains(code);
                 bool conflict = other && mode != GameExportMode.Add && conflicts.Contains(code);
-                bool moved = other && wanted.Count > 0 && (mode == GameExportMode.Clean || mode == GameExportMode.MergeOverwrite) && ownedOffsets.Contains(decoded.Offset);
-                bool released = other && (exportedOffsets.Contains(decoded.Offset) ? mode == GameExportMode.Clean : nuke && ownedOffsets.Contains(decoded.Offset));
+                bool moved = other && wanted.Count > 0 && mode == GameExportMode.MergeOverwrite && ownedOffsets.Contains(decoded.Offset);
+                bool released = other && ownedOffsets.Contains(decoded.Offset) && (exportedOffsets.Contains(decoded.Offset) ? mode == GameExportMode.Clean : nuke);
                 bool drop = conflict || moved || released || (reorder && wanted.Contains(code));
                 if (!drop)
                     result.Add(code);
@@ -564,7 +564,9 @@ namespace JoyPro.Engine.Games
             string xinput;
             if (joystick.Values.TryGetValue("isXInput", out xinput) && (xinput.Trim() == "1" || xinput.Trim().Equals("true", StringComparison.OrdinalIgnoreCase)))
                 return false;
-            return devices != null && devices.FindByInstanceGuid(joystick.Guid) != null;
+            // A device JoyPro never clears (the vJoy device JoyPro tunnels into, an ignored device) is not owned either.
+            GameDevice device = devices == null ? null : devices.FindByInstanceGuid(joystick.Guid);
+            return device != null && !device.Kept;
         }
 
         private string TryResolveOffset(GameInputBinding binding, ArmaProfile profile, GameDeviceDirectory devices, out int offset)

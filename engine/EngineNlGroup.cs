@@ -1570,10 +1570,11 @@ namespace JoyPro.Engine
                                 node.KeptIn[plane] = proposal.Name;
                             }
                         }
-                        else if (disabled.TryGetValue(key, out owners))
+                        // Switched off (or dismissed) in this relation only; off in another relation says nothing here.
+                        else if (disabled.TryGetValue(key, out owners) && owners.Contains(proposal.Name, StringComparer.OrdinalIgnoreCase))
                         {
-                            node.KeptIn[plane] = string.Join(", ", owners) + " (switched off)";
-                            AddUnique(result.Kept, plane + " " + node.Id + " stays switched off in '" + string.Join("', '", owners) + "'");
+                            node.KeptIn[plane] = proposal.Name + " (switched off)";
+                            AddUnique(result.Kept, plane + " " + node.Id + " stays switched off in '" + proposal.Name + "'");
                         }
                     }
                 }

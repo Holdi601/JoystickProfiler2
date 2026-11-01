@@ -1,4 +1,4 @@
-# Arma 3 (experimental, not tested on a real install; the game was never started on this PC)
+# Arma 3 (experimental; verified in game 2026-10-10 by `tools\e2e\games\Arma3Settings.ps1`: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)
 
 ## Files
 - Default profile: `Documents\Arma 3\<Name>.Arma3Profile`. Other profiles: `Documents\Arma 3 - Other Profiles\<Name>\<Name>.Arma3Profile`. [SRC https://community.bistudio.com/wiki/Profile]
@@ -119,6 +119,6 @@ preset does not list (Eject). Fresh build on a test PC: 51 actions (= the develo
 ## Safe write
 Rewrite only lines matching `^key<FlightAction>\[\]=\{...\};$`. In each: remove codes that belong to devices JoyPro manages (device type JB/JA/JP with that device's offset, and combos whose main input is on those devices), keep keyboard, mouse, TrackIR and XInput codes, append the new codes. Map devices via the instance GUID in `JoysticksList`; if a device is missing, warn and ask the user to start Arma once with it; a disabled device that gets binds is enabled. The JoysticksList arrays and properties and the top-level game options are edited only as described above; every other byte stays.
 
-In-game check (prepared, not run): `tools\e2e\games\Arma3Settings.ps1` (stages prime / prepare / launch / check / restore; test profile `JoyProE2E`; main menu > Options > Controls only, arma3_x64.exe without BattlEye).
+In-game check (25/25 on 2026-10-10; watcher run 2026-10-11: 29/30): `tools\e2e\games\Arma3Settings.ps1` (stages prime / prepare / launch / check / restore; test profile `JoyProE2E`; main menu > Options > Controls only, arma3_x64.exe without BattlEye).
 
 Samples: https://github.com/Florian-DELRIEU/Arma (Florian.Arma3Profile), https://github.com/ademirt/Arma3, https://github.com/teef22/Arma3_profile_stub.

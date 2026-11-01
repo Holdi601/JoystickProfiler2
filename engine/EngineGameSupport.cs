@@ -584,7 +584,7 @@ namespace JoyPro.Engine
             };
             List<Category> categories = report.Categories.Count > 0
                 ? report.Categories
-                : report.Rows.Select(r => r.Category).Distinct().Select(c => new Category { Id = c, Title = c.Length > 0 ? c : "Other" }).ToList();
+                : report.Rows.Select(r => r.Category).Distinct().Select(c => new Category { Id = c, Title = c.Length > 0 ? c : "Other", Note = string.Empty }).ToList();
             Func<Category, List<Row>> rowsOf = c => report.Rows.Where(r => r.Category == c.Id).ToList();
 
             int inEngine = report.Rows.Count(r => r.InEngine);

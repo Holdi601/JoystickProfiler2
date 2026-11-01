@@ -119,8 +119,28 @@ namespace JoyPro.Engine
                 {
                     if (args.Count < 1 || args.Count > 2)
                         return Fail("usage " + action + " <game> [<unit>]");
-                    string game = ResolveUsageGame(args[0]);
-                    string id = UsageOverrides.Id(game, args.Count > 1 ? args[1] : string.Empty);
+                    string game = GameInstalls.Resolve(args[0]);
+                    if (game.Length == 0)
+                        return Fail("Unknown game: " + args[0] + " (engine games installs lists the game ids).");
+                    string unit = args.Count > 1 ? args[1].Trim() : string.Empty;
+                    // Only what the ranking lists (logged usage, or the profile's binds with --profile); a choice already
+                    // stored can always be taken back.
+                    if (unit.Length > 0)
+                    {
+                        UsageAggregate checkAggregate;
+                        UsageRanking known = BuildUsageRanking(store, true, out checkAggregate);
+                        UsageUnitStat match = known.Units.FirstOrDefault(u => string.Equals(u.Game, game, StringComparison.OrdinalIgnoreCase) && string.Equals(u.Unit, unit, StringComparison.OrdinalIgnoreCase));
+                        if (match != null)
+                            unit = match.Unit;
+                        else
+                        {
+                            string stored = store.Overrides.Pinned.Concat(store.Overrides.Excluded).FirstOrDefault(p => string.Equals(p, UsageOverrides.Id(game, unit), StringComparison.OrdinalIgnoreCase));
+                            if (stored == null)
+                                return Fail("No usage of '" + unit + "' in " + game + " is known (engine usage ranking --game " + game + " lists the aircraft, ships and vehicles).");
+                            unit = stored.Substring(stored.IndexOf('|') + 1);
+                        }
+                    }
+                    string id = UsageOverrides.Id(game, unit);
                     if (action == "pin")
                     {
                         store.Overrides.Pinned.Add(id);
@@ -148,7 +168,11 @@ namespace JoyPro.Engine
                 case "restore":
                     if (args.Count != 1)
                         return Fail("usage restore <day> (engine usage backups lists them)");
-                    if (!store.Restore(args[0]))
+                    // Only a day engine usage backups lists (no path: "..", "\" or a drive never reach the store).
+                    string day = store.BackupDaysList().FirstOrDefault(d => string.Equals(d, args[0].Trim(), StringComparison.OrdinalIgnoreCase));
+                    if (day == null)
+                        return Fail("No usage backup of " + args[0] + " (engine usage backups lists the days).");
+                    if (!store.Restore(day))
                         return Fail("No usage backup of " + args[0] + ".");
                     EmitPayload(textOutput ? "Restored the usage store of " + args[0] + "." : Json(new Dictionary<string, object> { { "Restored", args[0] }, { "Sessions", store.Sessions.Count } }), outPath);
                     return 0;

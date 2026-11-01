@@ -1,0 +1,354 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JoyPro HUD</title>
+<!-- JoyPro's HUD for OBS's Browser Source (docs/hud.md "Streamer mode"). The background is transparent: OBS shows only
+     the widgets, no custom CSS needed. Served by JoyPro on 127.0.0.1 only; live data comes as Server-Sent Events. -->
+<style>
+html, body { margin: 0; padding: 0; background: transparent !important; overflow: hidden; width: 100%; height: 100%; }
+#stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.w { position: absolute; transform-origin: 0 0; opacity: var(--opacity); font-family: var(--font); color: var(--text); }
+.card { background: var(--cardBg); border: var(--cardBw) solid var(--cardBorder); border-radius: var(--cardRadius); box-shadow: var(--cardShadow); padding: 12px 14px; box-sizing: border-box; }
+.col { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; flex-direction: row; gap: 16px; align-items: center; }
+.row.tight { gap: 8px; }
+.title { font-size: var(--title); font-weight: var(--titleWeight); letter-spacing: var(--ls); white-space: nowrap; }
+.caps { font-size: var(--small); color: var(--dim); letter-spacing: 1.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot { width: 8px; height: 8px; border-radius: 4px; background: var(--accent); box-shadow: var(--glow); flex: none; }
+.value { font-size: var(--tiny); color: var(--text); }
+.pic { position: relative; flex: none; }
+.pic > .tilt { position: absolute; inset: 0; transform-origin: 50% 88%; }
+.pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.marker { position: absolute; width: 16px; height: 16px; box-sizing: border-box; border-radius: var(--markerRadius); border: 2px solid var(--soft); opacity: .35; transition: opacity .08s; }
+.marker.on { background: var(--pressed); border-color: #fff; opacity: 1; box-shadow: var(--glow); }
+.marker.big { width: 18px; height: 18px; opacity: 0; }
+.marker.big.on { opacity: 1; }
+.right { display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+.levers { display: flex; gap: 10px; }
+.lever { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 34px; }
+.lever .caps { max-width: 64px; }
+.bars { display: flex; flex-direction: column; }
+.barrow { display: grid; grid-template-columns: 84px 112px 34px; column-gap: 6px; align-items: center; min-height: 15px; }
+.barrow.nolabel { grid-template-columns: 112px 34px; }
+.barrow .value { text-align: right; }
+.grid { display: flex; flex-wrap: wrap; max-width: 260px; }
+.btn { width: var(--btn); height: var(--btn); border-radius: var(--btnRadius); background: var(--track); border: 1px solid var(--track); margin: 0 4px 4px 0; display: flex; align-items: center; justify-content: center; font-size: 9px; box-sizing: border-box; transition: background .08s; }
+.btn.on { background: var(--pressed); border-color: rgba(255,255,255,.8); }
+.chips { display: flex; flex-wrap: wrap; max-width: 520px; }
+.chip { border-radius: var(--chipRadius); padding: 3px 10px; margin: 0 6px 6px 0; background: var(--chip); border: 1px solid var(--accent); font-size: var(--size); font-weight: 600; color: var(--text); white-space: nowrap; }
+.chip.underline { border-width: 0 0 2px 0; }
+.chips:empty { display: none; }
+.hats { display: flex; flex-wrap: wrap; max-width: 80px; }
+.lines { display: flex; flex-direction: column; min-width: 300px; }
+.line { display: flex; margin: 0 0 6px 0; padding: 0 !important; overflow: hidden; transition: opacity .25s; }
+.line .bar { width: 4px; background: var(--accent); flex: none; }
+.line .txt { padding: 6px 16px 7px 12px; }
+.line .t { font-weight: 600; color: var(--text); }
+.line .d { color: var(--dim); }
+.line.r { align-self: flex-end; }
+.header { display: flex; gap: 10px; align-items: center; padding: 6px 16px 6px 8px; }
+.header .hp { width: 36px; height: 36px; border-radius: 8px; overflow: hidden; background: rgba(255,255,255,.1); flex: none; }
+.header .hp img { width: 100%; height: 100%; object-fit: cover; }
+.throttle { position: relative; flex: none; }
+.throttle > .move { position: absolute; inset: 0; transform-origin: 50% 80%; }
+.throttle img, .stick img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.stick { position: relative; flex: none; }
+.stick > .tilt { position: absolute; inset: 0; transform-origin: 50% 92%; }
+svg { overflow: visible; display: block; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<!--HUD-SNAPSHOT-->
+<script>
+"use strict";
+const stage = document.getElementById("stage");
+const NS = "http://www.w3.org/2000/svg";
+let layout = null;
+const parts = {};          // widget id -> elements to update
+let header = null, lines = null;
+
+function fit() {
+  const w = layout ? layout.width : 1920, h = layout ? layout.height : 1080;
+  const s = Math.min(window.innerWidth / w, window.innerHeight / h);
+  stage.style.transform = "scale(" + s + ")";
+}
+window.addEventListener("resize", fit);
+
+function el(tag, cls, parent, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function svg(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function img(id) { return id ? "/hud/img/" + id : ""; }
+
+// ---- Bars and levers in the style's shapes (rounded, square, thin, segmented, outline)
+function makeBar(parent, w, h, shape, vertical, bipolar) {
+  const s = svg("svg", { width: w, height: h }, parent);
+  const bar = { s, w, h, shape, vertical, bipolar, segs: [], fill: null, knob: null };
+  const len = vertical ? h : w, thick = vertical ? w : h;
+  if (shape === "segmented") {
+    const n = vertical ? 12 : 14, gap = 2, seg = (len - gap * (n - 1)) / n;
+    for (let i = 0; i < n; i++) {
+      const a = i * (seg + gap);
+      const r = vertical ? { x: 0, y: h - a - seg, width: w, height: seg } : { x: a, y: 0, width: seg, height: h };
+      bar.segs.push({ c: a + seg / 2, e: svg("rect", Object.assign({ rx: 1, fill: "var(--track)" }, r), s) });
+    }
+  } else if (shape === "thin") {
+    const m = thick / 2;
+    svg("line", vertical ? { x1: m, y1: 0, x2: m, y2: h } : { x1: 0, y1: m, x2: w, y2: m }, s).setAttribute("style", "stroke:var(--track);stroke-width:2");
+    bar.fill = svg("rect", { fill: "var(--accent)" }, s);
+    bar.knob = svg("circle", { r: Math.max(3, thick / 2), fill: "var(--accent)" }, s);
+  } else if (shape === "outline") {
+    svg("rect", { x: .5, y: .5, width: w - 1, height: h - 1, rx: 2, fill: "none" }, s).setAttribute("style", "stroke:var(--accent);stroke-width:1");
+    bar.fill = svg("rect", { rx: 1, fill: "var(--accent)" }, s);
+  } else {
+    const r = shape === "square" ? 0 : thick / 2;
+    svg("rect", { x: 0, y: 0, width: w, height: h, rx: r, fill: "var(--track)" }, s);
+    bar.fill = svg("rect", { rx: r, fill: "var(--accent)" }, s);
+  }
+  if (bipolar) svg("rect", vertical ? { x: 0, y: h / 2 - 1, width: w, height: 2 } : { x: w / 2 - 1, y: 0, width: 2, height: h }, s).setAttribute("fill", "rgba(255,255,255,.5)");
+  setBar(bar, .5);
+  return bar;
+}
+function setBar(bar, v) {
+  v = Math.max(0, Math.min(1, v));
+  const len = bar.vertical ? bar.h : bar.w, thick = bar.vertical ? bar.w : bar.h;
+  let from = bar.bipolar ? Math.min(v, .5) * len : 0, to = bar.bipolar ? Math.max(v, .5) * len : v * len;
+  if (to - from < 2) to = Math.min(len, from + 2);
+  if (bar.segs.length) { for (const g of bar.segs) g.e.setAttribute("fill", g.c >= from && g.c <= to ? "var(--accent)" : "var(--track)"); return; }
+  let inset = 0;
+  if (bar.shape === "thin") inset = Math.max(0, thick / 2 - 1.5);
+  if (bar.shape === "outline") { inset = 2; from = Math.max(2, from); to = Math.min(len - 2, to); }
+  const r = bar.vertical ? { x: inset, y: bar.h - to, width: bar.w - 2 * inset, height: Math.max(0, to - from) }
+                         : { x: from, y: inset, width: Math.max(0, to - from), height: bar.h - 2 * inset };
+  for (const k in r) bar.fill.setAttribute(k, r[k]);
+  if (bar.knob) {
+    const end = bar.bipolar && v < .5 ? from : to, m = thick / 2;
+    bar.knob.setAttribute("cx", bar.vertical ? m : end);
+    bar.knob.setAttribute("cy", bar.vertical ? bar.h - end : m);
+  }
+}
+
+// ---- The stick element in the style's shapes (ring, square, crosshair, radar, dot)
+function makeGimbal(parent, size, shape, twist) {
+  const s = svg("svg", { width: size, height: size }, parent);
+  const c = size / 2, r = c - 2, g = { s, c, r, shape, dot: null, tick: null };
+  const faint = "stroke:var(--track);stroke-width:.75", track = "stroke:var(--track);stroke-width:1";
+  const L = (x1, y1, x2, y2, st) => svg("line", { x1, y1, x2, y2 }, s).setAttribute("style", st);
+  if (shape === "square") {
+    svg("rect", { x: c - r, y: c - r, width: 2 * r, height: 2 * r, rx: 4, fill: "var(--track)" }, s).setAttribute("style", "stroke:var(--soft);stroke-width:2");
+    svg("rect", { x: c - r * .36, y: c - r * .36, width: r * .72, height: r * .72, fill: "none" }, s).setAttribute("style", track);
+    L(c, c - r + 4, c, c + r - 4, faint); L(c - r + 4, c, c + r - 4, c, faint);
+    g.dot = svg("rect", { width: 12, height: 12, rx: 2, fill: "var(--accent)" }, s); g.dot.setAttribute("style", "stroke:#fff;stroke-width:2"); g.off = 6;
+  } else if (shape === "crosshair") {
+    L(c, c - r, c, c + r, track); L(c - r, c, c + r, c, track);
+    for (let i = 1; i <= 4; i++) { const t = r * i / 4; L(c - 3, c - t, c + 3, c - t, track); L(c - 3, c + t, c + 3, c + t, track); L(c - t, c - 3, c - t, c + 3, track); L(c + t, c - 3, c + t, c + 3, track); }
+    g.dot = svg("g", {}, s);
+    const a = "stroke:var(--accent);stroke-width:2;fill:none";
+    for (const d of [[-9, 0, -3, 0], [3, 0, 9, 0], [0, -9, 0, -3], [0, 3, 0, 9]]) svg("line", { x1: d[0], y1: d[1], x2: d[2], y2: d[3] }, g.dot).setAttribute("style", a);
+    svg("circle", { r: 5 }, g.dot).setAttribute("style", a); g.group = true;
+  } else if (shape === "radar") {
+    svg("circle", { cx: c, cy: c, r, fill: "var(--track)" }, s).setAttribute("style", "stroke:var(--soft);stroke-width:2");
+    svg("circle", { cx: c, cy: c, r: r * .66, fill: "none" }, s).setAttribute("style", track);
+    svg("circle", { cx: c, cy: c, r: r * .33, fill: "none" }, s).setAttribute("style", track);
+    L(c, c - r, c, c + r, faint); L(c - r, c, c + r, c, faint);
+    g.line = svg("line", { x1: c, y1: c, x2: c, y2: c }, s); g.line.setAttribute("style", track);
+    g.dot = svg("circle", { r: 6, fill: "var(--accent)" }, s);
+  } else if (shape === "dot") {
+    svg("circle", { cx: c, cy: c, r, fill: "var(--track)" }, s);
+    g.dot = svg("circle", { r: 9, fill: "var(--accent)" }, s);
+  } else {
+    svg("circle", { cx: c, cy: c, r, fill: "var(--track)" }, s).setAttribute("style", "stroke:var(--soft);stroke-width:2");
+    svg("circle", { cx: c, cy: c, r: r * .36, fill: "none" }, s).setAttribute("style", track);
+    L(c, c - r + 6, c, c + r - 6, faint); L(c - r + 6, c, c + r - 6, c, faint);
+    g.dot = svg("circle", { r: 7, fill: "var(--accent)" }, s); g.dot.setAttribute("style", "stroke:#fff;stroke-width:2");
+  }
+  if (twist && shape !== "crosshair") { g.tick = svg("line", {}, s); g.tick.setAttribute("style", "stroke:var(--accent);stroke-width:4;stroke-linecap:round"); }
+  setGimbal(g, 0, 0, 0);
+  return g;
+}
+function setGimbal(g, x, y, t) {
+  const travel = g.r * .8, px = g.c + Math.max(-1, Math.min(1, x)) * travel, py = g.c + Math.max(-1, Math.min(1, y)) * travel;
+  if (g.group) g.dot.setAttribute("transform", "translate(" + px + "," + py + ")");
+  else if (g.off) { g.dot.setAttribute("x", px - g.off); g.dot.setAttribute("y", py - g.off); }
+  else { g.dot.setAttribute("cx", px); g.dot.setAttribute("cy", py); }
+  if (g.line) { g.line.setAttribute("x2", px); g.line.setAttribute("y2", py); }
+  if (g.tick) {
+    const a = Math.max(-1, Math.min(1, t)) * Math.PI / 2, s = Math.sin(a), co = Math.cos(a);
+    g.tick.setAttribute("x1", g.c + s * (g.r - 9)); g.tick.setAttribute("y1", g.c - co * (g.r - 9));
+    g.tick.setAttribute("x2", g.c + s * (g.r - 2)); g.tick.setAttribute("y2", g.c - co * (g.r - 2));
+  }
+}
+function makeHat(parent) {
+  const s = svg("svg", { width: 32, height: 32 }, parent);
+  s.style.margin = "0 6px 6px 0";
+  svg("circle", { cx: 16, cy: 16, r: 15.5, fill: "none" }, s).setAttribute("style", "stroke:var(--track);stroke-width:1.5");
+  const dots = [];
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; dots.push(svg("circle", { cx: 16 + Math.sin(a) * 11, cy: 16 - Math.cos(a) * 11, r: 2.5, fill: "var(--dim)", opacity: .55 }, s)); }
+  const centre = svg("circle", { cx: 16, cy: 16, r: 3, fill: "var(--dim)" }, s);
+  return { dots, centre, dir: -2 };
+}
+function setHat(h, dir) {
+  if (h.dir === dir) return;
+  h.dir = dir;
+  h.dots.forEach((d, i) => { d.setAttribute("r", i === dir ? 3.5 : 2.5); d.setAttribute("fill", i === dir ? "var(--pressed)" : "var(--dim)"); d.setAttribute("opacity", i === dir ? 1 : .55); });
+  h.centre.style.display = dir < 0 ? "" : "none";
+}
+function setChips(box, list, shape) {
+  const key = list.join("\u0001");
+  if (box._key === key) return;
+  box._key = key;
+  box.textContent = "";
+  for (const t of list) el("div", "chip" + (shape === "underline" ? " underline" : ""), box, t);
+}
+function markers(parent, list, w, h, big) {
+  return list.map(m => { const e = el("div", "marker" + (big ? " big" : ""), parent); const sz = big ? 18 : 16; e.style.left = (m[0] * w - sz / 2) + "px"; e.style.top = (m[1] * h - sz / 2) + "px"; return e; });
+}
+function lit(list, on) { const set = new Set(on); list.forEach((e, i) => e.classList.toggle("on", set.has(i))); }
+
+// ---- Widgets
+function build(data) {
+  layout = data;
+  stage.textContent = "";
+  for (const k in parts) delete parts[k];
+  header = null; lines = null;
+  fit();
+  for (const w of data.widgets) {
+    const box = el("div", "w", stage);
+    box.style.left = w.x + "px"; box.style.top = w.y + "px"; box.style.transform = "scale(" + w.s + ")";
+    for (const k in w.css) box.style.setProperty("--" + k, w.css[k]);
+    const p = { w };
+    parts[w.i] = p;
+    if (w.k === "device") buildDevice(box, w, p);
+    else if (w.k === "aircraft") buildAircraft(box, w, p);
+    else if (w.k === "binds") { lines = el("div", "lines", box); }
+    else if (w.k === "header") {
+      const c = el("div", "card header", box);
+      header = { pic: el("div", "hp", c), text: null };
+      if (w.hpic === false) header.pic.style.display = "none";
+      const col = el("div", "", c);
+      el("div", "caps", col, "JOYPRO");
+      header.text = el("div", "title", col);
+    }
+  }
+}
+function buildDevice(box, w, p) {
+  const card = el("div", "card col", box);
+  if (w.name) { const r = el("div", "row tight", card); el("div", "dot", r); el("div", "title", r, w.title); if (w.kind) el("div", "caps", r, w.dkind); }
+  const row = el("div", "row", card);
+  if (w.pic) {
+    const pic = el("div", "pic", row); pic.style.width = w.pw + "px"; pic.style.height = w.ph + "px";
+    p.tilt = el("div", "tilt", pic);
+    const i = el("img", "", p.tilt); i.src = img(w.pic);
+    p.markers = w.mv ? markers(p.tilt, w.markers, w.pw, w.ph, false) : [];
+  }
+  const right = el("div", "right", row);
+  const top = el("div", "row", right); top.style.gap = "14px";
+  const size = +w.css.gimbalSize || 84;
+  if (w.gim) p.gimbal = makeGimbal(top, size, w.css.gimbal, w.tw);
+  if (w.levers.length) {
+    const lv = el("div", "levers", top);
+    p.levers = w.levers.map(label => { const l = el("div", "lever", lv); const b = makeBar(l, +w.css.leverWidth || 20, 92, w.css.lever, true, false); const lab = w.labels ? el("div", "caps", l, label) : null; const val = w.values ? el("div", "value", l, "") : null; return { b, val }; });
+  }
+  if (w.hats) { const hb = el("div", "hats", top); p.hats = []; for (let i = 0; i < w.hats; i++) p.hats.push(makeHat(hb)); }
+  if (w.bars.length) {
+    const bars = el("div", "bars", right);
+    p.bars = w.bars.map(b => { const r = el("div", "barrow" + (w.labels ? "" : " nolabel"), bars); if (w.labels) el("div", "caps", r, b[0]); const bar = makeBar(r, 112, +w.css.barHeight || 6, w.css.bar, false, b[1]); const val = el("div", "value", r, ""); if (!w.values) val.style.visibility = "hidden"; return { bar, val, bipolar: b[1] }; });
+  }
+  if (w.grid) { const g = el("div", "grid", right); p.buttons = []; for (let i = 1; i <= w.grid; i++) p.buttons.push(el("div", "btn", g, String(i))); }
+  if (w.chips) p.chips = el("div", "chips", card);
+}
+function buildAircraft(box, w, p) {
+  const card = el("div", "card col", box);
+  if (w.name) { const r = el("div", "row tight", card); el("div", "dot", r); el("div", "title", r, w.title); }
+  const row = el("div", "row", card); row.style.gap = "18px";
+  if (w.tp) {
+    const tr = el("div", "row tight", row);
+    if (w.axes) p.rail = makeBar(tr, +w.css.leverWidth || 20, 150, w.css.lever, true, false);
+    const t = el("div", "throttle", tr); t.style.width = w.tw + "px"; t.style.height = w.ph + "px";
+    p.move = el("div", "move", t);
+    el("img", "", p.move).src = img(w.tp);
+    p.tm = w.btn ? markers(p.move, w.tm, w.tw, w.ph, true) : [];
+  }
+  if (w.sp) {
+    const s = el("div", "stick", row); s.style.width = w.sw + "px"; s.style.height = w.ph + "px";
+    p.stick = el("div", "tilt", s);
+    el("img", "", p.stick).src = img(w.sp);
+    p.sm = w.btn ? markers(p.stick, w.sm, w.sw, w.ph, true) : [];
+  }
+  if (w.gimbal) p.gimbal = makeGimbal(row, +w.css.gimbalSize || 84, w.css.gimbal, true);
+  if (w.chips) p.chips = el("div", "chips", card);
+}
+function pct(v, bipolar) { return bipolar ? (v >= .5 ? "+" : "") + Math.round((v - .5) * 200) : Math.round(v * 100) + "%"; }
+function rot(x, y, z) { return "perspective(700px) rotateX(" + x + "deg) rotateY(" + y + "deg) rotateZ(" + z + "deg)"; }
+
+function update(s) {
+  for (const d of s.w) {
+    const p = parts[d.i];
+    if (!p) continue;
+    if (p.w.k === "device") {
+      if (p.tilt && p.w.tilt) p.tilt.style.transform = rot(d.r[1], d.r[2], d.r[0]);
+      if (p.markers) lit(p.markers, d.m);
+      if (p.gimbal) setGimbal(p.gimbal, d.g[0], d.g[1], d.g[2]);
+      if (p.levers) p.levers.forEach((l, i) => { const v = d.v[i] ?? 0; setBar(l.b, v); if (l.val) l.val.textContent = pct(v, false); });
+      if (p.bars) p.bars.forEach((b, i) => { const v = d.b[i] ?? .5; setBar(b.bar, v); b.val.textContent = pct(v, b.bipolar); });
+      if (p.hats) p.hats.forEach((h, i) => setHat(h, d.h[i] ?? -1));
+      if (p.buttons) lit(p.buttons, d.p);
+      if (p.chips) setChips(p.chips, d.c, p.w.css.chipShape);
+    } else if (p.w.k === "aircraft") {
+      if (p.stick) p.stick.style.transform = rot(d.s[1], d.s[2], d.s[0]);
+      if (p.move) p.move.style.transform = "translateY(" + d.t[0] + "px) perspective(700px) rotateX(" + d.t[1] + "deg)";
+      if (p.rail) setBar(p.rail, d.t[2]);
+      if (p.sm) lit(p.sm, d.m);
+      if (p.tm) lit(p.tm, d.n);
+      if (p.gimbal) setGimbal(p.gimbal, d.g[0], d.g[1], d.g[2]);
+      if (p.chips) setChips(p.chips, d.c, p.w.css.chipShape);
+    }
+  }
+  if (header) {
+    if (header.text.textContent !== s.hd) header.text.textContent = s.hd;
+    const src = img(s.hp);
+    if (header.pic._src !== src) { header.pic._src = src; header.pic.textContent = ""; if (src) el("img", "", header.pic).src = src; }
+  }
+  if (lines) {
+    const key = s.l.map(l => l[0] + "\u0001" + l[1]).join("\u0002");
+    if (lines._key !== key) {
+      lines._key = key; lines.textContent = "";
+      for (const l of s.l) {
+        const c = el("div", "card line" + (l[4] ? " r" : ""), lines);
+        el("div", "bar", c);
+        const t = el("div", "txt", c);
+        const a = el("div", "t", t, l[0]); a.style.fontSize = l[3] + "px";
+        if (l[1]) { const b = el("div", "d", t, l[1]); b.style.fontSize = Math.max(10, l[3] * .6) + "px"; }
+      }
+    }
+    Array.from(lines.children).forEach((c, i) => { const o = s.l[i] ? s.l[i][2] : 1; c.style.opacity = o; });
+  }
+}
+
+function connect() {
+  // The HUD as it was when the page was served (shown at once), then live.
+  const first = window.__hud;
+  if (first && first.layout && first.layout.widgets) {
+    build(first.layout);
+    if (first.state && first.state.w) update(first.state);
+  }
+  const source = new EventSource("/hud/events");
+  source.addEventListener("layout", e => build(JSON.parse(e.data)));
+  source.addEventListener("state", e => { if (layout) update(JSON.parse(e.data)); });
+}
+connect();
+</script>
+</body>
+</html>

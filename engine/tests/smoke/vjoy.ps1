@@ -329,9 +329,8 @@ try {
 
     $vjRepo = Split-Path -Parent $engineDir
     $vjExe = Join-Path $vjRepo ("gui\JoyPro.VJoy\bin\" + $Configuration + "\net9.0-windows\JoyPro.VJoy.exe")
-    if (-not (Test-Path $vjExe)) {
-        & dotnet build (Join-Path $vjRepo "gui\JoyPro.VJoy\JoyPro.VJoy.csproj") -c $Configuration | Out-Null
-    }
+    # Always built (incremental): an older JoyPro.VJoy.exe left in bin would test old code.
+    & dotnet build (Join-Path $vjRepo "gui\JoyPro.VJoy\JoyPro.VJoy.csproj") -c $Configuration | Out-Null
     Assert-True (Test-Path $vjExe) "JoyPro.VJoy.exe was not built: $vjExe"
     # Sources that do not exist: the run touches no device and, with the dry sink (JOYPRO_VJOY_DRY=1), no vJoy.
     $vjGhost = '{"version":1,"vjoyDevices":[1],"sources":[{"device":"Ghost {00000000-0000-0000-0000-00000000F00D}","name":"Ghost","instanceGuid":"00000000-0000-0000-0000-00000000f00d"}],"slots":[{"source":0,"kind":"axis","index":0,"device":1,"target":0},{"source":0,"kind":"button","index":0,"device":1,"target":0}]}'
@@ -467,6 +466,68 @@ try {
     Assert-Match $vfRemove.Output "its virtual outputs are free again" "functions remove must free the outputs."
     $vfEmpty = (Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "list")).Output | ConvertFrom-Json
     Assert-True (@($vfEmpty.Functions).Count -eq 0) "No function may be left."
+
+    # ---- 8. Joystick Gremlin parts: modes, function chaining, the profile import, the tunnel device
+    $vgFixture = Join-Path $engineDir "tests\fixtures\gremlin"
+    $vgAdd = Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "add", "--game", "DCS", "--name", "Default", "--text")
+    Assert-True ($vgAdd.ExitCode -eq 0) "modes add failed. Output: $($vgAdd.Output)"
+    Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "add", "--game", "DCS", "--name", "Combat", "--parent", "Default", "--text") | Out-Null
+    $vgModes = (Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "list", "--game", "DCS")).Output | ConvertFrom-Json
+    Assert-True (@($vgModes.Modes).Count -eq 2 -and @($vgModes.Modes)[1].Parent -eq "Default" -and $vgModes.Start -eq "Default") "modes list must show Default and Combat (inherits Default). Got: $($vgModes | ConvertTo-Json -Compress -Depth 4)"
+    $vgLoopMode = Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "set", "--game", "DCS", "--name", "Default", "--parent", "Combat", "--text")
+    Assert-True ($vgLoopMode.ExitCode -ne 0 -and $vgLoopMode.Output -match "loop") "A mode must not inherit from its own child. Output: $($vgLoopMode.Output)"
+    # Chaining: a band feeds a toggle that works in Combat only; the reverse link would be a loop and is refused.
+    Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "add", "--game", "DCS", "--type", "bands", "--name", "Chain source", "--input", ("in=" + $vjThrottle + "|JOY_Z"), "--edges", "0.5", "--text") | Out-Null
+    $vgSourceId = @(((Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "list", "--game", "DCS")).Output | ConvertFrom-Json).Functions | Where-Object { $_.Function.Name -eq "Chain source" })[0].Id
+    $vgSink = Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "add", "--game", "DCS", "--type", "toggle", "--name", "Chain sink", "--input", ("in=fn:" + $vgSourceId + "|band2"), "--modes", "Combat", "--text")
+    Assert-True ($vgSink.ExitCode -eq 0 -and $vgSink.Output -notmatch "problem:") "A toggle reading a band must be fine. Output: $($vgSink.Output)"
+    $vgSinkId = @(((Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "list", "--game", "DCS")).Output | ConvertFrom-Json).Functions | Where-Object { $_.Function.Name -eq "Chain sink" })[0].Id
+    $vgLoop = Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "set", "--game", "DCS", "--id", $vgSourceId, "--input", ("in=fn:" + $vgSinkId + "|out"), "--text")
+    Assert-True ($vgLoop.ExitCode -ne 0 -and $vgLoop.Output -match "loop" -and $vgLoop.Output -match "Nothing was saved") "A loop of chained functions must be refused. Output: $($vgLoop.Output)"
+    $vgTable = Join-Path $vjDir "forwarder-chain.json"
+    Run-Engine @("--profile", $vjProfile, "vjoy", "forwarder-config", "--out", $vgTable, "--game", "DCS", "--text") | Out-Null
+    $vgTableObject = Get-Content $vgTable -Raw | ConvertFrom-Json
+    $vgChained = @($vgTableObject.functions | Where-Object { $_.Name -eq "Chain sink" })[0]
+    Assert-True ($vgChained.Inputs[0].Kind -eq "chain" -and $vgChained.Group -eq "DCS") "forwarder-config must pass the chained input and the function's mode group."
+    Assert-True ((@($vgTableObject.sources | Where-Object { $_.device -like "fn:*" })).Count -eq 0) "A chained input is no device of the forwarder."
+    Assert-True ((@($vgTableObject.modes)).Count -eq 1 -and @(@($vgTableObject.modes)[0].Modes).Count -eq 2) "forwarder-config must pass the game's modes."
+    $vgRun = (& $vjExe run --config $vgTable --sink dry --duration 2 2>&1 | ForEach-Object { $_.ToString() }) -join "`n"
+    Assert-Match $vgRun "mode DCS Default" "JoyPro.VJoy must report the game's mode at start."
+    Assert-Match $vgRun "priority=below-normal" "JoyPro.VJoy must run below normal priority."
+    $vgRemove = Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "remove", "--game", "DCS", "--id", $vgSourceId, "--text")
+    Assert-Match $vgRemove.Output "Inputs that read it are cleared" "Removing a chained function must clear the inputs that read it."
+    Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "remove", "--game", "DCS", "--id", $vgSinkId, "--text") | Out-Null
+    # The Gremlin import: a dry run saves nothing, then the import with modes; R14; not a profile.
+    $vgDry = (Run-Engine @("--profile", $vjProfile, "vjoy", "import-gremlin", (Join-Path $vgFixture "r13-modes.xml"), "--game", "DCS", "--replace", "--dry-run")).Output | ConvertFrom-Json
+    Assert-True ($vgDry.DryRun -and @($vgDry.Functions).Count -ge 15 -and (@($vgDry.NotImported) -join " ") -match "activation conditions") "import-gremlin --dry-run must report the functions and what is not imported. Got: $($vgDry.Message)"
+    Assert-True (@($vgDry.Devices | Where-Object { $_.Match -eq "guid" }).Count -eq 2) "Both Gremlin devices must be found by GUID."
+    $vgStill = (Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "list", "--game", "DCS")).Output | ConvertFrom-Json
+    Assert-True (@($vgStill.Modes).Count -eq 2) "A dry run must save nothing."
+    $vgImport = Run-Engine @("--profile", $vjProfile, "vjoy", "import-gremlin", (Join-Path $vgFixture "r13-modes.xml"), "--game", "DCS", "--replace", "--text")
+    Assert-Match $vgImport.Output "Imported \d+ virtual function\(s\) and 3 mode\(s\) for DCS World" "import-gremlin must import the functions and the modes. Output: $($vgImport.Output)"
+    Assert-Match $vgImport.Output "Not imported \(JoyPro cannot do this\):" "import-gremlin --text must list what was not imported."
+    $vgAfter = (Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "list", "--game", "DCS")).Output | ConvertFrom-Json
+    Assert-True ((@($vgAfter.Modes | ForEach-Object { $_.Name }) -join ",") -eq "Default,Combat,Landing" -and $vgAfter.Start -eq "Combat") "The imported modes and the start mode must be stored."
+    $vgFunctions = (Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "list", "--game", "DCS")).Output | ConvertFrom-Json
+    $vgProblems = @($vgFunctions.Functions | ForEach-Object { @($_.Problems) } | Where-Object { $_ })
+    Assert-True ($vgProblems.Count -eq 0) "Imported functions must be valid. Problems: $($vgProblems -join ' | ')"
+    $vgR14 = (Run-Engine @("--profile", $vjProfile, "vjoy", "import-gremlin", (Join-Path $vgFixture "r14-profile.xml"), "--game", "DCS", "--dry-run", "--vjoy-device", "1")).Output | ConvertFrom-Json
+    Assert-True ($vgR14.Format -like "Joystick Gremlin R14*" -and @($vgR14.Functions).Count -ge 5) "import-gremlin must read R14 profiles. Got: $($vgR14.Message)"
+    $vgBadFile = Join-Path $vjDir "not-gremlin.xml"
+    [System.IO.File]::WriteAllText($vgBadFile, "<settings/>", $vjUtf8)
+    $vgBad = Run-Engine @("--profile", $vjProfile, "vjoy", "import-gremlin", $vgBadFile, "--game", "DCS", "--text")
+    Assert-True ($vgBad.ExitCode -ne 0 -and $vgBad.Output -match "not a Joystick Gremlin profile") "A file that is no Gremlin profile must be refused."
+    # The tunnel device: the first device virtual mode writes, named in the status.
+    $vgTunnel = (Run-Engine @("--profile", $vjProfile, "vjoy", "status", "--vjoy-tunnel", "1")).Output | ConvertFrom-Json
+    Assert-True ($vgTunnel.Settings.TunnelDevice -eq 1 -and $vgTunnel.Settings.FirstDevice -eq 1 -and @($vgTunnel.Settings.TunnelWarnings).Count -eq 0) "status must name the tunnel device and agree with the table."
+    $vgNoTunnel = (Run-Engine @("--profile", $vjProfile, "vjoy", "status")).Output | ConvertFrom-Json
+    Assert-True ((@($vgNoTunnel.Settings.TunnelWarnings) -join " ") -match "names no") "Without a tunnel device the status must say imports read JoyPro's vJoy device."
+    foreach ($vgId in @($vgFunctions.Functions | ForEach-Object { $_.Id })) {
+        Run-Engine @("--profile", $vjProfile, "vjoy", "functions", "remove", "--game", "DCS", "--id", $vgId, "--text") | Out-Null
+    }
+    foreach ($vgMode in @("Landing", "Combat", "Default")) {
+        Run-Engine @("--profile", $vjProfile, "vjoy", "modes", "remove", "--game", "DCS", "--name", $vgMode, "--text") | Out-Null
+    }
 
     # Back to native: the export writes the physical devices again.
     $vjNative = Run-Engine @("--profile", $vjProfile, "vjoy", "mode", "DCS", "native", "--text")

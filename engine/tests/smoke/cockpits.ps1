@@ -70,6 +70,16 @@ Assert-True ($cpCompared.Matched -ge 1 -and $cpCompared.Total -gt 10) "cockpits 
 # photos and coverage.
 $cpPhotos = Run-Engine @("cockpits", "photos", "--coverage", "--text")
 Assert-Match $cpPhotos.Output "(?m)^Cockpit photos: \d+" "cockpits photos --coverage printed no count."
+# The verified photos (SHA-256, size, labels) and the variants that need photos (docs/cockpits.md "Photos of cockpits no
+# game has"); the photo page needs a local copy, so without one no photo page is rendered.
+$cpVerified = Run-Engine @("cockpits", "photos", "--verified")
+$cpVerifiedRows = @($cpVerified.Output.Substring($cpVerified.Output.IndexOf("[")) | ConvertFrom-Json | ForEach-Object { $_ })
+Assert-True ($cpVerifiedRows.Count -ge 25) "cockpits photos --verified listed $($cpVerifiedRows.Count) photos."
+Assert-True (@($cpVerifiedRows | Where-Object { $_.Sha256 -notmatch '^[0-9a-f]{64}$' -or $_.Width -le 0 -or $_.Labels -lt 3 }).Count -eq 0) "a verified cockpit photo lacks its hash, size or labels."
+$cpNeeded = Run-Engine @("cockpits", "photos", "--needed", "--text")
+Assert-Match $cpNeeded.Output "(?m)^Variants without good pictures from a game: \d+, with verified photos: \d+" "cockpits photos --needed printed no count."
+$cpNoPhoto = Run-Engine @("cockpits", "render", "a350", "--page", "photos", "--photos", (Join-Path $cpDir "no-photos"), "--png", (Join-Path $cpDir "photo.png"))
+Assert-True ($cpNoPhoto.ExitCode -ne 0) "a photo page was rendered without a local copy of the photo."
 $cpCoverage = Run-Engine @("cockpits", "coverage", "--text")
 Assert-Match $cpCoverage.Output "(?m)^Cockpit coverage: \d+ aircraft" "cockpits coverage printed no numbers."
 

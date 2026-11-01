@@ -256,12 +256,17 @@ public sealed partial class MainWindowViewModel
         LoadFfbEditors();
     }
 
+    // The game the pickers were last built for (an aircraft picked for one game is no choice of another).
+    private string ffbPickersGame = string.Empty;
+
     // Devices: those with stored settings for the game, connected ones and the profile's (DCS: also its config folders).
     private void RebuildFfbPickers()
     {
         FfbGameItem? game = SelectedFfbGame;
         string device = SelectedFfbDevice?.Value ?? string.Empty;
         string plane = SelectedFfbPlane?.Value ?? string.Empty;
+        bool sameGame = game != null && string.Equals(ffbPickersGame, game.Game, StringComparison.OrdinalIgnoreCase);
+        ffbPickersGame = game?.Game ?? string.Empty;
         ffbRebuildingPickers = true;
         try
         {
@@ -299,7 +304,10 @@ public sealed partial class MainWindowViewModel
             {
                 FfbPlaneOptions.Add(new FfbPickerOption(string.Empty, T("All aircraft")));
                 HashSet<string> storedPlanes = new(StoredFfbKeys(game.Game).Where(k => k.Plane.Length > 0).Select(k => k.Plane), StringComparer.OrdinalIgnoreCase);
-                foreach (string name in storedPlanes.Concat(BuildDcsRefreshPlaneCandidates())
+                // The aircraft shown stays in the list after its settings were cleared (it now shows what it takes from
+                // all aircraft) instead of the picker jumping to "All aircraft" when no DCS folder or database knows it.
+                IEnumerable<string> shown = sameGame && plane.Length > 0 ? [plane] : [];
+                foreach (string name in storedPlanes.Concat(BuildDcsRefreshPlaneCandidates()).Concat(shown)
                              .Distinct(StringComparer.OrdinalIgnoreCase)
                              .OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
                 {

@@ -115,7 +115,7 @@ of each version again.
   - `add` writes free inputs only; a profile bind on an input with another use or command is not written and listed under "Binds Not Written, Button Taken In The Game". An axis use the game has on another axis stays there (warning).
   - `merge` replaces the other use or command on the profile's input (the conflict) and keeps everything else, also a moved command's old button. An axis use moves (X-Plane ignores a use two axes share).
   - `merge-overwrite` also releases the other axes and buttons of connected devices that hold a use or command the profile binds (with their curves).
-  - `clean` also releases every other flight axis/command on connected devices.
+  - `clean` = merge + releases every other flight axis/command of the connected devices the export writes; other devices keep theirs (as in every game; an axis use still moves, see merge).
   - `<file>.joypro.json` records the inputs JoyPro wrote or took over on import (`A<index>` axes, `B<index>` buttons) and its curves; it no longer decides which binds an export removes.
 - Axis response (axis model `xplane`, `engine\AxisModels\XPlane.cs`; tuning scopes `game:XPlane12` / `game:XPlane11` -> `family:xplane` -> base):
   - Import reads each flight axis's curve into the relation's `game:XPlane12` (or `game:XPlane11`) tuning: the exact stops (`n.cpN`,

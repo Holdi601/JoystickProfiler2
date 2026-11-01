@@ -113,7 +113,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   --confirm-corrections true|false   Ask for confirmation on medium-confidence item remaps (default: true)
   --correction-report <path>         Write load correction report (json, or text with .txt/.log)
   --history-note <text>  Name of this change in the profile history (default: the command's name)
-  --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: imports and scans (dcs, il2, starcitizen, the other games) leave only that vJoy device out; every other vJoy device is read like any device (default: none)
+  --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: virtual mode writes there (the first vJoy device of the table, function outputs, forwarder, Gremlin import); imports and scans (dcs, il2, starcitizen, the other games) of games in native mode leave only that vJoy device out; every other vJoy device is read like any device (default: none)
   --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)
 ```
 
@@ -128,9 +128,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine profile validate [--fail-on-warnings true|false]
   engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)
   engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)
-  engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks)
+  engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks; --game takes the game id or an alias (il2, wt); --aircraft: only the marks of that aircraft; a warning when no open mark matches)
   engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)
-  engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--save <path.pr0file>]
+  engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--overwrite-mode left|right|ask] [--save <path.pr0file>] [--save-profile <path.pr0file>]   (the files are merged left to right; a relation both have: right = the later file wins (default), left = the first file keeps it, ask = the console asks; --overwrite-mode is another name for --mode, --save-profile for --save)
   engine profile history [list]   (the versions of --profile, newest first: every save is one, kept in <data>\ProfileHistory; undo/redo state)
   engine profile history show <id> | diff <id> [<id>|current]   (what a version changed / the changes between two versions)
   engine profile history restore <id> | undo | redo   (writes a version back into the profile; that is a version too, so it can be undone)
@@ -139,35 +139,35 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]
   engine dcs import [<saved-games-path>] [--path <saved-games-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]
   engine dcs export [<saved-games-path>] [--path <saved-games-path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--clear-keyboard-defaults true|false] [--nuke-untouched-devices true|false] [--clean-all-aircraft true|false] [--plane <name>] [--planes <csv>] [--ignore-device <name>] [--ignore-devices <csv>]   (only these aircraft; writes .diff.lua + .jp backup + modifiers.lua named as DCS names the device; the .diff.lua holds only differences from DCS's defaults (added non-default binds, removed defaults, defaults with other tuning as changed); add never deletes and lists binds whose button the game uses for another function (SkippedTakenInputs); merge removes a game bind on a button the profile puts another function on; merge-overwrite also takes the profile's actions off their other buttons in that aircraft; clean replaces the written devices in the exported aircraft, with --clean-all-aircraft true (default false) also in every other aircraft; nuke: connected devices without binds in an exported plane lose all binds there, DCS defaults included (--ignore-device(s) and --vjoy-tunnel devices are never cleared); the keyboard is never cleared or nuked: --keep-keyboard-defaults false writes the profile's keyboard binds and removes only the DCS default keys they take, --clear-keyboard-defaults true also removes every other DCS keyboard default of those aircraft)
-  engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)
-  engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)
-  engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore puts the originals back; auto re-applies after a DCS update; patched files fail server integrity checks)
-  engine dcs device-luas [list|remove|restore] [--dry-run] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back)
+  engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>] [--dry-run]   (older way, the GUI uses dcs device-luas remove: in every <install>\Mods\aircraft\<module>\Input\<input>\joystick folder every file except default.lua is moved into BACKUP_JOYSTICK_DEFAULTS, default.lua is copied there; refused while DCS or DCS_updater runs; --dry-run only counts)
+  engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>] [--dry-run]   (copies the files of BACKUP_JOYSTICK_DEFAULTS back into Mods\aircraft; refused while DCS or DCS_updater runs; --dry-run only counts)
+  engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check] [--status]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore (--restore) puts the originals back; status (--status) shows the state; auto re-applies after a DCS update; patched files fail server integrity checks)
+  engine dcs device-luas [list|remove|restore] [--dry-run] [--remove] [--restore] [--status] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back; list (also --status) shows them)
   engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>] [--dump-active <file>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only)
-  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
-  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
+  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)
+  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft)
   engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
   engine dcs ffb list [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--confirm true|false]
   engine dcs ffb set <device-name> [--path <saved-games-path>] [--invert-x true|false] [--invert-y true|false] [--swap-axis true|false] [--confirm true|false]
   engine dcs ffb clear [<device-name>] [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--all] [--confirm true|false]
   engine il2 scan [<il2-root-path>] [--path <il2-root-path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]
   engine il2 import [<il2-root-path>] [--path <il2-root-path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--import-inverted] [--import-curvature] [--import-deadzone] [--confirm true|false]
-  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)
+  engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s) and --vjoy-tunnel devices are never cleared; add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)
   engine starcitizen scan [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]
   engine starcitizen import [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]
-  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)
+  engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s) and --vjoy-tunnel devices are never cleared; stale duplicate joystick slots of a connected device are removed and their rebinds moved to the slot it keeps; add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)
   engine starcitizen list-devices [<sc-root-or-profile-path>] [--path <path>] [--source <path>]   (aliases: devices, list)
   engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)
-  engine db summary [--keyboard] [--no-keyboard] [--strict-names]
+  engine db summary [filter] [--keyboard] [--no-keyboard] [--strict-names]   (compares each DCS aircraft command list with its clean profile; filter = text in the aircraft name or file to count only those)
   engine db list [filter] [--missing] [--keyboard] [--no-keyboard] [--strict-names]
-  engine db check [--keyboard] [--no-keyboard] [--strict-names]
+  engine db check [filter] [--keyboard] [--no-keyboard] [--strict-names]   (like db summary, plus the aircraft without a clean profile; exit 1 when one is missing)
   engine db games [filter]
   engine db check-updates [--accept <game>] [--accept-all] [--no-record]   (games updated since their DB was built)
   engine db planes [filter] [--game <name>]
   engine db fingerprint
-  engine db paths   (where the lists are read from: the game-data folder for everything built from your games, the program folder for JoyPro's own data)
+  engine db paths   (where the lists are read from: the game-data folder for everything built from your games, the program folder for JoyPro's own data: DB\Functions, DB\Devices, DB\Llm, DB\DevicePhotos, DB\DeviceLayouts, DB\DeviceDrawings, DB\Cockpits, DB\Detents)
   engine db refresh-il2 [<install, data\input folder or .actions file>] [--path <path>] [--db-path <folder>] [--dry-run]   (adds new actions of the game's key mapping files to DB\IL2\IL2.actions; also: engine il2 refresh-db)
-  engine db refresh-starcitizen [<install-or-source-path>] [--install-path <path>] [--path <path>] [--source <path-to-source>] [--branch <name>] [--db-path <path>] [--include-user-profiles true|false] [--dry-run true|false]
+  engine db refresh-starcitizen [<install-or-source-path>] [--install-path <path>] [--path <path>] [--source <path-to-source>] [--branch <name>] [--db-path <path>] [--include-user-profiles true|false] [--dry-run true|false]   (builds JoyPro's Star Citizen command list from the game's action maps; --install-path / --path: the Star Citizen installation (else found); --dry-run true reads and reports only, nothing is written)
   engine games installs [--game <id>]   (which supported games are installed and where; import/export/scan/refresh/restore are refused for the others)
   engine games install set <game> <folder> | clear <game>   (your installation folder of a game, e.g. a portable install; it then counts as installed and detection never replaces it; unset = clear)
   engine games install disable <game> [<game> ...] | enable <game> [<game> ...]   (games you do not have: they count as not installed and the GUI hides them; enable undoes it)
@@ -177,9 +177,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine games integrations
   engine games support [--markdown | --html | --json] [--notes <file>]   (how far JoyPro supports each game: the feature matrix from the code plus the verification notes, docs/games/support.md; exit 1 when the notes miss a game or claim more than the code)
   engine hud devices [--grip <device>=<catalog id>]... [--no-device-photos]   (connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out (the user said never); the engine downloads no device photo, the GUI does per device after the user's yes)
-  engine overlay map [--game <id>] [--plane <name>] [--unit <DCS unit type>]   (bound buttons with modifiers and titles, for the overlay)
+  engine overlay map [--game <id>] [--plane <name>] [--unit <DCS unit type>]   (bound buttons with modifiers and titles, for the overlay; warnings also in the --text output)
   engine overlay dcs-hook status|install|remove [--path <Saved Games\DCS>] [--dry-run]   (Export.lua addition that tells JoyPro the aircraft; backed up)
-  engine media [games|aircraft|sources] [--no-internet-pictures]   (official pictures: game covers from Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon; DCS aircraft pictures from the modules; sources = the web source per game)
+  engine media [games|aircraft|sources] [--no-internet-pictures]   (official pictures: game covers from Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon; DCS aircraft pictures from the modules; sources = the web source per game; warnings also in the --text output)
   engine backups list [--game <id>] | show <id> | restore <id|latest> [--game <id>] [--dry-run]
   engine games devices   (connected devices with VID:PID, HID name and DirectInput axes/buttons/hats)
   engine sync status [--game <id>] [--path <config>]   (per game the config files / registry values JoyPro manages, their fingerprint and whether the game changed them since JoyPro's last export, accept or apply)
@@ -196,230 +196,232 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine vjoy settings [--first-device N] [--last-device N] [--auto-start on|off] [--hide-devices on|off] [--dry-run]   (which vJoy devices JoyPro may use, GUI auto start, HidHide on/off)
   engine vjoy exe <game> [--add <path>] [--remove <path>]   (the game executables HidHide blocks in virtual mode: found in the installation + your own)
   engine vjoy forwarder-config [--out <file>] [--xbox-game <game>] [--game <game>]   (the mapping table for JoyPro.VJoy.exe, the forwarding process; one Xbox game's pad table; with --game only that game's virtual functions)
-  engine vjoy functions types   (the virtual function types: axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axis ends, axes to hat, buttons to axis, encoder, turbo, macro, hat to buttons, buttons to hat)
+  engine vjoy functions types   (the virtual function types: axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axis ends, axes to hat, buttons to axis, encoder, turbo, macro, hat to buttons, buttons to hat, remap, mode switch)
   engine vjoy functions list [--game <game>]   (the virtual functions per game with inputs, outputs (bind device and input), problems, limit warnings and the physical devices for inputs)
-  engine vjoy functions add --game <game> --type <type> [--name <name>] [--input role=<device>|<input>]... [--output role=<target>[@<vJoy device>][:hold|enter|leave|both]]... [--param key=value]... [--edges 0.1,0.9] [--count n] [--tuning <axis tuning>] [--keyboard on|off] [--spec <json>|@<file>] [--no-auto-outputs] [--dry-run]   (adds a function; outputs left empty get free vJoy buttons/axes/hats (or Xbox pad controls), reserved in the table)
+  engine vjoy functions add --game <game> --type <type> [--name <name>] [--input role=<device>|<input>]... [--output role=<target>[@<vJoy device>][:hold|enter|leave|both]]... [--param key=value]... [--edges 0.1,0.9] [--count n] [--tuning <axis tuning>] [--keyboard on|off] [--modes <mode,...>] [--switch-modes <mode,...>] [--spec <json>|@<file>] [--no-auto-outputs] [--dry-run]   (adds a function; an input may read another function's output: --input role=fn:<id>|<output>; loops are refused; outputs left empty get free vJoy buttons/axes/hats (or Xbox pad controls), reserved in the table; --modes: the modes it works in (none: every mode))
   engine vjoy functions set --game <game> --id <id> [same options as add] [--enabled on|off] [--auto-outputs] [--dry-run]   (changes a function; --spec replaces it)
-  engine vjoy functions remove --game <game> --id <id> [--dry-run]   (removes a function; its outputs are free again)
+  engine vjoy functions remove --game <game> --id <id> [--dry-run]   (removes a function; its outputs are free again, inputs of other functions that read it are cleared)
   engine vjoy functions test (--game <game> --id <id> | --spec <json>|@<file>) [--stream "<ms>:<role>=<value>; ..."] [--rate Hz] [--duration ms]   (simulates the function with the forwarder's evaluation and lists every output change; nothing goes to vJoy, the pad or the keyboard)
+  engine vjoy modes list|add|set|remove|start --game <game> [--name <mode>] [--parent <mode>] [--rename <name>] [--dry-run]   (the game's modes (layers) of its virtual functions: a mode inherits the functions of its parent unless it has its own on that input; start: the mode the forwarder starts in)
+  engine vjoy import-gremlin <profile.xml> --game <game> [--dry-run] [--replace] [--vjoy-device N]   (a Joystick Gremlin R13/R14 profile into the game's virtual functions and modes: devices by GUID or name, remaps, curves, keys, macros, mode changes, merged axes, tempo/double tap/chain/smart toggle/hat buttons containers, axis ranges; lists what JoyPro cannot do and what differs; --vjoy-device moves the profile's vJoy device (default: the tunnel device))
   engine vjoy limits [--game <game>]   (what each game reads of one joystick: buttons, axes, hats, with confidence and source; vJoy offers 128 buttons, 8 axes, 4 hats)
-  engine vjoy configure-vjoy [--max [--device N]] [--dry-run]   (runs vJoyConfig for the vJoy devices that lack axes, buttons or hats, or with --max sets 8 axes, 128 buttons, 4 hats; one administrator prompt; never shrinks a device; Windows must restart afterwards)
-  engine vjoy apply-hidhide [--dry-run] [--owner-pid N] [--exe <game.exe>]... [--trusted <program.exe>]...   (hides the mapped physical devices from the virtual-mode games only; one administrator prompt; journal first)
-  engine vjoy restore-hidhide [--dry-run]   (undoes exactly JoyPro's HidHide changes and restores the previous HidHide state; one administrator prompt)
-  engine vjoy recover [--dry-run] [--force]   (restores a session whose owner (the GUI) is gone; --force: also while it runs)
+  engine vjoy configure-vjoy [--max [--device N]] [--dry-run]   (runs vJoyConfig for the vJoy devices that lack axes, buttons or hats, or with --max sets 8 axes, 128 buttons, 4 hats; keeps what a device has except axes a virtual-mode game must not see (e.g. Rx/Ry for Battlefield), which are left out unless the table uses them; one administrator prompt, exit code 2 when it is declined; Windows must restart afterwards)
+  engine vjoy apply-hidhide [--dry-run] [--owner-pid N] [--exe <game.exe>]... [--trusted <program.exe>]...   (hides the mapped physical devices from the virtual-mode games only; one administrator prompt, exit code 2 when it is declined; journal first)
+  engine vjoy restore-hidhide [--dry-run] [--force]   (undoes exactly JoyPro's HidHide changes and restores the previous HidHide state, also while the session's owner runs; --force is accepted like for recover and changes nothing here; one administrator prompt, exit code 2 when it is declined)
+  engine vjoy recover [--dry-run] [--force]   (restores a session whose owner (the GUI) is gone; --force: also while it runs; one administrator prompt, exit code 2 when it is declined)
   engine wardogs paths
   engine wardogs catalog
-  engine wardogs scan [<config-path>] [--path <config-path>]
-  engine wardogs import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine wardogs export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine wardogs refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine wardogs scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine wardogs import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine wardogs export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine wardogs refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine arma3 paths
   engine arma3 catalog
-  engine arma3 scan [<config-path>] [--path <config-path>]
-  engine arma3 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine arma3 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine arma3 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine arma3 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine arma3 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine arma3 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine arma3 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine arma2oa paths
   engine arma2oa catalog
-  engine arma2oa scan [<config-path>] [--path <config-path>]
-  engine arma2oa import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine arma2oa export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine arma2oa refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine arma2oa scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine arma2oa import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine arma2oa export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine arma2oa refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine arma2 paths
   engine arma2 catalog
-  engine arma2 scan [<config-path>] [--path <config-path>]
-  engine arma2 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine arma2 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine arma2 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine arma2 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine arma2 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine arma2 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine arma2 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine reforger paths
   engine reforger catalog
-  engine reforger scan [<config-path>] [--path <config-path>]
-  engine reforger import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine reforger export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine reforger refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine reforger scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine reforger import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine reforger export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine reforger refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine warthunder paths
   engine warthunder catalog
-  engine warthunder scan [<config-path>] [--path <config-path>]
-  engine warthunder import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine warthunder export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine warthunder refresh-db [<source-path>] [--dry-run] [--no-game-archives]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes); War Thunder: the full list from gui.vromfs.bin, with --no-game-archives only JoyPro's own list
+  engine warthunder scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>] [--no-game-archives]
+  engine warthunder import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>] [--no-game-archives]   (--ignore-device(s): the binds of these devices are left out)
+  engine warthunder export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>] [--no-game-archives]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine warthunder refresh-db [<source-path>] [--path <source-path>] [--dry-run] [--no-game-archives] [--read-game-archives true|false]   (reads the full list from the game's gui.vromfs.bin and rebuilds the catalog: actions the game no longer has are dropped; with --no-game-archives (or --read-game-archives false) only JoyPro's own list, added to the catalog; writes it only when it changes)
   engine xplane12 paths
   engine xplane12 catalog
-  engine xplane12 scan [<config-path>] [--path <config-path>]
-  engine xplane12 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine xplane12 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine xplane12 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine xplane12 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine xplane12 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine xplane12 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine xplane12 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine xplane11 paths
   engine xplane11 catalog
-  engine xplane11 scan [<config-path>] [--path <config-path>]
-  engine xplane11 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine xplane11 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine xplane11 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine xplane11 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine xplane11 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine xplane11 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine xplane11 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine msfs2024 paths
   engine msfs2024 catalog
-  engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]
-  engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)
-  engine msfs2024 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine msfs2024 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine msfs2024 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]
+  engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (--ignore-device(s): the binds of these devices are left out; devices that are not connected only with --include-disconnected)
+  engine msfs2024 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--aircraft <aircraft-key>] [--user-profiles true|false] [--import-files]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine msfs2024 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine msfs2020 paths
   engine msfs2020 catalog
-  engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]
-  engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)
-  engine msfs2020 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine msfs2020 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine msfs2020 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]
+  engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]   (--ignore-device(s): the binds of these devices are left out; devices that are not connected only with --include-disconnected)
+  engine msfs2020 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine msfs2020 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine bms paths
   engine bms catalog
-  engine bms scan [<config-path>] [--path <config-path>]
-  engine bms import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine bms export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine bms refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine bms scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine bms import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine bms export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine bms refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine il2korea paths
   engine il2korea catalog
-  engine il2korea scan [<config-path>] [--path <config-path>]
-  engine il2korea import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine il2korea export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine il2korea refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine il2korea scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine il2korea import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine il2korea export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine il2korea refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine x4 paths
   engine x4 catalog
-  engine x4 scan [<config-path>] [--path <config-path>]
-  engine x4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine x4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine x4 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine x4 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine x4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine x4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only ship flight actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine x4 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine elite paths
   engine elite catalog
-  engine elite scan [<config-path>] [--path <config-path>]
-  engine elite import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine elite export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine elite refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine elite scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine elite import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine elite export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only ship flight actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine elite refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine vtolvr paths
   engine vtolvr catalog
-  engine vtolvr scan [<config-path>] [--path <config-path>]
-  engine vtolvr import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine vtolvr export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine vtolvr refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine vtolvr scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine vtolvr import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine vtolvr export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine vtolvr refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine vtolvr mod status|prepare [--accept-license]   (the BYOJoystick mod on this PC: Mod Loader, Workshop item, BYOJoystick.dll with SHA-256 and the targets JoyPro reads; prepare backs up the BYOJ_<seat>.xml files and returns the Steam pages to open (Mod Loader, Workshop item 3276352374); Steam downloads and installs the mod, JoyPro ships none of it; refresh-db then reads the targets from the installed mod)
   engine vtolvr-native paths
   engine vtolvr-native catalog
-  engine vtolvr-native scan [<config-path>] [--path <config-path>]
-  engine vtolvr-native import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine vtolvr-native export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine vtolvr-native refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine vtolvr-native scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine vtolvr-native import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine vtolvr-native export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine vtolvr-native refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine nuclearoption paths
   engine nuclearoption catalog
-  engine nuclearoption scan [<config-path>] [--path <config-path>]
-  engine nuclearoption import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine nuclearoption export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine nuclearoption refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine nuclearoption scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine nuclearoption import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine nuclearoption export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine nuclearoption refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine tinycombatarena paths
   engine tinycombatarena catalog
-  engine tinycombatarena scan [<config-path>] [--path <config-path>]
-  engine tinycombatarena import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine tinycombatarena export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine tinycombatarena refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine tinycombatarena scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine tinycombatarena import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine tinycombatarena export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine tinycombatarena refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine grebels paths
   engine grebels catalog
-  engine grebels scan [<config-path>] [--path <config-path>]
-  engine grebels import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine grebels export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine grebels refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine grebels scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine grebels import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine grebels export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine grebels refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (JoyPro's own list of the G-Rebels actions: nothing is read from the game, which need not be installed; writes it only when it changes)
   engine hllv paths
   engine hllv catalog
-  engine hllv scan [<config-path>] [--path <config-path>]
-  engine hllv import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine hllv export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine hllv refresh-db [<source-path>] [--dry-run] [--oodle-dll <path>]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine hllv scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine hllv import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine hllv export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (writes only the keyboard pilot keys, with --include-keyboard; the gamepad binds reach the game through the virtual Xbox pad (engine vjoy mode HLLVietnam xbox), nothing is written for them)
+  engine hllv refresh-db [<source-path>] [--path <source-path>] [--dry-run] [--oodle-dll <path>]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine hllv oodle [--path <game folder>]   (the game's own Oodle library, or one another installed game ships; refresh-db --oodle-dll <path> uses that one only with the user's consent, from where it is, never copied; without it JoyPro's own list of the pad keys)
   engine bf6 paths
   engine bf6 catalog
-  engine bf6 scan [<config-path>] [--path <config-path>]
-  engine bf6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine bf6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine bf6 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine bf6 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine bf6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine bf6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine bf6 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine bf2042 paths
   engine bf2042 catalog
-  engine bf2042 scan [<config-path>] [--path <config-path>]
-  engine bf2042 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine bf2042 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine bf2042 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine bf2042 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine bf2042 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine bf2042 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine bf2042 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine ac8 paths
   engine ac8 catalog
-  engine ac8 scan [<config-path>] [--path <config-path>]
-  engine ac8 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine ac8 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)
-  engine ac8 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine ac8 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine ac8 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine ac8 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (writes nothing: the game reads only Xbox pads and checksums its settings; the binds reach it through the virtual Xbox pad, engine vjoy mode AceCombat8 xbox)
+  engine ac8 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine ac7 paths
   engine ac7 catalog
-  engine ac7 scan [<config-path>] [--path <config-path>]
-  engine ac7 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine ac7 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine ac7 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine ac7 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine ac7 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine ac7 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine ac7 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine pw paths
   engine pw catalog
-  engine pw scan [<config-path>] [--path <config-path>]
-  engine pw import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine pw export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine pw refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine pw scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine pw import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine pw export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine pw refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)
   engine il21946 paths
   engine il21946 catalog
-  engine il21946 scan [<config-path>] [--path <config-path>]
-  engine il21946 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine il21946 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine il21946 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine il21946 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine il21946 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine il21946 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine il21946 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine il2codblitz paths
   engine il2codblitz catalog
-  engine il2codblitz scan [<config-path>] [--path <config-path>]
-  engine il2codblitz import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine il2codblitz export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine il2codblitz refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine il2codblitz scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine il2codblitz import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine il2codblitz export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine il2codblitz refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine il2cod paths
   engine il2cod catalog
-  engine il2cod scan [<config-path>] [--path <config-path>]
-  engine il2cod import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine il2cod export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine il2cod refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine il2cod scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine il2cod import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine il2cod export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine il2cod refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine fsx paths
   engine fsx catalog
-  engine fsx scan [<config-path>] [--path <config-path>]
-  engine fsx import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine fsx export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine fsx refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine fsx scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine fsx import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine fsx export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine fsx refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine fsxse paths
   engine fsxse catalog
-  engine fsxse scan [<config-path>] [--path <config-path>]
-  engine fsxse import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine fsxse export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine fsxse refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine fsxse scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine fsxse import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine fsxse export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine fsxse refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine p3d4 paths
   engine p3d4 catalog
-  engine p3d4 scan [<config-path>] [--path <config-path>]
-  engine p3d4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine p3d4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine p3d4 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine p3d4 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine p3d4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine p3d4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine p3d4 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine p3d5 paths
   engine p3d5 catalog
-  engine p3d5 scan [<config-path>] [--path <config-path>]
-  engine p3d5 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine p3d5 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine p3d5 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine p3d5 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine p3d5 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine p3d5 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine p3d5 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine p3d6 paths
   engine p3d6 catalog
-  engine p3d6 scan [<config-path>] [--path <config-path>]
-  engine p3d6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]
-  engine p3d6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)
-  engine p3d6 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)
+  engine p3d6 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]
+  engine p3d6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)
+  engine p3d6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)
+  engine p3d6 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)
   engine layout render [--path <export-folder>] [--device <name>] [--devices <csv>] [--layout-map <joystick>=<path.layout>] [--game <name>] [--games <csv>] [--plane <name>] [--planes <csv>] [--include-overview true|false] [--include-planes true|false] [--skip-missing-layouts true|false] [--draw-markers true|false] [--draw-legend-table true|false] [--marker-size <n>] [--legend-width <n>] [--legend-max-rows <n>] [--legend-font-size <n>] [--button-symbol circle|square|triangle|diamond|bar] [--axis-symbol circle|square|triangle|diamond|bar] [--pov-symbol circle|square|triangle|diamond|bar] [--slider-symbol circle|square|triangle|diamond|bar] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>] [--style dark|light] [--print-width <px>] [--combine true|false] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a --layout-map to a device layout .json with tables and lines draws JoyPro 1 style sheets; the sheet style options colour the page, tables, lines, markers and labels, a device's own style in its layout wins; the --drawing-* options paint JoyPro's own drawings, default: the GUI's settings)
-  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)
+  engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; exit code 1 when the sheet check finds problems, the picture and file are written all the same; --check-all [query] checks every model)
   engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)
   engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)
   engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)
   engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]
   engine layout identify [--device <name>] [--devices <csv>] [--connected]   (vendor/model from VID:PID and HID name, picture search link)
-  engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]
+  engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]   (--max-markers: how many markers are listed, default 2000, at most 20000; 0 or less = 5000)
   engine layout template-save --source <path.layout-or-image> --out <path.layout> [--markers-json <file.json> | --markers <json-array-or-object>] [--tables-json <file.json> | --tables <json-array-or-object>] [--connectors-json <file.json> | --connectors <json-array-or-object>] [--replace-all true|false]
   engine devices list [--connected] [--profile-devices]
   engine devices inputs [--include-off]   (aliases: catalog, input-catalog)
   engine devices exchange <old-device> <new-device> [--old <name>] [--new <name>] [--confirm true|false]   (alias: swap; renames the device, inputs stay)
-  engine devices replace <old-device> <new-device> [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same ids, or by layout from the device catalog; --dry-run previews)
+  engine devices replace <old-device> <new-device> [--old <name>] [--new <name>] [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same = the same input ids, layout = by the part on the device (device catalog), auto = same for the same product, else layout; --merge where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins; --old/--from and --new/--to name the devices instead of the positions; --dry-run previews)
   engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)
   engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)
   engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)
@@ -430,7 +432,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations group add <relation-name> <group1> [group2] [...]
   engine relations group remove <relation-name> <group1> [group2] [...] [--all]
   engine relations group rename <old-group> <new-group>
-  engine relations item add <relation-name> --node game:id[:plane1|plane2] [--node ...]  (or --id/--game/--planes)
+  engine relations item add <relation-name> --node game:id[:plane1|plane2] [--node ...] [--force]  (or --id/--game/--planes; an action its game's list does not have, or an axis in a button relation or the other way round, is refused unless --force)
   engine relations item remove <relation-name> --node game:id[:plane1|plane2] [--node ...] [--all]
   engine relations item enable <relation-name> --node game:id[:plane1|plane2] [--node ...]
   engine relations item disable <relation-name> --node game:id[:plane1|plane2] [--node ...]
@@ -444,8 +446,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations mass add-postfix <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass remove-part <value> [--relation <name>] [--relations <csv>] [--query <text>] [--all]
   engine relations mass export <path.rl|path.json> [--format rl|json] [--relation <name>] [--relations <csv>] [--query <text>] [--all]
-  engine relations export <path.json>
-  engine relations import <path.json>
+  engine relations export <path.json> [filter]   (every relation with its bind as JSON, a missing folder is created; a filter word writes only the matching relations; with --text the file is the readable view, which relations import cannot read)
+  engine relations import <path.json> [--replace]   (the file's relations and binds replace all of the profile's; a file without some of the profile's relations (a filtered or mass export) is refused unless --replace, which removes them; profile history undo brings them back)
   engine relations edit   (no args; exports temp relations JSON, opens editor, re-imports on close; uses --editor or notepad)
   engine relations suggest <relation>|--relation <relation> [--min high|medium|low] [--limit N] [--game g1|g2] | --all [--missing [--per-relation N]] [--min ...]
   engine relations suggest apply <relation> [--add game:id:plane1|plane2]... [--never game:id:plane1|plane2]... [--remove game:id:planes]... [--move game:id:planes=>relation]... [--take game:id:planes]...
@@ -456,10 +458,14 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations functions [--category <id>] [--query "<words>"] [--coverage] [--dump <file.tsv>]
   engine relations chat <relation>|--relation <relation> "<message>" [--llm off|auto|on] [--show-prompt] [--apply]
   engine relations assistant "<message>" [--relation <name>] [--llm auto|on|off] [--max-steps N] [--show-prompt]
+  engine relations plan ask "<request>" [--relation <name>] [--llm auto|on|off]   (Manage / Edit with AI: the request as a plan of relation steps (create, delete, rename, add, remove, aircraft, groups, tuning, fill, check), each checked against the profile and the catalog; offline rules first, the local model when they do not cover it; a question gets an answer and no steps; nothing changes)
+  engine relations plan apply (--file <plan.json> | <json>) [--relation <name>] [--only 0,2,3] [--dry-run]   (runs the plan's steps, or only the numbered ones (from 0), in one history step; --relation limits it to that relation; --dry-run reports without changing the profile)
+  engine relations ai-matrix [--games g1|g2] [--paths p1|p2] [--examples N]   (test of every AI path of the Relations page with typical requests per game, on the loaded profile in memory; each answer is judged (right game only, readable, an answer at all); nothing is saved; --examples N shows the answers cut to N characters)
+  engine relations phrase-check --file <phrases.json> [--entries search|catalog|assistant|plan|describe] [--functions id1|id2] [--kinds phrases|descriptions|de] [--failures N]   (offline test: does every phrase of the file find its function on each entry point; nothing changes; lists up to N failures (default 40); exit 1 on errors)
   engine relations rename <relation> <new name>
   engine relations function <relation> [--set <function>|--none|--auto]
-  engine relations function --list [--axis|--button] [--query text]   the catalog functions to pick from
-  engine relations aircraft <relation> [--node game:id]
+  engine relations function --list [--axis|--button] [--query text]   (lists the catalog functions --set can pick, id and name sorted by name; --axis / --button only axis / button functions; --query only those whose name or id contains every word)
+  engine relations aircraft <relation> [--node game:id[:aircraft]]
   engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]
   engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]
   engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]
@@ -469,14 +475,14 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations merge-copies [--dry-run] [--name <relation>]
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g] [--all-examples]
-  engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]
+  engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]   (--replace first removes the relations tagged AutoGroup (an earlier Auto Group) with their binds; your other relations stay)
   engine relations from-text "<request>" [--games g1|g2] [--planes p1|p2] [--llm off|auto|on] [--substitutes] [--select <relation>]... [--skip-node game:id:plane1|plane2]... [--name <name>] [--min-confidence 0..1] [--dry-run]
   engine relations from-text --check   (tests the vocabulary in DB/Functions/language.json against the catalog)
   engine relations from-text "<request>" --show-prompt [--prompt-model <model>|local]
   engine llm status|recommend [--ram-gb N] [--vram-gb N] [--gpu <name>] [--gpu-vendor nvidia|amd|intel] [--cores N] [--avx2 true|false]
-  engine llm download [<model>] --accept-license [--runtime auto|cpu|vulkan|cuda] [--no-runtime]
+  engine llm download [<model> | --model <model>] --accept-license [--runtime auto|cpu|vulkan|cuda] [--no-runtime]
   engine llm remove [<model>] [--all]   (--all also removes the runtime and switches the model off)
-  engine llm enable [<model>|local] | engine llm disable   (use the local model for relations from-text)
+  engine llm enable [<model>|local] | engine llm disable   (enable switches the local model on, with a model also chooses it; disable switches it off and keeps the chosen model; for for relations from-text, the assistant, relations chat, relations duplicates --instruction, arrange ask and relations plan; local = your own llama.cpp / GGUF from llm use-local)
   engine llm cancel   (stops a running download; the next download resumes it)
   engine llm find-local [--root <folder>]...
   engine llm use-local [--server <llama-server.exe>] [--model <file.gguf>] [--gpu-layers auto|all|N] [--context N] [--template server|chatml] | --clear
@@ -485,17 +491,17 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine llm fake-server [--port N] [--port-file <path>] [--response <file>] [--serve <folder>] [--log <file>] [--lifetime <s>]
   engine setup devices [--grip <device>=<grip id>]... [--role <device|VID:PID>=<role>]... [--add-device <catalog id>]...
   engine setup aircraft --games <g1,g2>   (the aircraft / games for the priority list)
-  engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers]
+  engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers] [--realism 0..1] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role <device|VID:PID>=<role>]... [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--cockpit-file <json>]... [--out-plan <plan.json> | --plan-file <plan.json>]
   engine arrange ask "<your preferences in words>" [--llm auto|on|off] [--games <g1,g2>] [--add-missing] [--forget-saved] [--proposal <file>] [--role ...] [--grip ...] [--add-device ...]
   engine arrange apply --proposal <file> [--skip <change id>]... [--dry-run]   (applies the preview in one history version; keeps the preferences in the profile)
   engine arrange prefs [show | clear | remove <key>]   (the layout preferences kept in the profile)
-  engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers)
+  engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers; exit code 1 when a rule fails)
   engine setup apply --plan <plan.json> [--dry-run] [--force]   (writes the plan's relations, binds and modifiers in one step)
-  engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]   (a callout sheet per device)
+  engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a callout sheet per device; --aircraft: only the binds of that aircraft, labelled with its function names; --width: picture width, default 1800; the --drawing-* options paint JoyPro's drawings of the devices, default: the GUI's settings)
   engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]
-  engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)
-  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)
-  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]
+  engine devices kb [list [words] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign; list: the devices whose id, name or maker contains every word)
+  engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir> | detect <model> [--photo <file|view|sha>] [--photos <folder>] [--max <n>] [--eval]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions (layout-check: exit code 1 on a problem), JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing, detect: where the controls of a device photo probably are (experimental))
+  engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check [--structure] | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | render <aircraft> [<variant>] --page all|overview|stick|throttle|<device>|panels|panel:<id>|photos|photo [--png <file>] [--pdf <file>] [--style dark|light] [--scale <s>] [--highlight <words>] [--pictures picture|drawing|none] [--photos <folder>|none] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] [--verified] | photos --needed [--game G] | coverage | drawings | guide <aircraft> [<variant>] [--lang <code>] [--search <words>] [--no-pictures] | guide --coverage [--game G] [--no-pictures] | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|WarThunder|StarCitizen|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]
   engine binds list [filter]
   engine binds show <bind-or-relation>
   engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]
@@ -511,26 +517,26 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine ffb telemetry status   (JoyPro's telemetry force feedback: settings, game setup, process, last status)
   engine ffb telemetry effects
   engine ffb telemetry config show
-  engine ffb telemetry config set [--game DCS|IL2Game|IL2Korea|WarThunder] [--plane <aircraft>] [--effect <name>] | [--device {guid}] --param <key>=<value>...
+  engine ffb telemetry config set [--game DCS|IL2Game|IL2Korea|WarThunder] [--plane <aircraft>] [--effect <name>] | [--device {guid}] --param <key>=<value>...   (keys: global enabled, device, device-name, strength, max-force, invert-x, invert-y, tick-rate, timeout, centring-spring, centring-stiffness; --device invert-x, invert-y; --game enabled, port, graph, strength, url, poll-hz; --plane graph, strength; --effect enabled, strength)
   engine ffb telemetry config clear [--game <game>] [--plane <aircraft>] [--effect <name>] | [--device {guid}]
   engine ffb telemetry setup dcs|il2|il2korea|warthunder [--remove] [--dry-run] [--path <Saved Games\DCS | IL-2 folder | startup.cfg>]   (DCS Hooks script / IL-2 startup.cfg telemetry target; backed up)
   engine telemetry games   (telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible)
   engine telemetry config show
   engine telemetry config set [--game <game>] --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=<value>...
-  engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first)
+  engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first; alias: list)
   engine telemetry show <session> [--folder <folder>]   (<session> = path, file name, latest or a number of the list)
   engine telemetry export <session> --format acmi|acmi-zip|csv [--to <file or folder>] [--max-hz <n>] [--no-per-channel]   (Tacview ACMI 2.2 / CSV)
   engine telemetry preview <session> [--channel <key>]... [--points <n>]
-  engine telemetry delete <session>...
-  engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)
-  engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)
+  engine telemetry delete <session>...   (alias: remove)
+  engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings; exit code 1 when a session could not be read, finished or deleted)
+  engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; it ends after --seconds, with Ctrl+C or when the game exits; --no-game-check: the game process is not watched)
   engine usage harvest [--game <game>]... [--full] [--dry-run] [--no-steam]   (usage statistics, docs/usage-statistics.md: read what the games logged since the last time into <data>\Usage)
   engine usage sources [--game <game>]...   (where JoyPro reads usage per game, and the logs the watcher follows live)
   engine usage ranking [--game <game>] [--top <n>]   (most used games and aircraft / ships / vehicles; with --profile: binds as the weak fallback)
   engine usage stats [--top <n>]   (everything for the Statistics page; with --profile: binds per device, growth, oldest unused bind)
-  engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class)
-  engine usage backups | engine usage restore <day>   (the usage store's daily backups)
-  engine binds tuning models
+  engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class; the game must be known and the aircraft / ship in the ranking, or already pinned / excluded)
+  engine usage backups | engine usage restore <day>   (the usage store's daily backups; restore takes a day engine usage backups lists)
+  engine binds tuning models   (the axis response models: DCS, IL-2 Great Battles, IL-2 Korea, the per-game models (Arma, Elite, BMS, FSX, IL-2 1946, Cliffs of Dover, MSFS, Project Wingman, Star Citizen, VTOL VR, WARDOGS, War Thunder, X-Plane) and the generic one, with their parameters)
   engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]
   engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]
   engine binds tuning clear <bind-or-relation> --scope game:<game>|plane:<game>:<plane>|family:<family>
@@ -541,9 +547,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine binds detent uncalibrate <bind-or-relation>
   engine binds detent gates [--game <game>] [--plane <plane>]   (the shipped throttle gate data: afterburner start per aircraft, source, confidence)
   engine binds detent merge [--relations <csv>] [--into <relation>] [--ab-source profile|game] [--apply]   (per-aircraft throttle relations of one device axis into one relation in detent mode; without --apply only the plan)
-  engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game DCS|IL2Game] [--all]
-  engine binds export <path.json>
-  engine binds import <path.json>
+  engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game <game id>] [--all]   (--game: only relations with an action of that game, any game id (DCS, IL2Game, StarCitizen, MSFS2024, ...); --format: how the input is written, DCS (default) or IL-2 tokens)
+  engine binds export <path.json> [filter]   (every bind as JSON, a missing folder is created; a filter word writes only the matching binds; with --text the file is the readable view, which binds import cannot read)
+  engine binds import <path.json> [--replace]   (the file's binds replace all binds of the profile; a file without the binds of some relations (a filtered export) is refused unless --replace, which unbinds them; profile history undo brings them back)
   engine binds edit   (no args; exports temp binds JSON, opens editor, re-imports on close; uses --editor or notepad)
 ```
 
@@ -719,29 +725,29 @@ engine --correction-report 'C:\JoyPro\logs\load_corrections.json' profile load '
 ```
 
 ### `--history-note <text>`
-What it does: Command argument. See examples for typical values.
-Value format: Command argument. See examples for typical values.
+What it does: Global option: the name of this change in the profile history (default: the command's name).
+Value format: Free text. Example: 'Throttle curves for helicopters'.
 
 Example:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --history-note 'Gear on the stick' binds set 'Gear Toggle' --input JOY_BTN5 --text
 ```
 
 ### `--vjoy-tunnel <1-16>`
-What it does: Command argument. See examples for typical values.
-Value format: Command argument. See examples for typical values.
+What it does: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
+Value format: A vJoy device number from 1 to 16, or none. Example: 2.
 
 Example:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --vjoy-tunnel 1 warthunder import --text
 ```
 
 ### `--usage-style`
-What it does: Command argument. See examples for typical values.
+What it does: Global option: on (default) lets Auto Assign, Auto Group, the Setup wizard and Lay out with AI follow your most used aircraft for new ones (usage ranking); off does not.
 
 Example:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --usage-style off relations auto-assign --dry-run --text
 ```
 
 
@@ -831,7 +837,7 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile validate --fail
 ```
 
 ### `engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)`
-What it does: Runs this command operation.
+What it does: Has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -841,11 +847,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine profile game-state --game <id> --text
 ```
 
 ### `engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)`
-What it does: Runs this command operation.
+What it does: Binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -853,54 +859,56 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine export-marks list --text
 ```
 
-### `engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks)`
-What it does: Runs this command operation.
+### `engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks; --game takes the game id or an alias (il2, wt); --aircraft: only the marks of that aircraft; a warning when no open mark matches)`
+What it does: 'Keep as is' for the marks of an 'Only add' export: the Check shows no card for them. --game takes the game id or an alias (il2, wt); --aircraft limits it to that aircraft's marks. When no open mark matches, the output says so.
 
 Arguments and example values:
-- `--game`: Game filter value. Example: DCS or IL2Game.
+- `--game`: The game of the marks: its id or an alias (IL2Game or il2, WarThunder or wt). Example: --game DCS.
 - `<id>`: Command argument. See examples for typical values.
-- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `--relation`: The relation whose marks are kept as they are. Example: --relation 'Gear Toggle'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
+- `--aircraft`: Only the marks of this aircraft (default: all of the relation's marks in the game). Example: --aircraft F-16C_50.
 - `<a>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' export-marks dismiss --game il2 --relation 'Gear Toggle' --text
 ```
 
 ### `engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)`
-What it does: Runs this command operation.
+What it does: Games and DCS aircraft the profile has relations for, with how many are bound: what each export writes.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine profile games --text
 ```
 
-### `engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--save <path.pr0file>]`
-What it does: Runs this command operation.
+### `engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--overwrite-mode left|right|ask] [--save <path.pr0file>] [--save-profile <path.pr0file>]   (the files are merged left to right; a relation both have: right = the later file wins (default), left = the first file keeps it, ask = the console asks; --overwrite-mode is another name for --mode, --save-profile for --save)`
+What it does: Merges two or more .pr0file files from left to right into the loaded profile: relations only one file has are added; for a relation of the same name that differs, --mode decides (right = the later file wins, the default; left = the first file keeps it; ask = the console asks per conflict). Device aliases and pictures, aircraft aliases, modifier renames and the force feedback settings follow the same rule. The source files are only read; --save writes the result.
 
 Arguments and example values:
-- `<left.pr0file>`: Command argument. See examples for typical values.
-- `<right.pr0file>`: Command argument. See examples for typical values.
-- `<more.pr0file>`: Command argument. See examples for typical values.
-- `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--save`: Command argument. See examples for typical values.
+- `<left.pr0file>`: The first profile: the base everything else is merged into.
+- `<right.pr0file>`: The second profile, merged into the first.
+- `<more.pr0file>`: Further profiles, merged in this order.
+- `--mode`: What wins when two files have a relation of the same name that differs: right (default; also r, overwrite, keep-right) = the later file, left (also l, keep-left) = the first file, ask (also a, prompt) = the console asks per conflict (refused without an interactive console).
+- `--overwrite-mode`: Another name for --mode (left|right|ask); give only one of them.
+- `--save`: Write the merged profile to this .pr0file (the source files are only read).
 - `<path.pr0file>`: Path to profile file. Example: C:\\JoyPro\\profiles\\pilot_main.pr0file.
+- `--save-profile`: Another name for --save.
 
 Examples:
 ```powershell
-engine --help
+engine profile merge 'C:\JoyPro\profiles\pilot_main.pr0file' 'C:\JoyPro\profiles\friend.pr0file' --mode left --save 'C:\JoyPro\profiles\merged.pr0file' --text
 ```
 
 ### `engine profile history [list]   (the versions of --profile, newest first: every save is one, kept in <data>\ProfileHistory; undo/redo state)`
-What it does: Runs this command operation.
+What it does: The versions of --profile, newest first: every save is one, kept in <data>\ProfileHistory, with the undo / redo state.
 
 Arguments and example values:
 - `--profile`: Global option: load this .pr0file before running the command.
@@ -908,54 +916,55 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine profile history --text
 ```
 
 ### `engine profile history show <id> | diff <id> [<id>|current]   (what a version changed / the changes between two versions)`
-What it does: Runs this command operation.
+What it does: What a version changed (show), or the changes between two versions or a version and the current profile (diff).
 
 Arguments and example values:
 - `<id>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine profile history show <id> --text
 ```
 
 ### `engine profile history restore <id> | undo | redo   (writes a version back into the profile; that is a version too, so it can be undone)`
-What it does: Runs this command operation.
+What it does: Writes a version back into the profile (restore), or steps back / forward (undo / redo); that is a version too, so it can be undone.
 
 Arguments and example values:
 - `<id>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine profile history restore <id> --text
 ```
 
 ### `engine profile history keep <id> [on|off] | checkpoint [--label <text>]   (a kept version is never cleaned up; a checkpoint keeps the profile as it is now)`
-What it does: Runs this command operation.
+What it does: Keeps a version for good (on) or not (off), or keeps the profile as it is now as a checkpoint; kept versions are never cleaned up.
 
 Arguments and example values:
 - `<id>`: Command argument. See examples for typical values.
 - `--label`: Command argument. See examples for typical values.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 
 Examples:
 ```powershell
-engine --help
+engine profile history keep <id> --text
 ```
 
 ### `engine profile history prune [--all] [--dry-run] | usage [--all]   (clean-up: all of 24 h, hourly 7 days, daily 60 days, weekly after; 200 MB per profile, 1 GB in total)`
-What it does: Runs this command operation.
+What it does: The clean-up: everything of 24 hours, one version per hour for 7 days, per day for 60 days, per week after; at most 200 MB per profile and, with --all, 1 GB for all profiles (the oldest versions of all profiles go first). --dry-run counts every step, the global cap included; usage shows the sizes.
 
 Arguments and example values:
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile history prune --dry-run --text
+engine profile history prune --all --dry-run --text
 ```
 
 ### `engine dcs scan [<saved-games-path>] [--path <saved-games-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--ignore-easy-planes true|false] [--include-defaults] [--import-inverted] [--import-slider] [--import-curvature] [--import-deadzone] [--import-saturation-x] [--import-saturation-y] [--only-connected true|false] [--merge-same-name true|false] [--confirm true|false]`
@@ -971,7 +980,7 @@ Arguments and example values:
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
 - `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--ignore-easy-planes`: Command argument. See examples for typical values.
 - `--include-defaults`: Include defaults in DCS import/scan.
@@ -1012,7 +1021,7 @@ Arguments and example values:
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
 - `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--ignore-easy-planes`: Command argument. See examples for typical values.
 - `--include-defaults`: Include defaults in DCS import/scan.
@@ -1053,8 +1062,8 @@ Arguments and example values:
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
-- `--vjoy-tunnel`: Command argument. See examples for typical values.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 How arguments interact:
 - Import-only filters/settings are not valid for export commands.
@@ -1067,8 +1076,8 @@ Examples:
 engine dcs export 'C:\Users\Pilot\Saved Games\DCS.openbeta' --text
 ```
 
-### `engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (moves stick-specific defaults from game folder into BACKUP_JOYSTICK_DEFAULTS)`
-What it does: Backs up joystick defaults and removes stick-specific defaults from DCS game-folder aircraft input files.
+### `engine dcs defaults cut [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>] [--dry-run]   (older way, the GUI uses dcs device-luas remove: in every <install>\Mods\aircraft\<module>\Input\<input>\joystick folder every file except default.lua is moved into BACKUP_JOYSTICK_DEFAULTS, default.lua is copied there; refused while DCS or DCS_updater runs; --dry-run only counts)`
+What it does: The older way to take DCS's device default files out of the installation (the GUI uses dcs device-luas remove): in every <install>\Mods\aircraft\<module>\Input\<input>\joystick folder every file except default.lua is moved into BACKUP_JOYSTICK_DEFAULTS, and default.lua is copied there. Refused while DCS or DCS_updater runs; --dry-run only counts.
 
 Arguments and example values:
 - `<saved-games-path>`: Path to DCS Saved Games folder. Example: C:\\Users\\Pilot\\Saved Games\\DCS.openbeta.
@@ -1077,19 +1086,26 @@ Arguments and example values:
 - `--install-path`: DCS install path override (root folder that contains Mods\\aircraft).
 - `--backup-path`: Override backup folder path for dcs defaults cut/restore. Default: <saved-games>\\BACKUP_JOYSTICK_DEFAULTS.
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
+- `--dry-run`: Count the files that would be moved or copied; nothing is changed (also while DCS runs).
+- `<install>`: Command argument. See examples for typical values.
+- `<module>`: Command argument. See examples for typical values.
+- `<input>`: Command argument. See examples for typical values.
 
 How arguments interact:
 - If paths are omitted, the command tries to auto-detect DCS Saved Games and install locations.
-- Copies default.lua to backup and moves non-default joystick files into backup.
+- Only the joystick folders under Mods\\aircraft of the installation: every file except default.lua is moved into the backup, default.lua is copied.
+- Refused while DCS or DCS_updater runs; --dry-run counts the files and changes nothing.
+- The GUI uses dcs device-luas remove instead (it keeps files other Lua files refer to and the UI layer).
 - Default backup location is <saved-games>\\BACKUP_JOYSTICK_DEFAULTS unless --backup-path is provided.
 
 Examples:
 ```powershell
+engine dcs defaults cut 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --dry-run --text
 engine dcs defaults cut 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --text
 ```
 
-### `engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>]   (restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS)`
-What it does: Restores joystick defaults from BACKUP_JOYSTICK_DEFAULTS back into DCS game-folder aircraft input files.
+### `engine dcs defaults restore [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--backup-path <path>] [--dry-run]   (copies the files of BACKUP_JOYSTICK_DEFAULTS back into Mods\aircraft; refused while DCS or DCS_updater runs; --dry-run only counts)`
+What it does: Copies the files of BACKUP_JOYSTICK_DEFAULTS back into the DCS installation's Mods\aircraft folders. Refused while DCS or DCS_updater runs; --dry-run only counts.
 
 Arguments and example values:
 - `<saved-games-path>`: Path to DCS Saved Games folder. Example: C:\\Users\\Pilot\\Saved Games\\DCS.openbeta.
@@ -1098,10 +1114,12 @@ Arguments and example values:
 - `--install-path`: DCS install path override (root folder that contains Mods\\aircraft).
 - `--backup-path`: Override backup folder path for dcs defaults cut/restore. Default: <saved-games>\\BACKUP_JOYSTICK_DEFAULTS.
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
+- `--dry-run`: Count the files that would be copied back; nothing is changed (also while DCS runs).
 
 How arguments interact:
 - If paths are omitted, the command tries to auto-detect DCS Saved Games and install locations.
 - Restores files by copying backup aircraft input folders back into Mods\\aircraft.
+- Refused while DCS or DCS_updater runs; --dry-run counts the files and changes nothing.
 - Default backup location is <saved-games>\\BACKUP_JOYSTICK_DEFAULTS unless --backup-path is provided.
 
 Examples:
@@ -1109,11 +1127,11 @@ Examples:
 engine dcs defaults restore 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --text
 ```
 
-### `engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore puts the originals back; auto re-applies after a DCS update; patched files fail server integrity checks)`
+### `engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check] [--status]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore (--restore) puts the originals back; status (--status) shows the state; auto re-applies after a DCS update; patched files fail server integrity checks)`
 What it does: Switches DCS's default joystick binds off in the DCS installation (every joystick profile lua wrapped, combos = nil, original kept as <file>.nocombo.bak), or restores the originals; status and auto (re-apply after a DCS update).
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: List the files that would be patched or restored; nothing is changed.
 - `--restore`: dcs strip-defaults / device-luas: put the original DCS files back (same as the restore action).
 - `--skip-ui-layer`: dcs strip-defaults: leave Config\\Input\\UiLayer unpatched (true/false; the flag alone means true).
 - `--remember`: dcs strip-defaults / device-luas: keep the switch for automatic re-apply after DCS updates (default true).
@@ -1124,12 +1142,14 @@ Arguments and example values:
 - `--luae`: Path to DCS's luae.exe for the load check (default: the install's bin\\luae.exe).
 - `<luae.exe>`: Command argument. See examples for typical values.
 - `--no-load-check`: dcs strip-defaults: skip the check with DCS's own Lua loader after patching (tests only).
+- `--status`: Show the state (the same as the action status).
 - `<file>`: Command argument. See examples for typical values.
 
 How arguments interact:
 - Off by default. Patched DCS files fail the integrity check of multiplayer servers that enforce it.
 - Same marker (-- [[DCS_STRIP_JOYSTICK_DEFAULTS v1]]) and backup name as the community strip script; either one restores the other's files.
-- apply remembers the switch; JoyPro re-applies it at its start (auto) and before every DCS list refresh. restore switches it off.
+- apply remembers the switch; JoyPro re-applies it at its start (auto) and before every headless DCS list refresh (dcs refresh clean and dcs refresh id; the click flow does not). restore switches it off.
+- --status shows the state (as status); --remove is refused here (use --restore, or dcs device-luas remove).
 - Never touches Saved Games\\DCS\\Config\\Input. Refused while DCS or DCS_updater runs.
 
 Examples:
@@ -1140,11 +1160,14 @@ engine dcs strip-defaults status --text
 engine dcs strip-defaults --restore --text
 ```
 
-### `engine dcs device-luas [list|remove|restore] [--dry-run] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back)`
+### `engine dcs device-luas [list|remove|restore] [--dry-run] [--remove] [--restore] [--status] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back; list (also --status) shows them)`
 What it does: Moves the device-specific default files of the DCS installation into JoyPro's backup folder so DCS uses default.lua for every device, or puts them back.
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: List the files that would be moved or put back; nothing is changed.
+- `--remove`: Move the device files away (the same as the action remove).
+- `--restore`: dcs strip-defaults / device-luas: put the original DCS files back (same as the restore action).
+- `--status`: List the device files and where they are (the same as the action list).
 - `--remember`: dcs strip-defaults / device-luas: keep the switch for automatic re-apply after DCS updates (default true).
 - `--install-path`: DCS install path override (root folder that contains Mods\\aircraft).
 - `<dcs-install-path>`: Path to DCS install root (contains Mods\\aircraft). Example: D:\\Games\\Eagle Dynamics\\DCS World OpenBeta.
@@ -1193,8 +1216,8 @@ engine dcs verify-clean 'C:\Users\Pilot\Saved Games\DCS' --text
 engine dcs verify-clean --planes 'FA-18C_hornet' --include-disconnected true --text
 ```
 
-### `engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]`
-What it does: Automates DCS Controls -> Clear All flow and rebuilds JoyPro clean-profile baseline files.
+### `engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)`
+What it does: Rebuilds JoyPro's DCS clean profiles (the default binds DCS gives every device type). By default DCS's own Lua (luae.exe) does it without starting DCS; only --headless-lua false starts DCS and clicks Controls -> Clear All.
 
 Arguments and example values:
 - `<saved-games-path>`: Path to DCS Saved Games folder. Example: C:\\Users\\Pilot\\Saved Games\\DCS.openbeta.
@@ -1202,14 +1225,15 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--install-path`: DCS install path override (root folder that contains Mods\\aircraft).
 - `--ocr`: Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false).
-- `--launch`: Start DCS automatically before refresh automation (true/false).
+- `--launch`: Click flow only (--headless-lua false): start DCS (true, default) or use a running DCS (false).
 - `--keep-running`: Leave DCS running after refresh command completes (true/false).
-- `--headless-lua`: Command argument. See examples for typical values.
+- `--headless-lua`: true (default): DCS's own Lua (luae.exe) builds the clean profiles in temporary folders, DCS is not started and Config\Input is not changed. false: DCS starts in a window and JoyPro clicks through its menus (the legacy click flow).
 - `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS.
+- `--confirm`: Ask 'Type yes' before the run in an interactive console (true, default); false runs without asking.
 - `--menu-wait-seconds`: Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45.
 - `<n>`: Integer numeric value. Example: 45.
 - `--ocr-menu-timeout-seconds`: OCR max wait for DCS main menu template detection. Example: --ocr-menu-timeout-seconds 600.
@@ -1230,18 +1254,21 @@ Arguments and example values:
 
 How arguments interact:
 - Requires DCS Saved Games and install paths (auto-detect is attempted when omitted).
-- Without --ocr, XML click anchors from Clicks.xml are used; with --ocr, template image matching is used.
+- Default (--headless-lua true): DCS is not started; --plane/--planes limit the aircraft; the click options below are ignored with a warning.
+- Only with --headless-lua false: DCS starts (--launch) and JoyPro clicks through its menus. Without --ocr, XML click anchors from Clicks.xml are used; with --ocr, template image matching is used.
 - --dry-run skips launch/click/file changes and reports planned steps only.
-- --default-stick prefers <name>.diff.lua when rebuilding CleanProfile output.
-- --window-left/top/width/height and --gui-scale control non-OCR click coordinate resolution.
+- --default-stick prefers <name>.diff.lua when rebuilding CleanProfile output (click flow).
+- --window-left/top/width/height and --gui-scale control non-OCR click coordinate resolution (click flow).
 
 Examples:
 ```powershell
-engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --ocr false --preview-clicks --preview-image 'C:\JoyPro\logs\dcs_refresh_clean_preview.png' --confirm false --text
+engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --confirm false --text
+engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --plane F-16C_50 --dry-run --text
+engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --headless-lua false --ocr false --preview-clicks --preview-image 'C:\JoyPro\logs\dcs_refresh_clean_preview.png' --confirm false --text
 ```
 
-### `engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]`
-What it does: Automates DCS Controls -> Make HTML flow and refreshes DB HTML files from exported layouts.
+### `engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft)`
+What it does: Rebuilds JoyPro's DCS command lists (DB HTML per aircraft). By default DCS's own Lua (luae.exe) writes them without starting DCS; only --headless-lua false starts DCS and clicks Controls -> Make HTML per aircraft.
 
 Arguments and example values:
 - `<saved-games-path>`: Path to DCS Saved Games folder. Example: C:\\Users\\Pilot\\Saved Games\\DCS.openbeta.
@@ -1249,14 +1276,15 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--install-path`: DCS install path override (root folder that contains Mods\\aircraft).
 - `--ocr`: Use OCR image matching click flow instead of fixed XML anchor click offsets (true/false).
-- `--launch`: Start DCS automatically before refresh automation (true/false).
+- `--launch`: Click flow only (--headless-lua false): start DCS (true, default) or use a running DCS (false).
 - `--keep-running`: Leave DCS running after refresh command completes (true/false).
-- `--headless-lua`: Command argument. See examples for typical values.
+- `--headless-lua`: true (default): DCS's own Lua (luae.exe) writes the per-aircraft command lists, DCS is not started. false: DCS starts in a window and JoyPro clicks Make HTML per aircraft (the legacy click flow).
 - `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS.
+- `--confirm`: Ask 'Type yes' before the run in an interactive console (true, default); false runs without asking.
 - `--menu-wait-seconds`: Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45.
 - `<n>`: Integer numeric value. Example: 45.
 - `--ocr-menu-timeout-seconds`: OCR max wait for DCS main menu template detection. Example: --ocr-menu-timeout-seconds 600.
@@ -1276,13 +1304,14 @@ Arguments and example values:
 
 How arguments interact:
 - Requires DCS Saved Games and install paths (auto-detect is attempted when omitted).
-- Exports per-module HTML from DCS and copies the largest non-keyboard/mouse/trackir HTML per plane into DB\\DCS.
-- --modules-to-scan adds extra loop count on top of detected install/instance module counts.
+- Default (--headless-lua true): DCS is not started; DCS's Lua writes the per-aircraft HTML lists, JoyPro copies them into DB\\DCS.
+- Only with --headless-lua false: DCS starts, exports per-module HTML and JoyPro copies the largest non-keyboard/mouse/trackir HTML per plane into DB\\DCS; --modules-to-scan adds extra loop count on top of detected install/instance module counts.
 - --dry-run skips launch/click/file changes and reports planned steps only.
 
 Examples:
 ```powershell
-engine dcs refresh id 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --ocr true --modules-to-scan 0 --confirm false --text
+engine dcs refresh id 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --plane F-16C_50 --confirm false --text
+engine dcs refresh id 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --headless-lua false --ocr true --modules-to-scan 0 --confirm false --text
 ```
 
 ### `engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]`
@@ -1397,7 +1426,7 @@ Arguments and example values:
 - `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
 - `--import-inverted`: Include axis inversion settings.
 - `--import-curvature`: Include axis curvature settings.
 - `--import-deadzone`: Include axis deadzone settings.
@@ -1428,7 +1457,7 @@ Arguments and example values:
 - `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
 - `--import-inverted`: Include axis inversion settings.
 - `--import-curvature`: Include axis curvature settings.
 - `--import-deadzone`: Include axis deadzone settings.
@@ -1445,7 +1474,7 @@ Examples:
 engine il2 import 'D:\Games\IL-2 Sturmovik Great Battles' --devices 'VKB Gladiator NXT,LEFT VPC Throttle' --save-last --text
 ```
 
-### `engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false]   (add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)`
+### `engine il2 export [<il2-root-path>] [--path <il2-root-path>] [--mode clean|add|merge|merge-overwrite] [--nuke-untouched-devices true|false] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s) and --vjoy-tunnel devices are never cleared; add never removes and skips a bind whose input the game uses for another action; merge also removes the game's bind on an input the profile gives another action; merge-overwrite also takes the profile's actions off their other inputs; clean releases the other binds of the written devices, nuke the connected joysticks the profile does not use; mouse lines, lines JoyPro cannot read and devices that are not connected stay)`
 What it does: Exports current profile mappings to IL2-compatible files.
 
 Arguments and example values:
@@ -1453,6 +1482,11 @@ Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 How arguments interact:
 - Import-only filters/settings are not valid for export commands.
@@ -1464,7 +1498,7 @@ engine il2 export 'D:\Games\IL-2 Sturmovik Great Battles' --mode merge-overwrite
 ```
 
 ### `engine starcitizen scan [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
 - `<sc-root-or-profile-path>`: Command argument. See examples for typical values.
@@ -1476,7 +1510,7 @@ Arguments and example values:
 - `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--confirm`: Controls suggestion confirmation (true) vs auto-accept (false).
 
@@ -1486,7 +1520,7 @@ engine starcitizen scan --text
 ```
 
 ### `engine starcitizen import [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--merge] [--save-profile <path.pr0file>] [--save-last] [--device <name>] [--devices <csv>] [--ignore-device <name>] [--ignore-devices <csv>] [--include-keyboard true|false] [--confirm true|false]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
 - `<sc-root-or-profile-path>`: Command argument. See examples for typical values.
@@ -1502,7 +1536,7 @@ Arguments and example values:
 - `--devices`: Include devices as CSV. Example: --devices VKB Gladiator NXT,LEFT VPC Throttle.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
-- `--ignore-devices`: Exclude devices as CSV. Example: --ignore-devices Keyboard,Mouse.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--confirm`: Controls suggestion confirmation (true) vs auto-accept (false).
 
@@ -1511,8 +1545,8 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' starcitizen import --text
 ```
 
-### `engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false]   (add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine starcitizen export [<sc-root-or-profile-path>] [--path <path>] [--source <path>] [--mode clean|add|merge|merge-overwrite] [--keep-keyboard-defaults true|false] [--prefer-local-order true|false] [--include-keyboard true|false] [--nuke-untouched-devices true|false] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s) and --vjoy-tunnel devices are never cleared; stale duplicate joystick slots of a connected device are removed and their rebinds moved to the slot it keeps; add never changes a game bind and skips a bind whose input another ship action uses; merge and merge-overwrite put the profile's input into the action's slot and release the game's bind on an input the profile gives another ship action; clean releases the ship binds of the written devices, nuke those of the connected devices the profile does not use; both switch off the game's default joystick binds on js1 when js1 is written (clean) or unused (nuke) and its device is connected)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
 - `<sc-root-or-profile-path>`: Command argument. See examples for typical values.
@@ -1524,6 +1558,11 @@ Arguments and example values:
 - `--prefer-local-order`: Command argument. See examples for typical values.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
@@ -1531,7 +1570,7 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' starcitizen export --dr
 ```
 
 ### `engine starcitizen list-devices [<sc-root-or-profile-path>] [--path <path>] [--source <path>]   (aliases: devices, list)`
-What it does: Runs this command operation.
+What it does: Aliases: devices, list.
 
 Arguments and example values:
 - `<sc-root-or-profile-path>`: Command argument. See examples for typical values.
@@ -1541,26 +1580,27 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine starcitizen list-devices --text
 ```
 
 ### `engine starcitizen labels [--path <install>] [--dry-run]   (the game's names of the controls, from global.ini in Data.p4k)`
-What it does: Runs this command operation.
+What it does: The game's own names of the controls, read from global.ini in Data.p4k; --dry-run reads and reports only.
 
 Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `<install>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine starcitizen labels --text
 ```
 
-### `engine db summary [--keyboard] [--no-keyboard] [--strict-names]`
-What it does: Shows DB health/coverage summary for clean profile data.
+### `engine db summary [filter] [--keyboard] [--no-keyboard] [--strict-names]   (compares each DCS aircraft command list with its clean profile; filter = text in the aircraft name or file to count only those)`
+What it does: Compares each DCS aircraft command list (DB\DCS\*.html) with its clean profile (CleanProfile; with the keyboard check, --keyboard / --no-keyboard, also KeyboardCleanProfile) and counts the matches, alias matches and missing ones; an optional filter word limits it to aircraft whose name or file contains it.
 
 Arguments and example values:
+- `filter`: Text filter (case-insensitive substring). Example values: 'A-10', 'Hornet', 'VKB'.
 - `--keyboard`: Include keyboard clean-profile checks for supported DB commands.
 - `--no-keyboard`: Disable keyboard clean-profile checks for supported DB commands.
 - `--strict-names`: For DB summary/list/check: require exact clean filename match (no alias fallback accepted).
@@ -1572,6 +1612,7 @@ How arguments interact:
 Examples:
 ```powershell
 engine db summary --keyboard --text
+engine db summary F-16 --text
 ```
 
 ### `engine db list [filter] [--missing] [--keyboard] [--no-keyboard] [--strict-names]`
@@ -1593,10 +1634,11 @@ Examples:
 engine db list 'A-10' --missing --text
 ```
 
-### `engine db check [--keyboard] [--no-keyboard] [--strict-names]`
-What it does: Validates DB completeness and reports missing required data.
+### `engine db check [filter] [--keyboard] [--no-keyboard] [--strict-names]   (like db summary, plus the aircraft without a clean profile; exit 1 when one is missing)`
+What it does: The same comparison as db summary plus the list of DCS aircraft without a clean profile; fails (exit 1) when one is missing (with --strict-names also on alias matches). An optional filter word limits it.
 
 Arguments and example values:
+- `filter`: Text filter (case-insensitive substring). Example values: 'A-10', 'Hornet', 'VKB'.
 - `--keyboard`: Include keyboard clean-profile checks for supported DB commands.
 - `--no-keyboard`: Disable keyboard clean-profile checks for supported DB commands.
 - `--strict-names`: For DB summary/list/check: require exact clean filename match (no alias fallback accepted).
@@ -1608,6 +1650,7 @@ How arguments interact:
 Examples:
 ```powershell
 engine db check --text
+engine db check A-10 --strict-names --text
 ```
 
 ### `engine db games [filter]`
@@ -1622,7 +1665,7 @@ engine db games --text
 ```
 
 ### `engine db check-updates [--accept <game>] [--accept-all] [--no-record]   (games updated since their DB was built)`
-What it does: Runs this command operation.
+What it does: Games updated since their DB was built.
 
 Arguments and example values:
 - `--accept`: Command argument. See examples for typical values.
@@ -1632,7 +1675,7 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine db check-updates --text
 ```
 
 ### `engine db planes [filter] [--game <name>]`
@@ -1652,17 +1695,17 @@ engine db planes --game DCS 'A-10' --text
 ```
 
 ### `engine db fingerprint`
-What it does: Runs this command operation.
+What it does: Prints the fingerprint of the game lists JoyPro reads (DB): a load of a profile compares it to decide whether the DB correction pass must run.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine db fingerprint --text
 ```
 
-### `engine db paths   (where the lists are read from: the game-data folder for everything built from your games, the program folder for JoyPro's own data)`
+### `engine db paths   (where the lists are read from: the game-data folder for everything built from your games, the program folder for JoyPro's own data: DB\Functions, DB\Devices, DB\Llm, DB\DevicePhotos, DB\DeviceLayouts, DB\DeviceDrawings, DB\Cockpits, DB\Detents)`
 What it does: Shows the program folder (JoyPro's own data), the game-data folder <data>\GameData (lists built from your games) and, per game folder, where it is read from (game-data or program) and its recorded game build (docs/installs.md, Game data).
 
 Arguments and example values:
@@ -1674,7 +1717,7 @@ engine db paths --text
 ```
 
 ### `engine db refresh-il2 [<install, data\input folder or .actions file>] [--path <path>] [--db-path <folder>] [--dry-run]   (adds new actions of the game's key mapping files to DB\IL2\IL2.actions; also: engine il2 refresh-db)`
-What it does: Runs this command operation.
+What it does: Adds new actions of the game's key mapping files to DB\IL2\IL2.actions; also: engine il2 refresh-db.
 
 Arguments and example values:
 - `<install, data\input folder or .actions file>`: Command argument. See examples for typical values.
@@ -1682,36 +1725,36 @@ Arguments and example values:
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
 - `--db-path`: Command argument. See examples for typical values.
 - `<folder>`: Folder path. Example: C:\Cases\case1.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine db refresh-il2 --text
 ```
 
-### `engine db refresh-starcitizen [<install-or-source-path>] [--install-path <path>] [--path <path>] [--source <path-to-source>] [--branch <name>] [--db-path <path>] [--include-user-profiles true|false] [--dry-run true|false]`
-What it does: Runs this command operation.
+### `engine db refresh-starcitizen [<install-or-source-path>] [--install-path <path>] [--path <path>] [--source <path-to-source>] [--branch <name>] [--db-path <path>] [--include-user-profiles true|false] [--dry-run true|false]   (builds JoyPro's Star Citizen command list from the game's action maps; --install-path / --path: the Star Citizen installation (else found); --dry-run true reads and reports only, nothing is written)`
+What it does: Builds JoyPro's Star Citizen command list (DB\StarCitizen) from the game's action maps (a given source, the named installation, else every detected installation and, with --include-user-profiles, the players' actionmaps.xml); writes it only at the end, a dry run writes nothing.
 
 Arguments and example values:
-- `<install-or-source-path>`: Command argument. See examples for typical values.
-- `--install-path`: DCS install path override (root folder that contains Mods\\aircraft).
+- `<install-or-source-path>`: The installation folder, or a file with an action map (then read like --source).
+- `--install-path`: The Star Citizen installation folder (e.g. C:\Program Files\Roberts Space Industries\StarCitizen); default: the one JoyPro finds.
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
-- `--path`: Optional explicit path override. Use when you prefer option form over positional path.
-- `--source`: Command argument. See examples for typical values.
+- `--path`: Same as --install-path (used when --install-path is not given).
+- `--source`: A file or folder with the game's action map (e.g. an extracted defaultProfile.xml), read first.
 - `<path-to-source>`: Command argument. See examples for typical values.
-- `--branch`: Command argument. See examples for typical values.
+- `--branch`: Read only this game branch (e.g. LIVE or PTU).
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--db-path`: Command argument. See examples for typical values.
-- `--include-user-profiles`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--db-path`: Write the command list into this folder instead of JoyPro's game-data folder.
+- `--include-user-profiles`: When no installation is named, also take the players' actionmaps.xml as sources (true/false, default true).
+- `--dry-run`: true (a bare flag is true): report what the list would hold; nothing is written (default false).
 
 Examples:
 ```powershell
-engine --help
+engine db refresh-starcitizen --text
 ```
 
 ### `engine games installs [--game <id>]   (which supported games are installed and where; import/export/scan/refresh/restore are refused for the others)`
-What it does: Runs this command operation.
+What it does: Which supported games are installed and where; import/export/scan/refresh/restore are refused for the others.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -1719,11 +1762,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine games installs --text
 ```
 
 ### `engine games install set <game> <folder> | clear <game>   (your installation folder of a game, e.g. a portable install; it then counts as installed and detection never replaces it; unset = clear)`
-What it does: Runs this command operation.
+What it does: Your installation folder of a game (e.g. a portable install): it then counts as installed and detection never replaces it; clear removes it.
 
 Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
@@ -1731,22 +1774,22 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine games install set <game> <folder> --text
 ```
 
 ### `engine games install disable <game> [<game> ...] | enable <game> [<game> ...]   (games you do not have: they count as not installed and the GUI hides them; enable undoes it)`
-What it does: Runs this command operation.
+What it does: Games you do not have: they count as not installed and the GUI hides them; enable undoes it.
 
 Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine games install disable <game> --text
 ```
 
 ### `engine games config set <game> <file or folder> | clear <game>   (your config location of a game, e.g. Saved Games\DCS.openbeta; it comes first wherever JoyPro looks for the game's controls; not for games that keep them in the installation)`
-What it does: Runs this command operation.
+What it does: Your config location of a game (e.g. Saved Games\DCS.openbeta): it comes first wherever JoyPro looks for the game's controls; clear removes it. Not for games that keep their controls in the installation.
 
 Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
@@ -1754,7 +1797,7 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine games config set <game> <file or folder> --text
 ```
 
 ### `engine games paths [--game <name>] [--games <csv>]`
@@ -1776,14 +1819,14 @@ engine games paths --text
 ```
 
 ### `engine version`
-What it does: Runs this command operation.
+What it does: Prints the engine's version.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine version --text
 ```
 
 ### `engine games integrations`
@@ -1794,7 +1837,7 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine games integrations --text
 ```
 
 ### `engine games support [--markdown | --html | --json] [--notes <file>]   (how far JoyPro supports each game: the feature matrix from the code plus the verification notes, docs/games/support.md; exit 1 when the notes miss a game or claim more than the code)`
@@ -1815,7 +1858,7 @@ engine games support --html --out 'C:\JoyPro\supported-games.html'
 ```
 
 ### `engine hud devices [--grip <device>=<catalog id>]... [--no-device-photos]   (connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out (the user said never); the engine downloads no device photo, the GUI does per device after the user's yes)`
-What it does: Runs this command operation.
+What it does: Connected devices for the HUD: product picture address, axes with their role, buttons, hats, layout picture with button positions; --no-device-photos leaves the makers' photo addresses out (the user said never); the engine downloads no device photo, the GUI does per device after the user's yes.
 
 Arguments and example values:
 - `--grip`: Command argument. See examples for typical values.
@@ -1825,11 +1868,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine hud devices --text
 ```
 
-### `engine overlay map [--game <id>] [--plane <name>] [--unit <DCS unit type>]   (bound buttons with modifiers and titles, for the overlay)`
-What it does: Runs this command operation.
+### `engine overlay map [--game <id>] [--plane <name>] [--unit <DCS unit type>]   (bound buttons with modifiers and titles, for the overlay; warnings also in the --text output)`
+What it does: The bound buttons with modifiers and titles of a game (and aircraft or DCS unit type), for the overlay; an unknown --game is warned about. Warnings show in the JSON and the --text output.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -1838,59 +1881,61 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--unit`: Command argument. See examples for typical values.
 - `<DCS unit type>`: Command argument. See examples for typical values.
+- `--text`: Global option: render human-readable text instead of JSON output.
 
 Examples:
 ```powershell
-engine --help
+engine overlay map --text
 ```
 
 ### `engine overlay dcs-hook status|install|remove [--path <Saved Games\DCS>] [--dry-run]   (Export.lua addition that tells JoyPro the aircraft; backed up)`
-What it does: Runs this command operation.
+What it does: Export.lua addition that tells JoyPro the aircraft; backed up.
 
 Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `<Saved Games\DCS>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine overlay dcs-hook status|install|remove --text
 ```
 
-### `engine media [games|aircraft|sources] [--no-internet-pictures]   (official pictures: game covers from Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon; DCS aircraft pictures from the modules; sources = the web source per game)`
-What it does: Runs this command operation.
+### `engine media [games|aircraft|sources] [--no-internet-pictures]   (official pictures: game covers from Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon; DCS aircraft pictures from the modules; sources = the web source per game; warnings also in the --text output)`
+What it does: Official pictures for the GUI: game covers (Steam on this PC, else downloaded once from Steam's store or the publisher's site, else the game's executable icon) and DCS aircraft pictures from the modules; sources lists the web source per game. Warnings show in the JSON and the --text output.
 
 Arguments and example values:
 - `--no-internet-pictures`: Command argument. See examples for typical values.
+- `--text`: Global option: render human-readable text instead of JSON output.
 
 Examples:
 ```powershell
-engine --help
+engine media --text
 ```
 
 ### `engine backups list [--game <id>] | show <id> | restore <id|latest> [--game <id>] [--dry-run]`
-What it does: Runs this command operation.
+What it does: The backup sets every export makes of the game files it changes (newest 30 per game): list them, show one, or restore one (latest = the newest of --game). A restore removes files the export created and backs up the current files first, so it can be undone; --dry-run shows what it would do.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `<id>`: Command argument. See examples for typical values.
 - `<id|latest>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine backups list --text
 ```
 
 ### `engine games devices   (connected devices with VID:PID, HID name and DirectInput axes/buttons/hats)`
-What it does: Runs this command operation.
+What it does: Connected devices with VID:PID, HID name and DirectInput axes/buttons/hats.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine games devices --text
 ```
 
 ### `engine sync status [--game <id>] [--path <config>]   (per game the config files / registry values JoyPro manages, their fingerprint and whether the game changed them since JoyPro's last export, accept or apply)`
@@ -1909,7 +1954,7 @@ engine sync status --game DCS
 ```
 
 ### `engine sync accept --game <id> [--path <config>]   (the current config counts as known; nothing is imported)`
-What it does: Runs this command operation.
+What it does: Marks the game's current config as known without importing anything.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -1919,11 +1964,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine sync accept --game WarThunder
 ```
 
 ### `engine sync diff --game <id> [--path <config>]   (what the game changed that JoyPro manages, compared with the profile: added, removed, changed-tuning, changed-modifiers, with candidate relations)`
-What it does: Runs this command operation.
+What it does: Reads the game's config with its own import into a scratch profile and lists what changed that JoyPro manages (added, removed, changed-tuning, changed-modifiers) with the candidate relations.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -1933,11 +1978,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' sync diff --game DCS --text
 ```
 
 ### `engine sync apply --game <id> --choices <file.json> [--path <config>]   (per change id: Target = relation name, "new" (+ Name) or "ignore"; then the config counts as known)`
-What it does: Runs this command operation.
+What it does: Applies the user's choice per change (a relation, a new relation or ignore) to the profile; then the config counts as known.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -1949,11 +1994,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' sync apply --game DCS --choices 'C:\JoyPro\sync-choices.json'
 ```
 
 ### `engine sync pending --game <id> [--path <config>]   (what you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back)`
-What it does: Runs this command operation.
+What it does: What you changed in JoyPro since the last export of the game and the game does not have yet: an import before the next export brings the old binds back.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -1963,7 +2008,7 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine sync pending --game <id> --text
 ```
 
 ### `engine support bundle [--game <id>] [--days <n>] [--include-profile true|false] [--history-cap-mb <n>] [--list] --out <file.zip>   (the support file: logs (at least 14 days, back to the profile's oldest history version, at most 100 MB), errors, JoyPro's settings and state, devices with vJoy/HidHide, the games' environment, backups and JoyPro's copies of their config files; with --profile and --include-profile true (the default then) also the open profile, its history, the games' current bind files and JoyPro 1's profiles (Documents\JoyPro); user folder replaced, nothing uploaded; --list only shows the contents)`
@@ -2020,7 +2065,7 @@ What it does: Switches a game between its physical devices (native), the virtual
 
 Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
@@ -2053,7 +2098,7 @@ What it does: Saves the mapping table in the profile: existing slots never move,
 Arguments and example values:
 - `--reset`: Command argument. See examples for typical values.
 - `--prune`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
@@ -2072,7 +2117,7 @@ Arguments and example values:
 - `--last-device`: Command argument. See examples for typical values.
 - `--auto-start`: Command argument. See examples for typical values.
 - `--hide-devices`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
@@ -2118,8 +2163,8 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy forwarder-config --out 'C:\JoyPro\forwarder.json'
 ```
 
-### `engine vjoy functions types   (the virtual function types: axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axis ends, axes to hat, buttons to axis, encoder, turbo, macro, hat to buttons, buttons to hat)`
-What it does: Runs this command operation.
+### `engine vjoy functions types   (the virtual function types: axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axis ends, axes to hat, buttons to axis, encoder, turbo, macro, hat to buttons, buttons to hat, remap, mode switch)`
+What it does: Lists the virtual function types (axis bands, button cycle, toggle, switch pulses, short/long/double press, shift layer, merge, split, curve, axes to hat, macros, remaps, mode switch and more).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2129,11 +2174,11 @@ How arguments interact:
 
 Examples:
 ```powershell
-engine --help
+engine vjoy functions types --text
 ```
 
 ### `engine vjoy functions list [--game <game>]   (the virtual functions per game with inputs, outputs (bind device and input), problems, limit warnings and the physical devices for inputs)`
-What it does: Runs this command operation.
+What it does: The virtual functions per game with inputs, outputs (bind device and input), problems, limit warnings and the physical devices for inputs.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -2144,11 +2189,11 @@ How arguments interact:
 
 Examples:
 ```powershell
-engine --help
+engine vjoy functions list --text
 ```
 
-### `engine vjoy functions add --game <game> --type <type> [--name <name>] [--input role=<device>|<input>]... [--output role=<target>[@<vJoy device>][:hold|enter|leave|both]]... [--param key=value]... [--edges 0.1,0.9] [--count n] [--tuning <axis tuning>] [--keyboard on|off] [--spec <json>|@<file>] [--no-auto-outputs] [--dry-run]   (adds a function; outputs left empty get free vJoy buttons/axes/hats (or Xbox pad controls), reserved in the table)`
-What it does: Runs this command operation.
+### `engine vjoy functions add --game <game> --type <type> [--name <name>] [--input role=<device>|<input>]... [--output role=<target>[@<vJoy device>][:hold|enter|leave|both]]... [--param key=value]... [--edges 0.1,0.9] [--count n] [--tuning <axis tuning>] [--keyboard on|off] [--modes <mode,...>] [--switch-modes <mode,...>] [--spec <json>|@<file>] [--no-auto-outputs] [--dry-run]   (adds a function; an input may read another function's output: --input role=fn:<id>|<output>; loops are refused; outputs left empty get free vJoy buttons/axes/hats (or Xbox pad controls), reserved in the table; --modes: the modes it works in (none: every mode))`
+What it does: Adds a virtual function to a game: inputs (devices or other functions' outputs), outputs (left empty: free vJoy or Xbox pad controls are reserved), parameters, modes; loops are refused; --dry-run previews.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -2169,22 +2214,27 @@ Arguments and example values:
 - `--tuning`: Command argument. See examples for typical values.
 - `<axis tuning>`: Command argument. See examples for typical values.
 - `--keyboard`: Include keyboard clean-profile checks for supported DB commands.
+- `--modes`: Command argument. See examples for typical values.
+- `<mode,...>`: Command argument. See examples for typical values.
+- `--switch-modes`: Command argument. See examples for typical values.
 - `--spec`: Command argument. See examples for typical values.
 - `<json>`: Command argument. See examples for typical values.
 - `<file>`: Command argument. See examples for typical values.
 - `--no-auto-outputs`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+- `<id>`: Command argument. See examples for typical values.
+- `<output>`: Command argument. See examples for typical values.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
 
 Examples:
 ```powershell
-engine --help
+engine vjoy functions add --game <game> --type <type> --text
 ```
 
 ### `engine vjoy functions set --game <game> --id <id> [same options as add] [--enabled on|off] [--auto-outputs] [--dry-run]   (changes a function; --spec replaces it)`
-What it does: Runs this command operation.
+What it does: Changes a virtual function (same options as add, --enabled on|off; --spec replaces it); --dry-run previews.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -2193,7 +2243,7 @@ Arguments and example values:
 - `<id>`: Command argument. See examples for typical values.
 - `--enabled`: Command argument. See examples for typical values.
 - `--auto-outputs`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--spec`: Command argument. See examples for typical values.
 
 How arguments interact:
@@ -2201,29 +2251,29 @@ How arguments interact:
 
 Examples:
 ```powershell
-engine --help
+engine vjoy functions set --game <game> --id <id> --text
 ```
 
-### `engine vjoy functions remove --game <game> --id <id> [--dry-run]   (removes a function; its outputs are free again)`
-What it does: Runs this command operation.
+### `engine vjoy functions remove --game <game> --id <id> [--dry-run]   (removes a function; its outputs are free again, inputs of other functions that read it are cleared)`
+What it does: Removes a virtual function; its outputs are free again and inputs of other functions that read it are cleared; --dry-run previews.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `<game>`: Command argument. See examples for typical values.
 - `--id`: Node ID. Example: --id d3007pnilu3007cd16vd1vpnilvu0.
 - `<id>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
 
 Examples:
 ```powershell
-engine --help
+engine vjoy functions remove --game <game> --id <id> --text
 ```
 
 ### `engine vjoy functions test (--game <game> --id <id> | --spec <json>|@<file>) [--stream "<ms>:<role>=<value>; ..."] [--rate Hz] [--duration ms]   (simulates the function with the forwarder's evaluation and lists every output change; nothing goes to vJoy, the pad or the keyboard)`
-What it does: Runs this command operation.
+What it does: Simulates a function with the forwarder's evaluation and lists every output change; nothing goes to vJoy, the pad or the keyboard.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -2245,11 +2295,51 @@ How arguments interact:
 
 Examples:
 ```powershell
-engine --help
+engine vjoy functions test (--game <game> --id <id> --text
+```
+
+### `engine vjoy modes list|add|set|remove|start --game <game> [--name <mode>] [--parent <mode>] [--rename <name>] [--dry-run]   (the game's modes (layers) of its virtual functions: a mode inherits the functions of its parent unless it has its own on that input; start: the mode the forwarder starts in)`
+What it does: The modes (layers) of a game's virtual functions: a mode inherits the functions of its parent unless it has its own on that input; start = the mode the forwarder starts in; --dry-run previews.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
+- `<mode>`: Command argument. See examples for typical values.
+- `--parent`: Command argument. See examples for typical values.
+- `--rename`: Command argument. See examples for typical values.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+
+How arguments interact:
+- Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
+
+Examples:
+```powershell
+engine vjoy modes list|add|set|remove|start --game <game> --text
+```
+
+### `engine vjoy import-gremlin <profile.xml> --game <game> [--dry-run] [--replace] [--vjoy-device N]   (a Joystick Gremlin R13/R14 profile into the game's virtual functions and modes: devices by GUID or name, remaps, curves, keys, macros, mode changes, merged axes, tempo/double tap/chain/smart toggle/hat buttons containers, axis ranges; lists what JoyPro cannot do and what differs; --vjoy-device moves the profile's vJoy device (default: the tunnel device))`
+What it does: Imports a Joystick Gremlin R13/R14 profile into a game's virtual functions and modes and lists what JoyPro cannot do and what differs; --replace starts over, --dry-run previews.
+
+Arguments and example values:
+- `<profile.xml>`: Command argument. See examples for typical values.
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<game>`: Command argument. See examples for typical values.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+- `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
+- `--vjoy-device`: Command argument. See examples for typical values.
+
+How arguments interact:
+- Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
+
+Examples:
+```powershell
+engine vjoy import-gremlin <profile.xml> --game <game> --text
 ```
 
 ### `engine vjoy limits [--game <game>]   (what each game reads of one joystick: buttons, axes, hats, with confidence and source; vJoy offers 128 buttons, 8 axes, 4 hats)`
-What it does: Runs this command operation.
+What it does: What each game reads of one joystick (buttons, axes, hats) with confidence and source; vJoy offers 128 buttons, 8 axes and 4 hats.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -2260,16 +2350,16 @@ How arguments interact:
 
 Examples:
 ```powershell
-engine --help
+engine vjoy limits --text
 ```
 
-### `engine vjoy configure-vjoy [--max [--device N]] [--dry-run]   (runs vJoyConfig for the vJoy devices that lack axes, buttons or hats, or with --max sets 8 axes, 128 buttons, 4 hats; one administrator prompt; never shrinks a device; Windows must restart afterwards)`
-What it does: Runs vJoyConfig (one administrator prompt) for the vJoy devices that lack axes, buttons or hats for the table; never makes a device smaller.
+### `engine vjoy configure-vjoy [--max [--device N]] [--dry-run]   (runs vJoyConfig for the vJoy devices that lack axes, buttons or hats, or with --max sets 8 axes, 128 buttons, 4 hats; keeps what a device has except axes a virtual-mode game must not see (e.g. Rx/Ry for Battlefield), which are left out unless the table uses them; one administrator prompt, exit code 2 when it is declined; Windows must restart afterwards)`
+What it does: Runs vJoyConfig (one administrator prompt) for the vJoy devices that lack axes, buttons or hats for the table, or with --max sets vJoy's maximum. A device keeps what it has, except axes a virtual-mode game must not see (e.g. Battlefield's Rx/Ry), which are left out unless the table uses them.
 
 Arguments and example values:
 - `--max`: Command argument. See examples for typical values.
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
@@ -2280,11 +2370,11 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy configure-vjoy --dry-run --text
 ```
 
-### `engine vjoy apply-hidhide [--dry-run] [--owner-pid N] [--exe <game.exe>]... [--trusted <program.exe>]...   (hides the mapped physical devices from the virtual-mode games only; one administrator prompt; journal first)`
+### `engine vjoy apply-hidhide [--dry-run] [--owner-pid N] [--exe <game.exe>]... [--trusted <program.exe>]...   (hides the mapped physical devices from the virtual-mode games only; one administrator prompt, exit code 2 when it is declined; journal first)`
 What it does: Hides the mapped physical devices from the virtual-mode games only (HidHide block list; an existing allow list of the user is kept), never hides vJoy, parks dormant entries. One administrator prompt; the journal is written first.
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--owner-pid`: Command argument. See examples for typical values.
 - `--exe`: Command argument. See examples for typical values.
 - `<game.exe>`: Command argument. See examples for typical values.
@@ -2300,11 +2390,12 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vjoy apply-hidhide --dry-run --text
 ```
 
-### `engine vjoy restore-hidhide [--dry-run]   (undoes exactly JoyPro's HidHide changes and restores the previous HidHide state; one administrator prompt)`
+### `engine vjoy restore-hidhide [--dry-run] [--force]   (undoes exactly JoyPro's HidHide changes and restores the previous HidHide state, also while the session's owner runs; --force is accepted like for recover and changes nothing here; one administrator prompt, exit code 2 when it is declined)`
 What it does: Undoes exactly JoyPro's HidHide changes and gives HidHide its previous state back (one administrator prompt).
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+- `--force`: Accepted like for vjoy recover; restore-hidhide restores even while the session's owner runs, so it changes nothing here.
 
 How arguments interact:
 - Virtual joystick mode: docs/virtual-joystick.md. JOYPRO_VJOY_FAKE=<folder> replaces vJoy and HidHide by files (tests).
@@ -2316,11 +2407,11 @@ engine vjoy restore-hidhide --dry-run --text
 engine vjoy restore-hidhide --text
 ```
 
-### `engine vjoy recover [--dry-run] [--force]   (restores a session whose owner (the GUI) is gone; --force: also while it runs)`
+### `engine vjoy recover [--dry-run] [--force]   (restores a session whose owner (the GUI) is gone; --force: also while it runs; one administrator prompt, exit code 2 when it is declined)`
 What it does: Restores a HidHide session whose owner (the GUI) is gone, e.g. after a crash; --force also while the owner runs.
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--force`: Command argument. See examples for typical values.
 
 How arguments interact:
@@ -2333,7 +2424,7 @@ engine vjoy recover --text
 ```
 
 ### `engine wardogs paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2344,7 +2435,7 @@ engine wardogs paths --text
 ```
 
 ### `engine wardogs catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2354,54 +2445,74 @@ Examples:
 engine wardogs catalog --text
 ```
 
-### `engine wardogs scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine wardogs scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine wardogs paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine wardogs scan --text
 ```
 
-### `engine wardogs import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine wardogs import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine wardogs paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' wardogs import --text
 ```
 
-### `engine wardogs export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine wardogs export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine wardogs paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' wardogs export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' wardogs export --mode merge-overwrite --text
 ```
 
-### `engine wardogs refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine wardogs refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2409,7 +2520,7 @@ engine wardogs refresh-db --text
 ```
 
 ### `engine arma3 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2420,7 +2531,7 @@ engine arma3 paths --text
 ```
 
 ### `engine arma3 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2430,54 +2541,74 @@ Examples:
 engine arma3 catalog --text
 ```
 
-### `engine arma3 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine arma3 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma3 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine arma3 scan --text
 ```
 
-### `engine arma3 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine arma3 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma3 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma3 import --text
 ```
 
-### `engine arma3 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine arma3 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma3 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma3 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma3 export --mode merge-overwrite --text
 ```
 
-### `engine arma3 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine arma3 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2485,7 +2616,7 @@ engine arma3 refresh-db --text
 ```
 
 ### `engine arma2oa paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2496,7 +2627,7 @@ engine arma2oa paths --text
 ```
 
 ### `engine arma2oa catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2506,54 +2637,74 @@ Examples:
 engine arma2oa catalog --text
 ```
 
-### `engine arma2oa scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine arma2oa scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma2oa paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine arma2oa scan --text
 ```
 
-### `engine arma2oa import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine arma2oa import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma2oa paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma2oa import --text
 ```
 
-### `engine arma2oa export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine arma2oa export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma2oa paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma2oa export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma2oa export --mode merge-overwrite --text
 ```
 
-### `engine arma2oa refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine arma2oa refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2561,7 +2712,7 @@ engine arma2oa refresh-db --text
 ```
 
 ### `engine arma2 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2572,7 +2723,7 @@ engine arma2 paths --text
 ```
 
 ### `engine arma2 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2582,54 +2733,74 @@ Examples:
 engine arma2 catalog --text
 ```
 
-### `engine arma2 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine arma2 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma2 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine arma2 scan --text
 ```
 
-### `engine arma2 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine arma2 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma2 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma2 import --text
 ```
 
-### `engine arma2 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine arma2 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine arma2 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma2 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' arma2 export --mode merge-overwrite --text
 ```
 
-### `engine arma2 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine arma2 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2637,7 +2808,7 @@ engine arma2 refresh-db --text
 ```
 
 ### `engine reforger paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2648,7 +2819,7 @@ engine reforger paths --text
 ```
 
 ### `engine reforger catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2658,54 +2829,74 @@ Examples:
 engine reforger catalog --text
 ```
 
-### `engine reforger scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine reforger scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine reforger paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine reforger scan --text
 ```
 
-### `engine reforger import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine reforger import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine reforger paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' reforger import --text
 ```
 
-### `engine reforger export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine reforger export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine reforger paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' reforger export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' reforger export --mode merge-overwrite --text
 ```
 
-### `engine reforger refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine reforger refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2713,7 +2904,7 @@ engine reforger refresh-db --text
 ```
 
 ### `engine warthunder paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2724,7 +2915,7 @@ engine warthunder paths --text
 ```
 
 ### `engine warthunder catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2734,55 +2925,79 @@ Examples:
 engine warthunder catalog --text
 ```
 
-### `engine warthunder scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine warthunder scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>] [--no-game-archives]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine warthunder paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--no-game-archives`: Do not read War Thunder's packed archives (gui.vromfs.bin) for the command list: JoyPro's own list of the actions it knows is used (GUI: Settings > Games). scan, import and export build the list only when there is none yet.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine warthunder scan --text
 ```
 
-### `engine warthunder import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine warthunder import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>] [--no-game-archives]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine warthunder paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--no-game-archives`: Do not read War Thunder's packed archives (gui.vromfs.bin) for the command list: JoyPro's own list of the actions it knows is used (GUI: Settings > Games). scan, import and export build the list only when there is none yet.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' warthunder import --text
 ```
 
-### `engine warthunder export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine warthunder export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>] [--no-game-archives]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine warthunder paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--no-game-archives`: Do not read War Thunder's packed archives (gui.vromfs.bin) for the command list: JoyPro's own list of the actions it knows is used (GUI: Settings > Games). scan, import and export build the list only when there is none yet.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' warthunder export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' warthunder export --mode merge-overwrite --text
 ```
 
-### `engine warthunder refresh-db [<source-path>] [--dry-run] [--no-game-archives]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes); War Thunder: the full list from gui.vromfs.bin, with --no-game-archives only JoyPro's own list`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine warthunder refresh-db [<source-path>] [--path <source-path>] [--dry-run] [--no-game-archives] [--read-game-archives true|false]   (reads the full list from the game's gui.vromfs.bin and rebuilds the catalog: actions the game no longer has are dropped; with --no-game-archives (or --read-game-archives false) only JoyPro's own list, added to the catalog; writes it only when it changes)`
+What it does: Reads the full list from the game's gui.vromfs.bin and rebuilds the catalog: actions the game no longer has are dropped; with --no-game-archives (or --read-game-archives false) only JoyPro's own list, added to the catalog; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
-- `--no-game-archives`: Command argument. See examples for typical values.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+- `--no-game-archives`: Do not read War Thunder's packed archives (gui.vromfs.bin) for the command list: JoyPro's own list of the actions it knows is used (GUI: Settings > Games). scan, import and export build the list only when there is none yet.
+- `--read-game-archives`: true (default) reads the game's archives for the full command list, false is the same as --no-game-archives.
 
 Examples:
 ```powershell
@@ -2790,7 +3005,7 @@ engine warthunder refresh-db --text
 ```
 
 ### `engine xplane12 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2801,7 +3016,7 @@ engine xplane12 paths --text
 ```
 
 ### `engine xplane12 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2811,54 +3026,74 @@ Examples:
 engine xplane12 catalog --text
 ```
 
-### `engine xplane12 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine xplane12 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine xplane12 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine xplane12 scan --text
 ```
 
-### `engine xplane12 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine xplane12 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine xplane12 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' xplane12 import --text
 ```
 
-### `engine xplane12 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine xplane12 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine xplane12 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' xplane12 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' xplane12 export --mode merge-overwrite --text
 ```
 
-### `engine xplane12 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine xplane12 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2866,7 +3101,7 @@ engine xplane12 refresh-db --text
 ```
 
 ### `engine xplane11 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2877,7 +3112,7 @@ engine xplane11 paths --text
 ```
 
 ### `engine xplane11 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2887,54 +3122,74 @@ Examples:
 engine xplane11 catalog --text
 ```
 
-### `engine xplane11 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine xplane11 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine xplane11 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine xplane11 scan --text
 ```
 
-### `engine xplane11 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine xplane11 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine xplane11 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' xplane11 import --text
 ```
 
-### `engine xplane11 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine xplane11 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine xplane11 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' xplane11 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' xplane11 export --mode merge-overwrite --text
 ```
 
-### `engine xplane11 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine xplane11 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -2942,7 +3197,7 @@ engine xplane11 refresh-db --text
 ```
 
 ### `engine msfs2024 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2953,7 +3208,7 @@ engine msfs2024 paths --text
 ```
 
 ### `engine msfs2024 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -2963,67 +3218,86 @@ Examples:
 engine msfs2024 catalog --text
 ```
 
-### `engine msfs2024 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine msfs2024 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine msfs2024 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
-- `--game-profile`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--game-profile`: Command argument. See examples for typical values.
+- `--include-disconnected`: MSFS: also the devices the sim has profiles for that are not connected now (default: connected devices only).
 - `--include-sim-defaults`: MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine msfs2024 scan --text
 ```
 
-### `engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine msfs2024 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (--ignore-device(s): the binds of these devices are left out; devices that are not connected only with --include-disconnected)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine msfs2024 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
-- `--game-profile`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--game-profile`: Command argument. See examples for typical values.
+- `--include-disconnected`: MSFS: also the devices the sim has profiles for that are not connected now (default: connected devices only).
 - `--include-sim-defaults`: MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them.
-- `--limit-to-profile-aircraft`: Command argument. See examples for typical values.
+- `--limit-to-profile-aircraft`: Binds the sim has only in some aircraft's profiles are limited to those aircraft at once (default: imported for all aircraft and listed).
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' msfs2024 import --text
 ```
 
-### `engine msfs2024 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine msfs2024 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--aircraft <aircraft-key>] [--user-profiles true|false] [--import-files]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine msfs2024 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
-- `--game-profile`: Command argument. See examples for typical values.
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--game-profile`: Command argument. See examples for typical values.
 - `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
 - `<aircraft-key>`: MSFS aircraft key (package name, DB\\MSFS\\aircraft.tsv). Example: asobo-aircraft-c152.
+- `--user-profiles`: MSFS 2024 export only: write your own profiles the sim uses for each device and category (Steam remote folder or Microsoft Store save, backed up first); default true, false writes only JoyPro's package presets and the import files.
+- `--import-files`: MSFS 2024 export only: write an import file (Documents\JoyPro2\MSFS 2024 import files) for every device and category, not only where your own profile could not be written.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' msfs2024 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' msfs2024 export --mode merge-overwrite --text
 ```
 
-### `engine msfs2024 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine msfs2024 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3031,7 +3305,7 @@ engine msfs2024 refresh-db --text
 ```
 
 ### `engine msfs2020 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3042,7 +3316,7 @@ engine msfs2020 paths --text
 ```
 
 ### `engine msfs2020 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3052,67 +3326,88 @@ Examples:
 engine msfs2020 catalog --text
 ```
 
-### `engine msfs2020 scan [<config-path>] [--path <config-path>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine msfs2020 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine msfs2020 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
-- `--game-profile`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--game-profile`: Command argument. See examples for typical values.
+- `--include-disconnected`: MSFS: also the devices the sim has profiles for that are not connected now (default: connected devices only).
 - `--include-sim-defaults`: MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
+- --limit-to-profile-aircraft, --user-profiles and --import-files are MSFS 2024 options: given to MSFS 2020 they change nothing and the result says so.
 
 Examples:
 ```powershell
 engine msfs2020 scan --text
 ```
 
-### `engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults] [--limit-to-profile-aircraft]   (devices that are not connected only with --include-disconnected)`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine msfs2020 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--include-disconnected] [--include-sim-defaults]   (--ignore-device(s): the binds of these devices are left out; devices that are not connected only with --include-disconnected)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine msfs2020 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
-- `--game-profile`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--include-disconnected`: dcs verify-clean: also check devices that only have files, through a fake stick of their type (true/false).
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--game-profile`: Command argument. See examples for typical values.
+- `--include-disconnected`: MSFS: also the devices the sim has profiles for that are not connected now (default: connected devices only).
 - `--include-sim-defaults`: MSFS import/scan: also the sim's default presets of devices for which the sim's records (profile_00) do not show whether it uses them.
-- `--limit-to-profile-aircraft`: Command argument. See examples for typical values.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
+- --limit-to-profile-aircraft, --user-profiles and --import-files are MSFS 2024 options: given to MSFS 2020 they change nothing and the result says so.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' msfs2020 import --text
 ```
 
-### `engine msfs2020 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine msfs2020 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>] [--game-profile <name>] [--aircraft <aircraft-key>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine msfs2020 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
-- `--game-profile`: Command argument. See examples for typical values.
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--game-profile`: Command argument. See examples for typical values.
 - `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
 - `<aircraft-key>`: MSFS aircraft key (package name, DB\\MSFS\\aircraft.tsv). Example: asobo-aircraft-c152.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
+
+How arguments interact:
+- --limit-to-profile-aircraft, --user-profiles and --import-files are MSFS 2024 options: given to MSFS 2020 they change nothing and the result says so.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' msfs2020 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' msfs2020 export --mode merge-overwrite --text
 ```
 
-### `engine msfs2020 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine msfs2020 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3120,7 +3415,7 @@ engine msfs2020 refresh-db --text
 ```
 
 ### `engine bms paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3131,7 +3426,7 @@ engine bms paths --text
 ```
 
 ### `engine bms catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3141,54 +3436,74 @@ Examples:
 engine bms catalog --text
 ```
 
-### `engine bms scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine bms scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bms paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine bms scan --text
 ```
 
-### `engine bms import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine bms import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bms paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bms import --text
 ```
 
-### `engine bms export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine bms export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bms paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bms export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bms export --mode merge-overwrite --text
 ```
 
-### `engine bms refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine bms refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3196,7 +3511,7 @@ engine bms refresh-db --text
 ```
 
 ### `engine il2korea paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3207,7 +3522,7 @@ engine il2korea paths --text
 ```
 
 ### `engine il2korea catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3217,54 +3532,74 @@ Examples:
 engine il2korea catalog --text
 ```
 
-### `engine il2korea scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine il2korea scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2korea paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine il2korea scan --text
 ```
 
-### `engine il2korea import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine il2korea import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2korea paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2korea import --text
 ```
 
-### `engine il2korea export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine il2korea export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2korea paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2korea export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2korea export --mode merge-overwrite --text
 ```
 
-### `engine il2korea refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine il2korea refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3272,7 +3607,7 @@ engine il2korea refresh-db --text
 ```
 
 ### `engine x4 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3283,7 +3618,7 @@ engine x4 paths --text
 ```
 
 ### `engine x4 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3293,54 +3628,74 @@ Examples:
 engine x4 catalog --text
 ```
 
-### `engine x4 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine x4 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine x4 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine x4 scan --text
 ```
 
-### `engine x4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine x4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine x4 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' x4 import --text
 ```
 
-### `engine x4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine x4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only ship flight actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine x4 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' x4 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' x4 export --mode merge-overwrite --text
 ```
 
-### `engine x4 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine x4 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3348,7 +3703,7 @@ engine x4 refresh-db --text
 ```
 
 ### `engine elite paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3359,7 +3714,7 @@ engine elite paths --text
 ```
 
 ### `engine elite catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3369,54 +3724,74 @@ Examples:
 engine elite catalog --text
 ```
 
-### `engine elite scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine elite scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine elite paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine elite scan --text
 ```
 
-### `engine elite import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine elite import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine elite paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' elite import --text
 ```
 
-### `engine elite export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine elite export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only ship flight actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine elite paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' elite export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' elite export --mode merge-overwrite --text
 ```
 
-### `engine elite refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine elite refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3424,7 +3799,7 @@ engine elite refresh-db --text
 ```
 
 ### `engine vtolvr paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3435,7 +3810,7 @@ engine vtolvr paths --text
 ```
 
 ### `engine vtolvr catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3445,54 +3820,74 @@ Examples:
 engine vtolvr catalog --text
 ```
 
-### `engine vtolvr scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine vtolvr scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine vtolvr paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine vtolvr scan --text
 ```
 
-### `engine vtolvr import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine vtolvr import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine vtolvr paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vtolvr import --text
 ```
 
-### `engine vtolvr export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine vtolvr export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine vtolvr paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vtolvr export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vtolvr export --mode merge-overwrite --text
 ```
 
-### `engine vtolvr refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine vtolvr refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3500,7 +3895,7 @@ engine vtolvr refresh-db --text
 ```
 
 ### `engine vtolvr mod status|prepare [--accept-license]   (the BYOJoystick mod on this PC: Mod Loader, Workshop item, BYOJoystick.dll with SHA-256 and the targets JoyPro reads; prepare backs up the BYOJ_<seat>.xml files and returns the Steam pages to open (Mod Loader, Workshop item 3276352374); Steam downloads and installs the mod, JoyPro ships none of it; refresh-db then reads the targets from the installed mod)`
-What it does: Runs this command operation.
+What it does: The BYOJoystick mod on this PC: Mod Loader, Workshop item, BYOJoystick.dll with SHA-256 and the targets JoyPro reads; prepare backs up the BYOJ_<seat>.xml files and returns the Steam pages to open (Mod Loader, Workshop item 3276352374); Steam downloads and installs the mod, JoyPro ships none of it; refresh-db then reads the targets from the installed mod.
 
 Arguments and example values:
 - `--accept-license`: Command argument. See examples for typical values.
@@ -3508,11 +3903,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine vtolvr mod status|prepare --text
 ```
 
 ### `engine vtolvr-native paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3523,7 +3918,7 @@ engine vtolvr-native paths --text
 ```
 
 ### `engine vtolvr-native catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3533,54 +3928,74 @@ Examples:
 engine vtolvr-native catalog --text
 ```
 
-### `engine vtolvr-native scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine vtolvr-native scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine vtolvr-native paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine vtolvr-native scan --text
 ```
 
-### `engine vtolvr-native import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine vtolvr-native import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine vtolvr-native paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vtolvr-native import --text
 ```
 
-### `engine vtolvr-native export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine vtolvr-native export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine vtolvr-native paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vtolvr-native export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' vtolvr-native export --mode merge-overwrite --text
 ```
 
-### `engine vtolvr-native refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine vtolvr-native refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3588,7 +4003,7 @@ engine vtolvr-native refresh-db --text
 ```
 
 ### `engine nuclearoption paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3599,7 +4014,7 @@ engine nuclearoption paths --text
 ```
 
 ### `engine nuclearoption catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3609,54 +4024,74 @@ Examples:
 engine nuclearoption catalog --text
 ```
 
-### `engine nuclearoption scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine nuclearoption scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine nuclearoption paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine nuclearoption scan --text
 ```
 
-### `engine nuclearoption import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine nuclearoption import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine nuclearoption paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' nuclearoption import --text
 ```
 
-### `engine nuclearoption export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine nuclearoption export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine nuclearoption paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' nuclearoption export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' nuclearoption export --mode merge-overwrite --text
 ```
 
-### `engine nuclearoption refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine nuclearoption refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3664,7 +4099,7 @@ engine nuclearoption refresh-db --text
 ```
 
 ### `engine tinycombatarena paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3675,7 +4110,7 @@ engine tinycombatarena paths --text
 ```
 
 ### `engine tinycombatarena catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3685,54 +4120,74 @@ Examples:
 engine tinycombatarena catalog --text
 ```
 
-### `engine tinycombatarena scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine tinycombatarena scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine tinycombatarena paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine tinycombatarena scan --text
 ```
 
-### `engine tinycombatarena import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine tinycombatarena import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine tinycombatarena paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' tinycombatarena import --text
 ```
 
-### `engine tinycombatarena export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine tinycombatarena export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine tinycombatarena paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' tinycombatarena export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' tinycombatarena export --mode merge-overwrite --text
 ```
 
-### `engine tinycombatarena refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine tinycombatarena refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3740,7 +4195,7 @@ engine tinycombatarena refresh-db --text
 ```
 
 ### `engine grebels paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3751,7 +4206,7 @@ engine grebels paths --text
 ```
 
 ### `engine grebels catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3761,54 +4216,74 @@ Examples:
 engine grebels catalog --text
 ```
 
-### `engine grebels scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine grebels scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine grebels paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine grebels scan --text
 ```
 
-### `engine grebels import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine grebels import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine grebels paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' grebels import --text
 ```
 
-### `engine grebels export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine grebels export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine grebels paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' grebels export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' grebels export --mode merge-overwrite --text
 ```
 
-### `engine grebels refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine grebels refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (JoyPro's own list of the G-Rebels actions: nothing is read from the game, which need not be installed; writes it only when it changes)`
+What it does: JoyPro's own list of the G-Rebels actions: nothing is read from the game, which need not be installed; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3816,7 +4291,7 @@ engine grebels refresh-db --text
 ```
 
 ### `engine hllv paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3827,7 +4302,7 @@ engine hllv paths --text
 ```
 
 ### `engine hllv catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3837,54 +4312,73 @@ Examples:
 engine hllv catalog --text
 ```
 
-### `engine hllv scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine hllv scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine hllv paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine hllv scan --text
 ```
 
-### `engine hllv import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine hllv import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine hllv paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' hllv import --text
 ```
 
-### `engine hllv export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine hllv export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (writes only the keyboard pilot keys, with --include-keyboard; the gamepad binds reach the game through the virtual Xbox pad (engine vjoy mode HLLVietnam xbox), nothing is written for them)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine hllv paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' hllv export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' hllv export --mode merge-overwrite --text
 ```
 
-### `engine hllv refresh-db [<source-path>] [--dry-run] [--oodle-dll <path>]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine hllv refresh-db [<source-path>] [--path <source-path>] [--dry-run] [--oodle-dll <path>]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--oodle-dll`: Command argument. See examples for typical values.
 - `<path>`: Filesystem path value. Example: C:\\JoyPro\\logs\\preview.png.
 
@@ -3894,7 +4388,7 @@ engine hllv refresh-db --text
 ```
 
 ### `engine hllv oodle [--path <game folder>]   (the game's own Oodle library, or one another installed game ships; refresh-db --oodle-dll <path> uses that one only with the user's consent, from where it is, never copied; without it JoyPro's own list of the pad keys)`
-What it does: Runs this command operation.
+What it does: The game's own Oodle library, or one another installed game ships; refresh-db --oodle-dll <path> uses that one only with the user's consent, from where it is, never copied; without it JoyPro's own list of the pad keys.
 
 Arguments and example values:
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
@@ -3904,11 +4398,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine hllv oodle --text
 ```
 
 ### `engine bf6 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3919,7 +4413,7 @@ engine bf6 paths --text
 ```
 
 ### `engine bf6 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3929,54 +4423,74 @@ Examples:
 engine bf6 catalog --text
 ```
 
-### `engine bf6 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine bf6 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bf6 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine bf6 scan --text
 ```
 
-### `engine bf6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine bf6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bf6 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bf6 import --text
 ```
 
-### `engine bf6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine bf6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bf6 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bf6 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bf6 export --mode merge-overwrite --text
 ```
 
-### `engine bf6 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine bf6 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -3984,7 +4498,7 @@ engine bf6 refresh-db --text
 ```
 
 ### `engine bf2042 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -3995,7 +4509,7 @@ engine bf2042 paths --text
 ```
 
 ### `engine bf2042 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4005,54 +4519,74 @@ Examples:
 engine bf2042 catalog --text
 ```
 
-### `engine bf2042 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine bf2042 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bf2042 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine bf2042 scan --text
 ```
 
-### `engine bf2042 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine bf2042 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bf2042 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bf2042 import --text
 ```
 
-### `engine bf2042 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine bf2042 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine bf2042 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bf2042 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' bf2042 export --mode merge-overwrite --text
 ```
 
-### `engine bf2042 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine bf2042 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4060,7 +4594,7 @@ engine bf2042 refresh-db --text
 ```
 
 ### `engine ac8 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4071,7 +4605,7 @@ engine ac8 paths --text
 ```
 
 ### `engine ac8 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4081,54 +4615,73 @@ Examples:
 engine ac8 catalog --text
 ```
 
-### `engine ac8 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine ac8 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine ac8 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine ac8 scan --text
 ```
 
-### `engine ac8 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine ac8 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine ac8 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' ac8 import --text
 ```
 
-### `engine ac8 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (only aircraft/helicopter actions: clean and nuke release those on the written / unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine ac8 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (writes nothing: the game reads only Xbox pads and checksums its settings; the binds reach it through the virtual Xbox pad, engine vjoy mode AceCombat8 xbox)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine ac8 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' ac8 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' ac8 export --mode merge-overwrite --text
 ```
 
-### `engine ac8 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine ac8 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4136,7 +4689,7 @@ engine ac8 refresh-db --text
 ```
 
 ### `engine ac7 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4147,7 +4700,7 @@ engine ac7 paths --text
 ```
 
 ### `engine ac7 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4157,54 +4710,74 @@ Examples:
 engine ac7 catalog --text
 ```
 
-### `engine ac7 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine ac7 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine ac7 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine ac7 scan --text
 ```
 
-### `engine ac7 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine ac7 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine ac7 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' ac7 import --text
 ```
 
-### `engine ac7 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine ac7 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine ac7 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' ac7 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' ac7 export --mode merge-overwrite --text
 ```
 
-### `engine ac7 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine ac7 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4212,7 +4785,7 @@ engine ac7 refresh-db --text
 ```
 
 ### `engine pw paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4223,7 +4796,7 @@ engine pw paths --text
 ```
 
 ### `engine pw catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4233,54 +4806,74 @@ Examples:
 engine pw catalog --text
 ```
 
-### `engine pw scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine pw scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine pw paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine pw scan --text
 ```
 
-### `engine pw import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine pw import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine pw paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' pw import --text
 ```
 
-### `engine pw export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine pw export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine pw paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' pw export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' pw export --mode merge-overwrite --text
 ```
 
-### `engine pw refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine pw refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes)`
+What it does: Rebuilds the catalog from the installed game or <source-path>: actions the game no longer has are dropped; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4288,7 +4881,7 @@ engine pw refresh-db --text
 ```
 
 ### `engine il21946 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4299,7 +4892,7 @@ engine il21946 paths --text
 ```
 
 ### `engine il21946 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4309,54 +4902,74 @@ Examples:
 engine il21946 catalog --text
 ```
 
-### `engine il21946 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine il21946 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il21946 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine il21946 scan --text
 ```
 
-### `engine il21946 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine il21946 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il21946 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il21946 import --text
 ```
 
-### `engine il21946 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine il21946 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il21946 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il21946 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il21946 export --mode merge-overwrite --text
 ```
 
-### `engine il21946 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine il21946 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4364,7 +4977,7 @@ engine il21946 refresh-db --text
 ```
 
 ### `engine il2codblitz paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4375,7 +4988,7 @@ engine il2codblitz paths --text
 ```
 
 ### `engine il2codblitz catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4385,54 +4998,74 @@ Examples:
 engine il2codblitz catalog --text
 ```
 
-### `engine il2codblitz scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine il2codblitz scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2codblitz paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine il2codblitz scan --text
 ```
 
-### `engine il2codblitz import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine il2codblitz import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2codblitz paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2codblitz import --text
 ```
 
-### `engine il2codblitz export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine il2codblitz export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2codblitz paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2codblitz export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2codblitz export --mode merge-overwrite --text
 ```
 
-### `engine il2codblitz refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine il2codblitz refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4440,7 +5073,7 @@ engine il2codblitz refresh-db --text
 ```
 
 ### `engine il2cod paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4451,7 +5084,7 @@ engine il2cod paths --text
 ```
 
 ### `engine il2cod catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4461,54 +5094,74 @@ Examples:
 engine il2cod catalog --text
 ```
 
-### `engine il2cod scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine il2cod scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2cod paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine il2cod scan --text
 ```
 
-### `engine il2cod import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine il2cod import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2cod paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2cod import --text
 ```
 
-### `engine il2cod export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine il2cod export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine il2cod paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2cod export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' il2cod export --mode merge-overwrite --text
 ```
 
-### `engine il2cod refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine il2cod refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4516,7 +5169,7 @@ engine il2cod refresh-db --text
 ```
 
 ### `engine fsx paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4527,7 +5180,7 @@ engine fsx paths --text
 ```
 
 ### `engine fsx catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4537,54 +5190,74 @@ Examples:
 engine fsx catalog --text
 ```
 
-### `engine fsx scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine fsx scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fsx paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine fsx scan --text
 ```
 
-### `engine fsx import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine fsx import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fsx paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fsx import --text
 ```
 
-### `engine fsx export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine fsx export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fsx paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fsx export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fsx export --mode merge-overwrite --text
 ```
 
-### `engine fsx refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine fsx refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4592,7 +5265,7 @@ engine fsx refresh-db --text
 ```
 
 ### `engine fsxse paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4603,7 +5276,7 @@ engine fsxse paths --text
 ```
 
 ### `engine fsxse catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4613,54 +5286,74 @@ Examples:
 engine fsxse catalog --text
 ```
 
-### `engine fsxse scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine fsxse scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fsxse paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine fsxse scan --text
 ```
 
-### `engine fsxse import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine fsxse import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fsxse paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fsxse import --text
 ```
 
-### `engine fsxse export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine fsxse export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine fsxse paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fsxse export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' fsxse export --mode merge-overwrite --text
 ```
 
-### `engine fsxse refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine fsxse refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4668,7 +5361,7 @@ engine fsxse refresh-db --text
 ```
 
 ### `engine p3d4 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4679,7 +5372,7 @@ engine p3d4 paths --text
 ```
 
 ### `engine p3d4 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4689,54 +5382,74 @@ Examples:
 engine p3d4 catalog --text
 ```
 
-### `engine p3d4 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine p3d4 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d4 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine p3d4 scan --text
 ```
 
-### `engine p3d4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine p3d4 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d4 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d4 import --text
 ```
 
-### `engine p3d4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine p3d4 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d4 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d4 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d4 export --mode merge-overwrite --text
 ```
 
-### `engine p3d4 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine p3d4 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4744,7 +5457,7 @@ engine p3d4 refresh-db --text
 ```
 
 ### `engine p3d5 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4755,7 +5468,7 @@ engine p3d5 paths --text
 ```
 
 ### `engine p3d5 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4765,54 +5478,74 @@ Examples:
 engine p3d5 catalog --text
 ```
 
-### `engine p3d5 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine p3d5 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d5 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine p3d5 scan --text
 ```
 
-### `engine p3d5 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine p3d5 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d5 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d5 import --text
 ```
 
-### `engine p3d5 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine p3d5 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d5 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d5 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d5 export --mode merge-overwrite --text
 ```
 
-### `engine p3d5 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine p3d5 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4820,7 +5553,7 @@ engine p3d5 refresh-db --text
 ```
 
 ### `engine p3d6 paths`
-What it does: Lists the config files of this game found on this machine.
+What it does: Lists where JoyPro looks for this game's controls on this machine: files, folders or registry keys (your config location from games config set first). A file the game has not written yet can be listed (e.g. Arma Reforger's JoyPro.conf, Project Wingman's Input.ini).
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4831,7 +5564,7 @@ engine p3d6 paths --text
 ```
 
 ### `engine p3d6 catalog`
-What it does: Lists the flight actions JoyPro manages for this game (from DB\<Game>\actions.tsv).
+What it does: Lists every action of JoyPro's command list of this game with its kind and category: <data>\GameData\DB\<Game>\actions.tsv, else the program folder's DB\<Game>.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -4841,54 +5574,74 @@ Examples:
 engine p3d6 catalog --text
 ```
 
-### `engine p3d6 scan [<config-path>] [--path <config-path>]`
-What it does: Reads the game's control file and shows the joystick binds it contains, without changing the profile.
+### `engine p3d6 scan [<config-path>] [--path <config-path>] [--ignore-device <name>] [--ignore-devices <csv>]`
+What it does: Reads the game's controls (its control file or folder, or registry values for Nuclear Option and Tiny Combat Arena; Ace Combat 8 stores none) and shows the joystick binds, without changing the profile. Without a command list yet (fresh install) it first builds the list from the game and saves it.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d6 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine p3d6 scan --text
 ```
 
-### `engine p3d6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard]`
-What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list).
+### `engine p3d6 import [<config-path>] [--path <config-path>] [--replace] [--include-keyboard] [--ignore-device <name>] [--ignore-devices <csv>]   (--ignore-device(s): the binds of these devices are left out)`
+What it does: Imports the game's joystick binds into the loaded profile (merged by default; --replace starts from an empty relation list). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d6 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
 - `--include-keyboard`: Command argument. See examples for typical values.
+- `--ignore-device`: Leave the binds of this device out (one per flag; a name without {GUID} means every device of that name). Example: --ignore-device 'vJoy Device'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Leave the binds of these devices out (separated by commas, | or ;). Example: --ignore-devices 'vJoy Device,Old Pedals'.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+
+How arguments interact:
+- --ignore-device / --ignore-devices leave the binds of those devices out of the scan or import (the result names how many).
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d6 import --text
 ```
 
-### `engine p3d6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices]   (flight only: clean takes over the devices it writes, nuke clears unused devices)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+### `engine p3d6 export [<config-path>] [--path <config-path>] [--mode clean|add|merge|merge-overwrite] [--dry-run] [--include-keyboard] [--nuke-untouched-devices] [--ignore-device <name>] [--ignore-devices <csv>]   (flight only: clean takes over the devices it writes, nuke clears unused devices; --ignore-device(s) and --vjoy-tunnel devices are never cleared)`
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
-- `<config-path>`: Path to the game's control file. Optional: the engine uses the file it finds on this machine. Example: %LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini.
+- `<config-path>`: The game's controls: its control file or folder, or a registry key for the games that keep them there. Optional: by default the one engine p3d6 paths lists first.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the export would write; the game's files are not changed.
 - `--include-keyboard`: Command argument. See examples for typical values.
 - `--nuke-untouched-devices`: DCS export only: delete untouched device .diff.lua/.jp files under Config\\Input (true/false).
+- `--ignore-device`: Exclude one device per flag. Example: --ignore-device Keyboard.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--ignore-devices`: Exclude devices, separated by commas, | or ;. Example: --ignore-devices Keyboard,Mouse.
+- `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--vjoy-tunnel`: Global option: the vJoy device JoyPro tunnels into (1-16, or none): virtual mode writes there; imports and scans of games in native mode leave only that vJoy device out.
 
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d6 export --dry-run --text engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' p3d6 export --mode merge-overwrite --text
 ```
 
-### `engine p3d6 refresh-db [<source-path>] [--dry-run]   (builds the catalog from the installed game, or adds its new actions; writes it only when it changes)`
-What it does: Updates this game's action catalog from the game or its files.
+### `engine p3d6 refresh-db [<source-path>] [--path <source-path>] [--dry-run]   (reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes)`
+What it does: Reads the installed game or <source-path> and adds its new actions to the catalog, the known ones stay; writes it only when it changes.
 
 Arguments and example values:
 - `<source-path>`: Path to read actions from (game install or control file); optional.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--path`: Same as <source-path>: the game's installation or a file of the game to read the actions from.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
@@ -4955,21 +5708,21 @@ Arguments and example values:
 - `--print-width`: Command argument. See examples for typical values.
 - `<px>`: Command argument. See examples for typical values.
 - `--combine`: Command argument. See examples for typical values.
-- `--drawing-style`: Command argument. See examples for typical values.
-- `--drawing-preset`: Command argument. See examples for typical values.
-- `--drawing-ink`: Command argument. See examples for typical values.
+- `--drawing-style`: JoyPro's drawings of the devices: lines (line art) or cel (shaded). Default: the GUI's setting.
+- `--drawing-preset`: The colours of JoyPro's drawings: joypro, manual, blueprint, print or custom (then --drawing-ink / --drawing-paper / --drawing-accent). Default: the GUI's setting.
+- `--drawing-ink`: Line colour of JoyPro's drawings (#RRGGBB, preset custom).
 - `<#RRGGBB>`: Command argument. See examples for typical values.
-- `--drawing-paper`: Command argument. See examples for typical values.
-- `--drawing-accent`: Command argument. See examples for typical values.
+- `--drawing-paper`: Paper colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-accent`: Accent colour of JoyPro's drawings (#RRGGBB, preset custom).
 - `--drawing-`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine layout render --text
 ```
 
-### `engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; --check-all [query] checks every model)`
-What it does: Runs this command operation.
+### `engine layout callouts (--model <catalog id> | --layout <device-layout.json>) [--picture <file>] [--schematic] [--drawing-style lines|cel] [--drawing-preset <p>] [--drawing-ink|--drawing-paper|--drawing-accent <#RRGGBB>] [--arrange] [--device <name>] [--game <name> --plane <name>] [--sample] [--png <file>] [--light] [--print-width <px>] [--save <file.json>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (tables around the device picture with orthogonal lines; exit code 1 when the sheet check finds problems, the picture and file are written all the same; --check-all [query] checks every model)`
+What it does: Tables around the device picture with orthogonal lines; exit code 1 when the sheet check finds problems, the picture and file are written all the same; --check-all [query] checks every model.
 
 Arguments and example values:
 - `--model`: Command argument. See examples for typical values.
@@ -4979,12 +5732,12 @@ Arguments and example values:
 - `--picture`: Command argument. See examples for typical values.
 - `<file>`: Command argument. See examples for typical values.
 - `--schematic`: Command argument. See examples for typical values.
-- `--drawing-style`: Command argument. See examples for typical values.
-- `--drawing-preset`: Command argument. See examples for typical values.
+- `--drawing-style`: JoyPro's drawings of the devices: lines (line art) or cel (shaded). Default: the GUI's setting.
+- `--drawing-preset`: The colours of JoyPro's drawings: joypro, manual, blueprint, print or custom (then --drawing-ink / --drawing-paper / --drawing-accent). Default: the GUI's setting.
 - `<p>`: Command argument. See examples for typical values.
-- `--drawing-ink`: Command argument. See examples for typical values.
-- `--drawing-paper`: Command argument. See examples for typical values.
-- `--drawing-accent`: Command argument. See examples for typical values.
+- `--drawing-ink`: Line colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-paper`: Paper colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-accent`: Accent colour of JoyPro's drawings (#RRGGBB, preset custom).
 - `<#RRGGBB>`: Command argument. See examples for typical values.
 - `--arrange`: Command argument. See examples for typical values.
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
@@ -5028,11 +5781,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout callouts (--model <catalog id> --text
 ```
 
 ### `engine layout titles --device <name>   (the game's own menu titles of the device's binds, per game and aircraft)`
-What it does: Runs this command operation.
+What it does: The game's own menu titles of the device's binds, per game and aircraft.
 
 Arguments and example values:
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
@@ -5040,11 +5793,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout titles --device <name> --text
 ```
 
 ### `engine layout image <device> [--set <layout file>|--clear]   (the layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back)`
-What it does: Runs this command operation.
+What it does: The layout file the profile uses for a device; --clear: JoyPro's picture again, --set puts one back.
 
 Arguments and example values:
 - `<device>`: Command argument. See examples for typical values.
@@ -5054,11 +5807,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout image <device> --text
 ```
 
 ### `engine layout multiview <file.json> [--views <folder>] [--png <file>] [--device <name>] [--game <g> --plane <p>] [--light] [--print-width <px>] [--sheet-style joypro|print|high-contrast|dark-sheet|<style.json>] [--font <family>] [--font-size <n>] [--font-weight normal|semibold|bold] [--text-color <#RRGGBB|#AARRGGBB>] [--outline-color <color|none>] [--label-background <color|none>] [--page-background <color>] [--table-background <color>] [--table-border <color>] [--header-background <color>] [--header-text <color>] [--table-text <color>] [--line-color <color>] [--marker-color-button <color>] [--marker-color-axis <color>] [--marker-color-hat <color>] [--marker-color-slider <color>] [--modifier-colors <modifier=#RRGGBB,...>]   (a page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it)`
-What it does: Runs this command operation.
+What it does: A page with several views of a device: each view as view-<n>.png, the page as one picture; layout render draws it when --layout-map points to it.
 
 Arguments and example values:
 - `<file.json>`: Path to a JSON file. Example: C:\JoyPro\sync-choices.json.
@@ -5105,11 +5858,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout multiview <file.json> --text
 ```
 
 ### `engine layout suggest [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--legacy-layout-dir <path>] [--legacy-output-dir <path>] [--catalog <path.json>] [--apply true|false] [--apply-min-score <n>] [--backdrop <picture-file-or-image-url>]`
-What it does: Runs this command operation.
+What it does: Suggests a layout picture with markers for devices (connected or in the profile) from the layout catalog and JoyPro 1 layouts; --apply true saves the ones scoring at least --apply-min-score into the profile; --backdrop uses a picture of your own.
 
 Arguments and example values:
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
@@ -5131,11 +5884,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout suggest --text
 ```
 
 ### `engine layout identify [--device <name>] [--devices <csv>] [--connected]   (vendor/model from VID:PID and HID name, picture search link)`
-What it does: Runs this command operation.
+What it does: Vendor/model from VID:PID and HID name, picture search link.
 
 Arguments and example values:
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
@@ -5146,11 +5899,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout identify --text
 ```
 
-### `engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]`
-What it does: Runs this command operation.
+### `engine layout template-inspect --source <path.layout-or-image> [--max-markers <n>]   (--max-markers: how many markers are listed, default 2000, at most 20000; 0 or less = 5000)`
+What it does: Reads a .layout file or picture and lists its joystick name, font, colour, preview picture and marker positions (sorted top to bottom), at most --max-markers of them (default 2000).
 
 Arguments and example values:
 - `--source`: Command argument. See examples for typical values.
@@ -5160,11 +5913,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout template-inspect --source <path.layout-or-image> --text
 ```
 
 ### `engine layout template-save --source <path.layout-or-image> --out <path.layout> [--markers-json <file.json> | --markers <json-array-or-object>] [--tables-json <file.json> | --tables <json-array-or-object>] [--connectors-json <file.json> | --connectors <json-array-or-object>] [--replace-all true|false]`
-What it does: Runs this command operation.
+What it does: Writes a .layout file from a picture or .layout: the markers, tables and connectors from JSON (files or inline); --replace-all true replaces the existing ones instead of adding.
 
 Arguments and example values:
 - `--source`: Command argument. See examples for typical values.
@@ -5183,7 +5936,7 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine layout template-save --source <path.layout-or-image> --out <path.layout> [--markers-json <file.json> --text
 ```
 
 ### `engine devices list [--connected] [--profile-devices]`
@@ -5241,34 +5994,40 @@ Examples:
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices exchange 'LEFT VPC Throttle' 'RIGHT VPC Throttle' --confirm false --text
 ```
 
-### `engine devices replace <old-device> <new-device> [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same ids, or by layout from the device catalog; --dry-run previews)`
-What it does: Runs this command operation.
+### `engine devices replace <old-device> <new-device> [--old <name>] [--new <name>] [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same = the same input ids, layout = by the part on the device (device catalog), auto = same for the same product, else layout; --merge where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins; --old/--from and --new/--to name the devices instead of the positions; --dry-run previews)`
+What it does: Moves the binds and modifiers of one device to another, input by input: same = the same input ids, layout = by the part on the device (device catalog), auto (default) = same for the same product, else layout. --merge decides where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins. --old/--from and --new/--to name the devices instead of the positions; --dry-run previews.
 
 Arguments and example values:
 - `<old-device>`: Source device name to replace. Example: LEFT VPC Throttle {B6781E40-0000-0000-0000-504944564944}.
 - `<new-device>`: Target device name to assign. Example: RIGHT VPC Throttle {C7122B40-0000-0000-0000-504944564944}.
-- `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
-- `--map`: Command argument. See examples for typical values.
-- `--merge`: Merge import results into existing in-memory profile.
-- `--grip`: Command argument. See examples for typical values.
+- `--old`: The old device instead of the first position (also --from).
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--new`: The new device instead of the second position (also --to).
+- `--mode`: How inputs are matched: same = the same input ids, layout = by the part on the device (device catalog), auto (default) = same for the same product, else layout.
+- `--map`: Your own match for one input, OLD=NEW (NEW = none leaves the input out); repeatable. Example: --map JOY_BTN3=JOY_BTN5.
+- `--merge`: Where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins (the old one stays on the old device), replace = the old device's bind wins (the new device's bind there is removed).
+- `--grip`: The grip on a base (device or VID:PID = grip id), for the layout match.
 - `<device>`: Command argument. See examples for typical values.
 - `<grip id>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Show the plan (every input's match); the profile is not changed.
+- `--from`: Copy structure from existing relation(s).
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace 'Old Stick' 'New Stick' --dry-run --text
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace --from 'Old Stick' --to 'New Stick' --mode layout --merge keep --text
 ```
 
 ### `engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)`
-What it does: Runs this command operation.
+What it does: A profile device that is not connected gets the connected device of the same product with a new GUID (alias: remap); --dry-run previews.
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine devices auto-remap --text
 ```
 
 ### `engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)`
@@ -5290,7 +6049,7 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices remove 'LEFT VP
 ```
 
 ### `engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)`
-What it does: Runs this command operation.
+What it does: Names of your own for devices (display only; exports use the real device): list them, set one, or clear one.
 
 Arguments and example values:
 - `<device>`: Command argument. See examples for typical values.
@@ -5298,7 +6057,7 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine devices alias list --text
 ```
 
 ### `engine relations list [filter] [--titles]   (--titles: each relation with the titles of its actions)`
@@ -5409,12 +6168,13 @@ Examples:
 engine relations group rename 'Startup' 'Core Startup' --text
 ```
 
-### `engine relations item add <relation-name> --node game:id[:plane1|plane2] [--node ...]  (or --id/--game/--planes)`
-What it does: Adds node targets to an existing relation.
+### `engine relations item add <relation-name> --node game:id[:plane1|plane2] [--node ...] [--force]  (or --id/--game/--planes; an action its game's list does not have, or an axis in a button relation or the other way round, is refused unless --force)`
+What it does: Adds actions (node targets) to an existing relation. An action its game's list does not have, or an axis in a button relation (or the other way round), is refused unless --force.
 
 Arguments and example values:
 - `<relation-name>`: Name of target relation. Example: Gear Toggle.
 - `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--force`: Add the actions even when their game's list does not have them or they are of the other kind (axis / button) than the relation.
 - `--id`: Node ID. Example: --id d3007pnilu3007cd16vd1vpnilvu0.
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
@@ -5474,7 +6234,7 @@ engine relations item disable 'Gear Toggle' --node DCS:d3007pnilu3007cd16vd1vpni
 ```
 
 ### `engine relations item move <relation-name> --node game:id (--to <position> | --up | --down)  (the order of its actions)`
-What it does: Runs this command operation.
+What it does: Moves one action of a relation to another place in its list (--to <position> from 1, --up or --down).
 
 Arguments and example values:
 - `<relation-name>`: Name of target relation. Example: Gear Toggle.
@@ -5486,11 +6246,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations item move <relation-name> --node game:id (--to <position> --text
 ```
 
 ### `engine relations item move-to-input <relation-name> --node game:id[:plane1|plane2] --device <device> --input <input> [--modifier <name>]... [--keep-modifiers] [--name <new relation>] [--if-taken ask|swap|replace|keep-both] [--dry-run]  (one action to another button: joins the relation on that input, else a new one; --if-taken: when the aircraft has another action there)`
-What it does: Runs this command operation.
+What it does: Moves one action to another button: it joins the relation on that input, else a new relation; --if-taken decides when the aircraft has another action there; --dry-run previews.
 
 Arguments and example values:
 - `<relation-name>`: Name of target relation. Example: Gear Toggle.
@@ -5505,11 +6265,11 @@ Arguments and example values:
 - `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
 - `<new relation>`: Command argument. See examples for typical values.
 - `--if-taken`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine relations item move-to-input <relation-name> --node game:id --device <device> --input <input> --text
 ```
 
 ### `engine relations mass delete [--relation <name>] [--relations <csv>] [--query <text>] [--all]`
@@ -5521,7 +6281,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5542,7 +6302,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 - `--no-bind`: Command argument. See examples for typical values.
 
@@ -5563,7 +6323,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5588,7 +6348,7 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5611,7 +6371,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5632,7 +6392,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5653,7 +6413,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5675,7 +6435,7 @@ Arguments and example values:
 - `--relations`: Select relations as CSV for mass operations. Example: --relations 'Trim Pitch,Trim Roll'.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
 - `--query`: Select relations by substring query for mass operations. Example: --query Startup.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -5688,26 +6448,38 @@ engine relations mass export 'C:\\JoyPro\\exports\\selection.rl' --query 'Startu
 engine relations mass export 'C:\\JoyPro\\exports\\selection.json' --all --format json --text
 ```
 
-### `engine relations export <path.json>`
-What it does: Exports relations to JSON.
+### `engine relations export <path.json> [filter]   (every relation with its bind as JSON, a missing folder is created; a filter word writes only the matching relations; with --text the file is the readable view, which relations import cannot read)`
+What it does: Writes every relation with its bind to a JSON file (a missing folder is created); a filter word writes only the matching relations. With --text the file is the readable view, which relations import cannot read.
 
 Arguments and example values:
-- `<path.json>`: Path to JSON file. Example: C:\\JoyPro\\exports\\relations.json.
+- `<path.json>`: The file to write (an existing one is overwritten, a missing folder is created). Example: C:\JoyPro\exports\relations.json.
+- `filter`: Only the relations whose name contains this text are written (case-insensitive). Example: Gear.
+- `--text`: Global option: render human-readable text instead of JSON output.
+
+How arguments interact:
+- A filter word makes a partial file: importing it with --replace removes everything the file does not have.
 
 Examples:
 ```powershell
-engine relations export 'C:\JoyPro\exports\relations.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations export 'C:\JoyPro\exports\relations.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations export 'C:\JoyPro\exports\gear.json' Gear
 ```
 
-### `engine relations import <path.json>`
-What it does: Imports relations from JSON.
+### `engine relations import <path.json> [--replace]   (the file's relations and binds replace all of the profile's; a file without some of the profile's relations (a filtered or mass export) is refused unless --replace, which removes them; profile history undo brings them back)`
+What it does: Reads a relations JSON file (from relations export): its relations and binds replace all of the profile's. A file that lacks some of the profile's relations (a filtered export, relations mass export) is refused unless --replace, which removes them; profile history undo brings them back. A file that is not a relations document ends with a clear error.
 
 Arguments and example values:
-- `<path.json>`: Path to JSON file. Example: C:\\JoyPro\\exports\\relations.json.
+- `<path.json>`: The relations file of engine relations export (JSON; a --text export cannot be read). Example: C:\JoyPro\exports\relations.json.
+- `--replace`: Import also when the file lacks some of the profile's relations: they are removed (the file's relations replace all of the profile's). Without it such a file is refused.
+
+How arguments interact:
+- The import replaces everything of its kind in the profile; a partial file (a filtered export, relations mass export) needs --replace. profile merge adds relations instead.
+- The GUI asks before it imports and then passes --replace.
 
 Examples:
 ```powershell
-engine relations import 'C:\JoyPro\exports\relations.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations import 'C:\JoyPro\exports\relations.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations import 'C:\JoyPro\exports\gear.json' --replace
 ```
 
 ### `engine relations edit   (no args; exports temp relations JSON, opens editor, re-imports on close; uses --editor or notepad)`
@@ -5722,11 +6494,11 @@ engine --editor 'code --wait {file}' relations edit
 ```
 
 ### `engine relations suggest <relation>|--relation <relation> [--min high|medium|low] [--limit N] [--game g1|g2] | --all [--missing [--per-relation N]] [--min ...]`
-What it does: Runs this command operation.
+What it does: Proposes what a relation is still missing, each with the reason: the functions of its commands, your style, the function map, the same DCS command id in more aircraft, similar titles in any game. Also lists what you dismissed. --all lists every relation with suggestions; --all --missing per relation the free actions of games and aircraft it lacks.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
-- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `--relation`: The relation to get suggestions for (instead of the positional name).
 - `--min`: Command argument. See examples for typical values.
 - `--limit`: Command argument. See examples for typical values.
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -5736,11 +6508,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations suggest <relation>|--relation <relation> --text
 ```
 
 ### `engine relations suggest apply <relation> [--add game:id:plane1|plane2]... [--never game:id:plane1|plane2]... [--remove game:id:planes]... [--move game:id:planes=>relation]... [--take game:id:planes]...`
-What it does: Runs this command operation.
+What it does: Carries out decisions on a relation's suggestions: --add adds commands, --never dismisses them (added switched off, never proposed again; --remove restores), --take moves a command another relation uses into this one, --remove / --move fix entries that look wrong.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
@@ -5752,11 +6524,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations suggest apply <relation> --text
 ```
 
 ### `engine relations search "<words>" [--game g1|g2] [--plane p1|p2] [--category <name>] [--axis|--button] [--limit N] [--per-game N] [--batch <file>]`
-What it does: Runs this command operation.
+What it does: Finds actions of every game and aircraft through the function map: names, synonyms and game terms, what a query describes, a direction, typos and plain title words; grouped by game and function. --category alone lists a whole category of a game's list; --batch runs one query per line.
 
 Arguments and example values:
 - `<words>`: Command argument. See examples for typical values.
@@ -5764,8 +6536,8 @@ Arguments and example values:
 - `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
 - `--category`: Command argument. See examples for typical values.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
-- `--axis`: Set relation type to axis (explicit override).
-- `--button`: Set relation type to button (explicit override).
+- `--axis`: Only axis actions.
+- `--button`: Only button actions.
 - `--limit`: Command argument. See examples for typical values.
 - `--per-game`: Command argument. See examples for typical values.
 - `--batch`: Command argument. See examples for typical values.
@@ -5773,26 +6545,26 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations search "<words>" --text
 ```
 
 ### `engine relations browse [--game <game> [--plane p1|p2]] [--axis|--button]   (alias: relations catalog)`
-What it does: Runs this command operation.
+What it does: What exists: every game with its aircraft; with --game (DCS: and --plane) every action of the game's list by its categories, with the relations that use each.
 
 Arguments and example values:
-- `--game`: Game filter value. Example: DCS or IL2Game.
+- `--game`: The game whose list is shown by its categories. Example: DCS.
 - `<game>`: Command argument. See examples for typical values.
-- `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
-- `--axis`: Set relation type to axis (explicit override).
-- `--button`: Set relation type to button (explicit override).
+- `--plane`: DCS: the aircraft (p1|p2) whose actions are shown. Example: F-16C_50.
+- `--axis`: Only axis actions.
+- `--button`: Only button actions.
 
 Examples:
 ```powershell
-engine --help
+engine relations browse --text
 ```
 
 ### `engine relations pair "<title A>" "<title B>" [--game <game>]   (twin, opposite or different, for the recommended-action hints)`
-What it does: Runs this command operation.
+What it does: Whether two action titles are twins, opposites or different (for the recommended-action hints).
 
 Arguments and example values:
 - `<title A>`: Command argument. See examples for typical values.
@@ -5802,27 +6574,27 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations pair "<title A>" "<title B>" --text
 ```
 
 ### `engine relations resolve "<query>" [--game g1|g2] [--plane p1|p2] [--axis|--button] [--per-game N]`
-What it does: Runs this command operation.
+What it does: Reads a query as function ids (with direction) and lists the matching actions of every game, grouped by game.
 
 Arguments and example values:
 - `<query>`: Command argument. See examples for typical values.
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
-- `--axis`: Set relation type to axis (explicit override).
-- `--button`: Set relation type to button (explicit override).
+- `--axis`: Only axis actions.
+- `--button`: Only button actions.
 - `--per-game`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine relations resolve "<query>" --text
 ```
 
 ### `engine relations functions [--category <id>] [--query "<words>"] [--coverage] [--dump <file.tsv>]`
-What it does: Runs this command operation.
+What it does: Lists the function map: ids, names, synonyms, game terms, slots and how many actions of each game are each function; --coverage per game, --dump writes every action with its functions to a file.
 
 Arguments and example values:
 - `--category`: Command argument. See examples for typical values.
@@ -5835,15 +6607,15 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations functions --text
 ```
 
 ### `engine relations chat <relation>|--relation <relation> "<message>" [--llm off|auto|on] [--show-prompt] [--apply]`
-What it does: Runs this command operation.
+What it does: Changes one relation from a sentence: offline rules and the relation's suggestions give numbered candidates, the optional local model picks from them, JoyPro checks every id and prints the proposed adds and removes; --apply applies them.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
-- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `--relation`: The relation to change (instead of the positional name).
 - `<message>`: Command argument. See examples for typical values.
 - `--llm`: Command argument. See examples for typical values.
 - `--show-prompt`: Command argument. See examples for typical values.
@@ -5851,15 +6623,15 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations chat <relation>|--relation <relation> "<message>" --text
 ```
 
 ### `engine relations assistant "<message>" [--relation <name>] [--llm auto|on|off] [--max-steps N] [--show-prompt]`
-What it does: Runs this command operation.
+What it does: The JoyPro assistant: creates, fills, renames and trims relations from a sentence and applies it at once; with the local AI model through checked tools, without it simple commands.
 
 Arguments and example values:
 - `<message>`: Command argument. See examples for typical values.
-- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `--relation`: The relation the message is about (focus): the assistant works on it when the message names none. Example: --relation 'Throttle ALL'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--llm`: Command argument. See examples for typical values.
 - `--max-steps`: Command argument. See examples for typical values.
@@ -5867,11 +6639,71 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations assistant "<message>" --text
+```
+
+### `engine relations plan ask "<request>" [--relation <name>] [--llm auto|on|off]   (Manage / Edit with AI: the request as a plan of relation steps (create, delete, rename, add, remove, aircraft, groups, tuning, fill, check), each checked against the profile and the catalog; offline rules first, the local model when they do not cover it; a question gets an answer and no steps; nothing changes)`
+What it does: Manage / Edit with AI: turns a request into a plan of relation steps (create, delete, rename, add, remove, aircraft, groups, tuning, fill, check), each checked against the profile and the catalog. Offline rules first, the local model when they do not cover the request (--llm). A question gets JoyPro's answer and no steps. Nothing changes.
+
+Arguments and example values:
+- `<request>`: Command argument. See examples for typical values.
+- `--relation`: Plan only for this relation (Edit with AI on one relation).
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--llm`: auto (default): offline rules, the local model when they do not cover the request; on: always ask the model; off: offline rules only.
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations plan ask 'fill the F-4E Phantom II into my relations' --llm off --text
+```
+
+### `engine relations plan apply (--file <plan.json> | <json>) [--relation <name>] [--only 0,2,3] [--dry-run]   (runs the plan's steps, or only the numbered ones (from 0), in one history step; --relation limits it to that relation; --dry-run reports without changing the profile)`
+What it does: Runs a plan's steps (from relations plan ask, as a file or JSON text), or only the numbered ones with --only, in one history step; --dry-run reports without changing the profile.
+
+Arguments and example values:
+- `--file`: The plan as a JSON file (from relations plan ask); else the JSON is given as text.
+- `<plan.json>`: Command argument. See examples for typical values.
+- `<json>`: Command argument. See examples for typical values.
+- `--relation`: The relation the plan was made for (Edit with AI); a step that would change another relation gets an error.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--only`: Run only these steps, numbered from 0. Example: --only 0,2.
+- `--dry-run`: Report what the steps would do; the profile is not changed.
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations plan apply --file 'C:\JoyPro\plan.json' --only 0,2 --dry-run --text
+```
+
+### `engine relations ai-matrix [--games g1|g2] [--paths p1|p2] [--examples N]   (test of every AI path of the Relations page with typical requests per game, on the loaded profile in memory; each answer is judged (right game only, readable, an answer at all); nothing is saved; --examples N shows the answers cut to N characters)`
+What it does: Test of every AI path of the Relations page (assistant, Manage / Edit with AI, fill, by description, chat) with typical requests for every game, on the loaded profile in memory; each answer is judged (actions of the named game only, readable, an answer at all). Nothing is saved.
+
+Arguments and example values:
+- `--games`: Only these games (g1|g2); default: every game.
+- `--paths`: Only these AI paths (p1|p2); default: all.
+- `--examples`: Show each answer cut to N characters (0 = no answers).
+
+Examples:
+```powershell
+engine relations ai-matrix --text
+```
+
+### `engine relations phrase-check --file <phrases.json> [--entries search|catalog|assistant|plan|describe] [--functions id1|id2] [--kinds phrases|descriptions|de] [--failures N]   (offline test: does every phrase of the file find its function on each entry point; nothing changes; lists up to N failures (default 40); exit 1 on errors)`
+What it does: Offline test of the phrases in a JSON file (names, synonyms, slang, sentences, German): does each one find its function on every entry point (search, catalog, assistant, plan, describe)? Nothing changes; exit 1 when the run has errors.
+
+Arguments and example values:
+- `--file`: The phrase file (JSON), e.g. engine\tests\fixtures\phrases\phrases.json.
+- `<phrases.json>`: Command argument. See examples for typical values.
+- `--entries`: Only these entry points: search, catalog, assistant, plan, describe.
+- `--functions`: Only these function ids (id1|id2).
+- `--kinds`: Only these phrase kinds: phrases, descriptions, de.
+- `--failures`: How many failures are listed (default 40).
+
+Examples:
+```powershell
+engine relations phrase-check --file <phrases.json> --text
 ```
 
 ### `engine relations rename <relation> <new name>`
-What it does: Runs this command operation.
+What it does: Gives one relation a new name; its bind and actions stay.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
@@ -5879,14 +6711,14 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations rename <relation> <new name> --text
 ```
 
 ### `engine relations function <relation> [--set <function>|--none|--auto]`
-What it does: Runs this command operation.
+What it does: The function a relation stands for (set, named, covered, mixed or unknown) and how sure JoyPro is; --set picks a catalog function, --none says it has none, --auto goes back to automatic. With --list: the catalog functions to pick from (id and name), filtered by --axis / --button and --query.
 
 Arguments and example values:
-- `<relation>`: Command argument. See examples for typical values.
+- `<relation>`: The relation whose function is shown or set. Example: Gear Toggle.
 - `--set`: Command argument. See examples for typical values.
 - `<function>`: Command argument. See examples for typical values.
 - `--none`: Command argument. See examples for typical values.
@@ -5894,37 +6726,40 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations function 'Gear Toggle' --text
+engine relations function --list --button --query gear --text
 ```
 
-### `engine relations function --list [--axis|--button] [--query text]   the catalog functions to pick from`
-What it does: Runs this command operation.
+### `engine relations function --list [--axis|--button] [--query text]   (lists the catalog functions --set can pick, id and name sorted by name; --axis / --button only axis / button functions; --query only those whose name or id contains every word)`
+What it does: The function a relation stands for (set, named, covered, mixed or unknown) and how sure JoyPro is; --set picks a catalog function, --none says it has none, --auto goes back to automatic. With --list: the catalog functions to pick from (id and name), filtered by --axis / --button and --query.
 
 Arguments and example values:
-- `--list`: For support bundle: only print what the zip would hold; nothing is written.
-- `--axis`: Set relation type to axis (explicit override).
-- `--button`: Set relation type to button (explicit override).
-- `--query`: Select relations by substring query for mass operations. Example: --query Startup.
+- `--list`: List the catalog functions --set can pick (id and name, sorted by name) instead of showing a relation's function.
+- `--axis`: With --list: only axis functions.
+- `--button`: With --list: only button functions.
+- `--query`: With --list: only functions whose name or id contains every word. Example: --query gear.
+- `--set`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations function 'Gear Toggle' --text
+engine relations function --list --button --query gear --text
 ```
 
-### `engine relations aircraft <relation> [--node game:id]`
-What it does: Runs this command operation.
+### `engine relations aircraft <relation> [--node game:id[:aircraft]]`
+What it does: Every action of the relation with every aircraft that has its id: on, off or not in it, each aircraft's own title and category of the id and whether it means the same as the action. --node game:id[:aircraft] shows one action (an aircraft part only names the node).
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
-- `--node`: Node token format: game:id[:plane1|plane2]. Example: DCS:d3007pnilu3007cd16vd1vpnilvu0:F-16C_50|FA-18C_hornet.
+- `--node`: Only this action: game:id; an aircraft part (game:id:F-16C_50 or game:id:a|b) only names the node, the report lists every aircraft. Example: --node DCS:d3001pnilunilcdnilvdnilvpnilvunil.
 
 Examples:
 ```powershell
-engine --help
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations aircraft 'Gear Toggle' --node DCS:d3001pnilunilcdnilvdnilvpnilvunil:F-16C_50 --text
 ```
 
 ### `engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]`
-What it does: Runs this command operation.
+What it does: One action's aircraft selection in one step (one undo step): --on switches aircraft on (adds them), --off switches them off, --only ticks exactly these.
 
 Arguments and example values:
 - `<relation>`: Command argument. See examples for typical values.
@@ -5935,11 +6770,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations aircraft set <relation> --node game:id --text
 ```
 
 ### `engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]`
-What it does: Runs this command operation.
+What it does: Actions with switched-on aircraft where the same id means something else than in the others; --apply switches those aircraft off (they stay listed).
 
 Arguments and example values:
 - `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
@@ -5949,11 +6784,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations check-aircraft --text
 ```
 
 ### `engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]`
-What it does: Runs this command operation.
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step).
 
 Arguments and example values:
 - `--keys`: Command argument. See examples for typical values.
@@ -5966,11 +6801,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations duplicates [--keys "game|id|aircraft;" --text
 ```
 
 ### `engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]`
-What it does: Runs this command operation.
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step).
 
 Arguments and example values:
 - `--rule`: Command argument. See examples for typical values.
@@ -5981,11 +6816,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> --text
 ```
 
 ### `engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]`
-What it does: Runs this command operation.
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step).
 
 Arguments and example values:
 - `--instruction`: Command argument. See examples for typical values.
@@ -5994,11 +6829,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations duplicates --instruction "keep trim in the Trim relations, everything else in " --text
 ```
 
 ### `engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]`
-What it does: Runs this command operation.
+What it does: The check's errors in detail: an input bound in several relations that have an action of the same aircraft on, and a relation with two actions of one aircraft on; --keep, --keep-action, --off, --keep-both or --remove-actions fix them (one undo step each).
 
 Arguments and example values:
 - `--keys`: Command argument. See examples for typical values.
@@ -6013,24 +6848,24 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations conflicts [--keep <relation> --text
 ```
 
 ### `engine relations merge-copies [--dry-run] [--name <relation>]`
-What it does: Runs this command operation.
+What it does: Merges relations an import copied ('<name>__N' with the same device, input and modifiers as '<name>') back into one: aircraft, groups and per-aircraft tuning; one undo step. --dry-run lists them only.
 
 Arguments and example values:
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
 - `<relation>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine relations merge-copies --text
 ```
 
 ### `engine relations meanings [--game g] [--top N]`
-What it does: Runs this command operation.
+What it does: Per game: ids shared by several aircraft lists and how many of them mean something else in some aircraft.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6038,11 +6873,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations meanings --text
 ```
 
 ### `engine relations action-info --coverage [--game g] [--all-examples]`
-What it does: Runs this command operation.
+What it does: Per game: actions with a readable name, titles with unexplained abbreviations, explanations and functions with a recommended action.
 
 Arguments and example values:
 - `--coverage`: Command argument. See examples for typical values.
@@ -6051,27 +6886,27 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations action-info --coverage --text
 ```
 
-### `engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]`
-What it does: Runs this command operation.
+### `engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]   (--replace first removes the relations tagged AutoGroup (an earlier Auto Group) with their binds; your other relations stay)`
+What it does: Groups the same function of all DCS aircraft and the other games into relations (function catalog DB/Functions plus the function map). Existing relations of the same name get the missing aircraft, commands already used in another relation stay there; --replace first removes the relations tagged AutoGroup (an earlier Auto Group) and their binds, your other relations stay.
 
 Arguments and example values:
 - `--preset`: Command argument. See examples for typical values.
 - `--no-substitutes`: Command argument. See examples for typical values.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
-- `--replace`: For game import: start from an empty relation list instead of merging into the loaded profile.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--replace`: First remove the relations tagged AutoGroup (made by an earlier Auto Group) and their binds; every other relation stays.
+- `--dry-run`: Show what Auto Group would create and change; the profile is not changed.
 - `--no-map`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine relations auto-group --text
 ```
 
 ### `engine relations from-text "<request>" [--games g1|g2] [--planes p1|p2] [--llm off|auto|on] [--substitutes] [--select <relation>]... [--skip-node game:id:plane1|plane2]... [--name <name>] [--min-confidence 0..1] [--dry-run]`
-What it does: Runs this command operation.
+What it does: Group by description: offline rules pick the functions and aircraft of a request, the function catalog gives the commands, each with a confidence; the optional local model may re-pick from the offline candidates. --check tests the vocabulary, --show-prompt prints the model's prompt only.
 
 Arguments and example values:
 - `<request>`: Command argument. See examples for typical values.
@@ -6085,26 +6920,26 @@ Arguments and example values:
 - `--name`: Name value for commands that create/merge entities. Example: --name 'Merged Startup'.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--min-confidence`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine relations from-text "<request>" --text
 ```
 
 ### `engine relations from-text --check   (tests the vocabulary in DB/Functions/language.json against the catalog)`
-What it does: Runs this command operation.
+What it does: Group by description: offline rules pick the functions and aircraft of a request, the function catalog gives the commands, each with a confidence; the optional local model may re-pick from the offline candidates. --check tests the vocabulary, --show-prompt prints the model's prompt only.
 
 Arguments and example values:
 - `--check`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine relations from-text --check --text
 ```
 
 ### `engine relations from-text "<request>" --show-prompt [--prompt-model <model>|local]`
-What it does: Runs this command operation.
+What it does: Group by description: offline rules pick the functions and aircraft of a request, the function catalog gives the commands, each with a confidence; the optional local model may re-pick from the offline candidates. --check tests the vocabulary, --show-prompt prints the model's prompt only.
 
 Arguments and example values:
 - `<request>`: Command argument. See examples for typical values.
@@ -6114,11 +6949,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine relations from-text "<request>" --show-prompt --text
 ```
 
 ### `engine llm status|recommend [--ram-gb N] [--vram-gb N] [--gpu <name>] [--gpu-vendor nvidia|amd|intel] [--cores N] [--avx2 true|false]`
-What it does: Runs this command operation.
+What it does: The hardware, the model JoyPro recommends for it (size, quantization, GPU or CPU), downloaded models and runtime; the options replace detected values (what-if).
 
 Arguments and example values:
 - `--ram-gb`: Command argument. See examples for typical values.
@@ -6131,25 +6966,26 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine llm status|recommend --text
 ```
 
-### `engine llm download [<model>] --accept-license [--runtime auto|cpu|vulkan|cuda] [--no-runtime]`
-What it does: Runs this command operation.
+### `engine llm download [<model> | --model <model>] --accept-license [--runtime auto|cpu|vulkan|cuda] [--no-runtime]`
+What it does: Downloads a model (positional or --model; default: the chosen model, else the recommended one) and llama.cpp's server, checks their SHA-256 and switches the model on; without --accept-license only the size and licenses are shown.
 
 Arguments and example values:
 - `<model>`: Command argument. See examples for typical values.
+- `--model`: The model id to download (same as the positional <model>); default: the chosen model, else the recommended one.
 - `--accept-license`: Command argument. See examples for typical values.
 - `--runtime`: Command argument. See examples for typical values.
 - `--no-runtime`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine llm download [<model> --text
 ```
 
 ### `engine llm remove [<model>] [--all]   (--all also removes the runtime and switches the model off)`
-What it does: Runs this command operation.
+What it does: --all also removes the runtime and switches the model off.
 
 Arguments and example values:
 - `<model>`: Command argument. See examples for typical values.
@@ -6157,33 +6993,34 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine llm remove --text
 ```
 
-### `engine llm enable [<model>|local] | engine llm disable   (use the local model for relations from-text)`
-What it does: Runs this command operation.
+### `engine llm enable [<model>|local] | engine llm disable   (enable switches the local model on, with a model also chooses it; disable switches it off and keeps the chosen model; for for relations from-text, the assistant, relations chat, relations duplicates --instruction, arrange ask and relations plan; local = your own llama.cpp / GGUF from llm use-local)`
+What it does: Switches the local AI model on (optionally choosing a downloaded model, or local = your own llama.cpp and GGUF) or off (llm disable, which takes no model and keeps the chosen one). It is used by relations from-text, the assistant, relations chat, relations duplicates --instruction, arrange ask and relations plan.
 
 Arguments and example values:
 - `<model>`: Command argument. See examples for typical values.
+- `--instruction`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine llm enable --text
 ```
 
 ### `engine llm cancel   (stops a running download; the next download resumes it)`
-What it does: Runs this command operation.
+What it does: Stops a running download; the next download resumes it.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine llm cancel --text
 ```
 
 ### `engine llm find-local [--root <folder>]...`
-What it does: Runs this command operation.
+What it does: Looks for a llama-server.exe and GGUF models already on this PC (read-only) and names the pair that suits the hardware.
 
 Arguments and example values:
 - `--root`: Command argument. See examples for typical values.
@@ -6191,11 +7028,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine llm find-local --text
 ```
 
 ### `engine llm use-local [--server <llama-server.exe>] [--model <file.gguf>] [--gpu-layers auto|all|N] [--context N] [--template server|chatml] | --clear`
-What it does: Runs this command operation.
+What it does: Uses your own llama.cpp server and GGUF model instead of a download (without paths: what find-local recommends) and switches the model on; --clear forgets them.
 
 Arguments and example values:
 - `--server`: Command argument. See examples for typical values.
@@ -6209,33 +7046,33 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine llm use-local --text
 ```
 
 ### `engine llm start   (loads the chosen model now; started from JoyPro it stays loaded until the idle stop)`
-What it does: Runs this command operation.
+What it does: Loads the chosen model now; started from JoyPro it stays loaded until the idle stop.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine llm start --text
 ```
 
 ### `engine llm server | engine llm stop   (what runs now / end it and free its memory)`
-What it does: Runs this command operation.
+What it does: What runs now / end it and free its memory.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine llm server --text
 ```
 
 ### `engine llm fake-server [--port N] [--port-file <path>] [--response <file>] [--serve <folder>] [--log <file>] [--lifetime <s>]`
-What it does: Runs this command operation.
+What it does: A test stub that answers like llama-server and serves files with HTTP Range (no model involved).
 
 Arguments and example values:
 - `--port`: Command argument. See examples for typical values.
@@ -6251,11 +7088,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine llm fake-server --text
 ```
 
 ### `engine setup devices [--grip <device>=<grip id>]... [--role <device|VID:PID>=<role>]... [--add-device <catalog id>]...`
-What it does: Runs this command operation.
+What it does: Setup wizard: the connected devices with the proposed role and the rules the plan follows; --role, --grip and --add-device change them.
 
 Arguments and example values:
 - `--grip`: Command argument. See examples for typical values.
@@ -6269,11 +7106,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine setup devices --text
 ```
 
 ### `engine setup aircraft --games <g1,g2>   (the aircraft / games for the priority list)`
-What it does: Runs this command operation.
+What it does: The aircraft / games for the priority list.
 
 Arguments and example values:
 - `--games`: Game filter values as CSV. Example: DCS,IL2Game,StarCitizen.
@@ -6281,28 +7118,45 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine setup aircraft --games <g1,g2> --text
 ```
 
-### `engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers]`
-What it does: Runs this command operation.
+### `engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers 0..8] [--prefer-fewer|--use-all-modifiers] [--realism 0..1] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role <device|VID:PID>=<role>]... [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--cockpit-file <json>]... [--out-plan <plan.json> | --plan-file <plan.json>]`
+What it does: Setup wizard: plans relations and binds for the important functions of the chosen games' aircraft on your devices (priorities, modifier budget, realism, phase layers); deterministic for a --seed. Writes nothing to the profile; --out-plan saves the plan for setup check, apply and render.
 
 Arguments and example values:
-- `--games`: Game filter values as CSV. Example: DCS,IL2Game,StarCitizen.
+- `--games`: The games to set up (needed), comma-separated. Example: --games DCS,IL2Game.
 - `<g1,g2>`: Command argument. See examples for typical values.
-- `--priorities`: Command argument. See examples for typical values.
-- `--priority`: Command argument. See examples for typical values.
-- `--modifiers`: Command argument. See examples for typical values.
-- `--prefer-fewer`: Command argument. See examples for typical values.
-- `--use-all-modifiers`: Command argument. See examples for typical values.
+- `--priorities`: Aircraft in order of importance: '>' starts the next row, '|' (or '=') joins aircraft of one row. Example: --priorities 'F-16C_50>FA-18C_hornet|A-10C_2'.
+- `--priority`: One more row of equally important aircraft (repeatable). Example: --priority 'AV8BNA|F-14B'.
+- `--modifiers`: How many modifier buttons the plan may use, 0..8 (default 0).
+- `--prefer-fewer`: Use a modifier only when the essential functions do not fit (default).
+- `--use-all-modifiers`: Use the whole modifier budget.
+- `--realism`: 0 = group by function, 1 = like the real aircraft's HOTAS (cockpit database or knowledge map); 0..1 or 0..100 %.
+- `--seed`: The seed of the plan's local search (default 1): the same seed gives the same plan.
+- `--replace-existing`: Lay out your bound relations again; without it they keep their binds.
+- `--phase-layers`: Two combat phases on a latched mode switch: on, off or auto (default: when the inputs are too few for one phase).
+- `--role`: The role of a device (device or VID:PID = role), as for setup devices.
+- `<device|VID:PID>`: Command argument. See examples for typical values.
+- `<role>`: Command argument. See examples for typical values.
+- `--grip`: The grip on a base (device = grip id), as for setup devices.
+- `<device>`: Command argument. See examples for typical values.
+- `<grip id>`: Command argument. See examples for typical values.
+- `--add-device`: A catalog device to plan with although it is not connected.
+- `<catalog id>`: Command argument. See examples for typical values.
+- `--cockpit-file`: A cockpit entry (JSON, e.g. from engine cockpits get --json) used besides DB/Cockpits; repeatable.
+- `<json>`: Command argument. See examples for typical values.
+- `--out-plan`: Save the plan (JSON) here for setup check, apply and render; --plan-file is another name.
+- `<plan.json>`: Command argument. See examples for typical values.
+- `--plan-file`: Another name for --out-plan.
 
 Examples:
 ```powershell
-engine --help
+engine setup plan --games DCS --priorities 'F-16C_50>FA-18C_hornet' --modifiers 1 --realism 0.5 --out-plan 'C:\JoyPro\setup-plan.json' --text
 ```
 
 ### `engine arrange ask "<your preferences in words>" [--llm auto|on|off] [--games <g1,g2>] [--add-missing] [--forget-saved] [--proposal <file>] [--role ...] [--grip ...] [--add-device ...]`
-What it does: Runs this command operation.
+What it does: Lay out with AI: turns your preferences in words into the preferences JoyPro understood and every change of binds, axis curves, force feedback and the virtual joystick, as a preview (nothing is saved).
 
 Arguments and example values:
 - `<your preferences in words>`: Command argument. See examples for typical values.
@@ -6319,37 +7173,37 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine arrange ask "<your preferences in words>" --text
 ```
 
 ### `engine arrange apply --proposal <file> [--skip <change id>]... [--dry-run]   (applies the preview in one history version; keeps the preferences in the profile)`
-What it does: Runs this command operation.
+What it does: Applies the preview in one history version; keeps the preferences in the profile.
 
 Arguments and example values:
 - `--proposal`: Command argument. See examples for typical values.
 - `<file>`: Command argument. See examples for typical values.
 - `--skip`: Command argument. See examples for typical values.
 - `<change id>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine arrange apply --proposal <file> --text
 ```
 
 ### `engine arrange prefs [show | clear | remove <key>]   (the layout preferences kept in the profile)`
-What it does: Runs this command operation.
+What it does: The layout preferences kept in the profile.
 
 Arguments and example values:
 - `<key>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine arrange prefs [show --text
 ```
 
-### `engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers)`
-What it does: Runs this command operation.
+### `engine setup check --plan <plan.json> [--modifiers N]   (the rules every plan keeps: conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers; exit code 1 when a rule fails)`
+What it does: Checks a saved plan against the rules every plan keeps (conflicts, modifiers, trigger/pinky, MFD OSB order, panel labels, slew vs TMS, CMS, one device per hand, phase layers); exit code 1 when a rule fails.
 
 Arguments and example values:
 - `--plan`: Command argument. See examples for typical values.
@@ -6358,44 +7212,51 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine setup check --plan <plan.json> --text
 ```
 
 ### `engine setup apply --plan <plan.json> [--dry-run] [--force]   (writes the plan's relations, binds and modifiers in one step)`
-What it does: Runs this command operation.
+What it does: Writes the plan's relations, binds and modifiers in one step.
 
 Arguments and example values:
 - `--plan`: Command argument. See examples for typical values.
 - `<plan.json>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--force`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine setup apply --plan <plan.json> --text
 ```
 
-### `engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]   (a callout sheet per device)`
-What it does: Runs this command operation.
+### `engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>] [--drawing-style lines|cel] [--drawing-preset joypro|manual|blueprint|print|custom] [--drawing-ink <#RRGGBB>] [--drawing-paper <#RRGGBB>] [--drawing-accent <#RRGGBB>]   (a callout sheet per device; --aircraft: only the binds of that aircraft, labelled with its function names; --width: picture width, default 1800; the --drawing-* options paint JoyPro's drawings of the devices, default: the GUI's settings)`
+What it does: Draws a callout sheet per device of a saved plan into --out-dir; with --aircraft only the binds that cover that aircraft, labelled with its function names. The --drawing-* options paint JoyPro's drawings of the devices (default: the GUI's settings).
 
 Arguments and example values:
 - `--plan`: Command argument. See examples for typical values.
 - `<plan.json>`: Command argument. See examples for typical values.
 - `--out-dir`: Command argument. See examples for typical values.
 - `<folder>`: Folder path. Example: C:\Cases\case1.
-- `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
+- `--aircraft`: Only the binds that cover this aircraft, labelled with its function names (default: every bind with the relation names).
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--light`: Command argument. See examples for typical values.
-- `--width`: Command argument. See examples for typical values.
+- `--width`: Width of each sheet in pixels (default 1800).
 - `<px>`: Command argument. See examples for typical values.
+- `--drawing-style`: JoyPro's drawings of the devices: lines (line art) or cel (shaded). Default: the GUI's setting.
+- `--drawing-preset`: The colours of JoyPro's drawings: joypro, manual, blueprint, print or custom (then --drawing-ink / --drawing-paper / --drawing-accent). Default: the GUI's setting.
+- `--drawing-ink`: Line colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `<#RRGGBB>`: Command argument. See examples for typical values.
+- `--drawing-paper`: Paper colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-accent`: Accent colour of JoyPro's drawings (#RRGGBB, preset custom).
+- `--drawing-`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine setup render --plan 'C:\JoyPro\setup-plan.json' --out-dir 'C:\JoyPro\sheets' --aircraft F-16C_50 --text
 ```
 
 ### `engine relations auto-assign [--grip <device|VID:PID>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]`
-What it does: Runs this command operation.
+What it does: Binds the relations to the best physical controls of your devices (device catalog, function positions); existing binds stay unless --overwrite; at most 2 modifier layers; one device per hand; --explain lists the best candidates of a relation; --dry-run previews.
 
 Arguments and example values:
 - `--grip`: Command argument. See examples for typical values.
@@ -6414,15 +7275,15 @@ Arguments and example values:
 - `--no-style`: Command argument. See examples for typical values.
 - `--explain`: Command argument. See examples for typical values.
 - `<relation>`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 
 Examples:
 ```powershell
-engine --help
+engine relations auto-assign --text
 ```
 
-### `engine devices kb [list [query] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign)`
-What it does: Runs this command operation.
+### `engine devices kb [list [words] | show <id> | identify [--grip <device>=<grip id>]... [--add-device <id>]...]   (device catalog for Auto Assign; list: the devices whose id, name or maker contains every word)`
+What it does: The device catalog Auto Assign uses: list (devices whose id, name or maker contains every word of the query), show <id> (its axes and controls), identify (how the connected devices were recognised, grip choices).
 
 Arguments and example values:
 - `<id>`: Command argument. See examples for typical values.
@@ -6433,11 +7294,12 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine devices kb list vkb gladiator --text
+engine devices kb identify --text
 ```
 
-### `engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir>]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions, JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing)`
-What it does: Runs this command operation.
+### `engine devices reference [list [query] | identify --vidpid <VID:PID> --name <HID name> [--instance <name>] [--buttons <n>] [--hats <n>] [--axes X,Y,RZ] | show <id> [--base <id>] [--svg <file>] [--light] [--no-badges] | check [query] | photos [query] [--coverage] | photo-add --model <id> --url <https photo on the maker's host or an allowed review site> --view <front|side|back|top|base|three-quarter|sheet> [--page <url>] [--confidence <c>] [--shows a,b] [--sha256 <hex>] [--source maker|review|commons] [--site <name>] [--licence <note>] [--archive <web.archive.org url>] [--width <px>] [--height <px>] | layout-check | drawings [query] [--check] [--model <id> [--view <v>] --svg <file> | --png <file>] [--light] [--drawing-style lines|cel] [--drawing-preset <p>] | completeness [query] [--missing] [--list <file>] | mesh-render --aircraft <plane> --grip stick|throttle [--view <yaw>,<pitch>] [--size <px>] [--skip <regex>] --folder <dir> | detect <model> [--photo <file|view|sha>] [--photos <folder>] [--max <n>] [--eval]]   (device reference pictures: catalog, identification and the question to ask, JoyPro's schematic with markers, photo references, curated marker positions (layout-check: exit code 1 on a problem), JoyPro's own drawings of the devices, whether every input has a position, a game's grip rendered for a drawing, detect: where the controls of a device photo probably are (experimental))`
+What it does: Device reference pictures (docs/device-reference.md): list and identify catalog models, show JoyPro's schematic, check and list photo references, add one (photo-add), check the curated marker positions (layout-check, exit code 1 on a problem), JoyPro's own drawings (drawings), whether every input has a position (completeness), a game's grip rendered for a drawing (mesh-render) and, experimental, where the controls of a device photo probably are (detect).
 
 Arguments and example values:
 - `--vidpid`: Command argument. See examples for typical values.
@@ -6481,8 +7343,8 @@ Arguments and example values:
 - `--check`: Command argument. See examples for typical values.
 - `<v>`: Command argument. See examples for typical values.
 - `--png`: Command argument. See examples for typical values.
-- `--drawing-style`: Command argument. See examples for typical values.
-- `--drawing-preset`: Command argument. See examples for typical values.
+- `--drawing-style`: JoyPro's drawings of the devices: lines (line art) or cel (shaded). Default: the GUI's setting.
+- `--drawing-preset`: The colours of JoyPro's drawings: joypro, manual, blueprint, print or custom (then --drawing-ink / --drawing-paper / --drawing-accent). Default: the GUI's setting.
 - `<p>`: Command argument. See examples for typical values.
 - `--missing`: For db list, show only missing entries.
 - `--list`: For support bundle: only print what the zip would hold; nothing is written.
@@ -6496,26 +7358,34 @@ Arguments and example values:
 - `<regex>`: Command argument. See examples for typical values.
 - `--folder`: Command argument. See examples for typical values.
 - `<dir>`: Command argument. See examples for typical values.
+- `<model>`: Command argument. See examples for typical values.
+- `--photo`: Command argument. See examples for typical values.
+- `<file|view|sha>`: Command argument. See examples for typical values.
+- `--photos`: Command argument. See examples for typical values.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
+- `--max`: Command argument. See examples for typical values.
+- `--eval`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine devices reference [list --text
 ```
 
-### `engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] | coverage | drawings | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]`
-What it does: Runs this command operation.
+### `engine cockpits [list [query] [--game G] [--era E] [--role R] [--nation N] [--category fixed-wing|helicopter|space|fiction|real] | search <text> [--limit n] | get <aircraft> [<variant>] [--json] | check [--structure] | render <aircraft> [<variant>] --png <file> [--device <d>] [--style dark|light] [--print-width <px>] [--drawing-only] | render <aircraft> [<variant>] --page all|overview|stick|throttle|<device>|panels|panel:<id>|photos|photo [--png <file>] [--pdf <file>] [--style dark|light] [--scale <s>] [--highlight <words>] [--pictures picture|drawing|none] [--photos <folder>|none] | compare <aircraft> [<variant>] [--game G] | photos [query] [--coverage] [--verified] | photos --needed [--game G] | coverage | drawings | guide <aircraft> [<variant>] [--lang <code>] [--search <words>] [--no-pictures] | guide --coverage [--game G] [--no-pictures] | pictures build [--game DCS|XPlane12|MSFS2020|IL2Game|NuclearOption|WarThunder|StarCitizen|all] [--aircraft <name>,...] [--force] [--out <folder>] | pictures status | pictures check [--game G] [--aircraft <name>,...] [--write] [--drop]]`
+What it does: The cockpit database (DB/Cockpits): stick and throttle of real and fictional aircraft per variant with their functions; list, search, get, check, render (sheets or the Cockpits page's manual pages), compare with the profile, photos, coverage, drawings, the cockpit guide and the pictures built from your installed games.
 
 Arguments and example values:
-- `--game`: Game filter value. Example: DCS or IL2Game.
+- `--game`: list / compare / guide --coverage / pictures check: only this game. pictures build: DCS, XPlane12, MSFS2020, IL2Game, NuclearOption, WarThunder, StarCitizen or all.
 - `--era`: Command argument. See examples for typical values.
 - `--role`: Command argument. See examples for typical values.
 - `--nation`: Command argument. See examples for typical values.
 - `--category`: Command argument. See examples for typical values.
-- `<text>`: Command argument. See examples for typical values.
+- `<text>`: Free text. Example: 'Throttle curves for helicopters'.
 - `--limit`: Command argument. See examples for typical values.
 - `<aircraft>`: Command argument. See examples for typical values.
 - `<variant>`: Command argument. See examples for typical values.
 - `--json`: Command argument. See examples for typical values.
+- `--structure`: check: list only what is wrong, not what is still missing.
 - `--png`: Command argument. See examples for typical values.
 - `<file>`: Command argument. See examples for typical values.
 - `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
@@ -6524,18 +7394,34 @@ Arguments and example values:
 - `--print-width`: Command argument. See examples for typical values.
 - `<px>`: Command argument. See examples for typical values.
 - `--drawing-only`: Command argument. See examples for typical values.
+- `--page`: render: the Cockpits page's manual pages: all, overview, stick, throttle, <device>, panels, panel:<id>, photos, photo.
+- `<device>`: Command argument. See examples for typical values.
+- `<id>`: Command argument. See examples for typical values.
+- `--pdf`: render --page: also write the pages as one PDF.
+- `--scale`: render --page: scale of the pages (0.1..4, default 1).
+- `<s>`: Command argument. See examples for typical values.
+- `--highlight`: render --page: mark the controls these words name.
+- `<words>`: Command argument. See examples for typical values.
+- `--pictures`: render --page: picture (default, the pictures from your games), drawing or none.
+- `--photos`: render --page: folder of the verified cockpit photos (default: the GUI's downloads), or none.
+- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--coverage`: Command argument. See examples for typical values.
+- `--verified`: Command argument. See examples for typical values.
+- `--needed`: Command argument. See examples for typical values.
+- `--lang`: Command argument. See examples for typical values.
+- `<code>`: Command argument. See examples for typical values.
+- `--search`: Command argument. See examples for typical values.
+- `--no-pictures`: Command argument. See examples for typical values.
 - `--aircraft`: MSFS export only: also write the relations limited to this aircraft (key from DB\\MSFS\\aircraft.tsv); the sim's presets apply to every aircraft.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--force`: Command argument. See examples for typical values.
 - `--out`: Global option: write result output to file path instead of terminal.
-- `<folder>`: Folder path. Example: C:\Cases\case1.
 - `--write`: Command argument. See examples for typical values.
 - `--drop`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine cockpits [list --text
 ```
 
 ### `engine binds list [filter]`
@@ -6698,40 +7584,41 @@ engine ffb show --device 'VPforce Rhino FFB Joystick {...}' --game DCS --plane F
 ```
 
 ### `engine ffb set --device <device>|* --game <game> [--plane <plane>] --param <name>=<value>...`
-What it does: Runs this command operation.
+What it does: Sets force feedback settings of a device (or * for game-wide ones) for a game or one aircraft; written on the next export of that game.
 
 Arguments and example values:
-- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `--device`: The device whose settings these are, or * for the game-wide settings.
 - `<device>`: Command argument. See examples for typical values.
-- `--game`: Game filter value. Example: DCS or IL2Game.
+- `--game`: The game the settings are for (engine ffb models lists them). Example: DCS or IL2Game.
 - `<game>`: Command argument. See examples for typical values.
-- `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
+- `--plane`: Only this aircraft (a per-aircraft scope); default: the whole game.
 - `<plane>`: Command argument. See examples for typical values.
-- `--param`: A response model parameter as name=value, repeatable. Example: --param sensitivity=22 --param offset=10.
+- `--param`: A force feedback setting as name=value, repeatable (engine ffb models lists the names and ranges). Written on the next export of the game.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
 
 Examples:
 ```powershell
-engine --help
+engine ffb set --device 'VPforce Rhino FFB Joystick {...}' --game DCS --plane F-16C_50 --param trimmer=0.8 --param shake=0.3 --text
+engine ffb set --device * --game IL2Korea --param enabled=false --text
 ```
 
 ### `engine ffb clear --device <device>|* --game <game> [--plane <plane>] [--param <name>]...`
-What it does: Runs this command operation.
+What it does: Removes a scope's force feedback settings, or single values with --param; the game file's values then stay as they are.
 
 Arguments and example values:
-- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `--device`: The device whose settings are removed, or * for the game-wide settings.
 - `<device>`: Command argument. See examples for typical values.
-- `--game`: Game filter value. Example: DCS or IL2Game.
+- `--game`: The game the settings are for. Example: DCS.
 - `<game>`: Command argument. See examples for typical values.
-- `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
+- `--plane`: Only this aircraft's settings; default: the game's.
 - `<plane>`: Command argument. See examples for typical values.
-- `--param`: A response model parameter as name=value, repeatable. Example: --param sensitivity=22 --param offset=10.
+- `--param`: Remove only this setting (repeatable); without it the whole scope is removed.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 
 Examples:
 ```powershell
-engine --help
+engine ffb clear --device * --game IL2Korea --text
 ```
 
 ### `engine ffb telemetry status   (JoyPro's telemetry force feedback: settings, game setup, process, last status)`
@@ -6767,8 +7654,8 @@ Examples:
 engine ffb telemetry config show --text
 ```
 
-### `engine ffb telemetry config set [--game DCS|IL2Game|IL2Korea|WarThunder] [--plane <aircraft>] [--effect <name>] | [--device {guid}] --param <key>=<value>...`
-What it does: Sets telemetry force feedback settings: global (enabled, device, strength, max-force = the hard force cap, invert-x/y, tick-rate, timeout), per game (enabled, port, graph, strength, url, poll-hz), per aircraft (graph, strength) or per effect (enabled, strength).
+### `engine ffb telemetry config set [--game DCS|IL2Game|IL2Korea|WarThunder] [--plane <aircraft>] [--effect <name>] | [--device {guid}] --param <key>=<value>...   (keys: global enabled, device, device-name, strength, max-force, invert-x, invert-y, tick-rate, timeout, centring-spring, centring-stiffness; --device invert-x, invert-y; --game enabled, port, graph, strength, url, poll-hz; --plane graph, strength; --effect enabled, strength)`
+What it does: Sets telemetry force feedback settings: global (enabled, device, device-name, strength, max-force = the hard force cap, invert-x/y, tick-rate, timeout, centring-spring, centring-stiffness), per device (--device: invert-x, invert-y), per game (enabled, port, graph, strength, url, poll-hz), per aircraft (graph, strength) or per effect (enabled, strength).
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6810,7 +7697,7 @@ What it does: Sets a game up to send telemetry to JoyPro: DCS gets Saved Games\D
 
 Arguments and example values:
 - `--remove`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--path`: Optional explicit path override. Use when you prefer option form over positional path.
 - `<Saved Games\DCS | IL-2 folder | startup.cfg>`: Command argument. See examples for typical values.
 
@@ -6822,29 +7709,29 @@ engine ffb telemetry setup il2 --remove --text
 ```
 
 ### `engine telemetry games   (telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible)`
-What it does: Runs this command operation.
+What it does: Telemetry recording, docs/telemetry-recording.md: the games, what JoyPro listens to, ACMI possible.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine telemetry games --text
 ```
 
 ### `engine telemetry config show`
-What it does: Runs this command operation.
+What it does: Shows the telemetry recording settings (<data>\Telemetry\telemetry-recording.json) with every default filled in.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine telemetry config show --text
 ```
 
 ### `engine telemetry config set [--game <game>] --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=<value>...`
-What it does: Runs this command operation.
+What it does: Sets telemetry recording settings: enabled, folder, max-total-mb, keep-days, sample-hz, keep-raw, session-timeout; with --game the game's own enabled switch.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6854,11 +7741,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine telemetry config set --param enabled|folder|max-total-mb|keep-days|sample-hz|keep-raw|session-timeout=<value> --text
 ```
 
-### `engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first)`
-What it does: Runs this command operation.
+### `engine telemetry sessions [--game <game>] [--folder <folder>]   (recorded sessions, newest first; alias: list)`
+What it does: Recorded sessions, newest first; alias: list.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6868,11 +7755,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine telemetry sessions --text
 ```
 
 ### `engine telemetry show <session> [--folder <folder>]   (<session> = path, file name, latest or a number of the list)`
-What it does: Runs this command operation.
+What it does: <session> = path, file name, latest or a number of the list.
 
 Arguments and example values:
 - `<session>`: Command argument. See examples for typical values.
@@ -6881,11 +7768,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine telemetry show <session> --text
 ```
 
 ### `engine telemetry export <session> --format acmi|acmi-zip|csv [--to <file or folder>] [--max-hz <n>] [--no-per-channel]   (Tacview ACMI 2.2 / CSV)`
-What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the file is backed up to <file>.jpbak first.
+What it does: Writes the profile's binds for this game. Only the flight actions JoyPro manages are changed, the game must be closed, and the game's files are backed up first (engine backups). Without a command list yet it first builds the list from the game.
 
 Arguments and example values:
 - `<session>`: Command argument. See examples for typical values.
@@ -6902,7 +7789,7 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' telemetry export --dry-
 ```
 
 ### `engine telemetry preview <session> [--channel <key>]... [--points <n>]`
-What it does: Runs this command operation.
+What it does: A few channels of a recorded session reduced to --points values each, for a timeline.
 
 Arguments and example values:
 - `<session>`: Command argument. See examples for typical values.
@@ -6913,33 +7800,34 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine telemetry preview <session> --text
 ```
 
-### `engine telemetry delete <session>...`
-What it does: Runs this command operation.
+### `engine telemetry delete <session>...   (alias: remove)`
+What it does: Deletes recorded sessions (alias: remove).
 
 Arguments and example values:
 - `<session>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine telemetry delete <session> --text
 ```
 
-### `engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings)`
-What it does: Runs this command operation.
+### `engine telemetry recover | prune   (finish sessions cut off by a crash | apply the retention settings; exit code 1 when a session could not be read, finished or deleted)`
+What it does: Finishes sessions cut off by a crash (telemetry recover) or applies the retention settings now (telemetry prune); exit code 1 when a session could not be read, finished or deleted.
 
 Arguments and example values:
 - No command-specific arguments.
 
 Examples:
 ```powershell
-engine --help
+engine telemetry recover --text
+engine telemetry prune --text
 ```
 
-### `engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; Ctrl+C ends it)`
-What it does: Runs this command operation.
+### `engine telemetry record --game <game> [--seconds <n>] [--folder <folder>] [--sample-hz <n>] [--no-raw] [--no-game-check]   (records now; it ends after --seconds, with Ctrl+C or when the game exits; --no-game-check: the game process is not watched)`
+What it does: Records now; it ends after --seconds, with Ctrl+C or when the game exits; --no-game-check: the game process is not watched.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6954,27 +7842,27 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine telemetry record --game <game> --text
 ```
 
 ### `engine usage harvest [--game <game>]... [--full] [--dry-run] [--no-steam]   (usage statistics, docs/usage-statistics.md: read what the games logged since the last time into <data>\Usage)`
-What it does: Runs this command operation.
+What it does: Reads what the games logged since the last time into the usage store (<data>\Usage); --full reads everything again, --dry-run reports only.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `<game>`: Command argument. See examples for typical values.
 - `--full`: Command argument. See examples for typical values.
-- `--dry-run`: Plan mode only: do not click, launch, or change files; report what would run.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
 - `--no-steam`: Command argument. See examples for typical values.
 - `<data>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine usage harvest --text
 ```
 
 ### `engine usage sources [--game <game>]...   (where JoyPro reads usage per game, and the logs the watcher follows live)`
-What it does: Runs this command operation.
+What it does: Where JoyPro reads usage per game, and the logs the watcher follows live.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6982,11 +7870,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine usage sources --text
 ```
 
 ### `engine usage ranking [--game <game>] [--top <n>]   (most used games and aircraft / ships / vehicles; with --profile: binds as the weak fallback)`
-What it does: Runs this command operation.
+What it does: The most used games and aircraft / ships / vehicles; with --profile the profile's binds are the weak fallback.
 
 Arguments and example values:
 - `--game`: Game filter value. Example: DCS or IL2Game.
@@ -6997,11 +7885,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine usage ranking --text
 ```
 
 ### `engine usage stats [--top <n>]   (everything for the Statistics page; with --profile: binds per device, growth, oldest unused bind)`
-What it does: Runs this command operation.
+What it does: Everything for the Statistics page; with --profile also binds per device, growth and the oldest unused bind.
 
 Arguments and example values:
 - `--top`: Command argument. See examples for typical values.
@@ -7010,11 +7898,11 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine usage stats --text
 ```
 
-### `engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class)`
-What it does: Runs this command operation.
+### `engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class; the game must be known and the aircraft / ship in the ranking, or already pinned / excluded)`
+What it does: Your choices on the ranking: pinned = the model for new aircraft of its class, excluded = never counts. The game must be known and the aircraft / ship in the ranking (or already pinned / excluded).
 
 Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
@@ -7022,22 +7910,24 @@ Arguments and example values:
 
 Examples:
 ```powershell
-engine --help
+engine usage pin DCS F-16C_50 --text
+engine usage exclude StarCitizen RSI_Polaris --text
 ```
 
-### `engine usage backups | engine usage restore <day>   (the usage store's daily backups)`
-What it does: Runs this command operation.
+### `engine usage backups | engine usage restore <day>   (the usage store's daily backups; restore takes a day engine usage backups lists)`
+What it does: Lists the usage store's daily backups (usage backups) or puts one day back (usage restore <day>, a day the list shows).
 
 Arguments and example values:
 - `<day>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
-engine --help
+engine usage backups --text
+engine usage restore 2026-10-31 --text
 ```
 
-### `engine binds tuning models`
-What it does: Lists the axis response models (DCS, IL-2 Korea, generic) and their parameters.
+### `engine binds tuning models   (the axis response models: DCS, IL-2 Great Battles, IL-2 Korea, the per-game models (Arma, Elite, BMS, FSX, IL-2 1946, Cliffs of Dover, MSFS, Project Wingman, Star Citizen, VTOL VR, WARDOGS, War Thunder, X-Plane) and the generic one, with their parameters)`
+What it does: Lists the axis response models and their parameters: DCS, IL-2 Great Battles, IL-2 Korea, the per-game models (Arma 2 / 3 / Reforger, Elite, BMS, FSX, IL-2 1946, Cliffs of Dover, MSFS, Project Wingman, Star Citizen, VTOL VR, WARDOGS, War Thunder, X-Plane) and the generic one.
 
 Arguments and example values:
 - No command-specific arguments.
@@ -7071,7 +7961,7 @@ Arguments and example values:
 - `<game>`: Command argument. See examples for typical values.
 - `<plane>`: Command argument. See examples for typical values.
 - `<family>`: Command argument. See examples for typical values.
-- `--param`: A response model parameter as name=value, repeatable. Example: --param sensitivity=22 --param offset=10.
+- `--param`: A model parameter as name=value, repeatable; game, plane and family scopes only (the base scope does not keep it). Example: --param sensitivity=22.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
 - `--inverted`: Set axis inversion flag on selected bind (true/false).
@@ -7081,8 +7971,11 @@ Arguments and example values:
 - `--saturation-y`: Set saturation Y numeric value. Example: --saturation-y 0.8.
 - `--curvature`: Set curvature list. Example: --curvature 0.1,0.2,0.3.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
-- `--curve-points`: A curve with any number of stops (x:y pairs in 0..1, x increasing), or none to drop them (X-Plane's response curve). Example: --curve-points 0:0,0.4:0.3,1:1.
+- `--curve-points`: Free curve points x:y in 0..1 (or none); game, plane and family scopes only. Example: --curve-points 0:0,0.4:0.3,1:1.
 - `<x:y,...>`: Command argument. See examples for typical values.
+
+How arguments interact:
+- --scope base keeps invert, slider, dead zone, saturation and curvature; --param and --curve-points are not stored there (the result says so): set them on a game, plane or family scope.
 
 Examples:
 ```powershell
@@ -7215,7 +8108,7 @@ engine binds detent merge --text
 engine binds detent merge --relations 'ThrottleLeft,ThrottleLeft29,ThrottleLeftNonAB' --into ThrottleLeft --apply --text
 ```
 
-### `engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game DCS|IL2Game] [--all]`
+### `engine binds unbind <device::input|input> [--device <name>] [--input <value>] [--format dcs|il2] [--game <game id>] [--all]   (--game: only relations with an action of that game, any game id (DCS, IL2Game, StarCitizen, MSFS2024, ...); --format: how the input is written, DCS (default) or IL-2 tokens)`
 What it does: Removes bind links by input token (DCS or IL2 format).
 
 Arguments and example values:
@@ -7224,8 +8117,9 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--input`: Input token. Example: --input JOY_BTN1 or --input joy0_b0.
 - `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
-- `--format`: Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export.
-- `--game`: Game filter value. Example: DCS or IL2Game.
+- `--format`: How the input is written: dcs (default, JOY_BTN1) or il2 (joy0_b0).
+- `--game`: Only relations with an action of this game; any game id (DCS, IL2Game, StarCitizen, MSFS2024, ...).
+- `<game id>`: Command argument. See examples for typical values.
 - `--all`: Apply operation to all matches (or select all relations/devices where supported).
 
 How arguments interact:
@@ -7238,26 +8132,37 @@ engine binds unbind 'VKB Gladiator NXT::JOY_BTN1' --format dcs --text
 engine binds unbind --input joy0_b0 --format il2 --all --text
 ```
 
-### `engine binds export <path.json>`
-What it does: Exports binds to JSON.
+### `engine binds export <path.json> [filter]   (every bind as JSON, a missing folder is created; a filter word writes only the matching binds; with --text the file is the readable view, which binds import cannot read)`
+What it does: Writes every bind to a JSON file (a missing folder is created); a filter word writes only the matching binds. With --text the file is the readable view, which binds import cannot read.
 
 Arguments and example values:
-- `<path.json>`: Path to JSON file. Example: C:\\JoyPro\\exports\\relations.json.
+- `<path.json>`: The file to write (an existing one is overwritten, a missing folder is created). Example: C:\JoyPro\exports\binds.json.
+- `filter`: Only the binds whose relation name contains this text are written (case-insensitive). Example: Throttle.
+- `--text`: Global option: render human-readable text instead of JSON output.
+
+How arguments interact:
+- A filter word makes a partial file: importing it with --replace removes everything the file does not have.
 
 Examples:
 ```powershell
-engine binds export 'C:\JoyPro\exports\binds.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds export 'C:\JoyPro\exports\binds.json'
 ```
 
-### `engine binds import <path.json>`
-What it does: Imports binds from JSON.
+### `engine binds import <path.json> [--replace]   (the file's binds replace all binds of the profile; a file without the binds of some relations (a filtered export) is refused unless --replace, which unbinds them; profile history undo brings them back)`
+What it does: Reads a binds JSON file (from binds export): its binds replace all binds of the profile. A file without the binds of some relations (a filtered export) is refused unless --replace, which unbinds them; profile history undo brings them back. A file that is not a binds document ends with a clear error.
 
 Arguments and example values:
-- `<path.json>`: Path to JSON file. Example: C:\\JoyPro\\exports\\relations.json.
+- `<path.json>`: The binds file of engine binds export (JSON; a --text export cannot be read). Example: C:\JoyPro\exports\binds.json.
+- `--replace`: Import also when the file lacks the binds of some relations: those relations lose their bind (the file's binds replace all of the profile's). Without it such a file is refused.
+
+How arguments interact:
+- The import replaces everything of its kind in the profile; a partial file (a filtered export, relations mass export) needs --replace. profile merge adds relations instead.
+- The GUI asks before it imports and then passes --replace.
 
 Examples:
 ```powershell
-engine binds import 'C:\JoyPro\exports\binds.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds import 'C:\JoyPro\exports\binds.json'
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds import 'C:\JoyPro\exports\throttle-binds.json' --replace
 ```
 
 ### `engine binds edit   (no args; exports temp binds JSON, opens editor, re-imports on close; uses --editor or notepad)`

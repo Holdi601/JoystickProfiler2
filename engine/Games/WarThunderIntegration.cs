@@ -531,9 +531,10 @@ namespace JoyPro.Engine.Games
 
         // A cataloged shortcut goes when
         //  - the profile puts another action on the same input (merge, merge-overwrite, clean: the conflict goes),
-        //  - merge-overwrite or clean: its action is in the profile and this is another input of it on a device JoyPro
-        //    owns in this export (a connected joystick War Thunder's device list names; the keyboard only with
-        //    --include-keyboard), so a moved action fully moves,
+        //  - merge-overwrite: its action is in the profile and this is another input of it on a device JoyPro owns in
+        //    this export (a connected joystick War Thunder's device list names; the keyboard only with
+        //    --include-keyboard), so a moved action fully moves (clean leaves the devices it does not write alone, as in
+        //    every game),
         //  - its device is released: clean releases the devices the export writes, nuke the connected devices it does
         //    not use.
         // "Only add" removes nothing (apart from the devices nuke releases); plain merge keeps the action's old inputs.
@@ -554,7 +555,7 @@ namespace JoyPro.Engine.Games
                 HashSet<string> users;
                 if (wantedBy.TryGetValue(signature, out users) && !users.Contains(child.Name))
                     return true;
-                if (request.Mode != GameExportMode.Merge && wantedForId.Count > 0 && device.Length > 0 &&
+                if (request.Mode == GameExportMode.MergeOverwrite && wantedForId.Count > 0 && device.Length > 0 && !request.Devices.IsKept(device) &&
                     (request.IncludeKeyboard || !string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase)))
                     return true;
             }
@@ -562,10 +563,11 @@ namespace JoyPro.Engine.Games
         }
 
         // War Thunder also has tanks and ships: only cataloged (aircraft) entries are ever released, keyboard ones only
-        // with --include-keyboard, and only on devices that are connected (so they can be identified).
+        // with --include-keyboard, and only on devices that are connected (so they can be identified); never on a device
+        // JoyPro never clears (the vJoy device it tunnels into, an ignored device).
         private static bool Released(string device, GameExportRequest request, HashSet<string> usedDevices)
         {
-            if (device.Length == 0)
+            if (device.Length == 0 || request.Devices.IsKept(device))
                 return false;
             if (string.Equals(device, "Keyboard", StringComparison.OrdinalIgnoreCase) && !request.IncludeKeyboard)
                 return false;

@@ -64,6 +64,40 @@ public sealed partial class MainWindowViewModel
             _ = SetDcsRemoveDeviceFilesAsync(value);
     }
 
+    // "Keep the UI layer's default binds": kept in the settings; while stripping is on, DCS's input files are made again
+    // with the new choice (restore, then strip again).
+    partial void OnDcsStripSkipUiLayerChanged(bool value)
+    {
+        if (loadingDcsDefaults)
+            return;
+        SaveUiSettings();
+        if (DcsStripDefaults)
+            _ = ReapplyDcsStripAsync();
+    }
+
+    private void SetDcsStripSkipUiLayerQuietly(bool value)
+    {
+        loadingDcsDefaults = true;
+        try
+        {
+            DcsStripSkipUiLayer = value;
+        }
+        finally
+        {
+            loadingDcsDefaults = false;
+        }
+    }
+
+    private async Task ReapplyDcsStripAsync()
+    {
+        bool keepUiLayer = DcsStripSkipUiLayer;
+        if (!await RunDcsDefaultsChangeAsync(DcsInstallArgs("strip-defaults", "restore"), T("Restoring DCS's input files...")))
+            return;
+        List<string> args = DcsInstallArgs("strip-defaults", "apply");
+        args.AddRange(["--skip-ui-layer", keepUiLayer ? "true" : "false"]);
+        await RunDcsDefaultsChangeAsync(args, T("Switching DCS's default binds off..."));
+    }
+
     private List<string> DcsInstallArgs(params string[] head)
     {
         List<string> args = ["dcs", .. head];
@@ -188,12 +222,13 @@ public sealed partial class MainWindowViewModel
     }
 
     // Runs one change; with rebuildClean the clean profiles are built again when the engine says they no longer match.
-    private async Task RunDcsDefaultsChangeAsync(List<string> args, string busyLabel, bool rebuildClean = false)
+    // True when the change went through.
+    private async Task<bool> RunDcsDefaultsChangeAsync(List<string> args, string busyLabel, bool rebuildClean = false)
     {
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: false, mutatesProfile: false, busyLabel: busyLabel, forceText: false);
         ApplyDcsDefaultsResult(result);
         if (result == null || result.ExitCode != 0 || !TryReadDcsDefaults(result.StandardOutput, out DcsDefaultsInfo info))
-            return;
+            return false;
         if (rebuildClean && info.CleanProfilesStale)
         {
             EngineCommandResult? clean = await RunEngineAsync(DcsCleanRefreshArguments(), includeProfile: false, mutatesProfile: false,
@@ -201,6 +236,7 @@ public sealed partial class MainWindowViewModel
             if (clean != null && clean.ExitCode == 0)
                 await RefreshDcsDefaultsStatusAsync();
         }
+        return true;
     }
 
     private void SetDcsDefaultsSwitches(bool strip, bool deviceFiles)
@@ -228,15 +264,9 @@ public sealed partial class MainWindowViewModel
             return;
         }
         SetDcsDefaultsSwitches(info.StripEnabled, info.RemoveDeviceLuas);
-        loadingDcsDefaults = true;
-        try
-        {
-            DcsStripSkipUiLayer = info.SkipUiLayer;
-        }
-        finally
-        {
-            loadingDcsDefaults = false;
-        }
+        // While stripping is on the engine's state has the UI layer choice; off, the user's choice in the settings stays.
+        if (info.StripEnabled)
+            SetDcsStripSkipUiLayerQuietly(info.SkipUiLayer);
         DcsDefaultsStatus = DescribeDcsDefaults(info);
         DcsDefaultsAttention = info.Errors.Count > 0
             ? string.Join(" ", info.Errors.Select(Loc.Translate))

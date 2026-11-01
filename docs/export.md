@@ -40,7 +40,10 @@ every export).
   your profile (a backup is made, Undo export brings them back). Import first?" with "Import first", "Export anyway",
   "Cancel" and "Don't ask again" (Settings > Confirmations: `games.first-export-replaces`).
 - **Not exported marks** (`engine export-marks list|dismiss`): the profile keeps "not exported: input taken in <game>
-  by <action> (<date>)" per relation and aircraft (`Pr0file.ExportSkipMarks`). The relation shows a warning chip on the
+  by <action> (<date>)" per relation and aircraft (`Pr0file.ExportSkipMarks`). A bind a game has no place for gets a
+  mark too, in every mode (`Reason` `no-free-slot`; Elite keeps two inputs per action, so a second button of the
+  profile next to a kept keyboard key does not fit): its card names what holds the places and offers "Move to another
+  button" and "Keep as is" (an export with "Update" would not free a place). The relation shows a warning chip on the
   action row and the aircraft; the Check has a "Not written to the game" section ("Not written to <game>: <button> is
   used there for <other action>") with "Export with 'Update' to replace it", "Move to another button" and "Keep as is"
   (dismiss). Each export replaces the marks of its game and aircraft with what it skipped this time, so a mark clears
@@ -63,7 +66,7 @@ aircraft.
 | **Only add** (`add`) | Never removes or changes a bind of the game, also not with "Also clear my other devices" (that is not used with add). A profile bind whose input the game already uses for another action is not written, so no input gets two actions; the export lists each one (game, aircraft, device, input, the profile's action and the game's action; `SkippedTakenInputs` in the engine's result, "Binds Not Written, Button Taken In The Game" in its text). |
 | **Update, keep the game's binds** (`merge`) | Writes the profile's binds and keeps the game's other binds. A game bind on an input the profile gives another action is removed (conflict). An action you moved in JoyPro keeps its old input too, so it then sits on both; the Check and the watcher show that. Games with one slot per action (Star Citizen joystick, Wardogs, Hell Let Loose) put the new input into that slot. |
 | **Update, my profile wins** (`merge-overwrite`) | Like merge, and every action the profile binds loses its other inputs in the game (for that aircraft), so a moved action fully moves. Only inputs of connected joysticks count, and keyboard inputs only with the keyboard option. |
-| **Replace on my devices** (`clean`) | The devices the export writes keep only the profile's binds (for the aircraft in the export). |
+| **Replace on my devices** (`clean`) | The devices the export writes keep only the profile's binds (for the aircraft in the export). Other devices keep all their binds, also binds of the profile's actions: only "my profile wins" takes an action off another device. The same in every game since 2.6.0 (X4, Arma, Arma Reforger, Battlefield, G.Rebels, War Thunder, Falcon BMS, FSX/Prepar3D, MSFS, X-Plane and VTOL VR used to take them off on clean too). |
 | **Also clear my other devices** (nuke) | Connected devices the export does not write lose their binds (for the aircraft in the export). |
 
 Never touched, in any mode: devices that are not connected, devices the import cannot read or skips (for example two

@@ -47,6 +47,10 @@ public sealed partial class MainWindowViewModel
 
     public ObservableCollection<FfbTelemetryGameItem> FfbTelemetryGames { get; } = [];
 
+    // The page's game list: FfbTelemetryGames without the hidden games (Settings > Games is the one place to show them
+    // again). A hidden game is not looked for either.
+    public ObservableCollection<FfbTelemetryGameItem> VisibleFfbTelemetryGames { get; } = [];
+
     public ObservableCollection<FfbTelemetryDeviceOption> FfbTelemetryDevices { get; } = [];
 
     // Graphs a game can use: built-in + the files of the Graphs folder.
@@ -185,6 +189,22 @@ public sealed partial class MainWindowViewModel
     private string ffbKeyOptionsGame = string.Empty;
     private IReadOnlyList<TelemetryDescriptor> ffbDescriptors = AircraftTelemetry.Descriptors;
 
+    // The games shown on the page: every telemetry game but the hidden ones; a hidden selected game gives way to the first one.
+    internal void RebuildVisibleFfbTelemetryGames()
+    {
+        List<FfbTelemetryGameItem> visible = FfbTelemetryGames.Where(g => !IsGameHidden(g.Id)).ToList();
+        if (!visible.SequenceEqual(VisibleFfbTelemetryGames))
+        {
+            FfbTelemetryGameItem? previous = SelectedFfbTelemetryGame;
+            VisibleFfbTelemetryGames.Clear();
+            foreach (FfbTelemetryGameItem game in visible)
+                VisibleFfbTelemetryGames.Add(game);
+            if (previous != null && !VisibleFfbTelemetryGames.Contains(previous))
+                SelectedFfbTelemetryGame = VisibleFfbTelemetryGames.FirstOrDefault();
+        }
+        SelectedFfbTelemetryGame ??= VisibleFfbTelemetryGames.FirstOrDefault();
+    }
+
     // Called by the constructor: the games are known without the engine; with persisted settings (the real app, not the
     // tests) the config file is read directly so the process manager runs without the page ever being opened.
     private void InitializeFfbTelemetry(bool readConfigFile)
@@ -197,7 +217,7 @@ public sealed partial class MainWindowViewModel
             if (!FfbTelemetryGames.Any(g => string.Equals(g.Id, game.Id, StringComparison.OrdinalIgnoreCase)))
                 FfbTelemetryGames.Add(CreateFfbTelemetryGame(game.Id, game.Title, game.ProcessNames));
         }
-        SelectedFfbTelemetryGame ??= FfbTelemetryGames.FirstOrDefault();
+        RebuildVisibleFfbTelemetryGames();
         RebuildFfbGraphOptions();
         if (readConfigFile)
         {
@@ -408,6 +428,7 @@ public sealed partial class MainWindowViewModel
                         names.AddRange(processNames.EnumerateArray().Where(n => n.ValueKind == JsonValueKind.String).Select(n => n.GetString() ?? string.Empty).Where(n => n.Length > 0));
                     item = CreateFfbTelemetryGame(id, FfbJsonString(game, "Title") is { Length: > 0 } title ? title : id, names);
                     FfbTelemetryGames.Add(item);
+                    RebuildVisibleFfbTelemetryGames();
                 }
                 item.Running = FfbJsonBool(game, "Running") ?? item.Running;
                 item.SetupNeeded = FfbJsonBool(game, "SetupNeeded") ?? item.SetupNeeded;
@@ -1041,7 +1062,7 @@ public sealed partial class MainWindowViewModel
             return;
         foreach (FfbTelemetryGameItem game in FfbTelemetryGames)
         {
-            if (!game.Enabled || game.ProcessNames.Count == 0)
+            if (!game.Enabled || game.ProcessNames.Count == 0 || IsGameHidden(game.Id))
                 continue;
             int? pid = FfbFindGameProcess(game.ProcessNames);
             game.Running = pid != null;
@@ -1256,7 +1277,7 @@ public sealed partial class MainWindowViewModel
             FfbTelemetryStatusText = ffbTelemetryLastFault;
             return;
         }
-        List<string> names = FfbTelemetryGames.Where(g => g.Enabled).SelectMany(g => g.ProcessNames).Select(n => n + ".exe").ToList();
+        List<string> names = FfbTelemetryGames.Where(g => g.Enabled && !IsGameHidden(g.Id)).SelectMany(g => g.ProcessNames).Select(n => n + ".exe").ToList();
         FfbTelemetryStatusText = names.Count == 0 ? T("idle - every game is switched off") : T("idle - waiting for {0}", string.Join(" / ", names));
     }
 

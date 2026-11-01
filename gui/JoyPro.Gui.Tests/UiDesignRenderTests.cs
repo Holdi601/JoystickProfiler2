@@ -105,7 +105,8 @@ public sealed class UiDesignRenderTests
         await vm.RefreshBindsCommand.ExecuteAsync(null);
         await vm.RefreshModifiersCommand.ExecuteAsync(null);
         await vm.StartGameConfigWatcherAsync();
-        vm.GameCards.Single(c => c.GameId == "WarThunder").Result = "Imported 14:02";
+        if (vm.GameCards.FirstOrDefault(c => c.GameId == "WarThunder") is { } warThunder)
+            warThunder.Result = "Imported 14:02";
 
         // Relations: one relation open with its commands.
         vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Gear Up/Down");
@@ -141,6 +142,7 @@ public sealed class UiDesignRenderTests
             list.AutoScrollToSelectedItem = false;
             list.ItemsPanel = new Avalonia.Controls.Templates.FuncTemplate<Panel?>(() => new StackPanel());
         }
+        RenderPanels.UnvirtualizeItemsControls(main);
         for (int pass = 0; pass < 6; pass++)
         {
             main.Measure(size);
@@ -175,9 +177,12 @@ public sealed class UiDesignRenderTests
         private readonly AxisTuningFakeEngine tuning = new();
 
         public bool Empty { get; init; }
-
+        // "StarCitizen", "WarThunder", "IL2Korea": that game is hidden (Settings > Games), for the hidden-games renders and tests.
         // "StarCitizen": that game is hidden (Settings > Games), for the renders of the hidden-games line.
         public string HiddenGame { get; set; } = string.Empty;
+
+        // A device of the profile that is not connected now (its card says "Not connected now").
+        public string OfflineDevice { get; init; } = string.Empty;
 
         public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
         {
@@ -213,6 +218,11 @@ public sealed class UiDesignRenderTests
 
         private string Output(IReadOnlyList<string> args)
         {
+            // Settings > Force feedback settings of the games: the engine's models, IL-2 Korea's force stored in the profile.
+            if (AxisTuningTests.Seq(args, "ffb", "models"))
+                return FfbFakeEngine.ModelsJson;
+            if (AxisTuningTests.Seq(args, "ffb", "show"))
+                return "{\"Entries\":{\"*|game:IL2Korea\":\"ffForce=80\"},\"Game\":\"\",\"Plane\":null,\"Resolved\":null}";
             if (AxisTuningTests.Seq(args, "relations", "list"))
             {
                 if (Empty)
@@ -253,12 +263,28 @@ public sealed class UiDesignRenderTests
                     "\"AllReformers\":[" + string.Join(",", r.Mods.Select(m => "\"" + m + "\\u00A7" + (m == "Shift" ? Stick : Throttle) + "\\u00A7" + (m == "Shift" ? "JOY_BTN4" : "JOY_BTN3") + "\\u00A7False\"")) + "],\"DoubleTap\":false}");
                 return "{\"Binds\":[" + string.Join(",", binds) + "]}";
             }
+            if (AxisTuningTests.Seq(args, "profile", "games") && !Empty)
+            {
+                // The Export page's tiles: the profile's games with their relations, DCS with its aircraft.
+                (string Id, string Name, string Exporter)[] games = [("DCS", "DCS World", "dcs"), ("IL2Korea", "IL-2 Sturmovik: Korea", "registry"), ("WarThunder", "War Thunder", "registry")];
+                IEnumerable<string> items = games.Select(g =>
+                {
+                    var rows = Profile.Where(r => r.Nodes.Any(n => n.Game == g.Id)).ToList();
+                    string planes = g.Id != "DCS"
+                        ? string.Empty
+                        : ",\"Planes\":[" + string.Join(",", rows.SelectMany(r => r.Nodes.Where(n => n.Game == "DCS").SelectMany(n => n.Planes.Split(',')).Select(p => (Plane: p, r.Device)))
+                            .GroupBy(x => x.Plane).Select(p => "{\"Plane\":\"" + p.Key + "\",\"Relations\":" + p.Count() + ",\"Bound\":" + p.Count(x => x.Device.Length > 0) + "}")) + "]";
+                    return "{\"GameId\":\"" + g.Id + "\",\"Name\":\"" + g.Name + "\",\"Exporter\":\"" + g.Exporter + "\",\"Relations\":" + rows.Count + ",\"Bound\":" +
+                           rows.Count(r => r.Device.Length > 0) + ",\"Installed\":true" + planes + "}";
+                });
+                return "{\"Games\":[" + string.Join(",", items) + "]}";
+            }
             if (AxisTuningTests.Seq(args, "games", "installs") || AxisTuningTests.Seq(args, "games", "install"))
             {
                 return "{\"Games\":[" +
                        "{\"GameId\":\"DCS\",\"Name\":\"DCS World\",\"Installed\":true,\"InstallPath\":\"D:\\\\DCS World\",\"Source\":\"test\",\"ConfigPaths\":[]}," +
-                       "{\"GameId\":\"IL2Korea\",\"Name\":\"IL-2 Sturmovik: Korea\",\"Installed\":true,\"InstallPath\":\"D:\\\\IL-2 Korea\",\"Source\":\"test\",\"ConfigPaths\":[]}," +
-                       "{\"GameId\":\"WarThunder\",\"Name\":\"War Thunder\",\"Installed\":true,\"InstallPath\":\"D:\\\\War Thunder\",\"Source\":\"test\",\"ConfigPaths\":[]}," +
+                       "{\"GameId\":\"IL2Korea\",\"Name\":\"IL-2 Sturmovik: Korea\",\"Installed\":true,\"InstallPath\":\"D:\\\\IL-2 Korea\",\"Source\":\"test\",\"ConfigPaths\":[]" + (HiddenGame == "IL2Korea" ? ",\"Disabled\":true" : string.Empty) + "}," +
+                       "{\"GameId\":\"WarThunder\",\"Name\":\"War Thunder\",\"Installed\":true,\"InstallPath\":\"D:\\\\War Thunder\",\"Source\":\"test\",\"ConfigPaths\":[]" + (HiddenGame == "WarThunder" ? ",\"Disabled\":true" : string.Empty) + "}," +
                        "{\"GameId\":\"StarCitizen\",\"Name\":\"Star Citizen\",\"Installed\":false,\"InstallPath\":\"\",\"Source\":\"\",\"ConfigPaths\":[]" +
                        (HiddenGame == "StarCitizen" ? ",\"Disabled\":true" : string.Empty) + "}" +
                        "]}";
@@ -277,7 +303,7 @@ public sealed class UiDesignRenderTests
                     "  - VPforce Rhino FFB Joystick {00000000-0000-0000-0000-0000000000a4}", "  - WINWING F18 TAKEOFF PANEL {00000000-0000-0000-0000-0000000000a5}",
                     "  - vJoy Device {00000000-0000-0000-0000-0000000000a6}", "  - vJoy Driver", "  - Wooting Two HE (ARM) {00000000-0000-0000-0000-0000000000b1}",
                     "  - Wooting Two HE (ARM) {00000000-0000-0000-0000-0000000000b2}", "  - Wooting Two HE (ARM) {00000000-0000-0000-0000-0000000000b3}",
-                    "Profile:", "  - " + Stick, "  - " + Throttle);
+                    "Profile:", "  - " + Stick, "  - " + Throttle, OfflineDevice.Length > 0 ? "  - " + OfflineDevice : string.Empty);
             }
             if (AxisTuningTests.Seq(args, "hud", "devices"))
             {

@@ -231,11 +231,15 @@ namespace JoyPro.Engine.Games
                 return result;
             List<Ac7Section> deviceSections = ini.Sections.Where(s => s.Name.StartsWith(SectionPrefix, StringComparison.OrdinalIgnoreCase)).ToList();
             // The sections JoyPro may release values in: those of connected devices (the import reads them). A section of a
-            // device that is not connected is never touched.
+            // device that is not connected is never touched, nor one a device JoyPro never clears shares (one section per
+            // model: the vJoy device JoyPro tunnels into, an ignored device).
             HashSet<string> connected = new HashSet<string>(deviceSections.Where(s =>
             {
                 Guid product;
-                return Guid.TryParse(s.Name.Substring(SectionPrefix.Length), out product) && request.Devices.Devices.Any(d => d.ProductGuid == product && !string.IsNullOrEmpty(d.JoyProName));
+                if (!Guid.TryParse(s.Name.Substring(SectionPrefix.Length), out product))
+                    return false;
+                List<GameDevice> owners = request.Devices.Devices.Where(d => d.ProductGuid == product && !string.IsNullOrEmpty(d.JoyProName)).ToList();
+                return owners.Count > 0 && !owners.Any(d => d.Kept);
             }).Select(s => s.Name), StringComparer.OrdinalIgnoreCase);
 
             // The binds per section (one section per device model).

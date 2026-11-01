@@ -113,6 +113,24 @@ namespace JoyPro.Engine
             }
         }
 
+        // A write the run left out because the file already had its content: the run's backup set exists all the same
+        // (with no file for it), so "backups restore latest" still finds this run, the one the user just did.
+        public static void KeepRunSet()
+        {
+            if (disabled)
+                return;
+            try
+            {
+                OpenSet set = Open(string.IsNullOrWhiteSpace(currentGame) ? "Other" : currentGame);
+                if (!set.ManifestWritten)
+                    WriteManifest(set);
+            }
+            catch (Exception ex)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Backups", "Could not create the backup set of this run", ex);
+            }
+        }
+
         // Before JoyPro changes values of a registry key (Unity PlayerPrefs games such as Nuclear Option): the values
         // whose names start with ownedPrefix (the ones JoyPro may change or create) go into the run's backup set as a
         // JSON snapshot (registry\NNNN_<key>.json), once per key and run. "engine backups restore" writes them back and

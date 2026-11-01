@@ -99,6 +99,9 @@ namespace JoyPro.DeviceReference
         // The cockpit guide of the variant (CockpitGuideTree.Build): the game panels' titles and the callouts' names and
         // one-line explanations come from it; null = the game's own names.
         public CockpitGuideTree Guide;
+        // The local copy of a verified cockpit photo (docs/cockpits.md "Photos of cockpits no game has"), or null when it
+        // is not on this PC; null = no photo pages.
+        public Func<CockpitPhoto, string> PhotoFile;
     }
 
     public static class ManualLayout
@@ -292,6 +295,16 @@ namespace JoyPro.DeviceReference
             o = o ?? new ManualPageOptions();
             List<CockpitPictureView> game = GameViews(v, o);
             pages.Add(game.Count > 0 ? GameOverview(catalog, v, o, game) : Overview(catalog, v, o));
+            // Photos downloaded to this PC, for a cockpit no game has good pictures of: one page each, JoyPro's labels on top.
+            if (!GoodPictures(o) && o.PhotoFile != null)
+            {
+                foreach (CockpitPhoto photo in CockpitPhotos.Of(v))
+                {
+                    string file = o.PhotoFile(photo);
+                    if (!string.IsNullOrEmpty(file) && File.Exists(file))
+                        pages.Add(PhotoPage(v, photo, file, o));
+                }
+            }
             foreach (string device in CockpitCatalog.DevicesOf(v).Where(d => d != "panel"))
             {
                 ManualPage page = Device(catalog, v, device, o);
@@ -339,6 +352,18 @@ namespace JoyPro.DeviceReference
             if (o.Pictures == null)
                 return new List<CockpitPictureView>();
             return o.Pictures.ViewsOf(o.Pictures.SeatOf(v));
+        }
+
+        // The render that stands where a photo of the cockpit would be (the Cockpits page's photos, for a craft only a
+        // game has or one without a photo file): the seat's overview, else its first grip picture; only a picture the
+        // quality gate keeps (45 or more, like GameArt) and that is on this PC. Null = none.
+        public static CockpitPictureView RenderInsteadOfPhoto(CockpitPictureSet set, CockpitVariant v)
+        {
+            if (set == null || v == null)
+                return null;
+            List<CockpitPictureView> views = set.ViewsOf(set.SeatOf(v));
+            Func<CockpitPictureView, bool> usable = x => (x.Quality < 0 || x.Quality >= 45) && !string.IsNullOrEmpty(x.Image) && File.Exists(x.Image);
+            return views.FirstOrDefault(x => x.Kind == "overview" && usable(x)) ?? views.FirstOrDefault(x => x.Kind == "device" && usable(x));
         }
 
         // A game view as the page's picture: the render, or JoyPro's line drawing of it (the drawing mode, or no render).
@@ -488,6 +513,211 @@ namespace JoyPro.DeviceReference
             page.Height = y + ManualLayout.Margin;
             return page;
         }
+
+        // ------------------------------------------------------------------ a verified photo with JoyPro's labels
+
+        // The id of a photo's page: "photo:<first 12 of its SHA-256>".
+        public static string PhotoPageId(CockpitPhoto photo)
+        {
+            return "photo:" + (photo.Sha256.Length >= 12 ? photo.Sha256.Substring(0, 12) : photo.Sha256);
+        }
+
+        public static string PhotoTitle(CockpitPhoto photo)
+        {
+            string title = photo.Labels != null && photo.Labels.Title.Length > 0 ? photo.Labels.Title
+                : photo.Caption.Length > 0 ? photo.Caption : photo.View.Length > 0 ? char.ToUpperInvariant(photo.View[0]) + photo.View.Substring(1).Replace('-', ' ') : "Cockpit";
+            return "Photo: " + title;
+        }
+
+        // The photo as large as the page allows, JoyPro's numbered labels on top of it (a box near the point it marks, a
+        // line to the point), the numbered list below, the credit and licence of the photo. Nothing is drawn into the
+        // photo file itself.
+        public static ManualPage PhotoPage(CockpitVariant v, CockpitPhoto photo, string file, ManualPageOptions o)
+        {
+            ManualPalette pal = ManualPalette.Of(o);
+            ManualPage page = NewPage("photo", PhotoPageId(photo), PhotoTitle(photo), v, pal);
+            double y = 104;
+            double width = ManualLayout.PageWidth - 2 * ManualLayout.Margin;
+            if (photo.Caption.Length > 0 && (photo.Labels == null || !string.Equals(photo.Labels.Title, photo.Caption, StringComparison.OrdinalIgnoreCase)))
+            {
+                ManualPageItem t = Text(ManualLayout.Margin, y, width, photo.Caption, BodySize, false, pal.Ink);
+                page.Items.Add(t);
+                y += t.H + 10;
+            }
+            int[] size = CockpitPhotos.ImageSize(file);
+            double pw = size[0] > 0 ? size[0] : photo.Width > 0 ? photo.Width : 4;
+            double ph = size[1] > 0 ? size[1] : photo.Height > 0 ? photo.Height : 3;
+            double scale = Math.Min(width / pw, 760 / ph);
+            double w = pw * scale, h = ph * scale, x = ManualLayout.Margin + (width - w) / 2;
+            page.Items.Add(new ManualPageItem { Kind = "drawing", X = x, Y = y, W = w, H = h, Art = new CockpitArt { Picture = file, PictureWidth = pw, PictureHeight = ph } });
+            List<CockpitPhotoLabel> labels = photo.Labels == null ? new List<CockpitPhotoLabel>() : photo.Labels.Labels.Where(l => l.X >= 0 && l.X <= 1 && l.Y >= 0 && l.Y <= 1).OrderBy(l => l.N).ToList();
+            string key = photo.Sha256.Length >= 12 ? photo.Sha256.Substring(0, 12) : photo.Sha256;
+            PlaceLabels(page, labels, x, y, w, h, pal, o, v, key);
+            y += h + 16;
+            foreach (CockpitPhotoLabel l in labels)
+            {
+                string text = l.Note;
+                string link = CockpitPhotos.LinkOf(v, l);
+                if (text.Length == 0 && link.StartsWith("panel:", StringComparison.Ordinal))
+                {
+                    CockpitPanel panel = v.Panel(l.Panel);
+                    text = panel == null ? string.Empty : FirstSentence(panel.Text);
+                }
+                y = NumberedLine(page, y, l.N, l.Text, text, string.Empty, pal, o, link, "photo:" + key + ":" + l.N.ToString(CultureInfo.InvariantCulture));
+            }
+            List<string> credit = new List<string>();
+            if (photo.Credit.Length > 0) credit.Add(photo.Credit);
+            if (photo.License.Length > 0) credit.Add(LicenceName(photo.License));
+            string site = SiteName(photo.Page.Length > 0 ? photo.Page : photo.Url);
+            if (site.Length > 0) credit.Add(site);
+            string attribution = "Photo: " + string.Join(", ", credit) + (photo.Page.Length > 0 ? " (" + photo.Page + ")" : string.Empty) +
+                                 ". Downloaded to this PC from its original address; the numbered labels are JoyPro's, drawn on top of the photo.";
+            ManualPageItem src = Text(ManualLayout.Margin, y + 8, width, attribution, 11.5, false, pal.Muted);
+            src.Tag = "photo-credit";
+            page.Items.Add(src);
+            y += src.H + 8;
+            page.SearchText = string.Join(" ", page.Items.SelectMany(i => i.Lines));
+            page.Height = y + ManualLayout.Margin;
+            return page;
+        }
+
+        private static string FirstSentence(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return string.Empty;
+            int end = text.IndexOf(". ", StringComparison.Ordinal);
+            // A one-word first sentence ("Systems.") says little: the next one joins it.
+            if (end > 0 && end < 25)
+            {
+                int next = text.IndexOf(". ", end + 2, StringComparison.Ordinal);
+                end = next > 0 ? next : -1;
+            }
+            return end > 0 ? text.Substring(0, end + 1) : text.Trim();
+        }
+
+        // "cc-by-sa-4.0" -> "CC BY-SA 4.0", "public-domain" -> "public domain".
+        public static string LicenceName(string licence)
+        {
+            string l = (licence ?? string.Empty).Trim();
+            if (l.Length == 0)
+                return string.Empty;
+            string lower = l.ToLowerInvariant();
+            if (lower == "public-domain" || lower == "pd")
+                return "public domain";
+            if (lower == "cc0")
+                return "CC0";
+            if (lower.StartsWith("cc-", StringComparison.Ordinal))
+            {
+                string[] parts = lower.Substring(3).Split('-');
+                string version = parts.Length > 1 && parts[parts.Length - 1].Length > 0 && char.IsDigit(parts[parts.Length - 1][0]) ? parts[parts.Length - 1] : string.Empty;
+                string kind = string.Join("-", parts.Take(version.Length > 0 ? parts.Length - 1 : parts.Length)).ToUpperInvariant();
+                return "CC " + kind + (version.Length > 0 ? " " + version : string.Empty);
+            }
+            if (lower.StartsWith("gfdl", StringComparison.Ordinal))
+                return "GFDL" + (l.Length > 4 ? " " + l.Substring(4).Trim('-', ' ') : string.Empty);
+            return l;
+        }
+
+        private static string SiteName(string url)
+        {
+            Uri uri;
+            if (!Uri.TryCreate(url ?? string.Empty, UriKind.Absolute, out uri))
+                return string.Empty;
+            string host = uri.Host.ToLowerInvariant();
+            if (host.EndsWith("wikimedia.org", StringComparison.Ordinal) || host.EndsWith("wikipedia.org", StringComparison.Ordinal))
+                return "Wikimedia Commons";
+            return host.StartsWith("www.", StringComparison.Ordinal) ? host.Substring(4) : host;
+        }
+
+        // The labels on the photo: each box near its point (the first of a ring of places around it that stays inside the
+        // photo and clear of the other boxes and points), a line from the box to the point and a dot on it.
+        private static void PlaceLabels(ManualPage page, List<CockpitPhotoLabel> labels, double x, double y, double w, double h, ManualPalette pal,
+            ManualPageOptions o, CockpitVariant v, string key)
+        {
+            // Bigger than the page's body text: the page is often drawn at two thirds of its size.
+            const double size = 17, pad = 7, gap = 6;
+            List<double[]> boxes = new List<double[]>();
+            List<double[]> points = labels.Select(l => new[] { x + l.X * w, y + l.Y * h }).ToList();
+            List<ManualPageItem> lines = new List<ManualPageItem>(), dots = new List<ManualPageItem>(), cells = new List<ManualPageItem>();
+            double[][] directions =
+            {
+                new[] { -1.0, -1.0 }, new[] { 1.0, -1.0 }, new[] { -1.0, 1.0 }, new[] { 1.0, 1.0 },
+                new[] { 0.0, -1.0 }, new[] { 0.0, 1.0 }, new[] { -1.0, 0.0 }, new[] { 1.0, 0.0 }
+            };
+            for (int i = 0; i < labels.Count; i++)
+            {
+                CockpitPhotoLabel l = labels[i];
+                double px = points[i][0], py = points[i][1];
+                string text = l.N.ToString(CultureInfo.InvariantCulture) + " " + l.Text;
+                List<string> textLines = ManualLayout.Wrap(text, Math.Min(300, w * 0.45), size, true, 2);
+                double bw = textLines.Max(t => ManualLayout.TextWidth(t, size, true)) + 2 * pad + 4;
+                double bh = ManualLayout.TextHeight(textLines.Count, size) + 2 * pad - 4;
+                double[] best = null;
+                double bestCost = double.MaxValue;
+                foreach (double reach in new[] { 34.0, 60.0, 96.0, 140.0 })
+                {
+                    foreach (double[] d in directions)
+                    {
+                        double bx = d[0] < 0 ? px - reach - bw : d[0] > 0 ? px + reach : px - bw / 2;
+                        double by = d[1] < 0 ? py - reach * 0.7 - bh : d[1] > 0 ? py + reach * 0.7 : py - bh / 2;
+                        double[] box = { bx, by, bw, bh };
+                        // Outside the photo: not wanted; over another box or another label's point: worse; far: a little worse.
+                        double cost = reach + Outside(box, x, y, w, h) * 40 + boxes.Sum(b => Overlap(box, b, gap)) * 0.5 +
+                                      points.Where((p, k) => k != i && Inside(p, box, gap)).Count() * 400;
+                        if (cost < bestCost)
+                        {
+                            bestCost = cost;
+                            best = box;
+                        }
+                    }
+                    if (bestCost <= reach)
+                        break;
+                }
+                double[] r = best ?? new[] { px + 34, py - bh, bw, bh };
+                // Kept within the photo.
+                r[0] = Math.Max(x + 2, Math.Min(x + w - r[2] - 2, r[0]));
+                r[1] = Math.Max(y + 2, Math.Min(y + h - r[3] - 2, r[1]));
+                boxes.Add(r);
+                double ex = Math.Max(r[0], Math.Min(r[0] + r[2], px)), ey = Math.Max(r[1], Math.Min(r[1] + r[3], py));
+                bool hit = Matches(l.Text + " " + l.Note, o.Highlight);
+                string tag = "photo:" + key + ":" + l.N.ToString(CultureInfo.InvariantCulture);
+                string link = CockpitPhotos.LinkOf(v, l);
+                // A dark outline under the orange line keeps it visible on light and dark parts of the photo.
+                lines.Add(new ManualPageItem { Kind = "line", Points = new[] { ex, ey, px, py }, Stroke = pal.Header, StrokeWidth = 4.4, Tag = tag, Link = link });
+                lines.Add(new ManualPageItem { Kind = "line", Points = new[] { ex, ey, px, py }, Stroke = pal.Accent, StrokeWidth = 2.2, Tag = tag, Link = link });
+                dots.Add(new ManualPageItem { Kind = "dot", X = px - 6.5, Y = py - 6.5, W = 13, H = 13, Fill = pal.Header, Tag = tag });
+                dots.Add(new ManualPageItem { Kind = "dot", X = px - 4.5, Y = py - 4.5, W = 9, H = 9, Fill = pal.Accent, Tag = tag });
+                cells.Add(new ManualPageItem
+                {
+                    Kind = "cell", X = r[0], Y = r[1], W = r[2], H = r[3], Fill = hit ? pal.Mark : pal.Header, Stroke = pal.Accent, StrokeWidth = 1.8,
+                    Lines = textLines, Size = size, Bold = true, Color = hit ? "#18212D" : pal.HeaderInk, Align = "left", Tag = tag, Link = link, Highlight = hit
+                });
+            }
+            // Lines first, then the dots, then the boxes: no line crosses a box's text.
+            page.Items.AddRange(lines);
+            page.Items.AddRange(dots);
+            page.Items.AddRange(cells);
+        }
+
+        private static double Outside(double[] b, double x, double y, double w, double h)
+        {
+            double dx = Math.Max(0, x - b[0]) + Math.Max(0, b[0] + b[2] - (x + w));
+            double dy = Math.Max(0, y - b[1]) + Math.Max(0, b[1] + b[3] - (y + h));
+            return dx + dy;
+        }
+
+        private static double Overlap(double[] a, double[] b, double gap)
+        {
+            double ox = Math.Min(a[0] + a[2] + gap, b[0] + b[2]) - Math.Max(a[0] - gap, b[0]);
+            double oy = Math.Min(a[1] + a[3] + gap, b[1] + b[3]) - Math.Max(a[1] - gap, b[1]);
+            return ox > 0 && oy > 0 ? ox * oy : 0;
+        }
+
+        private static bool Inside(double[] p, double[] b, double gap)
+        {
+            return p[0] >= b[0] - gap && p[0] <= b[0] + b[2] + gap && p[1] >= b[1] - gap && p[1] <= b[1] + b[3] + gap;
+        }
+
 
         // A command's readable name: a game's command path (X-Plane: "laminar/B738/switch/gen2_up",
         // "sim/electrical/battery_1_on") as words with its system ("Gen 2 up", "Battery 1 on (electrical)"); a name that

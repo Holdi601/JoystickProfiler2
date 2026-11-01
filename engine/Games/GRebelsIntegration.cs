@@ -119,6 +119,23 @@ namespace JoyPro.Engine.Games
             return saved == null ? -1 : saved.Channel;
         }
 
+        // The devices of a channel a bind is read for: the only one, or (a shared channel) each one that has the input;
+        // a device whose capabilities are unknown counts as having it, and the first device stands in when none has it.
+        private static List<GameDevice> DevicesWith(List<GameDevice> onChannel, Func<GameDevice, bool> hasInput)
+        {
+            if (onChannel.Count < 2)
+                return onChannel;
+            List<GameDevice> with = onChannel.Where(d => !d.CapabilitiesKnown || hasInput(d)).ToList();
+            return with.Count > 0 ? with : onChannel.Take(1).ToList();
+        }
+
+        private static string SharedChannelNote(int channel, IEnumerable<GameDevice> devices)
+        {
+            return "Channel " + channel.ToString(CultureInfo.InvariantCulture) + " is shared by " + string.Join(", ", devices.Select(d => "'" + d.JoyProName + "'")) +
+                   " (the game feeds all of them into JST" + channel.ToString(CultureInfo.InvariantCulture) + "); its binds are read for each device that has the input. " +
+                   "Give each device its own channel in OPTIONS > INPUT > DEVICES.";
+        }
+
         private static string AxisKey(int channel, int axisIndex)
         {
             return "RawInput_Controller" + channel.ToString(CultureInfo.InvariantCulture) + "_Axis" + AxisNames[axisIndex];
@@ -134,7 +151,10 @@ namespace JoyPro.Engine.Games
                 return result;
             Dictionary<int, GameAction> roles = RoleActions(catalog);
             Dictionary<string, GameAction> buttons = ButtonActions(catalog);
-            Dictionary<int, GameDevice> channels = new Dictionary<int, GameDevice>();
+            // The game lets several devices share a channel (live run 2026-11-01: the user's stick and vJoy both on 0);
+            // every one of them drives the channel's binds, so a bind is read for each connected device of the channel
+            // that has the input (by its capabilities; the first device when none of them has it).
+            Dictionary<int, List<GameDevice>> channels = new Dictionary<int, List<GameDevice>>();
             foreach (GRebelsSaveOptions.Device saved in options.Devices.Where(d => d.Enabled))
             {
                 GameDevice device = DeviceOfPath(devices, saved.Path);
@@ -144,19 +164,24 @@ namespace JoyPro.Engine.Games
                     continue;
                 }
                 if (!channels.ContainsKey(saved.Channel))
-                    channels[saved.Channel] = device;
+                    channels[saved.Channel] = new List<GameDevice>();
+                if (!channels[saved.Channel].Contains(device))
+                    channels[saved.Channel].Add(device);
             }
+            foreach (KeyValuePair<int, List<GameDevice>> shared in channels.Where(c => c.Value.Count > 1).OrderBy(c => c.Key))
+                result.Warnings.Add(SharedChannelNote(shared.Key, shared.Value));
             foreach (GRebelsSaveOptions.Axis axis in options.Axes)
             {
                 Match match = Regex.Match(axis.Key, @"^RawInput_Controller(\d+)_Axis(\w+)$");
                 GameAction action;
-                GameDevice device;
-                if (!match.Success || !roles.TryGetValue(axis.Role, out action) || !channels.TryGetValue(int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture), out device))
+                List<GameDevice> onChannel;
+                if (!match.Success || !roles.TryGetValue(axis.Role, out action) || !channels.TryGetValue(int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture), out onChannel))
                     continue;
                 int index = Array.FindIndex(AxisNames, n => string.Equals(n, match.Groups[2].Value, StringComparison.OrdinalIgnoreCase));
                 if (index < 0)
                     continue;
-                result.Bindings.Add(new GameInputBinding { ActionId = action.Id, Device = device.JoyProName, Input = GameInputTokens.AxisToken(index), IsAxis = true, Inverted = axis.Inverted });
+                foreach (GameDevice device in DevicesWith(onChannel, d => d.AxisSlots.Contains(index)))
+                    result.Bindings.Add(new GameInputBinding { ActionId = action.Id, Device = device.JoyProName, Input = GameInputTokens.AxisToken(index), IsAxis = true, Inverted = axis.Inverted });
             }
             string buttonsPath = ButtonsPath(configPath);
             GvasKeyMappings mappings;
@@ -168,14 +193,15 @@ namespace JoyPro.Engine.Games
                     Match name = Regex.Match(mapping.MappingName, @"^(.+)JST(\d+)$");
                     Match key = Regex.Match(mapping.CurrentKey, @"^RawInput_Controller(\d+)_Button(\d+)$");
                     GameAction action;
-                    GameDevice device;
+                    List<GameDevice> onChannel;
                     if (!name.Success || !key.Success || name.Groups[2].Value != key.Groups[1].Value || !buttons.TryGetValue(name.Groups[1].Value, out action) ||
-                        !channels.TryGetValue(int.Parse(key.Groups[1].Value, CultureInfo.InvariantCulture), out device))
+                        !channels.TryGetValue(int.Parse(key.Groups[1].Value, CultureInfo.InvariantCulture), out onChannel))
                         continue;
                     int button = int.Parse(key.Groups[2].Value, CultureInfo.InvariantCulture);
                     if (button < 1)
                         continue;
-                    result.Bindings.Add(new GameInputBinding { ActionId = action.Id, Device = device.JoyProName, Input = GameInputTokens.ButtonToken(button - 1), IsAxis = false });
+                    foreach (GameDevice device in DevicesWith(onChannel, d => d.ButtonCount >= button))
+                        result.Bindings.Add(new GameInputBinding { ActionId = action.Id, Device = device.JoyProName, Input = GameInputTokens.ButtonToken(button - 1), IsAxis = false });
                 }
             }
             return result;
@@ -283,19 +309,30 @@ namespace JoyPro.Engine.Games
                     result.Warnings.Add("Relation '" + binding.RelationName + "' (" + binding.ActionId + "): " + reason);
                     continue;
                 }
-                written.Add(channel);
+                if (written.Add(channel))
+                {
+                    List<string> others = options.Devices.Where(d => d.Enabled && d.Channel == channel)
+                        .Select(d => DeviceOfPath(request.Devices, d.Path)).Where(d => d != null && d != device).Select(d => d.JoyProName).Distinct().ToList();
+                    if (others.Count > 0)
+                        result.Warnings.Add("'" + device.JoyProName + "' shares channel " + channel.ToString(CultureInfo.InvariantCulture) + " with " + string.Join(", ", others.Select(o => "'" + o + "'")) +
+                                            " in the game: their inputs drive the same JST" + channel.ToString(CultureInfo.InvariantCulture) + " binds. Give each device its own channel in OPTIONS > INPUT > DEVICES.");
+                }
                 result.BindingsWritten++;
             }
 
             // Channels JoyPro owns: switched on in the game and connected now. Merge-overwrite and nuke touch only these.
-            HashSet<int> owned = new HashSet<int>(options.Devices.Where(d => d.Enabled && DeviceOfPath(request.Devices, d.Path) != null).Select(d => d.Channel));
+            // A device JoyPro never clears (the vJoy device it tunnels into, an ignored device) is never released, also
+            // when the profile writes to it.
+            HashSet<int> keptChannels = new HashSet<int>(options.Devices.Where(d => { GameDevice device = DeviceOfPath(request.Devices, d.Path); return device != null && device.Kept; }).Select(d => d.Channel));
+            HashSet<int> owned = new HashSet<int>(options.Devices.Where(d => d.Enabled && DeviceOfPath(request.Devices, d.Path) != null && !keptChannels.Contains(d.Channel)).Select(d => d.Channel));
             HashSet<int> nukeChannels = new HashSet<int>(request.NukeUnusedDevices ? owned.Where(c => !written.Contains(c)) : new int[0]);
             HashSet<int> wantedRoles = new HashSet<int>(axisWanted.Values.SelectMany(w => w.Values.Select(v => v.Key)));
 
             // Axes (one role per physical axis): JoyPro's role replaces the axis' role (merge, merge-overwrite, clean:
-            // the profile wins on its input; "only add" wrote only free axes). Merge-overwrite and clean: another axis of
-            // an owned channel holding a role JoyPro sets goes to None (a moved role fully moves); clean: every other
-            // axis of a written channel; nuke: the owned channels without binds.
+            // the profile wins on its input; "only add" wrote only free axes). Merge-overwrite: another axis of an owned
+            // channel holding a role JoyPro sets goes to None (a moved role fully moves); clean: every other axis of a
+            // written channel (a channel it does not write keeps its roles, as in every game); nuke: the owned channels
+            // without binds.
             foreach (GRebelsSaveOptions.Axis axis in options.Axes)
             {
                 Match match = Regex.Match(axis.Key, @"^RawInput_Controller(\d+)_Axis");
@@ -312,16 +349,15 @@ namespace JoyPro.Engine.Games
                     options.SetInverted(axis, mine.Value);
                 }
                 else if (axis.Role != RoleNone &&
-                         ((wanted != null && request.Mode == GameExportMode.Clean) ||
-                          ((request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean) && owned.Contains(channel) && wantedRoles.Contains(axis.Role)) ||
+                         ((wanted != null && request.Mode == GameExportMode.Clean && !keptChannels.Contains(channel)) ||
+                          (request.Mode == GameExportMode.MergeOverwrite && owned.Contains(channel) && wantedRoles.Contains(axis.Role)) ||
                           nukeChannels.Contains(channel)))
                     options.SetRole(axis, RoleNone);
             }
 
             // Buttons: one key per action and channel. A mapping of another action on a key JoyPro writes goes (a
-            // conflict; "only add" skipped those binds); merge-overwrite and clean: the action's mappings on other owned
-            // channels go; clean: the other cataloged mappings of written channels; nuke: those of owned channels
-            // without binds.
+            // conflict; "only add" skipped those binds); merge-overwrite: the action's mappings on other owned channels
+            // go; clean: the other cataloged mappings of written channels; nuke: those of owned channels without binds.
             bool buttonsChanged = false;
             if (mappings == null && buttonWanted.Count > 0)
                 result.Warnings.Add("Button binds not written: " + ButtonsFile + " has no key profile yet (bind one button in the game once).");
@@ -335,10 +371,10 @@ namespace JoyPro.Engine.Games
                     if (!name.Success || !catalogNames.Contains(name.Groups[1].Value) || buttonWanted.ContainsKey(mapping.MappingName))
                         continue;
                     int channel = int.Parse(name.Groups[2].Value, CultureInfo.InvariantCulture);
-                    bool release = (written.Contains(channel) && request.Mode == GameExportMode.Clean) || nukeChannels.Contains(channel);
+                    bool release = (written.Contains(channel) && request.Mode == GameExportMode.Clean && !keptChannels.Contains(channel)) || nukeChannels.Contains(channel);
                     if (!release && request.Mode != GameExportMode.Add)
                         release = buttonWanted.Values.Contains(mapping.CurrentKey, StringComparer.OrdinalIgnoreCase);
-                    if (!release && (request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean) && owned.Contains(channel))
+                    if (!release && request.Mode == GameExportMode.MergeOverwrite && owned.Contains(channel))
                         release = wantedNatives.Contains(name.Groups[1].Value);
                     if (release)
                     {

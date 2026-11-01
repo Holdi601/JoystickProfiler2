@@ -402,6 +402,12 @@ namespace JoyPro.Engine.Games
                 Dictionary<string, object> entry = Devices.OfType<Dictionary<string, object>>().FirstOrDefault(d => IntOf(d, "deviceId", -2) == id);
                 return entry == null ? string.Empty : StringOf(entry, "model");
             }
+
+            public string DeviceIdent(int id)
+            {
+                Dictionary<string, object> entry = Devices.OfType<Dictionary<string, object>>().FirstOrDefault(d => IntOf(d, "deviceId", -2) == id);
+                return entry == null ? string.Empty : StringOf(entry, "ident");
+            }
         }
 
         private static T Ensure<T>(Dictionary<string, object> root, string key, Func<T> create) where T : class
@@ -446,12 +452,21 @@ namespace JoyPro.Engine.Games
         private static Dictionary<int, string> DeviceNames(ActionsFile file, KnownDevices known, GameDeviceDirectory devices)
         {
             Dictionary<int, string> names = new Dictionary<int, string>();
+            // Several known devices may hold one number (the game keeps a gone device's number): the one the file lists
+            // under that number wins, then a connected one.
+            HashSet<int> listedMatch = new HashSet<int>();
             foreach (KnownDevice entry in known.All().Where(k => k.DeviceId >= 0 && k.Guid != Guid.Empty))
             {
                 GameDevice connected = devices == null ? null : devices.FindByInstanceGuid(entry.Guid);
                 string name = connected != null ? connected.JoyProName : GameDeviceDirectory.BuildJoyProName(entry.Model.Length > 0 ? entry.Model : file.DeviceModel(entry.DeviceId), entry.Guid);
-                if (!names.ContainsKey(entry.DeviceId) || connected != null)
+                string ident = StringOf(entry.Entry, "ident");
+                bool listed = ident.Length > 0 && string.Equals(ident, file.DeviceIdent(entry.DeviceId), StringComparison.OrdinalIgnoreCase);
+                if (listedMatch.Contains(entry.DeviceId) && !listed)
+                    continue;
+                if (!names.ContainsKey(entry.DeviceId) || connected != null || listed)
                     names[entry.DeviceId] = name;
+                if (listed)
+                    listedMatch.Add(entry.DeviceId);
             }
             return names;
         }
@@ -957,9 +972,11 @@ namespace JoyPro.Engine.Games
             // not use. Clean and nuke never clear the keyboard (the game's keyboard defaults stay).
             HashSet<string> written = new HashSet<string>(wanted.Select(w => w.Input.DeviceKey).Where(k => k != "key"), StringComparer.OrdinalIgnoreCase);
             // The device numbers of connected devices: only their binds are JoyPro's to release (the import reads a device
-            // that is not connected after known.devices.json, but its binds are not the export's to clear).
+            // that is not connected after known.devices.json, but its binds are not the export's to clear), and not those
+            // of a device JoyPro never clears (the vJoy device it tunnels into, an ignored device).
             HashSet<string> connectedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (KnownDevice entry in known.All().Where(k => k.DeviceId >= 0 && k.Guid != Guid.Empty && request.Devices != null && request.Devices.FindByInstanceGuid(k.Guid) != null))
+            foreach (KnownDevice entry in known.All().Where(k => k.DeviceId >= 0 && k.Guid != Guid.Empty && request.Devices != null && request.Devices.FindByInstanceGuid(k.Guid) != null &&
+                                                                 !request.Devices.FindByInstanceGuid(k.Guid).Kept))
                 connectedIds.Add("dev" + entry.DeviceId.ToString(CultureInfo.InvariantCulture));
             Dictionary<int, string> names = DeviceNames(file, known, request.Devices);
             // An input JoyPro may release: an action of the catalog, every part readable by the import, the main input on
@@ -1137,17 +1154,41 @@ namespace JoyPro.Engine.Games
                 }
             }
 
-            // Every device number in use is listed under "devices"; joystick modifiers are listed under "modifiers".
+            // Every device number in use is listed under "devices" with the device the export wrote under it (the
+            // game's known.devices.json may give a number to a device while the file still lists another one under it,
+            // e.g. a device that is gone: the game lists the device that has the number once it saved the file, and so
+            // does JoyPro, so that the import reads the number back as that device). Joystick modifiers are listed
+            // under "modifiers".
             foreach (KeyValuePair<string, int> number in numbers)
             {
-                if (file.Devices.OfType<Dictionary<string, object>>().Any(d => IntOf(d, "deviceId", -2) == number.Value))
-                    continue;
                 GameDevice connected = request.Devices == null ? null : request.Devices.FindByJoyProName(number.Key);
-                KnownDevice entry = known.All().FirstOrDefault(k => k.DeviceId == number.Value);
+                string parsedName;
+                Guid guid;
+                if (connected != null)
+                    guid = connected.InstanceGuid;
+                else if (!GameDeviceDirectory.TryParseJoyProName(number.Key, out parsedName, out guid))
+                    guid = Guid.Empty;
+                KnownDevice entry = known.All().FirstOrDefault(k => guid != Guid.Empty && k.Guid == guid && k.DeviceId == number.Value)
+                                    ?? known.All().FirstOrDefault(k => k.DeviceId == number.Value);
+                string model = entry != null && entry.Model.Length > 0 ? entry.Model : connected != null ? ModelOf(connected) : number.Key;
+                string ident = entry != null ? StringOf(entry.Entry, "ident") : connected != null ? Ident(connected) : string.Empty;
+                Dictionary<string, object> listed = file.Devices.OfType<Dictionary<string, object>>().FirstOrDefault(d => IntOf(d, "deviceId", -2) == number.Value);
+                if (listed != null)
+                {
+                    string listedIdent = StringOf(listed, "ident");
+                    if (ident.Length == 0 || listedIdent.Length == 0 || string.Equals(listedIdent, ident, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    listed["model"] = model;
+                    listed["ident"] = ident;
+                    listed["name"] = string.Empty;
+                    result.Steps.Add("Listed " + number.Key + " as device " + number.Value.ToString(CultureInfo.InvariantCulture) + " in the key mapping (it listed another device under that number).");
+                    changed = true;
+                    continue;
+                }
                 Dictionary<string, object> device = new Dictionary<string, object>(StringComparer.Ordinal);
                 device["deviceId"] = number.Value;
-                device["model"] = entry != null ? entry.Model : connected != null ? ModelOf(connected) : number.Key;
-                device["ident"] = entry != null ? StringOf(entry.Entry, "ident") : connected != null ? Ident(connected) : string.Empty;
+                device["model"] = model;
+                device["ident"] = ident;
                 device["name"] = string.Empty;
                 file.Devices.Add(device);
                 changed = true;

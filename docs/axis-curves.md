@@ -67,7 +67,8 @@ The file is plain math with no engine dependencies; the GUI links it for the liv
   physical axis, invert, one-sided axes without dead zone, and User.cfg's `g_nAxisExp_AXIS_*` / `g_nAxisSat_AXIS_*` for
   pitch, roll, yaw and cursor X/Y. Preview from the documented ints (DirectInput dead zone/saturation of the half
   travel) and the BMS forum's description of the curve (linear-to-cubic blend, less travel to full output): UNVERIFIED
-  in game (`tools\e2e\games\BmsSettings.ps1` prepared). The fit from the base takes the nearest steps only, no exponent.
+  in game (`tools\e2e\games\BmsSettings.ps1`, 2026-10-09: 20/21, the launcher's files and Setup checked, entering the
+  cockpit for the sweeps failed). The fit from the base takes the nearest steps only, no exponent.
   Game settings: `engine\FfbModels\FalconBMS.cs` (see `docs/games/falcon-bms.md`).
 - **Star Citizen** (`starcitizen`, `engine\AxisModels\StarCitizen.cs`): dead zone and saturation per device axis
   (`deviceoptions`), then per joystick slot and option group invert, exponent (1..3) or a 9-point curve (10..90 %,
@@ -255,8 +256,9 @@ uncalibrate | gates | merge` (see the CLI wiki).
 - Old-vs-new: the IL-2 GB import and all export modes write the same files as before the `il2` model.
 - `engine\tests\smoke\arma.ps1`: Arma 3 arrays/settings/full-axis throttle, conflict warning, import round trip,
   settings-only export; Arma 2 OA sensitivity, family split, device switch; Reforger filter, order rules, game settings
-  and the refusals. In-game checks prepared (not run): `tools\e2e\games\Arma3Settings.ps1`, `Arma2Settings.ps1`.
-- WARDOGS / VTOL VR: `engine\tests\smoke\wardogs.ps1`, `vtolvr.ps1` (import round trips, own values, fit, game-wide settings, settings-only export). In game: `tools\e2e\games\WardogsSettings.ps1` (prepared, not run yet).
+  and the refusals. In game: `tools\e2e\games\Arma3Settings.ps1` (25/25 on 2026-10-10), `Arma2Settings.ps1` (Arma 2 17/17
+  on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05).
+- WARDOGS / VTOL VR: `engine\tests\smoke\wardogs.ps1`, `vtolvr.ps1` (import round trips, own values, fit, game-wide settings, settings-only export). In game: `tools\e2e\games\WardogsSettings.ps1` (36/36 on 2026-10-11, with the config watcher).
 - In game: `tools\e2e\games\IL2KoreaCurves.ps1` exports random settings, starts Korea and compares the table it
   compiled with JoyPro's preview on all 101 points (max difference 4e-6 on the first run).
 - In game: `tools\e2e\games\IL2GameCurves.ps1` does the same for Great Battles (roll in GB units, yaw as

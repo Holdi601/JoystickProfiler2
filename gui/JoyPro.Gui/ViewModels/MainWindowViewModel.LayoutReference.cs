@@ -51,6 +51,9 @@ public sealed partial class MainWindowViewModel
     // JoyPro's drawing is the shown picture: the Lines | Cel-shaded choice is offered next to it.
     public bool WorkspaceShowsLineArt => !LayoutShowsLayoutFile && deviceReference?.CanvasPhoto is Views.Controls.LineArtImage;
 
+    // Detected control spots of the shown photo (experimental, marker assistant open): rings a placement snaps to.
+    public IReadOnlyList<Avalonia.Point>? WorkspaceDetectedSpots => LayoutShowsLayoutFile ? null : deviceReference?.DetectedSpots;
+
     public double WorkspaceWidth => LayoutShowsLayoutFile ? LayoutEditorCanvasWidth : deviceReference?.PictureWidth ?? 0;
 
     public double WorkspaceHeight => LayoutShowsLayoutFile ? LayoutEditorCanvasHeight : deviceReference?.PictureHeight ?? 0;
@@ -323,6 +326,9 @@ public sealed partial class MainWindowViewModel
                 NotifyWorkspacePicture();
                 UpdateLayoutPictureStatus();
                 break;
+            case nameof(DeviceReferenceViewModel.DetectedSpots):
+                OnPropertyChanged(nameof(WorkspaceDetectedSpots));
+                break;
             case nameof(DeviceReferenceViewModel.HasGripChoices):
             case nameof(DeviceReferenceViewModel.SelectedGrip):
                 OnPropertyChanged(nameof(HasReferenceGripChoices));
@@ -375,6 +381,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(WorkspaceWidth));
         OnPropertyChanged(nameof(WorkspaceHeight));
         OnPropertyChanged(nameof(WorkspaceMarkers));
+        OnPropertyChanged(nameof(WorkspaceDetectedSpots));
         OnPropertyChanged(nameof(WorkspaceSelectedMarker));
         OnPropertyChanged(nameof(WorkspacePlainLabels));
         OnPropertyChanged(nameof(ShowPlaceMarkersHint));

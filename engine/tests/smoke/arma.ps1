@@ -275,6 +275,20 @@ try {
     Assert-Match $a3mAfter "(?m)^keyHeliCyclicForward\[\]=\{17,200\};" "arma3 clean should release the written stick's other flight codes."
     Assert-True ((Get-A3mNonFlight $a3mAfter) -eq $a3mNonFlight) "arma3 clean + nuke must leave the non-flight lines identical."
 
+    # Clean without nuke is the same in every game: the written stick keeps only the profile's codes, the connected
+    # throttle (not written) keeps its code of auto hover (131585 = throttle button 2). Only merge-overwrite moves it.
+    $a3mCleanPro = Join-Path $a3mDir "modes-clean.pr0file"
+    Run-Engine @("--profile", $a3mCleanPro, "relations", "add", "A3M Hover", "--button", "--node", "Arma3:AutoHover", "--device", $a3mStick, "--input", "JOY_BTN3", "--text") | Out-Null
+    $a3mCleanText = $a3mText.Replace("keyAutoHover[]={45,131337};", "keyAutoHover[]={45,131337,131585};")
+    [System.IO.File]::WriteAllText($a3mFile, $a3mCleanText)
+    $a3mCleanOnly = Run-Engine @("--profile", $a3mCleanPro, "arma3", "export", $a3mFile, "--mode", "clean", "--text")
+    Assert-True ($a3mCleanOnly.ExitCode -eq 0) ("arma3 clean export failed: " + $a3mCleanOnly.Output)
+    Assert-Match ([System.IO.File]::ReadAllText($a3mFile)) "(?m)^keyAutoHover\[\]=\{45,131585,131330\};" "arma3 clean must keep auto hover on the connected throttle the export does not write (only merge-overwrite moves it)."
+    [System.IO.File]::WriteAllText($a3mFile, $a3mCleanText)
+    $a3mOverwriteOnly = Run-Engine @("--profile", $a3mCleanPro, "arma3", "export", $a3mFile, "--mode", "merge-overwrite", "--text")
+    Assert-True ($a3mOverwriteOnly.ExitCode -eq 0) ("arma3 merge-overwrite export failed: " + $a3mOverwriteOnly.Output)
+    Assert-Match ([System.IO.File]::ReadAllText($a3mFile)) "(?m)^keyAutoHover\[\]=\{45,131330\};" "arma3 merge-overwrite should take auto hover off the connected throttle."
+
     # Nuke never clears a joystick that is not connected (the throttle's GUID changed: not connected).
     [System.IO.File]::WriteAllText($a3mFile, $a3mText.Replace("66666666-7777-8888-9999-000000000000", "0fff0fff-7777-8888-9999-000000000000"))
     $a3mNuke = Run-Engine @("--profile", $a3mPro, "arma3", "export", $a3mFile, "--mode", "merge", "--nuke-untouched-devices", "--text")

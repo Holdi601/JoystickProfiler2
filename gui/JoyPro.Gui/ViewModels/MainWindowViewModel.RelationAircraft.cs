@@ -569,19 +569,25 @@ public sealed partial class MainWindowViewModel
         if (relation.Length == 0 || items.Count == 0)
             return;
         int off = 0;
+        int steps = 0;
         foreach (AircraftCheckItem item in items)
         {
             List<string> drop = item.Planes.Where(p => !p.UseHere).Select(p => p.Plane).ToList();
             if (!await SwitchOffAircraftAsync(item, drop))
                 break;
             off += drop.Count;
+            if (drop.Count > 0)
+                steps++;
             KeepAircraft(item, item.Planes.Where(p => p.UseHere).Select(p => p.Plane));
             AircraftCheckItems.Remove(item);
         }
         SaveListPreferences();
         UpdateAircraftCheckTotals();
         await ReloadBuilderRelationAsync(relation);
-        StatusText = T("'{0}': switched off in {1} aircraft where the command does something else. Ctrl+Z undoes it.", relation, off);
+        // One engine run per action: several actions are several undo steps.
+        StatusText = steps > 1
+            ? T("'{0}': switched off in {1} aircraft where the command does something else. Ctrl+Z undoes it one action at a time ({2} steps).", relation, off, steps)
+            : T("'{0}': switched off in {1} aircraft where the command does something else. Ctrl+Z undoes it.", relation, off);
     }
 
     // "Keep for all": the relation stays for these aircraft; not asked again.
@@ -626,6 +632,7 @@ public sealed partial class MainWindowViewModel
     internal async Task RepairAircraftAsync()
     {
         int dropped = 0;
+        int steps = 1;
         if (ListPrefs.KeptAircraft.Count == 0)
         {
             EngineCommandResult? result = await RunEngineAsync(["relations", "check-aircraft", "--apply"], includeProfile: true, mutatesProfile: true,
@@ -644,18 +651,23 @@ public sealed partial class MainWindowViewModel
         }
         else
         {
+            steps = 0;
             foreach (AircraftCheckItem item in AircraftCheckItems.ToList())
             {
                 if (!await SwitchOffAircraftAsync(item, item.Planes.Select(p => p.Plane).ToList()))
                     break;
                 dropped += item.Planes.Count;
+                if (item.Planes.Count > 0)
+                    steps++;
                 AircraftCheckItems.Remove(item);
             }
         }
         UpdateAircraftCheckTotals();
         if (SelectedRelation != null)
             await ReloadBuilderRelationAsync(SelectedRelation.Name);
-        StatusText = T("{0} aircraft switched off where the command does something else. Ctrl+Z undoes it.", dropped);
+        StatusText = steps > 1
+            ? T("{0} aircraft switched off where the command does something else. Ctrl+Z undoes it one action at a time ({1} steps).", dropped, steps)
+            : T("{0} aircraft switched off where the command does something else. Ctrl+Z undoes it.", dropped);
     }
 
     // Opens a relation of the check.

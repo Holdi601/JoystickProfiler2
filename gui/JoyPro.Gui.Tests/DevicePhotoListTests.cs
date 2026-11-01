@@ -51,6 +51,10 @@ public sealed class DevicePhotoListTests : IDisposable
 
     private static string Shipped => DevicePhotoDb.PhotoFolderOf(DeviceReferenceTests.ShippedCatalog);
 
+    // A list version `above` the shipped one (the shipped version rises with every published list, so the feeds of
+    // these tests never name a fixed number).
+    private static int V(int above) => DevicePhotoList.VersionOf(Shipped) + above;
+
     // A feed folder: the shipped photo files with the list version set, changed by `edit` (the staged folder), zipped,
     // and its manifest. Returns the feed folder.
     private string Feed(string name, int version, Action<string>? edit = null, Func<string, string>? manifestSha = null, int? sizeOverride = null)
@@ -99,13 +103,13 @@ public sealed class DevicePhotoListTests : IDisposable
     public async Task NewerFeed_ReplacesTheShippedList_AndTheCatalogUsesIt()
     {
         string newUrl = string.Empty, model = string.Empty;
-        string feed = Feed("v2", 2, stage => { (_, model, _, newUrl) = RepairOne(stage); });
+        string feed = Feed("v2", V(1), stage => { (_, model, _, newUrl) = RepairOne(stage); });
         DevicePhotoList list = new(feed);
         Assert.Null(list.FolderFor(Shipped));
 
         Assert.Equal(DevicePhotoList.Outcome.Installed, await list.CheckAsync(Catalog(), Shipped, force: true));
         Assert.Equal(list.ListFolder, list.FolderFor(Shipped));
-        Assert.Equal(2, list.ReadState().Version);
+        Assert.Equal(V(1), list.ReadState().Version);
         DeviceReferenceService.Reload();
         RefDevice device = DeviceReferenceService.Catalog.Find(model)!;
         Assert.Contains(device.Photos, p => p.Url == newUrl);
@@ -135,12 +139,12 @@ public sealed class DevicePhotoListTests : IDisposable
         File.WriteAllText(Path.Combine(bad, "manifest.json"), "{ not json");
         Assert.Equal(DevicePhotoList.Outcome.Rejected, await new DevicePhotoList(bad).CheckAsync(Catalog(), Shipped, force: true));
         // A zip with something else than JSON files in it.
-        string extra = Feed("extra", 5, stage => File.WriteAllText(Path.Combine(stage, "run.exe"), "MZ"));
+        string extra = Feed("extra", V(4), stage => File.WriteAllText(Path.Combine(stage, "run.exe"), "MZ"));
         DevicePhotoList withExe = new(extra);
         Assert.Equal(DevicePhotoList.Outcome.Rejected, await withExe.CheckAsync(Catalog(), Shipped, force: true));
         Assert.Null(withExe.FolderFor(Shipped));
         // An emptied list (fewer than half the shipped photos) never wipes the pictures.
-        string empty = Feed("empty", 6, stage =>
+        string empty = Feed("empty", V(5), stage =>
         {
             foreach (string f in Directory.GetFiles(stage, "*.json").Where(f => !Path.GetFileName(f).StartsWith('_')))
                 File.WriteAllText(f, "{ \"photos\": [] }");
@@ -151,7 +155,7 @@ public sealed class DevicePhotoListTests : IDisposable
     [Fact]
     public async Task ChecksumMismatch_IsIgnored()
     {
-        string feed = Feed("sha", 3, stage => RepairOne(stage), sha => new string('0', 64));
+        string feed = Feed("sha", V(2), stage => RepairOne(stage), sha => new string('0', 64));
         DevicePhotoList list = new(feed);
         Assert.Equal(DevicePhotoList.Outcome.Rejected, await list.CheckAsync(Catalog(), Shipped, force: true));
         Assert.Null(list.FolderFor(Shipped));
@@ -162,7 +166,7 @@ public sealed class DevicePhotoListTests : IDisposable
     public async Task DisallowedSource_RejectsTheList()
     {
         // A shop address as a maker's photo.
-        string shop = Feed("shop", 4, stage =>
+        string shop = Feed("shop", V(3), stage =>
         {
             string file = Path.Combine(stage, "vkb.json");
             JsonNode root = JsonNode.Parse(File.ReadAllText(file))!;
@@ -171,7 +175,7 @@ public sealed class DevicePhotoListTests : IDisposable
         });
         Assert.Equal(DevicePhotoList.Outcome.Rejected, await new DevicePhotoList(shop).CheckAsync(Catalog(), Shipped, force: true));
         // A review photo of a site the list does not name.
-        string review = Feed("review", 4, stage =>
+        string review = Feed("review", V(3), stage =>
         {
             string file = Path.Combine(stage, "vkb.json");
             JsonNode root = JsonNode.Parse(File.ReadAllText(file))!;
@@ -180,12 +184,85 @@ public sealed class DevicePhotoListTests : IDisposable
         });
         Assert.Equal(DevicePhotoList.Outcome.Rejected, await new DevicePhotoList(review).CheckAsync(Catalog(), Shipped, force: true));
         // A whole shared CDN as a maker host.
-        string host = Feed("host", 4, stage => File.WriteAllText(Path.Combine(stage, "_hosts.json"), "{\"models\":{\"vkb-gunfighter-mcg-pro\":[\"cdn.shopify.com\"]}}"));
+        string host = Feed("host", V(3), stage => File.WriteAllText(Path.Combine(stage, "_hosts.json"), "{\"models\":{\"vkb-gunfighter-mcg-pro\":[\"cdn.shopify.com\"]}}"));
         Assert.Equal(DevicePhotoList.Outcome.Rejected, await new DevicePhotoList(host).CheckAsync(Catalog(), Shipped, force: true));
         Assert.Contains("a shared host", DevicePhotoDb.HostEntryProblem("cdn.shopify.com"));
         Assert.Empty(DevicePhotoDb.HostEntryProblem("cdn.shopify.com/s/files/1/0571/3192/5689/"));
         Assert.Empty(DevicePhotoDb.HostEntryProblem("d7qztf2ityad6.cloudfront.net"));
         Assert.NotEmpty(DevicePhotoDb.HostEntryProblem("web.archive.org"));
+    }
+
+    // The web archive fallback reaches users with the list: a photo whose address died keeps working through its
+    // recorded snapshot (also one of a former address with the same bytes), checked against the recorded hash.
+    [Fact]
+    public async Task Feed_CarriesTheSnapshots_AndADeadAddressFallsBackToIt()
+    {
+        byte[] picture = [0x89, (byte)'P', (byte)'N', (byte)'G', 13, 10, 26, 10, 1, 2, 3, 4, 5, 6, 7, 8];
+        string sha = Convert.ToHexString(SHA256.HashData(picture)).ToLowerInvariant();
+        string model = string.Empty, oldUrl = string.Empty, newUrl = string.Empty;
+        string snapshot = string.Empty;
+        string feed = Feed("archive", V(6), stage =>
+        {
+            string file;
+            (file, model, oldUrl, newUrl) = RepairOne(stage);
+            snapshot = "https://web.archive.org/web/20240101000000id_/" + oldUrl;
+            JsonNode root = JsonNode.Parse(File.ReadAllText(file))!;
+            JsonNode photo = root["photos"]!.AsArray().First(p => (string)p!["url"]! == newUrl)!;
+            photo["sha256"] = sha;
+            photo.AsObject().Remove("sha256Alt");
+            photo["archive"] = snapshot;
+            File.WriteAllText(file, root.ToJsonString());
+        });
+        DevicePhotoList list = new(feed);
+        Assert.Equal(DevicePhotoList.Outcome.Installed, await list.CheckAsync(Catalog(), Shipped, force: true));
+        DeviceReferenceService.Reload();
+        DevicePhoto installed = DeviceReferenceService.Catalog.Find(model)!.Photos.First(p => p.Url == newUrl);
+        Assert.Equal(snapshot, installed.Archive);
+        Assert.Equal(snapshot, DevicePhotoDb.ArchiveUrl(installed));
+
+        // The new address is dead too: the snapshot of the former one has the recorded bytes.
+        ReferencePhotoStore store = new(Path.Combine(temp, "store"))
+        {
+            Fetch = (uri, _, _) => Task.FromResult<(byte[]?, string)>(uri.AbsoluteUri == snapshot ? (picture, string.Empty) : (null, "404"))
+        };
+        ReferencePhotoStore.PhotoResult result = await store.EnsureAsync(model, installed);
+        Assert.Equal("archive", result.Origin);
+        Assert.False(result.Changed);
+        Assert.Equal(picture, File.ReadAllBytes(result.File!));
+    }
+
+    [Fact]
+    public async Task ArchiveThatIsNoWaybackSnapshot_RejectsTheList()
+    {
+        string feed = Feed("bad-archive", V(7), stage =>
+        {
+            string file = Path.Combine(stage, "vkb.json");
+            JsonNode root = JsonNode.Parse(File.ReadAllText(file))!;
+            root["photos"]![0]!["archive"] = "https://mirror.example.com/web/2024id_/x.jpg";
+            File.WriteAllText(file, root.ToJsonString());
+        });
+        DevicePhotoList list = new(feed);
+        Assert.Equal(DevicePhotoList.Outcome.Rejected, await list.CheckAsync(Catalog(), Shipped, force: true));
+        Assert.Null(list.FolderFor(Shipped));
+    }
+
+    // Every recorded snapshot of the shipped list is a raw Wayback capture (https://web.archive.org/web/<time>id_/<http
+    // address>, or the older im_ form: the original bytes, without the archive's frame), so the fallback gets the
+    // picture itself.
+    [Fact]
+    public void ShippedSnapshots_AreRawWaybackCaptures()
+    {
+        int count = 0;
+        foreach (RefDevice model in Catalog().Devices)
+        {
+            foreach (DevicePhoto photo in model.Photos.Where(p => p.Archive.Length > 0))
+            {
+                count++;
+                Assert.True(DevicePhotoDb.IsArchiveUrl(photo.Archive), photo.Archive);
+                Assert.Matches(@"^https://web\.archive\.org/web/\d{1,14}(id|im)_/https?://", photo.Archive);
+            }
+        }
+        Assert.True(count > 100, "snapshots recorded: " + count);
     }
 
     private sealed class OfflineTransport : IUpdateTransport
@@ -201,7 +278,7 @@ public sealed class DevicePhotoListTests : IDisposable
     public async Task Offline_KeepsTheListItHas()
     {
         // A newer list installed earlier stays in use when the feed cannot be reached.
-        DevicePhotoList first = new(Feed("v7", 7, stage => RepairOne(stage)));
+        DevicePhotoList first = new(Feed("v7", V(6), stage => RepairOne(stage)));
         Assert.Equal(DevicePhotoList.Outcome.Installed, await first.CheckAsync(Catalog(), Shipped, force: true));
         DevicePhotoList offline = new("https://example.invalid/feed/", null, new OfflineTransport());
         Assert.Equal(DevicePhotoList.Outcome.Unreachable, await offline.CheckAsync(Catalog(), Shipped, force: true));
@@ -215,7 +292,7 @@ public sealed class DevicePhotoListTests : IDisposable
     [Fact]
     public async Task NoLook_WhileTheMakersPhotosAreSwitchedOff()
     {
-        string feed = Feed("privacy", 8, stage => RepairOne(stage));
+        string feed = Feed("privacy", V(7), stage => RepairOne(stage));
         MainWindowViewModel vm = new(loadPersistedUiSettings: false) { DevicePhotoListFactory = () => new DevicePhotoList(feed) };
         DevicePhotoConsent.Mode = DevicePhotoConsent.Never;
         Assert.Equal(DevicePhotoList.Outcome.Off, await vm.CheckDevicePhotoListAsync(force: true));

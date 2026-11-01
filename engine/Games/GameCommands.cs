@@ -21,6 +21,10 @@ namespace JoyPro.Engine.Games
         // read Hell Let Loose: Vietnam's files (docs/games/hll-vietnam.md "Oodle"). Null = not allowed.
         public static string ForeignOodleDll { get; private set; }
 
+        // Notes about options of this run that do not apply to the game (given, accepted, nothing done): shown with the
+        // result's warnings (Render).
+        private static readonly List<string> ArgumentNotes = new List<string>();
+
         public static bool IsMutating(List<string> command)
         {
             string action = command == null || command.Count == 0 ? string.Empty : command[0].ToLowerInvariant();
@@ -30,6 +34,7 @@ namespace JoyPro.Engine.Games
         public static int Run(IGameIntegration game, List<string> command, bool textOutput, out string payload)
         {
             payload = string.Empty;
+            ArgumentNotes.Clear();
             string action = command.Count == 0 ? "paths" : command[0].ToLowerInvariant();
             List<string> args = command.Skip(1).ToList();
             // VTOL VR's BYOJoystick mod on this PC (status, prepare the install from the Steam Workshop).
@@ -58,6 +63,13 @@ namespace JoyPro.Engine.Games
             bool replace = PopFlag(args, "--replace");
             bool includeKeyboard = PopSwitch(args, "--include-keyboard");
             bool nuke = PopSwitch(args, "--nuke-untouched-devices");
+            // export: devices JoyPro never clears (the import's ignored devices; the vJoy device JoyPro tunnels into is
+            // added by RunExport). scan / import: the binds of these devices are left out.
+            // --ignore-device: one device per flag (| and ; also separate); --ignore-devices: a list, separated by
+            // commas, | or ; (as for dcs / il2 / starcitizen).
+            List<string> keepDevices = SplitDeviceList(PopValues(args, "--ignore-device"), false);
+            keepDevices.AddRange(SplitDeviceList(PopValues(args, "--ignore-devices"), true));
+            keepDevices = keepDevices.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             bool includeDisconnectedGiven = args.Any(a => string.Equals(a, "--include-disconnected", StringComparison.OrdinalIgnoreCase));
             bool includeDisconnected = PopSwitch(args, "--include-disconnected");
             bool includeSimDefaultsGiven = args.Any(a => string.Equals(a, "--include-sim-defaults", StringComparison.OrdinalIgnoreCase));
@@ -82,6 +94,21 @@ namespace JoyPro.Engine.Games
             bool limitToProfileAircraft = PopFlag(args, "--limit-to-profile-aircraft");
             if (limitToProfileAircraft && (action != "import" || !(game is IGameAircraftScope)))
                 return Fail("--limit-to-profile-aircraft is only valid with an import of a game with an aircraft list (msfs2024 import).");
+            // MSFS 2020 takes the MSFS 2024-only options without failing: they change nothing there, and the result says so.
+            MsfsIntegration msfs = game as MsfsIntegration;
+            if (msfs != null && msfs.Sim != 2024)
+            {
+                List<string> onlyFor2024 = new List<string>();
+                if (limitToProfileAircraft)
+                    onlyFor2024.Add("--limit-to-profile-aircraft");
+                if (userProfilesGiven)
+                    onlyFor2024.Add("--user-profiles");
+                if (importFilesGiven)
+                    onlyFor2024.Add("--import-files");
+                if (onlyFor2024.Count > 0)
+                    ArgumentNotes.Add(string.Join(", ", onlyFor2024) + (onlyFor2024.Count == 1 ? " applies" : " apply") + " to Microsoft Flight Simulator 2024 only; " +
+                                      game.DisplayName + " ignored " + (onlyFor2024.Count == 1 ? "it" : "them") + ".");
+            }
             string positionalPath = args.FirstOrDefault(a => !a.StartsWith("--", StringComparison.Ordinal));
             if (positionalPath != null)
                 args.Remove(positionalPath);
@@ -159,11 +186,11 @@ namespace JoyPro.Engine.Games
                 case "catalog":
                     return RunCatalog(game, textOutput, out payload);
                 case "scan":
-                    return RunScan(game, explicitPath, textOutput, out payload);
+                    return RunScan(game, explicitPath, keepDevices, textOutput, out payload);
                 case "import":
-                    return RunImport(game, explicitPath, !replace, includeKeyboard, limitToProfileAircraft, textOutput, out payload);
+                    return RunImport(game, explicitPath, !replace, includeKeyboard, limitToProfileAircraft, keepDevices, textOutput, out payload);
                 case "export":
-                    return RunExport(game, explicitPath, modeRaw, dryRun, includeKeyboard, nuke, textOutput, out payload);
+                    return RunExport(game, explicitPath, modeRaw, dryRun, includeKeyboard, nuke, keepDevices, textOutput, out payload);
                 case "refresh-db":
                     return RunRefresh(game, explicitPath, dryRun, textOutput, out payload);
                 default:
@@ -218,11 +245,11 @@ namespace JoyPro.Engine.Games
             return 0;
         }
 
-        private static int RunScan(IGameIntegration game, string explicitPath, bool textOutput, out string payload)
+        private static int RunScan(IGameIntegration game, string explicitPath, List<string> ignoredDevices, bool textOutput, out string payload)
         {
             payload = string.Empty;
             GameScanResult result;
-            if (!TryReadGameFile(game, explicitPath, "scan", out result))
+            if (!TryReadGameFile(game, explicitPath, "scan", ignoredDevices, out result))
             {
                 payload = Render(result, textOutput, null);
                 return 1;
@@ -232,10 +259,11 @@ namespace JoyPro.Engine.Games
             return result.Errors.Count == 0 ? 0 : 1;
         }
 
-        private static int RunImport(IGameIntegration game, string explicitPath, bool merge, bool includeKeyboard, bool limitToProfileAircraft, bool textOutput, out string payload)
+        private static int RunImport(IGameIntegration game, string explicitPath, bool merge, bool includeKeyboard, bool limitToProfileAircraft, List<string> ignoredDevices,
+                                     bool textOutput, out string payload)
         {
             GameScanResult result;
-            if (!TryReadGameFile(game, explicitPath, "import", out result))
+            if (!TryReadGameFile(game, explicitPath, "import", ignoredDevices, out result))
             {
                 payload = Render(result, textOutput, null);
                 return 1;
@@ -295,7 +323,44 @@ namespace JoyPro.Engine.Games
             result.Steps.Add("Game settings imported: " + JoyPro.Engine.Axis.FfbSettings.Format(read));
         }
 
-        private static bool TryReadGameFile(IGameIntegration game, string explicitPath, string action, out GameScanResult result)
+        // --ignore-device a|b --ignore-devices "a;b" / "a,b": one entry per device.
+        private static List<string> SplitDeviceList(IEnumerable<string> values, bool commas)
+        {
+            char[] separators = commas ? new[] { '|', ';', ',' } : new[] { '|', ';' };
+            return (values ?? Enumerable.Empty<string>())
+                .SelectMany(d => (d ?? string.Empty).Split(separators, StringSplitOptions.RemoveEmptyEntries))
+                .Select(d => d.Trim())
+                .Where(d => d.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
+        // A bind's device is ignored when an entry names it exactly ("Name {GUID}"), or when an entry without a GUID names
+        // the device ("Saitek X52" = every device of that name), as the export's never-cleared devices are matched.
+        internal static bool IsIgnoredDevice(string device, IEnumerable<string> ignored)
+        {
+            string value = (device ?? string.Empty).Trim();
+            if (value.Length == 0 || ignored == null)
+                return false;
+            string name;
+            Guid guid;
+            string bare = GameDeviceDirectory.TryParseJoyProName(value, out name, out guid) ? name : value;
+            foreach (string entry in ignored)
+            {
+                string wanted = (entry ?? string.Empty).Trim();
+                if (wanted.Length == 0)
+                    continue;
+                if (string.Equals(wanted, value, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                string wantedName;
+                Guid wantedGuid;
+                if (!GameDeviceDirectory.TryParseJoyProName(wanted, out wantedName, out wantedGuid) && string.Equals(wanted, bare, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
+        private static bool TryReadGameFile(IGameIntegration game, string explicitPath, string action, List<string> ignoredDevices, out GameScanResult result)
         {
             List<string> warnings = new List<string>();
             string path = ResolveConfigPath(game, explicitPath, warnings);
@@ -319,6 +384,15 @@ namespace JoyPro.Engine.Games
                 int tunnelBinds = result.Bindings.RemoveAll(b => b != null && VJoyTunnel.IsTunnelDevice(b.Device));
                 if (VJoyTunnel.Instance > 0)
                     result.Steps.AddRange(VJoyTunnel.Notes.Select(n => n + (tunnelBinds > 0 ? " Binds left out: " + tunnelBinds.ToString(CultureInfo.InvariantCulture) + "." : string.Empty)));
+                // --ignore-device(s): the binds of these devices (and keys of the keyboard when it is named) stay out.
+                if (ignoredDevices != null && ignoredDevices.Count > 0)
+                {
+                    List<string> leftOutDevices = result.Bindings.Where(b => b != null && IsIgnoredDevice(b.Device, ignoredDevices))
+                        .Select(b => b.Device.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList();
+                    int ignoredBinds = result.Bindings.RemoveAll(b => b != null && IsIgnoredDevice(b.Device, ignoredDevices));
+                    result.Steps.Add("Ignored devices (--ignore-device): " + string.Join(", ", ignoredDevices) + "; binds left out: " +
+                                     ignoredBinds.ToString(CultureInfo.InvariantCulture) + (leftOutDevices.Count > 0 ? " (" + string.Join(", ", leftOutDevices) + ")" : string.Empty) + ".");
+                }
             }
 
             result.Steps.InsertRange(0, catalogResult.Steps);
@@ -332,7 +406,7 @@ namespace JoyPro.Engine.Games
             return result.Errors.Count == 0;
         }
 
-        private static int RunExport(IGameIntegration game, string explicitPath, string modeRaw, bool dryRun, bool includeKeyboard, bool nuke, bool textOutput, out string payload)
+        private static int RunExport(IGameIntegration game, string explicitPath, string modeRaw, bool dryRun, bool includeKeyboard, bool nuke, List<string> keepDevices, bool textOutput, out string payload)
         {
             GameIoResult result = new GameIoResult();
             result.Game = game.GameId;
@@ -383,6 +457,22 @@ namespace JoyPro.Engine.Games
                 Catalog = LoadOrBuildCatalog(game, dryRun, result),
                 Devices = GameDeviceDirectory.Discover(result.Warnings)
             };
+            // One rule for every game and mode: the vJoy device JoyPro tunnels into and the import's ignored devices are
+            // never cleared (clean, nuke, "my profile wins"); each exporter treats them like a device that is not
+            // connected when it releases binds. (A game in virtual mode writes to the tunnel device, so there it is
+            // JoyPro's: VJoyTunnel.Devices() is empty then.)
+            List<string> kept = (keepDevices ?? new List<string>())
+                .SelectMany(d => (d ?? string.Empty).Split(new[] { '|', ';' }, StringSplitOptions.RemoveEmptyEntries))
+                .Select(d => d.Trim())
+                .Where(d => d.Length > 0)
+                .ToList();
+            VJoyTunnel.AddTo(kept);
+            request.Devices.MarkKept(kept);
+            if (VJoyTunnel.Instance > 0 && !VJoyTunnel.VirtualGame && VJoyTunnel.Devices().Count == 0)
+                result.Steps.AddRange(VJoyTunnel.Notes);
+            List<string> keptNames = request.Devices.Devices.Where(d => d.Kept).Select(d => d.JoyProName).ToList();
+            if (keptNames.Count > 0)
+                result.Steps.Add("Never cleared (ignored devices, the vJoy device JoyPro tunnels into): " + string.Join(", ", keptNames) + ".");
 
             List<GameInputBinding> bindings = WithoutKeyboard(GameProfileBridge.CollectBindings(game, result), includeKeyboard, result, "exported");
             foreach (GameInputBinding binding in bindings)
@@ -645,6 +735,11 @@ namespace JoyPro.Engine.Games
 
         private static string Render(GameIoResult result, bool textOutput, List<GameInputBinding> bindings)
         {
+            foreach (string note in ArgumentNotes)
+            {
+                if (!result.Warnings.Contains(note))
+                    result.Warnings.Insert(0, note);
+            }
             if (!textOutput)
             {
                 return EngineSerialization.ToJson(new
@@ -697,8 +792,10 @@ namespace JoyPro.Engine.Games
             // Imported for all aircraft; "engine <command>" limits one (--limit-to-profile-aircraft: all at once).
             AppendList(sb, "Only In Some Aircraft", result.OnlyInAircraft.Select(o => "Only in the sim's profile(s) of " + o.AircraftText + ": " + o.Relation + " (" + o.Device + " " + o.Input +
                                                                                       "), imported for all aircraft. Limit: engine " + o.LimitCommand).ToList());
-            // "Only add": binds not written because the game uses the input for another action.
-            AppendList(sb, "Binds Not Written, Button Taken In The Game", result.SkippedTakenInputs.Select(m => m.Describe()).ToList());
+            // "Only add": binds not written because the game uses the input for another action; every mode: binds the game
+            // has no free place for (Elite's two inputs per action).
+            AppendList(sb, "Binds Not Written, Button Taken In The Game", result.SkippedTakenInputs.Where(m => m.Reason != ExportSkippedBind.NoFreeSlot).Select(m => m.Describe()).ToList());
+            AppendList(sb, "Binds Not Written, No Free Place In The Game", result.SkippedTakenInputs.Where(m => m.Reason == ExportSkippedBind.NoFreeSlot).Select(m => m.Describe()).ToList());
             AppendList(sb, "Steps", result.Steps);
             AppendList(sb, "Warnings", result.Warnings);
             AppendList(sb, "Errors", result.Errors);
@@ -728,6 +825,26 @@ namespace JoyPro.Engine.Games
             string value = args[index + 1];
             args.RemoveRange(index, 2);
             return value;
+        }
+
+        // Every value of a repeatable option ("--ignore-device A --ignore-device B").
+        private static List<string> PopValues(List<string> args, string name)
+        {
+            List<string> values = new List<string>();
+            string value;
+            while (args.Any(a => string.Equals(a, name, StringComparison.OrdinalIgnoreCase)))
+            {
+                int index = args.FindIndex(a => string.Equals(a, name, StringComparison.OrdinalIgnoreCase));
+                if (index + 1 >= args.Count)
+                {
+                    args.RemoveAt(index);
+                    break;
+                }
+                value = args[index + 1];
+                args.RemoveRange(index, 2);
+                values.Add(value);
+            }
+            return values;
         }
 
         private static bool PopFlag(List<string> args, string name)

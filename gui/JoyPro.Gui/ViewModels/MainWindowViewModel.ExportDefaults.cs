@@ -37,6 +37,15 @@ public sealed partial class MainWindowViewModel
             VJoyTunnelDevice = 0;
     }
 
+    // Every export of every game: the devices JoyPro never clears in any mode (the import's ignored devices and the vJoy
+    // device JoyPro tunnels into); the engine treats them like devices that are not connected when it releases binds.
+    private void AddExportKeptDeviceArgs(List<string> args)
+    {
+        foreach (string ignored in BuildEffectiveImportIgnoredDeviceFilter())
+            args.AddRange(["--ignore-device", ignored]);
+        AddVJoyTunnelArgs(args);
+    }
+
     private void AddVJoyTunnelArgs(List<string> args)
     {
         if (VJoyTunnelDevice is >= 1 and <= 16)
@@ -269,6 +278,7 @@ public sealed partial class MainWindowViewModel
                     Modifiers = modifiers,
                     GameActionId = ReadJsonString(item, "GameActionId"),
                     GameAction = ReadJsonString(item, "GameAction"),
+                    Reason = ReadJsonString(item, "Reason"),
                     Date = ReadJsonString(item, "Date"),
                     Dismissed = ReadJsonBool(item, "Dismissed")
                 });
@@ -315,6 +325,8 @@ public sealed partial class MainWindowViewModel
         string other = mark.GameAction.Length > 0 ? mark.GameAction : mark.GameActionId;
         // "(F-16C_50; 2026-10-31)" or "(2026-10-31)": aircraft and date in one place of the sentence.
         string when = aircraft.Count == 0 ? mark.Date : string.Join(", ", aircraft) + "; " + mark.Date;
+        if (mark.NoFreeSlot)
+            return T("Not exported: {0} has no free place for another input of this command ({1})", game, when);
         return T("Not exported: input taken in {0} by '{1}' ({2})", game, other, when);
     }
 
@@ -339,6 +351,8 @@ public sealed partial class MainWindowViewModel
         string date = first.Date;
         if (DateTime.TryParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime day))
             date = day.ToString("d", CultureInfo.CurrentCulture);
+        if (first.NoFreeSlot)
+            return NoFreeSlotCard(first, game, button, other, action, aircraft, where, date);
         return new CheckIssueCard
         {
             Kind = "export-skips",
@@ -363,6 +377,36 @@ public sealed partial class MainWindowViewModel
             RelationGroup = first.Relation,
             AircraftGroup = aircraft.Count == 0 ? game : FirstPlaneWords(first.Game, aircraft),
             SearchText = string.Join(" ", game, button, other, action, first.Relation, string.Join(" ", aircraft), where),
+            GroupLabel = game,
+            Relations = [first.Relation]
+        };
+    }
+
+    // A bind the game has no place for (Elite keeps two inputs per command; both hold other inputs, often a keyboard key
+    // and another button of the profile): which inputs hold them, and the fixes that help (no "Update": it would not
+    // free a place).
+    private CheckIssueCard NoFreeSlotCard(ExportMarkItem first, string game, string button, string holders, string action, List<string> aircraft, string where, string date)
+    {
+        return new CheckIssueCard
+        {
+            Kind = "export-skips",
+            Severity = "warning",
+            Title = T("Not written to {0}", game),
+            ButtonsLine = SideWords(button, first.Relation),
+            Sentence = T("{0} keeps only a few inputs per command, and '{1}' has all of them in use ({2}), so this button was not written in {3}.", game, action, holders, where),
+            CausedText = date.Length > 0 ? T("Found by the export on {0}", date) : string.Empty,
+            Fixes =
+            [
+                new CheckFix { Text = T("Move to another button"), Tip = T("Opens the move dialog: press a free button for '{0}'.", action), Command = new RelayCommand(() => OpenMoveForMark(first, aircraft)) },
+                new CheckFix { Text = T("Keep as is"), Tip = T("The game keeps its own bind; the check does not show this again."), Command = new AsyncRelayCommand(() => DismissExportMarkAsync(first)) }
+            ],
+            OpenButtons = [OpenFix(first.Relation, button, first.Game, [first.ActionId], aircraft)],
+            Game = first.Game,
+            RelationsSort = first.Relation,
+            AircraftSort = string.Join(",", aircraft),
+            RelationGroup = first.Relation,
+            AircraftGroup = aircraft.Count == 0 ? game : FirstPlaneWords(first.Game, aircraft),
+            SearchText = string.Join(" ", game, button, holders, action, first.Relation, string.Join(" ", aircraft), where),
             GroupLabel = game,
             Relations = [first.Relation]
         };
@@ -427,9 +471,12 @@ public sealed partial class MainWindowViewModel
     {
         await LoadExportMarksAsync();
         string today = DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        int count = ExportMarks.Count(m => !m.Dismissed && string.Equals(m.Game, gameId, StringComparison.OrdinalIgnoreCase) && m.Date == today);
-        return count == 0 ? string.Empty
-            : T("Binds not written to {0}: {1} (the game uses their buttons for other functions, see Check).", DisplayText.Game(gameId), count);
+        List<ExportMarkItem> now = ExportMarks.Where(m => !m.Dismissed && string.Equals(m.Game, gameId, StringComparison.OrdinalIgnoreCase) && m.Date == today).ToList();
+        if (now.Count == 0)
+            return string.Empty;
+        return now.Any(m => m.NoFreeSlot)
+            ? T("Binds not written to {0}: {1} (see Check, 'Not written to the game').", DisplayText.Game(gameId), now.Count)
+            : T("Binds not written to {0}: {1} (the game uses their buttons for other functions, see Check).", DisplayText.Game(gameId), now.Count);
     }
 }
 
@@ -446,6 +493,10 @@ public sealed class ExportMarkItem
     public List<string> Modifiers { get; init; } = [];
     public string GameActionId { get; init; } = string.Empty;
     public string GameAction { get; init; } = string.Empty;
+    // "" = the input is taken by GameAction; "no-free-slot" = the game has no free place for another input of this
+    // command (GameAction then names what holds the places).
+    public string Reason { get; init; } = string.Empty;
+    public bool NoFreeSlot => string.Equals(Reason, "no-free-slot", StringComparison.OrdinalIgnoreCase);
     public string Date { get; init; } = string.Empty;
     public bool Dismissed { get; set; }
 }

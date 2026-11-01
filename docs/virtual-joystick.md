@@ -26,6 +26,8 @@ the user's click (vJoy 2.1.9.1, HidHide 1.5.230, ViGEmBus 1.22.0; docs/component
 | Forwarder | `gui/JoyPro.VJoy` (`<GUI>\vjoy\JoyPro.VJoy.exe`) | DirectInput (non-exclusive) -> vJoyInterface.dll, live |
 | GUI page | `Virtual Joystick` (bottom bar), `MainWindowViewModel.VirtualJoystick.cs` | toggles, status, table, Start/Test/Stop, live view |
 | Virtual functions | `engine/VJoy/VirtualFunctions.cs`, `VirtualFunctionRuntime.cs` (shared), `EngineVJoyFunctions.cs`, GUI `MainWindowViewModel.VirtualFunctions.cs`, `VirtualFunctionEditorViewModel.cs` | functions between the physical inputs and the virtual outputs, evaluated by the forwarder every pass |
+| Chaining and modes | `VfChain`, `VfModeSet` (VirtualFunctions.cs), the runtime; GUI `MainWindowViewModel.VirtualModes.cs`, `Views/Controls/VirtualFunctionGraphView.cs` | functions reading other functions' outputs; named modes with inheritance; the editable graph |
+| Gremlin import | `engine/VJoy/GremlinImport.cs`, `EngineVJoyGremlin.cs` | Joystick Gremlin R13/R14 profiles into functions and modes, with a report |
 | Game input limits | `engine/VJoy/GameInputLimits.cs` | what a game reads of one joystick; warnings above it |
 
 ### The mapping table
@@ -69,6 +71,41 @@ normal device. When that vJoy device is not connected nothing is left out and th
 `engine\tests\smoke\vjoytunnel.ps1` (two fake vJoy devices: without the option both are imported, `--vjoy-tunnel 1`
 leaves out only device 1, `2` only device 2, `17` is refused).
 
+How the tokens of `--device` / `--ignore-device` of `dcs|il2|starcitizen import|scan` become device names
+(`Program.TryResolveDeviceFilters`, 2.6.0): an exact name of a profile, connected or game-listed device stays; a name
+without GUID ("vJoy Device") becomes every device of that name; an ignored device that is not there stays as given
+(it never hides another device, such as another vJoy instance; a single other device of the same model that is not
+vJoy is added too); a selected device that is not there becomes one device, chosen deterministically, never the
+tunnel device, a real device before vJoy unless the token names vJoy. The message names the device ("vJoy device 2",
+the model), the log keeps the full name. The IL-2 lookup reads devices.txt with the import's GUID conversion (the
+reversed last 8 bytes), and with `JOYPRO_FAKE_DEVICES` the fake devices are the connected ones. Before, a tunnel or
+ignored vJoy name could be swapped for another vJoy device (the live log: "Multiple devices matched ... auto-selected
+vJoy Device {GUID}"). Checked by `engine\tests\smoke\il2vjoy.ps1`.
+
+Exports (2.6.0): the GUI passes `--vjoy-tunnel` and the import's ignored devices (`--ignore-device`) to every export
+(`engine dcs|il2|starcitizen|<game> export`). Those devices are never cleared in any mode, like a device that is not
+connected: one rule in `GameCommands.RunExport` (`GameDeviceDirectory.MarkKept`, `GameDevice.Kept`) that every exporter
+checks where it releases binds (clean, nuke, "my profile wins"); IL-2 and Star Citizen take the same list. The device
+stays in the device list (slot and device order of the games do not change) and binds the profile itself has on it are
+still written. A game in virtual mode writes to the tunnel device, so there it is JoyPro's and is cleared as usual.
+Checked by `ExportKeptDevicesTests` (per game class a fake vJoy device holding game binds survives clean + nuke; without
+the option the same export clears it). Arma Reforger has no case there: the game never sees vJoy, so its export skips
+vJoy binds and gives vJoy no slot (`engine\tests\smoke\reforger.ps1` checks that).
+
+**One source of truth (2.6.0).** The tunnel setting is also where virtual mode writes: the GUI passes `--vjoy-tunnel`
+to every `engine vjoy` command, and the engine makes that device the first vJoy device of the table
+(`EngineVJoy.ApplyTunnel`: `FirstDevice` = the tunnel device, saved with the next change). So the table's slots, the
+function outputs (an output without a device goes there), the forwarder, the exports (GameScope), the Gremlin import
+(its vJoy device moves there) and Battlefield's one joystick all use the tunnel device, and a VoiceAttack-fed vJoy
+below it is never written. Imports and scans leave the tunnel device out only for games in **native** mode; a game in
+virtual mode reads it, because its binds on JoyPro's slots are turned back into the physical inputs and its binds on
+function outputs are the profile's own (leaving it out would lose them). `engine vjoy status` reports `TunnelDevice`
+and `TunnelWarnings` (no tunnel device named while virtual mode writes one; a table that needs a second vJoy device,
+which imports of native games then read like any other); the page's Status card shows both. After changing the tunnel
+device, export the virtual games again (the slots move to the new device). Not covered: sync (`engine sync`) compares
+only the devices the profile uses and passes no tunnel; the nuke of IL-2, Star Citizen and the registry games' exports
+clears binds on every connected device it does not write, the tunnel device included (only DCS keeps it).
+
 ### Virtual Xbox pad (mode "xbox", ViGEmBus)
 
 For games that only read Xbox controllers (XInput) or only one device, a game can use a **virtual Xbox 360 pad**
@@ -102,6 +139,14 @@ and no test touches the driver.
   The report is computed from the last state of every physical device: two buttons on one control combine, a pressed
   button on a stick half wins over the axis on that stick, triggers take the larger value; stick Y follows XInput (up
   = positive), so a physical stick pushed forward gives a positive Y. No allocation per pass.
+- **When to start the pad**: the general rule (start the virtual device before the game) is for vJoy, which games
+  look for once at start. The Xbox pad games tested so far, Hell Let Loose: Vietnam and ACE COMBAT 8, want the pad
+  created **after** their title screen shows: in the in-game runs of 2026-10-11 a pad that existed before the launch
+  never reached Hell Let Loose: Vietnam (probably Steam Input or the game's startup taking the pads present at
+  launch), while a pad connected while the game ran worked; `tools\e2e\games\HllVietnamXbox.ps1` and
+  `AceCombat8Xbox.ps1` therefore create it once the title shows. JoyPro does not delay the pad by itself (Start by hand
+  or the auto start, which creates it within about 3 s of the game's process): if such a game does not react to the
+  pad, press Stop and Start once the title screen shows.
 - **Export**: games that can store gamepad binds (`IGameGamepadBinds`) get their binds on the virtual pad
   (`Xbox 360 Controller (JoyPro virtual pad)` with `XB_*` inputs). Games with fixed gamepad layouts (Hell Let Loose:
   Vietnam) keep their layout; JoyPro's table follows it, so nothing has to be written.
@@ -209,6 +254,13 @@ hidden-device list needs administrator rights) is **unknown**, never "off" or "e
 as unknown, a dry run says its plan is partial and which parts are missing, and a real session or restore stops with
 nothing changed. A journal whose "previous" lacks the inverse mode never has the inverse mode set back.
 
+Program entries HidHide itself cannot name: `HidHideCLI --app-list` prints an entry whose stored image path lies on a
+volume that is not mounted any more (volume numbers change when drives are added) as `--app-reg ""`, elevated or not.
+Such entries are part of a complete answer (2.6.0; before, they made the program list "unknown" and no session could
+start - the development PC has five): JoyPro counts them (`UnnamedApps` in the status JSON, "(+N HidHide cannot
+name)" in the text), leaves them as they are (they cannot be removed or added by path and name no program on a drive of
+this PC), says so in the plan, and checks after apply and restore that their number is the same.
+
 Changing HidHide is one elevated step (one UAC prompt; never bypassed): `apply-hidhide`, `restore-hidhide` and
 `recover` start the engine elevated (`engine vjoy elevated-hidhide`, the request passed on its command line, not in a
 file), and that process does everything: reads HidHide completely, resolves the device instance paths (`--dev-gaming`),
@@ -250,8 +302,11 @@ the physical inputs and the virtual outputs - Joystick Gremlin-like features ins
 | `macro` | ▶ Macro | trigger | out1..outN, keys | steps (after ms: tap/press/release an output or key, hold ms), once or repeat while held |
 | `hat-buttons` | ✣ Hat to buttons | hat | up, right, down, left, 4 diagonals (opt.) | 4 ways (a diagonal presses both neighbours) or 8 |
 | `buttons-hat` | ⊕ Buttons to hat (8-way from 4 switches) | up, right, down, left | hat | diagonal settle time |
+| `remap` | → Remap | in (any) | out1..out8 (follow the input; a button on an axis = full/rest, an axis on a button = past half) | invert an axis |
+| `mode` | ⇆ Mode switch | in (button) | - | switch to / hold (temporary) / toggle / cycle / back; the target modes |
 
-Inputs are physical inputs (`JOY_X` .. `JOY_SLIDER2`, `JOY_BTN<n>`, `POV<n>`, a hat direction `JOY_BTN_POV<n>_<dir>`);
+Inputs are physical inputs (`JOY_X` .. `JOY_SLIDER2`, `JOY_BTN<n>`, `POV<n>`, a hat direction `JOY_BTN_POV<n>_<dir>`) or
+another function's output (device `fn:<id>`, input the output's role, see "Function chaining");
 outputs are vJoy inputs (`JOY_BTN<n>`, an axis, `POV<n>` on a vJoy device), controls of the virtual Xbox pad (`XB_A`,
 `XB_LT`, `XB_LX`, `XB_DPAD`, ...) or keys (`KEY_A`, `KEY_LCTRL`, `KEY_F1`, ... - **only** with the function's
 `Keyboard` switch on; keys go out through SendInput with scan codes and only with a real sink, never in a dry run or
@@ -299,6 +354,97 @@ input), outputs (target, vJoy device, band mode, "Bind relation"), settings (sli
 view; **Try it** runs the function in the editor (sliders, press buttons, hat directions; a timer only while it is on),
 and while Test or Start runs the forwarder's `fn` lines show the real state (LIVE). Save stores it through the engine.
 
+### Function chaining
+
+An input of a function can read another function's output instead of a physical input: `--input "in=fn:f1|band2"`
+(CLI), the input's device list in the editor (`⚙ f1 Throttle detents`, with that function's outputs as inputs), or a
+drag in the graph. Examples: an axis band that feeds a toggle, a curve that feeds a split, a tempo container whose long
+press starts a macro (the Gremlin import builds these). The runtime evaluates the functions in dependency order every
+pass (a function after the ones it reads), so a chained input sees the value of the same pass, without a pass of
+delay; every output keeps its value of the pass (`VfOut.Level`, `HatLevel`). An output that only feeds other functions
+needs no virtual target (it is "internal": no vJoy button is used, the editor says "feeds f2 only"). Loops (a function
+reading itself, directly or through others) are refused by `functions add|set` ("These functions would read each other
+in a loop: f1 "A" -> f2 "B" -> f1 "A". Chain them one way only. Nothing was saved.") and by the graph before the engine is
+asked; the runtime leaves any loop out with that message. Removing a function clears the inputs that read it. A chained
+input is no device: it is not a forwarder source and HidHide hides nothing for it.
+
+### Modes
+
+Like Joystick Gremlin, a game's functions can have named **modes** (layers), e.g. Default, Combat, Landing; a mode may
+inherit from another (`engine vjoy modes add --game DCS --name Combat --parent Default`, `set --parent|--rename`,
+`remove`, `start`, `list`; GUI: the Modes card of the Functions tab). Stored per game (`VJoySettings.Modes[game]`, a
+`VfModeSet`); a function lists the modes it works in (`functions set --modes Combat,Landing`, the editor's "Works in
+modes"; none = every mode).
+
+- A function in a mode also works in the modes that inherit from it, unless such a mode (or one closer in its line) has
+  its own function on the same input; a function without modes works in every mode unless the current mode's line has
+  its own function on that input. So "button 1 -> vJoy 1 everywhere, but vJoy 30 in Combat" is two remaps: one without
+  modes, one in Combat.
+- A **mode switch** function (type `mode`) changes the mode: switch to a mode, hold it while the button is held (back
+  on release; the switch keeps running in the held mode to see the release), toggle (the next press goes back), cycle
+  through a list, back to the previous mode. Targets: `--switch-modes Landing` (the editor's "Mode to switch to").
+- A switch takes effect after the pass that asked for it. A function that becomes active starts from its inputs as they
+  are (`Prime`): a button held through the switch is no new press, so one press never switches twice.
+- Only the functions of the current mode run; the outputs they own are released while they do not run, so a remap in
+  Combat that writes the input's own table slot takes the slot away in the other modes (Gremlin's per-mode remap).
+- The forwarder starts each game in its start mode (`modes start`, else the first) and reports `mode <game> <mode>` at
+  start and on every change; the page shows "Mode now (live)" and marks the running mode. Started by hand with several
+  virtual games, each game keeps its own modes (one mode group per game).
+
+### Editing in the graph
+
+The Functions tab shows every function of the chosen game as a node (`VirtualFunctionGraphView`, the default view of
+the right side; "Editor" shows the function opened with Edit): columns by dependency, inputs on the left edge of a node
+with what they read, outputs on the right edge with their target, wires from an output to the inputs that read it, the
+modes each node works in. Drag from an output dot to an input dot of another function to connect (a wrong kind or a
+loop is refused with a message), click a wire (or the input it ends at) and then its × or Delete to disconnect, × on a
+node removes the function (asks first), double-click opens the editor. Physical inputs, outputs, settings, modes, macro
+steps and curves are edited in the editor's rows; "Add function" adds nodes. Every change goes through the engine.
+
+### Coming from Joystick Gremlin
+
+`engine vjoy import-gremlin <profile.xml> --game <game> [--dry-run] [--replace] [--vjoy-device N]` (GUI: "Import a
+Gremlin profile..." on the Functions tab; a dry run shows its report first, Import saves) reads Joystick Gremlin R13
+profiles (profile version 9-13: `<devices><device><mode><button|axis|hat><container><action-set>`) and R14 profiles
+(profile version 14: `<inputs>` bound to a root action of the `<library>`, `<modes>`), and makes the game's modes and
+virtual functions from them:
+
+| Gremlin | JoyPro |
+|---|---|
+| devices (by `device-guid`, else by name) | the connected or known device with that DirectInput instance GUID, else by name; unknown: kept as `Name {GUID}` (listed) |
+| modes, `inherit`, start mode | modes with their parents and the start mode (only when the profile has more than one mode) |
+| remap button / axis / hat -> vJoy | `remap` (several remaps and keys on one input: one remap with several outputs) |
+| response curve + axis remap | `curve`: centre dead zone, saturation X, the spline sampled into an 11-point user curve; inverted when it falls |
+| map to keyboard | `remap` with key outputs (keyboard output on) |
+| macro (keys, pauses, vJoy buttons; repeat single / hold) | `macro` with steps, keyboard output on when it types |
+| switch / temporary / cycle / previous mode, change mode | `mode` (switch, hold, cycle, back) |
+| merged axis (average, sum, minimum, maximum) | `merge` |
+| tempo container (short / long) | `presses`; a set that is not a lone button remap is chained to the long/short output |
+| double tap | `presses` with short and double |
+| chain container | `cycle` (pulse per step) |
+| smart toggle | `toggle` |
+| hat buttons (4 / 8) | `hat-buttons` |
+| axis range as a button (`virtual-button` limits) | `bands` with that band, chained to the set's actions |
+| hat directions as a button | the input `JOY_BTN_POV<n>_<dir>` |
+
+Listed as **not imported** (never dropped silently): activation conditions (the actions are imported to run always),
+mouse actions, sounds and speech, pause/resume, user plugins (Python), keyboard devices and keyboard inputs, vJoy
+devices as inputs, a chain's timeout, macro steps on axes or the mouse, more than 8 outputs on one input, unknown
+actions and containers, devices that are not connected (imported on `Name {GUID}`). Listed as **imported, but
+different**: a relative axis remap (absolute), axis scaling, asymmetric dead zones or curves (one value for both
+sides), Bezier handles, a tempo "on press" (JoyPro fires the short press on release), the chain's step held while the
+button is held (a pulse), a smart toggle's long hold, macro repeat toggle / count, a hat virtual button with several
+directions, an axis range "from one direction". Gremlin numbers a device's axes 1..8; JoyPro takes them as X, Y, Z, Rx,
+Ry, Rz, Slider 1, Slider 2, which is Gremlin's order when the device has all eight - check the axis inputs of a device
+with fewer axes. The vJoy outputs keep Gremlin's vJoy device unless `--vjoy-device` (or the tunnel device of
+Settings) moves them; outputs on a button the table already uses are warned about (bind the relations to the outputs
+like any vJoy button). The R14 reader follows R14's library structure (actions with typed `<property>` values and
+child action ids); anything it does not know is listed.
+
+What a Gremlin user does in JoyPro: set the game to vJoy, import the profile, bind the game's relations to the vJoy
+outputs (or keep the game's binds where they are: the outputs are the same vJoy buttons and axes), Start. HidHide and
+the forwarder replace Gremlin's own device hiding and its running in the background.
+
 **Performance** (`JoyPro.VJoy bench`, release build, development PC, 4 synthetic sources changing every pass, 50
 functions of all types): 144 Hz: 9.7 us per pass on average (p99 29 us), 0.47 % of one core (table only: 0.31 %);
 240 Hz: 8.5 us average (p99 31 us), 0.31 % of one core; 0 bytes allocated in the loop. The GUI test
@@ -308,6 +454,7 @@ functions of all types): 144 Hz: 9.7 us per pass on average (p99 29 us), 0.47 % 
 
 ```
 JoyPro.VJoy run --config <file> [--sink vjoy|dry] [--xbox-sink vigem|dry] [--rate Hz] [--mode event|poll] [--parent-pid N] [--protocol] [--monitor] [--duration s] [--vjoy-dll path]
+                [--priority below-normal|normal] [--stats-seconds N] [--fake-sources idle|stream|noisy]
 JoyPro.VJoy devices [--json]      (DirectInput game controllers with instance GUID and HID path; read-only)
 JoyPro.VJoy refresh-rate          (the fastest display's refresh rate, at least 60)
 JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (the loop with virtual functions and synthetic sources; no device, vJoy or key)
@@ -317,23 +464,66 @@ JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (t
   176 bytes of DIJOYSTATE2: X Y Z Rx Ry Rz Slider Slider by GUID, 4 POVs, 128 buttons - the numbering of JoyPro's and
   DCS's binds). `DIPROP_RANGE` is set to vJoy's axis range, so axis values go over 1:1; JoyPro's curves, dead zones and
   inversions stay in the game's settings.
-- Wakes on DirectInput's change events (a button goes out at once) and on a high-resolution waitable timer at the rate
-  (default: the fastest display's refresh rate, minimum 60 Hz; period = whole milliseconds rounded down, so 144 Hz polls
-  every 6 ms). Event wake-ups closer together than half a period wait for the next tick: a device that reports 1000
-  times a second costs at most two passes per period. `--mode poll` uses the timer only.
+- **At most one pass per period** (the rate: default the fastest display's refresh rate, minimum 60 Hz; the period is
+  exact, 144 Hz = 6.94 ms, a one-shot high-resolution waitable timer armed after every pass). A DirectInput change event
+  that comes a period or more after the last pass runs a pass at once (a button goes out at once). A pass that found a
+  change stops watching the change events until one period after it; the pass at the end of that period takes
+  everything that came meanwhile. So a device that reports all the time - real sticks do while nobody touches them (on
+  the development PC the VPC stick and throttle send 180 and 300 reports a second with changing values, the Crosswind
+  250 and the WinWing panel 100 identical ones, a Rhino force feedback base up to 1000) - costs one pass and one
+  wake-up per period, not one per report, and a button on another device waits at most one period. `--mode poll` uses
+  the timer only.
+- **A pass reads only the devices whose event fired** (and DirectInput polled devices, `DIDC_POLLEDDEVICE`, which are
+  also the only ones `Poll()` is called for). Every 100 ms a pass reads every device as a safety net for a missed
+  event; a change found that way is counted in the stats line (`missed=`; 0 with the six real devices of the
+  development PC).
+- **Rests when nothing happens**: when every device signals its changes, the last pass found no change and no virtual
+  function needs the clock, the timer waits 100 ms (a safety poll); the next change event wakes the loop at once. A
+  virtual function that waits for a time (a pulse end, the next turbo phase, a long press or double-press window, a
+  macro step, a diagonal settle: `VfRuntime.NextDueUs`) sets the timer to that time instead of running every period;
+  only a moving incremental axis, an encoder queue and a mode change need the very next pass. A resting setup costs
+  10 passes a second. `--mode poll` never rests.
+- **Performance (2.6.0 budgets, `ForwarderSoakTests`)**: the real JoyPro.VJoy (release build, development PC, 144 Hz,
+  dry sink, 4 synthetic devices, 52 virtual functions of every type incl. a chain and two modes), CPU from the
+  process's cycle counter (`cycles-ms=`; Windows' process times, `cpu-ms=`, are sampled at the clock tick and charge a
+  loop that runs for microseconds at random: 0.000 % or 0.5 % over 20 s): **resting** (nothing changes) 0.19 % of one
+  core, 10 passes/s; **every device changing every pass** 0.52 %, 144 passes/s, 144 vJoy writes/s; **noisy** (one
+  device signals a change 1000 times a second with noise on every axis, like a force feedback base nobody touches)
+  0.56 %, 144 passes/s, 144 wake-ups/s; private bytes about 8 MB and handles flat (no growth), 0 bytes allocated by
+  the loop in every phase (30 s per phase, after a 12 s warm-up). Budgets: resting 0.5 %, streaming 1.5 % of one core,
+  memory growth at most 1 MB, handles at most +5, no loop allocation after warm-up, at most one pass per period and,
+  noisy, one wake-up per pass.
+- **Real devices** (2026-11-01, the six connected devices of the development PC, the vJoy live test's table: 6 button
+  slots, 23 virtual functions incl. a running turbo, a mode cycle and a moving incremental axis, 144 Hz, nobody
+  touching anything, DCS not running): before the fix the event wake-ups of the noisy devices gave ~292 passes, ~580
+  wake-ups and ~268 vJoy writes a second, every pass reading all six devices: 3.3 % of one core with the real vJoy sink, of which the loop thread 1.2 %. Now 144 passes, ~150
+  wake-ups, ~132 vJoy writes and ~290 device reads a second: the loop thread costs 0.25-0.4 % with the dry sink and ~0.7 %
+  with the real vJoy sink (an `UpdateVJD` costs ~25 us), the process 2.6 %. The rest is DirectInput itself: its own
+  reading thread takes every HID report of every acquired device (~25 us each, mostly in the kernel), whether it
+  changes anything or not - one resting device costs the process 0.07 % (VKB, 13 reports/s) to 0.7 % (VPC throttle
+  300/s, Crosswind 250/s), JoyPro.VJoy with no device 0.17 %. That cost belongs to reading these devices at all: a game
+  that reads them natively pays it in its own process, and in virtual mode HidHide hides them from the game, so it
+  moves from the game to the forwarder rather than adding to it. Lowering it would need JoyPro's own HID reader that
+  drains the reports once per period instead of DirectInput (not done: DirectInput's button and axis numbering is what
+  the binds use).
+- **Below normal priority**: the process runs `BelowNormal` (its loop thread one step above the process, still below a
+  game's normal threads), so the game always comes first; `--priority normal` for a test.
 - Writes a vJoy device only when its position changed (`UpdateVJD` with the whole JOYSTICK_POSITION_V2). Neutral at
   start (axes centred, buttons up, hats centred) and at the end.
 - No allocation per pass: native buffers, preallocated handles, structs; the stats line reports the loop thread's
-  allocated bytes (stays at the startup value). Measured on the development PC (3 real devices incl. a VPforce Rhino,
-  144 Hz, release build): ~250 passes/s, 1.5-1.7 % of one CPU core, ~34 MB working set, handles flat; poll mode ~1.4 %.
+  allocated bytes (stays at the startup value). ~35-40 MB working set, handles flat.
 - A device that disappears releases its buttons and centres its hats (axes keep their last value); it is opened again
   when Windows reports a device change (WM_DEVICECHANGE), else once a minute (opening a missing device costs
   DirectInput a device scan).
 - Ends on `stop` (stdin), when stdin closes (`--protocol`), when the parent process exits (`--parent-pid`), on Ctrl+C or
   after `--duration`. The default sink is `dry` (nothing goes to vJoy); only `--sink vjoy` uses the vJoy devices, and
   it refuses a vJoy device another feeder holds. `JOYPRO_VJOY_DRY=1` forces dry.
-- Protocol lines: `ready ...`, `source <i> connected|missing|lost <device>`, `stats passes= hz= wakes= changes= writes=
-  sources= loop-alloc= cpu-ms= ws-kb= handles=` (1/s), `out <id> <8 axes> <128 buttons hex> <4 hats>` (15/s while the
+- Protocol lines: `ready ...` (with `priority=`), `source <i> connected|missing|lost <device>`, `mode <game> <mode>` (at
+  start and on every change), `stats passes= hz= wakes= changes= writes= sources= loop-alloc= cpu-ms= ws-kb= handles=
+  private-kb= gc-kb= idle= idle-switches=` plus `reads=` (device reads), `missed=` (changes only the safety read
+  found), `cycles-ms=` (the process's CPU from its cycle counter) and `loop-ms=` (the loop thread's) (every second
+  while the live view is on, else every 5 s, `--stats-seconds`;
+  once at the end), `out <id> <8 axes> <128 buttons hex> <4 hats>` (15/s while the
   live view is on), `fn <id> <first input 0..1000> <state> <outputs on, bit mask>` per virtual function (15/s while the
   live view is on), `error ...`, `exit <reason>`. The ready line says `functions=<n>` (and `keys=on` when a function may
   type).
@@ -346,14 +536,21 @@ JoyPro.VJoy bench [--functions 50] [--rate Hz] [--seconds 10] [--sources 4]   (t
   game a Native/Virtual switch (the games of the profile and every game in virtual mode); options "Hide the real
   devices" (HidHide on/off) and "Start and stop by itself when a game set to Virtual starts and ends".
 - **Mapping**: the table (physical input, virtual input, the relations that use it, state), `Update mapping`.
-- **Functions**: the virtual functions (see "Virtual functions"). Overview also has "Set up vJoy for maximum" and, per
-  game, what it reads of a joystick with the limit warnings.
+- **Functions**: the virtual functions (see "Virtual functions"): left the types and "Add function", the game's Modes
+  (rename, inherits, at start, remove, add; the running mode live), "Coming from Joystick Gremlin?" (import with the
+  report first) and the list (outputs, modes, what a function reads and feeds); right the graph of the game's functions
+  ("Editing in the graph") or the editor of one function. Overview also has "Set up vJoy for maximum" and, per game,
+  what it reads of a joystick with the limit warnings; its Status card names the vJoy device JoyPro tunnels into.
 - **Live test**: bars for the eight axes, pressed buttons and hats of each vJoy device as the forwarder writes them, the
   forwarder's stats and log.
 - `Start`: updates the table, writes the forwarding table, hides the physical devices (one prompt), starts
   `JoyPro.VJoy --sink vjoy`. `Test`: the same without HidHide and with the dry sink (nothing changes). `Stop` and an
-  unexpected end of the forwarder restore HidHide. Press Start before you start the game: games often look for devices
-  only once at start.
+  unexpected end of the forwarder restore HidHide. vJoy: press Start before you start the game: games often look for
+  devices only once at start. Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: press Start
+  once the game's title screen shows (or Stop and Start there), see "When to start the pad" under "Virtual Xbox pad".
+  The page says so under Overview step 3 and in the tooltips of Start and of the auto start
+  (`VirtualXboxPadTimingNote`): the game set to Xbox pad by name, nothing when neither is, a note naming both while the
+  games are not loaded (`VirtualXboxPadTimingTests`).
 - Auto start: only while it is on and a game is in virtual mode, JoyPro looks for the games' processes every 3 s and
   starts (with the running game's executable added to HidHide's list) and stops by itself.
 
@@ -395,17 +592,48 @@ user's consent, `refresh-db --oodle-dll`; docs/games/hll-vietnam.md "Oodle").
   allocation per `Tick`, a loop benchmark. `VirtualFunctionsGuiTests.cs`: the Functions tab against a fake engine (list,
   add, edit, preview, save spec, live lines, bind, remove, set up for maximum, limits) and offscreen renders of the
   editors (`%TEMP%\JoyPro2.Gui.Tests\vjoy-functions`; the whole tab with `JOYPRO_VJOY_FUNCTIONS_PAGE_PREVIEW=1`).
-- Nothing in the tests touches the real HidHide, vJoyConfig or a vJoy device: the GUI tests never start JoyPro.VJoy and
-  point every engine at a fake (`JOYPRO_VJOY_FAKE`).
+- Joystick Gremlin parts: `VirtualFunctionChainModeTests` (a chained output in the same pass, order independent of the
+  list, loops refused with the message, validation against the game, internal axes, remap, modes with inheritance and
+  takeover, cycle / hold / back, a held button no new press, two games' modes, `NeedsClock`, `NextDueUs` (the time of
+  the next turbo edge / long press / pulse end, and ticking only at input changes and at `NextDueUs` gives the same
+  outputs as ticking every millisecond), no allocation per pass with chains and modes); `GremlinImportTests` (the fixtures `engine\tests\fixtures\gremlin\r13-basic.xml`, `r13-modes.xml`,
+  `r14-profile.xml`, written from Gremlin's documented format: devices by GUID / name / not found, curves, keys,
+  merged axes, every container, macros, axis ranges, mode changes, the report, the imported profile running with its
+  modes, `--vjoy-device`, refusal of other XML); `VirtualFunctionGraphModesGuiTests` (the Modes card, the editor's modes
+  and function sources, the graph's connect / refuse / disconnect / remove / open, the import's report before saving,
+  `--vjoy-tunnel` on every vjoy command, renders of the tab at 1280 and 2267 in dark and light to
+  `JOYPRO_VJOY_RENDER_OUT`); `engine\tests\smoke\vjoy.ps1` section 8 (modes CLI and a refused parent loop, chaining and a
+  refused loop, forwarder-config with chain and modes, `mode DCS Default` and `priority=below-normal` from a dry run,
+  import dry run / import / R14 / not a profile, the tunnel device in the status).
+- `ForwarderSoakTests` (the forwarder's cost, see "Performance" above): phases idle, stream and noisy (one synthetic
+  device signalling 1000 times a second: at most one pass and one wake-up per period); always 30 s per phase;
+  `JOYPRO_FORWARDER_SOAK=1` runs 5 minutes per phase (`JOYPRO_FORWARDER_SOAK_SECONDS`), `JOYPRO_FORWARDER_EXE` picks the build (release for the
+  numbers).
+- Nothing in the tests touches the real HidHide, vJoyConfig or a vJoy device: the GUI tests point every engine at a fake
+  (`JOYPRO_VJOY_FAKE`) and start JoyPro.VJoy only with the dry sink and synthetic devices (`ForwarderSoakTests`).
 
 ## Limits and notes
 
 - Force feedback is not forwarded (vJoy's FFB would need a feedback loop back to the physical stick).
-- Virtual functions read physical inputs only (not another function's output); started by hand, the functions of every
-  virtual game run at once (a shift layer of one game also acts while another runs); auto start runs only the started
-  game's. The node view is read-only (the rows next to it edit).
-- Not verified on hardware yet: the functions in a running game, keys from SendInput in a game, the vJoy maximum setup
-  (needs a Windows restart; never run by the tests).
+- Started by hand, the functions of every virtual game run at once (each game with its own modes, but a shift layer of
+  one game also acts while another runs); auto start runs only the started game's.
+- Verified live in DCS (2026-11-01, `tools\e2e\games\VJoyLive.ps1`, RunAll test `vjoy-live`, 58 of 59 checks): JoyPro's
+  elevated HidHide step hid six flight devices from DCS only (dcs.log and the Controls page list the vJoy device and
+  none of them; Wooting, HeadTracker, mouse stay), the export's binds show in the vJoy column, DCS's assignment panel
+  caught a vJoy button pulsed by a chain of virtual functions running on real DirectInput sources (toggle on at start ->
+  turbo), a chained mode switch cycled the modes of an imported Gremlin R13 profile, a Combat-only remap followed the
+  mode, a buttons-to-axis output moved, all 17 imported Gremlin functions ran; restore-hidhide put HidHide back exactly
+  (cloak, inverse, 19 devices, programs incl. 5 HidHide cannot name) and DCS listed the devices again. Forwarder cost
+  there: 6 real sources (noisy devices: event wake-ups gave ~290 passes/s at 144 Hz) with functions that change an
+  output every pass: 2.8 % of one core with the dry sink, 3.8-5.9 % with the real vJoy sink - above the 1.5 % streaming
+  budget. Fixed in 2.6.0 (one pass and one wake-up per period, only signalled devices read, timed functions wake the
+  loop at their due time): see "Real devices" under "The forwarder". The
+  elevated step does not inherit `JOYPRO_DATA_DIR`: its log lines go to the user's own `%LOCALAPPDATA%\JoyPro2\Logs`.
+- Not verified on hardware yet: keys from SendInput in a game, the vJoy maximum setup
+  (needs a Windows restart; never run by the tests), modes and chains driven by a person on real devices, a real Gremlin user's profile
+  (R14 especially: the reader follows its structure, the fixtures are written from the documented format), the idle
+  rest with real devices (that every HID device signals its changes) and the forwarder at below normal priority while
+  a game loads every core.
 - Games that identify devices only by name or VID/PID cannot tell several vJoy devices apart.
 - HidHide blocks by executable path: a game started through another executable (a launcher that stays the game) must
   be listed with `engine vjoy exe <game> --add`. Microsoft Store games live in protected folders JoyPro cannot list.

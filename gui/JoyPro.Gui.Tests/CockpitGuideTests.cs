@@ -441,6 +441,34 @@ public sealed class CockpitGuideTests
         }
     }
 
+    // Close all closes the areas too ("Shows the areas only"); before, the areas stayed open with their panels.
+    [Fact]
+    public void Page_CloseAll_ShowsTheAreasOnly()
+    {
+        string root = Temp("guide-close-all");
+        CockpitPictureTests.WriteSyntheticSet(root);
+        CockpitService.FolderOverride = () => CockpitDatabaseTests.ShippedCockpits;
+        CockpitService.Reload();
+        try
+        {
+            CockpitsViewModel vm = new() { PicturesRoot = root };
+            vm.Reload();
+            Assert.True(vm.Show("f-16", "f-16c-block-50"));
+            vm.ExpandAllGuideCommand.Execute(null);
+            Assert.Contains(vm.GuideRows, r => r.IsControl);
+
+            vm.CollapseAllGuideCommand.Execute(null);
+            Assert.NotEmpty(vm.GuideRows);
+            Assert.All(vm.GuideRows, r => Assert.True(r.IsArea, r.Name + " is not an area"));
+            Assert.Equal(vm.GuideTree!.Roots.Count, vm.GuideRows.Count);
+        }
+        finally
+        {
+            CockpitService.FolderOverride = () => null;
+            CockpitService.Reload();
+        }
+    }
+
     // The Cockpits page with the guide open, rendered at 2267x1250 and 1280x800 (dark and light), and the panel page as
     // exported. JOYPRO_GUIDE_RENDER_OUT names the output folder; JOYPRO_GUIDE_PICTURES a pictures root (the picture
     // packs unpacked: <root>\DCS\F-16C_50 ...), else the synthetic set.

@@ -364,21 +364,22 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         // Grouped by game, a header per game; the row already in the relation cannot be ticked.
         Assert.Equal(5, vm.BuilderSearchResults.Count);
         List<BuilderSearchGroupItem> groups = vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>().ToList();
-        Assert.Equal(["DCS", "FalconBMS", "WarThunder"], groups.Select(g => g.Game).ToArray());
+        Assert.Equal(["DCS", "FalconBMS", "WarThunder"], groups.Where(g => g.IsGame).Select(g => g.Game).ToArray());
         Assert.Equal(3, vm.BuilderSearchGames.Count);
         BuilderSearchResultItem inside = vm.BuilderSearchResults.Single(r => r.Id == "d3014pnil");
         Assert.True(inside.IsInOpenRelation);
         Assert.False(inside.CanCheck);
         Assert.Equal("already in this relation", inside.InOtherRelationsText);
         BuilderSearchResultItem used = vm.BuilderSearchResults.Single(r => r.Id == "d3001");
-        Assert.Equal("also in 'Chaff'", used.InOtherRelationsText);
+        Assert.Equal(string.Empty, used.InOtherRelationsText);
+        Assert.Equal("in 'Chaff'", used.OtherRelationsTag);
         Assert.Contains("understood as CMS FWD", vm.BuilderSearchStatus);
         // The match tier and the function of each row; grouped by function on request.
         Assert.Equal("same function", vm.BuilderSearchResults.Single(r => r.Id == "d3084").MatchLabel);
         Assert.Equal("Countermeasures dispense", vm.BuilderSearchResults.Single(r => r.Id == "d3084").FunctionName);
         Assert.Equal("word match", used.MatchLabel);
         vm.BuilderGroupByFunction = true;
-        Assert.Equal(["Countermeasures dispense", "Other matches"], vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>().Select(g => g.Label).ToArray());
+        Assert.Equal(["Countermeasures dispense", "Other matches", "Already in this relation"], vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>().Select(g => g.Label).ToArray());
         vm.BuilderGroupByFunction = false;
 
         // A game chip searches that game again (all its rows); the chips stay; none ticked = every game.
@@ -729,6 +730,12 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
 
     public bool LlmEnabled { get; set; }
 
+    // The relations a search row of War Thunder's flares is switched on in ("A|B"; SearchTagsTests).
+    public string SeveralRelations { get; set; } = string.Empty;
+
+    // The relations the Hornet's suggestion for "Flare" is switched on in ("A|B").
+    public string HornetRelations { get; set; } = "Hornet dispense";
+
     // A second high suggestion (several DCS aircraft) for "Add all".
     public bool ExtraHigh { get; set; }
 
@@ -886,7 +893,7 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
             List<string> rows =
             [
                 Row("FalconBMS", "SimCMSUp", "STICK: CMS Up", "FalconBMS", "high", 95, "Same function as F-16C_50 'Countermeasures Management Switch - Fwd'", ""),
-                Row("DCS", "d3033", "Dispense Switch - Aft(FLARE)", "FA-18C_hornet", "high", 95, "Same function as F-16C_50 'Countermeasures Management Switch - Fwd'", "Hornet dispense"),
+                Row("DCS", "d3033", "Dispense Switch - Aft(FLARE)", "FA-18C_hornet", "high", 95, "Same function as F-16C_50 'Countermeasures Management Switch - Fwd'", HornetRelations),
                 Row("WarThunder", "ID_FLARES", "Fire countermeasures", "WarThunder", ExtraHigh ? "high" : "medium", ExtraHigh ? 90 : 80, "Your style: 'CMS FWD' where it is missing", ""),
                 Row("DCS", "d77", "Countermeasures Continuously Dispense", "Mi-8MT", "low", 40, "Title match: 'Countermeasures Dispense' (72%)", ""),
             ];
@@ -931,7 +938,7 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
                     (false, Hit("DCS", "d3001", "AN/ALE-39 Flare SGL", "RIO", false, "F-14_RIO", "", "Chaff")),
                     (false, Hit("DCS", "d3014pnil", "Countermeasures Management Switch - Fwd", "Stick", false, "F-16C_50", "function 'CMS FWD'", "Flare")),
                     (false, Hit("FalconBMS", "SimCMSUp", "STICK: CMS Up", "Stick", false, "FalconBMS", "function 'CMS FWD'", "")),
-                    (false, Hit("WarThunder", "ID_FLARES", "Fire countermeasures", "Weapons", false, "WarThunder", "", "")),
+                    (false, Hit("WarThunder", "ID_FLARES", "Fire countermeasures", "Weapons", false, "WarThunder", "", SeveralRelations)),
                 ];
             }
             HashSet<string> games = args.Contains("--game") ? After(args, "--game").Split('|').ToHashSet(StringComparer.OrdinalIgnoreCase) : [];
@@ -1030,7 +1037,7 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     private static string Hit(string game, string id, string title, string category, bool axis, string planes, string why, string inRelation) =>
         "{\"Game\":\"" + game + "\",\"Id\":\"" + id + "\",\"Title\":\"" + title + "\",\"Category\":\"" + category + "\",\"IsAxis\":" + (axis ? "true" : "false") +
         ",\"Planes\":[" + string.Join(",", planes.Split('|').Select(p => "\"" + p + "\"")) + "],\"Score\":99,\"Why\":\"" + why + "\",\"InRelations\":[" +
-        (inRelation.Length > 0 ? "\"" + inRelation + "\"" : string.Empty) + "]" +
+        (inRelation.Length > 0 ? string.Join(",", inRelation.Split('|').Select(r => "\"" + r + "\"")) : string.Empty) + "]" +
         ",\"Match\":\"" + (why.StartsWith("function", StringComparison.Ordinal) ? "function" : why.StartsWith("synonym", StringComparison.Ordinal) ? "synonym" : "words") + "\"" +
         ",\"Function\":\"" + (why.StartsWith("function 'Throttle'", StringComparison.Ordinal) || why.StartsWith("synonym", StringComparison.Ordinal) ? "throttle" : why.StartsWith("function", StringComparison.Ordinal) ? "cm_dispense" : string.Empty) + "\"}";
 
@@ -1038,7 +1045,7 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         "{\"Game\":\"" + game + "\",\"Id\":\"" + id + "\",\"Title\":\"" + title + "\",\"Spec\":\"" + game + ":" + id + ":" + planes + "\",\"IsAxis\":false," +
         "\"Planes\":[" + string.Join(",", planes.Split('|').Select(p => "\"" + p + "\"")) + "],\"Confidence\":\"" + confidence + "\",\"Score\":" + score + "," +
         "\"Source\":\"catalog\",\"Why\":\"" + why + "\",\"Reasons\":[\"" + why + " (function catalog, checked against the manuals).\"]," +
-        "\"InOtherRelations\":[" + (other.Length > 0 ? "\"" + other + "\"" : string.Empty) + "]," +
+        "\"InOtherRelations\":[" + (other.Length > 0 ? string.Join(",", other.Split('|').Select(o => "\"" + o + "\"")) : string.Empty) + "]," +
         // "Flare" has F-16C_50 only: another game is a new game, other DCS aircraft are new aircraft.
         "\"Missing\":\"" + (game == "DCS" ? "aircraft" : "game") + "\",\"NewGame\":" + (game == "DCS" ? "false" : "true") +
         ",\"NewPlanes\":[" + string.Join(",", planes.Split('|').Select(p => "\"" + p + "\"")) + "]}";

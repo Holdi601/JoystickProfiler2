@@ -310,6 +310,9 @@ public sealed class ForwarderConfig
     /// <summary>The virtual functions, resolved by the engine (source and device indices filled).</summary>
     public List<VirtualFunction> Functions { get; init; } = [];
 
+    /// <summary>The mode sets of the games whose functions run (Group = game id; docs/virtual-joystick.md "Modes").</summary>
+    public List<VfModeSet> Modes { get; init; } = [];
+
     /// <summary>A virtual Xbox pad is needed: Xbox slots, or a function that writes the pad.</summary>
     public bool UsesXbox => Xbox.Count > 0 || Functions.Any(f => f.Enabled && f.Outputs.Any(o => o.Kind is "xbutton" or "xaxis" or "xdpad"));
 
@@ -355,6 +358,17 @@ public sealed class ForwarderConfig
             {
                 function.Normalize();
                 config.Functions.Add(function);
+            }
+        }
+
+        if (root.TryGetProperty("modes", out var modes) && modes.ValueKind == JsonValueKind.Array)
+        {
+            var list = JsonSerializer.Deserialize<List<VfModeSet>>(modes.GetRawText(), FunctionJson) ?? [];
+            foreach (var set in list.Where(s => s != null))
+            {
+                set.Normalize();
+                if (set.Modes.Count > 0)
+                    config.Modes.Add(set);
             }
         }
 

@@ -130,9 +130,52 @@ try {
     $grCleanScan = Run-Engine @("grebels", "scan", $grCleanPath, "--text")
     Assert-NotMatch $grCleanScan.Output "Axis_Yaw <- vJoy" "clean releases Yaw on the written vJoy channel."
     Assert-Match $grCleanScan.Output "Axis_Roll <- GR Stick" "clean keeps the stick (not written)."
+    # Clean is the same in every game: Roll on vJoy Z (written); the connected stick (not written) keeps its Roll axis.
+    # Only merge-overwrite moves the role there.
+    $grRollProfile = Join-Path $grDir "clean-roll.pr0file"
+    Run-Engine @("--profile", $grRollProfile, "relations", "add", "GR Roll", "--axis", "--node", "GRebels:Axis_Roll", "--device", $grVjoy, "--input", "JOY_Z", "--text") | Out-Null
+    $grRollCleanPath = New-GrCopy "clean-roll"
+    $grRollClean = Run-Engine @("--profile", $grRollProfile, "grebels", "export", $grRollCleanPath, "--mode", "clean", "--text")
+    Assert-True ($grRollClean.ExitCode -eq 0) "grebels clean export (roll) failed. Output: $($grRollClean.Output)"
+    $grRollCleanScan = (Run-Engine @("grebels", "scan", $grRollCleanPath, "--text")).Output
+    Assert-Match $grRollCleanScan "Axis_Roll <- vJoy Device \{[^}]+\} JOY_Z" "clean should write Roll on vJoy Z."
+    Assert-Match $grRollCleanScan "Axis_Roll <- GR Stick \{[^}]+\} JOY_X" "clean must keep Roll on the connected stick the export does not write (only merge-overwrite moves it)."
+    $grRollOverwritePath = New-GrCopy "overwrite-roll"
+    Run-Engine @("--profile", $grRollProfile, "grebels", "export", $grRollOverwritePath, "--mode", "merge-overwrite", "--text") | Out-Null
+    Assert-NotMatch (Run-Engine @("grebels", "scan", $grRollOverwritePath, "--text")).Output "Axis_Roll <- GR Stick" "merge-overwrite should take Roll off the connected stick."
     $grNukePath = New-GrCopy "nuke"
     Run-Engine @("--profile", $grProfile, "grebels", "export", $grNukePath, "--nuke-untouched-devices", "--text") | Out-Null
     Assert-NotMatch (Run-Engine @("grebels", "scan", $grNukePath, "--text")).Output "Axis_Roll <- GR Stick" "nuke releases the roles of the enabled channel JoyPro does not write."
+
+    # ---- a channel shared by two connected devices (live run 2026-11-01: the user's stick sat on channel 0 and vJoy was
+    # switched on to channel 0 too; the game saved both, listed stick first). The import read every channel-0 bind as
+    # the stick's, so vJoy's exported binds came back on the stick. Both devices drive the channel's binds: each one
+    # that has the input gets the bind, and scan/export say the channel is shared.
+    $grSharedBody = [byte[]]((New-GrArray "AxisOptions" "S_Input_Axis_Save" $grAxes) +
+                             (New-GrArray "Joysticks" "S_Controller_Save" (L (New-GrDevice $grStickPath $true 0) (New-GrDevice $grVjoyPath $true 0) (New-GrDevice $grPedalsPath $false 0))) + $grNone + [byte[]]@(0, 0, 0, 0))
+    $grSharedDir = Join-Path $grDir "shared"
+    Copy-Item $grFixture $grSharedDir -Recurse -Force
+    $grSharedPath = Join-Path $grSharedDir "SaveOptions.sav"
+    [System.IO.File]::WriteAllBytes($grSharedPath, [byte[]]($grHeader + (New-GrString "/Game/BASE/UI/STARTMENU/Blueprints/SaveFiles/SaveOptions.SaveOptions_C") + [byte[]]@(0) + $grSharedBody))
+    $grSharedScan = (Run-Engine @("grebels", "scan", $grSharedPath, "--text")).Output
+    Assert-Match $grSharedScan "Axis_Pitch <- vJoy Device \{[^}]+\} JOY_Y" "a shared channel: Pitch on Y should be read for vJoy too, not only for the device listed first."
+    Assert-Match $grSharedScan "Axis_Pitch <- GR Stick \{[^}]+\} JOY_Y" "a shared channel: Pitch on Y should be read for the stick too (it has Y)."
+    Assert-Match $grSharedScan "shared by" "a shared channel should be named in the scan."
+    $grSharedProfile = Join-Path $grDir "shared.pr0file"
+    Run-Engine @("--profile", $grSharedProfile, "relations", "add", "GRS Roll", "--axis", "--node", "GRebels:Axis_Roll", "--device", $grVjoy, "--input", "JOY_Z", "--text") | Out-Null
+    Run-Engine @("--profile", $grSharedProfile, "relations", "add", "GRS Fire", "--button", "--node", "GRebels:PrimaryFire", "--device", $grVjoy, "--input", "JOY_BTN20", "--text") | Out-Null
+    $grSharedExport = Run-Engine @("--profile", $grSharedProfile, "grebels", "export", $grSharedPath, "--text")
+    Assert-True ($grSharedExport.ExitCode -eq 0) "grebels export on a shared channel failed. Output: $($grSharedExport.Output)"
+    Assert-Match $grSharedExport.Output "shares channel 0 with 'GR Stick" "the export should say that vJoy's channel is shared with the stick."
+    $grSharedBack = (Run-Engine @("grebels", "scan", $grSharedPath, "--text")).Output
+    Assert-Match $grSharedBack "Axis_Roll <- vJoy Device \{[^}]+\} JOY_Z" "vJoy's exported Roll on Z must read back on vJoy (the shared channel's first device has no Z)."
+    Assert-NotMatch $grSharedBack "Axis_Roll <- GR Stick" "the stick has no Z axis: Roll must not be read on it."
+    Assert-Match $grSharedBack "PrimaryFire <- vJoy Device \{[^}]+\} JOY_BTN20" "vJoy's exported button 20 must read back on vJoy."
+    Assert-NotMatch $grSharedBack "PrimaryFire <- GR Stick" "the stick has 16 buttons: button 20 must not be read on it."
+    $grSharedImportProfile = Join-Path $grDir "shared-import.pr0file"
+    Run-Engine @("--profile", $grSharedImportProfile, "grebels", "import", $grSharedPath, "--text") | Out-Null
+    $grSharedList = (Run-Engine @("--profile", $grSharedImportProfile, "relations", "list", "--text")).Output
+    Assert-Match $grSharedList "bind=vJoy Device \{[^}]+\}::JOY_Z" "the import should bring Roll back on vJoy Z."
 
     # ---- refresh-db on a fresh install (a release ships no DB\GRebels): JoyPro's own table is written to <data>\GameData
     $grFreshRoot = Join-Path $grDir "fresh-joypro"

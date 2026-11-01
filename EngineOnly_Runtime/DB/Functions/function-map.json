@@ -484,7 +484,9 @@
  },
  "classes": {
   "heli": {"planes": ["AH-64", "CH-47", "Ka-50", "ka-50", "Mi-8", "mi-8", "Mi-24", "OH-58", "SA342", "UH-1", "UH-60", "Mi-28", "Mi-26", "Gazelle", "Bo-105", "Huey"], "words": ["helicopter", "heli", "rotorcraft"]},
-  "space": {"games": ["StarCitizen", "EliteDangerous", "X4"]}
+  "space": {"games": ["StarCitizen", "EliteDangerous", "X4"]},
+  "ground": {"categories": ["ground vehicle", "ground vehicles", "ground", "ground forces", "tank", "tanks", "armor", "armour", "armored vehicle", "armoured vehicle", "car", "cars", "truck", "trucks", "land vehicle", "land vehicles", "srv", "buggy", "IL2CoD:vehicle", "IL2CoDBlitz:vehicle"]},
+  "naval": {"categories": ["ship", "ships", "boat", "boats", "naval", "navy", "fleet", "submarine", "submarines", "sea vessel"], "notGames": ["StarCitizen", "EliteDangerous", "X4"]}
  },
  "functions": [
 
@@ -1022,12 +1024,16 @@
   {"id": "target_lock", "name": "Target lock", "category": "sensors", "kind": "button", "only": "button",
    "synonyms": ["lock", "lock target", "target lock", "weapon lock", "lock on", "lockon", "lock radar", "radar lock", "stt", "lock radar irst on target", "lock radar target on", "weapon lock air to air", "weapon lock air to ground", "lock guided bombs", "lock under reticle", "lock target ahead", "toggle target lock", "acquire", "acquisition", "radar acquire", "lock target hold to unlock", "lock unlock", "target acquire", "auto acquisition", "boresight lock", "missile lock", "cycle lock state"],
    "not": ["unlock", "door", "doors", "canopy", "gear", "tailwheel", "tail wheel", "nose wheel", "nosewheel", "shoulder", "harness", "seat", "light", "brake", "throttle", "lock view", "padlock", "view", "camera", "terrain", "wing", "flap", "flaps", "hook", "rudder", "collective", "pedal", "cyclic", "control lock", "gust", "keyboard", "parking", "mixture", "prop", "hatch", "trim", "beam", "altitude", "heading", "caps", "num", "scroll", "pitot", "lever", "stick", "steering", "landing", "track", "lock out", "lockout", "uc", "radio", "cargo", "primer", "jettison", "elevation", "undercarriage", "arc", "ark", "rotation"],
+   "bare": ["lock", "lock on", "lockon", "lock unlock", "acquire", "acquisition"],
+   "context": ["target", "aircraft", "enemy", "friend", "friendly", "foe", "hostile", "bandit", "contact", "surface", "ship", "radar", "stt", "tws", "rws", "irst", "missile", "weapon", "bomb", "rocket", "gun", "cannon", "sight", "gunsight", "sensor", "tgp", "pod", "seeker", "designate", "designation", "reticle", "magic", "boresight", "acm", "bvr"],
    "dirs": {},
    "slots": {"radar_lock": "", "space_lock_under_reticle": ""}},
 
   {"id": "target_unlock", "name": "Target unlock", "category": "sensors", "kind": "button", "only": "button",
    "synonyms": ["unlock", "break lock", "drop lock", "unlock target", "deselect target", "target cancel", "radar unlock", "release lock", "reject", "radar reject", "unlock radar", "clear target", "target unlock", "deselect", "cancel target"],
    "not": ["door", "doors", "canopy", "gear", "tailwheel", "harness", "light", "view", "padlock", "camera", "terrain", "stop padlock", "wing", "seat", "hatch"],
+   "bare": ["unlock", "reject", "deselect"],
+   "context": ["target", "aircraft", "enemy", "friend", "friendly", "foe", "hostile", "bandit", "contact", "surface", "ship", "radar", "stt", "tws", "rws", "irst", "missile", "weapon", "bomb", "rocket", "gun", "cannon", "sight", "gunsight", "sensor", "tgp", "pod", "seeker", "designate", "designation", "reticle", "magic", "boresight", "acm", "bvr"],
    "dirs": {},
    "slots": {"radar_unlock": ""}},
 

@@ -22,6 +22,7 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
 {
     private readonly VirtualFunction original;
     private readonly IReadOnlyList<VfDeviceOption> devices;
+    private readonly List<VirtualFunction> others;
     private readonly Stopwatch clock = new();
     private VfSimulator? simulator;
     private DispatcherTimer? timer;
@@ -29,14 +30,22 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
     private long liveUntil;
 
     public VirtualFunctionEditorViewModel(string game, string gameName, VirtualFunction function, IReadOnlyList<VfDeviceOption> devices, bool xboxGame,
-        IReadOnlyList<string>? warnings = null)
+        IReadOnlyList<string>? warnings = null, IReadOnlyList<VfMode>? modes = null, IReadOnlyList<VirtualFunction>? gameFunctions = null)
     {
         Game = game;
         GameName = gameName;
         IsXboxGame = xboxGame;
         original = function.Clone();
         original.Normalize();
-        this.devices = devices;
+        GameModes = modes ?? [];
+        // The game's other functions: their outputs are input sources (chaining), and validation sees the chain.
+        others = (gameFunctions ?? []).Where(f => !string.Equals(f.Id, original.Id, StringComparison.OrdinalIgnoreCase)).Select(f => f.Clone()).ToList();
+        this.devices = devices.Concat(others.Where(f => !VfChain.DependsOn(f).Contains(original.Id, StringComparer.OrdinalIgnoreCase)).Select(VfDeviceOption.ForFunction)).ToList();
+        foreach (VfMode mode in GameModes)
+        {
+            ModeChoices.Add(new VfModeChoice(mode.Name, original.Modes.Contains(mode.Name, StringComparer.OrdinalIgnoreCase), OnChanged));
+            SwitchModeChoices.Add(new VfModeChoice(mode.Name, original.SwitchModes.Contains(mode.Name, StringComparer.OrdinalIgnoreCase), OnChanged));
+        }
         Type = VirtualFunctionCatalog.Get(original.Type) ?? VirtualFunctionCatalog.Types[0];
         Warnings = warnings ?? [];
         building = true;
@@ -84,6 +93,39 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
     public ObservableCollection<VfStepItem> Steps { get; } = [];
 
     public ObservableCollection<string> Problems { get; } = [];
+
+    // ---- modes (docs/virtual-joystick.md "Modes")
+
+    public IReadOnlyList<VfMode> GameModes { get; }
+
+    // The modes the function works in (none checked: every mode).
+    public ObservableCollection<VfModeChoice> ModeChoices { get; } = [];
+
+    // Mode switch: the target mode (switch, hold, toggle: the first checked) or the modes to cycle through.
+    public ObservableCollection<VfModeChoice> SwitchModeChoices { get; } = [];
+
+    public bool HasModes => GameModes.Count > 0;
+
+    public bool IsModeSwitch => Type.Id == VirtualFunctionCatalog.ModeSwitch;
+
+    public bool ShowSwitchModes => IsModeSwitch && HasModes;
+
+    public bool ShowNoModesNote => IsModeSwitch && !HasModes;
+
+    // Where the function works, with inheritance ("Combat, Landing (inherited)").
+    public string ModesSummary
+    {
+        get
+        {
+            if (!HasModes)
+                return string.Empty;
+            VirtualFunction function = ToFunction();
+            List<VirtualFunction> all = others.Concat([function]).ToList();
+            VfModeSet set = new() { Modes = GameModes.Select(m => m.Clone()).ToList() };
+            set.Normalize();
+            return T("Works in: {0}", set.Describe(function, all));
+        }
+    }
 
     [ObservableProperty]
     private string name = string.Empty;
@@ -157,7 +199,7 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
     public bool IsMacro => Type.Id == VirtualFunctionCatalog.Macro;
 
     // Cycle steps, shift entries, macro outputs: how many.
-    public bool HasCount => Type.Id is VirtualFunctionCatalog.Cycle or VirtualFunctionCatalog.Shift or VirtualFunctionCatalog.Macro;
+    public bool HasCount => Type.Id is VirtualFunctionCatalog.Cycle or VirtualFunctionCatalog.Shift or VirtualFunctionCatalog.Macro or VirtualFunctionCatalog.Remap;
 
     public string CountLabel => Type.Id switch
     {
@@ -237,6 +279,12 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
             function.Steps = Steps.Select(s => s.ToStep()).ToList();
         if (IsCurve)
             function.Tuning = CurveTuning().Format();
+        if (HasModes)
+        {
+            function.Modes = ModeChoices.Where(m => m.IsChecked).Select(m => m.Name).ToList();
+            if (IsModeSwitch)
+                function.SwitchModes = SwitchModeChoices.Where(m => m.IsChecked).Select(m => m.Name).ToList();
+        }
         return function;
     }
 
@@ -421,6 +469,8 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
         original.Name = current.Name;
         original.Enabled = current.Enabled;
         original.Keyboard = current.Keyboard;
+        original.Modes = current.Modes;
+        original.SwitchModes = current.SwitchModes;
     }
 
     // ---- band edges (dragged on the axis bar)
@@ -501,8 +551,21 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
     {
         VirtualFunction function = ToFunction();
         Problems.Clear();
-        foreach (string problem in VirtualFunctionCatalog.Validate(function))
+        // Checked against the game's other functions: chained inputs, outputs that only feed others, loops.
+        List<VirtualFunction> all = others.Concat([function]).ToList();
+        HashSet<string> chained = VfChain.ChainedRoles(function, all);
+        foreach (string problem in VirtualFunctionCatalog.Validate(function, all, chained))
             Problems.Add(problem);
+        string loop = VfChain.LoopProblem(all);
+        if (loop.Length > 0)
+            Problems.Add(loop);
+        foreach (VfOutputRoleItem output in Outputs)
+        {
+            List<string> readers = others.Where(f => f.Inputs.Any(i => VfChain.IsChain(i) && string.Equals(VfChain.FunctionId(i), function.Id, StringComparison.OrdinalIgnoreCase) && VfChain.Role(i) == output.Role))
+                .Select(f => f.Id).ToList();
+            output.ChainNote = readers.Count == 0 ? string.Empty : output.TargetToken.Length == 0 ? T("feeds {0} only", string.Join(", ", readers)) : T("also feeds {0}", string.Join(", ", readers));
+        }
+        OnPropertyChanged(nameof(ModesSummary));
         OnPropertyChanged(nameof(HasProblems));
         OnPropertyChanged(nameof(ProblemsText));
         OnPropertyChanged(nameof(Hysteresis));
@@ -650,6 +713,8 @@ public sealed partial class VirtualFunctionEditorViewModel : ObservableObject
             VirtualFunctionCatalog.Encoder => state == 0 ? "No pulse waiting" : Math.Abs(state).ToString(CultureInfo.InvariantCulture) + (state > 0 ? " up" : " down") + " pulse(s) waiting",
             VirtualFunctionCatalog.Turbo => state == 1 ? "Repeating" : "Idle",
             VirtualFunctionCatalog.Macro => state < 0 ? "Idle" : "Playing (event " + (state + 1).ToString(CultureInfo.InvariantCulture) + ")",
+            VirtualFunctionCatalog.Remap => Inputs.FirstOrDefault()?.InputKind == "axis" ? T("Output {0} %", Math.Round(state / 10.0).ToString(CultureInfo.InvariantCulture)) : state > 0 ? T("Pressed: every output on") : T("Released"),
+            VirtualFunctionCatalog.ModeSwitch => state >= 0 && state < GameModes.Count ? T("Mode now: {0}", GameModes[state].Name) : IsModeSwitch && !HasModes ? T("The game has no modes yet") : T("Waiting for a press"),
             _ => string.Empty
         };
     }

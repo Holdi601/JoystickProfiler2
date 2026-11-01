@@ -25,6 +25,12 @@ namespace JoyPro.Engine.VJoy
     // Outputs: every vJoy button, axis and hat a function writes is "owned" (OwnedButtons, AxisOwned, HatOwned): the
     // merge replaces exactly those, so a function also overrides a slot of the forwarding table it owns (a shift layer's
     // unshifted output). Two functions on one button combine (pressed when either presses it).
+    //
+    // Chaining: a function may read another function's output (VfChain); the functions run in dependency order, every
+    // output keeps its value of the pass (VfOut.Level / HatLevel) and an output that only feeds other functions is
+    // "internal" (no vJoy target). Modes: functions belong to the mode set of their game (VfModeSet, Group); only the
+    // functions of the current mode run, a mode switch takes effect from the next pass, and a function that becomes
+    // active starts from the inputs as they are (Prime), so a held button is no new press.
     public sealed class VfRuntime
     {
         public const int StateSize = 176;
@@ -34,7 +40,8 @@ namespace JoyPro.Engine.VJoy
         public const uint HatCentred = uint.MaxValue;
 
         internal const byte InNone = 0, InAxis = 1, InButton = 2, InHat = 3, InHatDir = 4;
-        internal const byte OutNone = 0, OutVButton = 1, OutVAxis = 2, OutVHat = 3, OutXButton = 4, OutXAxis = 5, OutXDpad = 6, OutKey = 7;
+        internal const byte OutNone = 0, OutVButton = 1, OutVAxis = 2, OutVHat = 3, OutXButton = 4, OutXAxis = 5, OutXDpad = 6, OutKey = 7, OutInternal = 8;
+        internal const byte ClassButton = 0, ClassAxis = 1, ClassHat = 2;
 
         private readonly byte[][] states;
         private readonly List<int> keyScans = new List<int>();
@@ -55,7 +62,11 @@ namespace JoyPro.Engine.VJoy
         public readonly double[] XboxAxes = new double[6];
         public readonly bool[] XboxAxisOwned = new bool[6];
 
-        public VfRuntime(IList<VirtualFunction> functions, int sourceCount, int deviceCount, int axisMin = 0, int axisMax = 32767, IVfKeySink keys = null)
+        private readonly Dictionary<string, VfFunction> compiledById = new Dictionary<string, VfFunction>(StringComparer.OrdinalIgnoreCase);
+        private HashSet<string> chainedOutputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private VfModeState[] modeStates = new VfModeState[0];
+
+        public VfRuntime(IList<VirtualFunction> functions, int sourceCount, int deviceCount, int axisMin = 0, int axisMax = 32767, IVfKeySink keys = null, IList<VfModeSet> modes = null)
         {
             AxisMin = axisMin;
             AxisMax = Math.Max(axisMin + 1, axisMax);
@@ -75,15 +86,28 @@ namespace JoyPro.Engine.VJoy
             HatOwned = new bool[DeviceCount * 4];
             List<VfFunction> built = new List<VfFunction>();
             List<string> problems = new List<string>();
-            foreach (VirtualFunction function in functions ?? new List<VirtualFunction>())
+            List<VirtualFunction> enabled = (functions ?? new List<VirtualFunction>()).Where(f => f != null && f.Enabled).ToList();
+            // Functions after the ones they read; loops left out (VfChain.Order says which).
+            List<VirtualFunction> ordered = VfChain.Order(enabled, problems);
+            foreach (VirtualFunction function in ordered)
             {
-                if (function == null || !function.Enabled)
-                    continue;
+                foreach (VfInput input in function.Inputs ?? new List<VfInput>())
+                {
+                    if (VfChain.IsChain(input))
+                        chainedOutputs.Add(VfChain.FunctionId(input) + "|" + VfChain.Role(input));
+                }
+            }
+            foreach (VirtualFunction function in ordered)
+            {
                 VfFunction compiled = VfFunction.Create(this, function, problems);
-                if (compiled != null)
-                    built.Add(compiled);
+                if (compiled == null)
+                    continue;
+                built.Add(compiled);
+                if (compiled.Id.Length > 0 && !compiledById.ContainsKey(compiled.Id))
+                    compiledById[compiled.Id] = compiled;
             }
             Functions = built.ToArray();
+            BuildModes(modes, ordered, problems);
             Problems = problems;
             keyLevel = new bool[keyScans.Count];
             keySent = new bool[keyScans.Count];
@@ -98,6 +122,14 @@ namespace JoyPro.Engine.VJoy
         public List<string> Problems { get; private set; }
         public bool HasXbox { get; private set; }
         public long LastTickUs { get; private set; }
+        // After a pass: some function needs the clock (a pulse, a macro, turbo, a long press, a moving axis ...) or the
+        // mode changed. Without it the forwarder may wait for the next input change (idle).
+        public bool NeedsClock { get; private set; }
+        // After a pass with NeedsClock: when (microseconds, the Tick clock) the next pass is due at the latest - the end
+        // of a pulse, the next turbo phase, a long press or double-press window, a macro step, a diagonal settle - or
+        // LastTickUs for "the very next pass" (a moving axis, an encoder pulse, a mode change). long.MaxValue without
+        // NeedsClock. The forwarder sets its timer to it instead of running every period.
+        public long NextDueUs { get; private set; }
         public int SourceCount
         {
             get { return states.Length; }
@@ -127,7 +159,8 @@ namespace JoyPro.Engine.VJoy
                 WriteUInt(state, HatOffset + i * 4, HatCentred);
         }
 
-        // One pass: every function evaluates at nowUs (microseconds, any monotonic clock).
+        // One pass: every function of the current modes evaluates at nowUs (microseconds, any monotonic clock), in
+        // dependency order; mode switches asked for in the pass take effect afterwards.
         public void Tick(long nowUs)
         {
             LastTickUs = nowUs;
@@ -137,10 +170,153 @@ namespace JoyPro.Engine.VJoy
             {
                 VfFunction function = list[i];
                 function.Active = 0;
+                if (!IsActive(function))
+                {
+                    function.WasActive = false;
+                    continue;
+                }
+                if (!function.WasActive)
+                {
+                    function.WasActive = true;
+                    function.Prime(this);
+                }
                 function.Tick(this, nowUs);
                 function.Passes++;
             }
+            bool clock = false;
+            long due = long.MaxValue;
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (!list[i].WasActive || !list[i].Busy(nowUs))
+                    continue;
+                clock = true;
+                due = Math.Min(due, Math.Max(nowUs, list[i].NextDue(nowUs)));
+            }
+            for (int g = 0; g < modeStates.Length; g++)
+            {
+                VfModeState state = modeStates[g];
+                if (state.Pending < 0)
+                    continue;
+                if (state.Pending != state.Current)
+                {
+                    state.Previous = state.Current;
+                    state.Current = state.Pending;
+                    state.Changes++;
+                    clock = true; // the functions of the new mode start on the next pass
+                    due = nowUs;
+                }
+                state.Pending = -1;
+            }
+            NeedsClock = clock;
+            NextDueUs = clock ? due : long.MaxValue;
             FlushKeys();
+        }
+
+        private bool IsActive(VfFunction function)
+        {
+            if (function.ActiveIn == null || function.Group < 0 || function.Group >= modeStates.Length)
+                return true;
+            return function.ActiveIn[modeStates[function.Group].Current] || function.KeepActive;
+        }
+
+        // ---- modes
+
+        // The mode sets of the games (one group each); a function's group is its VirtualFunction.Group (the game) or,
+        // with a single set, that one. Without sets every function runs always.
+        private void BuildModes(IList<VfModeSet> sets, List<VirtualFunction> ordered, List<string> problems)
+        {
+            List<VfModeSet> clean = new List<VfModeSet>();
+            foreach (VfModeSet set in sets ?? new List<VfModeSet>())
+            {
+                if (set == null)
+                    continue;
+                VfModeSet copy = set.Clone();
+                copy.Normalize();
+                if (copy.Modes.Count > 0)
+                    clean.Add(copy);
+            }
+            modeStates = new VfModeState[clean.Count];
+            for (int g = 0; g < clean.Count; g++)
+            {
+                VfModeSet set = clean[g];
+                int start = Math.Max(0, set.IndexOf(set.Start));
+                modeStates[g] = new VfModeState { Set = set, Names = set.Modes.Select(m => m.Name).ToArray(), Current = start, Previous = start, Start = start, Pending = -1 };
+            }
+            for (int g = 0; g < clean.Count; g++)
+            {
+                List<int> members = new List<int>();
+                for (int i = 0; i < Functions.Length; i++)
+                {
+                    VirtualFunction source = ordered.FirstOrDefault(f => ReferenceEquals(f, Functions[i].Source));
+                    if (source != null && GroupOf(source, clean) == g)
+                        members.Add(i);
+                }
+                List<VirtualFunction> group = members.Select(i => Functions[i].Source).ToList();
+                bool[][] table = clean[g].ActiveTable(group);
+                for (int k = 0; k < members.Count; k++)
+                {
+                    VfFunction function = Functions[members[k]];
+                    function.Group = g;
+                    function.ActiveIn = table[k];
+                    foreach (string problem in clean[g].Check(function.Source))
+                        problems.Add(VfChain.Label(function.Source) + ": " + problem);
+                    function.BindModes(this, modeStates[g]);
+                }
+            }
+            for (int i = 0; i < Functions.Length; i++)
+            {
+                VfFunction function = Functions[i];
+                function.WasActive = IsActive(function);
+                if (function.Group < 0 && function.Source != null && function.Source.Modes.Count > 0 && clean.Count > 0)
+                    problems.Add(VfChain.Label(function.Source) + ": its modes belong to no mode set of the forwarder; it runs in every mode.");
+            }
+        }
+
+        private static int GroupOf(VirtualFunction function, List<VfModeSet> sets)
+        {
+            if (sets.Count == 1 && (function.Group.Length == 0 || string.Equals(sets[0].Group, function.Group, StringComparison.OrdinalIgnoreCase)))
+                return 0;
+            return sets.FindIndex(s => string.Equals(s.Group, function.Group, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // The mode groups (games with modes).
+        public int ModeGroupCount
+        {
+            get { return modeStates.Length; }
+        }
+
+        public string ModeGroupName(int group)
+        {
+            return (uint)group < (uint)modeStates.Length ? modeStates[group].Set.Group : string.Empty;
+        }
+
+        // The current mode of a group (its name; empty without modes).
+        public string CurrentModeName(int group)
+        {
+            return (uint)group < (uint)modeStates.Length ? modeStates[group].Names[modeStates[group].Current] : string.Empty;
+        }
+
+        public int CurrentMode(int group)
+        {
+            return (uint)group < (uint)modeStates.Length ? modeStates[group].Current : -1;
+        }
+
+        // How often the group's mode changed (the forwarder reports a change when this moves).
+        public long ModeChanges(int group)
+        {
+            return (uint)group < (uint)modeStates.Length ? modeStates[group].Changes : 0;
+        }
+
+        // Sets a group's mode by name (tests, the GUI's preview); false when unknown.
+        public bool SetMode(int group, string name)
+        {
+            if ((uint)group >= (uint)modeStates.Length)
+                return false;
+            int index = Array.FindIndex(modeStates[group].Names, n => string.Equals(n, name, StringComparison.OrdinalIgnoreCase));
+            if (index < 0)
+                return false;
+            modeStates[group].Pending = index;
+            return true;
         }
 
         // The end of a run: every key the functions hold goes up, outputs neutral.
@@ -153,6 +329,20 @@ namespace JoyPro.Engine.VJoy
         private void Clear()
         {
             int centre = AxisMin + (AxisMax - AxisMin + 1) / 2;
+            VfFunction[] list = Functions;
+            if (list != null)
+            {
+                for (int f = 0; f < list.Length; f++)
+                {
+                    VfOut[] outs = list[f].Outs;
+                    for (int k = 0; k < outs.Length; k++)
+                    {
+                        VfOut o = outs[k];
+                        o.Level = o.Class == ClassAxis ? 0.5 : 0.0;
+                        o.HatLevel = HatCentred;
+                    }
+                }
+            }
             for (int i = 0; i < Buttons.Length; i++)
                 Buttons[i] = 0;
             for (int i = 0; i < Axes.Length; i++)
@@ -186,6 +376,9 @@ namespace JoyPro.Engine.VJoy
 
         internal double Unit(VfIn input)
         {
+            VfOut from = input.From;
+            if (from != null)
+                return from.Class == ClassHat ? (from.HatLevel == HatCentred ? 0.0 : 1.0) : from.Level;
             if (input.Kind == InAxis)
             {
                 if (input.Source < 0)
@@ -198,6 +391,9 @@ namespace JoyPro.Engine.VJoy
 
         internal bool Pressed(VfIn input)
         {
+            VfOut from = input.From;
+            if (from != null)
+                return from.Class == ClassHat ? from.HatLevel != HatCentred : from.Level > 0.5;
             if (input.Source < 0)
                 return false;
             switch (input.Kind)
@@ -220,6 +416,9 @@ namespace JoyPro.Engine.VJoy
 
         internal uint Hat(VfIn input)
         {
+            VfOut from = input.From;
+            if (from != null)
+                return from.Class == ClassHat ? from.HatLevel : HatCentred;
             if (input.Source < 0 || (input.Kind != InHat && input.Kind != InHatDir))
                 return HatCentred;
             uint raw = BitConverter.ToUInt32(states[input.Source], HatOffset + input.Index * 4);
@@ -235,6 +434,8 @@ namespace JoyPro.Engine.VJoy
 
         internal void Press(VfOut output)
         {
+            if (output.Class != ClassAxis)
+                output.Level = 1.0;
             switch (output.Kind)
             {
                 case OutVButton:
@@ -258,6 +459,7 @@ namespace JoyPro.Engine.VJoy
         internal void SetAxis(VfOut output, double unit)
         {
             unit = unit < 0 ? 0 : unit > 1 ? 1 : unit;
+            output.Level = output.Class == ClassAxis ? unit : unit > 0.5 ? 1.0 : 0.0;
             switch (output.Kind)
             {
                 case OutVAxis:
@@ -267,6 +469,7 @@ namespace JoyPro.Engine.VJoy
                     XboxAxes[output.Index] = unit;
                     break;
                 case OutNone:
+                case OutInternal:
                     break;
                 default:
                     if (unit > 0.5)
@@ -277,6 +480,12 @@ namespace JoyPro.Engine.VJoy
 
         internal void SetHat(VfOut output, uint hat)
         {
+            if (output.Kind != OutNone)
+            {
+                output.HatLevel = hat;
+                if (output.Class == ClassHat)
+                    output.Level = hat == HatCentred ? 0.0 : 1.0;
+            }
             switch (output.Kind)
             {
                 case OutVHat:
@@ -286,6 +495,7 @@ namespace JoyPro.Engine.VJoy
                     XboxButtons |= DPadBits(hat);
                     break;
                 case OutNone:
+                case OutInternal:
                     break;
                 default:
                     if (hat != HatCentred)
@@ -323,6 +533,7 @@ namespace JoyPro.Engine.VJoy
                 case OutXDpad: return (XboxButtons & 0x000F) != 0;
                 case OutVAxis: return AxisUnit(output) > 0.5;
                 case OutXAxis: return XboxAxes[output.Index] > 0.5;
+                case OutInternal: return output.Class == ClassHat ? output.HatLevel != HatCentred : output.Level > 0.5;
                 default: return false;
             }
         }
@@ -333,6 +544,8 @@ namespace JoyPro.Engine.VJoy
                 return (Axes[output.Device * 8 + output.Index] - AxisMin) / (double)(AxisMax - AxisMin);
             if (output.Kind == OutXAxis)
                 return XboxAxes[output.Index];
+            if (output.Kind == OutInternal && output.Class == ClassAxis)
+                return output.Level;
             return IsOn(output) ? 1.0 : 0.0;
         }
 
@@ -340,6 +553,8 @@ namespace JoyPro.Engine.VJoy
         {
             if (output.Kind == OutVHat)
                 return Hats[output.Device * 4 + output.Index];
+            if (output.Kind == OutInternal)
+                return output.HatLevel;
             return HatCentred;
         }
 
@@ -350,6 +565,17 @@ namespace JoyPro.Engine.VJoy
             VfIn compiled = new VfIn();
             if (input == null)
                 return compiled;
+            if (VfChain.IsChain(input))
+            {
+                // Another function's output: compiled before this one (dependency order). Missing: reads rest.
+                VfFunction producer;
+                VfOut from = compiledById.TryGetValue(VfChain.FunctionId(input), out producer) ? producer.OutputByRole(VfChain.Role(input)) : null;
+                if (from == null)
+                    return compiled;
+                compiled.From = from;
+                compiled.Kind = from.Class == ClassAxis ? InAxis : from.Class == ClassHat ? InHat : InButton;
+                return compiled;
+            }
             switch (input.Kind ?? string.Empty)
             {
                 case "axis": compiled.Kind = InAxis; break;
@@ -364,6 +590,18 @@ namespace JoyPro.Engine.VJoy
             int limit = compiled.Kind == InAxis ? 8 : compiled.Kind == InButton ? 128 : 4;
             if (compiled.Index < 0 || compiled.Index >= limit)
                 compiled.Kind = InNone;
+            return compiled;
+        }
+
+        internal VfOut MakeOutput(VfOutput output, VirtualFunction function, string role)
+        {
+            VfOut compiled = MakeOutput(output);
+            string kind = function == null ? "button" : VirtualFunctionCatalog.OutputKind(function, role);
+            compiled.Class = kind == "axis" ? ClassAxis : kind == "hat" ? ClassHat : ClassButton;
+            compiled.Level = compiled.Class == ClassAxis ? 0.5 : 0.0;
+            // An output another function reads works without a virtual target (internal).
+            if (compiled.Kind == OutNone && function != null && chainedOutputs.Contains((function.Id ?? string.Empty) + "|" + (role ?? string.Empty).ToLowerInvariant()))
+                compiled.Kind = OutInternal;
             return compiled;
         }
 
@@ -487,13 +725,15 @@ namespace JoyPro.Engine.VJoy
         }
     }
 
-    // A compiled input: source index (-1: not read, reads neutral), kind, 0-based index, hat direction.
+    // A compiled input: source index (-1: not read, reads neutral), kind, 0-based index, hat direction; or the output of
+    // another function it reads (From).
     public sealed class VfIn
     {
         public int Source = -1;
         public byte Kind;
         public int Index;
         public int Direction;
+        public VfOut From;
 
         public bool Configured
         {
@@ -501,7 +741,9 @@ namespace JoyPro.Engine.VJoy
         }
     }
 
-    // A compiled output: kind, vJoy device index, 0-based index (key: scan code), Xbox mask, key slot, band mode.
+    // A compiled output: kind, vJoy device index, 0-based index (key: scan code), Xbox mask, key slot, band mode; the
+    // class it carries (button, axis, hat) and its value in the current pass (Level 0..1, HatLevel), which functions
+    // that read it see.
     public sealed class VfOut
     {
         public byte Kind;
@@ -511,6 +753,9 @@ namespace JoyPro.Engine.VJoy
         public int KeySlot;
         public byte Mode;
         public string Role = string.Empty;
+        public byte Class;
+        public double Level;
+        public uint HatLevel = VfRuntime.HatCentred;
 
         public bool Configured
         {
@@ -531,6 +776,56 @@ namespace JoyPro.Engine.VJoy
         public double Input;
         public int Active;
         public long Passes;
+        // Modes: the group (game) and per mode of the group whether it runs (null: always).
+        public int Group = -1;
+        public bool[] ActiveIn;
+        public bool WasActive = true;
+        internal VirtualFunction Source;
+
+        // Stays running outside its modes (a mode switch held for a temporary mode waits for the release).
+        public virtual bool KeepActive
+        {
+            get { return false; }
+        }
+
+        // Becomes active (mode change): take the inputs as they are, so a held button is no new press.
+        internal virtual void Prime(VfRuntime rt)
+        {
+        }
+
+        // The function's mode group (mode switches resolve their target modes here).
+        internal virtual void BindModes(VfRuntime rt, VfModeState state)
+        {
+        }
+
+        // Needs the next pass on time although no input changes (a pulse runs, a timer waits ...).
+        internal virtual bool Busy(long now)
+        {
+            for (int k = 0; k < PulseUntil.Length; k++)
+            {
+                if (PulseUntil[k] > now)
+                    return true;
+            }
+            return false;
+        }
+
+        // While Busy: when the next pass is due at the latest without an input change (now = the very next pass). A
+        // function that overrides Busy overrides this too; the default is the end of the earliest running pulse.
+        internal virtual long NextDue(long now)
+        {
+            return PulseDue(now);
+        }
+
+        protected long PulseDue(long now)
+        {
+            long due = long.MaxValue;
+            for (int k = 0; k < PulseUntil.Length; k++)
+            {
+                if (PulseUntil[k] > now && PulseUntil[k] < due)
+                    due = PulseUntil[k];
+            }
+            return due;
+        }
         internal VfOut[] Outs = new VfOut[0];
         internal long[] PulseUntil = new long[0];
         private readonly List<VfOut> building = new List<VfOut>();
@@ -551,7 +846,7 @@ namespace JoyPro.Engine.VJoy
 
         protected int AddOut(VfRuntime rt, VirtualFunction function, string role)
         {
-            VfOut output = rt.MakeOutput(function.OutputOf(role));
+            VfOut output = rt.MakeOutput(function.OutputOf(role), function, role);
             output.Role = role;
             building.Add(output);
             return building.Count - 1;
@@ -624,6 +919,8 @@ namespace JoyPro.Engine.VJoy
                 case VirtualFunctionCatalog.Macro: compiled = new MacroFunction(rt, function); break;
                 case VirtualFunctionCatalog.HatButtons: compiled = new HatButtonsFunction(rt, function); break;
                 case VirtualFunctionCatalog.ButtonsHat: compiled = new ButtonsHatFunction(rt, function); break;
+                case VirtualFunctionCatalog.Remap: compiled = new RemapFunction(rt, function); break;
+                case VirtualFunctionCatalog.ModeSwitch: compiled = new ModeSwitchFunction(rt, function); break;
                 default:
                     problems.Add((function.Name ?? function.Id) + ": unknown function type " + function.Type + ".");
                     return null;
@@ -631,6 +928,7 @@ namespace JoyPro.Engine.VJoy
             compiled.Id = function.Id ?? string.Empty;
             compiled.Name = function.Name ?? string.Empty;
             compiled.Type = function.Type ?? string.Empty;
+            compiled.Source = function;
             return compiled;
         }
     }
@@ -734,6 +1032,13 @@ namespace JoyPro.Engine.VJoy
             index = hold ? 0 : -1;
         }
 
+        internal override void Prime(VfRuntime rt)
+        {
+            lastNext = rt.Pressed(next);
+            lastPrev = rt.Pressed(prev);
+            lastReset = rt.Pressed(reset);
+        }
+
         internal override void Tick(VfRuntime rt, long now)
         {
             int n = Outs.Length;
@@ -780,6 +1085,11 @@ namespace JoyPro.Engine.VJoy
             Finish();
         }
 
+        internal override void Prime(VfRuntime rt)
+        {
+            last = rt.Pressed(input);
+        }
+
         internal override void Tick(VfRuntime rt, long now)
         {
             bool pressed = rt.Pressed(input);
@@ -808,6 +1118,12 @@ namespace JoyPro.Engine.VJoy
             AddOut(rt, f, "on");
             AddOut(rt, f, "off");
             Finish();
+        }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            if (started)
+                last = rt.Pressed(input);
         }
 
         internal override void Tick(VfRuntime rt, long now)
@@ -857,6 +1173,28 @@ namespace JoyPro.Engine.VJoy
             longOut = AddOut(rt, f, "long");
             doubleOut = AddOut(rt, f, "double");
             Finish();
+        }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            // A button already down waits for its release.
+            State = rt.Pressed(input) ? SecondDown : Idle;
+        }
+
+        internal override bool Busy(long now)
+        {
+            return State == Down || State == WaitSecond || base.Busy(now);
+        }
+
+        internal override long NextDue(long now)
+        {
+            long due = PulseDue(now);
+            // Down without a long output waits for the release (an input change); with one, for the long press.
+            if (State == Down && Outs[longOut].Configured)
+                due = Math.Min(due, since + longUs);
+            else if (State == WaitSecond)
+                due = Math.Min(due, since + doubleUs);
+            return due;
         }
 
         internal override void Tick(VfRuntime rt, long now)
@@ -955,6 +1293,13 @@ namespace JoyPro.Engine.VJoy
                 frozenBase[i] = 0.5;
             }
             Finish();
+        }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            last = rt.Pressed(shift);
+            if (!latch)
+                shifted = last;
         }
 
         internal override void Tick(VfRuntime rt, long now)
@@ -1220,6 +1565,24 @@ namespace JoyPro.Engine.VJoy
             Finish();
         }
 
+        internal override void Prime(VfRuntime rt)
+        {
+            lastCentre = rt.Pressed(centre);
+            last = -1;
+        }
+
+        private bool moving;
+
+        internal override bool Busy(long now)
+        {
+            return moving;
+        }
+
+        internal override long NextDue(long now)
+        {
+            return now; // moves every pass
+        }
+
         public double Value
         {
             get { return value; }
@@ -1244,6 +1607,7 @@ namespace JoyPro.Engine.VJoy
                 value = Math.Abs(value - start) <= step ? start : value + (value < start ? step : -step);
             }
             value = VfRuntime.Clamp01(value);
+            moving = (direction != 0 && (direction > 0 ? value < 1 : value > 0)) || (returnRate > 0 && direction == 0 && Math.Abs(value - start) > 1e-9);
             Input = direction;
             State = (int)Math.Round(value * 1000);
             rt.SetAxis(Outs[0], value);
@@ -1276,6 +1640,22 @@ namespace JoyPro.Engine.VJoy
             AddOut(rt, f, "up");
             AddOut(rt, f, "down");
             Finish();
+        }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            reference = -1;
+            pendingUp = pendingDown = 0;
+        }
+
+        internal override bool Busy(long now)
+        {
+            return phase != 0 || pendingUp > 0 || pendingDown > 0;
+        }
+
+        internal override long NextDue(long now)
+        {
+            return now; // its pulses and gaps step per pass
         }
 
         internal override void Tick(VfRuntime rt, long now)
@@ -1342,6 +1722,25 @@ namespace JoyPro.Engine.VJoy
             toggle = f.Param("toggle", 0) >= 0.5;
             AddOut(rt, f, "out");
             Finish();
+        }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            last = rt.Pressed(input);
+            running = false;
+        }
+
+        internal override bool Busy(long now)
+        {
+            return running;
+        }
+
+        internal override long NextDue(long now)
+        {
+            // The next edge of the on/off cycle.
+            long cycle = onUs + offUs;
+            long phase = (now - since) % cycle;
+            return now + (phase < onUs ? onUs - phase : cycle - phase);
         }
 
         internal override void Tick(VfRuntime rt, long now)
@@ -1428,6 +1827,27 @@ namespace JoyPro.Engine.VJoy
         }
 
         public long Length { get; private set; }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            last = rt.Pressed(trigger);
+            running = false;
+            for (int i = 0; i < levels.Length; i++)
+                levels[i] = false;
+        }
+
+        internal override bool Busy(long now)
+        {
+            return running;
+        }
+
+        internal override long NextDue(long now)
+        {
+            // A press seen this pass is released in the next pass; else the next step's time.
+            if (AnyPressedThisPass() || next >= times.Length)
+                return now;
+            return started + times[next];
+        }
 
         internal override void Tick(VfRuntime rt, long now)
         {
@@ -1553,6 +1973,16 @@ namespace JoyPro.Engine.VJoy
             Finish();
         }
 
+        internal override bool Busy(long now)
+        {
+            return pendingSince >= 0;
+        }
+
+        internal override long NextDue(long now)
+        {
+            return pendingSince + settleUs;
+        }
+
         public static int DirectionOf(bool u, bool r, bool d, bool l)
         {
             int dx = (r ? 1 : 0) - (l ? 1 : 0);
@@ -1593,6 +2023,191 @@ namespace JoyPro.Engine.VJoy
             if (current >= 0)
                 MarkAxis(0);
         }
+    }
+
+    // Remap: the input as it is on every output (an axis also inverted; a button on an axis output = full or rest, an
+    // axis on a button output = pressed past half).
+    internal sealed class RemapFunction : VfFunction
+    {
+        private readonly VfIn input;
+        private readonly bool invert;
+
+        public RemapFunction(VfRuntime rt, VirtualFunction f)
+        {
+            input = rt.MakeInput(f.InputOf("in"));
+            invert = f.Param("invert", 0) >= 0.5;
+            int count = VirtualFunctionCatalog.CountOf(f);
+            for (int i = 1; i <= count; i++)
+                AddOut(rt, f, "out" + i.ToString(CultureInfo.InvariantCulture));
+            Finish();
+        }
+
+        internal override void Tick(VfRuntime rt, long now)
+        {
+            switch (input.Kind)
+            {
+                case VfRuntime.InAxis:
+                {
+                    double u = rt.Unit(input);
+                    if (invert)
+                        u = 1 - u;
+                    Input = u;
+                    State = (int)Math.Round(u * 1000);
+                    for (int k = 0; k < Outs.Length; k++)
+                    {
+                        rt.SetAxis(Outs[k], u);
+                        MarkAxis(k);
+                    }
+                    break;
+                }
+                case VfRuntime.InHat:
+                {
+                    uint hat = rt.Hat(input);
+                    Input = hat == VfRuntime.HatCentred ? 0 : 1;
+                    State = hat == VfRuntime.HatCentred ? -1 : (int)(hat / 4500);
+                    for (int k = 0; k < Outs.Length; k++)
+                    {
+                        rt.SetHat(Outs[k], hat);
+                        if (hat != VfRuntime.HatCentred)
+                            MarkAxis(k);
+                    }
+                    break;
+                }
+                case VfRuntime.InNone:
+                    break;
+                default:
+                {
+                    bool down = rt.Pressed(input);
+                    Input = down ? 1 : 0;
+                    State = down ? 1 : 0;
+                    for (int k = 0; k < Outs.Length; k++)
+                    {
+                        if (Outs[k].Kind == VfRuntime.OutVAxis || Outs[k].Kind == VfRuntime.OutXAxis || (Outs[k].Kind == VfRuntime.OutInternal && Outs[k].Class == VfRuntime.ClassAxis))
+                        {
+                            rt.SetAxis(Outs[k], down ? 1.0 : 0.0);
+                            if (down)
+                                MarkAxis(k);
+                        }
+                        else
+                            Out(rt, k, down);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    // Mode switch: changes the mode of its group (the game's functions) on a press - switch to a mode, hold it while
+    // the button is held, toggle it, cycle through a list or go back to the mode before. State = the current mode.
+    internal sealed class ModeSwitchFunction : VfFunction
+    {
+        private readonly VfIn input;
+        private readonly int action;
+        private readonly List<string> targetNames;
+        private int[] targets = new int[0];
+        private VfModeState modes;
+        private bool last;
+        private bool holding;
+        private int holdReturn = -1;
+        private int toggleReturn = -1;
+
+        public ModeSwitchFunction(VfRuntime rt, VirtualFunction f)
+        {
+            input = rt.MakeInput(f.InputOf("in"));
+            action = (int)Math.Round(f.Param("action", 0));
+            targetNames = (f.SwitchModes ?? new List<string>()).ToList();
+            Finish();
+        }
+
+        public override bool KeepActive
+        {
+            get { return holding; }
+        }
+
+        internal override void BindModes(VfRuntime rt, VfModeState state)
+        {
+            modes = state;
+            targets = targetNames.Select(n => Array.FindIndex(state.Names, m => string.Equals(m, n, StringComparison.OrdinalIgnoreCase))).Where(i => i >= 0).ToArray();
+        }
+
+        internal override void Prime(VfRuntime rt)
+        {
+            last = rt.Pressed(input);
+        }
+
+        internal override void Tick(VfRuntime rt, long now)
+        {
+            bool pressed = rt.Pressed(input);
+            Input = pressed ? 1 : 0;
+            if (modes == null)
+            {
+                last = pressed;
+                State = -1;
+                return;
+            }
+            int current = modes.Current;
+            if (pressed && !last)
+            {
+                switch (action)
+                {
+                    case VirtualFunctionCatalog.ModeActionHold:
+                        if (targets.Length > 0)
+                        {
+                            holdReturn = current;
+                            holding = true;
+                            modes.Pending = targets[0];
+                        }
+                        break;
+                    case VirtualFunctionCatalog.ModeActionToggle:
+                        if (targets.Length > 0)
+                        {
+                            if (current == targets[0])
+                                modes.Pending = toggleReturn >= 0 ? toggleReturn : modes.Previous;
+                            else
+                            {
+                                toggleReturn = current;
+                                modes.Pending = targets[0];
+                            }
+                        }
+                        break;
+                    case VirtualFunctionCatalog.ModeActionCycle:
+                        if (targets.Length > 0)
+                        {
+                            int at = Array.IndexOf(targets, current);
+                            modes.Pending = targets[at < 0 ? 0 : (at + 1) % targets.Length];
+                        }
+                        break;
+                    case VirtualFunctionCatalog.ModeActionPrevious:
+                        modes.Pending = modes.Previous;
+                        break;
+                    default:
+                        if (targets.Length > 0)
+                            modes.Pending = targets[0];
+                        break;
+                }
+            }
+            else if (!pressed && last && holding)
+            {
+                holding = false;
+                if (holdReturn >= 0)
+                    modes.Pending = holdReturn;
+                holdReturn = -1;
+            }
+            last = pressed;
+            State = current;
+        }
+    }
+
+    // The mode state of one group (a game's mode set) while the runtime runs.
+    public sealed class VfModeState
+    {
+        public VfModeSet Set;
+        public string[] Names;
+        public int Current;
+        public int Previous;
+        public int Start;
+        public int Pending = -1;
+        public long Changes;
     }
 
     // ---------------------------------------------------------------------------------------------- benchmark mix
@@ -2005,6 +2620,10 @@ namespace JoyPro.Engine.VJoy
                     return "100:hat=0; 300:hat=45; 500:hat=90; 700:hat=-1; 900:hat=225; 1100:hat=-1";
                 case VirtualFunctionCatalog.ButtonsHat:
                     return "100:up=1; 300:right=1; 500:up=0; 700:right=0; 900:left=1; 1100:left=0";
+                case VirtualFunctionCatalog.Remap:
+                    return "100:in=1; 400:in=0; 800:in=1; 1000:in=0";
+                case VirtualFunctionCatalog.ModeSwitch:
+                    return "100:in=1; 300:in=0";
                 default:
                     return string.Empty;
             }

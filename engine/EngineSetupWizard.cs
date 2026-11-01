@@ -703,7 +703,9 @@ namespace JoyPro.Engine
         // engine setup devices [--grip <device>=<grip id>]... [--role <device>=<role>]... [--add-device <catalog id>]...
         // engine setup aircraft --games <g1,g2>
         // engine setup plan --games <g1,g2> [--priorities "A>B|C>D"] [--priority "B|C"]... [--modifiers N] [--prefer-fewer|--use-all-modifiers]
-        //     [--realism 0..1] [--seed N] [--replace-existing] [--role ...] [--grip ...] [--add-device ...] [--cockpit-file <json>]... [--out <plan.json>]
+        //     [--realism 0..1] [--seed N] [--replace-existing] [--phase-layers on|off|auto] [--role ...] [--grip ...] [--add-device ...] [--cockpit-file <json>]...
+        //     [--out-plan <plan.json>] (also --plan-file)
+        // engine setup check --plan <plan.json> [--modifiers N]
         // engine setup apply --plan <plan.json> [--dry-run] [--force]
         // engine setup render --plan <plan.json> --out-dir <folder> [--aircraft <name>] [--light] [--width <px>]
         private static int RunSetup(List<string> command, string outPath, bool textOutput)
@@ -892,7 +894,8 @@ namespace JoyPro.Engine
                         support[game] = EngineGameSupport.ModifierSupport(game);
                     SetupCheckReport report = SetupPlanChecks.Check(plan, functions, support, Math.Max(allowed, plan.ModifiersWanted));
                     EmitPayload(textOutput ? SetupPlanChecks.ToText(report) : EngineSerialization.ToJson(report), outPath);
-                    return 0;
+                    // Exit code 1 when a rule failed (the report says which), as for db check.
+                    return report.Passed ? 0 : 1;
                 }
                 case "apply":
                 {
@@ -998,7 +1001,7 @@ namespace JoyPro.Engine
                     return 0;
                 }
                 default:
-                    return Fail("Unknown setup action: " + action + " (devices, aircraft, plan, apply, render).");
+                    return Fail("Unknown setup action: " + action + " (devices, aircraft, plan, check, apply, render).");
             }
         }
 

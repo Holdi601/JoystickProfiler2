@@ -497,6 +497,25 @@ namespace JoyPro.Engine
             return byPlane;
         }
 
+        // The connected joysticks as JoyPro names them (no keyboard), as nuke finds them.
+        private static List<string> ConnectedJoysticks(EngineDcsExportResult result)
+        {
+            return Games.GameDeviceDirectory.Discover(result.Warnings).Devices
+                .Where(d => d.Connected && !string.IsNullOrWhiteSpace(d.JoyProName) && !string.Equals(d.JoyProName.Trim(), "Keyboard", StringComparison.OrdinalIgnoreCase))
+                .Select(d => d.JoyProName.Trim())
+                .ToList();
+        }
+
+        // Whether a device (JoyPro or DCS file name) is one of the connected joysticks; compared by JoyPro name as nuke
+        // does: a file named as DCS names the device (spaces kept) is the same device.
+        private static bool IsConnectedDevice(string device, string joystickDir, List<string> connected)
+        {
+            if (string.IsNullOrWhiteSpace(device) || connected == null)
+                return false;
+            string name = DcsDeviceNames.JoyProName(SanitizeDcsFileName(DcsDeviceNames.DcsName(device.Trim(), joystickDir)));
+            return connected.Any(d => string.Equals(DcsDeviceNames.JoyProName(SanitizeDcsFileName(DcsDeviceNames.DcsName(d, joystickDir))), name, StringComparison.OrdinalIgnoreCase));
+        }
+
         // A device the export never clears or takes binds from (the import's ignored devices, the vJoy tunnel).
         private static bool IsKeptDevice(string device, EngineDcsExportOptions options)
         {
@@ -513,15 +532,18 @@ namespace JoyPro.Engine
             return false;
         }
 
-        // Profile wins: the profile's actions also lose their buttons on the plane's other devices that have a file (a device
-        // without one keeps DCS's defaults; nuke is the tool for those). Not the keyboard of an aircraft without keyboard
-        // binds in the profile (no keyboard file is written there), not the kept devices.
+        // Profile wins: the profile's actions also lose their buttons on the plane's other connected devices that have a
+        // file (a device without one keeps DCS's defaults; nuke is the tool for those). Not a device that is not connected
+        // (its file may belong to another stick of the same name or come back later; only connected joysticks count, as
+        // in every game), not the keyboard of an aircraft without keyboard binds in the profile (no keyboard file is
+        // written there), not the kept devices.
         private static void RemoveOtherButtonsElsewhere(
             string inputPath,
             Dictionary<string, Dictionary<string, DiffPayload>> generatedPayloads,
             Dictionary<string, HashSet<string>> profileActions,
             EngineDcsExportOptions options,
             Dictionary<string, DiffPayload> cleanProfiles,
+            List<string> connected,
             EngineDcsExportResult result)
         {
             foreach (KeyValuePair<string, Dictionary<string, DiffPayload>> plane in generatedPayloads.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
@@ -540,7 +562,8 @@ namespace JoyPro.Engine
                         devices.Add(DcsDeviceNames.JoyProName(name.Substring(0, name.Length - ".diff.lua".Length)));
                     }
                 }
-                List<string> targets = devices.Where(d => !written.Contains(d) && !IsKeptDevice(d, options)).OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList();
+                List<string> targets = devices.Where(d => !written.Contains(d) && IsConnectedDevice(d, joystickDir, connected) && !IsKeptDevice(d, options))
+                    .OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList();
 
                 foreach (string device in targets)
                 {

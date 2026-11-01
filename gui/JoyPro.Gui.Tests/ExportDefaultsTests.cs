@@ -315,6 +315,31 @@ public sealed class ExportDefaultsTests : IDisposable
         Assert.Equal(0, vm.VJoyTunnelDevice);
     }
 
+    // 2.5.1: every export, not only DCS's, names the devices JoyPro never clears: the vJoy device it tunnels into and
+    // the import's ignored devices (the live export of 2026-10-31 cleared the tunnel device in the other games).
+    [Fact]
+    public async Task VJoyTunnel_AndIgnoredDevices_PassedToEveryExport()
+    {
+        A2FakeEngine fake = new() { GameState = "{\"Game\":\"WarThunder\",\"Imported\":true,\"Exported\":true,\"GameHasBinds\":true,\"GameBindCount\":3}" };
+        MainWindowViewModel vm = Vm(fake, persist: false);
+        vm.ProfilePath = Profile();
+        vm.ConfirmHandler = _ => Task.FromResult(true);
+        vm.VJoyTunnelDevice = 2;
+        vm.ImportIgnoreDevicesCsv = "Old Pedals";
+        await vm.RefreshExportGamesCommand.ExecuteAsync(null);
+        fake.Calls.Clear();
+        await vm.ExportDcsCommand.ExecuteAsync(null);
+        await vm.ExportIl2Command.ExecuteAsync(null);
+        await vm.ExportStarCitizenCommand.ExecuteAsync(null);
+        await vm.ExportGameNowCommand.ExecuteAsync(vm.ExportGames.Single(g => g.GameId == "WarThunder"));
+        foreach (string[] export in new[] { new[] { "dcs", "export" }, ["il2", "export"], ["starcitizen", "export"], ["warthunder", "export"] })
+        {
+            IReadOnlyList<string> call = Assert.Single(fake.Calls, c => NoviceGuiTests.Seq(c, export));
+            Assert.True(NoviceGuiTests.Seq(call, "--vjoy-tunnel", "2"), string.Join(" ", call));
+            Assert.True(NoviceGuiTests.Seq(call, "--ignore-device", "Old Pedals"), string.Join(" ", call));
+        }
+    }
+
     // ---- Paths and ignored devices per PC, a profile's own ----
 
     [Fact]
@@ -417,6 +442,33 @@ public sealed class ExportDefaultsTests : IDisposable
         Assert.True(NoviceGuiTests.Seq(Assert.Single(fake.Calls, c => NoviceGuiTests.Seq(c, "export-marks", "dismiss")), "--game", "DCS", "--relation", "Gear", "--aircraft", "F-16C_50"));
         Assert.DoesNotContain(vm.CheckSections, s => s.Kind == "export-skips");
         Assert.False(node.HasExportSkip);
+    }
+
+    // Elite keeps two inputs per command: a second button of the profile next to a kept keyboard key is not written
+    // (Reason no-free-slot). The card names what holds the places and offers no "Update" (it would not free one).
+    [Fact]
+    public async Task ExportMarks_NoFreePlace_CardNamesTheHolders()
+    {
+        string marks = "{\"Marks\":[{\"Game\":\"EliteDangerous\",\"Aircraft\":\"\",\"Relation\":\"Gear\",\"ActionId\":\"gear\",\"Action\":\"Landing Gear\",\"Device\":\"" + Stick +
+                       "\",\"Input\":\"JOY_BTN35\",\"Modifiers\":[],\"GameActionId\":\"Primary: keyboard key U; Secondary: HOTAS Warthog button 34 (relation 'Gear 2')\"," +
+                       "\"GameAction\":\"Primary: keyboard key U; Secondary: HOTAS Warthog button 34 (relation 'Gear 2')\",\"Reason\":\"no-free-slot\",\"Date\":\"2026-10-31\",\"Dismissed\":false}]}";
+        A2FakeEngine fake = new() { Marks = marks };
+        MainWindowViewModel vm = Vm(fake, persist: false);
+        vm.ProfilePath = Profile();
+        await vm.RefreshRelationsCommand.ExecuteAsync(null);
+        await vm.LoadExportMarksAsync();
+        ExportMarkItem mark = Assert.Single(vm.ExportMarks);
+        Assert.True(mark.NoFreeSlot);
+
+        CheckIssueSection section = Assert.Single(vm.CheckSections, s => s.Kind == "export-skips");
+        CheckIssueCard card = Assert.Single(section.AllCards);
+        Assert.StartsWith("Not written to ", card.Title);
+        Assert.Contains("keyboard key U", card.Sentence);
+        Assert.Contains("button 34 (relation 'Gear 2')", card.Sentence);
+        Assert.DoesNotContain("Only add", card.Sentence);
+        Assert.False(card.HasRecommended);
+        Assert.Equal(["Move to another button", "Keep as is"], card.Fixes.Select(f => f.Text));
+        Assert.Contains("no free place", MainWindowViewModel.ExportMarkChipText(mark, []));
     }
 
     [Fact]

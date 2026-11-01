@@ -18,6 +18,14 @@ sources, loopback UDP host, War Thunder HTTP stub) and the smoke part `engine\te
 settings and game setup on temp copies, `JoyPro.Ffb run --sink dry` against `JoyPro.Ffb simulate` per game, telemetry
 timeout, game exit, and a 60 s CPU/memory/handle resource run, ~2 min).
 
+View model tests that change the page or wait for the view model (`DetentModeTests`, `FollowInputTests`,
+`FfbSettingsTests`, `AllViewModelCommands_ExecuteWithoutThrowing`) run their body through `UiThread.RunAsync`: one thread
+with a synchronization context, as Avalonia's UI thread in the app. xUnit has none, so without it the continuations of
+the refreshes a page change starts (`CurrentStage = Binds` reloads relations, binds and the bind picker) ran on pool
+threads at the same time as the test and changed `Binds` or `BindInputChoices` under it ("Collection was modified",
+`IndexOutOfRangeException` in `ObservableCollection.InsertItem`). In the app these continuations come back to the UI
+thread, and input, timers and sockets post to it (`Dispatcher.UIThread.Post`).
+
 Usage statistics (docs/usage-statistics.md): `UsageStoreTests` (parsers on the synthetic fixtures of
 `engine\tests\fixtures\usage\root`, dedupe, retention, ranking), `UsageRecordingTests` (live tail incl. a long resource
 run, tray host, the engine's usage commands in a process and the server, the Statistics page rendered at 1280 / 2267 in
@@ -46,11 +54,59 @@ first-export question's primary button) and the renders of every changed view at
 `JOYPRO_A4_RENDER_OUT=<folder>` (`TesterBatch250RenderTests`). JoyPro 1's profiles in the support file: the smoke part
 `engine\tests\smoke\supportbundle.ps1` (`JOYPRO_JOYPRO1_DIR`).
 
+The Add actions search on a big DCS profile: `SearchSpeedTests` (Auto Group over 47 DCS aircraft, ~440 relations and
+~6700 actions, or a copy of a real profile with `JOYPRO_SEARCH_SPEED_PROFILE`; every keystroke of "tacan channel xx0x
+inc" with and without an aircraft filter through the view model, the real engine server and the real view in a hidden
+root: results within 300 ms of the debounce and no UI-thread block over 300 ms, one keystroke up to twice that;
+`JOYPRO_SEARCH_SPEED_REPORT=<file>`). `SearchTagsTests` / `SearchTagsRealEngineTests`: the tag of other relations
+(none, one, several, a name opens the relation, Back returns with the search), actions of the open relation greyed at
+the bottom and not counted, Replace from a Check card, the testers' F-14 "master" / "reset" / "master reset" cases
+through the real engine. Engine side: `engine\tests\smoke\searchliteral.ps1` (titles with every word first, brackets in
+the query, `[Inc]` / `[Dec]` / `[Next]` read right, the F-14 cases, "increase tacan channel").
+
+The 2.6.0 batch: `TesterBatch251Tests` (hidden games left out of the telemetry force feedback and telemetry recording
+lists and not looked for, back after Show again; the Relations page's filter block folded up and kept over a restart,
+its folded line naming the active filters; the Check card's fix buttons all as high as "More", no ▾ / ✓ characters on
+them) and the renders of every changed view at 1280 / 2267, dark and light, with `JOYPRO_251_RENDER_OUT=<folder>`
+(`TesterBatch251RenderTests`: Start page, Settings > Devices with a device that is not connected, Settings > Telemetry
+recording and the force feedback page with War Thunder hidden, the Relations page with its filters open and folded,
+the Check's cards). Switched-off buttons, check boxes and radio buttons are checked by `ThemeTests` through the
+contrast pairs (`ButtonForegroundDisabled` 3:1 on its face and the cards).
+
 Keyboard key and modifier names (JoyPro 1's LeftAlt / Oem102 and DCS's LAlt / OEM102 are one key,
 `engine\KeyboardKeyNames.cs`): the smoke part `engine\tests\smoke\keyboardnames.ps1` reads a profile with both
 "KeyboardLeftAlt" (Keyboard, LeftAlt) and "LAlt" (Keyboard, LAlt) and checks one modifier with the user's name, every
 bind kept, one history step of its own and none on the next run; and a DCS import with JoyPro 1's spellings that stores
-DCS's. vJoy devices in imports and `--vjoy-tunnel`: `engine\tests\smoke\vjoytunnel.ps1`.
+DCS's. vJoy devices in imports and `--vjoy-tunnel`: `engine\tests\smoke\vjoytunnel.ps1`; in the exports of every game class
+(never cleared, like ignored devices): `ExportKeptDevicesTests`. Star Citizen's stale duplicate joystick slots removed on
+export: `StarCitizenStaleSlotsTests` and `engine\tests\smoke\scslots.ps1`. The Check's vehicle classes (ground vehicles and
+ships by the catalog's category): `VehicleClassConflictTests`. The Cockpits stick page with its notes below it, light and
+dark (`JOYPRO_COCKPITS_RENDER_OUT` keeps the pictures): `WebsiteScreenshotTests.CockpitsStickPage_NotesBelowThePage_NotOverIt`.
+
+The 2.6.0 export and kit fixes: `engine\tests\smoke\elite.ps1` (one action on two buttons next to a kept keyboard key:
+only one is written, the other is listed as "No Free Place" with the slots' holders and kept as an export mark; the
+kept half-axis modifier bind named in plain words), the WARDOGS block of the smoke test (no "is False" warning from
+the export that turns Enable HOTAS on), `ExportDefaultsTests.ExportMarks_NoFreePlace_CardNamesTheHolders`,
+`ReferencePhotoStoreTests.ReencodedPhoto_WithAnAcceptedHash_IsThePhotoOnRecord`, `DevicePhotoListTests` (feeds above
+the shipped list version) and `tools\e2e\SelfTest.ps1` (MSFS 2024's footer phrase, the launch option pick, the page
+recognition of `games\Pages.psm1` on real OCR texts, every game script parses; no game is started).
+
+The 2.6.0 fixes from rebuilding the author's profile: `engine\tests\smoke\rebuild251.ps1` (a `devices exchange` save
+keeps the profile's DB fingerprint, vJoy -> vJoy exchange, `relations import` keeps the stored titles, War Thunder's
+throttle and collective on one axis are no conflict), `engine\tests\smoke\autogroupslots.ps1` (needs the development
+game lists: switched off in another relation / dismissed in this one, relations sharing a button, the user's own
+substitutes over `DCS.rejected.tsv`), `engine\tests\smoke\scslots.ps1` (Star Citizen: one device under its game, instance
+and stale names takes one slot; `JOYPRO_FAKE_SC_PRODUCTS=pidvid` makes the fake devices' DirectInput product
+`<HID product>  {PIDVID}` as on a PC, `JOYPRO_DI_ORDER_OVERRIDE` sets the startup order) and the bare "lock" rows of
+`engine\tests\smoke\functionmap.ps1`.
+
+Virtual joystick, Joystick Gremlin parts (docs/virtual-joystick.md): `VirtualFunctionChainModeTests` (chaining, modes,
+remap, idle hint, no allocation), `GremlinImportTests` (the fixtures in `engine\tests\fixtures\gremlin`),
+`VirtualFunctionGraphModesGuiTests` (Modes card, editor, the editable graph, the import's report, `--vjoy-tunnel`;
+renders at 1280 / 2267, dark and light, with `JOYPRO_VJOY_RENDER_OUT=<folder>`) and section 8 of
+`engine\tests\smoke\vjoy.ps1`. The forwarder's permanent cost: `ForwarderSoakTests` runs the real JoyPro.VJoy with the
+dry sink and synthetic devices (30 s per phase; `JOYPRO_FORWARDER_SOAK=1` 5 minutes per phase,
+`JOYPRO_FORWARDER_EXE=<release exe>` for the numbers) against CPU, memory, handle and allocation budgets.
 
 ## Test sandbox
 
@@ -124,7 +180,12 @@ Nothing a person waits for should take more than a few seconds (interactive acti
 - **DCS export.** The input files are read once, several at once (`RunFileCache`: a file the run wrote is taken from
   what it wrote, every hit checked by size and time stamp), parsed in parallel and merged in the usual order; the backup
   manifest is written once per run (a journal in between, read back after a crash); the unique relation name of an
-  import is one lookup. The output is byte for byte the old engine's (checked on a copy of a real Saved Games folder in
+  import is one lookup. A file that already holds exactly the bytes the export would write is neither backed up nor
+  rewritten (a re-export rewrote and backed up every file, 4 of 5 of them unchanged: most of the time of the gate's
+  export, I7 "dcs export dry-run"); the state record after the export hashes the files from memory, a clean profile's
+  defaults are parsed once per run, and the connected devices are read once per run (the environment log, nuke and the
+  import's device plan each read them again). `smoke\dcsexportmodes.ps1` checks that a repeated export rewrites no file
+  and that its undo changes nothing. The output is byte for byte the old engine's (checked on a copy of a real Saved Games folder in
   merge, merge-overwrite and clean + nuke, and loaded with DCS's own `luae.exe`).
 - **Load corrections.** The DB fingerprint hashes only files new or changed since the last fingerprint
   (`<data>\Cache\db-file-hashes.tsv`, size and time stamp). A profile saved with an older DB searches a replacement
@@ -136,6 +197,48 @@ Nothing a person waits for should take more than a few seconds (interactive acti
   the old full search: `JOYPRO_CORRECTION_REFERENCE=1` scores every candidate the old way, and the correction reports
   (`--correction-report`) of both are compared on copies of real profiles (2298 + 228 replacement searches identical;
   the user's March 2025 profile 80 s -> 2 s, the first Lay out with AI preview ~100 s -> under 3 s).
+- **HUD page live check in OBS.** `HudObsLiveTests` (opt-in: `JOYPRO_HUD_LIVE=<folder>`) checks the real stream page
+  server started by Start HUD in a sandbox with a fake device stream; `tools\obs_hud_live_check.ps1 -Obs` adds OBS
+  (portable copy, a copy of the user's OBS settings, Browser Source picture via obs-websocket, the user's
+  `%APPDATA%\obs-studio` mirrored and restored exactly). docs/hud.md "Live check in OBS".
+- **HUD soak (background cost while playing).** Everything the HUD runs while the user plays must be unnoticeable
+  (docs/hud.md "Performance"). `HudSoakTests` (opt-in: `JOYPRO_HUD_SOAK=<minutes>`, report with
+  `JOYPRO_HUD_SOAK_OUT=<folder>` -> `hud-soak.md`; in the quality gate as I12) drives a fake device stream (three
+  devices, every axis moving, reported every 15 ms like the DirectInput poll, a button every half second) with the HUD
+  on and one page of the stream server connected, in three phases: a baseline (the fake devices alone, the HUD off),
+  the stream page only (the player's own HUD off) and the HUD laid out and drawn in a hidden root plus the stream page.
+  It measures the whole test process (so the fake stream and the page reader are in it) after a warm-up: CPU in % of
+  one core, managed allocations, managed heap and working set growth, HUD updates and page events per second, and one
+  frame of the whole HUD drawn in software. Budgets (`HudSoak` in `HudSoakTests.cs`): stream page only < 5 % of one core
+  and < 250 KB/s, HUD drawn + stream page < 8 % and < 1500 KB/s, heap growth < 4 MB, working set growth < 40 MB,
+  updates and page events 5 .. 31 a second, a software frame < 12 ms. Measured on the development PC (2026-10-31,
+  4 minutes, other programs running):
+
+  | Measure | baseline | stream page only | HUD drawn + stream page |
+  |---|---|---|---|
+  | CPU (% of one core) | 3.87 | 3.78 | 2.24 |
+  | Allocations (KB/s) | 47 | 58 | 987 |
+  | Managed heap growth (MB) | -0.08 | 0.00 | -0.13 |
+  | Working set growth (MB) | -1.0 | -1.5 | 2.7 |
+  | HUD updates / page events per second | 0 | 22.7 | 22.3 |
+  | Stream page data (KB/s) | 0 | 11.4 | 11.2 |
+
+  One software frame of the whole HUD: 3.3 ms. The HUD's own share is within the noise of the baseline (the fake
+  stream's timers); the allocations of the drawn phase are Avalonia's layout and drawing of the changed widgets
+  (JoyPro's own path allocates nothing per report: `TesterBatch250Tests.Hud_AxisReports_AllocateNothing`,
+  `HudStreamerTests.Aircraft_...` for the aircraft widget). A first 1-minute run showed a working set step of ~49 MB
+  right after the HUD was first drawn (Skia's caches filling); with the warm-up of 30 s it stays at 2.7 MB over 2
+  minutes. Not covered: the GPU of a shown window and of OBS's Browser Source (the page draws in OBS's own process).
+- **HUD tests.** `HudStreamerTests`: 40 presets valid and using every shape, values kept in range, every HUD setting
+  (style, a changed option, an own style, a widget's style, screen / stream ticks, element ticks, outputs, port, update
+  rate) kept over a restart, a 2.5.0 `hud.json` keeping its look, style file export / import, the aircraft widget
+  lighting the control of the pressed button and moving with its sources without allocating, the aircraft grips found
+  and cut from a picture set, the stream page (transparent background, the layout and live state as events, a widget
+  unticked for the stream leaving the page, another host name refused), nothing built without a page, the pump.
+  `HudStreamerRenderTests` (`JOYPRO_HUD_RENDER_OUT=<folder>`, `JOYPRO_HUD_ENGINE=<engine.exe>` for this PC's devices,
+  `JOYPRO_HUD_PICTURES` / `JOYPRO_HUD_AIRCRAFT` for the cockpit pictures, read only) renders the HUD in 14 presets, on
+  a transparent background, the aircraft and device widgets, the designer at 1280 and 2267 in Light and Dark, and the
+  stream page in a headless Edge (`stream-page-edge.png`, checked for a transparent background and drawn widgets).
 
 ## Quality gate
 
@@ -159,10 +262,17 @@ into copies of the game's config or as dry runs, and the real config files are f
 | I9 | every game the UI names (games list, supported games page, badges, trailer) has an integration, catalog actions and a function map; labels are names, not abbreviations |
 | I10 | every page and the relation editor (empty, normal, large relation) at MinWidth, 1280x720 and 1920x1080, 100 % and 150 %, Light and Dark: no overlapping controls or chips, no text drawn over a control or chip it does not belong to, no cut-off text, no pre-filled search that finds nothing; also at 150 % and 200 % text size (Settings > Appearance) and with a serif and a wide font at 150 % text, each with 150 % Windows scaling, in Dark; the Layout page also with the profile's devices as own layouts (long names, "Your layout · N markers" chips; the header names the picture in words, match at most 100 %) |
 | I11 | every phrase of `engine/tests/fixtures/phrases/phrases.json` (names, synonyms, slang, paraphrases, everyday sentences, German) finds its function offline: search box 95 %, catalog filter 90 %, JoyPro assistant 95 %, Manage / Edit with AI 90 %, By description 90 %, search top-row precision 90 %; the app's catalog filter on one phrase and one sentence per function 85 %; failures in `phrase-failures.txt` |
+| I12 | opt-in (`-HudSoakMinutes <n>` / `JOYPRO_QUALITY_GATE_HUD_SOAK=<n>`; otherwise a note and no time spent): the HUD and the stream page stay within the HUD soak's budgets ("Speed"), report `hud-soak.md` |
 
 Output: `report.md` (findings by check, rule and game; timings), `findings.json`, `timings.csv`, `engine-calls.csv` (every
 engine run with its time) and the pictures of the contrast and layout checks. A finding fails its check; the script's
 exit code is 0 only without findings.
+
+`-Website` also builds the website (`python website\build.py --check`): every GUI page and engine command must have
+its page or entry, and the number of controls and commands without any description must not grow beyond
+`website\data\completeness-baseline.json`; then `website\check_public.ps1` runs the public-content check of
+`tools\export_public.ps1` over the built pages ([website/README.md](../website/README.md)). The screenshots of the
+site come from the opt-in render `WebsiteScreenshotTests` (`JOYPRO_WEBSITE_SHOTS_OUT`).
 
 The engine smoke test dot-sources one part per game from `engine\tests\smoke\*.ps1`. The DB refresh parts (IL-2 Great
 Battles `il2.ps1`, Elite `elite.ps1`, War Thunder, MSFS, Nuclear Option, Arma Reforger `reforger.ps1`) build small synthetic game files, run the

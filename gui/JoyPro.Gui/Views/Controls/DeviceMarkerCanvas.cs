@@ -140,6 +140,13 @@ public sealed class DeviceMarkerCanvas : Control
 
     public object? FlashMarker { get => GetValue(FlashMarkerProperty); set => SetValue(FlashMarkerProperty, value); }
 
+    // Detected control spots (picture pixels, experimental): thin rings under the markers that a placement snaps to
+    // (DeviceReferenceViewModel.Spots.cs); null or empty draws nothing.
+    public static readonly StyledProperty<IReadOnlyList<Point>?> SnapSpotsProperty =
+        AvaloniaProperty.Register<DeviceMarkerCanvas, IReadOnlyList<Point>?>(nameof(SnapSpots));
+
+    public IReadOnlyList<Point>? SnapSpots { get => GetValue(SnapSpotsProperty); set => SetValue(SnapSpotsProperty, value); }
+
     // What the shown device is doing right now: a held input's marker pulses (with its leader line), a moving axis
     // shows a small live bar (docs/ui/live-input.md).
     public static readonly StyledProperty<LiveInputState?> LiveInputProperty =
@@ -543,7 +550,8 @@ public sealed class DeviceMarkerCanvas : Control
                 state.Changed += OnLiveInputChanged;
             OnLiveInputChanged(this, EventArgs.Empty);
         }
-        else if (change.Property == ShowGridProperty || change.Property == GridSizeProperty || change.Property == ShowBackdropProperty || change.Property == PictureBackgroundProperty)
+        else if (change.Property == ShowGridProperty || change.Property == GridSizeProperty || change.Property == ShowBackdropProperty || change.Property == PictureBackgroundProperty ||
+                 change.Property == SnapSpotsProperty)
         {
             InvalidateVisual();
         }
@@ -759,6 +767,9 @@ public sealed class DeviceMarkerCanvas : Control
             context.DrawRectangle(Resource("JP.SurfaceRaisedBrush") ?? Brushes.DimGray, null, target, 6, 6);
         }
 
+        if (SnapSpots is { Count: > 0 } snapSpots)
+            DrawSnapSpots(context, snapSpots, target, zoom);
+
         if (ShowGrid && GridSize > 0)
         {
             double step = GridSize;
@@ -771,6 +782,25 @@ public sealed class DeviceMarkerCanvas : Control
                     context.DrawLine(gridPen, new Point(pan.X + x * zoom, target.Top), new Point(pan.X + x * zoom, target.Bottom));
                 for (double y = 0; y <= picture.Height; y += step)
                     context.DrawLine(gridPen, new Point(target.Left, pan.Y + y * zoom), new Point(target.Right, pan.Y + y * zoom));
+            }
+        }
+    }
+
+    // The detected spots: a dashed accent ring with a dark halo (readable on light and dark photos) and a centre dot.
+    private void DrawSnapSpots(DrawingContext context, IReadOnlyList<Point> spots, Rect target, double zoom)
+    {
+        Color accent = Resource("JP.AccentBrush") is ISolidColorBrush brush ? brush.Color : Color.Parse("#3D8BFF");
+        IPen halo = new Pen(new SolidColorBrush(Color.FromArgb(140, 0, 0, 0)), 3.2);
+        IPen ring = new Pen(new SolidColorBrush(accent), 1.6, new DashStyle([2.5, 1.8], 0));
+        IBrush dot = new SolidColorBrush(accent);
+        using (context.PushClip(target))
+        {
+            foreach (Point spot in spots)
+            {
+                Point c = new(pan.X + spot.X * zoom, pan.Y + spot.Y * zoom);
+                context.DrawEllipse(null, halo, c, 7, 7);
+                context.DrawEllipse(null, ring, c, 7, 7);
+                context.DrawEllipse(dot, null, c, 1.8, 1.8);
             }
         }
     }

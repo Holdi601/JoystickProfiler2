@@ -23,7 +23,9 @@ Settings > Appearance (`ViewModels/MainWindowViewModel.Appearance.cs`, `Services
   opacity, hex text, a few swatches), a live preview of a small main page (`Views/Controls/ThemePreviewHost.cs`: the
   edited colours and fonts as local resources), Reset colours, Save, Use this theme, Duplicate, Delete.
 - Contrast check: `ThemeService.ContrastPairs` (text on its backgrounds, semi-transparent backgrounds composited on what
-  they stand on): 4.5:1 for text, 3:1 for the accent and chart curves. "Fix the contrast" makes the text colours lighter
+  they stand on): 4.5:1 for text, 3:1 for the accent, chart curves and switched-off controls (`ButtonForegroundDisabled`
+  on `ButtonBackgroundDisabled` and on the cards; 2.6.0: Fluent's grey on grey was about 2.5:1 in the Light theme, the
+  toggles, check boxes and radio buttons follow the two button tokens). "Fix the contrast" makes the text colours lighter
   or darker (keeping their hue) until all pairs pass; a text colour on several backgrounds gets one colour that reads on
   all of them; when no text colour can, the backgrounds move.
 

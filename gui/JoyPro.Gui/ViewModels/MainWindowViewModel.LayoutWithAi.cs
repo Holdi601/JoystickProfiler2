@@ -343,7 +343,8 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(CanApplyLayout));
     }
 
-    // Forgets a kept preference (engine arrange prefs remove), then makes the preview again when one is shown.
+    // Forgets a kept preference (engine arrange prefs remove) and discards a preview that is shown (Preview makes a new
+    // one without it).
     [RelayCommand]
     private async Task RemoveLayoutPreferenceAsync(LayoutPreferenceItem? item)
     {

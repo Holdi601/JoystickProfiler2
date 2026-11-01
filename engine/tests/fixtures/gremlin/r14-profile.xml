@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A Joystick Gremlin R14 profile (profile version 14: inputs bound to a root action of the action library, actions
+     with typed properties, modes with parents) written after the R14 structure for JoyPro's import tests. -->
+<profile version="14">
+    <inputs>
+        <input>
+            <device-id>{11111111-2222-3333-4444-000000000001}</device-id>
+            <input-type>button</input-type>
+            <input-id>3</input-id>
+            <mode>Default</mode>
+            <action-configuration>
+                <behavior>button</behavior>
+                <root-action>7d1b0f2e-0001-4c3b-9a55-000000000001</root-action>
+            </action-configuration>
+        </input>
+        <input>
+            <device-id>{11111111-2222-3333-4444-000000000001}</device-id>
+            <input-type>button</input-type>
+            <input-id>4</input-id>
+            <mode>Gear</mode>
+            <action-configuration>
+                <behavior>button</behavior>
+                <root-action>7d1b0f2e-0002-4c3b-9a55-000000000002</root-action>
+            </action-configuration>
+        </input>
+        <input>
+            <device-id>{11111111-2222-3333-4444-000000000001}</device-id>
+            <input-type>axis</input-type>
+            <input-id>2</input-id>
+            <mode>Default</mode>
+            <action-configuration>
+                <behavior>axis</behavior>
+                <root-action>7d1b0f2e-0003-4c3b-9a55-000000000003</root-action>
+            </action-configuration>
+        </input>
+        <input>
+            <device-id>{11111111-2222-3333-4444-000000000001}</device-id>
+            <input-type>hat</input-type>
+            <input-id>1</input-id>
+            <mode>Default</mode>
+            <action-configuration>
+                <behavior>button</behavior>
+                <virtual-button>north|north-east</virtual-button>
+                <root-action>7d1b0f2e-0004-4c3b-9a55-000000000004</root-action>
+            </action-configuration>
+        </input>
+        <input>
+            <device-id>keyboard</device-id>
+            <input-type>key</input-type>
+            <input-id>57</input-id>
+            <mode>Default</mode>
+        </input>
+    </inputs>
+    <library>
+        <action id="7d1b0f2e-0001-4c3b-9a55-000000000001" type="root">
+            <property type="action_ids"><name>children</name><value>a0000000-0000-0000-0000-0000000000a1|a0000000-0000-0000-0000-0000000000a2</value></property>
+        </action>
+        <action id="a0000000-0000-0000-0000-0000000000a1" type="remap">
+            <property type="int"><name>vjoy-device-id</name><value>1</value></property>
+            <property type="int"><name>vjoy-input-id</name><value>40</value></property>
+            <property type="input_type"><name>vjoy-input-type</name><value>button</value></property>
+        </action>
+        <action id="a0000000-0000-0000-0000-0000000000a2" type="map-to-keyboard">
+            <property type="string"><name>keys</name><value>57:False</value></property>
+        </action>
+        <action id="7d1b0f2e-0002-4c3b-9a55-000000000002" type="root">
+            <property type="action_ids"><name>children</name><value>b0000000-0000-0000-0000-0000000000b1</value></property>
+        </action>
+        <action id="b0000000-0000-0000-0000-0000000000b1" type="tempo">
+            <property type="float"><name>threshold</name><value>0.5</value></property>
+            <property type="string"><name>activate-on</name><value>release</value></property>
+            <short-actions><action-id>a0000000-0000-0000-0000-0000000000a3</action-id></short-actions>
+            <long-actions><action-id>a0000000-0000-0000-0000-0000000000a4</action-id></long-actions>
+        </action>
+        <action id="a0000000-0000-0000-0000-0000000000a3" type="remap">
+            <property type="int"><name>vjoy-device-id</name><value>1</value></property>
+            <property type="int"><name>vjoy-input-id</name><value>41</value></property>
+            <property type="input_type"><name>vjoy-input-type</name><value>button</value></property>
+        </action>
+        <action id="a0000000-0000-0000-0000-0000000000a4" type="change-mode">
+            <property type="string"><name>change-type</name><value>Switch</value></property>
+            <property type="string"><name>target-mode</name><value>Default</value></property>
+        </action>
+        <action id="7d1b0f2e-0003-4c3b-9a55-000000000003" type="root">
+            <property type="action_ids"><name>children</name><value>c0000000-0000-0000-0000-0000000000c1|a0000000-0000-0000-0000-0000000000a5</value></property>
+        </action>
+        <action id="c0000000-0000-0000-0000-0000000000c1" type="response-curve">
+            <property type="string"><name>deadzone</name><value>-1.0 -0.1 0.1 1.0</value></property>
+            <property type="string"><name>control-points</name><value>-1,-1|-0.5,-0.125|0,0|0.5,0.125|1,1</value></property>
+        </action>
+        <action id="a0000000-0000-0000-0000-0000000000a5" type="remap">
+            <property type="int"><name>vjoy-device-id</name><value>1</value></property>
+            <property type="int"><name>vjoy-input-id</name><value>5</value></property>
+            <property type="input_type"><name>vjoy-input-type</name><value>axis</value></property>
+            <property type="axis_mode"><name>axis-mode</name><value>absolute</value></property>
+        </action>
+        <action id="7d1b0f2e-0004-4c3b-9a55-000000000004" type="root">
+            <property type="action_ids"><name>children</name><value>d0000000-0000-0000-0000-0000000000d1|a0000000-0000-0000-0000-0000000000a6</value></property>
+        </action>
+        <action id="d0000000-0000-0000-0000-0000000000d1" type="play-sound">
+            <property type="string"><name>sound-file</name><value>C:\Sounds\beep.wav</value></property>
+        </action>
+        <action id="a0000000-0000-0000-0000-0000000000a6" type="remap">
+            <property type="int"><name>vjoy-device-id</name><value>1</value></property>
+            <property type="int"><name>vjoy-input-id</name><value>42</value></property>
+            <property type="input_type"><name>vjoy-input-type</name><value>button</value></property>
+        </action>
+    </library>
+    <modes>
+        <mode parent="">Default</mode>
+        <mode parent="Default">Gear</mode>
+    </modes>
+    <settings>
+        <startup-mode>Default</startup-mode>
+    </settings>
+</profile>

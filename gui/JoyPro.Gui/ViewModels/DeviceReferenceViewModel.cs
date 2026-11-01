@@ -1217,6 +1217,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         OnPropertyChanged(nameof(HasAssistant));
         OnPropertyChanged(nameof(HasNoKnownPositions));
         OnPropertyChanged(nameof(HasMissingMarkers));
+        _ = RefreshDetectedSpotsAsync();
     }
 
     [RelayCommand]
@@ -1245,6 +1246,7 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
         OnPropertyChanged(nameof(HasPhoto));
         OnPropertyChanged(nameof(ShowsSchematic));
         OnPropertyChanged(nameof(PictureAspect));
+        _ = RefreshDetectedSpotsAsync();
     }
 
     partial void OnModelChanged(RefDevice? value) => OnPropertyChanged(nameof(HasModel));
@@ -1257,5 +1259,6 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(ShowsSchematic));
         NotifyCanvasPicture();
+        _ = RefreshDetectedSpotsAsync();
     }
 }

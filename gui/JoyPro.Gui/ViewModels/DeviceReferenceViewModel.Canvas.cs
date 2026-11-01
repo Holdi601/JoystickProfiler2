@@ -106,7 +106,8 @@ public sealed partial class DeviceReferenceViewModel
         double width = PictureWidth, height = PictureHeight;
         if (Assistant is not { } assistant || width <= 0 || height <= 0)
             return false;
-        double px = System.Math.Clamp(x / width, 0, 1), py = System.Math.Clamp(y / height, 0, 1);
+        // Near a detected control spot (experimental, off by default) the marker goes on the spot's centre.
+        (double px, double py) = SnapToSpot(System.Math.Clamp(x / width, 0, 1), System.Math.Clamp(y / height, 0, 1));
         // A pressed input waits for its click; else the part of "Now place: X" goes there.
         return assistant.IsWaitingForClick ? assistant.PlaceAt(px, py) : assistant.PlaceNextAt(px, py);
     }
@@ -117,7 +118,8 @@ public sealed partial class DeviceReferenceViewModel
         double width = PictureWidth, height = PictureHeight;
         if (Assistant is not { } assistant || width <= 0 || height <= 0 || string.IsNullOrWhiteSpace(partId))
             return false;
-        return assistant.DropPart(partId, System.Math.Clamp(x / width, 0, 1), System.Math.Clamp(y / height, 0, 1));
+        (double px, double py) = SnapToSpot(System.Math.Clamp(x / width, 0, 1), System.Math.Clamp(y / height, 0, 1));
+        return assistant.DropPart(partId, px, py);
     }
 
     // Shows nothing (no device picked).

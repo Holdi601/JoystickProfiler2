@@ -73,7 +73,7 @@ translated later.
 | `validate --lang de --in f [--todo chunk]` | a filled-in file: every text there, placeholders kept |
 | `merge --lang de --in f` | adds a filled-in file to `Strings/de.json` (keeps the English text's leading/trailing spaces) |
 | `check` | placeholders of every translation in every language |
-| `cyrillic` | makes `sr-Cyrl.json` from `sr-Latn.json` (transliteration; names, ids and placeholders stay) |
+| `cyrillic` | makes `sr-Cyrl.json` from `sr-Latn.json` (transliteration; names, ids, placeholders and key names such as `Ctrl+Z`, `Alt+Up` stay) |
 | `wrap-axaml [--file x] [--dry]` | literal XAML texts to `{l:T '...'}` (and `StringFormat` bindings to `Arg0`) |
 | `wrap-cs [--file x] [--dry] [--left f]` | user texts in C# to `T("...", args)`; concatenations and `$"..."` become format texts; ids, keys, JSON fields, logs and static tables stay (listed in `--left` with the reason). Review the diff and run the tests |
 | `merge --keep` | as merge, but a translation already in the file stays |

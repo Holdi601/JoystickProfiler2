@@ -37,8 +37,8 @@ open last. Nothing to press, nothing lost on a crash, and the history never fill
 - **Top bar**: `Saving…` while an engine change runs or edits wait for the autosave, `Saved ✓` afterwards (tooltip:
   the time), `Not saved` with the reason when a save failed (the edits stay pending and are tried again). `Ctrl+S`
   still saves at once.
-- **New profile** has no dialog: `Documents\JoyPro2\profiles\profile-<date-time>.pr0file` (`JOYPRO_PROFILES_DIR`
-  replaces the folder; tests). `More > Rename...` renames the file (its history goes along), `More > Save as...`
+- **New profile** has no dialog: `Documents\JoyPro2\profiles\My profile.pr0file`, or `My profile 2.pr0file`,
+  `My profile 3.pr0file`, ... when that name is taken (`JOYPRO_PROFILES_DIR` replaces the folder; tests). `More > Rename...` renames the file (its history goes along), `More > Save as...`
   writes a copy and goes on with it (the copy starts its own history, "Saved as a copy of ...").
   Renaming onto the name of another profile asks first ("Replace the profile ...?"); yes keeps the replaced file as
   `<name>.pr0file.bak` next to it (`<name>.pr0file.<date-time>.bak` when a .bak is there already) together with its
@@ -111,8 +111,9 @@ So the history never fills the disk (`ProfileHistory.Prune`, `ProfileHistoryPoli
 | up to 60 days | the newest version of every day |
 | older | the newest version of every week |
 
-Then, per profile, the oldest versions go until its history is under **200 MB**, and across all profiles the oldest
-versions of all go until all histories are under **1 GB**. Never removed: versions marked `Keep`, the newest version,
+Then, per profile, the oldest versions go until its history is under **200 MB**, and across all profiles (`--all`, and
+every clean-up of the GUI) the oldest versions of all go until all histories are under **1 GB**; `--dry-run` counts both steps
+and removes nothing. Never removed: versions marked `Keep`, the newest version,
 the version the profile is at (and the one it stands for after an undo) and the redo stack. Blobs no version uses any
 more are deleted.
 

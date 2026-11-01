@@ -19,6 +19,9 @@ public sealed class ListPreferences
     // The Binds page's peek at the selected relation's actions is open.
     public bool BindPeekOpen { get; set; } = true;
 
+    // The Relations page's filter block (groups, games, devices, bound, axes / buttons, sort, search scope) is open.
+    public bool RelationFiltersOpen { get; set; } = true;
+
     // List -> its sort levels ("device:asc", "input:asc", "name:desc"); none = by name.
     public Dictionary<string, List<string>> Sorts { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 

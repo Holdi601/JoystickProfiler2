@@ -1165,8 +1165,13 @@ namespace JoyPro.Engine
         {
             try
             {
+                // A file this run just read or wrote (the DCS export's input files): its bytes from memory (not while a
+                // test makes reads fail).
+                byte[] bytes;
+                if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(SafeFileIo.FaultVariable)) || !RunFileCache.TryGetBytes(path, out bytes))
+                    bytes = SafeFileIo.ReadAllBytes(path);
                 using (SHA256 sha = SHA256.Create())
-                    return Hex(sha.ComputeHash(SafeFileIo.ReadAllBytes(path)));
+                    return Hex(sha.ComputeHash(bytes));
             }
             catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
             {

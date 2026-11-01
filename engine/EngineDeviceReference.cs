@@ -144,6 +144,8 @@ namespace JoyPro.Engine
                     return RunDeviceLineArt(catalog, rest, outPath, textOutput);
                 case "mesh-render":
                     return RunDeviceMeshRender(rest, outPath);
+                case "detect":
+                    return RunDeviceDetect(catalog, rest, outPath, textOutput);
                 case "completeness":
                 {
                     // Per model: does the best shipped picture place every input? (docs/device-reference.md)
@@ -244,7 +246,7 @@ namespace JoyPro.Engine
                     return problems.Count == 0 ? 0 : 1;
                 }
                 default:
-                    return Fail("Unknown devices reference action: " + action + " (use list, identify, show, check, photos, photo-add or layout-check).");
+                    return Fail("Unknown devices reference action: " + action + " (use list, identify, show, check, photos, photo-add, layout-check, drawings, completeness, mesh-render or detect).");
             }
         }
 
@@ -384,7 +386,7 @@ namespace JoyPro.Engine
 
         // devices reference layout-check: every curated position set (DB\DeviceLayouts) names a catalog model and one of
         // its referenced photos, carries that photo's content hash (and the same hash as the photo reference when it has
-        // one), and only parts the model has. The exit code is the number of problems.
+        // one), and only parts the model has. Exit code 1 when there is a problem (the list names each), else 0.
         private static int RunDeviceLayoutCheck(DeviceCatalog catalog, List<string> rest, string outPath)
         {
             List<string> warnings = new List<string>();

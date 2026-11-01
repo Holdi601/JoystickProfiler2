@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace JoyPro.Engine.Games
 {
     // The X4 control catalog as the installed game defines it (see docs/games/x4.md "Action catalog"): the rows of the
-    // Options > Controls menu are config.input.controlsorder in ui/addons/ego_gameoptions/gameoptions.lua (sections
+    // Settings > Controls menu are config.input.controlsorder in ui/addons/ego_gameoptions/gameoptions.lua (sections
     // space, menus, firstperson), the bind-together groups config.input.controlFunctions; titles come from
     // t/0001-l044.xml (pages 1005 actions, 1006 states, 1007 ranges, 1001 group names). The Lua menu uses numeric
     // ids; their names come from the name tables in X4.exe, else from DB\X4\order.tsv. Everything is read-only.

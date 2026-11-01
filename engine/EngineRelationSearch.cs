@@ -24,6 +24,9 @@ namespace JoyPro.Engine
         // variants (cyclic, gyroscope, balloon burner, alternate axes), also before a title that has the query's word.
         private const int PrimaryScore = 450;
         private const int PrimaryTieScore = 60;
+        // A title with every typed word, when the query does not name a function with all of its words: before every
+        // row that only means the same (docs/relation-builder.md "Ranking").
+        private const int LiteralScore = 2000;
 
         private static readonly HashSet<string> Filler = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -47,6 +50,9 @@ namespace JoyPro.Engine
             // The meaning of the id this row stands for (EngineIdMeanings: DCS aircraft whose title and category of the
             // id are the same or near); other games: 0.
             public int Cluster;
+            // The title has every typed word (LiteralHits); LiteralShare: how much of the title they are, in percent.
+            public bool Literal;
+            public double LiteralShare;
             public readonly SortedSet<string> Planes = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -75,7 +81,7 @@ namespace JoyPro.Engine
             EngineFunctionMap.Map map = EngineFunctionMap.Load(result.Warnings);
             result.LoadMilliseconds = map.LoadMilliseconds;
             Stopwatch watch = Stopwatch.StartNew();
-            string[] words = EngineFunctionMap.Tokenize(result.Query).Where(t => !Filler.Contains(t)).Distinct().ToArray();
+            string[] words = EngineFunctionMap.Tokenize(EngineFunctionMap.QueryText(result.Query)).Where(t => !Filler.Contains(t)).Distinct().ToArray();
             if (words.Length == 0 && result.Category.Length == 0 && !wholeList)
             {
                 result.Errors.Add("Type what the action does, e.g. \"gear up\", \"flare\", \"CMS aft\".");
@@ -120,6 +126,10 @@ namespace JoyPro.Engine
                 int contentWords = (content.Length > 0 ? content : words).Count(w => !map.Stopwords.Contains(w));
                 bool named = u.Functions.Any(r => !r.Related && r.Covered >= contentWords);
                 WordHits(map, content.Length > 0 ? content : words, words, wanted, rows, named);
+                // Every title with all the typed words is a hit, and it leads unless the query names a function with
+                // all its words ("pitch", "gear up": that function's rows lead as before).
+                bool literalLeads = !u.Functions.Any(r => !r.Related && !r.Described) || u.Extra.Count > 0;
+                LiteralHits(map, LiteralWords(result.Query), wanted, rows, literalLeads);
                 // A command id is no description: the functions guessed from its letters are not "understood as".
                 if (KeyHits(map, result.Query, wanted, rows) && DcsCommandNames.LooksLikeCommandId(result.Query))
                 {
@@ -204,6 +214,7 @@ namespace JoyPro.Engine
                     MeaningNote = MeaningNote(near, different),
                     Score = (int)Math.Round(row.Score),
                     Primary = row.Primary,
+                    Literal = row.Literal,
                     FunctionLabel = label,
                     Display = display,
                     Why = row.Why,
@@ -551,6 +562,7 @@ namespace JoyPro.Engine
             public readonly Dictionary<string, List<int>> Id = new Dictionary<string, List<int>>(StringComparer.Ordinal);
             public readonly Dictionary<string, List<int>> Category = new Dictionary<string, List<int>>(StringComparer.Ordinal);
             public string[] Vocabulary = new string[0];
+            public string[] TitleVocabulary = new string[0];
             public int Documents;
         }
 
@@ -582,6 +594,7 @@ namespace JoyPro.Engine
                     AddTo(index.Category, t, i);
             }
             index.Vocabulary = index.Title.Keys.Concat(index.Id.Keys).Distinct(StringComparer.Ordinal).ToArray();
+            index.TitleVocabulary = index.Title.Keys.ToArray();
             wordIndex = index;
             return index;
         }
@@ -734,6 +747,85 @@ namespace JoyPro.Engine
             return found;
         }
 
+        // The typed words as they are written in a title: '+' and '-' and brackets are only punctuation here ("TACAN
+        // Channel (xx0x) - [Inc]" is "tacan channel xx 0 x inc"), filler words ("the", "of") left out.
+        internal static string[] LiteralWords(string query)
+        {
+            string text = (query ?? string.Empty).Replace('-', ' ').Replace('+', ' ');
+            return EngineFunctionMap.Tokenize(text).Where(t => !Filler.Contains(t)).Distinct().ToArray();
+        }
+
+        // Titles with every typed word (a whole word, or the start of one from three letters on: "disp" = "Dispense").
+        // A title the other passes did not find is added as a word match; leads: the titles with every word as a whole
+        // word go before every row that only means the same (the function, a synonym, a description), the ones with the
+        // fewest other words first ("guns hot" does not put every "HOTAS" title first by its start "hot").
+        private static void LiteralHits(EngineFunctionMap.Map map, string[] literal, Func<EngineRelationSuggest.Command, bool> wanted, Dictionary<string, Row> rows, bool leads)
+        {
+            if (literal.Length == 0)
+                return;
+            WordIndex index = Words(map);
+            List<HashSet<int>> sets = new List<HashSet<int>>();
+            List<List<int>> whole = new List<List<int>>();
+            foreach (string term in literal)
+            {
+                HashSet<int> set = new HashSet<int>();
+                List<int> list;
+                if (index.Title.TryGetValue(term, out list))
+                    set.UnionWith(list);
+                whole.Add(list ?? new List<int>());
+                if (term.Length >= 3)
+                {
+                    foreach (string token in index.TitleVocabulary)
+                    {
+                        if (token.Length > term.Length && token.StartsWith(term, StringComparison.Ordinal) && index.Title.TryGetValue(token, out list))
+                            set.UnionWith(list);
+                    }
+                }
+                if (set.Count == 0)
+                    return;
+                sets.Add(set);
+            }
+            sets.Sort((a, b) => a.Count.CompareTo(b.Count));
+            HashSet<int> found = new HashSet<int>(sets[0]);
+            for (int i = 1; i < sets.Count && found.Count > 0; i++)
+                found.IntersectWith(sets[i]);
+            HashSet<int> wholeWords = new HashSet<int>(found);
+            foreach (List<int> list in whole)
+            {
+                if (wholeWords.Count == 0)
+                    break;
+                wholeWords.IntersectWith(list);
+            }
+            HashSet<Row> literalRows = new HashSet<Row>();
+            HashSet<Row> leading = new HashSet<Row>();
+            foreach (int e in found)
+            {
+                EngineFunctionMap.Entry entry = map.Entries[e];
+                if (!wanted(entry.Command))
+                    continue;
+                int titleWords = Math.Max(literal.Length, entry.TitleTokens.Count(t => !Filler.Contains(t)));
+                double share = 100.0 * literal.Length / titleWords;
+                Row row = Add(rows, entry, WordScore + share * 1.5, "Title has every word", "words", null);
+                if (literalRows.Add(row))
+                {
+                    row.LiteralShare = share;
+                    // Of titles with as many other words, the ones whose other word is a step or direction ([Inc], [Dec],
+                    // [Next], Up, Toggle) before fixed positions ("- 0" .. "- 9"): a button usually steps a knob.
+                    if (entry.TitleTokens.Where(t => !literal.Contains(t)).Any(t => map.DirectionWords.Contains(t)))
+                        row.LiteralShare += 0.5;
+                }
+                if (wholeWords.Contains(e))
+                    leading.Add(row);
+            }
+            foreach (Row row in literalRows)
+            {
+                row.Literal = true;
+                // The whole title typed ("master reset" = "MASTER RESET") comes first of all.
+                if (leads && leading.Contains(row))
+                    row.Score += LiteralScore + row.LiteralShare + (row.LiteralShare >= 100 ? ExactScore : 0);
+            }
+        }
+
         private static void Mark(Dictionary<int, double[]> found, List<int> entries, int word, int words, double value)
         {
             foreach (int e in entries)
@@ -746,12 +838,12 @@ namespace JoyPro.Engine
             }
         }
 
-        private static void Add(Dictionary<string, Row> rows, EngineFunctionMap.Entry entry, double score, string why, string match, EngineFunctionMap.Assignment a)
+        private static Row Add(Dictionary<string, Row> rows, EngineFunctionMap.Entry entry, double score, string why, string match, EngineFunctionMap.Assignment a)
         {
-            Add(rows, entry, score, why, match, a, false);
+            return Add(rows, entry, score, why, match, a, false);
         }
 
-        private static void Add(Dictionary<string, Row> rows, EngineFunctionMap.Entry entry, double score, string why, string match, EngineFunctionMap.Assignment a, bool primary)
+        private static Row Add(Dictionary<string, Row> rows, EngineFunctionMap.Entry entry, double score, string why, string match, EngineFunctionMap.Assignment a, bool primary)
         {
             EngineRelationSuggest.Command command = entry.Command;
             // One row per id and meaning: a DCS id that means something else in some aircraft becomes a row per meaning.
@@ -772,6 +864,7 @@ namespace JoyPro.Engine
                 row.Primary = primary;
             }
             row.Planes.Add(command.Plane);
+            return row;
         }
 
         // The best rows up to the limit, but every game with a function hit keeps its best two and the best row of each
@@ -787,6 +880,8 @@ namespace JoyPro.Engine
             // synonym a game is found by (two per game), then the rest by score.
             List<Row> order = new List<Row>();
             order.AddRange(games.Select(g => g.First()));
+            // Titles with every typed word (when they lead) right after every game's best row.
+            order.AddRange(ranked.Where(r => r.Literal && r.Score >= LiteralScore));
             order.AddRange(games.Where(g => g.Count() > 1).Select(g => g.ElementAt(1)));
             HashSet<string> found = new HashSet<string>(games.Select(g => g.Key), StringComparer.OrdinalIgnoreCase);
             if (words.Length > 0)
@@ -914,6 +1009,8 @@ namespace JoyPro.Engine
         public bool IsAxis { get; set; }
         public List<string> Planes { get; set; }
         public int Score { get; set; }
+        // The title has every typed word (punctuation and filler words aside).
+        public bool Literal { get; set; }
         public string Why { get; set; }
         // The function's main control in this game for a query by the function's own words (MSFS "AXIS ELEVATOR SET"
         // for "pitch"): it leads its game.

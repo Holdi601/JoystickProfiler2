@@ -91,12 +91,14 @@ public sealed partial class MainWindowViewModel
         SaveUiSettings();
         if (IsOverlayRunning)
             _ = ReloadOverlayMapAsync();
+        // The aircraft widget shows the picked aircraft's stick and throttle.
+        _ = RefreshHudAircraftAsync();
     }
 
     partial void OnOverlayCornerChanged(string value)
     {
         SaveUiSettings();
-        if (IsOverlayRunning)
+        if (IsOverlayRunning && HudOnScreen)
             OverlayPresenter?.Show(this);
     }
     partial void OnOverlayMaxLinesChanged(decimal value) => SaveUiSettings();
@@ -138,7 +140,7 @@ public sealed partial class MainWindowViewModel
         StartInputMonitor();
         _ = Task.Run(() => ListenForDcsAsync(token), CancellationToken.None);
         _ = OverlayLoopAsync(token);
-        OverlayPresenter?.Show(this);
+        ApplyHudOutputs();
     }
 
     public void StopOverlayForShutdown()
@@ -151,7 +153,7 @@ public sealed partial class MainWindowViewModel
     {
         overlayCts?.Cancel();
         overlayCts = null;
-        OverlayPresenter?.Hide();
+        StopHudOutputs();
         OverlayLines.Clear();
         IsOverlayRunning = false;
         StopInputMonitorIfIdle();
@@ -286,6 +288,7 @@ public sealed partial class MainWindowViewModel
             overlayUnit = unit;
             overlayGame = "DCS";
             _ = ReloadOverlayMapAsync();
+            _ = RefreshHudAircraftAsync();
         }
         else if (message == "exit")
         {
@@ -372,6 +375,7 @@ public sealed partial class MainWindowViewModel
         string where = overlayGame.Length == 0 ? T("no game running") : overlayGame + (overlayPlane.Length > 0 && overlayGame == "DCS" ? " · " + overlayPlane : string.Empty);
         OverlayHeader = T("JoyPro · {0}", where);
         _ = UpdateHudHeaderAsync();
+        _ = RefreshHudAircraftAsync();
         OverlayStatus = T("The HUD is on ({0}, {1} bound buttons).{2}", where, entries.Count, (overlayGame.Length == 0 && OverlayOnlyInGame ? T(" It shows presses once a game runs.") : string.Empty));
     }
 

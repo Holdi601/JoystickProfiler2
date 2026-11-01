@@ -219,7 +219,9 @@ namespace JoyPro.Engine.Games
             }
 
             List<UserProfileTarget> targets = new List<UserProfileTarget>();
-            bool replace = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
+            // "My profile wins" also takes the export's actions off the profiles of connected devices without binds of
+            // the export; clean leaves those alone, as in every game.
+            bool replace = request.Mode == GameExportMode.MergeOverwrite;
             List<string> sourceNotes = new List<string>();
             List<KeyValuePair<MsfsProfileSourceKind, string>> sources = new List<KeyValuePair<MsfsProfileSourceKind, string>>();
             foreach (string remote in MsfsUserProfiles.SteamRemoteFolders(sim, new List<string>()))
@@ -277,7 +279,7 @@ namespace JoyPro.Engine.Games
                             string active = entry.Key;
                             string file;
                             files.TryGetValue(active, out file);
-                            // A device without binds of the export: only for "my profile wins" / clean, and only when it is
+                            // A device without binds of the export: only for "my profile wins", and only when it is
                             // connected (checked below once the profile is read: it must hold an action the export binds).
                             if (!exported && !(replace && OwnsDevice(request, device)))
                                 continue;

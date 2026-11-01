@@ -215,6 +215,20 @@ namespace JoyPro.Engine
                 tuning.ClearControlPoints();
             BindTuning.Set(bind, scope, tuning);
             string conflicts = SharedAxisConflicts(relationName, InternalDataManagement.AllRelations[relationName], bind);
+            if (scope == BindTuning.BaseScope)
+            {
+                // The base scope keeps only invert, slider, dead zone, saturation and curvature (the bind itself): model
+                // parameters and control points are not stored there, so the message shows what was stored and says so.
+                List<string> notStored = new List<string>();
+                if (paramOptions.Count > 0)
+                    notStored.Add("--param");
+                if (!string.IsNullOrWhiteSpace(curvePointsRaw) && !string.Equals(curvePointsRaw.Trim(), "none", StringComparison.OrdinalIgnoreCase))
+                    notStored.Add("--curve-points");
+                string note = notStored.Count == 0 ? string.Empty
+                    : "\nNot set: " + string.Join(" and ", notStored) + (notStored.Count == 1 ? " does" : " do") + " not apply to the base scope (it keeps invert, slider, dead zone, " +
+                      "saturation and curvature); set " + (notStored.Count == 1 ? "it" : "them") + " on a game, plane or family scope, e.g. --scope game:<game>.";
+                return EmitTuningResult(relationName, "Set " + scope + ": " + BindTuning.Base(bind).Format() + note + conflicts, outPath, textOutput);
+            }
             return EmitTuningResult(relationName, "Set " + scope + ": " + tuning.Format() + conflicts, outPath, textOutput);
         }
 

@@ -455,7 +455,7 @@ public sealed partial class MainWindowViewModel
             AddSection("copies", T("Copied relations"), T("An import made copies of a relation on the same button. They can be merged back into one."), "warning",
                 SortedAll("copies", () => copyCards).Where(Matches));
         if (kind is "all" or "errors")
-            AddSection("export-skips", T("Not written to the game"), T("'Only add' left these binds out: the game already uses their button for something else."), "warning",
+            AddSection("export-skips", T("Not written to the game"), T("The export left these binds out: the game uses their button for something else, or has no free place for another input. Each card says which."), "warning",
                 SortedAll("export-skips", () => exportSkipCards).Where(Matches));
         if (kind is "all" or "notes")
             AddSection("notes", T("Notes"), T("Harmless, worth a look."), "note",

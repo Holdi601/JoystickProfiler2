@@ -36,11 +36,11 @@
 
         <WrapPanel Grid.Row="2" ItemSpacing="16">
             <TextBlock Text="{l:T 'Inputs'}" VerticalAlignment="Center" FontWeight="SemiBold" />
-            <RadioButton GroupName="ReplaceMode" IsChecked="{Binding ReplaceModeAuto}" Content="{l:T 'Automatic'}"
+            <RadioButton IsChecked="{Binding ReplaceModeAuto}" Content="{l:T 'Automatic'}"
                          ToolTip.Tip="{l:T 'The same product: the same input ids. Another device: by its parts on the device.'}" />
-            <RadioButton GroupName="ReplaceMode" IsChecked="{Binding ReplaceModeSame}" Content="{l:T 'Same input ids (1:1)'}"
+            <RadioButton IsChecked="{Binding ReplaceModeSame}" Content="{l:T 'Same input ids (1:1)'}"
                          ToolTip.Tip="{l:T 'Button 5 stays button 5, X stays X (for the same product, or a device you set up the same way)'}" />
-            <RadioButton GroupName="ReplaceMode" IsChecked="{Binding ReplaceModeLayout}" Content="{l:T 'By layout (device catalog)'}"
+            <RadioButton IsChecked="{Binding ReplaceModeLayout}" Content="{l:T 'By layout (device catalog)'}"
                          ToolTip.Tip="{l:T 'Trigger to trigger, hat 2 to hat 2, roll to roll, throttle to throttle; buttons without a matching part by their order (shown as a guess)'}" />
         </WrapPanel>
 
@@ -92,11 +92,11 @@
             <StackPanel Spacing="4">
                 <TextBlock Text="{Binding ReplaceMergeText}" TextWrapping="Wrap" FontWeight="SemiBold" />
                 <WrapPanel ItemSpacing="16">
-                    <RadioButton GroupName="ReplaceMerge" IsChecked="{Binding ReplaceMergeAdd}" Content="{l:T 'Keep both'}"
+                    <RadioButton IsChecked="{Binding ReplaceMergeAdd}" Content="{l:T 'Keep both'}"
                                  ToolTip.Tip="{l:T 'Both binds stay on that input (fine when they are for different games or aircraft)'}" />
-                    <RadioButton GroupName="ReplaceMerge" IsChecked="{Binding ReplaceMergeKeep}" Content="{l:T 'Keep the new device\'s binds'}"
+                    <RadioButton IsChecked="{Binding ReplaceMergeKeep}" Content="{l:T 'Keep the new device\'s binds'}"
                                  ToolTip.Tip="{l:T 'The old device\'s bind stays on the old device for those inputs'}" />
-                    <RadioButton GroupName="ReplaceMerge" IsChecked="{Binding ReplaceMergeReplace}" Content="{l:T 'Replace them with the old device\'s binds'}"
+                    <RadioButton IsChecked="{Binding ReplaceMergeReplace}" Content="{l:T 'Replace them with the old device\'s binds'}"
                                  ToolTip.Tip="{l:T 'The new device\'s binds on those inputs are removed (Undo brings them back)'}" />
                 </WrapPanel>
             </StackPanel>

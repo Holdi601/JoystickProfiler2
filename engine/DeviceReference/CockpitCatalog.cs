@@ -116,6 +116,19 @@ namespace JoyPro.DeviceReference
         public string Variant = string.Empty;
         public string Caption = string.Empty;
         public string Confidence = string.Empty;
+        // A verified photo (docs/cockpits.md "Photos of cockpits no game has"): the SHA-256 of the file at Url, further
+        // hashes of the same pixels (Sha256Alt), its Wayback Machine snapshot (Archive), its size and where it is from
+        // ("commons", "maker", "press", "museum"). The user's PC downloads it, checks the hash and falls back to the
+        // snapshot like a device reference photo; JoyPro's labels (Labels, DB\Cockpits\photo-labels) are drawn on top.
+        public string Sha256 = string.Empty;
+        public List<string> Sha256Alt = new List<string>();
+        public string Archive = string.Empty;
+        public int Width;
+        public int Height;
+        public string Source = string.Empty;
+        public CockpitPhotoLabels Labels;
+
+        public bool Verified { get { return CockpitPhotos.IsSha256(Sha256); } }
     }
 
     public sealed class CockpitLink
@@ -412,6 +425,8 @@ namespace JoyPro.DeviceReference
         public List<CockpitAircraft> Aircraft = new List<CockpitAircraft>();
         public Dictionary<string, CockpitDrawing> Drawings = new Dictionary<string, CockpitDrawing>(StringComparer.OrdinalIgnoreCase);
         public List<string> Warnings = new List<string>();
+        // Label files (photo-labels) whose photo is not in the database: reported by Check.
+        public List<CockpitPhotoLabels> LabelOrphans = new List<CockpitPhotoLabels>();
         public string Folder = string.Empty;
 
         private readonly Dictionary<string, CockpitVariant> variantsById = new Dictionary<string, CockpitVariant>(StringComparer.OrdinalIgnoreCase);
@@ -471,6 +486,7 @@ namespace JoyPro.DeviceReference
                     catalog.Warnings.Add(Path.GetFileName(file) + ": " + ex.Message);
                 }
             }
+            CockpitPhotos.AttachLabels(catalog);
             return catalog;
         }
 
@@ -982,6 +998,7 @@ namespace JoyPro.DeviceReference
                     problems.AddRange(CheckVariant(v, a, functionIds, complete).Select(p => vat + ": " + p));
                 }
             }
+            problems.AddRange(CockpitPhotos.Check(this));
             return problems;
         }
 
@@ -1238,7 +1255,9 @@ namespace JoyPro.DeviceReference
                 a.Photos.Add(new CockpitPhoto
                 {
                     Url = Text(p, "url"), Page = Text(p, "page"), View = Text(p, "view"), Credit = Text(p, "credit"),
-                    License = Text(p, "license"), Variant = Text(p, "variant"), Caption = Text(p, "caption"), Confidence = Text(p, "confidence")
+                    License = Text(p, "license"), Variant = Text(p, "variant"), Caption = Text(p, "caption"), Confidence = Text(p, "confidence"),
+                    Sha256 = Text(p, "sha256").ToLowerInvariant(), Sha256Alt = Strings(p, "sha256Alt").Select(x => x.ToLowerInvariant()).ToList(),
+                    Archive = Text(p, "archive"), Width = (int)Number(p, "width", 0), Height = (int)Number(p, "height", 0), Source = Text(p, "source")
                 });
             }
             foreach (Dictionary<string, object> l in Objects(item, "links"))

@@ -7,9 +7,13 @@
              x:Name="Surface"
              x:DataType="controls:HudSurface"
              FontFamily="{DynamicResource JP.UiFont}">
+    <!-- Every widget's design comes from its HudWidgetHost (HudLook.ApplyTo: the widget's own style or the HUD's); these
+         are only the defaults until the host has its widget. -->
     <UserControl.Resources>
         <SolidColorBrush x:Key="HudAccent" Color="#38BDF8" />
-        <SolidColorBrush x:Key="HudAccentSoft" Color="#4038BDF8" />
+        <SolidColorBrush x:Key="HudAccentSoft" Color="#6638BDF8" />
+        <SolidColorBrush x:Key="HudPressed" Color="#38BDF8" />
+        <SolidColorBrush x:Key="HudChipBackground" Color="#4038BDF8" />
         <SolidColorBrush x:Key="HudCardBackground" Color="#B00B1220" />
         <SolidColorBrush x:Key="HudCardBorder" Color="#5538BDF8" />
         <SolidColorBrush x:Key="HudTrack" Color="#26FFFFFF" />
@@ -18,25 +22,39 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <Style Selector="Border.card">
+        <Style Selector="Border.hudcard">
             <Setter Property="Background" Value="{DynamicResource HudCardBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource HudCardBorder}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="BorderThickness" Value="{DynamicResource HudCardBorderThickness}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource HudCardRadius}" />
+            <Setter Property="BoxShadow" Value="{DynamicResource HudCardShadow}" />
             <Setter Property="Padding" Value="14,12" />
         </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource HudFont}" />
+        </Style>
         <Style Selector="TextBlock.caps">
-            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontSize" Value="{DynamicResource HudSmallSize}" />
             <Setter Property="Foreground" Value="{DynamicResource HudTextDim}" />
             <Setter Property="LetterSpacing" Value="1.5" />
         </Style>
+        <Style Selector="TextBlock.hudtitle">
+            <Setter Property="FontSize" Value="{DynamicResource HudTitleSize}" />
+            <Setter Property="FontWeight" Value="{DynamicResource HudTitleWeight}" />
+            <Setter Property="Foreground" Value="{DynamicResource HudText}" />
+            <Setter Property="LetterSpacing" Value="{DynamicResource HudLetterSpacing}" />
+        </Style>
+        <Style Selector="TextBlock.hudvalue">
+            <Setter Property="FontSize" Value="{DynamicResource HudTinySize}" />
+            <Setter Property="Foreground" Value="{DynamicResource HudText}" />
+        </Style>
         <Style Selector="Border.btn">
-            <Setter Property="Width" Value="22" />
-            <Setter Property="Height" Value="22" />
-            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Width" Value="{DynamicResource HudButtonSize}" />
+            <Setter Property="Height" Value="{DynamicResource HudButtonSize}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource HudButtonRadius}" />
             <Setter Property="Margin" Value="0,0,4,4" />
-            <Setter Property="Background" Value="#1AFFFFFF" />
-            <Setter Property="BorderBrush" Value="#26FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource HudTrack}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource HudTrack}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Transitions">
                 <Transitions>
@@ -45,13 +63,13 @@
             </Setter>
         </Style>
         <Style Selector="Border.btn.pressed">
-            <Setter Property="Background" Value="{DynamicResource HudAccent}" />
+            <Setter Property="Background" Value="{DynamicResource HudPressed}" />
             <Setter Property="BorderBrush" Value="#CCFFFFFF" />
         </Style>
         <Style Selector="Border.marker">
             <Setter Property="Width" Value="16" />
             <Setter Property="Height" Value="16" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="{DynamicResource HudMarkerRadius}" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="{DynamicResource HudAccentSoft}" />
             <Setter Property="Background" Value="Transparent" />
@@ -63,21 +81,44 @@
             </Setter>
         </Style>
         <Style Selector="Border.marker.pressed">
-            <Setter Property="Background" Value="{DynamicResource HudAccent}" />
+            <Setter Property="Background" Value="{DynamicResource HudPressed}" />
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="Opacity" Value="1" />
+            <Setter Property="BoxShadow" Value="{DynamicResource HudGlow}" />
+        </Style>
+        <Style Selector="Border.marker.big">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+            <Setter Property="Opacity" Value="0.0" />
+        </Style>
+        <Style Selector="Border.marker.big.pressed">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Border.hudchip">
+            <Setter Property="CornerRadius" Value="{DynamicResource HudChipRadius}" />
+            <Setter Property="Padding" Value="10,3" />
+            <Setter Property="Margin" Value="0,0,6,6" />
+            <Setter Property="Background" Value="{DynamicResource HudChipBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource HudAccent}" />
+            <Setter Property="BorderThickness" Value="{DynamicResource HudChipBorder}" />
         </Style>
         <Style Selector="Ellipse.hatdot">
             <Setter Property="Width" Value="5" />
             <Setter Property="Height" Value="5" />
-            <Setter Property="Fill" Value="#4DFFFFFF" />
+            <Setter Property="Fill" Value="{DynamicResource HudTextDim}" />
+            <Setter Property="Opacity" Value="0.55" />
         </Style>
         <Style Selector="Ellipse.hatdot.active">
             <Setter Property="Width" Value="7" />
             <Setter Property="Height" Value="7" />
-            <Setter Property="Fill" Value="{DynamicResource HudAccent}" />
+            <Setter Property="Fill" Value="{DynamicResource HudPressed}" />
+            <Setter Property="Opacity" Value="1" />
         </Style>
         <Style Selector="ItemsControl.markers > ContentPresenter" x:DataType="models:HudMarker">
+            <Setter Property="Canvas.Left" Value="{Binding Left}" />
+            <Setter Property="Canvas.Top" Value="{Binding Top}" />
+        </Style>
+        <Style Selector="ItemsControl.aircraftmarkers > ContentPresenter" x:DataType="models:HudAircraftMarker">
             <Setter Property="Canvas.Left" Value="{Binding Left}" />
             <Setter Property="Canvas.Top" Value="{Binding Top}" />
         </Style>
@@ -85,10 +126,14 @@
             <Setter Property="Canvas.Left" Value="{Binding Left}" />
             <Setter Property="Canvas.Top" Value="{Binding Top}" />
         </Style>
+        <!-- On screen: the widgets ticked for the screen; stream outputs: the ones ticked for the stream. -->
         <Style Selector="ItemsControl.widgets > ContentPresenter" x:DataType="models:HudWidget">
             <Setter Property="controls:HudPanel.Left" Value="{Binding X}" />
             <Setter Property="controls:HudPanel.Top" Value="{Binding Y}" />
             <Setter Property="IsVisible" Value="{Binding Visible}" />
+        </Style>
+        <Style Selector="ItemsControl.widgets.stream > ContentPresenter" x:DataType="models:HudWidget">
+            <Setter Property="IsVisible" Value="{Binding StreamVisible}" />
         </Style>
         <Style Selector="Rectangle.outline">
             <Setter Property="Stroke" Value="#80FFFFFF" />
@@ -108,7 +153,7 @@
         </Style>
     </UserControl.Styles>
 
-    <ItemsControl x:Name="WidgetItems" Classes="widgets" ItemsSource="{Binding #Surface.Widgets}">
+    <ItemsControl x:Name="WidgetItems" Classes="widgets" Classes.stream="{Binding #Surface.Stream}" ItemsSource="{Binding #Surface.Widgets}">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <controls:HudPanel Fixed="{Binding #Surface.Fixed}" />
@@ -116,21 +161,21 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="models:HudWidget">
-                <Grid Background="Transparent" Cursor="{Binding #Surface.DragCursor}"
-                      PointerPressed="WidgetPointerPressed" PointerMoved="WidgetPointerMoved" PointerReleased="WidgetPointerReleased">
+                <controls:HudWidgetHost Background="Transparent" Cursor="{Binding #Surface.DragCursor}"
+                                        PointerPressed="WidgetPointerPressed" PointerMoved="WidgetPointerMoved" PointerReleased="WidgetPointerReleased">
                     <LayoutTransformControl>
                         <LayoutTransformControl.LayoutTransform>
                             <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" />
                         </LayoutTransformControl.LayoutTransform>
-                        <Panel Opacity="{Binding Theme.Opacity}">
+                        <Panel Opacity="{DynamicResource HudOpacity}">
 
                             <!-- Device -->
-                            <Border Classes="card" IsVisible="{Binding IsDevice}" BoxShadow="{Binding Theme.CardShadow}">
+                            <Border Classes="hudcard" IsVisible="{Binding IsDevice}">
                                 <StackPanel Spacing="10">
                                     <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding ShowName}">
-                                        <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource HudAccent}" BoxShadow="{Binding Theme.Glow}" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Device.ShortTitle}" Foreground="{DynamicResource HudText}" FontSize="14" FontWeight="SemiBold" LetterSpacing="0.6" VerticalAlignment="Center" />
-                                        <TextBlock Text="{Binding Device.DeviceKind}" Classes="caps" VerticalAlignment="Center" />
+                                        <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource HudAccent}" BoxShadow="{DynamicResource HudGlow}" VerticalAlignment="Center" />
+                                        <TextBlock Classes="hudtitle" Text="{Binding Device.ShortTitle}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Device.DeviceKind}" Classes="caps" VerticalAlignment="Center" IsVisible="{Binding ShowKind}" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Spacing="16">
                                         <!-- Picture: tilts with the stick; button positions glow on a layout picture. -->
@@ -157,24 +202,10 @@
 
                                         <StackPanel Spacing="12" VerticalAlignment="Center">
                                             <StackPanel Orientation="Horizontal" Spacing="14">
-                                                <!-- Gimbal: stick position as a dot, twist as the tick on the ring. -->
-                                                <Grid Width="84" Height="84" IsVisible="{Binding GimbalVisible}">
-                                                    <Ellipse Stroke="{DynamicResource HudAccentSoft}" StrokeThickness="2" Fill="#14FFFFFF" />
-                                                    <Ellipse Width="30" Height="30" Stroke="#26FFFFFF" StrokeThickness="1" />
-                                                    <Line StartPoint="42,8" EndPoint="42,76" Stroke="#1FFFFFFF" StrokeThickness="1" />
-                                                    <Line StartPoint="8,42" EndPoint="76,42" Stroke="#1FFFFFFF" StrokeThickness="1" />
-                                                    <Border Width="4" Height="11" CornerRadius="2" Background="{DynamicResource HudAccent}" VerticalAlignment="Top" HorizontalAlignment="Center"
-                                                            IsVisible="{Binding Device.HasTwist}" RenderTransformOrigin="50%,381%">
-                                                        <Border.RenderTransform>
-                                                            <RotateTransform Angle="{Binding Device.TwistTick}" />
-                                                        </Border.RenderTransform>
-                                                    </Border>
-                                                    <Border Width="14" Height="14" CornerRadius="7" Background="{DynamicResource HudAccent}" BorderBrush="White" BorderThickness="2" BoxShadow="{Binding Theme.Glow}">
-                                                        <Border.RenderTransform>
-                                                            <TranslateTransform X="{Binding Device.GimbalX}" Y="{Binding Device.GimbalY}" />
-                                                        </Border.RenderTransform>
-                                                    </Border>
-                                                </Grid>
+                                                <!-- Stick element: position and twist, in the style's shape. -->
+                                                <controls:HudGimbalView Width="{DynamicResource HudGimbalSize}" Height="{DynamicResource HudGimbalSize}" IsVisible="{Binding GimbalVisible}"
+                                                                        X="{Binding Device.StickX}" Y="{Binding Device.StickY}" Twist="{Binding Device.StickTwist}" ShowTwist="{Binding Device.HasTwist}"
+                                                                        Shape="{DynamicResource HudGimbalShape}" Accent="{DynamicResource HudAccent}" Soft="{DynamicResource HudAccentSoft}" Track="{DynamicResource HudTrack}" />
 
                                                 <!-- Levers: throttles, collective, brakes. -->
                                                 <ItemsControl ItemsSource="{Binding Device.Levers}" IsVisible="{Binding LeversVisible}">
@@ -185,12 +216,13 @@
                                                     </ItemsControl.ItemsPanel>
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:HudAxis">
-                                                            <StackPanel Spacing="4">
-                                                                <Border Width="20" Height="92" CornerRadius="10" Background="{DynamicResource HudTrack}" HorizontalAlignment="Center" ClipToBounds="True">
-                                                                    <Border VerticalAlignment="Bottom" Height="{Binding LeverFill}" CornerRadius="10" Background="{DynamicResource HudAccent}" />
-                                                                </Border>
-                                                                <TextBlock Text="{Binding Label}" Classes="caps" HorizontalAlignment="Center" MaxWidth="64" TextTrimming="CharacterEllipsis" />
-                                                                <TextBlock Text="{Binding Percent}" FontSize="10" Foreground="{DynamicResource HudText}" HorizontalAlignment="Center" />
+                                                            <StackPanel Spacing="4" MinWidth="34">
+                                                                <controls:HudBarView Vertical="True" Width="{DynamicResource HudLeverWidth}" Height="92" HorizontalAlignment="Center"
+                                                                                     Value="{Binding Value}" Shape="{DynamicResource HudLeverShape}" Fill="{DynamicResource HudAccent}" Track="{DynamicResource HudTrack}" />
+                                                                <TextBlock Text="{Binding Label}" Classes="caps" HorizontalAlignment="Center" MaxWidth="64" TextTrimming="CharacterEllipsis"
+                                                                           IsVisible="{Binding $parent[controls:HudWidgetHost].((models:HudWidget)DataContext).ShowLabels}" />
+                                                                <TextBlock Text="{Binding Percent}" Classes="hudvalue" HorizontalAlignment="Center"
+                                                                           IsVisible="{Binding $parent[controls:HudWidgetHost].((models:HudWidget)DataContext).ShowValues}" />
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -206,7 +238,7 @@
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:HudHat">
                                                             <Grid Width="32" Height="32" Margin="0,0,6,6">
-                                                                <Ellipse Stroke="#26FFFFFF" StrokeThickness="1" />
+                                                                <Ellipse Stroke="{DynamicResource HudTrack}" StrokeThickness="1.5" />
                                                                 <ItemsControl Classes="hatdots" ItemsSource="{Binding Dots}">
                                                                     <ItemsControl.ItemsPanel>
                                                                         <ItemsPanelTemplate>
@@ -219,7 +251,7 @@
                                                                         </DataTemplate>
                                                                     </ItemsControl.ItemTemplate>
                                                                 </ItemsControl>
-                                                                <Ellipse Width="6" Height="6" Fill="#66FFFFFF" IsVisible="{Binding IsCentered}" />
+                                                                <Ellipse Width="6" Height="6" Fill="{DynamicResource HudTextDim}" IsVisible="{Binding IsCentered}" />
                                                             </Grid>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -230,14 +262,13 @@
                                             <ItemsControl ItemsSource="{Binding Device.Bars}" IsVisible="{Binding AxesVisible}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate x:DataType="models:HudAxis">
-                                                        <Grid ColumnDefinitions="84,112,34" ColumnSpacing="6" Height="15">
-                                                            <TextBlock Text="{Binding Label}" Classes="caps" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                                            <Canvas Grid.Column="1" Width="112" Height="6" VerticalAlignment="Center">
-                                                                <Border Width="112" Height="6" CornerRadius="3" Background="{DynamicResource HudTrack}" />
-                                                                <Border Canvas.Left="{Binding FillLeft}" Width="{Binding FillWidth}" Height="6" CornerRadius="3" Background="{DynamicResource HudAccent}" />
-                                                                <Border Canvas.Left="55" Width="2" Height="6" Background="#80FFFFFF" IsVisible="{Binding Bipolar}" />
-                                                            </Canvas>
-                                                            <TextBlock Grid.Column="2" Text="{Binding Percent}" FontSize="10" Foreground="{DynamicResource HudText}" VerticalAlignment="Center" HorizontalAlignment="Right" />
+                                                        <Grid ColumnDefinitions="Auto,112,Auto" ColumnSpacing="6" MinHeight="15">
+                                                            <TextBlock Text="{Binding Label}" Classes="caps" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Width="84"
+                                                                       IsVisible="{Binding $parent[controls:HudWidgetHost].((models:HudWidget)DataContext).ShowLabels}" />
+                                                            <controls:HudBarView Grid.Column="1" Width="112" Height="{DynamicResource HudBarHeight}" VerticalAlignment="Center"
+                                                                                 Value="{Binding Value}" Bipolar="{Binding Bipolar}" Shape="{DynamicResource HudBarShape}" Fill="{DynamicResource HudAccent}" Track="{DynamicResource HudTrack}" />
+                                                            <TextBlock Grid.Column="2" Text="{Binding Percent}" Classes="hudvalue" VerticalAlignment="Center" HorizontalAlignment="Right" TextAlignment="Right" Width="34"
+                                                                       IsVisible="{Binding $parent[controls:HudWidgetHost].((models:HudWidget)DataContext).ShowValues}" />
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -261,7 +292,7 @@
                                         </StackPanel>
                                     </StackPanel>
                                     <!-- Held buttons by name. -->
-                                    <ItemsControl ItemsSource="{Binding Device.PressedChips}" IsVisible="{Binding ShowButtons}" MaxWidth="520">
+                                    <ItemsControl ItemsSource="{Binding Device.PressedChips}" IsVisible="{Binding ChipsVisible}" MaxWidth="520">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <WrapPanel />
@@ -269,8 +300,92 @@
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="x:String">
-                                                <Border CornerRadius="11" Padding="10,3" Margin="0,0,6,6" Background="{DynamicResource HudAccentSoft}" BorderBrush="{DynamicResource HudAccent}" BorderThickness="1">
-                                                    <TextBlock Text="{Binding}" Foreground="White" FontSize="13" FontWeight="SemiBold" />
+                                                <Border Classes="hudchip">
+                                                    <TextBlock Text="{Binding}" Foreground="{DynamicResource HudText}" FontSize="{DynamicResource HudTextSize}" FontWeight="SemiBold" />
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Aircraft: its own stick and throttle (from the game's model), moving with the user's. -->
+                            <Border Classes="hudcard" IsVisible="{Binding IsAircraft}">
+                                <StackPanel Spacing="10">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding ShowName}">
+                                        <Border Width="8" Height="8" CornerRadius="4" Background="{DynamicResource HudAccent}" BoxShadow="{DynamicResource HudGlow}" VerticalAlignment="Center" />
+                                        <TextBlock Classes="hudtitle" Text="{Binding Aircraft.Title, FallbackValue={l:T 'Aircraft stick and throttle'}}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Spacing="18">
+                                        <!-- Throttle: slides forward with the user's throttle. -->
+                                        <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding AircraftThrottleVisible}">
+                                            <controls:HudBarView Vertical="True" Width="{DynamicResource HudLeverWidth}" Height="150" VerticalAlignment="Center"
+                                                                 Value="{Binding Aircraft.ThrottleValue}" Shape="{DynamicResource HudLeverShape}" Fill="{DynamicResource HudAccent}" Track="{DynamicResource HudTrack}"
+                                                                 IsVisible="{Binding ShowAxes}" />
+                                            <Panel Width="{Binding Aircraft.ThrottleWidth}" Height="240" ClipToBounds="False">
+                                                <Panel RenderTransformOrigin="50%,80%">
+                                                    <Panel.RenderTransform>
+                                                        <TransformGroup>
+                                                            <Rotate3DTransform AngleX="{Binding Aircraft.ThrottleTilt}" Depth="700" />
+                                                            <TranslateTransform Y="{Binding Aircraft.ThrottleOffset}" />
+                                                        </TransformGroup>
+                                                    </Panel.RenderTransform>
+                                                    <Image Source="{Binding Aircraft.ThrottlePicture}" Stretch="Uniform" />
+                                                    <ItemsControl Classes="aircraftmarkers" ItemsSource="{Binding Aircraft.ThrottleMarkers}" IsVisible="{Binding ShowButtons}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <Canvas />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="models:HudAircraftMarker">
+                                                                <Border Classes="marker big" Classes.pressed="{Binding IsPressed}" />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Panel>
+                                            </Panel>
+                                        </StackPanel>
+                                        <!-- Stick: tilts and twists with the user's stick. -->
+                                        <Panel Width="{Binding Aircraft.StickWidth}" Height="240" IsVisible="{Binding AircraftStickVisible}">
+                                            <Panel RenderTransformOrigin="50%,92%">
+                                                <Panel.RenderTransform>
+                                                    <Rotate3DTransform AngleX="{Binding Aircraft.StickPitch}" AngleY="{Binding Aircraft.StickYaw}" AngleZ="{Binding Aircraft.StickRoll}" Depth="700" />
+                                                </Panel.RenderTransform>
+                                                <Image Source="{Binding Aircraft.StickPicture}" Stretch="Uniform" />
+                                                <ItemsControl Classes="aircraftmarkers" ItemsSource="{Binding Aircraft.StickMarkers}" IsVisible="{Binding ShowButtons}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <Canvas />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:HudAircraftMarker">
+                                                            <Border Classes="marker big" Classes.pressed="{Binding IsPressed}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Panel>
+                                        </Panel>
+                                        <controls:HudGimbalView Width="{DynamicResource HudGimbalSize}" Height="{DynamicResource HudGimbalSize}" VerticalAlignment="Center"
+                                                                IsVisible="{Binding ShowGimbal}"
+                                                                X="{Binding Aircraft.StickSource.StickX, FallbackValue=0}" Y="{Binding Aircraft.StickSource.StickY, FallbackValue=0}"
+                                                                Twist="{Binding Aircraft.StickSource.StickTwist, FallbackValue=0}" ShowTwist="{Binding Aircraft.StickSource.HasTwist, FallbackValue=False}"
+                                                                Shape="{DynamicResource HudGimbalShape}" Accent="{DynamicResource HudAccent}" Soft="{DynamicResource HudAccentSoft}" Track="{DynamicResource HudTrack}" />
+                                    </StackPanel>
+                                    <!-- Without pictures (in the designer): what is needed. -->
+                                    <TextBlock TextWrapping="Wrap" MaxWidth="360" FontSize="{DynamicResource HudSmallSize}" Foreground="{DynamicResource HudTextDim}" IsVisible="{Binding Aircraft, Converter={x:Static ObjectConverters.IsNull}}"
+                                               Text="{l:T 'No aircraft yet: pick one under DCS aircraft or for this widget, or install the DCS hook. The pictures come from Cockpits > Build pictures from my games.'}" />
+                                    <ItemsControl ItemsSource="{Binding Aircraft.PressedChips}" IsVisible="{Binding ChipsVisible}" MaxWidth="520">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <Border Classes="hudchip">
+                                                    <TextBlock Text="{Binding}" Foreground="{DynamicResource HudText}" FontSize="{DynamicResource HudTextSize}" FontWeight="SemiBold" />
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -280,7 +395,7 @@
 
                             <!-- Binds ticker: what the pressed button does. -->
                             <StackPanel Spacing="6" MinWidth="300" IsVisible="{Binding IsBinds}">
-                                <Border Classes="card" Padding="12,8">
+                                <Border Classes="hudcard" Padding="12,8">
                                     <Border.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="#Surface.Designer" />
@@ -295,7 +410,7 @@
                                 <ItemsControl ItemsSource="{Binding Theme.Lines}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="models:OverlayLine">
-                                            <Border Classes="card line" Padding="0" Margin="0,0,0,6" Opacity="{Binding Opacity}" HorizontalAlignment="{Binding Align}">
+                                            <Border Classes="hudcard line" Padding="0" Margin="0,0,0,6" Opacity="{Binding Opacity}" HorizontalAlignment="{Binding Align}">
                                                 <Grid ColumnDefinitions="4,*">
                                                     <Border Background="{DynamicResource HudAccent}" CornerRadius="16,0,0,16" />
                                                     <StackPanel Grid.Column="1" Margin="12,6,16,7">
@@ -310,21 +425,21 @@
                             </StackPanel>
 
                             <!-- Header: game / aircraft. -->
-                            <Border Classes="card" Padding="8,6,16,6" IsVisible="{Binding IsHeader}" BoxShadow="{Binding Theme.CardShadow}">
+                            <Border Classes="hudcard" Padding="8,6,16,6" IsVisible="{Binding IsHeader}">
                                 <StackPanel Orientation="Horizontal" Spacing="10">
-                                    <Border Width="36" Height="36" CornerRadius="8" ClipToBounds="True" Background="#1AFFFFFF">
+                                    <Border Width="36" Height="36" CornerRadius="8" ClipToBounds="True" Background="#1AFFFFFF" IsVisible="{Binding ShowHeaderPicture}">
                                         <Image Source="{Binding Theme.HeaderPicture}" Stretch="UniformToFill" />
                                     </Border>
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="JOYPRO" Classes="caps" />
-                                        <TextBlock Text="{Binding Theme.HeaderText}" Foreground="{DynamicResource HudText}" FontSize="14" FontWeight="SemiBold" />
+                                        <TextBlock Classes="hudtitle" Text="{Binding Theme.HeaderText}" />
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
                         </Panel>
                     </LayoutTransformControl>
                     <Rectangle Classes="outline" Classes.selected="{Binding IsSelected}" IsVisible="{Binding #Surface.Designer}" Margin="-4" RadiusX="18" RadiusY="18" IsHitTestVisible="False" />
-                </Grid>
+                </controls:HudWidgetHost>
             </DataTemplate>
         </ItemsControl.ItemTemplate>
     </ItemsControl>

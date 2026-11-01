@@ -53,6 +53,9 @@ Tags: **[OBS]** seen on a test PC · **[SRC]** the game's files · **[WEB]** pub
   column; so far only **Primary Fire** (`PRIMARYFIRE`) is confirmed. Other actions follow when their names are seen.
 - **Devices:** matched by HID path (SaveOptions' `DeviceID`) to the channel; a device without a channel is skipped
   with "switch it on in OPTIONS > INPUT > DEVICES". Hats (POV rows), dead zone and sensitivity are not written yet.
+  Several devices can share a channel (the game saves them all with the same MultiID and feeds all of them into one JST
+  tab; seen live 2026-11-01 with the user's stick and vJoy both on 0): scan/import read a bind of that channel for each
+  connected device that has the input, and scan and export name the shared channel (give each device its own).
 - Catalog: `DB\GRebels\actions.tsv`, JoyPro's own table (the game's paks are not read).
   A release ships no game DB folder, so `engine grebels refresh-db` (GUI: Build List / Update) writes the table from
   the code into the game-data folder (2026-10-12; before, a fresh install had no G-Rebels list); rows already there keep

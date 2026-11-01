@@ -12,7 +12,8 @@ namespace JoyPro.Gui.ViewModels;
 // each have a source: Automatic (the default: the device's own axis while it gives a position, else the one of the base
 // the device sits on: buttons from the grip, axes from the base) or a picked device and axis. The choice is kept in
 // hud.json with the widget. Pairing a grip with its base: the same alias (Layout page: both named "Right stick"), else a
-// stick-like device of the same hand with its own X and Y and fewer buttons (a base, an FFB base), the fewest first.
+// real stick-like device of the same hand with its own X and Y and fewer buttons, a base (FFB base) first, then the
+// fewest buttons. Virtual devices (vJoy) and bases never get a base; virtual devices are never one.
 // Nothing here runs per frame: the sources are worked out when the devices or a choice change.
 public sealed partial class MainWindowViewModel
 {
@@ -133,19 +134,21 @@ public sealed partial class MainWindowViewModel
 
     private static bool StickLike(HudDevice device) => device.DeviceKind is "stick" or "base" or "hotas" or "yoke" or "controller";
 
-    // The base a grip sits on: only for a stick-like device; candidates are stick-like devices with their own X and Y,
-    // fewer buttons than the grip and no other hand. The same alias wins, then a base by its kind, then the fewest
-    // buttons. Null: none (the device's own axes, a missing one centred).
+    // The base a grip sits on (docs/hud.md "Stick axes"). Only a stick-like real device that is no base itself gets one:
+    // never a virtual device (vJoy, the forwarder's tunnel device: it mirrors real devices) and never a base (of the kind
+    // "base", or one that takes grips like the VPforce Rhino: it has its own X and Y). Candidates are real stick-like
+    // devices with their own X and Y, fewer buttons than the grip and no other hand. The same alias wins, then a base
+    // (kind or grip choices), then the fewest buttons. Null: none (the device's own axes, a missing one centred).
     internal static HudDevice? PairedHudBase(HudDevice grip, IReadOnlyList<HudDevice> devices)
     {
-        if (!StickLike(grip))
+        if (!StickLike(grip) || grip.IsVirtual || grip.IsBase)
             return null;
         string alias = DeviceAliases.Shown(grip.Device) ?? string.Empty;
         return devices
-            .Where(b => !ReferenceEquals(b, grip) && StickLike(b) && b.OwnIndex(HudDevice.RoleX) >= 0 && b.OwnIndex(HudDevice.RoleY) >= 0 &&
+            .Where(b => !ReferenceEquals(b, grip) && !b.IsVirtual && StickLike(b) && b.OwnIndex(HudDevice.RoleX) >= 0 && b.OwnIndex(HudDevice.RoleY) >= 0 &&
                         b.ButtonCount < grip.ButtonCount && !OtherHand(grip.Hand, b.Hand))
             .OrderByDescending(b => alias.Length > 0 && string.Equals(DeviceAliases.Shown(b.Device), alias, StringComparison.OrdinalIgnoreCase))
-            .ThenByDescending(b => b.DeviceKind == "base")
+            .ThenByDescending(b => b.IsBase)
             .ThenBy(b => b.ButtonCount)
             .ThenBy(b => b.Device, StringComparer.OrdinalIgnoreCase)
             .FirstOrDefault();

@@ -60,7 +60,9 @@ namespace JoyPro.Engine
             return ExecuteImport(rootPath, true, merge, options);
         }
 
-        public static EngineIl2ExportResult Export(string rootPath, string modeRaw, Action<string> statusSink = null, bool nukeUntouchedDevices = false)
+        // keepDevices: devices JoyPro never clears in any mode (the import's ignored devices, the vJoy device JoyPro tunnels
+        // into); their lines stay like those of a device that is not connected.
+        public static EngineIl2ExportResult Export(string rootPath, string modeRaw, Action<string> statusSink = null, bool nukeUntouchedDevices = false, IEnumerable<string> keepDevices = null)
         {
             EngineIl2ExportResult result = new EngineIl2ExportResult();
             result.RootPath = Normalize(rootPath);
@@ -163,7 +165,7 @@ namespace JoyPro.Engine
             // Only lines of connected joysticks (and of the keyboard when the export writes keyboard lines) are released.
             if (mode == EngineIl2ExportMode.Add && nukeUntouchedDevices)
                 result.Warnings.Add("\"Only add\" never removes binds: --nuke-untouched-devices was not used.");
-            HashSet<string> ownedDevices = OwnedDevices(deviceIndex, writtenDevices);
+            HashSet<string> ownedDevices = OwnedDevices(deviceIndex, writtenDevices, keepDevices);
             // A line the import cannot read (an unknown token) is not in the profile either: it always stays.
             Func<ActionLine, bool> readable = line => line.Sides != null && line.Sides.Count > 0 && line.Sides.All(side =>
                 side != null && TryConvertIl2TokenToDcs(side.MainToken, existingDeviceMap, il2ToDx, out string _, out string _, out bool _, out string _));
@@ -1553,36 +1555,46 @@ namespace JoyPro.Engine
             usage[part.Joystick]++;
         }
 
-        // The device an action line binds: "joy<N>" (inputs of one joystick, keyboard modifiers allowed), "key" (only
-        // keyboard keys), "mouse" (any mouse input, also with keyboard modifiers) or "other" (TrackIR, inputs of two
-        // joysticks, unknown tokens). JoyPro imports and writes only joystick and keyboard lines, so only those can be
-        // released; mouse and other lines always stay.
+        // The device an action line binds: "joy<N>" (the main input of every side on one joystick), "key" (keyboard
+        // main inputs), "mouse" (any mouse input, also with keyboard modifiers) or "other" (TrackIR, main inputs on two
+        // devices, unknown tokens). The main input is the last token of a side, the tokens before it are modifiers, as
+        // the import reads the line: "joy6_b1+joy4_b3" is joy4's button with a modifier on joy6, so it belongs to joy4
+        // (clean of joy4 and nuke of joy4 release it). JoyPro imports and writes only joystick and keyboard lines, so
+        // only those can be released; mouse and other lines always stay.
         private static string DeviceOf(ActionLine line)
         {
             string command = line == null ? string.Empty : line.Command ?? string.Empty;
-            string joy = null;
-            bool key = false;
-            foreach (string raw in command.Split(new[] { '+', '/' }, StringSplitOptions.RemoveEmptyEntries))
+            string main = null;
+            foreach (string sideRaw in command.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                string token = raw.Trim().TrimStart('-').ToLowerInvariant();
-                if (token.Length == 0)
+                string[] tokens = sideRaw.Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim().TrimStart('-').ToLowerInvariant())
+                    .Where(t => t.Length > 0)
+                    .ToArray();
+                if (tokens.Length == 0)
                     continue;
-                if (token.StartsWith("mouse_", StringComparison.Ordinal))
-                    return "mouse";
-                Match match = Regex.Match(token, @"^joy(\d+)_");
-                if (match.Success)
+                string sideDevice = null;
+                for (int i = 0; i < tokens.Length; i++)
                 {
-                    string device = "joy" + match.Groups[1].Value;
-                    if (joy != null && joy != device)
+                    string token = tokens[i];
+                    if (token.StartsWith("mouse_", StringComparison.Ordinal))
+                        return "mouse";
+                    Match match = Regex.Match(token, @"^joy(\d+)_");
+                    string device;
+                    if (match.Success)
+                        device = "joy" + match.Groups[1].Value;
+                    else if (token.StartsWith("key_", StringComparison.Ordinal))
+                        device = "key";
+                    else
                         return "other";
-                    joy = device;
+                    if (i == tokens.Length - 1)
+                        sideDevice = device;
                 }
-                else if (token.StartsWith("key_", StringComparison.Ordinal))
-                    key = true;
-                else
+                if (main != null && main != sideDevice)
                     return "other";
+                main = sideDevice;
             }
-            return joy ?? (key ? "key" : "other");
+            return main ?? "other";
         }
 
         // The input of a line as IL-2 tells inputs apart: device, input and modifiers in one command ("key_lshift+joy0_b3").
@@ -1593,13 +1605,15 @@ namespace JoyPro.Engine
 
         // Devices whose lines an export may release: the joy<N> of connected joysticks (the import reads their binds)
         // and "key" when the export writes keyboard lines.
-        private static HashSet<string> OwnedDevices(Dictionary<string, int> deviceIndex, HashSet<string> writtenDevices)
+        private static HashSet<string> OwnedDevices(Dictionary<string, int> deviceIndex, HashSet<string> writtenDevices, IEnumerable<string> keepDevices)
         {
             HashSet<string> owned = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (writtenDevices.Contains("key"))
                 owned.Add("key");
+            JoyPro.Engine.Games.GameDeviceDirectory directory = JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>());
+            directory.MarkKept(keepDevices);
             HashSet<string> connected = new HashSet<string>(
-                JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>()).Devices.Select(d => d.JoyProName ?? string.Empty),
+                directory.Devices.Where(d => !d.Kept).Select(d => d.JoyProName ?? string.Empty),
                 StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, int> device in deviceIndex)
             {
@@ -2714,7 +2728,8 @@ namespace JoyPro.Engine
             }
         }
 
-        private static string Il2JoyIdToDcsJoyId(string guid, string device)
+        // Also the engine's device lookup for import filters (Program.DiscoverIl2InputDevices): one conversion.
+        internal static string Il2JoyIdToDcsJoyId(string guid, string device)
         {
             try
             {

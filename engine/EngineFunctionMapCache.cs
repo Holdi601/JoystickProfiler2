@@ -14,7 +14,8 @@ namespace JoyPro.Engine
     internal static class EngineFunctionMapCache
     {
         // 2: DCS titles stored as localization keys are resolved when the DB is read (DcsCommandNames).
-        private const string Magic = "JoyProFunctionMap/2";
+        // 3: a trailing tag that says what a DCS command does ("[Inc]", "[Toggle]") stays in its title words.
+        private const string Magic = "JoyProFunctionMap/3";
 
         public static string CacheFile()
         {

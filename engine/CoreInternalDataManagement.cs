@@ -57,6 +57,10 @@ namespace JoyPro
         public static Func<LoadCorrectionSuggestion, bool> LoadItemCorrectionConfirmation = null;
         public static string CurrentDatabaseFingerprint = string.Empty;
         public static string LoadedProfileDatabaseFingerprint = string.Empty;
+        // True when the profile in memory matches the current DB: a new profile, a load whose fingerprint matched, or a
+        // load that ran the DB correction pass. A load without corrections (devices exchange and other commands that skip
+        // them) keeps the loaded fingerprint on save, so the next load still corrects (BuildProfileSnapshot).
+        public static bool ProfileMatchesCurrentDatabase = true;
 
         private static DateTime LastLoadCorrectionRunUtc = DateTime.MinValue;
         private static bool LastLoadCorrectionsEnabled = false;
@@ -240,6 +244,7 @@ namespace JoyPro
             SyncedGames = new List<string>();
             CurrentDatabaseFingerprint = string.Empty;
             LoadedProfileDatabaseFingerprint = string.Empty;
+            ProfileMatchesCurrentDatabase = true;
 
             if (!keepMetaSettings || MainStructure.msave == null)
                 MainStructure.msave = new MetaSave();
@@ -552,6 +557,7 @@ namespace JoyPro
                 !string.IsNullOrWhiteSpace(currentFingerprint) &&
                 string.Equals(profileFingerprint, currentFingerprint, StringComparison.OrdinalIgnoreCase);
             bool runCorrections = applyLegacyCorrections && !fingerprintMatch;
+            ProfileMatchesCurrentDatabase = applyLegacyCorrections;
 
             BeginLoadCorrectionReportSession(runCorrections, autoAddDbItems);
             if (applyLegacyCorrections)
@@ -3838,6 +3844,23 @@ namespace JoyPro
                 .ToList();
         }
 
+        // Whether the game's command list (DCS, IL-2, Star Citizen) has this id: null when JoyPro has no list of that
+        // game yet (a fresh install, a public checkout), so nothing can be said (engine relations item add checks with it).
+        public static bool? KnownActionId(string game, string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return null;
+            if (planeLookupIndex == null)
+                planeLookupIndex = BuildDbCorrectionIndex();
+            string trimmed = id.Trim();
+            if (string.IsNullOrWhiteSpace(game) || string.Equals(game.Trim(), "DCS", StringComparison.OrdinalIgnoreCase))
+                return planeLookupIndex.AllDcsInputs.Count == 0 ? (bool?)null : planeLookupIndex.DcsById.ContainsKey(trimmed);
+            Dictionary<string, List<OtherGameInput>> idMap;
+            if (!planeLookupIndex.OtherByGameAndId.TryGetValue(NormalizeGameNameForCorrection(game), out idMap) || idMap.Count == 0)
+                return null;
+            return idMap.ContainsKey(trimmed);
+        }
+
         private static List<DCSInput> GetDcsInputsById(DbCorrectionIndex index, string id)
         {
             if (index == null || string.IsNullOrWhiteSpace(id))
@@ -4127,7 +4150,8 @@ namespace JoyPro
 
         private static Pr0file BuildProfileSnapshot()
         {
-            string fingerprint = GetOrComputeCurrentDatabaseFingerprint();
+            // Only a profile the DB correction pass saw (or that already matched) gets the current DB's fingerprint.
+            string fingerprint = ProfileMatchesCurrentDatabase ? GetOrComputeCurrentDatabaseFingerprint() : string.Empty;
             if (string.IsNullOrWhiteSpace(fingerprint))
                 fingerprint = NormalizeDatabaseFingerprint(LoadedProfileDatabaseFingerprint);
 

@@ -120,6 +120,15 @@ namespace JoyPro.Engine
             }
             if (useMap)
                 result.MapRows = AddMapRows(slots, aircraft, usable, result);
+            // The rejected lists are for guesses: a catalog substitute or a function map row the manuals rejected for the
+            // aircraft and slot is not used (the user's own relations are not affected, LearnStyle).
+            if (rejected.Count > 0)
+            {
+                int before = usable.Count;
+                usable.RemoveAll(r => (string.Equals(r.Status, "substitute", StringComparison.OrdinalIgnoreCase) || string.Equals(r.Status, "map", StringComparison.OrdinalIgnoreCase)) &&
+                                      rejected.Contains(r.Plane + "|" + r.Slot + "|" + r.Action));
+                result.MapRows -= Math.Min(result.MapRows, before - usable.Count);
+            }
 
             // A plane's own functions (manual-verified) versus the catalog's fallback substitutes.
             Dictionary<string, Dictionary<string, List<string>>> own = new Dictionary<string, Dictionary<string, List<string>>>(StringComparer.OrdinalIgnoreCase);
@@ -141,7 +150,7 @@ namespace JoyPro.Engine
             Dictionary<string, Relation> relations = InternalDataManagement.AllRelations;
             Dictionary<string, List<KeyValuePair<string, int>>> learned;
             Dictionary<string, string> learnedNames;
-            LearnStyle(relations, slots, aircraft, own, functionsOf, rejected, result, out learned, out learnedNames);
+            LearnStyle(relations, slots, aircraft, own, functionsOf, result, out learned, out learnedNames);
 
             // Usage ranking (docs/usage-statistics.md#style-reference): an aircraft the user has not flown (yet) is grouped
             // like the most used aircraft of its class, so its functions join that aircraft's relations (and binds) where
@@ -232,8 +241,13 @@ namespace JoyPro.Engine
             // A command a plane already uses in one of the user's other relations stays there: binding it twice
             // would make two relations fight over the same DCS command.
             Dictionary<string, List<string>> usedElsewhere = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-            // A command the user switched off for a plane stays off: Auto Group never re-enables it.
+            // A command switched off for a plane in a relation (or dismissed there, EngineDismissedSuggestions) stays off in
+            // that relation: Auto Group never re-enables it there, but may place it in another relation.
             Dictionary<string, List<string>> disabledByUser = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            // "relation|plane": a DCS aircraft that already has an action on in the relation. That action is the user's
+            // choice for it (also a deliberate substitute the catalog calls something else: TDC depress on Radar Lock),
+            // so Auto Group adds no second one (the check's "two actions of one aircraft").
+            HashSet<string> activeBefore = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, Relation> pair in relations)
             {
                 if (pair.Value == null || pair.Value.NODES == null || removedNames.Contains(pair.Key))
@@ -245,6 +259,8 @@ namespace JoyPro.Engine
                     foreach (KeyValuePair<string, bool> plane in node.AIRCRAFT)
                     {
                         AddOwner(plane.Value ? usedElsewhere : disabledByUser, NodeKey(node.Game, node.ID, plane.Key), pair.Key);
+                        if (plane.Value && IsDcs(node.Game))
+                            activeBefore.Add(pair.Key + "|" + plane.Key.Trim());
                     }
                 }
             }
@@ -254,6 +270,11 @@ namespace JoyPro.Engine
                 if (!removedNames.Contains(dismissed.Value.Relation))
                     AddOwner(disabledByUser, dismissed.Key, dismissed.Value.Relation);
             }
+
+            // Relations that share a button (the user's "HOTAS slots"): an aircraft may be on in only one of them, or one
+            // press runs two things in the game (the check's "one input does two things"). A placement that would make
+            // that is skipped and listed; the relation the aircraft already has there stays as it is.
+            ButtonUse buttons = ButtonUse.Build(relations, removedNames);
 
             HashSet<string> planesCovered = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             EngineFunctionMap.Map functionMap = useMap ? EngineFunctionMap.Load(result.Warnings) : null;
@@ -326,16 +347,34 @@ namespace JoyPro.Engine
                         }
                         continue;
                     }
-                    if (disabledByUser.TryGetValue(key, out owners))
+                    // Only in that relation: JoyPro itself switches an aircraft off in one relation when two relations
+                    // carry the same command (the same-number cleanup on load), which says nothing about the others.
+                    if (disabledByUser.TryGetValue(key, out owners) && owners.Contains(group.Name, StringComparer.OrdinalIgnoreCase))
                     {
+                        owners = new List<string> { group.Name };
                         result.KeptDisabled++;
                         AddUnique(result.Kept, row.Plane + " " + row.Action + " stays disabled in '" + string.Join("', '", owners) + "' (catalog: '" + group.Name + "')");
+                        continue;
+                    }
+                    if (exists && IsDcs(row.Game) && activeBefore.Contains(group.Name + "|" + row.Plane.Trim()))
+                    {
+                        result.KeptYourAction++;
+                        AddUnique(result.Kept, row.Plane + " " + row.Action + " not added to '" + group.Name + "': " + row.Plane + " already has your action there");
+                        continue;
+                    }
+                    List<string> buttonOwners = buttons.OthersOn(group.Name, row.Game, row.Plane, row.Action);
+                    if (buttonOwners.Count > 0)
+                    {
+                        result.KeptForButtonConflicts++;
+                        AddUnique(result.Kept, row.Plane + " " + row.Action + " not added to '" + group.Name + "': its button already does '" +
+                                               string.Join("', '", buttonOwners) + "' for " + row.Plane + " (one press would run both)");
                         continue;
                     }
                     if (!dryRun && !relation.AddNode(EngineRelationSuggest.NodeId(EngineRelationSuggest.GameKey(row.Game), row.Action), row.Game, relation.ISAXIS, row.Plane))
                         continue;
                     added++;
                     planesCovered.Add(row.Plane);
+                    buttons.MarkOn(group.Name, row.Game, row.Plane, row.Action);
                 }
 
                 if (added == 0)
@@ -470,13 +509,6 @@ namespace JoyPro.Engine
         internal static Dictionary<string, List<KeyValuePair<string, int>>> LearnHabits(
             Dictionary<string, Slot> slots, Dictionary<string, Aircraft> aircraft, List<Row> rows, List<string> rules)
         {
-            string folder = EngineNlGroup.FunctionsFolder();
-            HashSet<string> rejected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            if (Directory.Exists(folder))
-            {
-                foreach (string file in Directory.GetFiles(folder, "*.rejected.tsv"))
-                    rejected.UnionWith(LoadRejected(file));
-            }
             Dictionary<string, Dictionary<string, List<string>>> own = new Dictionary<string, Dictionary<string, List<string>>>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, HashSet<string>> functionsOf = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             foreach (Row row in rows)
@@ -492,7 +524,7 @@ namespace JoyPro.Engine
             EngineAutoGroupResult result = new EngineAutoGroupResult();
             Dictionary<string, List<KeyValuePair<string, int>>> learned;
             Dictionary<string, string> learnedNames;
-            LearnStyle(InternalDataManagement.AllRelations, slots, aircraft, own, functionsOf, rejected, result, out learned, out learnedNames);
+            LearnStyle(InternalDataManagement.AllRelations, slots, aircraft, own, functionsOf, result, out learned, out learnedNames);
             if (rules != null)
                 rules.AddRange(result.LearnedRules);
             return learned;
@@ -507,7 +539,6 @@ namespace JoyPro.Engine
             Dictionary<string, Aircraft> aircraft,
             Dictionary<string, Dictionary<string, List<string>>> own,
             Dictionary<string, HashSet<string>> functionsOf,
-            HashSet<string> rejected,
             EngineAutoGroupResult result,
             out Dictionary<string, List<KeyValuePair<string, int>>> learned,
             out Dictionary<string, string> learnedNames)
@@ -562,13 +593,12 @@ namespace JoyPro.Engine
 
                 RememberRelation(bestRelation, slot.Id, relation.NAME, dominant.Value);
 
-                // Commands the manuals proved wrong here (old placeholders) are no habit, on any aircraft they were copied to.
-                HashSet<string> rejectedActions = new HashSet<string>(
-                    entries.Where(e => rejected.Contains(e.Plane + "|" + slot.Id + "|" + e.Action)).Select(e => e.Action),
-                    StringComparer.Ordinal);
+                // What the user put here himself is his style, also where the rejected lists (DB\Functions\*.rejected.tsv,
+                // the manuals' verdict on catalog guesses) say the command is not this function: TDC depress on Radar
+                // Lock, VoIP talk on a spare engine-start button are deliberate substitutes.
                 foreach (StyleEntry entry in entries)
                 {
-                    if (entry.Functions.Contains(slot.Id) || Lookup(own, entry.Plane, slot.Id).Count > 0 || rejectedActions.Contains(entry.Action))
+                    if (entry.Functions.Contains(slot.Id) || Lookup(own, entry.Plane, slot.Id).Count > 0)
                         continue;
                     Dictionary<string, Habit> habit;
                     if (!pairs.TryGetValue(slot.Id, out habit))
@@ -612,6 +642,100 @@ namespace JoyPro.Engine
             {
                 if (claimed.Add(pair.Value.Key))
                     learnedNames[pair.Key] = pair.Value.Key;
+            }
+        }
+
+        // Which relations have an aircraft switched on per bound input (device, input and modifiers), with the rules of
+        // the check's "one input does two things" (EngineCheckConflicts.InputConflicts): Star Citizen is left out, and a
+        // conflict the user kept ("keep both") is allowed.
+        private sealed class ButtonUse
+        {
+            private readonly Dictionary<string, string> inputOf = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            // slot (input + game:plane) -> relation -> the vehicle classes of its actions there (games without aircraft lists).
+            private readonly Dictionary<string, Dictionary<string, HashSet<string>>> on = new Dictionary<string, Dictionary<string, HashSet<string>>>(StringComparer.OrdinalIgnoreCase);
+            private readonly EngineCheckConflicts.VehicleClasses classes = new EngineCheckConflicts.VehicleClasses();
+            private readonly HashSet<string> kept = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            internal static ButtonUse Build(Dictionary<string, Relation> relations, HashSet<string> removed)
+            {
+                ButtonUse use = new ButtonUse();
+                use.kept.UnionWith((InternalDataManagement.KeptDuplicates ?? new List<string>()).Where(EngineCheckConflicts.IsConflictEntry));
+                foreach (KeyValuePair<string, Relation> pair in relations)
+                {
+                    Relation relation = pair.Value;
+                    if (relation == null || removed.Contains(pair.Key))
+                        continue;
+                    Bind bind = relation.bind;
+                    if (bind == null && InternalDataManagement.AllBinds != null)
+                        InternalDataManagement.AllBinds.TryGetValue(pair.Key, out bind);
+                    string input = bind == null ? string.Empty : (relation.ISAXIS ? bind.JAxis : bind.JButton) ?? string.Empty;
+                    if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick) || string.IsNullOrWhiteSpace(input))
+                        continue;
+                    StringBuilder key = new StringBuilder();
+                    key.Append(bind.Joystick).Append("§").Append(input);
+                    foreach (string reformer in bind.AllReformers ?? new List<string>())
+                        key.Append("§").Append(reformer ?? string.Empty);
+                    use.inputOf[pair.Key] = key.ToString();
+                    foreach (RelationItem node in relation.NODES ?? new List<RelationItem>())
+                    {
+                        if (node == null || node.AIRCRAFT == null)
+                            continue;
+                        foreach (KeyValuePair<string, bool> plane in node.AIRCRAFT)
+                        {
+                            if (plane.Value)
+                                use.MarkOn(pair.Key, node.Game, plane.Key, node.ID);
+                        }
+                    }
+                }
+                return use;
+            }
+
+            private static string GameOf(string game)
+            {
+                return string.IsNullOrWhiteSpace(game) ? "DCS" : game.Trim();
+            }
+
+            private string Slot(string relation, string game, string plane, out string input)
+            {
+                input = null;
+                if (string.IsNullOrWhiteSpace(plane) || string.Equals(EngineRelationSuggest.GameKey(GameOf(game)), "StarCitizen", StringComparison.OrdinalIgnoreCase) ||
+                    !inputOf.TryGetValue(relation ?? string.Empty, out input))
+                    return null;
+                return input + "\n" + EngineRelationSuggest.GameKey(GameOf(game)) + ":" + plane.Trim();
+            }
+
+            internal void MarkOn(string relation, string game, string plane, string action)
+            {
+                string input;
+                string slot = Slot(relation, game, plane, out input);
+                if (slot == null)
+                    return;
+                Dictionary<string, HashSet<string>> owners;
+                if (!on.TryGetValue(slot, out owners))
+                    on[slot] = owners = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+                HashSet<string> vehicles;
+                if (!owners.TryGetValue(relation, out vehicles))
+                    owners[relation] = vehicles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                vehicles.Add(classes.Of(game, action));
+            }
+
+            // The other relations on the same input that have the aircraft (in a game without aircraft lists: a vehicle of
+            // the action's class) on; none when the user kept exactly them.
+            internal List<string> OthersOn(string relation, string game, string plane, string action)
+            {
+                string input;
+                string slot = Slot(relation, game, plane, out input);
+                Dictionary<string, HashSet<string>> owners;
+                if (slot == null || !on.TryGetValue(slot, out owners))
+                    return new List<string>();
+                string vehicle = classes.Of(game, action);
+                List<string> others = owners.Where(o => !string.Equals(o.Key, relation, StringComparison.OrdinalIgnoreCase) && o.Value.Contains(vehicle))
+                    .Select(o => o.Key).OrderBy(o => o, StringComparer.OrdinalIgnoreCase).ToList();
+                if (others.Count == 0)
+                    return others;
+                string entry = "input|" + GameOf(game) + ":" + plane.Trim() + "§" + input + "|" +
+                               string.Join("\t", others.Concat(new[] { relation }).OrderBy(r => r, StringComparer.OrdinalIgnoreCase));
+                return kept.Contains(entry) ? new List<string>() : others;
             }
         }
 
@@ -922,6 +1046,8 @@ namespace JoyPro.Engine
             sb.AppendLine("Nodes Added: " + result.NodesAdded.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Kept In Other Relations: " + result.KeptInOtherRelations.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Kept Disabled By You: " + result.KeptDisabled.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine("Left Out, Button Already Used For The Aircraft: " + result.KeptForButtonConflicts.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine("Left Out, Aircraft Has Your Action There: " + result.KeptYourAction.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Left Out, Same Id Means Something Else: " + result.MeaningExcluded.ToString(CultureInfo.InvariantCulture));
             foreach (string note in result.MeaningNotes.Take(20))
                 sb.AppendLine("  ~ " + note);
@@ -997,6 +1123,11 @@ namespace JoyPro.Engine
         // Axes left out of the user's own relations: only the function catalog reads them as the relation's function.
         public int KeptOutOfOwnRelations { get; set; }
         public int KeptDisabled { get; set; }
+        // Placements left out because the relation's button already does another relation's action for the aircraft.
+        public int KeptForButtonConflicts { get; set; }
+        // Commands left out of a relation where the aircraft already has the user's action (a second one would be two
+        // actions of one aircraft on one input).
+        public int KeptYourAction { get; set; }
         public int AircraftCovered { get; set; }
         public int CommandsMissingInDatabase { get; set; }
         public int LearnedSubstitutes { get; set; }

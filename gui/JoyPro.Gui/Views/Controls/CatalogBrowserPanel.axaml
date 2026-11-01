@@ -45,79 +45,81 @@
             </Grid>
         </StackPanel>
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MinHeight="0">
-            <ItemsControl ItemsSource="{Binding CatalogCategories}" Margin="0,0,12,0">
-                <ItemsControl.ItemTemplate>
+            <!-- One list (CatalogEntries): each shown category, then its shown rows. Only the items in view are built: a filter's
+                 first letter opens every category with a match, and building all their rows (3561 on the F-4E) froze the
+                 window for minutes -->
+            <ItemsControl x:Name="CatalogList" ItemsSource="{Binding CatalogEntries}" Margin="0,0,12,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.DataTemplates>
                     <DataTemplate x:DataType="models:CatalogCategoryItem">
-                        <StackPanel IsVisible="{Binding IsVisible}" Margin="0,2">
-                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8" Background="Transparent">
-                                <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding HasTickable}" VerticalAlignment="Center"
-                                          ToolTip.Tip="{l:T 'Tick or untick every action of this category shown'}" />
-                                <Button Grid.Column="1" Classes="ghost small" Padding="2" Width="22" Height="22"
-                                        Command="{Binding #CatalogRoot.DataContext.ToggleCatalogCategoryCommand}" CommandParameter="{Binding}"
-                                        ToolTip.Tip="{l:T 'Open or close this category'}">
-                                    <Panel>
-                                        <TextBlock Text="&gt;" FontWeight="Bold" HorizontalAlignment="Center" IsVisible="{Binding !IsExpanded}" />
-                                        <TextBlock Text="v" FontWeight="Bold" HorizontalAlignment="Center" IsVisible="{Binding IsExpanded}" />
-                                    </Panel>
+                        <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8" Background="Transparent" Margin="0,4,0,2">
+                            <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding HasTickable}" VerticalAlignment="Center"
+                                      ToolTip.Tip="{l:T 'Tick or untick every action of this category shown'}" />
+                            <Button Grid.Column="1" Classes="ghost small" Padding="2" Width="22" Height="22"
+                                    Command="{Binding #CatalogRoot.DataContext.ToggleCatalogCategoryCommand}" CommandParameter="{Binding}"
+                                    ToolTip.Tip="{l:T 'Open or close this category'}">
+                                <Panel>
+                                    <TextBlock Text="&gt;" FontWeight="Bold" HorizontalAlignment="Center" IsVisible="{Binding !IsExpanded}" />
+                                    <TextBlock Text="v" FontWeight="Bold" HorizontalAlignment="Center" IsVisible="{Binding IsExpanded}" />
+                                </Panel>
+                            </Button>
+                            <Button Grid.Column="2" Classes="ghost small" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="2,0"
+                                    Command="{Binding #CatalogRoot.DataContext.ToggleCatalogCategoryCommand}" CommandParameter="{Binding}">
+                                <TextBlock TextTrimming="CharacterEllipsis">
+                                    <Run Text="{Binding Name}" FontWeight="Bold" />
+                                    <Run Text="  " />
+                                    <Run Text="{Binding CountText}" Foreground="{DynamicResource JP.TextMutedBrush}" FontSize="{DynamicResource JP.FontSize.12}" />
+                                </TextBlock>
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                    <DataTemplate x:DataType="models:CatalogEntryRow">
+                        <StackPanel Spacing="2" Margin="30,1,0,1">
+                            <CheckBox IsChecked="{Binding Item.Row.IsChecked}" IsEnabled="{Binding Item.Row.CanCheck}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                      ToolTip.Tip="{Binding Item.Row.PlanesTooltip}">
+                                <StackPanel Spacing="1">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                        <TextBlock Text="{Binding Item.Row.DisplayTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Item.Row.IdTip}" />
+                                        <TextBlock Grid.Column="1" Classes="caption" Text="{Binding Item.Row.KindLabel}" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <WrapPanel ItemSpacing="4" LineSpacing="2">
+                                        <Border Classes="chip recommended" IsVisible="{Binding Item.Row.IsRecommended}"
+                                                ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
+                                            <TextBlock Text="{Binding Item.Row.RecommendedLabel}" />
+                                        </Border>
+                                        <Border Classes="chip ok" IsVisible="{Binding Item.Row.IsInOpenRelation}"><TextBlock Text="{l:T 'in this relation'}" /></Border>
+                                        <Border Classes="chip" IsVisible="{Binding Item.IsUsed}" ToolTip.Tip="{l:T 'The relations that use it already'}">
+                                            <TextBlock Text="{Binding Item.UsedText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
+                                        </Border>
+                                        <Border Classes="keycap" IsVisible="{Binding Item.IsBound}" ToolTip.Tip="{l:T 'Already on this input (through that relation)'}">
+                                            <TextBlock Text="{Binding Item.BoundText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
+                                        </Border>
+                                    </WrapPanel>
+                                    <TextBlock Classes="warnText" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Item.Row.VariantText}" IsVisible="{Binding Item.Row.HasVariant}" TextWrapping="Wrap" />
+                                    <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Item.Row.Explanation}" IsVisible="{Binding Item.Row.HasExplanation}" TextWrapping="Wrap" MaxLines="2"
+                                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Item.Row.ExplanationTip}" />
+                                </StackPanel>
+                            </CheckBox>
+                            <!-- DCS: the browsed aircraft is ticked; tick more aircraft with the same meaning -->
+                            <StackPanel Margin="28,0,0,0" Spacing="4" IsVisible="{Binding Item.Row.HasAircraft}">
+                                <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" Command="{Binding Item.Row.Aircraft.ToggleExpandedCommand, FallbackValue={x:Null}}"
+                                        ToolTip.Tip="{l:T 'Every aircraft with this id, each with its own title: tick the ones the action is for'}">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
+                                        <PathIcon Data="{StaticResource Icon.Airplane}" Width="12" Height="12" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Item.Row.Aircraft.ExpandLabel, FallbackValue=''}" FontSize="{DynamicResource JP.FontSize.11.5}" TextWrapping="Wrap" />
+                                    </Grid>
                                 </Button>
-                                <Button Grid.Column="2" Classes="ghost small" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="2,0"
-                                        Command="{Binding #CatalogRoot.DataContext.ToggleCatalogCategoryCommand}" CommandParameter="{Binding}">
-                                    <TextBlock TextTrimming="CharacterEllipsis">
-                                        <Run Text="{Binding Name}" FontWeight="Bold" />
-                                        <Run Text="  " />
-                                        <Run Text="{Binding CountText}" Foreground="{DynamicResource JP.TextMutedBrush}" FontSize="{DynamicResource JP.FontSize.12}" />
-                                    </TextBlock>
-                                </Button>
-                            </Grid>
-                            <ItemsControl ItemsSource="{Binding VisibleRows}" Margin="30,0,0,4">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="models:CatalogRowItem">
-                                        <StackPanel Spacing="2" Margin="0,1">
-                                            <CheckBox IsChecked="{Binding Row.IsChecked}" IsEnabled="{Binding Row.CanCheck}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                                      ToolTip.Tip="{Binding Row.PlanesTooltip}">
-                                                <StackPanel Spacing="1">
-                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
-                                                        <TextBlock Text="{Binding Row.DisplayTitle}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Row.IdTip}" />
-                                                        <TextBlock Grid.Column="1" Classes="caption" Text="{Binding Row.KindLabel}" VerticalAlignment="Center" />
-                                                    </Grid>
-                                                    <WrapPanel ItemSpacing="4" LineSpacing="2">
-                                                        <Border Classes="chip recommended" IsVisible="{Binding Row.IsRecommended}"
-                                                                ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
-                                                            <TextBlock Text="{Binding Row.RecommendedLabel}" />
-                                                        </Border>
-                                                        <Border Classes="chip ok" IsVisible="{Binding Row.IsInOpenRelation}"><TextBlock Text="{l:T 'in this relation'}" /></Border>
-                                                        <Border Classes="chip" IsVisible="{Binding IsUsed}" ToolTip.Tip="{l:T 'The relations that use it already'}">
-                                                            <TextBlock Text="{Binding UsedText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
-                                                        </Border>
-                                                        <Border Classes="keycap" IsVisible="{Binding IsBound}" ToolTip.Tip="{l:T 'Already on this input (through that relation)'}">
-                                                            <TextBlock Text="{Binding BoundText}" MaxWidth="260" TextTrimming="CharacterEllipsis" />
-                                                        </Border>
-                                                    </WrapPanel>
-                                                    <TextBlock Classes="warnText" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Row.VariantText}" IsVisible="{Binding Row.HasVariant}" TextWrapping="Wrap" />
-                                                    <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Row.Explanation}" IsVisible="{Binding Row.HasExplanation}" TextWrapping="Wrap" MaxLines="2"
-                                                               TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Row.ExplanationTip}" />
-                                                </StackPanel>
-                                            </CheckBox>
-                                            <!-- DCS: the browsed aircraft is ticked; tick more aircraft with the same meaning -->
-                                            <StackPanel Margin="28,0,0,0" Spacing="4" IsVisible="{Binding Row.HasAircraft}">
-                                                <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" Command="{Binding Row.Aircraft.ToggleExpandedCommand, FallbackValue={x:Null}}"
-                                                        ToolTip.Tip="{l:T 'Every aircraft with this id, each with its own title: tick the ones the action is for'}">
-                                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4">
-                                                        <PathIcon Data="{StaticResource Icon.Airplane}" Width="12" Height="12" VerticalAlignment="Top" Margin="0,2,0,0" />
-                                                        <TextBlock Grid.Column="1" Text="{Binding Row.Aircraft.ExpandLabel, FallbackValue=''}" FontSize="{DynamicResource JP.FontSize.11.5}" TextWrapping="Wrap" />
-                                                    </Grid>
-                                                </Button>
-                                                <Panel IsVisible="{Binding Row.Aircraft.IsExpanded, FallbackValue=False}">
-                                                    <controls:AircraftSelectorPanel DataContext="{Binding Row.Aircraft}" />
-                                                </Panel>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                <Panel IsVisible="{Binding Item.Row.Aircraft.IsExpanded, FallbackValue=False}">
+                                    <controls:AircraftSelectorPanel DataContext="{Binding Item.Row.Aircraft}" />
+                                </Panel>
+                            </StackPanel>
                         </StackPanel>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                </ItemsControl.DataTemplates>
             </ItemsControl>
         </ScrollViewer>
         <Grid Grid.Row="3" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="6" IsVisible="{Binding HasCatalogRows}">

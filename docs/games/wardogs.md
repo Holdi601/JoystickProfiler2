@@ -4,7 +4,7 @@ Unreal Engine 5 game by Bulkhead. Joysticks are handled by the game's own "WD Jo
 
 ## Files
 - Joystick bindings: `%LOCALAPPDATA%\Wardogs\Saved\Config\WindowsClient\GameUserSettings.ini`, section `[/Script/WDJoystick.WDJoystickSettings]`.
-- HOTAS master switch: `bUseHOTASHelicopters` in `[/Script/WDGame.WDUserSettings]` of the same file = the in-game "Enable HOTAS" toggle (verified in game 2026-10-04). With it off the HOTAS menu lists no binds and the game ignores them, so JoyPro's export turns it on when it writes binds.
+- HOTAS master switch: `bUseHOTASHelicopters` in `[/Script/WDGame.WDUserSettings]` of the same file = the in-game "Enable HOTAS" toggle (verified in game 2026-10-04). With it off the HOTAS menu lists no binds and the game ignores them, so JoyPro's export turns it on when it writes binds. The "bUseHOTASHelicopters is False" warning comes only when the switch stays off after the export (no binds written); the export that turns it on says so instead (2.6.0: it printed both).
 - Keyboard bindings: `[/Script/BHEnhancedInput.BHEnhancedInputPlayerBinds]` and `Saved\SaveGames\EnhancedInputUserSettings.sav` (GVAS). Not needed for joysticks.
 - JoyPro does not read the install; the user's ini files are the source.
 
@@ -35,6 +35,10 @@ ActionBindings=(Action=<EWDFlightAction>,Binding=(DeviceIdentifier="<id>",_aaaal
 | `_aaaamdcclmobefllhjkdm` | hat direction enum, `Up` = value 0 = placeholder | medium |
 | `Sensitivity`, `DeadZone` | the HOTAS page's Sensitivity and Deadzone sliders (defaults 1.0 / 0.05, same units as the menu); managed by JoyPro (`wardogs` axis model) | high |
 | `_aaaaoabiaaaacohedinbn`, `_aaabgcjobaejlnkbppedn`, the two `<Src>` structs | unknown; preserve | low |
+
+The generated field names change with game builds (build of 2026-11-01: axis index `_aaaajdmbkojdnhnkhhfhe`, hidden float
+`_aaaaobillkpcogeggajji`, hidden bool `_aaabgnoihpkpainacpjmf`); the engine and the e2e kit find every such field by its
+position next to a readable anchor, never by its name.
 
 Defaults of a pristine file: Roll=axis 0, Pitch=1, Throttle=2, Yaw=5, LookPitch/LookYaw=-1.
 
@@ -93,7 +97,7 @@ The `_aaaa...` tokens are hashes of the property names: the same logical field h
 1. Full action list: bind every action in the HOTAS menu once and read the ini.
 2. Hat encoding: bind a hat direction as an action and as LookPitch Positive.
 3. Meaning of the unknown fields: change one HOTAS option at a time and diff. Sensitivity, DeadZone, invert and Self-Centering Collective are mapped (see above); `_aaaaoabiaaaacohedinbn` (always 1.0), `_aaabgcjobaejlnkbppedn` (always False) and the two `<Src>` structs have no menu row.
-5. In-game check of the settings: `tools\e2e\games\WardogsSettings.ps1` (random values, HOTAS page OCR, snapshot/restore; not run yet).
+5. In-game check of the settings: `tools\e2e\games\WardogsSettings.ps1` (random values, HOTAS page OCR, snapshot/restore): 36/36 on 2026-10-11 with the config watcher; the binds (`Wardogs.ps1`) 42/42 on 2026-10-10.
 4. ~~Whether `bUseHOTASHelicopters=True` is required~~: yes (see Files).
 
 Sources: thewardogsguide.com/wardogs-controls-hotas, allthings.how WARDOGS HOTAS guide; real files on a test PC (current file plus three `.bak` versions).

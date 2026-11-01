@@ -20,10 +20,26 @@ namespace JoyPro.Engine
             return settings.AllFunctions()
                 .Where(f => f.Value.Enabled && settings.IsAnyVirtual(f.Key))
                 .SelectMany(f => f.Value.Inputs)
-                .Where(i => i.Device.Length > 0 && i.Input.Length > 0)
+                .Where(i => i.Device.Length > 0 && i.Input.Length > 0 && !VfChain.IsChain(i))
                 .Select(i => i.Device)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
+        }
+
+        // Problems of a function in its game: the function itself, its chained inputs against the game's other
+        // functions, its modes against the game's mode set.
+        public static List<string> FunctionProblems(VJoySettings settings, string game, VirtualFunction function)
+        {
+            List<VirtualFunction> all = settings.FunctionsOf(game);
+            if (!all.Contains(function))
+                all = all.Where(f => !string.Equals(f.Id, function.Id, StringComparison.OrdinalIgnoreCase)).Concat(new[] { function }).ToList();
+            List<string> problems = VirtualFunctionCatalog.Validate(function, all, VfChain.ChainedRoles(function, all));
+            VfModeSet modes = settings.ModesOf(game);
+            if (modes != null)
+                problems.AddRange(modes.Check(function));
+            else if (function.Modes.Count > 0 || function.SwitchModes.Count > 0)
+                problems.Add(GameName(game) + " has no modes yet (engine vjoy modes add --game " + game + " --name <mode>): the function works in every mode.");
+            return problems;
         }
 
         // A shift layer's unshifted output defaults to the input's own slot (vJoy slot, or the Xbox control of the
@@ -53,6 +69,156 @@ namespace JoyPro.Engine
                 existing.Target = xbox ? slot.Target.TrimEnd('~') : slot.Target;
                 existing.VJoyDevice = xbox ? 0 : slot.Device;
             }
+        }
+
+        // ---- engine vjoy modes list|add|set|remove|start --game g [--name X] [--parent P] [--rename Y]
+
+        private static int ModesCommand(List<string> args, bool textOutput, out string payload)
+        {
+            string action = args.Count == 0 ? "list" : args[0].Trim().ToLowerInvariant();
+            if (args.Count > 0)
+                args.RemoveAt(0);
+            string game = RequireGame(args);
+            string name = PopValue(args, "--name");
+            string parent = PopValue(args, "--parent");
+            string rename = PopValue(args, "--rename");
+            bool dryRun = PopFlag(args, "--dry-run");
+            RefuseLeftovers(args, "modes " + action);
+            VJoySettings settings = LoadSettings();
+            VfModeSet set = settings.ModeSetOf(game);
+            string message;
+            switch (action)
+            {
+                case "list":
+                    message = string.Empty;
+                    break;
+                case "add":
+                {
+                    if (string.IsNullOrWhiteSpace(name))
+                        throw new ArgumentException("modes add needs --name <mode>.");
+                    if (set.Find(name) != null)
+                        throw new ArgumentException("The mode \"" + name.Trim() + "\" exists already for " + GameName(game) + ".");
+                    if (!string.IsNullOrWhiteSpace(parent) && set.Find(parent) == null)
+                        throw new ArgumentException("No mode \"" + parent.Trim() + "\" to inherit from (engine vjoy modes list --game " + game + ").");
+                    set.Modes.Add(new VfMode { Name = name.Trim(), Parent = (parent ?? string.Empty).Trim() });
+                    message = "Added the mode \"" + name.Trim() + "\"" + (string.IsNullOrWhiteSpace(parent) ? string.Empty : " (inherits from \"" + parent.Trim() + "\")") + " for " + GameName(game) + ".";
+                    break;
+                }
+                case "set":
+                {
+                    VfMode mode = RequireMode(set, name, game);
+                    if (parent != null)
+                    {
+                        if (parent.Trim().Length > 0 && set.Find(parent) == null)
+                            throw new ArgumentException("No mode \"" + parent.Trim() + "\" to inherit from.");
+                        if (parent.Trim().Length > 0 && set.Lineage(parent).Contains(mode.Name, StringComparer.OrdinalIgnoreCase))
+                            throw new ArgumentException("\"" + mode.Name + "\" cannot inherit from \"" + parent.Trim() + "\": that mode already inherits from it (a loop).");
+                        mode.Parent = parent.Trim();
+                    }
+                    if (!string.IsNullOrWhiteSpace(rename) && !string.Equals(rename.Trim(), mode.Name, StringComparison.Ordinal))
+                    {
+                        if (set.Find(rename) != null && !string.Equals(rename.Trim(), mode.Name, StringComparison.OrdinalIgnoreCase))
+                            throw new ArgumentException("The mode \"" + rename.Trim() + "\" exists already.");
+                        RenameMode(settings, game, mode.Name, rename.Trim());
+                    }
+                    message = "Updated the mode \"" + mode.Name + "\" of " + GameName(game) + ".";
+                    break;
+                }
+                case "remove":
+                {
+                    VfMode mode = RequireMode(set, name, game);
+                    set.Modes.Remove(mode);
+                    foreach (VfMode child in set.Modes.Where(m => string.Equals(m.Parent, mode.Name, StringComparison.OrdinalIgnoreCase)))
+                        child.Parent = mode.Parent;
+                    int touched = 0;
+                    foreach (VirtualFunction function in settings.FunctionsOf(game))
+                    {
+                        touched += function.Modes.RemoveAll(m => string.Equals(m, mode.Name, StringComparison.OrdinalIgnoreCase));
+                        touched += function.SwitchModes.RemoveAll(m => string.Equals(m, mode.Name, StringComparison.OrdinalIgnoreCase));
+                    }
+                    message = "Removed the mode \"" + mode.Name + "\" of " + GameName(game) + (touched > 0 ? "; " + touched.ToString(CultureInfo.InvariantCulture) + " function reference(s) to it were dropped" : string.Empty) + ".";
+                    break;
+                }
+                case "start":
+                {
+                    VfMode mode = RequireMode(set, name, game);
+                    set.Start = mode.Name;
+                    message = "\"" + mode.Name + "\" is the mode at start for " + GameName(game) + ".";
+                    break;
+                }
+                default:
+                    throw new ArgumentException("Unknown vjoy modes action: " + action + ". Use list, add, set, remove or start.");
+            }
+            set.Normalize();
+            if (action != "list" && !dryRun)
+                SaveSettings(settings);
+            if (dryRun && message.Length > 0)
+                message = "Dry run: " + message + " Nothing was saved.";
+            List<VirtualFunction> functions = settings.FunctionsOf(game);
+            List<object> modes = set.Modes.Select(m => (object)new Dictionary<string, object>
+            {
+                { "Name", m.Name },
+                { "Parent", m.Parent },
+                { "Start", string.Equals(m.Name, set.Start, StringComparison.OrdinalIgnoreCase) },
+                { "Lineage", set.Lineage(m.Name) },
+                { "Functions", functions.Where((f, i) => set.ActiveTable(functions)[i][set.IndexOf(m.Name)]).Select(f => f.Id).ToList() }
+            }).ToList();
+            if (!textOutput)
+            {
+                payload = EngineSerialization.ToJson(new { Message = message, Game = game, Start = set.Start, Modes = modes });
+                return 0;
+            }
+            StringBuilder sb = new StringBuilder();
+            if (message.Length > 0)
+                sb.AppendLine(message);
+            sb.AppendLine("Modes of " + GameName(game) + ": " + (set.Modes.Count == 0 ? "none (every function works always)" : set.Modes.Count.ToString(CultureInfo.InvariantCulture)));
+            foreach (VfMode mode in set.Modes)
+                sb.AppendLine("  " + mode.Name + (mode.Parent.Length > 0 ? " (inherits from " + mode.Parent + ")" : string.Empty) + (string.Equals(mode.Name, set.Start, StringComparison.OrdinalIgnoreCase) ? " [start]" : string.Empty));
+            payload = sb.ToString();
+            return 0;
+        }
+
+        private static VfMode RequireMode(VfModeSet set, string name, string game)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("--name <mode> is needed.");
+            VfMode mode = set.Find(name);
+            if (mode == null)
+                throw new ArgumentException("No mode \"" + name.Trim() + "\" for " + GameName(game) + " (engine vjoy modes list --game " + game + ").");
+            return mode;
+        }
+
+        // A new name everywhere: the mode, its children's parent, the functions' lists, the start mode.
+        public static void RenameMode(VJoySettings settings, string game, string from, string to)
+        {
+            VfModeSet set = settings.ModeSetOf(game);
+            foreach (VfMode mode in set.Modes)
+            {
+                if (string.Equals(mode.Name, from, StringComparison.OrdinalIgnoreCase))
+                    mode.Name = to;
+                if (string.Equals(mode.Parent, from, StringComparison.OrdinalIgnoreCase))
+                    mode.Parent = to;
+            }
+            if (string.Equals(set.Start, from, StringComparison.OrdinalIgnoreCase))
+                set.Start = to;
+            foreach (VirtualFunction function in settings.FunctionsOf(game))
+            {
+                for (int i = 0; i < function.Modes.Count; i++)
+                {
+                    if (string.Equals(function.Modes[i], from, StringComparison.OrdinalIgnoreCase))
+                        function.Modes[i] = to;
+                }
+                for (int i = 0; i < function.SwitchModes.Count; i++)
+                {
+                    if (string.Equals(function.SwitchModes[i], from, StringComparison.OrdinalIgnoreCase))
+                        function.SwitchModes[i] = to;
+                }
+            }
+        }
+
+        private static List<string> ParseNames(string text)
+        {
+            return (text ?? string.Empty).Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries).Select(n => n.Trim()).Where(n => n.Length > 0).ToList();
         }
 
         private static int FunctionsCommand(List<string> args, bool textOutput, out string payload)
@@ -194,16 +360,19 @@ namespace JoyPro.Engine
         internal static Dictionary<string, object> FunctionItem(VJoySettings settings, VJoyPlan plan, Dictionary<int, VJoyDeviceCaps> caps, DeviceScan scan, string game, VirtualFunction function)
         {
             VfTypeInfo type = VirtualFunctionCatalog.Get(function.Type);
-            List<string> problems = VirtualFunctionCatalog.Validate(function);
+            List<string> problems = FunctionProblems(settings, game, function);
             List<string> warnings = new List<string>();
             bool xbox = settings.IsXbox(game);
+            List<VirtualFunction> gameFunctions = settings.FunctionsOf(game);
+            HashSet<string> chained = VfChain.ChainedRoles(function, gameFunctions);
             if (!settings.IsAnyVirtual(game))
                 warnings.Add(GameName(game) + " uses its physical devices: the function runs only while the game is in virtual mode (vJoy or Xbox pad).");
-            foreach (VfInput input in function.Inputs.Where(i => i.Device.Length > 0 && i.Input.Length > 0))
+            foreach (VfInput input in function.Inputs.Where(i => i.Device.Length > 0 && i.Input.Length > 0 && !VfChain.IsChain(i)))
             {
                 if (scan != null && scan.Find(input.Device) == null)
                     warnings.Add(input.Role + ": " + input.Device + " is not connected now.");
             }
+            VfModeSet modeSet = settings.ModesOf(game);
             List<Dictionary<string, object>> outputs = new List<Dictionary<string, object>>();
             List<KeyValuePair<int, string>> vjoyTargets = new List<KeyValuePair<int, string>>();
             foreach (VfOutput output in function.Outputs)
@@ -214,7 +383,7 @@ namespace JoyPro.Engine
                 bool parsed = output.Target.Length > 0 && VfTokens.TryParseOutput(output.Target, out kind, out index, out mask);
                 bool vjoy = parsed && VfTokens.TryParseOutput(output.Target, out kind, out index, out mask) && (kind == "button" || kind == "axis" || kind == "hat");
                 bool isXbox = parsed && output.Target.StartsWith("XB_", StringComparison.OrdinalIgnoreCase);
-                int device = output.VJoyDevice <= 0 ? 1 : output.VJoyDevice;
+                int device = output.VJoyDevice <= 0 ? settings.FirstDevice : output.VJoyDevice;
                 string bindDevice = string.Empty;
                 if (vjoy)
                 {
@@ -249,7 +418,8 @@ namespace JoyPro.Engine
                     { "Target", output.Target },
                     { "VJoyDevice", vjoy ? device : 0 },
                     { "Mode", output.Mode ?? string.Empty },
-                    { "Describe", output.Target.Length == 0 ? "none" : (vjoy ? "vJoy " + device.ToString(CultureInfo.InvariantCulture) + " " : string.Empty) + VfTokens.Describe(output.Target) },
+                    { "Describe", output.Target.Length == 0 ? (chained.Contains(output.Role) ? "feeds other functions only" : "none") : (vjoy ? "vJoy " + device.ToString(CultureInfo.InvariantCulture) + " " : string.Empty) + VfTokens.Describe(output.Target) },
+                    { "Chained", chained.Contains(output.Role) },
                     { "BindDevice", bindDevice },
                     { "BindInput", output.Target.StartsWith("KEY_", StringComparison.OrdinalIgnoreCase) ? string.Empty : output.Target }
                 });
@@ -268,6 +438,8 @@ namespace JoyPro.Engine
                 { "Summary", type == null ? string.Empty : type.Summary },
                 { "Function", function },
                 { "Outputs", outputs },
+                { "ModesText", modeSet == null ? string.Empty : modeSet.Describe(function, gameFunctions) },
+                { "ReadBy", gameFunctions.Where(f => !ReferenceEquals(f, function) && VfChain.DependsOn(f).Contains(function.Id, StringComparer.OrdinalIgnoreCase)).Select(f => f.Id).ToList() },
                 { "Problems", problems },
                 { "Warnings", warnings.Distinct().ToList() }
             };
@@ -288,6 +460,8 @@ namespace JoyPro.Engine
             string edges = PopValue(args, "--edges");
             string count = PopValue(args, "--count");
             string tuning = PopValue(args, "--tuning");
+            string modesText = PopValue(args, "--modes");
+            string switchModesText = PopValue(args, "--switch-modes");
             bool? keyboard = ParseOnOff(PopValue(args, "--keyboard"), "--keyboard");
             bool? enabled = ParseOnOff(PopValue(args, "--enabled"), "--enabled");
             bool autoOutputs = add ? !PopFlag(args, "--no-auto-outputs") : PopFlag(args, "--auto-outputs");
@@ -342,6 +516,10 @@ namespace JoyPro.Engine
                 function.Enabled = enabled.Value;
             if (tuning != null)
                 function.Tuning = tuning;
+            if (modesText != null)
+                function.Modes = ParseNames(modesText);
+            if (switchModesText != null)
+                function.SwitchModes = ParseNames(switchModesText);
             if (edges != null)
                 function.Edges = ParseNumbers(edges, "--edges");
             if (count != null)
@@ -365,7 +543,7 @@ namespace JoyPro.Engine
             foreach (string value in inputs)
                 ApplyInput(function, value, scan);
             foreach (string value in outputs)
-                ApplyOutput(function, value);
+                ApplyOutput(function, value, settings.FirstDevice);
             List<string> notes = new List<string>();
             if (autoOutputs)
                 notes.AddRange(AllocateOutputs(settings, game, function, caps));
@@ -374,6 +552,10 @@ namespace JoyPro.Engine
                 list.Add(function);
             else
                 list[list.IndexOf(existing)] = function;
+            // Chained functions must not read each other in a loop: refused, nothing saved.
+            string loop = VfChain.LoopProblem(list);
+            if (loop.Length > 0)
+                throw new ArgumentException(loop + " Nothing was saved.");
             VJoyPlan plan = BuildPlan(settings, caps, false, false);
             if (!dryRun)
                 SaveSettings(settings);
@@ -531,6 +713,13 @@ namespace JoyPro.Engine
                 throw new ArgumentException("--input takes role=<device>|<input>, e.g. --input \"in=VPC Throttle {GUID}|JOY_Z\".");
             string device = value.Substring(eq + 1, bar - eq - 1).Trim();
             string token = value.Substring(bar + 1).Trim().ToUpperInvariant();
+            if (VfChain.IsChainDevice(device))
+            {
+                // Another function's output: --input "in=fn:f2|band3".
+                input.Device = VfChain.Device(device.Trim().Substring(VfChain.Prefix.Length));
+                input.Input = token;
+                return;
+            }
             string kind;
             int index;
             int direction;
@@ -551,7 +740,7 @@ namespace JoyPro.Engine
         }
 
         // --output role=<token>[@<vJoy device>][:<mode>] (role= clears it, role=auto lets JoyPro pick).
-        private static void ApplyOutput(VirtualFunction function, string value)
+        private static void ApplyOutput(VirtualFunction function, string value, int defaultDevice)
         {
             int eq = value.IndexOf('=');
             if (eq <= 0)
@@ -591,7 +780,7 @@ namespace JoyPro.Engine
             if (!VfTokens.TryParseOutput(token, out kind, out index, out mask))
                 throw new ArgumentException(token + " is not a virtual output (JOY_BTN<n>, JOY_X .. JOY_SLIDER2, POV<n>, XB_A .., KEY_<key>).");
             output.Target = token;
-            output.VJoyDevice = kind == "button" || kind == "axis" || kind == "hat" ? (device > 0 ? device : (output.VJoyDevice > 0 ? output.VJoyDevice : 1)) : 0;
+            output.VJoyDevice = kind == "button" || kind == "axis" || kind == "hat" ? (device > 0 ? device : (output.VJoyDevice > 0 ? output.VJoyDevice : defaultDevice)) : 0;
         }
 
         // Gives every output role without a target a free virtual output: on vJoy the lowest free button/axis/hat
@@ -617,7 +806,7 @@ namespace JoyPro.Engine
                             xboxTaken.Add(output.Target);
                     }
                     else
-                        taken.Add((output.VJoyDevice <= 0 ? 1 : output.VJoyDevice).ToString(CultureInfo.InvariantCulture) + ":" + VJoyPlanner.Normalize(output.Target));
+                        taken.Add((output.VJoyDevice <= 0 ? settings.FirstDevice : output.VJoyDevice).ToString(CultureInfo.InvariantCulture) + ":" + VJoyPlanner.Normalize(output.Target));
                 }
             }
             foreach (VfOutput output in function.Outputs.Where(o => o.Target.Length > 0))
@@ -625,7 +814,7 @@ namespace JoyPro.Engine
                 if (output.Target.StartsWith("XB_", StringComparison.OrdinalIgnoreCase))
                     xboxTaken.Add(output.Target);
                 else
-                    taken.Add((output.VJoyDevice <= 0 ? 1 : output.VJoyDevice).ToString(CultureInfo.InvariantCulture) + ":" + VJoyPlanner.Normalize(output.Target));
+                    taken.Add((output.VJoyDevice <= 0 ? settings.FirstDevice : output.VJoyDevice).ToString(CultureInfo.InvariantCulture) + ":" + VJoyPlanner.Normalize(output.Target));
             }
             Dictionary<int, string> avoid = AvoidAxes(settings);
             GameInputLimit limit = GameInputLimits.For(game);
@@ -715,9 +904,20 @@ namespace JoyPro.Engine
             if (function == null)
                 throw new ArgumentException("No function " + id + " for " + GameName(game) + ".");
             list.Remove(function);
+            // Inputs of other functions that read it: cleared (they would read rest otherwise).
+            List<string> cleared = new List<string>();
+            foreach (KeyValuePair<string, VirtualFunction> other in settings.AllFunctions())
+            {
+                foreach (VfInput input in other.Value.Inputs.Where(i => VfChain.IsChain(i) && string.Equals(VfChain.FunctionId(i), function.Id, StringComparison.OrdinalIgnoreCase)))
+                {
+                    input.Device = input.Input = string.Empty;
+                    cleared.Add(other.Value.Id + " " + input.Role);
+                }
+            }
             if (!dryRun)
                 SaveSettings(settings);
-            string message = (dryRun ? "Dry run: would remove" : "Removed") + " the function " + function.Id + " \"" + function.Name + "\" of " + GameName(game) + "; its virtual outputs are free again.";
+            string message = (dryRun ? "Dry run: would remove" : "Removed") + " the function " + function.Id + " \"" + function.Name + "\" of " + GameName(game) + "; its virtual outputs are free again." +
+                             (cleared.Count > 0 ? " Inputs that read it are cleared: " + string.Join(", ", cleared) + "." : string.Empty);
             payload = textOutput ? message : EngineSerialization.ToJson(new { Message = message, Id = function.Id, Game = game });
             return 0;
         }

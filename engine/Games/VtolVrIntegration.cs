@@ -238,7 +238,10 @@ namespace JoyPro.Engine.Games
                     file = ByojFile.Empty();
                 }
 
-                bool overwrite = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
+                // "My profile wins" only: clean clears the devices it writes and leaves the others alone, as in every game
+                // (the keyboard counts as written when the seat gets keys of the profile).
+                bool overwrite = request.Mode == GameExportMode.MergeOverwrite;
+                bool keyboardOverwrite = overwrite || (request.Mode == GameExportMode.Clean && wantedKeyboard[seat].Count > 0);
                 List<ByojJoystickBinding> wanted = wantedJoystick[seat];
                 // The targets the profile binds in this seat (joystick and keyboard): "my profile wins" takes their other
                 // inputs away.
@@ -260,7 +263,8 @@ namespace JoyPro.Engine.Games
                     }
                     else
                     {
-                        drop = OwnsInput(request.Devices, existing) &&
+                        // (never on a device JoyPro never clears: the vJoy device it tunnels into, an ignored device)
+                        drop = OwnsInput(request.Devices, existing) && !KeptDevice(request.Devices, existing) &&
                                ((request.Mode == GameExportMode.Clean && joyProDevice) ||
                                 (request.NukeUnusedDevices && !joyProDevice) ||
                                 (overwrite && profileTargets.Contains(existing.Target) && !wantedHere));
@@ -322,7 +326,7 @@ namespace JoyPro.Engine.Games
                 {
                     keyboard.RemoveAll(k => !wantedKeys.Any(w => w.KeyId == k.KeyId) &&
                         (wantedKeys.Any(w => w.Target != k.Target && w.Key == k.Key && w.ModifierKey == k.ModifierKey) ||
-                         (overwrite && request.IncludeKeyboard && profileTargets.Contains(k.Target))));
+                         (keyboardOverwrite && request.IncludeKeyboard && profileTargets.Contains(k.Target))));
                 }
                 foreach (ByojKeyboardBinding want in wantedKeys)
                 {
@@ -376,6 +380,12 @@ namespace JoyPro.Engine.Games
         }
 
         // Binds JoyPro may release: on a connected device, and an input the import reads (others are not in the profile).
+        private static bool KeptDevice(GameDeviceDirectory devices, ByojJoystickBinding binding)
+        {
+            GameDevice device = devices == null ? null : devices.FindByInstanceGuid(binding.JoystickId);
+            return device != null && device.Kept;
+        }
+
         private static bool OwnsInput(GameDeviceDirectory devices, ByojJoystickBinding binding)
         {
             return devices != null && devices.FindByInstanceGuid(binding.JoystickId) != null &&

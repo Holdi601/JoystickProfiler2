@@ -171,7 +171,11 @@ namespace JoyPro.Engine
             }
 
             ScActionmapsDocument document = ScActionmapsDocument.Open(paths.ActionmapsFile, hasLocalActionmaps, localActionData);
+            Dictionary<int, string> slotsBefore = document.JoystickProductsByInstance();
             document.SetJoystickProducts(slotPlan, result.Warnings);
+            // A connected device listed under more slots than there are devices of its product (an old slot the game
+            // left behind) takes slots a device with binds needs: those stale slots leave the file.
+            result.StaleJoystickSlotsRemoved.AddRange(document.RemoveStaleJoystickOptions(slotPlan, slotsBefore));
             List<XElement> joyProRebinds = new List<XElement>();
             List<ScWantedRebind> writtenRebinds = new List<ScWantedRebind>();
 
@@ -179,7 +183,7 @@ namespace JoyPro.Engine
             // one of them) may be released. Slots of devices that are not connected stay as they are; mouse and gamepad
             // rebinds are never touched, keyboard rebinds only with --include-keyboard. A rebind with an empty input
             // ("js1_ ", a default the game switched off) binds nothing and is never released.
-            HashSet<int> ownedSlots = OwnedJoystickSlots(slotPlan, hasLocalActionmaps ? localActionData.JoystickOptions : null);
+            HashSet<int> ownedSlots = OwnedJoystickSlots(slotPlan, hasLocalActionmaps ? localActionData.JoystickOptions : null, KeptDevices(effectiveOptions.KeepDevices));
             Func<XElement, bool> releasable = rebind =>
             {
                 string input = RebindInput(rebind);
@@ -559,6 +563,12 @@ namespace JoyPro.Engine
                 for (int i = 0; i < result.JoystickOptions.Count; i++)
                     sb.AppendLine("  - " + result.JoystickOptions[i]);
             }
+            if (result.StaleJoystickSlotsRemoved.Count > 0)
+            {
+                sb.AppendLine("Stale Joystick Slots Removed:");
+                foreach (string stale in result.StaleJoystickSlotsRemoved)
+                    sb.AppendLine("  - " + stale);
+            }
 
             sb.AppendLine("Option Groups Written: " + result.OptionGroupsWritten);
             sb.AppendLine("Device Options Written: " + result.DeviceOptionsWritten);
@@ -808,7 +818,21 @@ namespace JoyPro.Engine
         }
 
         // The js slots whose device is connected (n-th slot of a product = n-th connected device of it).
-        private static HashSet<int> OwnedJoystickSlots(ScSlotPlan plan, List<ScOptionDevice> fileOptions)
+        // The connected devices (instance names) JoyPro never clears: the export's KeepDevices (the import's ignored
+        // devices, the vJoy device JoyPro tunnels into) as the device directory resolves them.
+        private static HashSet<string> KeptDevices(List<string> keepDevices)
+        {
+            HashSet<string> kept = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (keepDevices == null || keepDevices.Count == 0)
+                return kept;
+            JoyPro.Engine.Games.GameDeviceDirectory directory = JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>());
+            directory.MarkKept(keepDevices);
+            foreach (JoyPro.Engine.Games.GameDevice device in directory.Devices.Where(d => d.Kept))
+                kept.Add(NormalizeScProductToken(device.JoyProName));
+            return kept;
+        }
+
+        private static HashSet<int> OwnedJoystickSlots(ScSlotPlan plan, List<ScOptionDevice> fileOptions, HashSet<string> kept = null)
         {
             HashSet<int> owned = new HashSet<int>();
             Dictionary<string, int> seen = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -827,7 +851,12 @@ namespace JoyPro.Engine
                 int occurrence;
                 seen.TryGetValue(product, out occurrence);
                 seen[product] = occurrence + 1;
-                if (ConnectedInstanceForProduct(product, occurrence).Length > 0)
+                // The plan names a slot by the connected instance ("name {instance GUID}") until the file is written
+                // (ScProductForFile); the file's own slots by the product. Both count as the connected device.
+                string instance = ConnectedInstanceForProduct(product, occurrence);
+                if (instance.Length == 0)
+                    instance = ConnectedInstanceByName(product);
+                if (instance.Length > 0 && (kept == null || !kept.Contains(NormalizeScProductToken(instance))))
                     owned.Add(slot.Key);
             }
             return owned;
@@ -1052,7 +1081,10 @@ namespace JoyPro.Engine
                         product = NormalizeScProductToken(kvp.Key);
 
                     int rank;
-                    return connectedStartupOrder.TryGetValue(product, out rank) ? rank : int.MaxValue;
+                    if (connectedStartupOrder.TryGetValue(product, out rank))
+                        return rank;
+                    // The startup order names the connected instance; the profile may map it to the game's product name.
+                    return connectedStartupOrder.TryGetValue(NormalizeScProductToken(ConnectedDeviceOf(kvp.Key, profileProductMap)), out rank) ? rank : int.MaxValue;
                 })
                 .ThenByDescending(kvp => kvp.Value)
                 .ThenBy(kvp => kvp.Key, StringComparer.OrdinalIgnoreCase)
@@ -1061,6 +1093,23 @@ namespace JoyPro.Engine
 
             Dictionary<int, ScOptionDevice> baseSlots = new Dictionary<int, ScOptionDevice>();
             Dictionary<string, int> productToSlot = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            // One physical device under several names: the game's "name  {PIDVID}" in the file, the connected instance
+            // "name {instance GUID}", an older instance GUID of the profile. Without this a connected stick the file
+            // already has on js1 took a second slot under its instance name (and a stale duplicate in the file a
+            // third), the 8 slots ran out and devices with binds (the author's Rhino) were left out.
+            Dictionary<string, int> deviceToSlot = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            Func<string, int> slotOfDevice = token =>
+            {
+                string connected = ConnectedDeviceOf(token, profileProductMap);
+                int found;
+                return connected.Length > 0 && deviceToSlot.TryGetValue(connected, out found) ? found : 0;
+            };
+            Action<string, int> rememberDevice = (token, slot) =>
+            {
+                string connected = ConnectedDeviceOf(token, profileProductMap);
+                if (connected.Length > 0 && !deviceToSlot.ContainsKey(connected))
+                    deviceToSlot[connected] = slot;
+            };
 
             if (preferLocalOrder)
             {
@@ -1079,10 +1128,11 @@ namespace JoyPro.Engine
                     if (connectedInstance.Length == 0)
                         continue;
                     string key = ResolveProductForDevice(connectedInstance, profileProductMap);
-                    if (key.Length == 0 || productToSlot.ContainsKey(key))
+                    if (key.Length == 0 || productToSlot.ContainsKey(key) || slotOfDevice(connectedInstance) > 0)
                         continue;
                     baseSlots[option.Instance] = new ScOptionDevice { Instance = option.Instance, Product = key };
                     productToSlot[key] = option.Instance;
+                    rememberDevice(connectedInstance, option.Instance);
                     fileSlots.Add(option.Instance);
                 }
 
@@ -1090,7 +1140,7 @@ namespace JoyPro.Engine
                     .Where(v => !string.IsNullOrWhiteSpace(v.Key) && v.Value > 0 && v.Value <= MaxJoystickSlots)
                     .OrderBy(v => v.Value))
                 {
-                    if (baseSlots.ContainsKey(entry.Value) || productToSlot.ContainsKey(entry.Key))
+                    if (baseSlots.ContainsKey(entry.Value) || productToSlot.ContainsKey(entry.Key) || slotOfDevice(entry.Key) > 0)
                         continue;
 
                     ScOptionDevice startupOption = new ScOptionDevice();
@@ -1099,6 +1149,7 @@ namespace JoyPro.Engine
                     baseSlots[startupOption.Instance] = startupOption;
                     if (!productToSlot.ContainsKey(startupOption.Product))
                         productToSlot[startupOption.Product] = startupOption.Instance;
+                    rememberDevice(entry.Key, startupOption.Instance);
                 }
 
                 for (int i = 0; i < localOptions.Count; i++)
@@ -1113,7 +1164,8 @@ namespace JoyPro.Engine
                     if (copy.Product.Length == 0)
                         continue;
 
-                    if (productToSlot.ContainsKey(copy.Product))
+                    // A stale duplicate of a device that has its slot already (the same stick listed twice) is merged.
+                    if (productToSlot.ContainsKey(copy.Product) || slotOfDevice(copy.Product) > 0)
                         continue;
 
                     if (baseSlots.ContainsKey(copy.Instance))
@@ -1127,6 +1179,7 @@ namespace JoyPro.Engine
                     baseSlots[copy.Instance] = copy;
                     if (!productToSlot.ContainsKey(copy.Product))
                         productToSlot[copy.Product] = copy.Instance;
+                    rememberDevice(copy.Product, copy.Instance);
                 }
             }
 
@@ -1137,6 +1190,12 @@ namespace JoyPro.Engine
                 int slot;
 
                 if (product.Length > 0 && productToSlot.TryGetValue(product, out slot))
+                {
+                    plan.DeviceToSlot[device] = slot;
+                    continue;
+                }
+                slot = preferLocalOrder ? slotOfDevice(device) : 0;
+                if (slot > 0)
                 {
                     plan.DeviceToSlot[device] = slot;
                     continue;
@@ -1159,6 +1218,7 @@ namespace JoyPro.Engine
                 created.Product = product;
                 baseSlots[slot] = created;
                 productToSlot[product] = slot;
+                rememberDevice(device, slot);
                 plan.DeviceToSlot[device] = slot;
             }
 
@@ -1206,6 +1266,39 @@ namespace JoyPro.Engine
             for (int i = 0; i < plan.Options.Count; i++)
                 plan.SlotToProduct[plan.Options[i].Instance] = plan.Options[i].Product;
             return plan;
+        }
+
+        // The connected device (its instance name) a slot token, profile device or file product stands for: the token's
+        // GUID is a connected instance GUID, or the product GUID (PIDVID) of exactly one connected device (two of one
+        // product stay apart); else the profile's product of the device is tried the same way. "" when none.
+        private static string ConnectedDeviceOf(string token, Dictionary<string, string> profileProductMap)
+        {
+            ConnectedProductForInstance(string.Empty);
+            string normalized = NormalizeScProductToken(token);
+            string found = ConnectedDeviceByGuid(ExtractGuidToken(normalized));
+            if (found.Length > 0)
+                return found;
+            string product;
+            if (profileProductMap != null && profileProductMap.TryGetValue((token ?? string.Empty).Trim(), out product))
+                return ConnectedDeviceByGuid(ExtractGuidToken(NormalizeScProductToken(product)));
+            return string.Empty;
+        }
+
+        private static string ConnectedDeviceByGuid(string guid)
+        {
+            if (guid.Length == 0)
+                return string.Empty;
+            foreach (KeyValuePair<string, string> pair in connectedInOrder)
+            {
+                if (string.Equals(ExtractGuidToken(NormalizeScProductToken(pair.Key)), guid, StringComparison.OrdinalIgnoreCase))
+                    return NormalizeScProductToken(pair.Key);
+            }
+            List<string> byProduct = connectedInOrder
+                .Where(p => string.Equals(ExtractGuidToken(NormalizeScProductToken(p.Value)), guid, StringComparison.OrdinalIgnoreCase))
+                .Select(p => NormalizeScProductToken(p.Key))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return byProduct.Count == 1 ? byProduct[0] : string.Empty;
         }
 
         private static Dictionary<string, int> BuildConnectedStartupOrder(List<string> warnings)
@@ -1821,13 +1914,19 @@ namespace JoyPro.Engine
                 // Test hook (JOYPRO_FAKE_DEVICES): the fake devices are the connected ones, named as their product.
                 if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(JoyPro.Engine.Games.GameDeviceDirectory.FakeDevicesEnvironmentVariable)))
                 {
+                    // JOYPRO_FAKE_SC_PRODUCTS=pidvid: the game's product name as DirectInput gives it instead
+                    // ("<HID product>  {PIDVID}", the fake file's VID and PID), so instance and product differ as on a PC.
+                    bool pidVid = string.Equals(Environment.GetEnvironmentVariable("JOYPRO_FAKE_SC_PRODUCTS"), "pidvid", StringComparison.OrdinalIgnoreCase);
                     foreach (JoyPro.Engine.Games.GameDevice fake in JoyPro.Engine.Games.GameDeviceDirectory.Discover(new List<string>()).Devices)
                     {
                         string name = (fake.JoyProName ?? string.Empty).Trim();
                         if (name.Length > 0 && !connectedProducts.ContainsKey(name))
                         {
-                            connectedProducts[name] = name;
-                            connectedInOrder.Add(new KeyValuePair<string, string>(name, name));
+                            string fakeProduct = pidVid && fake.ProductGuid != Guid.Empty
+                                ? (string.IsNullOrWhiteSpace(fake.HidProductString) ? fake.InstanceName : fake.HidProductString) + "  {" + fake.ProductGuid.ToString("D").ToUpperInvariant() + "}"
+                                : name;
+                            connectedProducts[name] = fakeProduct;
+                            connectedInOrder.Add(new KeyValuePair<string, string>(name, fakeProduct));
                         }
                     }
                 }
@@ -1856,15 +1955,36 @@ namespace JoyPro.Engine
         // occurrence-th of them in DirectInput order (the n-th slot of that product). "" when none is connected.
         private static string ConnectedInstanceForProduct(string product, int occurrence)
         {
+            List<string> matches = ConnectedInstancesForProduct(product);
+            return matches.Count == 0 ? string.Empty : matches[Math.Max(0, Math.Min(occurrence, matches.Count - 1))];
+        }
+
+        // The connected device whose instance name a slot token is ("name {instance GUID}", any case), "" when none.
+        private static string ConnectedInstanceByName(string token)
+        {
+            ConnectedProductForInstance(string.Empty);
+            string normalized = NormalizeScProductToken(token);
+            if (normalized.Length == 0)
+                return string.Empty;
+            foreach (KeyValuePair<string, string> pair in connectedInOrder)
+                if (string.Equals(NormalizeScProductToken(pair.Key), normalized, StringComparison.OrdinalIgnoreCase))
+                    return pair.Key;
+            return string.Empty;
+        }
+
+        // Every connected device (instance name, DirectInput order) of a slot's product.
+        private static List<string> ConnectedInstancesForProduct(string product)
+        {
             ConnectedProductForInstance(string.Empty);
             string normalized = NormalizeScProductToken(product);
+            if (normalized.Length == 0)
+                return new List<string>();
             string guid = ExtractGuidToken(normalized);
-            List<string> matches = connectedInOrder
+            return connectedInOrder
                 .Where(p => (guid.Length > 0 && string.Equals(ExtractGuidToken(NormalizeScProductToken(p.Value)), guid, StringComparison.OrdinalIgnoreCase)) ||
                             string.Equals(NormalizeScProductToken(p.Value), normalized, StringComparison.OrdinalIgnoreCase))
                 .Select(p => p.Key)
                 .ToList();
-            return matches.Count == 0 ? string.Empty : matches[Math.Max(0, Math.Min(occurrence, matches.Count - 1))];
         }
 
         private static string ResolveDeviceNameFromProduct(string product, List<string> warnings, int occurrence = 0)
@@ -3194,6 +3314,106 @@ namespace JoyPro.Engine
                         option.Add(moved.Select(CloneNode));
                     option.SetAttributeValue("Product", fileProduct);
                 }
+            }
+
+            // Stale slots: a connected device listed under more joystick slots than there are connected devices of its
+            // product (the slot the game kept from an older place of the device, a slot written with JoyPro's instance
+            // name). The slots the plan uses come first, then the lowest instances; the others leave the file. Their
+            // option settings go to the kept slot when it has none, and their js rebinds move to the kept slot (one js
+            // rebind per action: dropped where the action already has one there), so no bind lands on the device the
+            // game puts on the freed slot next. Slots of devices that are not connected stay, and so do the keyboard,
+            // mouse and gamepad options and rebinds. Returns "js3 (<product>) -> js1" per removed slot.
+            public List<string> RemoveStaleJoystickOptions(ScSlotPlan plan, Dictionary<int, string> before)
+            {
+                List<string> removedText = new List<string>();
+                HashSet<int> planned = new HashSet<int>(plan.SlotToProduct.Keys.Where(k => plan.DeviceToSlot.ContainsValue(k)));
+                List<XElement> joystickOptions = profile.Elements("options").Where(o => (string)o.Attribute("type") == "joystick").ToList();
+                Func<XElement, int> instanceOf = o =>
+                {
+                    int value;
+                    return int.TryParse(((string)o.Attribute("instance") ?? string.Empty).Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out value) ? value : 0;
+                };
+                Dictionary<int, int> remap = new Dictionary<int, int>();
+                foreach (IGrouping<string, XElement> sameDevice in joystickOptions
+                    .Where(o => instanceOf(o) > 0)
+                    .GroupBy(o => NormalizeScProductToken(ScProductForFile(((string)o.Attribute("Product") ?? string.Empty).Trim())), StringComparer.OrdinalIgnoreCase)
+                    .Where(g => g.Key.Length > 0 && g.Count() > 1))
+                {
+                    int connected = ConnectedInstancesForProduct(sameDevice.Key).Count;
+                    if (connected == 0 || sameDevice.Count() <= connected)
+                        continue;
+                    List<XElement> ordered = sameDevice.OrderBy(o => planned.Contains(instanceOf(o)) ? 0 : 1).ThenBy(instanceOf).ToList();
+                    List<XElement> kept = ordered.Take(connected).OrderBy(instanceOf).ToList();
+                    XElement target = kept[kept.Count - 1];
+                    foreach (XElement stale in ordered.Skip(connected))
+                    {
+                        if (!target.Elements().Any() && stale.Elements().Any())
+                        {
+                            target.RemoveNodes();
+                            target.Add(stale.Nodes().Select(CloneNode));
+                        }
+                        remap[instanceOf(stale)] = instanceOf(target);
+                        removedText.Add("js" + instanceOf(stale).ToString(CultureInfo.InvariantCulture) + " (" + ((string)stale.Attribute("Product") ?? string.Empty).Trim() + ") -> js" +
+                                        instanceOf(target).ToString(CultureInfo.InvariantCulture));
+                        RemoveWithIndent(stale);
+                    }
+                }
+                // A stale slot the plan gave a device that had none (SetJoystickProducts wrote its product there): the
+                // rebinds on it are still the old device's and move to the slot that device keeps.
+                if (before != null)
+                {
+                    List<XElement> remaining = profile.Elements("options").Where(o => (string)o.Attribute("type") == "joystick" && instanceOf(o) > 0).ToList();
+                    Func<XElement, string> productOf = o => NormalizeScProductToken(ScProductForFile(((string)o.Attribute("Product") ?? string.Empty).Trim()));
+                    foreach (KeyValuePair<int, string> old in before.Where(b => b.Value.Length > 0 && !remap.ContainsKey(b.Key)))
+                    {
+                        int connected = ConnectedInstancesForProduct(old.Value).Count;
+                        if (connected == 0 || before.Values.Count(v => string.Equals(v, old.Value, StringComparison.OrdinalIgnoreCase)) <= connected)
+                            continue;
+                        XElement now = remaining.FirstOrDefault(o => instanceOf(o) == old.Key);
+                        if (now != null && string.Equals(productOf(now), old.Value, StringComparison.OrdinalIgnoreCase))
+                            continue;
+                        XElement target = remaining.Where(o => string.Equals(productOf(o), old.Value, StringComparison.OrdinalIgnoreCase)).OrderBy(instanceOf).LastOrDefault();
+                        if (target == null || instanceOf(target) == old.Key)
+                            continue;
+                        remap[old.Key] = instanceOf(target);
+                        removedText.Add("js" + old.Key.ToString(CultureInfo.InvariantCulture) + " (" + old.Value + ") -> js" + instanceOf(target).ToString(CultureInfo.InvariantCulture) +
+                                        (now == null ? string.Empty : "; js" + old.Key.ToString(CultureInfo.InvariantCulture) + " now belongs to " + ((string)now.Attribute("Product") ?? string.Empty).Trim()));
+                    }
+                }
+                if (remap.Count == 0)
+                    return removedText;
+
+                foreach (XElement action in profile.Elements("actionmap").SelectMany(m => m.Elements("action")).ToList())
+                {
+                    foreach (XElement rebind in action.Elements("rebind").Where(r => RebindType(r) == "js").ToList())
+                    {
+                        int to;
+                        string input = RebindInput(rebind);
+                        if (!remap.TryGetValue(RebindInstance(rebind), out to) || input.IndexOf('_') < 0)
+                            continue;
+                        bool taken = action.Elements("rebind").Any(r => r != rebind && RebindType(r) == "js" && RebindInstance(r) == to);
+                        if (taken)
+                            RemoveWithIndent(rebind);
+                        else
+                            rebind.SetAttributeValue("input", "js" + to.ToString(CultureInfo.InvariantCulture) + input.Substring(input.IndexOf('_')));
+                    }
+                    if (!action.Elements().Any())
+                        RemoveEmptyAction(action);
+                }
+                return removedText;
+            }
+
+            // The joystick slots as the file has them now: instance -> the device's product (the game's spelling, normalized).
+            public Dictionary<int, string> JoystickProductsByInstance()
+            {
+                Dictionary<int, string> slots = new Dictionary<int, string>();
+                foreach (XElement option in profile.Elements("options").Where(o => (string)o.Attribute("type") == "joystick"))
+                {
+                    int instance;
+                    if (int.TryParse(((string)option.Attribute("instance") ?? string.Empty).Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out instance) && instance > 0 && !slots.ContainsKey(instance))
+                        slots[instance] = NormalizeScProductToken(ScProductForFile(((string)option.Attribute("Product") ?? string.Empty).Trim()));
+                }
+                return slots;
             }
 
             private static XNode CloneNode(XNode node)

@@ -234,7 +234,7 @@ public sealed class ThemeTests : IDisposable
         HashSet<string> tokens = ThemeService.Tokens.Select(t => t.Key).Concat(["JP.HitTestBrush", "JP.Banner.GradientBrush", "ExpanderHeaderBackground",
             "ExpanderHeaderBackgroundPointerOver", "ExpanderHeaderBackgroundPressed", "ExpanderHeaderBorderBrush", "ExpanderHeaderBorderBrushPointerOver",
             "ExpanderHeaderBorderBrushPressed", "ExpanderContentBackground", "ExpanderContentBorderBrush", "ListBoxItemBackgroundSelectedPointerOver",
-            "ListBoxItemBackgroundSelectedPressed", "AccentTintBrush"]).ToHashSet(StringComparer.Ordinal);
+            "ListBoxItemBackgroundSelectedPressed", "AccentTintBrush"]).Concat(ThemeService.DerivedKeys).ToHashSet(StringComparer.Ordinal);
         Regex colour = new(@"(?<attr>[\w.:]+)=""(?<value>#[0-9A-Fa-f]{3,8}|(?:White|Black|Red|Gray|Grey|Green|Blue|Yellow|Orange|DimGray|LightGray|SteelBlue))""");
         List<string> found = [];
         foreach (string file in Directory.EnumerateFiles(root, "*.axaml", SearchOption.AllDirectories))

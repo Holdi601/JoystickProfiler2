@@ -71,7 +71,7 @@ namespace JoyPro.Engine.Games
         {
             get
             {
-                return "Close X4 before exporting. Assign every joystick once in X4 (Options > Controls > Manage Controllers/Joysticks): " +
+                return "Close X4 before exporting. Assign every joystick once in X4 (Settings > Controls > Manage Controllers/Joysticks): " +
                        "only devices X4 pinned to a slot can be written; X4 supports 8 devices, 64 buttons and one hat per device.";
             }
         }
@@ -293,11 +293,16 @@ namespace JoyPro.Engine.Games
             }
 
             // Slots JoyPro owns in this export: pinned in config.xml to a device that is connected now. Merge-overwrite and
-            // nuke touch only these (and the keyboard with --include-keyboard); gamepad sources never.
+            // nuke touch only these (and the keyboard with --include-keyboard); gamepad sources never. The slot of a device
+            // JoyPro never clears (the vJoy device it tunnels into, an ignored device) is not JoyPro's, also for clean.
+            HashSet<int> keptSlots = new HashSet<int>();
             HashSet<int> ownedSlots = new HashSet<int>(slots.PinnedSlots().Where(s =>
             {
                 Guid guid;
-                return slots.TryGetDevice(s, out guid) && request.Devices != null && request.Devices.FindByInstanceGuid(guid) != null;
+                GameDevice device = slots.TryGetDevice(s, out guid) && request.Devices != null ? request.Devices.FindByInstanceGuid(guid) : null;
+                if (device != null && device.Kept)
+                    keptSlots.Add(s);
+                return device != null && !device.Kept;
             }));
             HashSet<string> catalogIds = new HashSet<string>(request.Catalog.Actions.Select(a => a.Id), StringComparer.Ordinal);
             // The game's inputs of the flight actions themselves (their map twins are other contexts and never count).
@@ -369,7 +374,7 @@ namespace JoyPro.Engine.Games
             HashSet<string> releasedSources = new HashSet<string>(StringComparer.Ordinal);
             if (request.Mode == GameExportMode.Clean)
             {
-                foreach (int slot in usedSlots)
+                foreach (int slot in usedSlots.Where(s => !keptSlots.Contains(s)))
                 {
                     releasedSources.Add(JoySource(slot, true));
                     releasedSources.Add(JoySource(slot, false));
@@ -387,10 +392,11 @@ namespace JoyPro.Engine.Games
             }
 
             // A conflict is another flight action on an input the profile uses: it goes in merge, merge-overwrite and
-            // clean. Merge-overwrite and clean also take an action the profile binds off its other inputs on owned slots
-            // (and the keyboard with --include-keyboard); plain merge keeps them.
+            // clean. Merge-overwrite also takes an action the profile binds off its other inputs on owned slots (and the
+            // keyboard with --include-keyboard); plain merge keeps them. Clean only clears the slots it writes (above),
+            // as in every game: the other connected devices keep their binds.
             HashSet<string> desiredIds = new HashSet<string>(desired.Select(d => d.Id), StringComparer.Ordinal);
-            bool moves = request.Mode == GameExportMode.MergeOverwrite || request.Mode == GameExportMode.Clean;
+            bool moves = request.Mode == GameExportMode.MergeOverwrite;
             List<X4Entry> releasedEntries = new List<X4Entry>();
             foreach (X4Entry entry in map.Entries)
             {
@@ -1095,8 +1101,8 @@ namespace JoyPro.Engine.Games
                 if (slot > 0)
                     return string.Empty;
                 if (disabled.Contains(guid))
-                    return "the device is disabled in X4 (Options > Controls > Manage Controllers/Joysticks).";
-                return "the device has no fixed X4 slot yet; assign it once in X4 (Options > Controls > Manage Controllers/Joysticks).";
+                    return "the device is disabled in X4 (Settings > Controls > Manage Controllers/Joysticks).";
+                return "the device has no fixed X4 slot yet; assign it once in X4 (Settings > Controls > Manage Controllers/Joysticks).";
             }
         }
 

@@ -54,7 +54,15 @@ public sealed class ManualPageView : Control
 
     public bool Dark { get; set; }
 
-    private double Scale => Page is { Width: > 0 } p && Bounds.Width > 0 ? Bounds.Width / p.Width : 1;
+    // The page fills the control's width, but never more than its height: measured at most 1.4 times the page's width,
+    // a stretched control is arranged wider than it asked for, and a page scaled to that width was drawn taller than
+    // the control, over the notes, photos and sources below it (2.5.1).
+    private double Scale => Page is { Width: > 0, Height: > 0 } p && Bounds.Width > 0
+        ? (Bounds.Height > 0 ? Math.Min(Bounds.Width / p.Width, Bounds.Height / p.Height) : Bounds.Width / p.Width)
+        : 1;
+
+    // The page's drawn size in the control (for tests and the export of what is shown).
+    internal Size DrawnSize => Page is { Width: > 0 } p ? new Size(p.Width * Scale, p.Height * Scale) : default;
 
     protected override Size MeasureOverride(Size availableSize)
     {
@@ -230,10 +238,22 @@ public sealed class ManualPageView : Control
 
     // A PNG as it is; a JPEG of a picture pack with its transparency from the grey mask PNG next to it (docs/cockpits.md
     // "Picture packs"). Without a usable mask the JPEG is shown opaque.
+    private const int MaxPictureWidth = 2800;
+
     internal static Bitmap LoadPicture(string file, string? mask)
     {
         if (string.IsNullOrEmpty(mask) || !File.Exists(mask))
+        {
+            // A big photo (a cockpit photo's original file, docs/cockpits.md "Photos of cockpits no game has") is decoded
+            // at most 2800 px wide: the page never draws it larger, and the full size would take 80 MB and more.
+            int[] size = JoyPro.DeviceReference.CockpitPhotos.ImageSize(file);
+            if (size[0] > MaxPictureWidth)
+            {
+                using FileStream stream = File.OpenRead(file);
+                return Bitmap.DecodeToWidth(stream, MaxPictureWidth, BitmapInterpolationMode.HighQuality);
+            }
             return new Bitmap(file);
+        }
         using SkiaSharp.SKBitmap? color = SkiaSharp.SKBitmap.Decode(file);
         using SkiaSharp.SKBitmap? alpha = SkiaSharp.SKBitmap.Decode(mask);
         if (color == null)

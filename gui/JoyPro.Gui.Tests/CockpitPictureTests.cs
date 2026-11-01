@@ -275,14 +275,97 @@ public sealed class CockpitPictureTests
     }
 
     // Writes the synthetic cockpit as a DCS set "F-16C_50" under root\DCS.
-    internal static string WriteSyntheticSet(string root)
+    internal static string WriteSyntheticSet(string root, string game = "DCS", string key = "F-16C_50", params string[] planes)
     {
+        if (planes.Length == 0)
+            planes = ["F-16C_50", "F-16C"];
         CockpitScene scene = SyntheticCockpit(out List<CockpitCallout> callouts, out List<CockpitGrip> grips, out Vec3 head);
         List<CockpitViewPlan> views = CockpitViews.Plan(scene, head, callouts, grips, 400);
-        string folder = Path.Combine(root, "DCS", "F-16C_50");
-        PictureWriter.Write(scene, views, folder, new PictureWriter.SetInfo { Game = "DCS", Plane = "F-16C_50", Planes = ["F-16C_50", "F-16C"], Module = "F-16C", Source = "test.edm", GameVersion = "2.9.0" }, null);
-        DcsCockpitPictures.WriteIndex(Path.Combine(root, "DCS"), [new DcsCockpitPictures.SetResult { Plane = "F-16C_50", Planes = ["F-16C_50", "F-16C"], Folder = folder }]);
+        string folder = Path.Combine(root, game, key);
+        PictureWriter.Write(scene, views, folder, new PictureWriter.SetInfo { Game = game, Plane = planes[0], Planes = [.. planes], Module = game == "DCS" ? "F-16C" : string.Empty, Source = "test.edm", GameVersion = "2.9.0" }, null);
+        DcsCockpitPictures.WriteIndex(Path.Combine(root, game), [new DcsCockpitPictures.SetResult { Plane = planes[0], Planes = [.. planes], Folder = folder }]);
         return folder;
+    }
+
+    // A craft only a game has (no real cockpit to photograph): the render from the game stands where a photo would be,
+    // without asking (it is made on this PC); a real aircraft with a photo address keeps its photos only.
+    [Fact]
+    public void Page_ShowsTheGameRender_WhereAPhoto_WouldBe_ForACraftOnlyAGameHas()
+    {
+        string root = Temp("pictures-render");
+        CockpitService.FolderOverride = () => CockpitDatabaseTests.ShippedCockpits;
+        CockpitService.Reload();
+        try
+        {
+            // The pictures are decoded by Avalonia: on its render thread, waiting by pumping its dispatcher.
+            AvaloniaRenderThread.Run(() =>
+            {
+                CockpitsViewModel vm = new() { PicturesRoot = root };
+                vm.PictureBuilder = () =>
+                {
+                    WriteSyntheticSet(root, "StarCitizen", "ANVL_Carrack", "Anvil Carrack", "ANVL_Carrack");
+                    WriteSyntheticSet(root);
+                    return Task.FromResult<string?>("ok");
+                };
+                vm.Reload();
+                Assert.True(vm.Show("sc-anvil", "sc-carrack"));
+                AvaloniaRenderThread.Wait(vm.PhotoLoad);
+                Assert.False(vm.HasRenderPhoto);
+                Assert.DoesNotContain(vm.Photos, p => p.IsRender);
+                // The Carrack has page links only (no photo of a real cockpit exists).
+                Assert.True(vm.Aircraft!.Fiction);
+                Assert.DoesNotContain(vm.Aircraft.Photos, p => p.Url.Length > 0 && (p.Variant.Length == 0 || p.Variant == "sc-carrack"));
+
+                AvaloniaRenderThread.Wait(vm.BuildPicturesCommand.ExecuteAsync(null));
+                Assert.True(vm.HasGamePictures);
+                Assert.True(vm.HasRenderPhoto);
+                Assert.True(vm.HasPhotoArea);
+                CockpitPhotoItem render = vm.Photos[0];
+                Assert.True(render.IsRender);
+                Assert.NotNull(render.Image);
+                Assert.False(render.HasPhoto);
+                Assert.False(render.CanOpenPage);
+                Assert.Contains("Star Citizen", render.Caption);
+                Assert.Contains("no real cockpit to photograph", render.Credit);
+                Assert.Contains("picture from the game", vm.PhotoHeader);
+                Assert.Single(vm.Photos, p => p.IsRender);
+                // The manual's overview is the same render.
+                Assert.True(vm.Pages[0].Page.Items.Single(i => i.Kind == "drawing").Art!.HasPicture);
+
+                // Answering the photo question again keeps the render first.
+                vm.PhotoAnswerCommand.Execute("no");
+                AvaloniaRenderThread.Wait(vm.PhotoLoad);
+                Assert.True(vm.Photos[0].IsRender);
+
+                // A real aircraft with the game's pictures: the render only where no photo address of the variant is known.
+                Assert.True(vm.Show("f-16", "f-16c-block-50"));
+                AvaloniaRenderThread.Wait(vm.PhotoLoad);
+                bool photoFile = vm.Aircraft!.Photos.Any(p => p.Url.Length > 0 && (p.Variant.Length == 0 || p.Variant == "f-16c-block-50"));
+                Assert.Equal(!photoFile, vm.HasRenderPhoto);
+            });
+        }
+        finally
+        {
+            CockpitService.FolderOverride = () => null;
+            CockpitService.Reload();
+        }
+    }
+
+    [Fact]
+    public void RenderInsteadOfPhoto_TakesTheOverview_ElseAGrip_OnlyAKeptPicture()
+    {
+        string folder = WriteSyntheticSet(Temp("pictures-render-pick"));
+        CockpitPictureSet set = CockpitPictureSet.Load(folder)!;
+        CockpitCatalog catalog = CockpitCatalog.Load(CockpitDatabaseTests.ShippedCockpits);
+        CockpitVariant v = catalog.Resolve(catalog.Variant("f-16c-block-50")!);
+        Assert.Equal("overview", CockpitManualPages.RenderInsteadOfPhoto(set, v)!.Kind);
+        set.View("overview")!.Quality = 30;
+        CockpitPictureView? grip = CockpitManualPages.RenderInsteadOfPhoto(set, v);
+        Assert.True(grip == null || grip.Kind == "device");
+        foreach (CockpitPictureView view in set.Views)
+            view.Quality = 10;
+        Assert.Null(CockpitManualPages.RenderInsteadOfPhoto(set, v));
+        Assert.Null(CockpitManualPages.RenderInsteadOfPhoto(null!, v));
     }
 
     [Fact]
@@ -418,6 +501,29 @@ public sealed class CockpitPictureTests
         }
     }
 
+    [Fact]
+    public void Edm_DrawsOpaqueSelfLitPanels_ButNotTheLightLayers()
+    {
+        EdmScene.Options o = new EdmScene.Options();
+        EdmMaterial Mat(string name, string shader, int blending, params string[] textures)
+        {
+            EdmMaterial m = new EdmMaterial { Name = name, Shader = shader, Blending = blending };
+            for (int i = 0; i < textures.Length; i++)
+                m.Textures.Add(new EdmTexture { Index = i, Name = textures[i] });
+            return m;
+        }
+        // The C-130J's overhead panel faces: opaque, glowing only at night.
+        Assert.True(EdmScene.Drawn(Mat("OH_PACK_3_ILLUMIN", "additive_self_illum_material", 0, "pack3", "pack3_nrm"), o));
+        Assert.True(EdmScene.Drawn(Mat("VC_PAN_08", "additive_self_illum_material", 0, "vc_pan_08"), o));
+        Assert.True(EdmScene.Drawn(Mat("PACK2", "def_material", 0, "pack2"), o));
+        // Light layers stay out: additive blending, the alpha-tested lamp glows, bano lights, the textured additive kind.
+        Assert.False(EdmScene.Drawn(Mat("OVERHEAD_BACKLIGHTING_MAT", "additive_self_illum_material", 3, "oh_bk_lite"), o));
+        Assert.False(EdmScene.Drawn(Mat("ka50_cpt_lamp_si", "additive_self_illum_material", 1, "ka50_cpt_buttons_si"), o));
+        Assert.False(EdmScene.Drawn(Mat("OVERHEAD_DOT_LIGHT_MAT", "bano_material", 3, "dots_lights"), o));
+        Assert.False(EdmScene.Drawn(Mat("LIGHTS", "additive_self_illum_tex_material", 0, "lights"), o));
+        Assert.False(EdmScene.Drawn(Mat("NO_TEXTURE", "additive_self_illum_material", 0), o));
+    }
+
     // ------------------------------------------------------------------ the games' own files (maintainer's PC only)
 
     [Fact]
@@ -434,5 +540,18 @@ public sealed class CockpitPictureTests
         CockpitScene scene = EdmScene.Build(edm, new EdmScene.Options());
         Assert.True(scene.TriangleCount > 10000);
         Assert.True(scene.Points.Count > 50);
+    }
+
+    [Fact]
+    public void Edm_DrawsTheC130JsOverheadPanelFaces_WhenDcsIsInstalled()
+    {
+        string file = @"G:\Program Files\Eagle Dynamics\DCS World\Mods\aircraft\C130J\Cockpit\Shapes\Cockpit_C130J_30.edm";
+        if (!File.Exists(file))
+            return;
+        CockpitScene scene = EdmScene.Build(EdmFile.Read(file), new EdmScene.Options());
+        HashSet<string> drawn = new HashSet<string>(scene.Meshes.Select(m => scene.Materials[m.Material].Name), StringComparer.Ordinal);
+        Assert.Contains("OH_PACK_3_ILLUMIN", drawn);
+        Assert.Contains("VC_PAN_08", drawn);
+        Assert.DoesNotContain("OVERHEAD_BACKLIGHTING_MAT", drawn);
     }
 }

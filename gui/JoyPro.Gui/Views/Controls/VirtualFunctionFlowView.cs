@@ -140,7 +140,7 @@ public sealed class VirtualFunctionFlowView : Control
         double centreWidth = Math.Min(230, Math.Max(150, right - left - NodeWidth - 60));
         double centreX = left + NodeWidth + (right - left - NodeWidth - centreWidth) / 2;
         double top = 34;
-        Text(context, T("Physical inputs"), left, 10, DetailBrush, 11, bold: true);
+        Text(context, model.Inputs.Any(i => i.IsChained) ? T("Inputs") : T("Physical inputs"), left, 10, DetailBrush, 11, bold: true);
         Text(context, T("Virtual outputs"), right, 10, DetailBrush, 11, bold: true);
 
         // The function node.

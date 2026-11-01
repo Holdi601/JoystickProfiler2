@@ -499,7 +499,9 @@ each (see "Components" under Settings below).
    your real devices.
 3. Press **Start** before you start the game: JoyPro hides your real devices from that game only (HidHide, one
    administrator prompt) and copies every input to the virtual joystick live (as often as your fastest screen refreshes,
-   at least 60 times a second; button presses at once). Other programs keep seeing your devices.
+   at least 60 times a second; button presses at once). Other programs keep seeing your devices. Exception: the
+   virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8 reaches the game only when it is started once the
+   game's title screen shows (press Stop and Start there if the game does not react to the pad).
 4. Press **Stop** when you are done: HidHide gets back exactly the setup it had before. Closing JoyPro does the same. If
    JoyPro or the PC crashed, JoyPro repairs HidHide when it starts the next time (or press `Restore HidHide`).
 

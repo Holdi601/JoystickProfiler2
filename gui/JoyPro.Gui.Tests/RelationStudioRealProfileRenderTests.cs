@@ -171,6 +171,7 @@ public sealed class RelationStudioRealProfileRenderTests
             list.AutoScrollToSelectedItem = false;
             list.ItemsPanel = new Avalonia.Controls.Templates.FuncTemplate<Panel?>(() => new StackPanel());
         }
+        RenderPanels.UnvirtualizeItemsControls(main);
         Layout(main, width, height);
         return main;
     }

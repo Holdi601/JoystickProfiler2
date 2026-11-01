@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A Joystick Gremlin R13 profile with modes (Combat and Landing inherit from Default), written after Gremlin's
+     documented format for JoyPro's import tests: temporary/cycle/switch/previous mode changes, tempo (short/long with a
+     macro), chain, smart toggle, double tap, hat buttons, axis ranges as buttons (one switches the mode: chained to a
+     band function), activation conditions, a keyboard device and the start mode. -->
+<profile version="9">
+    <devices>
+        <device device-guid="{11111111-2222-3333-4444-000000000001}" label="" name="VJ Stick" type="joystick">
+            <mode name="Default">
+                <button description="Trigger" id="1">
+                    <container type="basic">
+                        <action-set>
+                            <remap button="1" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Pinky" id="5">
+                    <container type="basic">
+                        <action-set>
+                            <temporary-mode-switch name="Landing"/>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Mode cycle" id="6">
+                    <container type="basic">
+                        <action-set>
+                            <cycle-modes>
+                                <mode name="Default"/>
+                                <mode name="Combat"/>
+                                <mode name="Landing"/>
+                            </cycle-modes>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Comms" id="7">
+                    <container activate-on="release" delay="0.6" type="tempo">
+                        <action-set>
+                            <remap button="10" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <macro>
+                                <properties>
+                                    <repeat type="single"/>
+                                    <is-exclusive>False</is-exclusive>
+                                </properties>
+                                <actions>
+                                    <key extended="False" press="True" scan-code="29"/>
+                                    <pause duration="0.1"/>
+                                    <vjoy input-id="11" input-type="button" value="True" vjoy-id="1"/>
+                                    <pause duration="0.05"/>
+                                    <vjoy input-id="11" input-type="button" value="False" vjoy-id="1"/>
+                                    <key extended="False" press="False" scan-code="29"/>
+                                </actions>
+                            </macro>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Weapons" id="8">
+                    <container timeout="2.0" type="chain">
+                        <action-set>
+                            <remap button="12" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <remap button="13" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <remap button="14" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Lights" id="9">
+                    <container delay="0.5" type="smart_toggle">
+                        <action-set>
+                            <remap button="15" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Mark" id="10">
+                    <container activate-on="exclusive" delay="0.3" type="double_tap">
+                        <action-set>
+                            <remap button="16" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <switch-mode name="Combat"/>
+                        </action-set>
+                    </container>
+                </button>
+                <hat description="Trim" id="1">
+                    <container button-count="4" type="hat_buttons">
+                        <action-set>
+                            <remap button="20" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <remap button="21" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <remap button="22" vjoy="1"/>
+                        </action-set>
+                        <action-set>
+                            <remap button="23" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </hat>
+            </mode>
+            <mode inherit="Default" name="Combat">
+                <button description="Trigger (guns)" id="1">
+                    <container type="basic">
+                        <action-set>
+                            <remap button="30" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </button>
+            </mode>
+            <mode inherit="Default" name="Landing">
+                <button description="Gear" id="2">
+                    <container type="basic">
+                        <action-set>
+                            <activation-condition rule="all">
+                                <condition comparison="pressed" condition-type="joystick" input-id="3" input-type="button"/>
+                            </activation-condition>
+                            <remap button="32" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </button>
+                <button description="Back" id="4">
+                    <container type="basic">
+                        <action-set>
+                            <previous-mode/>
+                        </action-set>
+                    </container>
+                </button>
+            </mode>
+        </device>
+        <device device-guid="{11111111-2222-3333-4444-000000000002}" label="" name="VJ Throttle" type="joystick">
+            <mode name="Default"/>
+            <mode inherit="Default" name="Combat">
+                <axis description="Idle cutoff" id="3">
+                    <container type="basic">
+                        <virtual-button direction="anywhere" lower-limit="-1.0" upper-limit="-0.8"/>
+                        <action-set>
+                            <remap button="31" vjoy="1"/>
+                        </action-set>
+                    </container>
+                    <container type="basic">
+                        <virtual-button direction="anywhere" lower-limit="0.9" upper-limit="1.0"/>
+                        <action-set>
+                            <switch-mode name="Landing"/>
+                        </action-set>
+                    </container>
+                </axis>
+            </mode>
+        </device>
+        <device device-guid="{6F1D2B61-D5A0-11CF-BFC7-444553540000}" label="" name="Keyboard" type="keyboard">
+            <mode name="Default">
+                <key extended="False" id="30">
+                    <container type="basic">
+                        <action-set>
+                            <remap button="40" vjoy="1"/>
+                        </action-set>
+                    </container>
+                </key>
+            </mode>
+        </device>
+    </devices>
+    <vjoy-devices/>
+    <settings>
+        <startup-mode>Combat</startup-mode>
+    </settings>
+    <plugins/>
+</profile>

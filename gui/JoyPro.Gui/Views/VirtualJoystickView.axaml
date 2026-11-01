@@ -18,7 +18,7 @@
                 </Border>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
                     <Button Command="{Binding StartVirtualJoystickCommand}" Content="{l:T 'Start'}" MinWidth="90" IsEnabled="{Binding CanStartVirtualJoystick}"
-                            ToolTip.Tip="{l:T 'Hides your physical devices from the games set to Virtual (Windows asks once for administrator rights) and copies their inputs to vJoy live. Press it before you start the game.'}" />
+                            ToolTip.Tip="{Binding VirtualJoystickStartTip}" />
                     <Button Command="{Binding TestVirtualJoystickCommand}" Content="{l:T 'Test'}" MinWidth="90" IsEnabled="{Binding CanStartVirtualJoystick}"
                             ToolTip.Tip="{l:T 'Reads your devices and shows below what the virtual joystick would get. vJoy and HidHide are not touched.'}" />
                     <Button Command="{Binding StopVirtualJoystickCommand}" Content="{l:T 'Stop'}" MinWidth="90" IsEnabled="{Binding VirtualJoystickRunning}"
@@ -39,6 +39,7 @@
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '1. Switch the game to Virtual below.'}" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '2. Export the game again (Export page). JoyPro writes the binds to the virtual joystick; your profile keeps your real devices.'}" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '3. Press Start before you start the game. JoyPro hides your real devices from that game with HidHide (Windows asks once for administrator rights) and copies every input to the virtual joystick in real time.'}" />
+                                    <TextBlock TextWrapping="Wrap" Margin="16,0,0,0" Text="{Binding VirtualXboxPadTimingNote}" IsVisible="{Binding HasVirtualXboxPadTimingNote}" />
                                     <TextBlock TextWrapping="Wrap" Text="{l:T '4. Press Stop when you are done. HidHide gets back exactly the setup it had before; nothing stays hidden.'}" />
                                     <TextBlock TextWrapping="Wrap" Opacity="0.8" Text="{l:T 'Only the games set to Virtual stop seeing your real devices. Every other program (JoyPro, SimHub, Discord, other games) keeps seeing them. Curves, dead zones and inversions stay in the game\'s own settings as JoyPro exports them: the virtual joystick passes the raw values on 1:1.'}" />
                                 </StackPanel>
@@ -57,6 +58,10 @@
                                     <TextBlock Text="{Binding ViGEmStatusText}" TextWrapping="Wrap" />
                                     <TextBlock Text="{Binding VirtualJoystickSessionText}" TextWrapping="Wrap" />
                                     <TextBlock Text="{Binding VirtualJoystickRateText}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
+                                    <TextBlock Text="{Binding VirtualJoystickTunnelText}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}"
+                                               IsVisible="{Binding VirtualJoystickTunnelText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                    <TextBlock Text="{Binding VirtualJoystickTunnelWarnings}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}"
+                                               IsVisible="{Binding VirtualJoystickTunnelWarnings, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <Button Command="{Binding ConfigureVJoyCommand}" Content="{l:T 'Set up vJoy for the table'}" IsVisible="{Binding VirtualJoystickNeedsConfig}"
                                                 ToolTip.Tip="{l:T 'Runs vJoyConfig once (Windows asks for administrator rights) so the vJoy devices have the axes, buttons and hats the table needs. It never takes anything away from a device.'}" />
@@ -130,7 +135,7 @@
                                     <CheckBox IsChecked="{Binding VirtualJoystickHideDevices}" Content="{l:T 'Hide the real devices from the games set to Virtual (HidHide)'}"
                                               ToolTip.Tip="{l:T 'Off: the games see your real devices and the virtual joystick, which can give double input. Recommended: on.'}" />
                                     <CheckBox IsChecked="{Binding VirtualJoystickAutoStart}" Content="{l:T 'Start and stop by itself when a game set to Virtual starts and ends'}"
-                                              ToolTip.Tip="{l:T 'JoyPro looks for the game every 3 seconds while this is on. Pressing Start before the game is still the safest: some games only look for devices when they start.'}" />
+                                              ToolTip.Tip="{Binding VirtualJoystickAutoStartTip}" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -178,7 +183,7 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel Spacing="10">
                                 <TextBlock TextWrapping="Wrap" Opacity="0.8"
-                                           Text="{l:T 'Virtual functions run inside the virtual joystick, between your devices and what the game gets: axis bands as buttons, button cycles, toggles, short/long/double press, shift layers, axis tools, turbo, macros and hat helpers. Each one gets free virtual buttons or axes; bind relations to them like to any vJoy button.'}" />
+                                           Text="{l:T 'Virtual functions run inside the virtual joystick, between your devices and what the game gets: remaps, axis bands as buttons, button cycles, toggles, short/long/double press, shift layers, axis tools, turbo, macros and hat helpers. A function can read another function\'s output, and modes give an input a different job per mode, like in Joystick Gremlin.'}" />
                                 <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
                                     <StackPanel Spacing="6">
                                         <TextBlock Text="{l:T 'Add a function'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
@@ -189,7 +194,12 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
-                                        <ListBox ItemsSource="{Binding VirtualFunctionTypes}" SelectedItem="{Binding NewVirtualFunctionType}" MaxHeight="340">
+                                        <ListBox ItemsSource="{Binding VirtualFunctionTypes}" SelectedItem="{Binding NewVirtualFunctionType}" MaxHeight="300">
+                                            <ListBox.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel />
+                                                </ItemsPanelTemplate>
+                                            </ListBox.ItemsPanel>
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate x:DataType="models:VfTypeOption">
                                                     <Grid ColumnDefinitions="30,*" ColumnSpacing="6" ToolTip.Tip="{Binding Example}">
@@ -206,6 +216,64 @@
                                                 ToolTip.Tip="{l:T 'Adds the function with free virtual outputs; then choose its inputs in the editor.'}" />
                                     </StackPanel>
                                 </Border>
+
+                                <!-- Modes (layers) of the chosen game. -->
+                                <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{Binding VirtualModesHeader}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
+                                        <TextBlock TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}"
+                                                   Text="{l:T 'Modes give your inputs a different job per situation (Combat, Landing ...). A mode switch function changes the mode; a mode gets the functions of the mode it inherits from unless it has its own function on that input.'}" />
+                                        <TextBlock Text="{Binding VirtualFunctionCurrentModeText}" FontWeight="SemiBold" Foreground="{DynamicResource JP.OkTextBrush}"
+                                                   IsVisible="{Binding VirtualFunctionCurrentModeText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                        <ItemsControl ItemsSource="{Binding VirtualFunctionModes}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="models:VfModeItem">
+                                                    <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="0,0,0,1" Padding="0,4">
+                                                        <StackPanel Spacing="4">
+                                                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
+                                                                <TextBox Text="{Binding EditName}" MinWidth="80" ToolTip.Tip="{l:T 'The mode\'s name; type a new one and press Rename'}" />
+                                                                <Button Grid.Column="1" Content="{l:T 'Rename'}" Padding="6,2"
+                                                                        Command="{Binding $parent[local:VirtualJoystickView].((vm:MainWindowViewModel)DataContext).RenameVirtualModeCommand}" CommandParameter="{Binding}" />
+                                                                <Button Grid.Column="2" Content="×" Padding="8,2" ToolTip.Tip="{l:T 'Removes the mode (asks first)'}"
+                                                                        Command="{Binding $parent[local:VirtualJoystickView].((vm:MainWindowViewModel)DataContext).RemoveVirtualModeCommand}" CommandParameter="{Binding}" />
+                                                            </Grid>
+                                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                                                <TextBlock Text="{l:T 'inherits'}" VerticalAlignment="Center" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
+                                                                <ComboBox Grid.Column="1" ItemsSource="{Binding ParentOptions}" SelectedItem="{Binding Parent}" HorizontalAlignment="Stretch" />
+                                                                <Button Grid.Column="2" Content="{l:T 'At start'}" Padding="6,2" IsVisible="{Binding !IsStart}"
+                                                                        ToolTip.Tip="{l:T 'The forwarder starts in this mode'}"
+                                                                        Command="{Binding $parent[local:VirtualJoystickView].((vm:MainWindowViewModel)DataContext).SetVirtualStartModeCommand}" CommandParameter="{Binding}" />
+                                                                <TextBlock Grid.Column="2" Text="{Binding StartText}" IsVisible="{Binding IsStart}" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="{DynamicResource JP.FontSize.12}" />
+                                                            </Grid>
+                                                            <TextBlock Text="{l:T 'running now'}" IsVisible="{Binding IsCurrent}" Foreground="{DynamicResource JP.OkTextBrush}" FontSize="{DynamicResource JP.FontSize.12}" FontWeight="SemiBold" />
+                                                        </StackPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock Text="{l:T 'No modes yet: every function works all the time.'}" IsVisible="{Binding !HasVirtualModes}" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" />
+                                        <TextBox Text="{Binding NewVirtualModeName}" Watermark="{l:T 'new mode, e.g. Combat'}" />
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                                            <TextBlock Text="{l:T 'inherits'}" VerticalAlignment="Center" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{Binding VirtualModeParentOptions}" SelectedItem="{Binding NewVirtualModeParent}" HorizontalAlignment="Stretch"
+                                                      ToolTip.Tip="{l:T 'The mode it inherits from'}" />
+                                            <Button Grid.Column="2" Content="{l:T 'Add mode'}" Command="{Binding AddVirtualModeCommand}" Padding="10,2" IsEnabled="{Binding VirtualFunctionGame, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Joystick Gremlin profile import. -->
+                                <Border BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" CornerRadius="8" Padding="10">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{l:T 'Coming from Joystick Gremlin?'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
+                                        <TextBlock TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}"
+                                                   Text="{l:T 'Import a Gremlin profile (.xml, R13 or R14) into the game chosen above: modes, remaps, curves, macros, merged axes, tempo, chain and toggle containers become virtual functions. You see the report before anything is saved.'}" />
+                                        <CheckBox IsChecked="{Binding GremlinReplace}" Content="{l:T 'Replace the game\'s functions and modes'}" />
+                                        <Button Content="{l:T 'Import a Gremlin profile...'}" Click="ImportGremlinClicked" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding VirtualFunctionGame, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                    </StackPanel>
+                                </Border>
+
                                 <TextBlock Text="{Binding VirtualFunctionsHeader}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
                                 <ItemsControl ItemsSource="{Binding VirtualFunctions}">
                                     <ItemsControl.ItemTemplate>
@@ -214,9 +282,13 @@
                                                 <Grid ColumnDefinitions="30,*" ColumnSpacing="6">
                                                     <TextBlock Text="{Binding Icon}" FontSize="{DynamicResource JP.FontSize.18}" VerticalAlignment="Top" HorizontalAlignment="Center" />
                                                     <StackPanel Grid.Column="1" Spacing="2">
-                                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
                                                         <TextBlock Text="{Binding GameName}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" />
                                                         <TextBlock Text="{Binding OutputsText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding ModesText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.85" TextWrapping="Wrap"
+                                                                   IsVisible="{Binding ModesText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                                        <TextBlock Text="{Binding ChainText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.85" TextWrapping="Wrap"
+                                                                   IsVisible="{Binding ChainText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                         <TextBlock Text="{Binding StatusText}" FontSize="{DynamicResource JP.FontSize.11}" FontWeight="SemiBold" />
                                                         <TextBlock Text="{Binding LiveText}" FontSize="{DynamicResource JP.FontSize.11}" Foreground="{DynamicResource JP.OkTextBrush}"
                                                                    IsVisible="{Binding LiveText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -233,23 +305,61 @@
                                 </ItemsControl>
                             </StackPanel>
                         </ScrollViewer>
-                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*" RowSpacing="8">
-                            <TextBlock Text="{Binding VirtualFunctionMessage}" TextWrapping="Wrap" FontWeight="SemiBold"
-                                       IsVisible="{Binding VirtualFunctionMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasVirtualFunctionEditor}">
-                                <Button Content="{l:T 'Save'}" Command="{Binding SaveVirtualFunctionCommand}" MinWidth="90"
+                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="8">
+                            <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="8">
+                                <ToggleButton Content="{l:T 'Graph of all functions'}" IsChecked="{Binding VirtualFunctionShowGraph}" MinWidth="120"
+                                              ToolTip.Tip="{l:T 'Every function of the game as a node: drag an output to an input to chain functions'}" />
+                                <ToggleButton Grid.Column="1" Content="{l:T 'Editor'}" IsChecked="{Binding !VirtualFunctionShowGraph}" MinWidth="90" IsEnabled="{Binding HasVirtualFunctionEditor}"
+                                              ToolTip.Tip="{l:T 'The function you opened with Edit: inputs, outputs, settings, modes and a preview'}" />
+                                <Button Grid.Column="3" Content="{l:T 'Save'}" Command="{Binding SaveVirtualFunctionCommand}" MinWidth="90" IsVisible="{Binding VirtualFunctionShowEditor}"
                                         ToolTip.Tip="{l:T 'Saves the function in the profile. A running virtual joystick takes it after Stop and Start (or Test).'}" />
-                                <Button Content="{l:T 'Close'}" Command="{Binding CloseVirtualFunctionEditorCommand}" MinWidth="90" ToolTip.Tip="{l:T 'Closes the editor without saving.'}" />
-                            </StackPanel>
-                            <TextBlock Grid.Row="2" IsVisible="{Binding !HasVirtualFunctionEditor}" TextWrapping="Wrap" Opacity="0.7"
+                                <Button Grid.Column="4" Content="{l:T 'Close'}" Command="{Binding CloseVirtualFunctionEditorCommand}" MinWidth="90" IsVisible="{Binding VirtualFunctionShowEditor}"
+                                        ToolTip.Tip="{l:T 'Closes the editor without saving.'}" />
+                            </Grid>
+                            <TextBlock Grid.Row="1" Text="{Binding VirtualFunctionMessage}" TextWrapping="Wrap" FontWeight="SemiBold"
+                                       IsVisible="{Binding VirtualFunctionMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <!-- The Gremlin import's report: nothing is saved until Import. -->
+                            <Border Grid.Row="2" BorderBrush="{DynamicResource JP.AccentBrush}" Background="{DynamicResource JP.AccentSoftBrush}" BorderThickness="1" CornerRadius="8" Padding="10" IsVisible="{Binding HasGremlinReport}">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{l:T 'Joystick Gremlin profile: what JoyPro makes of it'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding GremlinReportText}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{l:T 'Not imported (JoyPro cannot do this):'}" FontWeight="SemiBold" IsVisible="{Binding HasGremlinNotImported}" Foreground="{DynamicResource JP.WarnTextBrush}" />
+                                    <ItemsControl ItemsSource="{Binding GremlinNotImported}" IsVisible="{Binding HasGremlinNotImported}" MaxHeight="180">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <TextBlock Text="{Binding StringFormat='• {0}'}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <TextBlock Text="{l:T 'Imported, but different:'}" FontWeight="SemiBold" IsVisible="{Binding HasGremlinNotes}" />
+                                    <ItemsControl ItemsSource="{Binding GremlinNotes}" IsVisible="{Binding HasGremlinNotes}" MaxHeight="140">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="x:String">
+                                                <TextBlock Text="{Binding StringFormat='• {0}'}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.85" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <Button Content="{l:T 'Import'}" Command="{Binding ConfirmGremlinImportCommand}" MinWidth="90" Classes="accent" />
+                                        <Button Content="{l:T 'Cancel'}" Command="{Binding CancelGremlinImportCommand}" MinWidth="90" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                            <Grid Grid.Row="3" RowDefinitions="Auto,*" RowSpacing="6" IsVisible="{Binding VirtualFunctionShowGraph}">
+                                <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="{DynamicResource JP.FontSize.12}"
+                                           Text="{l:T 'Drag from an output dot (right edge) to an input dot (left edge) of another function to chain them. Click a wire, then its × (or Delete) to disconnect. × on a function removes it; double-click a function to edit its devices, outputs and settings.'}" />
+                                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                    <controls:VirtualFunctionGraphView Functions="{Binding VirtualFunctionGraph}" Host="{Binding}" MinHeight="260" />
+                                </ScrollViewer>
+                            </Grid>
+                            <TextBlock Grid.Row="3" IsVisible="{Binding VirtualFunctionShowHint}" TextWrapping="Wrap" Opacity="0.7"
                                        Text="{l:T 'Pick a function on the left (Edit), or add one. The editor shows the inputs, the virtual outputs, the settings and a preview: \'Try it\' runs the function here; with Test or Start the editor shows your real devices live.'}" />
-                            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" IsVisible="{Binding HasVirtualFunctionEditor}">
+                            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" IsVisible="{Binding VirtualFunctionShowEditor}">
                                 <views:VirtualFunctionEditorView DataContext="{Binding VirtualFunctionEditor}" Margin="0,0,8,0" />
                             </ScrollViewer>
                         </Grid>
                     </Grid>
                 </TabItem>
-
                 <TabItem Header="{l:T 'Live test'}">
                     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8" Margin="0,8,8,0">
                         <StackPanel Orientation="Horizontal" Spacing="12">

@@ -92,6 +92,7 @@ public sealed partial class MainWindowViewModel
     {
         savedLayoutDevices.Add(device);
         layoutTemplateByDevice[device] = file;
+        ForgetLayoutPick(device);
         LayoutEditorOutputPath = string.Empty;
         LayoutEditorSourcePath = file;
         LayoutShowsLayoutFile = true;
@@ -108,6 +109,7 @@ public sealed partial class MainWindowViewModel
             return;
         savedLayoutDevices.Remove(device);
         layoutTemplateByDevice.Remove(device);
+        ForgetLayoutPick(device);
         if (!string.IsNullOrWhiteSpace(ProfilePath))
         {
             if (old.Previous.Length > 0)

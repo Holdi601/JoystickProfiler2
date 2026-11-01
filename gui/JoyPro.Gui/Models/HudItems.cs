@@ -10,8 +10,8 @@ using JoyPro.Gui.Services;
 
 namespace JoyPro.Gui.Models;
 
-// What all HUD widgets share: the look (accent colour, style, opacity), the lines of the binds ticker and the
-// game / aircraft of the header.
+// What all HUD widgets share: the look (HudLook, the HUD's style), the lines of the binds ticker and the game / aircraft
+// of the header.
 public sealed partial class HudContext : ObservableObject
 {
     public HudContext(ObservableCollection<OverlayLine> lines)
@@ -30,44 +30,11 @@ public sealed partial class HudContext : ObservableObject
     [ObservableProperty]
     private Bitmap? headerPicture;
 
+    // The HUD's own design (Look > Style); a widget with a style of its own uses that one instead.
     [ObservableProperty]
-    private IBrush accent = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(Color.Parse("#38BDF8"));
+    private HudLook look = new(HudStylePresets.Default);
 
-    [ObservableProperty]
-    private Color accentColor = Color.Parse("#38BDF8");
-
-    [ObservableProperty]
-    private IBrush accentSoft = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(Color.Parse("#4038BDF8"));
-
-    [ObservableProperty]
-    private BoxShadows glow = BoxShadows.Parse("0 0 14 3 #CC38BDF8");
-
-    [ObservableProperty]
-    private IBrush cardBackground = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(Color.Parse("#B00B1220"));
-
-    [ObservableProperty]
-    private IBrush cardBorder = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(Color.Parse("#5538BDF8"));
-
-    [ObservableProperty]
-    private BoxShadows cardShadow = BoxShadows.Parse("0 10 30 0 #99000000");
-
-    [ObservableProperty]
-    private double opacity = 1;
-
-    public void Apply(string accentHex, string style, double hudOpacity)
-    {
-        Color color = Color.TryParse(accentHex, out Color parsed) ? parsed : Color.Parse("#38BDF8");
-        AccentColor = color;
-        Accent = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(color);
-        AccentSoft = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(Color.FromArgb(0x40, color.R, color.G, color.B));
-        string hex = color.R.ToString("X2") + color.G.ToString("X2") + color.B.ToString("X2");
-        bool glass = style != "Neon" && style != "Minimal";
-        Glow = style == "Minimal" ? default : BoxShadows.Parse("0 0 14 3 #CC" + hex);
-        CardBackground = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(glass ? Color.Parse("#B00B1220") : Colors.Transparent);
-        CardBorder = new Avalonia.Media.Immutable.ImmutableSolidColorBrush(style == "Minimal" ? Colors.Transparent : Color.FromArgb(glass ? (byte)0x55 : (byte)0xCC, color.R, color.G, color.B));
-        CardShadow = glass ? BoxShadows.Parse("0 10 30 0 #99000000") : style == "Neon" ? BoxShadows.Parse("0 0 18 1 #66" + hex) : default;
-        Opacity = Math.Clamp(hudOpacity, 0.2, 1);
-    }
+    public void ApplyLook(HudLookSettings settings) => Look = new HudLook(settings);
 }
 
 // One widget of the HUD (a device, the binds ticker or the game header), at its place in the reference screen.
@@ -94,9 +61,51 @@ public sealed partial class HudWidget : ObservableObject
         axisX = config.AxisX ?? string.Empty;
         axisY = config.AxisY ?? string.Empty;
         axisTwist = config.AxisTwist ?? string.Empty;
+        streamVisible = config.StreamVisible ?? config.Visible;
+        config.StreamVisible = streamVisible;
+        showChips = config.ShowChips;
+        showValues = config.ShowValues;
+        showLabels = config.ShowLabels;
+        showKind = config.ShowKind;
+        showHeaderPicture = config.ShowHeaderPicture;
+        showStick = config.ShowStick;
+        showThrottle = config.ShowThrottle;
+        aircraftChoice = config.Aircraft ?? string.Empty;
+        stickDevice = config.StickDevice ?? string.Empty;
+        throttleDevice = config.ThrottleDevice ?? string.Empty;
+        ownLook = config.Look == null ? null : new HudLook(config.Look);
         if (device != null)
             device.TiltEnabled = tilt;
+        theme.PropertyChanged += OnThemeChanged;
     }
+
+    // The design this widget is drawn with: its own style, else the HUD's.
+    public HudLook Look => ownLook ?? Theme.Look;
+
+    private HudLook? ownLook;
+
+    public bool HasOwnStyle => ownLook != null;
+
+    public string OwnStyleName => ownLook?.Settings.Name ?? string.Empty;
+
+    // A style of its own (null = the HUD's style again).
+    public void SetOwnStyle(HudLookSettings? settings)
+    {
+        Config.Look = settings?.Normalized();
+        ownLook = Config.Look == null ? null : new HudLook(Config.Look);
+        OnPropertyChanged(nameof(Look));
+        OnPropertyChanged(nameof(HasOwnStyle));
+        OnPropertyChanged(nameof(OwnStyleName));
+    }
+
+    private void OnThemeChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(HudContext.Look) && ownLook == null)
+            OnPropertyChanged(nameof(Look));
+    }
+
+    // The widget is dropped (devices read again): it stops listening to the HUD's look.
+    public void Detach() => Theme.PropertyChanged -= OnThemeChanged;
 
     // The stick element's axis sources: empty = Automatic, else "<device>|<input>" (HudWidgetConfig).
     [ObservableProperty]
@@ -138,10 +147,17 @@ public sealed partial class HudWidget : ObservableObject
 
     public bool IsHeader => Kind == "header";
 
+    public bool IsAircraft => Kind == "aircraft";
+
+    // The aircraft widget's stick and throttle (set by the view model; null for the other widgets).
+    [ObservableProperty]
+    private HudAircraft? aircraft;
+
     public string Title => Kind switch
     {
         "binds" => "What the button does",
         "header" => "Game and aircraft",
+        "aircraft" => "Aircraft stick and throttle",
         _ => Device?.Title ?? Config.Device
     };
 
@@ -149,6 +165,7 @@ public sealed partial class HudWidget : ObservableObject
     {
         "binds" => "Function of every pressed button in the running game",
         "header" => "The running game / DCS aircraft",
+        "aircraft" => "The stick and throttle of the aircraft you fly, moving with yours",
         _ => Device?.Subtitle ?? string.Empty
     };
 
@@ -185,6 +202,40 @@ public sealed partial class HudWidget : ObservableObject
     [ObservableProperty]
     private bool showHats;
 
+    [ObservableProperty]
+    private bool streamVisible;
+
+    [ObservableProperty]
+    private bool showChips;
+
+    [ObservableProperty]
+    private bool showValues;
+
+    [ObservableProperty]
+    private bool showLabels;
+
+    [ObservableProperty]
+    private bool showKind;
+
+    [ObservableProperty]
+    private bool showHeaderPicture;
+
+    [ObservableProperty]
+    private bool showStick;
+
+    [ObservableProperty]
+    private bool showThrottle;
+
+    // Aircraft widget: empty = the aircraft JoyPro knows, else "<game>/<picture set>".
+    [ObservableProperty]
+    private string aircraftChoice;
+
+    [ObservableProperty]
+    private string stickDevice;
+
+    [ObservableProperty]
+    private string throttleDevice;
+
     // Auto (product photo, else layout picture), Photo or Layout (button positions light up).
     [ObservableProperty]
     private string pictureSource;
@@ -211,11 +262,51 @@ public sealed partial class HudWidget : ObservableObject
 
     public bool HasGripChoices => Device?.GripChoices.Count > 0;
 
+    public bool ChipsVisible => ShowChips && ShowButtons;
+
+    public bool AircraftStickVisible => ShowStick && Aircraft?.HasStick == true;
+
+    public bool AircraftThrottleVisible => ShowThrottle && Aircraft?.HasThrottle == true;
+
+    partial void OnAircraftChanged(HudAircraft? value) => RefreshAircraft();
+
+    public void RefreshAircraft()
+    {
+        OnPropertyChanged(nameof(AircraftStickVisible));
+        OnPropertyChanged(nameof(AircraftThrottleVisible));
+    }
+
     // Changes go back into the saved layout.
     partial void OnXChanged(double value) => Config.X = Math.Round(value);
     partial void OnYChanged(double value) => Config.Y = Math.Round(value);
     partial void OnScaleChanged(double value) => Config.Scale = Math.Round(value, 2);
     partial void OnVisibleChanged(bool value) => Config.Visible = value;
+    partial void OnStreamVisibleChanged(bool value) => Config.StreamVisible = value;
+    partial void OnShowValuesChanged(bool value) => Config.ShowValues = value;
+    partial void OnShowLabelsChanged(bool value) => Config.ShowLabels = value;
+    partial void OnShowKindChanged(bool value) => Config.ShowKind = value;
+    partial void OnShowHeaderPictureChanged(bool value) => Config.ShowHeaderPicture = value;
+    partial void OnAircraftChoiceChanged(string value) => Config.Aircraft = value ?? string.Empty;
+    partial void OnStickDeviceChanged(string value) => Config.StickDevice = value ?? string.Empty;
+    partial void OnThrottleDeviceChanged(string value) => Config.ThrottleDevice = value ?? string.Empty;
+
+    partial void OnShowChipsChanged(bool value)
+    {
+        Config.ShowChips = value;
+        OnPropertyChanged(nameof(ChipsVisible));
+    }
+
+    partial void OnShowStickChanged(bool value)
+    {
+        Config.ShowStick = value;
+        OnPropertyChanged(nameof(AircraftStickVisible));
+    }
+
+    partial void OnShowThrottleChanged(bool value)
+    {
+        Config.ShowThrottle = value;
+        OnPropertyChanged(nameof(AircraftThrottleVisible));
+    }
     partial void OnShowNameChanged(bool value) => Config.ShowName = value;
 
     partial void OnTiltChanged(bool value)
@@ -240,6 +331,7 @@ public sealed partial class HudWidget : ObservableObject
     {
         Config.ShowButtons = value;
         RefreshVisibility();
+        OnPropertyChanged(nameof(ChipsVisible));
     }
 
     partial void OnShowAxesChanged(bool value)
@@ -362,9 +454,45 @@ public sealed partial class HudDevice : ObservableObject
 
     public IReadOnlyDictionary<string, string> Labels { get; }
 
+    // What each input is in the control vocabulary ("JOY_BTN3" -> "stick.hat.tms.up"; docs/devices.md), from the
+    // device catalog: the aircraft widget lights the aircraft's control of the same name.
+    public IReadOnlyDictionary<string, string> Controls { get; set; } = new Dictionary<string, string>();
+
+    // The stick element's position, -1..1 per role (0 = centred): the stick element draws it, the aircraft widget reads it.
+    [ObservableProperty]
+    private double stickX;
+
+    [ObservableProperty]
+    private double stickY;
+
+    [ObservableProperty]
+    private double stickTwist;
+
+    // Called after the device's axes or its stick element moved (no allocation: the aircraft widget marks itself dirty).
+    public Action<HudDevice>? Moved { get; set; }
+
+    // A lever's travel, 0..1 (0 when the device has no such lever).
+    public double LeverValue(int index) => index >= 0 && index < Levers.Count ? Levers[index].Value : 0;
+
     public List<HudChoice> GripChoices { get; }
 
-    public string Title => DeviceAliases.Shown(Device) is { Length: > 0 } alias ? alias : Model.Length > 0 ? Model : Name;
+    // "VID:PID" in hex (engine hud devices), empty when unknown.
+    public string VidPid { get; init; } = string.Empty;
+
+    // A virtual device (vJoy, also the one JoyPro's forwarder tunnels into; ViGEm or another virtual joystick): it only
+    // mirrors real devices, so it never is a stick's base and never sits on one.
+    public bool IsVirtual => LooksVirtual(Device, Name, VidPid);
+
+    // A base by itself: of the kind "base", or a base that takes grips (a VPforce Rhino: the grip choices of the catalog).
+    public bool IsBase => DeviceKind == "base" || GripChoices.Count > 0;
+
+    private static readonly Regex VirtualName = new(@"\bvjoy\b|vigem|virtual (joystick|device|controller|gamepad)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    public static bool LooksVirtual(string? device, string? name, string? vidPid) =>
+        string.Equals((vidPid ?? string.Empty).Trim(), "1234:BEAD", StringComparison.OrdinalIgnoreCase) ||
+        VirtualName.IsMatch(device ?? string.Empty) || VirtualName.IsMatch(name ?? string.Empty);
+
+    public string Title =>DeviceAliases.Shown(Device) is { Length: > 0 } alias ? alias : Model.Length > 0 ? Model : Name;
 
     public void RefreshName()
     {
@@ -611,6 +739,7 @@ public sealed partial class HudDevice : ObservableObject
         }
         for (int i = 0; i < axisDependents.Count; i++)
             axisDependents[i].UpdateGimbal();
+        Moved?.Invoke(this);
     }
 
     // -1..1 of a role from its source; 0 (centred) when there is none, it reports nothing yet or it is dead.
@@ -626,6 +755,9 @@ public sealed partial class HudDevice : ObservableObject
     public void UpdateGimbal()
     {
         double rollValue = RoleValue(RoleX), pitchValue = RoleValue(RoleY), twistValue = RoleValue(RoleTwist);
+        StickX = Math.Round(rollValue, 3);
+        StickY = Math.Round(pitchValue, 3);
+        StickTwist = Math.Round(twistValue, 3);
         bool tilt = TiltEnabled && CanTilt;
         Roll = tilt ? Math.Round(rollValue * 18, 2) : 0;
         Pitch = tilt ? Math.Round(-pitchValue * 14, 2) : 0;
@@ -633,6 +765,7 @@ public sealed partial class HudDevice : ObservableObject
         GimbalX = Math.Round(rollValue * GimbalRadius, 1);
         GimbalY = Math.Round(pitchValue * GimbalRadius, 1);
         TwistTick = Math.Round(twistValue * 90, 1);
+        Moved?.Invoke(this);
     }
 
     public void SetInput(string input, bool down)
@@ -764,7 +897,13 @@ public sealed partial class HudAxis : ObservableObject
     // Lever: fill from the bottom.
     public double LeverFill => Math.Max(3, Value * LeverHeight);
 
-    public string Percent => Bipolar ? ((int)Math.Round((Value - 0.5) * 200)).ToString("+0;-0;0") : ((int)Math.Round(Value * 100)) + "%";
+    // From tables made once: an axis report makes no new string.
+    public string Percent => Bipolar
+        ? BipolarTexts[Math.Clamp((int)Math.Round((Value - 0.5) * 200), -100, 100) + 100]
+        : PercentTexts[Math.Clamp((int)Math.Round(Value * 100), 0, 100)];
+
+    private static readonly string[] BipolarTexts = Enumerable.Range(-100, 201).Select(v => v.ToString("+0;-0;0", System.Globalization.CultureInfo.InvariantCulture)).ToArray();
+    private static readonly string[] PercentTexts = Enumerable.Range(0, 101).Select(v => v.ToString(System.Globalization.CultureInfo.InvariantCulture) + "%").ToArray();
 
     // Cached event arguments: an axis report changes these many times a second while the HUD is on (no allocation).
     private static readonly System.ComponentModel.PropertyChangedEventArgs FillLeftChanged = new(nameof(FillLeft));

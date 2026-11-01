@@ -257,7 +257,8 @@ so the tables never overlap and the lines do not cross tables. Controls the draw
   [privacy.md](privacy.md#cockpit-photos).
 - **Compare with my setup**: with a profile open, each function gets a mark in the HOTAS tables when a relation of the
   profile holds it for that game and aircraft (`engine cockpits compare`), with the relation's name and its input.
-- **Use this layout**: hands the variant to the setup wizard (below).
+- **Use this layout**: opens the setup wizard with the variant (below): its aircraft first in the priority list, and
+  the plan reads this variant's layout for it.
 
 ## The cockpit guide
 
@@ -400,8 +401,10 @@ pictures, seats, a shared guide and German, the pages, the page's selection and 
   `Links`. The aircraft and the variant may be given by id, name or alias; a variant id alone also works
   (`engine cockpits get f-16c-block-50`).
 - In the GUI: `CockpitsViewModel.UseLayoutRequested` (event, `CockpitLayoutRequest` with `AircraftId`, `VariantId`,
-  `Games` and the CLI arguments) and `MainWindowViewModel.PendingCockpitLayout` (the last request, until the wizard takes
-  it with `TakePendingCockpitLayout()`).
+  `Games` and the CLI arguments) goes to `MainWindowViewModel.UseCockpitLayout`, which opens the setup wizard with it
+  (`SetupWizardViewModel.UseCockpitLayout`; a wizard made later takes `PendingCockpitLayout` with
+  `TakePendingCockpitLayout()`). The wizard puts the aircraft named in `Games` first in the priority list and asks the
+  engine with the request's arguments (`cockpits get <aircraft> <variant> --json`) for that aircraft's `--cockpit-file`.
 - `cockpits get --json` also gives `Modes`, `DefaultMode`, the `Overview` (areas), the `Panels` with their `Items`, and
   per function `Press`, `When`, `By` and `FnBy`. A function's `Text` and `Fn` are the default mode's cell: the setup
   wizard places a function where the default mode has it (`SetupCockpits`).
@@ -443,7 +446,7 @@ yoke and throttle datarefs (X-Plane); the details are under "Finding the grips".
 
 | Game | What is read | State (2026-10-17) |
 |---|---|---|
-| DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), `Entry\Views.lua` where a module keeps it there, mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives, also under `CoreMods\aircraft\<module>`) | 49 cockpit sets on the test PC (2026-10-25). The SA342 Gazelle's cockpit model is in `CoreMods\aircraft\SA342\Shapes` (found there since 2026-10-25); the F-14BU has no clickable data yet (overview only); the textures of the C-130J, F-14 and OH-58D are in `CoreMods\aircraft\<module>`. The F-100D's model has parts the reader places wrongly (big shards): its set is rated low and most of its panel pictures are left out |
+| DCS World | `Mods\aircraft\*`: entry.lua (aircraft, cockpit folder), `Entry\Views.lua` where a module keeps it there, mainpanel_init.lua (model, grip arguments), clickabledata.lua, Views.lua (seats, eye points), the cockpit EDM and its textures (DDS in zip archives, also under `CoreMods\aircraft\<module>`) | 49 cockpit sets on the test PC (2026-10-25). The SA342 Gazelle's cockpit model is in `CoreMods\aircraft\SA342\Shapes` (found there since 2026-10-25); the F-14BU has no clickable data yet (overview only); the textures of the C-130J, F-14 and OH-58D are in `CoreMods\aircraft\<module>`. Opaque self-lit surfaces (`additive_self_illum_material` without blending) are drawn like plain ones since 2026-10-31: the C-130J's panel faces (overhead, pedestal, consoles: `PACK2`..`PACK5`, `VC_PAN_01`..`12`) are made of them and showed as grey plates without labels, and its throttle levers too (a throttle page since then; the set's mean rating 80 -> 91, no picture left out); the light layers (additive or alpha blending, `bano`) stay out. The AJS37, F-16C, Ka-50 and P-47D pictures stay the same apart from small parts (the Ka-50's reserve attitude indicator scale). The F-100D's model has parts the reader places wrongly (big shards): its set is rated low and most of its panel pictures are left out |
 | X-Plane 12 | `Aircraft\**\*.acf` (objects, pilot's eye) and the OBJ8 objects with their textures (DDS and PNG both top row first; the figures (pilot, crew and passenger objects, also in `crew\`/`pilot\` folders) left out, the pilot's panels kept) | 23 aircraft (every one in Aircraft; an AI-only `_AI` copy is left out). The displays are drawn by the sim at run time (black in the pictures) |
 | MSFS 2020 | the packages of `InstalledPackagesPath` (UserCfg.opt) without `.fsarchive` files: `model*\model.cfg` `interior=` -> the interior xml (its first LOD's glTF, its behaviours) -> the glTF (Asobo's optimised format: interleaved vertices, half-float texture coordinates, primitives sharing one index buffer by `ASOBO_primitive` StartIndex / BaseVertexIndex, `MSFT_texture_dds`), the textures (texture.cfg fallbacks), cameras.cfg + flight_model.cfg (eye = reference datum + eyepoint + the pilot camera's offset) | 57 interiors (every readable one of the test PC's packages; about 730 pictures, 7,300 callouts). Callouts on the parts named by function (`ELECTRICAL_Switch_Battery_Master`, older models `DEICESYSTEM_SWITCH_AIRFRAME`), with the behaviour template and its events where the xml names the node; the yoke (`HANDLING_Yoke_1`, `YOKE_LEFT`) and throttle are grips; where a model uses other names (2026-10-26) any part named as the stick, yoke, throttle or collective (`COCKPIT_yoke_pilot`, `Yoke1`, `joystick_l`, `ENGINE_Lever_Throttle_1_Visual`, `throttle_01`, `collective_grip_pilot`) or driven by a throttle, collective or yoke behaviour (also in the files the interior includes: the PC-6's `Prop_Lever`, `ASOBO_ROTORCRAFT_Collective_Template` of the Cabri) is one: the pilot's (nearest the eye, not `copilot`), the whole lever or yoke, without its rods, cables, base and the other pilot's grip. Every interior has both grips except the gliders (LS8, DG-1001: airbrake levers only), the Wright Flyer (no throttle) and the Bell 407 (its cyclic is a skinned mesh, which the reader does not pose). Packages with `.fsarchive` files are not read; the sim itself is not installed on the test PC |
 | MSFS 2024 | the models are not read (the aircraft packages hold `.fsc` / `.fsarchive` files). Screenshots in the sim instead: `tools\e2e\games\Msfs2024CockpitShots.ps1` (unattended; SimConnect through the sim's own client library `SimConnect_internal.dll`: EnumerateSimObjectsAndLiveries, FlightSave/FlightLoad to swap the aircraft at Innsbruck, CAMERA VIEW TYPE AND INDEX for the pilot's view and every instrument view, EnumerateInputEvents) | screenshots of every aircraft family (overview + instrument views, the HUD cropped away); the list on the overview is the aircraft's own input events (`ELECTRICAL_Battery_1`), without places (they cannot be derived honestly from a screenshot). Only via picture packs or the e2e script, not from the Cockpits page |
@@ -575,7 +578,7 @@ A helicopter's collective is the `throttle` grip in every game (as the UH-1H's a
   (C.202, Do 335) is kept where the model has no other throttle.
 
 Not found, because the model has no separate part for it (checked 2026-10-26): DCS I-16 (only generic names, no grip
-gauges, no hand connectors), the C-130J's throttles (no geometry under the `THROTTLE_n` nodes except a light layer) and
+gauges, no hand connectors) and
 the OH-58D pilot's cyclic (only bones, no meshes; the CPO's cyclic is found); X-Plane ASK 21 (a glider: no throttle,
 its air brake lever is a panel callout); War Thunder: of the 206 sets that lacked a grip, 156 have no stick / yoke node
 and 185 no throttle / collective node at all (bombers, transports and helicopters whose yoke, throttle quadrant or
@@ -653,10 +656,155 @@ encyclopedia pages.
   958 answer, 31 refuse programs (fandom.com pages), none fail.
 - Star Citizen ships: besides the official RSI ship page, each ship links its Star Citizen Wiki page (starcitizen.tools,
   community wiki under CC BY-SA 4.0: pictures of the ship and its cockpit, specifications); page links only.
+- **The render from the game where the photo would be** (2026-11-01): a craft only a game has (`fiction`: no real
+  cockpit exists to photograph) or a variant without any photo address gets, as the first card under "Photos", the
+  cockpit JoyPro rendered on this PC from the game's files ("Carrack: the cockpit rendered on this PC from the files of
+  Star Citizen", "Made by JoyPro from your game files; it stays on this PC ..."). It is the set's overview, else its
+  first grip picture, and only a picture the quality gate keeps (45 or more, like the manual's pages;
+  `CockpitManualPages.RenderInsteadOfPhoto`); the manual's overview page is the same render. It is local: no question,
+  no download, no "Open the page"; it follows the game chosen under "Pictures from" and appears right after "Build
+  pictures from my games". Games JoyPro reads cockpit models of: DCS, X-Plane 12, MSFS 2020, IL-2, Nuclear Option,
+  Star Citizen, War Thunder (MSFS 2024: screenshots). Elite Dangerous, X4, Star Wars: Squadrons, No Man's Sky, VTOL VR
+  and the film and series craft have no render (JoyPro reads no cockpit models of them), so they keep their page links.
 - The engine never downloads a photo.
-- The maintainer's private backup: `tools\backup_cockpit_photos.ps1 -Target <folder outside the repository>` (default
-  `..\JoyPro2-private\cockpit-photos`) downloads every linked photo with a manifest (aircraft, view, address, page,
-  credit, license, date, SHA-256, size). Neither the build nor the release reads it.
+- The maintainer's private archive: see [Photos of cockpits no game has](#photos-of-cockpits-no-game-has).
+
+## Photos of cockpits no game has
+
+Where a game gives good pictures of a cockpit (see "Pictures from your games"), nothing else is needed. For the
+aircraft and ships no game has good pictures of (none at all, or a set rated low), JoyPro knows **verified photos**:
+photo addresses with a SHA-256 each, and JoyPro's own labels for the main panels as data.
+
+- **On the Cockpits page**: such a variant gets "No game has pictures of this cockpit. Photos of the ... cockpit JoyPro
+  knows: 2 (commons.wikimedia.org) ..." with **Download photos**. One click downloads every photo of the aircraft (it
+  counts as the yes for that aircraft), with a progress bar and Cancel, and says how many were downloaded and checked,
+  how many came from the web archive's copy and which could not be downloaded. The manual then has a page per photo
+  ("Photo: Flight deck", after the overview): the photo as large as the page allows, JoyPro's numbered labels on top (a
+  box near the panel, a line to a dot on it), the numbered list below (the label's note or the catalog panel's first
+  sentence; a label that names a panel or grip leads to its page) and the photo's credit, licence and site. The photo
+  cards under "Photos" show the downloaded photos from this PC, without asking again. A variant with good pictures from
+  a game shows no photo page and no offer.
+- **On this PC**: `<data>\CockpitPhotos\<aircraft>\<view>-<sha12>.<ext>` with `index.json`, kept by the same store as the
+  device reference photos (`ReferencePhotoStore`, [device-reference.md](device-reference.md#reference-photos-on-this-pc)):
+  the original address first, checked against `sha256` (or one of `sha256Alt`); when it fails or sends other bytes, the
+  Wayback snapshot (`archive`, else the archive's newest capture), checked the same way; a photo the site changed and no
+  archive has is kept as it is now and reported ("its labels may not fit").
+- **Shipped**: only the addresses and JoyPro's labels. A Wikimedia Commons photo is recorded as its original file (the
+  same bytes everywhere and in the web archive; drawn at most 2800 px wide); only a file over 7.5 MB or 6000 px is
+  recorded as its 1920 px thumbnail. Wikimedia makes thumbnails in each of its data centres, and their bytes differ
+  from place to place (a check from Europe and the web archive's capture from America got different files of the same
+  size): such a download counts as changed, but the labels still fit, so the page only warns when the size differs.
+  Other photos (makers, press, museums) are only addresses. The labels are never drawn into a picture.
+
+The photo fields (in the aircraft's `photos`, besides `url`, `page`, `view`, `credit`, `license`, `variant`, `caption`):
+
+| Field | |
+|---|---|
+| `sha256` | the SHA-256 of the file at `url` (lower-case hex): makes the photo a verified one |
+| `sha256Alt` | further hashes of the same pixels (a site re-encoded the file) |
+| `archive` | its Wayback Machine snapshot (`https://web.archive.org/web/<time>id_/<url>`) |
+| `width`, `height` | its size in pixels when recorded |
+| `source` | `commons`, `maker`, `press` or `museum` |
+
+A photo with `variant` belongs to that variant (and its seats and the variants inheriting from it); one without is for
+every variant of the aircraft that needs photos.
+
+JoyPro's labels (`DB/Cockpits/photo-labels/<aircraft>.<sha12>.json`, one file per photo):
+
+```json
+{ "format": "joypro-cockpit-photo-labels", "version": 1, "aircraft": "a350",
+  "photo": { "url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/Airbus_A-350_XWB_F-WWYB_cockpit_view.jpg", "sha256": "f83162..." }, "title": "Flight deck",
+  "source": "JoyPro's labels, placed on the photo by looking at it (2026-10-31)",
+  "labels": [ { "n": 1, "text": "Glareshield: autopilot (FCU) and EFIS", "x": 0.70, "y": 0.215, "panel": "glareshield" },
+              { "n": 5, "text": "Nose wheel steering tiller", "x": 0.27, "y": 0.475,
+                "note": "A small hand wheel that steers the nose wheel while taxiing on the ground." } ] }
+```
+
+`x`, `y`: the point the label marks (0..1 of the photo from the top left); `panel`: a catalog panel id of the variant,
+or a grip (`stick`, `throttle`, a device name), or `overview`; `note`: one plain sentence for a label without a catalog
+panel text. `cockpits check` (`CockpitPhotos.Check`): a verified photo has its address, a SHA-256, its size, credit and
+licence; a fictional craft has no Commons photo; labels are numbered 1..N once, 1 to 60 characters, inside the photo,
+name a panel or grip the aircraft has, and belong to a verified photo of their aircraft.
+
+### Tools
+
+- `py -3 tools/cockpit_photos.py needed` (or `engine cockpits photos --needed [--game G]`): every variant without good
+  pictures from a game, why, and its verified photos.
+- `search <words>`: Wikimedia Commons files; `record <aircraft> <Commons file page or address> [--variant v] [--caption
+  text] [--thumb]`: downloads the photo once (the original, or the thumbnail as above; no EXIF rotation: JoyPro draws
+  the pixels as stored), records `url`, `sha256`, size,
+  credit and licence (from the Commons file page) and keeps the bytes in the private archive.
+- `panels <aircraft> [variant]`, `label <aircraft> <sha12> list | title <text> | add <n> <x> <y> <text> [--panel id]
+  [--note text] | move <n> <x> <y> | remove <n>`: the labels; `preview <aircraft> [variant] <sha12>` renders the photo
+  page (`engine cockpits render <aircraft> <variant> --page photo:<sha12> --photos <archive folder>`).
+- `check`: every verified photo alive / changed / dead, and for the others whether the snapshot has the recorded
+  content; `snapshots [--record] [--save-page-now] [--all]`: finds a Wayback snapshot with the recorded content (CDX,
+  matched by the digest of the private archive's copy without downloading the captures, then the captures compared,
+  then the availability API), records it as `archive`, and asks Save Page Now for the ones the archive does not have
+  yet (one request every 20 s; after "too many requests" it waits 5, then 10 minutes); `--all` also checks every
+  recorded snapshot against the recorded bytes and replaces one that has other bytes.
+- `engine cockpits render ... --page photos|photo|photo:<sha12> [--photos <folder>|none]`: the photo pages (default
+  folder: the GUI's downloads); `engine cockpits photos --verified`: the verified photos with their hashes and labels.
+
+### The private photo archive (maintainer)
+
+`tools\backup_cockpit_photos.ps1 [-Target <folder outside the repository>] [-Verified] [-Aircraft id] [-Refresh]`
+(default target `JOYPRO_COCKPIT_PHOTO_ARCHIVE`, else `..\JoyPro2-private\cockpit-photos`) keeps a copy of every linked
+photo, so that a photo whose address and snapshot are both gone can still be recovered and its labels checked: files by
+content (`sha256\<sha256>.<ext>`, where `cockpit_photos.py record` puts its downloads too) and `manifest.json` (one line
+per aircraft and address: aircraft, view, variant, url, page, credit, license, source, archive, origin (original /
+archive), changed, date, sha256, bytes, recordedSha256, file). A verified photo is checked against its hash and comes
+from its snapshot when the address fails. Incremental; neither the build nor the release reads it, and no archived file
+is ever published. Older backups (`<aircraft>\<view>-<sha12>.<ext>`) move into the content store on the next run.
+
+### First batch (2026-10-31)
+
+`cockpits photos --needed`: 178 variants without good pictures from a game: 122 fictional (film and series craft, Elite
+Dangerous, X4, No Man's Sky, Star Wars: Squadrons, VTOL VR, WARDOGS, Tiny Combat Arena: games JoyPro reads no pictures
+of, or no real cockpit), 56 real, plus the Star Citizen ships whose renders are rated low. 40 of them now have verified
+photos with labels (37 photos, 260 labels):
+
+- Airliners and civil: A350-900, A380-800, 777-300ER, 727-200 (and its flight engineer's station), ATR 72-600, Q400,
+  E175, E195, CRJ-700 / -900, Pitts S-2S, R44.
+- Helicopters: UH-1Y, OH-58A, CH-47D, UH-60M, NH90, SA 330 Puma.
+- Jets: Hawk T2 (Mk 127), MiG-31, Su-35S (exhibition stand), F-35A/B/C (mock-up), F-22A.
+- Spacecraft: Mercury, Gemini, Apollo CM and LM (simulator), Space Shuttle (forward and aft flight deck), Soyuz MS,
+  X-15, Crew Dragon (cabin mock-up), Buran.
+- Star Citizen (renders rated low; the maker's own pictures, address only): Vulture, Ares, Aurora.
+
+### Second batch (2026-11-01)
+
+- MH-60R / MH-60S (`uh-60`, variant `mh-60r-s`): 3 photos from Wikimedia Commons (U.S. Navy, public domain) with 15
+  labels: the MH-60S cockpit in flight (displays, standby instruments, keysets, centre and overhead consoles), the
+  MH-60R cockpit in flight over the Gulf of Alaska, and the MH-60R centre console with the stabilator and dipping-sonar
+  controls between the two keysets. Their web archive snapshots were made with Save Page Now (2026-11-01, see below).
+- Rafale (C, B, M, F4): Commons has no photo of a Rafale's cockpit panels (only people climbing in, the canopy from
+  outside, a HUD selfie and the Rafale A prototype), so none was added.
+- Star Citizen (Gladius, Carrack, Mercury Star Runner, C2 Hercules, Nomad, Defender): Commons has no picture of
+  their cockpits, so none was added; the Star Citizen Wiki stays a page link. Their render from the game stands where
+  the photo would be (below).
+- `snapshots --all --record --save-page-now` 2026-11-01: every one of the 40 verified photos has a pinned Wayback
+  snapshot with its recorded bytes. 37 had one, each checked by the CDX digest of the private archive's copy (all 37
+  kept); the 3 MH-60 photos had no capture, Save Page Now made one of each, and each was downloaded and compared with
+  the recorded SHA-256 before it was recorded. `CockpitPhotoTests.ShippedPhotos_AreVerifiedWithLabelsOnThePhoto` now
+  requires the snapshot of every verified photo.
+- `check` 2026-11-01: 40 of 40 verified photos alive with their recorded bytes; `cockpit_db.py check-links`: 950 of
+  980 addresses answer, 30 refuse programs (fandom.com pages), none fail.
+
+Still without a usable photo (Commons has no cockpit photo of a real one, and no maker or museum picture was found):
+SA342 Mistral, Rafale, Hawk T1 / Mk 100, Alpha Jet, J-10, MiG-25, Su-57, Yak-130, F-16 Block 30 / F-16D, Soyuz TM,
+Pe-2 series 87 (IL-2 set rated low).
+
+The Star Citizen Carrack, Nomad, Defender, C2 Hercules, Mercury Star Runner and Gladius have no real cockpit (no photo
+exists), but JoyPro renders each of them on the user's PC from Star Citizen's files, and the render stands where the
+photo would be (see [Photos](#photos)). Checked 2026-11-01 with the current reader (`engine cockpits pictures build
+--game StarCitizen`, rated by the quality gate): Gladius 100 (7 pictures: overview, stick, throttle, 4 panels), Carrack
+95 (overview, both sticks), Defender 100 (overview only: its dashboard model cannot be read and no stick or throttle is
+found by part name), Nomad 60 (overview, stick, throttle, overhead), Mercury Star Runner 100 (overview, yoke, 2 side
+panels), C2 Hercules 93 (the A2/C2/M2 Starlifter share one set: overview, yoke, 3 panels). Sets made before 2026-10-26
+(cabin and consoles not drawn yet) rated the Carrack, Nomad and Defender 0 and the Hercules 27, so their overview was
+left out; "Build pictures from my games" with the current version makes them again where the game was updated since,
+`engine cockpits pictures build --game StarCitizen --force` in any case.
 
 ## Licensing
 
@@ -769,6 +917,19 @@ grips with their HOTAS tables and numbered panels; `cockpits check` reports no p
 - `engine\tests\smoke\cockpits.ps1`: `cockpits check`, `list` with filters, `search`, `get` (JSON for the wizard,
   vocabulary and game actions), `render` (PNG), `compare` on a profile, `photos --coverage`.
 - `dotnet test gui/JoyPro.Gui.Tests --filter CockpitPicturePackTests`: the picture packs (below).
+- `CockpitPictureTests.Page_ShowsTheGameRender_WhereAPhoto_WouldBe_ForACraftOnlyAGameHas` and
+  `RenderInsteadOfPhoto_TakesTheOverview_ElseAGrip_OnlyAKeptPicture`: the Star Citizen Carrack gets its render as the
+  first card under "Photos" after "Build pictures from my games" (no question, no page link, the same render on the
+  manual's overview), also after answering the photo question; a real aircraft only when no photo address of the
+  variant is known; a picture the quality gate drops never stands in.
+- `dotnet test gui/JoyPro.Gui.Tests --filter CockpitPhotoTests`: the shipped verified photos and their labels, the
+  rules of `check` (a label off the photo, an unknown panel, a label file without its photo), "Download photos" against
+  a fake server (SHA-256 check, a changed photo from the web archive's copy, a dead one reported, Cancel, the consent,
+  the photo page afterwards), the photo page (every dot on its point, the boxes inside the photo and apart, the links,
+  the credit with author, licence and site) and no photo page where a game has good pictures. Opt-in render:
+  `JOYPRO_COCKPIT_PHOTO_RENDER=<out>`, `JOYPRO_COCKPIT_PHOTO_ARCHIVE=<archive>`, `JOYPRO_COCKPIT_PHOTO_AIRCRAFT=a350,uh-60:uh-60m`
+  (the Cockpits tab before and after the download, 1280 px and large, light and dark). Code:
+  `engine/DeviceReference/CockpitPhotos.cs`, `CockpitManualPages.PhotoPage`, `CockpitsViewModel.VerifiedPhotos.cs`.
 - `dotnet test gui/JoyPro.Gui.Tests --filter CockpitPictureQualityTests`: the quality gate (flat, black, empty, untextured,
   hidden controls, a grip too small in its frame, duplicates), a poor panel left out and a duplicate merged, the X-Plane
   static offsets, a low-quality set giving way to another game's set (also for the packs), the drawing mode showing the

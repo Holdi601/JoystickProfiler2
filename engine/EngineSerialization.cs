@@ -450,6 +450,9 @@ namespace JoyPro.Engine
 
             Dictionary<string, Relation> relations = new Dictionary<string, Relation>();
             Dictionary<string, Bind> binds = new Dictionary<string, Bind>();
+            // The action info the profile stored with its nodes (titles and categories per aircraft, the other games'
+            // inputs) is not part of the document: it is taken over from the profile's nodes of the same action.
+            Dictionary<string, RelationItem> storedInfo = CollectStoredActionInfo();
 
             for (int i = 0; i < doc.Relations.Count; i++)
             {
@@ -488,6 +491,7 @@ namespace JoyPro.Engine
                         InternalDataManagement.MigratePlanelessNodeAircraft(item);
                         item.AllInputs = new DCSInput[0];
                         item.OtherInputs = new OtherGameInput[0];
+                        RestoreStoredActionInfo(item, storedInfo, nodeDto);
                         relation.NODES.Add(item);
                     }
                 }
@@ -515,6 +519,78 @@ namespace JoyPro.Engine
             InternalDataManagement.ResyncBindsToMods();
             InternalDataManagement.ResyncRelations();
             InternalDataManagement.RecalcFigures();
+        }
+
+        private static string StoredActionKey(string game, string id)
+        {
+            return (string.IsNullOrWhiteSpace(game) ? "DCS" : game.Trim()) + "\n" + (id ?? string.Empty).Trim();
+        }
+
+        // Per action (game + id) the stored inputs of every node of the profile in memory, one entry per aircraft.
+        private static Dictionary<string, RelationItem> CollectStoredActionInfo()
+        {
+            Dictionary<string, RelationItem> stored = new Dictionary<string, RelationItem>(StringComparer.OrdinalIgnoreCase);
+            foreach (Relation relation in (InternalDataManagement.AllRelations ?? new Dictionary<string, Relation>()).Values)
+            {
+                if (relation == null || relation.NODES == null)
+                    continue;
+                foreach (RelationItem node in relation.NODES)
+                {
+                    if (node == null || string.IsNullOrWhiteSpace(node.ID))
+                        continue;
+                    bool hasDcs = node.AllInputs != null && node.AllInputs.Length > 0;
+                    bool hasOther = node.OtherInputs != null && node.OtherInputs.Length > 0;
+                    if (!hasDcs && !hasOther)
+                        continue;
+                    string key = StoredActionKey(node.Game, node.ID);
+                    RelationItem entry;
+                    if (!stored.TryGetValue(key, out entry))
+                    {
+                        entry = new RelationItem();
+                        stored[key] = entry;
+                    }
+                    if (hasDcs)
+                        entry.AllInputs = entry.AllInputs.Concat(node.AllInputs.Where(input => input != null &&
+                            !entry.AllInputs.Any(x => string.Equals((x.Plane ?? string.Empty).Trim(), (input.Plane ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase)))).ToArray();
+                    if (hasOther)
+                        entry.OtherInputs = entry.OtherInputs.Concat(node.OtherInputs.Where(input => input != null &&
+                            !entry.OtherInputs.Any(x => string.Equals((x.Plane ?? string.Empty).Trim(), (input.Plane ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase) &&
+                                                        string.Equals((x.Game ?? string.Empty).Trim(), (input.Game ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase)))).ToArray();
+                }
+            }
+            return stored;
+        }
+
+        // The imported node gets the stored inputs of its action; without any in the profile, the titles the document
+        // carries ("relations show" / "list --titles" output) become its stored inputs.
+        private static void RestoreStoredActionInfo(RelationItem item, Dictionary<string, RelationItem> stored, EngineRelationItemDto nodeDto)
+        {
+            RelationItem entry;
+            if (stored != null && stored.TryGetValue(StoredActionKey(item.Game, item.ID), out entry))
+            {
+                item.AllInputs = entry.AllInputs.Select(input => input.Copy()).ToArray();
+                item.OtherInputs = entry.OtherInputs.Select(input => input.Copy()).ToArray();
+                return;
+            }
+            if (nodeDto == null || nodeDto.StoredTitles == null || nodeDto.StoredTitles.Count == 0)
+                return;
+            bool dcs = string.Equals(item.Game, "DCS", StringComparison.OrdinalIgnoreCase);
+            List<DCSInput> dcsInputs = new List<DCSInput>();
+            List<OtherGameInput> otherInputs = new List<OtherGameInput>();
+            foreach (KeyValuePair<string, string> title in nodeDto.StoredTitles)
+            {
+                if (string.IsNullOrWhiteSpace(title.Key) || string.IsNullOrWhiteSpace(title.Value))
+                    continue;
+                string category;
+                if (nodeDto.StoredCategories == null || !nodeDto.StoredCategories.TryGetValue(title.Key, out category))
+                    category = string.Empty;
+                if (dcs)
+                    dcsInputs.Add(new DCSInput { ID = item.ID, Plane = title.Key.Trim(), Title = title.Value.Trim(), Cat = category ?? string.Empty });
+                else
+                    otherInputs.Add(new OtherGameInput { ID = item.ID, Game = item.Game, Plane = title.Key.Trim(), Title = title.Value.Trim(), Category = category ?? string.Empty });
+            }
+            item.AllInputs = dcsInputs.ToArray();
+            item.OtherInputs = otherInputs.ToArray();
         }
 
         public static void ImportBinds(EngineBindsDocument doc)

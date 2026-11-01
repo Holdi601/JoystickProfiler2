@@ -191,6 +191,27 @@ try {
     Assert-True ((@($koNukeJson.actions.rpc_yaw) -join ",") -eq "key_x/key_z,dev3_axis_t") "il2korea nuke must keep a device that is not connected and the keyboard."
     Assert-True (@($koNukeJson.actions.landing_lights).Count -eq 0 -and -not (@($koNukeJson.actions.gear_up) -contains "dev2_b3")) "il2korea nuke should clear the connected throttle the profile does not use."
     Assert-True ((@($koNukeJson.actions.gear) -contains "key_g")) "il2korea nuke must keep keyboard inputs."
+
+    # The device number known.devices.json gives the exported device is listed under "devices" by another device (the
+    # game gave the throttle number 3, which Old Pedals, not connected, still hold in the file's list; seen live with
+    # vJoy = 5 and a VKB stick listed as 5). The export lists the throttle under its number, and the import reads the
+    # number back as the throttle, as the game does once it saved the file.
+    $koShareDir = Join-Path $tempDir "il2korea-shared-number\\input"
+    New-Item -Path $koShareDir -ItemType Directory -Force | Out-Null
+    Copy-Item -Path (Join-Path $engineDir "tests\\fixtures\\il2korea\\input\\*") -Destination $koShareDir -Force
+    $koShareActions = Join-Path $koShareDir "general.actions"
+    $koShareKnown = Join-Path $koShareDir "known.devices.json"
+    [System.IO.File]::WriteAllText($koShareKnown, ([System.IO.File]::ReadAllText($koShareKnown) -replace '("66666666-7777-8888-0000000000009999": \{\s*"deviceId": )-1', '${1}3'), (New-Object System.Text.UTF8Encoding($false)))
+    Assert-True (([System.IO.File]::ReadAllText($koShareKnown) | ConvertFrom-Json).knownDevices."66666666-7777-8888-0000000000009999".deviceId -eq 3) "the shared-number fixture should give the throttle number 3."
+    $koShareProfile = Join-Path $tempDir "il2korea-shared-number.pr0file"
+    Run-Engine @("--profile", $koShareProfile, "relations", "add", "Korea Shared Gear", "--button", "--node", "IL2Korea:gear_up", "--device", $koThrottle, "--input", "JOY_BTN4", "--text") | Out-Null
+    $koShareExport = Run-Engine @("--profile", $koShareProfile, "il2korea", "export", $koShareActions, "--mode", "clean", "--text")
+    Assert-True ($koShareExport.ExitCode -eq 0) ("il2korea export with a shared device number failed: " + $koShareExport.Output)
+    $koShareJson = [System.IO.File]::ReadAllText($koShareActions) | ConvertFrom-Json
+    Assert-True ((@($koShareJson.actions.gear_up) -contains "dev3_b3")) "il2korea export should write the throttle's button under its number 3."
+    Assert-True (@($koShareJson.devices | Where-Object { $_.deviceId -eq 3 -and $_.ident -eq "abcd_0001" }).Count -eq 1 -and @($koShareJson.devices | Where-Object { $_.deviceId -eq 3 }).Count -eq 1) ("il2korea export should list the throttle (not Old Pedals) as device 3: " + ($koShareJson.devices | ConvertTo-Json -Compress))
+    $koShareScan = Run-Engine @("il2korea", "scan", $koShareActions, "--text")
+    Assert-Match $koShareScan.Output "gear_up <- Smoke Throttle \{66666666-7777-8888-9999-000000000000\} JOY_BTN4" ("il2korea import should read device 3 back as the throttle the file lists: " + $koShareScan.Output)
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices

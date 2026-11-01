@@ -130,6 +130,9 @@ binds for it stay in the profile. The GUI leaves it out of:
 - (2.5.0) the game chips of the Relations and Binds pages' filters (a tick on a hidden game is dropped), the catalog's
   games, the action search's results and game chips, the suggestions for a relation, and the HUD (a running hidden
   game is not looked for, the header never names it),
+- (2.6.0) the telemetry force feedback page's game list and the telemetry recording game list (Settings): a hidden
+  game is not shown there and not looked for, so neither JoyPro.Ffb nor a recording starts for it; its settings stay in
+  the config files and come back with **Show again**,
 - the "not installed" hints. **Settings > Games is the one place that shows them again**: its "Hidden games" list has
   **Show again** for each. The Start page only says how many are hidden, with a button to that list.
 
@@ -137,7 +140,7 @@ Your link and config location are kept; **Show again** (or `engine games install
 
 ## Portable installs and other drives
 
-A linked folder is the game's installation everywhere: import, export, scan, DB refresh (also the headless DCS refresh and the catalog refreshes that read the installation), backups and the config paths of games that keep their controls in the installation. Detection never replaces it: as long as the link is set, the game's installation is that folder and nothing else (only MSFS's catalog refresh also reads the package folders it finds next to it), also when the folder is gone (the game then shows "The folder you set does not exist (any more)" and stays blocked until you link it again or press **Use detected**). The GUI's own DCS and Star Citizen paths (Saved Games, install folder, profile folder) follow the link and the config location too.
+A linked folder is the game's installation everywhere: import, export, scan, DB refresh (also the headless DCS refresh and the catalog refreshes that read the installation), backups and the config paths of games that keep their controls in the installation. Detection never replaces it: as long as the link is set, the game's installation is that folder and nothing else (only MSFS's catalog refresh also reads the package folders it finds next to it), also when the folder is gone (the game then shows "The folder you set does not exist (any more)" and stays blocked until you link it again or press **Use detected**). The GUI's own DCS and Star Citizen paths (Saved Games, install folder, profile folder) follow the link and the config location too. With both `Saved Games\DCS` and `Saved Games\DCS.openbeta` on the PC, the DCS folder (export, import, defaults) is the one of the installed DCS (`DCS.openbeta` for an OpenBeta install, from its `dcs_variant.txt` or folder name) when the other one holds no binds; a folder you set by hand stays.
 
 ## How a game is found
 

@@ -16,13 +16,15 @@ namespace JoyPro.Engine
     //                                                                 sample-hz, keep-raw, session-timeout; --game: enabled
     //   telemetry sessions [--game G] [--folder F]                    recorded sessions, newest first
     //   telemetry show <session> [--folder F]                         one session: facts and channels
-    //   telemetry export <session> --format acmi|acmi-zip|csv [--out P] [--max-hz N] [--no-per-channel] [--folder F]
+    //   telemetry export <session> --format acmi|acmi-zip|csv [--to P] [--max-hz N] [--no-per-channel] [--folder F]
     //   telemetry preview <session> [--channel KEY]... [--points N]   a few channels reduced for a timeline
-    //   telemetry delete <session>... [--folder F]
-    //   telemetry recover [--folder F]                                finish sessions cut off by a crash
-    //   telemetry prune [--folder F]                                  apply the retention settings now
+    //   telemetry delete <session>... [--folder F]                   (alias: remove)
+    //   telemetry recover [--folder F]                                finish sessions cut off by a crash; exit 1 on a problem
+    //   telemetry prune [--folder F]                                  apply the retention settings now; exit 1 on a problem
     //   telemetry record --game G [--seconds N] [--folder F] [--sample-hz N] [--no-raw] [--no-game-check]
-    //       records now, also when the settings say off (runs JoyPro.Ffb record; Ctrl+C ends it)
+    //       records now, also when the settings say off (runs JoyPro.Ffb record); it ends after --seconds, with Ctrl+C
+    //       or when the game exits (--no-game-check: the game is not watched)
+    // telemetry sessions has the alias list.
     // <session> = a path, a file name in the folder, "latest" or a number of the list (1 = newest).
     // Settings: <data>\Telemetry\telemetry-recording.json (data = JOYPRO_DATA_DIR or %LOCALAPPDATA%\JoyPro2), the format
     // gui/JoyPro.Ffb.Core/Telemetry/Recording/TelemetryRecordingConfig.cs reads. Everything stays on this PC.
@@ -69,7 +71,8 @@ namespace JoyPro.Engine
                         EmitPayload(textOutput
                             ? "Finished " + done.Count.ToString(CultureInfo.InvariantCulture) + " session(s) that were cut off." + string.Concat(done.Select(d => Environment.NewLine + "  " + d)) + string.Concat(problems.Select(p => Environment.NewLine + "  problem: " + p))
                             : EngineSerialization.ToJson(new { Folder = folder, Recovered = done, Problems = problems }), outPath);
-                        return 0;
+                        // A session that could not be read or finished: exit code 1 (the others are done).
+                        return problems.Count == 0 ? 0 : 1;
                     }
                     case "prune":
                     {
@@ -80,9 +83,10 @@ namespace JoyPro.Engine
                         List<string> problems = new List<string>();
                         List<string> deleted = TelemetrySessionStore.Prune(folder, maxBytes, keepDays, DateTime.UtcNow, problems);
                         EmitPayload(textOutput
-                            ? "Deleted " + deleted.Count.ToString(CultureInfo.InvariantCulture) + " session(s) (size cap " + (maxBytes == 0 ? "none" : TelemetrySessionStore.FormatSize(maxBytes)) + ", keep days " + (keepDays == 0 ? "no limit" : keepDays.ToString(CultureInfo.InvariantCulture)) + ")." + string.Concat(deleted.Select(d => Environment.NewLine + "  " + d))
+                            ? "Deleted " + deleted.Count.ToString(CultureInfo.InvariantCulture) + " session(s) (size cap " + (maxBytes == 0 ? "none" : TelemetrySessionStore.FormatSize(maxBytes)) + ", keep days " + (keepDays == 0 ? "no limit" : keepDays.ToString(CultureInfo.InvariantCulture)) + ")." + string.Concat(deleted.Select(d => Environment.NewLine + "  " + d)) + string.Concat(problems.Select(p => Environment.NewLine + "  problem: " + p))
                             : EngineSerialization.ToJson(new { Folder = folder, Deleted = deleted, Problems = problems }), outPath);
-                        return 0;
+                        // A session that could not be read or deleted: exit code 1.
+                        return problems.Count == 0 ? 0 : 1;
                     }
                     case "record":
                         return RecordTelemetry(args, folderOption);

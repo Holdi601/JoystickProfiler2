@@ -85,7 +85,7 @@
                     </Grid>
                     <!-- Pictures from the user's own games (made on this PC, never shipped) -->
                     <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10,6">
-                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto,Auto" RowSpacing="4">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="4">
                             <TextBlock Text="{Binding PicturesStatus}" TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.85" />
                             <ComboBox Grid.Column="1" ItemsSource="{Binding PictureModes}" SelectedIndex="{Binding PictureModeIndex}" MinWidth="200"
                                       IsVisible="{Binding HasGamePictures}" VerticalAlignment="Center"
@@ -141,6 +141,24 @@
                                         </ItemsControl>
                                     </StackPanel>
                                 </Expander>
+                            </StackPanel>
+                            <!-- Photos of cockpits no game has (CockpitsViewModel.VerifiedPhotos.cs): one click downloads every
+                                 photo of the aircraft (checked, with the web archive's copy as the fallback); the manual then
+                                 shows a page per photo with JoyPro's labels on top. -->
+                            <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Spacing="6" IsVisible="{Binding HasVerifiedPhotos}">
+                                <Border IsVisible="{Binding HasPhotoOffer}" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,8">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                        <TextBlock Text="{Binding PhotoOfferText}" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                        <Button Grid.Column="1" Classes="accent" Content="{l:T 'Download photos'}" Command="{Binding DownloadPhotosCommand}" VerticalAlignment="Center"
+                                                ToolTip.Tip="{l:T 'Downloads every photo of this cockpit from its original address (or the web archive\'s copy), checks each against JoyPro\'s record and keeps it on this PC'}" />
+                                    </Grid>
+                                </Border>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="2" IsVisible="{Binding IsDownloadingPhotos}">
+                                    <ProgressBar Value="{Binding PhotoProgress}" Minimum="0" Maximum="100" Height="8" VerticalAlignment="Center" />
+                                    <Button Grid.Column="1" Grid.RowSpan="2" Classes="small" Content="{l:T 'Cancel'}" Command="{Binding CancelPhotoDownloadCommand}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1" Text="{Binding PhotoProgressText}" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.8" TextWrapping="Wrap" />
+                                </Grid>
+                                <TextBlock Text="{Binding PhotoDownloadStatus}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Opacity="0.85" IsVisible="{Binding PhotoDownloadStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -300,8 +318,8 @@
                         </ItemsControl>
                     </Expander>
 
-                    <!-- Real photos: only links, loaded after the user's yes -->
-                    <Expander Header="{Binding PhotoHeader}" IsExpanded="True" HorizontalAlignment="Stretch" IsVisible="{Binding HasPhotos}">
+                    <!-- Real photos: only links, loaded after the user's yes; a craft only a game has shows its render from the game here -->
+                    <Expander Header="{Binding PhotoHeader}" IsExpanded="True" HorizontalAlignment="Stretch" IsVisible="{Binding HasPhotoArea}">
                         <StackPanel Spacing="8">
                             <Border IsVisible="{Binding AskPhotos}" Background="{DynamicResource JP.AccentSoftBrush}" BorderBrush="{DynamicResource JP.AccentBrush}" BorderThickness="1" CornerRadius="8" Padding="10,8">
                                 <StackPanel Spacing="8">
@@ -336,7 +354,7 @@
                                                     <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Try again'}" Command="{Binding TryAgainCommand}" IsVisible="{Binding Failed}" />
                                                     <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Open the photo'}" Command="{Binding OpenPhotoCommand}" IsVisible="{Binding HasPhoto}"
                                                             ToolTip.Tip="{l:T 'Opens the photo itself in your browser (full size, to save it from there)'}" />
-                                                    <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Open the page'}" Command="{Binding OpenPageCommand}" />
+                                                    <Button Classes="small" Margin="0,0,6,4" Content="{l:T 'Open the page'}" Command="{Binding OpenPageCommand}" IsVisible="{Binding CanOpenPage}" />
                                                 </WrapPanel>
                                             </StackPanel>
                                         </Border>

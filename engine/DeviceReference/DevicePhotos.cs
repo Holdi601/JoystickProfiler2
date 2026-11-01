@@ -25,6 +25,10 @@ namespace JoyPro.DeviceReference
         public string Page = string.Empty;
         // Lower-case hex SHA-256 of the photo file; empty = not fetched by a maintainer yet (no curated positions).
         public string Sha256 = string.Empty;
+        // Further SHA-256 values of the same picture: files a shop re-encoded with exactly the same pixels (checked by
+        // decoding both, tools/device_photo_links.py same-pixels). A download with one of them counts as the photo on
+        // record; Sha256 stays its identity (curated positions and drawings are keyed by it).
+        public List<string> Sha256Alt = new List<string>();
         public string Confidence = string.Empty;
         // The parts (vocabulary ids without direction: "stick.hat.tms") this view shows; empty = not recorded.
         public List<string> Shows = new List<string>();
@@ -70,10 +74,20 @@ namespace JoyPro.DeviceReference
             }
         }
 
+        // Whether a file with this SHA-256 is the photo on record (no hash recorded: any content).
+        public bool HasContent(string sha256)
+        {
+            string sha = (sha256 ?? string.Empty).Trim().ToLowerInvariant();
+            if (Sha256.Length == 0)
+                return true;
+            return sha == Sha256 || Sha256Alt.Contains(sha);
+        }
+
         public DevicePhoto Clone()
         {
             DevicePhoto copy = (DevicePhoto)MemberwiseClone();
             copy.Shows = new List<string>(Shows);
+            copy.Sha256Alt = new List<string>(Sha256Alt);
             return copy;
         }
     }
@@ -379,6 +393,7 @@ namespace JoyPro.DeviceReference
             if (int.TryParse(DeviceCatalog.Text(item, "height"), NumberStyles.Integer, CultureInfo.InvariantCulture, out size) && size > 0)
                 photo.Height = size;
             photo.Shows.AddRange(DeviceCatalog.Strings(item, "shows").Where(s => s.Trim().Length > 0).Select(s => s.Trim()));
+            photo.Sha256Alt.AddRange(DeviceCatalog.Strings(item, "sha256Alt").Select(s => s.Trim().ToLowerInvariant()).Where(s => s.Length > 0 && s != photo.Sha256).Distinct());
             return photo;
         }
 
@@ -392,6 +407,8 @@ namespace JoyPro.DeviceReference
                 item["page"] = photo.Page;
             if (photo.Sha256.Length > 0)
                 item["sha256"] = photo.Sha256;
+            if (photo.Sha256Alt.Count > 0)
+                item["sha256Alt"] = photo.Sha256Alt.Cast<object>().ToList();
             if (photo.Confidence.Length > 0)
                 item["confidence"] = photo.Confidence;
             if (photo.Shows.Count > 0)
@@ -567,6 +584,10 @@ namespace JoyPro.DeviceReference
                         problems.Add(model.Id + ": not a web archive address: " + photo.Archive);
                     if (photo.Sha256.Length > 0 && (photo.Sha256.Length != 64 || photo.Sha256.Any(c => !Uri.IsHexDigit(c))))
                         problems.Add(model.Id + ": not a SHA-256: " + photo.Sha256);
+                    foreach (string alt in photo.Sha256Alt.Where(a => a.Length != 64 || a.Any(c => !Uri.IsHexDigit(c))))
+                        problems.Add(model.Id + ": not a SHA-256 (sha256Alt): " + alt);
+                    if (photo.Sha256Alt.Count > 0 && photo.Sha256.Length == 0)
+                        problems.Add(model.Id + ": sha256Alt without sha256: " + photo.Url);
                 }
             }
             if (count < minimumPhotos)

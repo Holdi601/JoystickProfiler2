@@ -54,6 +54,49 @@ internal static class Native
     public static extern unsafe uint WaitForMultipleObjects(uint count, IntPtr* handles, bool waitAll, uint milliseconds);
 
     [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern uint WaitForSingleObject(IntPtr handle, uint milliseconds);
+
+    public const uint ThreadQueryLimitedInformation = 0x0800;
+
+    [DllImport("kernel32.dll")]
+    public static extern uint GetCurrentThreadId();
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern IntPtr OpenThread(uint access, bool inherit, uint threadId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool QueryThreadCycleTime(IntPtr thread, out ulong cycles);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool QueryProcessCycleTime(IntPtr process, out ulong cycles);
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr GetCurrentProcess();
+
+    /// <summary>
+    /// Processor cycles per millisecond (the nominal clock, the rate of the invariant time stamp counter that the cycle
+    /// times count), 0 when unknown. Windows' process times are sampled at the clock tick (15.6 ms): a thread that runs
+    /// for microseconds hundreds of times a second is charged at random, so short measurements of the forwarder were
+    /// off by +-0.5 % of a core. Cycle times are exact.
+    /// </summary>
+    public static readonly double CyclesPerMs = ReadCyclesPerMs();
+
+    private static double ReadCyclesPerMs()
+    {
+        try
+        {
+            return Microsoft.Win32.Registry.GetValue(@"HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0", "~MHz", 0) is int mhz && mhz > 0 ? mhz * 1000.0 : 0;
+        }
+        catch (Exception ex) when (ex is System.Security.SecurityException or IOException or UnauthorizedAccessException)
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>CPU time of the process from its cycle counter in ms, -1 when unknown.</summary>
+    public static long ProcessCycleMs() => CyclesPerMs > 0 && QueryProcessCycleTime(GetCurrentProcess(), out var cycles) ? (long)(cycles / CyclesPerMs) : -1;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
     public static extern IntPtr CreateWaitableTimerExW(IntPtr attributes, IntPtr name, uint flags, uint access);
 
     [DllImport("kernel32.dll", SetLastError = true)]

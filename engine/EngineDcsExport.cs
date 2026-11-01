@@ -143,7 +143,7 @@ namespace JoyPro.Engine
             if (mode == EngineDcsExportMode.MergeOverwrite)
             {
                 ReportStatus(effectiveOptions, "Taking the profile's actions off their other buttons in the exported aircraft.");
-                RemoveOtherButtonsElsewhere(result.InputPath, generatedPayloads, profileActions, effectiveOptions, cleanProfiles, result);
+                RemoveOtherButtonsElsewhere(result.InputPath, generatedPayloads, profileActions, effectiveOptions, cleanProfiles, ConnectedJoysticks(result), result);
             }
 
             // Clean touches only the exported aircraft (2.5.0). Only on request ("clean all aircraft", off by default)
@@ -1437,9 +1437,7 @@ namespace JoyPro.Engine
         {
             try
             {
-                Directory.CreateDirectory(outputDirectory);
-                GameBackups.Protect(filePath, result.Warnings);
-                RunFileCache.WriteAllText(filePath, RenderDiffLua(payload, includeBackupMetadata));
+                WriteGameFile(outputDirectory, filePath, RenderDiffLua(payload, includeBackupMetadata), result);
                 result.FilesWritten++;
                 if (includeBackupMetadata)
                     result.BackupFilesWritten++;
@@ -1620,9 +1618,7 @@ namespace JoyPro.Engine
         {
             try
             {
-                Directory.CreateDirectory(outputDirectory);
-                GameBackups.Protect(filePath, result.Warnings);
-                RunFileCache.WriteAllText(filePath, RenderModifiersLua(modifiers));
+                WriteGameFile(outputDirectory, filePath, RenderModifiersLua(modifiers), result);
                 result.FilesWritten++;
                 result.WrittenFiles.Add(filePath);
             }
@@ -1630,6 +1626,23 @@ namespace JoyPro.Engine
             {
                 result.Errors.Add("Failed writing file '" + filePath + "': " + ex.Message);
             }
+        }
+
+        // Writes a file of the input folder (backed up first). A file that already holds exactly these bytes is left as it
+        // is: no backup copy, no write, its time stamp stays. A re-export rewrites most files with what they already have
+        // (on a big Saved Games folder 4 of 5 files), and the backup copy of each was most of the export's time. It still
+        // counts as written (the result lists every file the export manages), and the run keeps its backup set, so "Undo
+        // last export" undoes this export (nothing to put back when it changed nothing), never an older one.
+        private static void WriteGameFile(string outputDirectory, string filePath, string text, EngineDcsExportResult result)
+        {
+            if (RunFileCache.Holds(filePath, text))
+            {
+                GameBackups.KeepRunSet();
+                return;
+            }
+            Directory.CreateDirectory(outputDirectory);
+            GameBackups.Protect(filePath, result.Warnings);
+            RunFileCache.WriteAllText(filePath, text);
         }
 
         private static string RenderModifiersLua(Dictionary<string, ModifierPayload> modifiers)

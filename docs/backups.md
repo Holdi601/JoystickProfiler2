@@ -18,6 +18,9 @@ break after an export, restore the set from before that export.
   copies plus `manifest.json` with the original paths. `JOYPRO_DATA_DIR` moves the folder (tests).
 - Files the export created (for example a new DCS `.diff.lua`) are recorded as "did not exist"; a restore removes
   them again.
+- A DCS file the export would write with exactly the bytes it already has is left alone (no copy, its time stamp
+  stays). An export that changed nothing still gets its (empty) set, so "Undo last export" never goes back to an older
+  export.
 - Games that keep their controls in the registry (Nuclear Option: `HKCU\Software\Shockfront\NuclearOption`) get a
   snapshot of the values JoyPro may change (`registry\NNNN_<key>.json` in the set: Player0's Rewired controller maps).
   A restore writes those values back and removes controller-map values the export added; other values of the key

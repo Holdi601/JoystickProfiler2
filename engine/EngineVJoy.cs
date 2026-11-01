@@ -62,7 +62,54 @@ namespace JoyPro.Engine
                     }
                 }
             }
+            ApplyTunnel(settings);
             return settings;
+        }
+
+        // The vJoy device JoyPro tunnels into (Settings, --vjoy-tunnel) is the first vJoy device virtual mode writes:
+        // the table, the function outputs, the forwarder and the exports start there, and imports leave it out for
+        // native games. One source of truth: the tunnel moves the range's start (saved with the next change).
+        public static void ApplyTunnel(VJoySettings settings)
+        {
+            if (settings == null || VJoyTunnel.Instance <= 0)
+                return;
+            settings.FirstDevice = VJoyTunnel.Instance;
+            if (settings.LastDevice < settings.FirstDevice)
+                settings.LastDevice = settings.FirstDevice;
+        }
+
+        // The DirectInput name of the first vJoy device virtual mode writes (the tunnel device), empty when not there.
+        public static string OwnVJoyDeviceName()
+        {
+            try
+            {
+                VJoySettings settings = LoadSettings();
+                return ScanDevices(null, ReadVJoyDevices()).NameOf(settings.FirstDevice) ?? string.Empty;
+            }
+            catch (Exception ex) when (ex is IOException || ex is InvalidOperationException || ex is UnauthorizedAccessException)
+            {
+                return string.Empty;
+            }
+        }
+
+        // Where the tunnel setting and the devices virtual mode writes disagree, in plain words.
+        public static List<string> TunnelWarnings(VJoySettings settings, IEnumerable<int> devicesWritten)
+        {
+            List<string> warnings = new List<string>();
+            List<int> written = (devicesWritten ?? Enumerable.Empty<int>()).Distinct().OrderBy(d => d).ToList();
+            if (written.Count == 0)
+                return warnings;
+            if (VJoyTunnel.Instance <= 0)
+            {
+                warnings.Add("Virtual mode writes vJoy " + string.Join(", ", written) + ", but Settings names no \"vJoy device JoyPro tunnels into\": imports of games in native mode read " +
+                             (written.Count == 1 ? "that device" : "those devices") + " like any other. Choose vJoy " + written[0].ToString(CultureInfo.InvariantCulture) + " there.");
+                return warnings;
+            }
+            List<int> others = written.Where(d => d != VJoyTunnel.Instance).ToList();
+            if (others.Count > 0)
+                warnings.Add("The table needs more than one vJoy device (vJoy " + string.Join(", ", others) + " besides vJoy " + VJoyTunnel.Instance.ToString(CultureInfo.InvariantCulture) +
+                             "); only vJoy " + VJoyTunnel.Instance.ToString(CultureInfo.InvariantCulture) + " is left out of imports of native games, the others are read like any device.");
+            return warnings;
         }
 
         public static void SaveSettings(VJoySettings settings)
@@ -1782,6 +1829,8 @@ namespace JoyPro.Engine
             }
             if (string.IsNullOrWhiteSpace(gameId) || string.IsNullOrWhiteSpace(InternalDataManagement.VirtualJoystickConfig))
                 return GameScope.None();
+            // The tunnel device is left out of imports of native games only (VJoyTunnel.VirtualGame).
+            VJoyTunnel.VirtualGame = LoadSettings().IsAnyVirtual(gameId);
             return GameScope.Begin(gameId, action);
         }
 
@@ -1796,7 +1845,12 @@ namespace JoyPro.Engine
                 string sub = command.Count > 1 ? (command[1] ?? string.Empty).Trim().ToLowerInvariant() : "list";
                 return !dry && (sub == "add" || sub == "set" || sub == "remove");
             }
-            return !dry && (action == "mode" || action == "map" || action == "settings");
+            if (action == "modes")
+            {
+                string sub = command.Count > 1 ? (command[1] ?? string.Empty).Trim().ToLowerInvariant() : "list";
+                return !dry && sub != "list";
+            }
+            return !dry && (action == "mode" || action == "map" || action == "settings" || action == "import-gremlin");
         }
 
         public static int Run(List<string> command, bool textOutput, out string payload)
@@ -1824,6 +1878,10 @@ namespace JoyPro.Engine
                         return ForwarderConfig(args, textOutput, out payload);
                     case "functions":
                         return FunctionsCommand(args, textOutput, out payload);
+                    case "modes":
+                        return ModesCommand(args, textOutput, out payload);
+                    case "import-gremlin":
+                        return ImportGremlinCommand(args, textOutput, out payload);
                     case "limits":
                         return LimitsCommand(args, textOutput, out payload);
                     case "configure-vjoy":
@@ -1839,7 +1897,7 @@ namespace JoyPro.Engine
                     case "elevated-run":
                         return RunElevatedHelper(args);
                     default:
-                        payload = "Unknown vjoy action: " + action + ". Use status, mode, plan, map, settings, exe, functions, limits, forwarder-config, configure-vjoy, apply-hidhide, restore-hidhide or recover.";
+                        payload = "Unknown vjoy action: " + action + ". Use status, mode, plan, map, settings, exe, functions, modes, import-gremlin, limits, forwarder-config, configure-vjoy, apply-hidhide, restore-hidhide or recover.";
                         return 1;
                 }
             }
@@ -1951,7 +2009,10 @@ namespace JoyPro.Engine
                     { "DeviceLimitNote", DeviceLimit(id) == null ? string.Empty : DeviceLimit(id).DeviceLimitNote ?? string.Empty },
                     { "InputLimit", LimitItem(id) },
                     { "LimitWarnings", gameLimitWarnings },
-                    { "Functions", settings.Functions != null && settings.Functions.ContainsKey(id) ? settings.Functions[id].Count : 0 }
+                    { "Functions", settings.Functions != null && settings.Functions.ContainsKey(id) ? settings.Functions[id].Count : 0 },
+                    // The game's modes (layers) of its virtual functions.
+                    { "Modes", settings.ModesOf(id) == null ? new List<VfMode>() : settings.ModesOf(id).Modes },
+                    { "StartMode", settings.ModesOf(id) == null ? string.Empty : settings.ModesOf(id).Start }
                 });
             }
 
@@ -2102,6 +2163,7 @@ namespace JoyPro.Engine
                         { "InverseOn", hidState.InverseOn },
                         { "Devices", hidState.Devices },
                         { "Apps", hidState.Apps },
+                        { "UnnamedApps", hidState.UnnamedApps },
                         { "Unreadable", hidState.UnknownParts() },
                         { "ReadProblems", hidRead.Problems }
                     }
@@ -2111,6 +2173,8 @@ namespace JoyPro.Engine
                     {
                         { "FirstDevice", settings.FirstDevice },
                         { "LastDevice", settings.LastDevice },
+                        { "TunnelDevice", VJoyTunnel.Instance },
+                        { "TunnelWarnings", TunnelWarnings(settings, plan.Slots.Select(s => s.Device).Concat(plan.FunctionTargets.Select(f => f.Device))) },
                         { "AutoStart", settings.AutoStart },
                         { "HideDevices", settings.HideDevices }
                     }
@@ -2155,7 +2219,8 @@ namespace JoyPro.Engine
                   ", cloaking " + (unreadable.Contains("cloaking state") ? "unknown" : (bool)hid["CloakOn"] ? "on" : "off") +
                   ", " + (unreadable.Contains("inverse mode") ? "inverse mode unknown" : (bool)hid["InverseOn"] ? "inverse (block list)" : "allow list") +
                   ", " + (unreadable.Contains("hidden devices") ? "hidden devices unknown" : ((List<string>)hid["Devices"]).Count + " hidden device(s)") +
-                  ", " + (unreadable.Contains("program list") ? "programs unknown" : ((List<string>)hid["Apps"]).Count + " program(s)")
+                  ", " + (unreadable.Contains("program list") ? "programs unknown" : ((List<string>)hid["Apps"]).Count + " program(s)" +
+                      ((int)hid["UnnamedApps"] > 0 ? " (+" + hid["UnnamedApps"] + " HidHide cannot name)" : string.Empty))
                 : "not installed"));
             foreach (string problem in (List<string>)hid["ReadProblems"])
                 sb.AppendLine("  not read: " + problem);
@@ -2506,8 +2571,11 @@ namespace JoyPro.Engine
                 .Where(f => settings.IsVirtual(f.Key) || (string.Equals(f.Key, xboxGame, StringComparison.OrdinalIgnoreCase) && settings.IsXbox(f.Key)))
                 .Select(f => new KeyValuePair<string, VirtualFunction>(f.Key, f.Value.Clone()))
                 .ToList();
+            // A vJoy output without a device goes to the first device virtual mode writes (the tunnel device).
+            foreach (VfOutput output in functions.SelectMany(f => f.Value.Outputs).Where(o => o.VJoyDevice <= 0 && o.Target.Length > 0 && !o.Target.StartsWith("XB_", StringComparison.OrdinalIgnoreCase) && !o.Target.StartsWith("KEY_", StringComparison.OrdinalIgnoreCase)))
+                output.VJoyDevice = settings.FirstDevice;
             List<string> sources = vjoySlots.Select(s => s.Source).Concat(xboxSlots.Select(s => s.Source))
-                .Concat(functions.SelectMany(f => f.Value.Inputs).Where(i => i.Device.Length > 0 && i.Input.Length > 0).Select(i => i.Device))
+                .Concat(functions.SelectMany(f => f.Value.Inputs).Where(i => i.Device.Length > 0 && i.Input.Length > 0 && !VfChain.IsChain(i)).Select(i => i.Device))
                 .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(s => s, StringComparer.OrdinalIgnoreCase).ToList();
             List<int> vjoyDeviceIds = vjoySlots.Select(s => s.Device)
                 .Concat(functions.Where(f => settings.IsVirtual(f.Key)).SelectMany(f => VfResolver.VJoyTargets(f.Value)).Select(t => t.Key))
@@ -2516,8 +2584,9 @@ namespace JoyPro.Engine
             foreach (KeyValuePair<string, VirtualFunction> entry in functions)
             {
                 VirtualFunction function = entry.Value;
+                function.Group = entry.Key;
                 FillShiftBase(function, settings.IsXbox(entry.Key) ? xboxSlots : vjoySlots, settings.IsXbox(entry.Key));
-                List<string> problems = VirtualFunctionCatalog.Validate(function).Where(p => !p.EndsWith("no input chosen.", StringComparison.Ordinal)).ToList();
+                List<string> problems = FunctionProblems(settings, entry.Key, function).Where(p => !p.EndsWith("no input chosen.", StringComparison.Ordinal)).ToList();
                 problems.AddRange(VfResolver.Resolve(function, sources, vjoyDeviceIds));
                 functionWarnings.AddRange(problems.Select(p => VJoyPlanner.VJoyFunctionLabel(entry.Key, function, null) + ": " + p));
                 resolved.Add(function);
@@ -2569,7 +2638,9 @@ namespace JoyPro.Engine
                 { "virtualGames", settings.VirtualGames() },
                 { "xboxGame", xboxGame },
                 { "xbox", xbox },
-                { "functions", resolved }
+                { "functions", resolved },
+                // The mode sets of the games whose functions run (Group = game id).
+                { "modes", functions.Select(f => f.Key).Distinct(StringComparer.OrdinalIgnoreCase).Select(settings.ModesOf).Where(m => m != null).ToList() }
             };
             string json = EngineSerialization.ToJson(config);
             if (string.IsNullOrWhiteSpace(outPath))

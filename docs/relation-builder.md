@@ -101,6 +101,12 @@ are; ticks that would show nothing are dimmed. Under the bar the active filters 
 clears them. The relations are filter subjects built once per list, so a filter change is set lookups: on the user's
 profile with 524 relations and 3 300 actions a change takes a few milliseconds (the journey test checks < 300 ms).
 
+On the Relations page the whole block (filters, bound / axes switches, chips, sort and the search scope box) folds up
+under **Filters** (2.6.0; at 1280x800 it took a third of the narrow pane's height). Folded, the line under the header
+says what is on: the active filters, the search scope when it is not "Name + actions", the sort when it is not by name,
+and `n of 524 shown` (`No filters · 524 in all` when nothing is on). Open / folded is remembered
+(`list-preferences.json` `RelationFiltersOpen`, open by default; `MainWindowViewModel.RelationFilterPanel.cs`).
+
 ## Browse the catalog
 
 `Open catalog` (next to the search) or the `Catalog` tab: not what a search finds, but everything a game or an aircraft
@@ -112,7 +118,8 @@ how many of its actions your relations use, and ticks all of its rows with its b
 relation`, `in '<relation>'` and, when that relation is bound, `bound: WarBRD · BTN 8`. `Only free` hides what is used,
 the filter box opens the categories with a match. Ticked actions go in with `Add selected (n)` (or `Create relation
 with n actions`); a DCS action takes its ticked aircraft (the browsed one; its aircraft selector adds more with the same
-meaning). The open relation's kind decides what is listed (an axis relation: only axes).
+meaning). The open relation's kind decides what is listed (an axis relation: only axes). The list builds only the rows in view, so a filter or
+`Open all` on a big aircraft (the F-4E has 1635 actions) stays instant.
 
 **Sort** (the catalog and the search results have the same sort bar as the Relations and Binds lists,
 `ListSortViewModel.ForActions`, remembered as `catalog` / `action-search`): game, aircraft, category, title, axis /
@@ -174,8 +181,17 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    game and aircraft (`engine relations search "<words>" [--axis|--button] [--plane ...] --limit 400`). The engine knows
    synonyms: `throttle` also finds thrust and the helicopter collective, `flare` the countermeasure dispense switches.
 3. The rows come grouped by game (`DCS · 48 actions`), each with a tick box, the title (the words you typed marked),
-   the aircraft, the kind, why it was found ("same function: Throttle") and `also in '<relation>'` when another
-   relation uses it. Each game's **main control** of the function comes first, marked `main control`; a title that
+   the aircraft, the kind, why it was found ("same function: Throttle") and one tag when other relations have it
+   switched on (for at least one of its aircraft; the engine's `InRelations` without the open relation; the same tag on
+   the suggestions, from their `InOtherRelations`): none, `in
+   '<relation>'` (a click opens it) or `in 3 relations` (a click lists them under the row, a name opens that relation).
+   The search stays; **Back to '<relation>'** above the opened relation's name (and the header's Back, Alt+Left)
+   returns to the relation and its search as they were (`builder-search` in the navigation entry). Actions already in
+   the open relation are not shown at their rank: greyed, without a tick box, in a group **Already in this relation** at
+   the bottom of every list (by game, by function, with game chips, after Show more, with or without the aircraft
+   filter); Tick all shown and Add selected leave them out, and the header counts only what can be added (`10 actions
+   in 1 game + 1 already in this relation`). Only the rows in view are built (a virtualizing list): a search over every
+   game lists up to 160 rows. Each game's **main control** of the function comes first, marked `main control`; a title that
    does not name the function says it: `AXIS ELEVATOR SET — Pitch axis (elevator)`.
 4. Filters: `All` / `Axes` / `Buttons` (a relation holds one kind; an open relation with actions shows only its own,
    an empty one every kind), the game chips of the result with how many actions each game has (none ticked = every
@@ -212,6 +228,17 @@ command and meaning, with every aircraft where the command means that and the re
   result says `Did you mean: throttle`.
 - **Plain words** still work for everything the map does not know: whole words, word starts (`disp` finds
   "Dispense"), the readable id and the game's category; rare words weigh more than common ones.
+- **Titles with every word** (2.6.0): every title that has all the typed words (whole words or word starts from three
+  letters; `+`, `-`, brackets and punctuation of the query are only separators: `tacan channel (xx0x) - [inc]` is
+  `tacan channel xx 0 x inc`; a `-` or `+` on its own is no direction either, only one glued to a word (`zoom-`) or the
+  word itself; of titles with as many other words, a step or direction ([Inc], [Next]) before a fixed position (`- 0`)) is a hit, also when its words alone are generic (`master`, `reset`, `inc`). Unless the
+  query names a function with all its words (`pitch`, `gear up`: that function's rows lead as below), the titles with
+  every word as a whole word come before every row that only means the same (a word start alone does not lead: "guns
+  hot" puts no "HOTAS" title first), the whole title typed first (`master reset` = `MASTER RESET`), then those
+  with the fewest other words (`Literal` in the JSON). A DCS title's trailing tag says what the command does (`[Inc]`,
+  `[Dec]`, `[Next]`, `[Toggle]`, `[CW]`); only seat and panel tags (`[FWD]`, `[SimPit]`, `[WSO]` ...) are dropped
+  (before 2.6.0 every trailing tag was dropped and the dash before it read as "minus": `[Inc]`, `[Next]` and
+  `[Toggle]` were "decrease").
 - **Ranking**: the exact title first, then the function by its own words (`Throttle Left`), then by a synonym or game
   term (`Collective`), then by what the query describes, then plain word matches. Rows of the function's natural kind
   (a throttle axis, a gear button) rank before the others. The function's **primary axis** leads its game (see
@@ -472,6 +499,11 @@ simulator), each with:
 - `synonyms` (English, matched as whole words in titles, plural `s` ignored) and `terms` per game or class
   (`"StarCitizen": ["strafe longitudinal"]`, `"class:heli": ["throttle"]`, `"class:space": ["boost"]`);
 - `not`: words that rule the function out ("Throttle Cutoff" is no throttle axis, "CB ..." is a circuit breaker);
+- `bare` and `context` (2.6.0): synonyms too general on their own count in a title only together with one of the
+  context words. "Lock" is a target lock in "Auto lock on nearest aircraft", "Radar - STT Lock" or "Target toggle
+  lock", but not in "Ramp Control Sequence Valve Lock - LOCK" (CH-47F), "Droppable tank lock" or "Lock pilot body
+  position"; the same for "unlock", "reject" and "deselect" of the target unlock. Searches are not affected (a typed
+  "lock" still finds the target lock);
 - `dirs`: the function's direction words (`noseup` = "nose up", "aft", "pull"), `sided` (per engine or wheel), `keyed`
   (PTT 1, OSB 12, UFC 7);
 - `slots`: the function catalog's slots it stands for (`"cms_fwd_start_program_or_just_flare": "@0.85"` for flares);
@@ -590,7 +622,9 @@ action's meaning, `unknown` when the id is not in that aircraft's list. `relatio
 command on two inputs (DCS writes both binds). The load correction's "add the DB's other aircraft of an id" step
 (`--auto-add-db-items`, runs when the profile's DB fingerprint differs: since 2.3.1 the fingerprint covers only the
 command lists the correction reads, DCS, IL-2 and Star Citizen, plus the version of the correction rules; before, JoyPro's
-own release data (device catalog, drawings, cockpits) counted too, so every update corrected every profile again) puts a new aircraft into a
+own release data (device catalog, drawings, cockpits) counted too, so every update corrected every profile again; since
+2.6.0 a save of a command that loads without corrections, such as `devices exchange`, keeps the fingerprint the profile
+had instead of stamping the current one, so the next load still corrects) puts a new aircraft into a
 node switched on only when no other relation has that action of that aircraft on and, in DCS, its title of the id means
 what the node's switched-on aircraft mean (same / near / same function); otherwise it goes in switched off ("left out").
 Before 2.3.1 it switched the aircraft on in every node of the id, so a profile could collect such duplicates without
@@ -628,7 +662,7 @@ their relation ("LEFT VPC Throttle MT-50 CM · BTN 9 ('A10 - DMS Down') ↔ VKB-
 Aft')"), one sentence what happens in the game, aircraft -> command (3 rows, "Show all"), "Caused by: <history entry> on
 <date>" when the profile history tells (`CausedBy`, `CausedSummary`, `CausedAt` of the group: the version that brought
 most of its actions into the second relation; one whose change names other relations only is skipped), one recommended
-fix (the suggestion), "Keep only on X" / "Keep both" / "More ▾" (switch it off on both buttons), an "Open '<relation>'"
+fix (the suggestion), "Keep only on X" / "Keep both" / "More" (switch it off on both buttons), an "Open '<relation>'"
 button per relation that opens it with exactly the card's commands and aircraft marked (Back returns to the card), and
 the confidence with its reasons in the collapsed details. Only aircraft ticked in both relations count. A command the
 aircraft's current list no longer has is `Unknown` (its `Title` is the name the relation stored): the card says "unknown
@@ -651,7 +685,12 @@ same lines from it:
   aircraft in its table. `--keep <relation>` switches the aircraft off in the other relations of the conflict.
 - `ActionConflicts`: a relation with two actions of one aircraft (or game) on (`Key` "game|plane|relation"). The app:
   "One button runs two commands". `--keep-action <id>` switches the relation's other actions of the game off for the
-  aircraft; `--off` all of them.
+  aircraft; `--off` all of them. A game without aircraft lists (War Thunder, MSFS, Arma ...) names the game as the
+  aircraft of all its actions; there actions of different vehicle classes (the function map's class: helicopter,
+  spaceship, else fixed wing) are different vehicles, as the aircraft of DCS are: the plane's throttle and the
+  helicopter's collective on one axis are no error (2.6.0). Only actions of the same class are, and the conflict lists
+  just those. The same holds for `InputConflicts`: two relations on one input count only when they carry actions of
+  the same vehicle class of such a game.
 - `--keep-both` saves "input|<key>|<relations>" / "active|<key>|<ids>" in `Pr0file.KeptDuplicates`: the check does not
   name it again while exactly these relations (actions) have it. `--remove-actions --keys "game|id|plane;..."` takes
   actions (unknown ones) out of every relation. Each fix is one profile version (one undo step).

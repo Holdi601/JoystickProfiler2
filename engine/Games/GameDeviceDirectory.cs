@@ -25,6 +25,11 @@ namespace JoyPro.Engine.Games
         public string HidProductString { get; set; }
         public int EnumerationIndex { get; set; }
         public bool Connected { get; set; }
+        // A device JoyPro never clears (GameDeviceDirectory.MarkKept: the vJoy device JoyPro tunnels into and the
+        // devices on the import's ignore list): every export mode leaves the game's binds on it alone, as if it were not
+        // connected. The device stays in the list (slot and device order of the games do not change) and the profile's
+        // own binds on it are still written.
+        public bool Kept { get; set; }
 
         public GameDevice()
         {
@@ -71,6 +76,71 @@ namespace JoyPro.Engine.Games
             Devices = new List<GameDevice>();
         }
 
+        // One reading of the connected devices for a whole game file run (import, export, scan or restore of DCS, IL-2
+        // or Star Citizen; Program turns it on): its environment log, nuke and the import's device plan each asked Windows
+        // again (HID and DirectInput, 0.2-0.4 s each) within seconds. Every Discover still gets new GameDevice objects and
+        // the warnings of the reading. Off again at the end of the command and at the start of every run.
+        private static readonly object RunReadingGate = new object();
+        private static bool runReadingOn;
+        private static Dictionary<string, string> runHidNames;
+        private static List<DirectInputDeviceDiscovery.DirectInputDeviceInfo> runInfos;
+        private static List<string> runWarnings;
+
+        public static void ReadOnceThisRun()
+        {
+            lock (RunReadingGate)
+                runReadingOn = true;
+        }
+
+        public static void EndRunReading()
+        {
+            lock (RunReadingGate)
+            {
+                runReadingOn = false;
+                runHidNames = null;
+                runInfos = null;
+                runWarnings = null;
+            }
+        }
+
+        private static void ReadDevices(List<string> warnings, out Dictionary<string, string> hidNames, out List<DirectInputDeviceDiscovery.DirectInputDeviceInfo> infos)
+        {
+            lock (RunReadingGate)
+            {
+                if (runReadingOn)
+                {
+                    if (runInfos == null)
+                    {
+                        List<string> read = new List<string>();
+                        runHidNames = HidProductNames.ByVidPid(read);
+                        runInfos = DirectInputDeviceDiscovery.EnumerateConnectedDeviceInfos(read);
+                        runWarnings = read;
+                    }
+                    if (warnings != null)
+                        warnings.AddRange(runWarnings);
+                    hidNames = runHidNames;
+                    infos = runInfos;
+                    return;
+                }
+            }
+            hidNames = HidProductNames.ByVidPid(warnings);
+            infos = DirectInputDeviceDiscovery.EnumerateConnectedDeviceInfos(warnings);
+        }
+
+        // The connected DirectInput devices: the run's reading while it is on, else a new enumeration.
+        internal static List<DirectInputDeviceDiscovery.DirectInputDeviceInfo> ConnectedInfos(List<string> warnings)
+        {
+            bool on;
+            lock (RunReadingGate)
+                on = runReadingOn;
+            if (!on)
+                return DirectInputDeviceDiscovery.EnumerateConnectedDeviceInfos(warnings);
+            Dictionary<string, string> hidNames;
+            List<DirectInputDeviceDiscovery.DirectInputDeviceInfo> infos;
+            ReadDevices(warnings, out hidNames, out infos);
+            return infos;
+        }
+
         public static GameDeviceDirectory Discover(List<string> warnings)
         {
             string fakePath = Environment.GetEnvironmentVariable(FakeDevicesEnvironmentVariable);
@@ -78,8 +148,9 @@ namespace JoyPro.Engine.Games
                 return LoadFake(fakePath, warnings);
 
             GameDeviceDirectory directory = new GameDeviceDirectory();
-            Dictionary<string, string> hidNames = HidProductNames.ByVidPid(warnings);
-            List<DirectInputDeviceDiscovery.DirectInputDeviceInfo> infos = DirectInputDeviceDiscovery.EnumerateConnectedDeviceInfos(warnings);
+            Dictionary<string, string> hidNames;
+            List<DirectInputDeviceDiscovery.DirectInputDeviceInfo> infos;
+            ReadDevices(warnings, out hidNames, out infos);
             for (int i = 0; i < infos.Count; i++)
             {
                 DirectInputDeviceDiscovery.DirectInputDeviceInfo info = infos[i];
@@ -195,6 +266,42 @@ namespace JoyPro.Engine.Games
             }
 
             return directory;
+        }
+
+        // The one rule of every game's export (engine <game> export): the devices named here (JoyPro names, "Name {GUID}";
+        // the GUID alone matches too) are never cleared. RunExport passes the vJoy device JoyPro tunnels into
+        // (VJoyTunnel) and the import's ignored devices (--ignore-device).
+        public void MarkKept(IEnumerable<string> joyProNames)
+        {
+            foreach (string name in joyProNames ?? Enumerable.Empty<string>())
+            {
+                GameDevice device = FindByJoyProName(name);
+                if (device != null)
+                {
+                    device.Kept = true;
+                    continue;
+                }
+                // An ignore entry without GUID ("Saitek X52") names every device of that name.
+                string value = (name ?? string.Empty).Trim();
+                string ignoredName;
+                Guid ignoredGuid;
+                if (value.Length == 0 || TryParseJoyProName(value, out ignoredName, out ignoredGuid))
+                    continue;
+                foreach (GameDevice named in Devices.Where(d => string.Equals((d.InstanceName ?? string.Empty).Trim(), value, StringComparison.OrdinalIgnoreCase)))
+                    named.Kept = true;
+            }
+        }
+
+        public bool AnyKept
+        {
+            get { return Devices.Any(d => d.Kept); }
+        }
+
+        // True when the device (JoyPro name) is connected and one JoyPro never clears.
+        public bool IsKept(string joyProName)
+        {
+            GameDevice device = FindByJoyProName(joyProName);
+            return device != null && device.Kept;
         }
 
         public GameDevice FindByJoyProName(string joyProName)

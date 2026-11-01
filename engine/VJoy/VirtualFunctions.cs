@@ -23,7 +23,7 @@ namespace JoyPro.Engine.VJoy
         public string Id { get; set; }
         public string Name { get; set; }
         // A VirtualFunctionCatalog type id: bands, cycle, toggle, switch, presses, shift, merge, split, curve,
-        // axis-buttons, axes-hat, buttons-axis, encoder, turbo, macro, hat-buttons, buttons-hat.
+        // axis-buttons, axes-hat, buttons-axis, encoder, turbo, macro, hat-buttons, buttons-hat, remap, mode.
         public string Type { get; set; }
         public bool Enabled { get; set; }
         // Keyboard outputs (KEY_* targets) only when the user switched this on for the function.
@@ -37,16 +37,25 @@ namespace JoyPro.Engine.VJoy
         public List<VfStep> Steps { get; set; }
         // Response curve (curve): JoyPro's axis tuning text (AxisTuning.Format, DCS parameters).
         public string Tuning { get; set; }
+        // The modes (layers) of the game this function works in (VfModeSet; empty: every mode). A function in a mode
+        // also works in the modes that inherit from it, unless such a mode has its own function on the same input.
+        public List<string> Modes { get; set; }
+        // Mode switch (type "mode"): the target mode (switch, hold, toggle) or the modes to cycle through.
+        public List<string> SwitchModes { get; set; }
+        // Resolved for the forwarder: the mode group (the game) the function belongs to. Empty in the profile.
+        public string Group { get; set; }
 
         public VirtualFunction()
         {
-            Id = Name = Type = Tuning = string.Empty;
+            Id = Name = Type = Tuning = Group = string.Empty;
             Enabled = true;
             Inputs = new List<VfInput>();
             Outputs = new List<VfOutput>();
             Params = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
             Edges = new List<double>();
             Steps = new List<VfStep>();
+            Modes = new List<string>();
+            SwitchModes = new List<string>();
         }
 
         public void Normalize()
@@ -55,6 +64,9 @@ namespace JoyPro.Engine.VJoy
             Name = (Name ?? string.Empty).Trim();
             Type = (Type ?? string.Empty).Trim().ToLowerInvariant();
             Tuning = Tuning ?? string.Empty;
+            Group = (Group ?? string.Empty).Trim();
+            Modes = CleanNames(Modes);
+            SwitchModes = CleanNames(SwitchModes);
             if (Inputs == null)
                 Inputs = new List<VfInput>();
             if (Outputs == null)
@@ -74,6 +86,9 @@ namespace JoyPro.Engine.VJoy
                 input.Role = (input.Role ?? string.Empty).Trim().ToLowerInvariant();
                 input.Device = (input.Device ?? string.Empty).Trim();
                 input.Input = (input.Input ?? string.Empty).Trim().ToUpperInvariant();
+                // Another function's output: "fn:<id>" (ids are lower case), the input is the output's role.
+                if (VfChain.IsChainDevice(input.Device))
+                    input.Device = VfChain.Prefix + input.Device.Substring(VfChain.Prefix.Length).Trim().ToLowerInvariant();
             }
             foreach (VfOutput output in Outputs)
             {
@@ -81,6 +96,24 @@ namespace JoyPro.Engine.VJoy
                 output.Target = (output.Target ?? string.Empty).Trim().ToUpperInvariant();
                 output.Mode = (output.Mode ?? string.Empty).Trim().ToLowerInvariant();
             }
+        }
+
+        private static List<string> CleanNames(List<string> names)
+        {
+            List<string> clean = new List<string>();
+            foreach (string name in names ?? new List<string>())
+            {
+                string value = (name ?? string.Empty).Trim();
+                if (value.Length > 0 && !clean.Contains(value, StringComparer.OrdinalIgnoreCase))
+                    clean.Add(value);
+            }
+            return clean;
+        }
+
+        // Works in this mode by its own list (not counting inheritance): no list = every mode.
+        public bool InMode(string mode)
+        {
+            return Modes == null || Modes.Count == 0 || Modes.Contains(mode ?? string.Empty, StringComparer.OrdinalIgnoreCase);
         }
 
         public double Param(string key, double fallback)
@@ -107,12 +140,15 @@ namespace JoyPro.Engine.VJoy
             copy.Params = new Dictionary<string, double>(Params ?? new Dictionary<string, double>(), StringComparer.OrdinalIgnoreCase);
             copy.Edges = new List<double>(Edges ?? new List<double>());
             copy.Steps = (Steps ?? new List<VfStep>()).Select(s => s.Clone()).ToList();
+            copy.Modes = new List<string>(Modes ?? new List<string>());
+            copy.SwitchModes = new List<string>(SwitchModes ?? new List<string>());
             return copy;
         }
     }
 
-    // A physical input of a function: the JoyPro device ("Name {GUID}") and the input token (JOY_X .. JOY_SLIDER2,
-    // JOY_BTN<n>, POV<n> for a whole hat, JOY_BTN_POV<n>_<U|UR|R|DR|D|DL|L|UL> for one hat direction).
+    // An input of a function: a physical input - the JoyPro device ("Name {GUID}") and the input token (JOY_X ..
+    // JOY_SLIDER2, JOY_BTN<n>, POV<n> for a whole hat, JOY_BTN_POV<n>_<U|UR|R|DR|D|DL|L|UL> for one hat direction) - or
+    // another function's output (function chaining): Device "fn:<function id>", Input the output's role (OUT, BAND2).
     public sealed class VfInput
     {
         public string Role { get; set; }
@@ -268,6 +304,11 @@ namespace JoyPro.Engine.VJoy
         public const string Macro = "macro";
         public const string HatButtons = "hat-buttons";
         public const string ButtonsHat = "buttons-hat";
+        public const string Remap = "remap";
+        public const string ModeSwitch = "mode";
+
+        // Mode switch actions (param "action").
+        public const int ModeActionSwitch = 0, ModeActionHold = 1, ModeActionToggle = 2, ModeActionCycle = 3, ModeActionPrevious = 4;
 
         public const string ModeHold = "hold";
         public const string ModeEnter = "enter";
@@ -514,6 +555,29 @@ namespace JoyPro.Engine.VJoy
                 Outputs = { Role("hat", "Hat", "hat") },
                 Params = { P("settleMs", "Diagonal settle", 0, 200, 5, 30, "ms", "When one of two buttons of a diagonal is let go, the hat waits this long before it shows the other direction, so letting go of a diagonal does not flick.") }
             });
+            list.Add(new VfTypeInfo
+            {
+                Id = Remap, Name = "Remap", Icon = "→",
+                Summary = "An input straight to one or more virtual outputs (Joystick Gremlin's remap); with modes, a different output per mode.",
+                Example = "Button 5 is weapon release in Combat and gear in Landing; a key combination on a button.",
+                Inputs = { Role("in", "Input", "any") },
+                Outputs = { Role("out", "Output", "any", numbered: true) },
+                Params = { P("invert", "Invert an axis", 0, 1, 1, 0, "", "Reverses an axis input on its way to the output.", "No", "Yes") },
+                DefaultCount = 1, MaxCount = 8
+            });
+            list.Add(new VfTypeInfo
+            {
+                Id = ModeSwitch, Name = "Mode switch", Icon = "⇆",
+                Summary = "A button changes the mode (layer) of the game's functions: switch, hold, toggle, cycle or back.",
+                Example = "Pinky switch held: Landing mode; a button cycles Combat, Navigation, Landing.",
+                Inputs = { Role("in", "Button", "button") },
+                Params =
+                {
+                    P("action", "On press", 0, 4, 1, 0, "",
+                        "Switch to: the mode below. Hold: that mode while the button is held, then back. Toggle: that mode, the next press back. Cycle: the next mode of the list. Back: the mode before.",
+                        "Switch to", "Hold (temporary)", "Toggle", "Cycle through the list", "Back to the previous mode")
+                }
+            });
             return list;
         }
 
@@ -578,6 +642,28 @@ namespace JoyPro.Engine.VJoy
             return output;
         }
 
+        // The kind (axis, button or hat) an output role carries: the role's own, or for "any" roles (shift layer,
+        // remap) the kind of the input it follows (a hat direction is a button; unknown: a button). all: the game's
+        // functions, for an input that reads another function's output.
+        public static string OutputKind(VirtualFunction function, string role, IList<VirtualFunction> all = null)
+        {
+            VfRoleInfo info = ExpandOutputs(function).FirstOrDefault(r => string.Equals(r.Role, role, StringComparison.OrdinalIgnoreCase));
+            if (info == null)
+                return "button";
+            if (info.Kind != "any")
+                return info.Kind;
+            string inputRole = function.Type == Remap ? "in" : "in" + new string((role ?? string.Empty).Where(char.IsDigit).ToArray());
+            VfInput source = function.InputOf(inputRole);
+            if (source == null)
+                return "button";
+            if (VfChain.IsChain(source))
+                return VfChain.KindOf(source, all);
+            string kind;
+            int index;
+            int direction;
+            return VfTokens.TryParseInput(source.Input, out kind, out index, out direction) ? (kind == "hatdir" ? "button" : kind) : "button";
+        }
+
         // A new function of a type with its defaults (inputs and outputs empty: the user or the engine fills them).
         public static VirtualFunction Create(string type, string name)
         {
@@ -630,6 +716,14 @@ namespace JoyPro.Engine.VJoy
         // here (a device may be unplugged); the engine adds that.
         public static List<string> Validate(VirtualFunction function)
         {
+            return Validate(function, null, null);
+        }
+
+        // all: the game's functions (an input that reads another function's output is checked against it); chained:
+        // the output roles of this function that other functions read (an output that only feeds another function
+        // needs no virtual target).
+        public static List<string> Validate(VirtualFunction function, IList<VirtualFunction> all, ICollection<string> chained)
+        {
             List<string> problems = new List<string>();
             VfTypeInfo info = Get(function.Type);
             if (info == null)
@@ -649,6 +743,15 @@ namespace JoyPro.Engine.VJoy
                 string kind;
                 int index;
                 int direction;
+                if (VfChain.IsChain(input))
+                {
+                    string chainProblem = VfChain.Check(function, input, all);
+                    if (chainProblem.Length > 0)
+                        problems.Add(role.Label + ": " + chainProblem);
+                    else if (all != null && !VfTokens.Fits(role.Kind, VfChain.KindOf(input, all), true))
+                        problems.Add(role.Label + ": needs " + KindWord(role.Kind) + ", " + VfChain.Describe(input, all) + " is " + KindWord(VfChain.KindOf(input, all)) + ".");
+                    continue;
+                }
                 if (!VfTokens.TryParseInput(input.Input, out kind, out index, out direction))
                     problems.Add(role.Label + ": \"" + input.Input + "\" is not a joystick input (JOY_X, JOY_BTN5, POV1, JOY_BTN_POV1_U ...).");
                 else if (!VfTokens.Fits(role.Kind, kind, true))
@@ -659,7 +762,7 @@ namespace JoyPro.Engine.VJoy
                 VfOutput output = function.OutputOf(role.Role);
                 if (output == null || output.Target.Length == 0)
                 {
-                    if (!role.Optional)
+                    if (!role.Optional && (chained == null || !chained.Contains(role.Role)))
                         problems.Add(role.Label + ": no virtual output.");
                     continue;
                 }
@@ -673,17 +776,10 @@ namespace JoyPro.Engine.VJoy
                 }
                 if (kind == "key" && !function.Keyboard)
                     problems.Add(role.Label + ": " + output.Target + " is a keyboard key; switch on \"Keyboard output\" for this function to allow keys.");
-                string required = role.Kind;
-                if (function.Type == Shift && role.Role.StartsWith("out", StringComparison.Ordinal) || function.Type == Shift && role.Role.StartsWith("base", StringComparison.Ordinal))
-                {
-                    VfInput source = function.InputOf("in" + role.Role.Substring(role.Role.StartsWith("out", StringComparison.Ordinal) ? 3 : 4));
-                    string sourceKind;
-                    int sourceIndex;
-                    int sourceDirection;
-                    if (source != null && VfTokens.TryParseInput(source.Input, out sourceKind, out sourceIndex, out sourceDirection))
-                        required = sourceKind == "hatdir" ? "button" : sourceKind;
-                }
-                if (!VfTokens.Fits(required, VfTokens.OutputClass(kind), false))
+                string required = role.Kind == "any" ? OutputKind(function, role.Role, all) : role.Kind;
+                // A remap may also turn a button into an axis (pressed = full) or an axis into a button (past half).
+                bool loose = function.Type == Remap && required != "hat" && VfTokens.OutputClass(kind) != "hat";
+                if (!loose && !VfTokens.Fits(required, VfTokens.OutputClass(kind), false))
                     problems.Add(role.Label + ": needs " + KindWord(required) + ", " + output.Target + " is " + KindWord(VfTokens.OutputClass(kind)) + ".");
                 if (role.HasMode && output.Mode.Length > 0 && !Modes.Contains(output.Mode))
                     problems.Add(role.Label + ": mode \"" + output.Mode + "\" is not hold, enter, leave or both.");
@@ -721,6 +817,14 @@ namespace JoyPro.Engine.VJoy
                     if (step.DelayMs < 0 || step.DelayMs > 60000 || step.HoldMs < 0 || step.HoldMs > 60000)
                         problems.Add("Macro step: delays are 0..60000 ms.");
                 }
+            }
+            if (info.Id == ModeSwitch)
+            {
+                int action = (int)Math.Round(function.Param("action", 0));
+                if (action != ModeActionPrevious && function.SwitchModes.Count == 0)
+                    problems.Add("Mode switch: no mode chosen.");
+                if (action == ModeActionCycle && function.SwitchModes.Count < 2)
+                    problems.Add("Mode switch: cycling needs at least two modes.");
             }
             foreach (VfParamInfo param in info.Params)
             {
@@ -793,6 +897,17 @@ namespace JoyPro.Engine.VJoy
         public static IEnumerable<string> KeyNames
         {
             get { return Keys.Keys.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).Select(k => "KEY_" + k.ToUpperInvariant()); }
+        }
+
+        // The KEY_ token of a scan code (+ 0x100 = extended), empty when JoyPro has no name for it.
+        public static string KeyName(int scan)
+        {
+            foreach (KeyValuePair<string, int> key in Keys.OrderBy(k => k.Key.Length).ThenBy(k => k.Key, StringComparer.Ordinal))
+            {
+                if (key.Value == scan)
+                    return "KEY_" + key.Key.ToUpperInvariant();
+            }
+            return string.Empty;
         }
 
         public static bool TryKey(string token, out int scan)
@@ -973,6 +1088,12 @@ namespace JoyPro.Engine.VJoy
                 input.Index = input.Direction = -1;
                 if (input.Input.Length == 0 || input.Device.Length == 0)
                     continue;
+                if (VfChain.IsChain(input))
+                {
+                    // The runtime links it to the other function's output (VfRuntime: functions in dependency order).
+                    input.Kind = "chain";
+                    continue;
+                }
                 if (!VfTokens.TryParseInput(input.Input, out kind, out index, out direction))
                 {
                     problems.Add(function.Name + ": " + input.Input + " is not a joystick input.");
@@ -1044,6 +1165,433 @@ namespace JoyPro.Engine.VJoy
                     targets.Add(new KeyValuePair<int, string>(output.VJoyDevice <= 0 ? 1 : output.VJoyDevice, output.Target));
             }
             return targets;
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------- chaining
+
+    // Function chaining: an input of a function can read another function's output (Device "fn:<id>", Input the
+    // output's role). The forwarder evaluates the functions in dependency order every pass, so a function reads what the
+    // functions before it wrote in the same pass. Loops (a function that reads itself, directly or through others) are
+    // refused by the engine and left out by the runtime.
+    public static class VfChain
+    {
+        public const string Prefix = "fn:";
+
+        public static bool IsChainDevice(string device)
+        {
+            return device != null && device.Trim().StartsWith(Prefix, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsChain(VfInput input)
+        {
+            return input != null && IsChainDevice(input.Device);
+        }
+
+        public static string FunctionId(VfInput input)
+        {
+            return IsChain(input) ? input.Device.Trim().Substring(Prefix.Length).Trim() : string.Empty;
+        }
+
+        public static string Role(VfInput input)
+        {
+            return (input == null ? string.Empty : input.Input ?? string.Empty).Trim().ToLowerInvariant();
+        }
+
+        public static string Device(string functionId)
+        {
+            return Prefix + (functionId ?? string.Empty).Trim().ToLowerInvariant();
+        }
+
+        public static VirtualFunction Producer(VfInput input, IList<VirtualFunction> all)
+        {
+            string id = FunctionId(input);
+            return all == null || id.Length == 0 ? null : all.FirstOrDefault(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // The kind (axis, button, hat) of the output a chained input reads (unknown: button).
+        public static string KindOf(VfInput input, IList<VirtualFunction> all)
+        {
+            return KindOf(input, all, 0);
+        }
+
+        private static string KindOf(VfInput input, IList<VirtualFunction> all, int depth)
+        {
+            VirtualFunction producer = Producer(input, all);
+            if (producer == null || depth > 32)
+                return "button";
+            VfRoleInfo info = VirtualFunctionCatalog.ExpandOutputs(producer).FirstOrDefault(r => string.Equals(r.Role, Role(input), StringComparison.OrdinalIgnoreCase));
+            if (info == null)
+                return "button";
+            if (info.Kind != "any")
+                return info.Kind;
+            VfInput source = producer.InputOf(producer.Type == VirtualFunctionCatalog.Remap ? "in" : "in" + new string(Role(input).Where(char.IsDigit).ToArray()));
+            if (source == null)
+                return "button";
+            if (IsChain(source))
+                return KindOf(source, all, depth + 1);
+            string kind;
+            int index;
+            int direction;
+            return VfTokens.TryParseInput(source.Input, out kind, out index, out direction) ? (kind == "hatdir" ? "button" : kind) : "button";
+        }
+
+        // What is wrong with a chained input, in plain words (empty: fine; all null: only the input itself is checked).
+        public static string Check(VirtualFunction function, VfInput input, IList<VirtualFunction> all)
+        {
+            string id = FunctionId(input);
+            if (id.Length == 0)
+                return "no function chosen.";
+            if (function != null && string.Equals(id, function.Id, StringComparison.OrdinalIgnoreCase) && function.Id.Length > 0)
+                return "a function cannot read its own output.";
+            if (Role(input).Length == 0)
+                return "no output of " + id + " chosen.";
+            if (all == null)
+                return string.Empty;
+            VirtualFunction producer = Producer(input, all);
+            if (producer == null)
+                return "reads the function " + id + ", which does not exist (any more).";
+            if (!VirtualFunctionCatalog.ExpandOutputs(producer).Any(r => string.Equals(r.Role, Role(input), StringComparison.OrdinalIgnoreCase)))
+                return Label(producer) + " has no output \"" + Role(input) + "\".";
+            if (!producer.Enabled)
+                return Label(producer) + " is off, so this input stays at rest.";
+            return string.Empty;
+        }
+
+        // "the output band2 of f1 "Throttle detents"".
+        public static string Describe(VfInput input, IList<VirtualFunction> all)
+        {
+            VirtualFunction producer = Producer(input, all);
+            return "the output " + Role(input) + " of " + (producer == null ? FunctionId(input) : Label(producer));
+        }
+
+        public static string Label(VirtualFunction function)
+        {
+            return function.Id + (function.Name.Length > 0 ? " \"" + function.Name + "\"" : string.Empty);
+        }
+
+        // The ids of the functions this one reads.
+        public static List<string> DependsOn(VirtualFunction function)
+        {
+            return (function.Inputs ?? new List<VfInput>()).Where(IsChain).Select(FunctionId).Where(id => id.Length > 0)
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        // The output roles of a function that other functions read.
+        public static HashSet<string> ChainedRoles(VirtualFunction function, IList<VirtualFunction> all)
+        {
+            HashSet<string> roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (VirtualFunction other in all ?? new List<VirtualFunction>())
+            {
+                if (other == null || ReferenceEquals(other, function))
+                    continue;
+                foreach (VfInput input in other.Inputs ?? new List<VfInput>())
+                {
+                    if (IsChain(input) && string.Equals(FunctionId(input), function.Id, StringComparison.OrdinalIgnoreCase))
+                        roles.Add(Role(input));
+                }
+            }
+            return roles;
+        }
+
+        // The functions in evaluation order: every function after the ones it reads, otherwise in list order. Functions
+        // in a loop, and those that read one, are left out (problems say which).
+        public static List<VirtualFunction> Order(IList<VirtualFunction> functions, List<string> problems)
+        {
+            List<VirtualFunction> list = (functions ?? new List<VirtualFunction>()).Where(f => f != null).ToList();
+            HashSet<string> ids = new HashSet<string>(list.Select(f => f.Id ?? string.Empty), StringComparer.OrdinalIgnoreCase);
+            List<VirtualFunction> ordered = new List<VirtualFunction>();
+            HashSet<VirtualFunction> placed = new HashSet<VirtualFunction>();
+            HashSet<string> placedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            bool progress = true;
+            while (progress)
+            {
+                progress = false;
+                foreach (VirtualFunction function in list)
+                {
+                    if (placed.Contains(function))
+                        continue;
+                    // A reference to a function that is not in the list (removed, off) is no dependency: it reads rest.
+                    if (DependsOn(function).Where(ids.Contains).All(placedIds.Contains))
+                    {
+                        ordered.Add(function);
+                        placed.Add(function);
+                        placedIds.Add(function.Id ?? string.Empty);
+                        progress = true;
+                    }
+                }
+            }
+            List<VirtualFunction> left = list.Where(f => !placed.Contains(f)).ToList();
+            if (left.Count > 0 && problems != null)
+            {
+                List<List<string>> loops = Loops(left);
+                HashSet<string> inLoop = new HashSet<string>(loops.SelectMany(l => l), StringComparer.OrdinalIgnoreCase);
+                foreach (List<string> loop in loops)
+                    problems.Add(LoopText(loop, list) + ": these functions read each other in a loop and are left out until the loop is broken.");
+                foreach (VirtualFunction function in left.Where(f => !inLoop.Contains(f.Id ?? string.Empty)))
+                    problems.Add(Label(function) + " reads a function in a loop and is left out until the loop is broken.");
+            }
+            return ordered;
+        }
+
+        // Every loop among the functions, as a list of ids (the first id again at the end).
+        public static List<List<string>> Loops(IList<VirtualFunction> functions)
+        {
+            Dictionary<string, List<string>> edges = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (VirtualFunction function in functions ?? new List<VirtualFunction>())
+            {
+                if (function != null && !edges.ContainsKey(function.Id ?? string.Empty))
+                    edges[function.Id ?? string.Empty] = DependsOn(function);
+            }
+            List<List<string>> loops = new List<List<string>>();
+            HashSet<string> done = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string start in edges.Keys.ToList())
+                FindLoop(start, edges, new List<string>(), done, loops);
+            return loops;
+        }
+
+        private static void FindLoop(string id, Dictionary<string, List<string>> edges, List<string> path, HashSet<string> done, List<List<string>> loops)
+        {
+            int at = path.FindIndex(p => string.Equals(p, id, StringComparison.OrdinalIgnoreCase));
+            if (at >= 0)
+            {
+                List<string> loop = path.Skip(at).ToList();
+                loop.Add(id);
+                if (!loops.Any(l => l.Count == loop.Count && new HashSet<string>(l, StringComparer.OrdinalIgnoreCase).SetEquals(loop)))
+                    loops.Add(loop);
+                return;
+            }
+            if (done.Contains(id) || !edges.ContainsKey(id))
+                return;
+            path.Add(id);
+            foreach (string next in edges[id])
+                FindLoop(next, edges, path, done, loops);
+            path.RemoveAt(path.Count - 1);
+            done.Add(id);
+        }
+
+        // "f1 "A" -> f2 "B" -> f1 "A"".
+        public static string LoopText(List<string> loop, IList<VirtualFunction> functions)
+        {
+            return string.Join(" -> ", loop.Select(id =>
+            {
+                VirtualFunction function = (functions ?? new List<VirtualFunction>()).FirstOrDefault(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
+                return function == null ? id : Label(function);
+            }));
+        }
+
+        // Would the functions (after a change) contain a loop? The message for the user, empty when not.
+        public static string LoopProblem(IList<VirtualFunction> functions)
+        {
+            List<List<string>> loops = Loops(functions);
+            if (loops.Count == 0)
+                return string.Empty;
+            List<string> loop = loops[0];
+            return loop.Count == 2
+                ? LoopText(loop.Take(1).ToList(), functions) + " would read its own output: a function cannot read itself."
+                : "These functions would read each other in a loop: " + LoopText(loop, functions) + ". Chain them one way only.";
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------- modes
+
+    // A mode (layer) of a game's functions, Joystick Gremlin style. A function in a mode also works in the modes that
+    // inherit from it (Parent), unless such a mode has its own function on the same input; a function without modes
+    // works in every mode unless the current mode (or one it inherits from) has its own function on that input.
+    public sealed class VfMode
+    {
+        public string Name { get; set; }
+        public string Parent { get; set; }
+
+        public VfMode()
+        {
+            Name = Parent = string.Empty;
+        }
+
+        public VfMode Clone()
+        {
+            return (VfMode)MemberwiseClone();
+        }
+    }
+
+    // The modes of one game (VJoySettings.Modes[game]); in the forwarder config one set per game (Group = game id).
+    public sealed class VfModeSet
+    {
+        public string Group { get; set; }
+        public List<VfMode> Modes { get; set; }
+        // The mode at start (empty: the first).
+        public string Start { get; set; }
+
+        public VfModeSet()
+        {
+            Group = Start = string.Empty;
+            Modes = new List<VfMode>();
+        }
+
+        public VfModeSet Clone()
+        {
+            VfModeSet copy = (VfModeSet)MemberwiseClone();
+            copy.Modes = (Modes ?? new List<VfMode>()).Select(m => m.Clone()).ToList();
+            return copy;
+        }
+
+        // Names trimmed and unique, unknown or looping parents dropped, the start mode one of the modes.
+        public void Normalize()
+        {
+            Group = (Group ?? string.Empty).Trim();
+            List<VfMode> clean = new List<VfMode>();
+            foreach (VfMode mode in Modes ?? new List<VfMode>())
+            {
+                if (mode == null)
+                    continue;
+                mode.Name = (mode.Name ?? string.Empty).Trim();
+                mode.Parent = (mode.Parent ?? string.Empty).Trim();
+                if (mode.Name.Length > 0 && !clean.Any(m => string.Equals(m.Name, mode.Name, StringComparison.OrdinalIgnoreCase)))
+                    clean.Add(mode);
+            }
+            foreach (VfMode mode in clean)
+            {
+                if (string.Equals(mode.Parent, mode.Name, StringComparison.OrdinalIgnoreCase) || !clean.Any(m => string.Equals(m.Name, mode.Parent, StringComparison.OrdinalIgnoreCase)))
+                    mode.Parent = string.Empty;
+            }
+            // A parent chain that comes back to a mode: the link that closes the loop goes.
+            foreach (VfMode mode in clean)
+            {
+                HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { mode.Name };
+                VfMode cursor = mode;
+                while (cursor.Parent.Length > 0)
+                {
+                    string parentName = cursor.Parent;
+                    VfMode parent = clean.First(m => string.Equals(m.Name, parentName, StringComparison.OrdinalIgnoreCase));
+                    if (!seen.Add(parent.Name))
+                    {
+                        cursor.Parent = string.Empty;
+                        break;
+                    }
+                    cursor = parent;
+                }
+            }
+            Modes = clean;
+            Start = (Start ?? string.Empty).Trim();
+            VfMode start = Find(Start);
+            Start = start != null ? start.Name : clean.Count > 0 ? clean[0].Name : string.Empty;
+        }
+
+        public VfMode Find(string name)
+        {
+            string key = (name ?? string.Empty).Trim();
+            return (Modes ?? new List<VfMode>()).FirstOrDefault(m => string.Equals(m.Name, key, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public int IndexOf(string name)
+        {
+            string key = (name ?? string.Empty).Trim();
+            return (Modes ?? new List<VfMode>()).FindIndex(m => string.Equals(m.Name, key, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // The mode and the modes it inherits from, nearest first.
+        public List<string> Lineage(string name)
+        {
+            List<string> chain = new List<string>();
+            VfMode mode = Find(name);
+            while (mode != null && !chain.Contains(mode.Name, StringComparer.OrdinalIgnoreCase) && chain.Count < 64)
+            {
+                chain.Add(mode.Name);
+                mode = mode.Parent.Length == 0 ? null : Find(mode.Parent);
+            }
+            return chain;
+        }
+
+        // The input keys of a function (physical device|input, or fn:id|role): a mode's own function on one of them
+        // takes the input over from an inherited or mode-less function.
+        public static List<string> InputKeys(VirtualFunction function)
+        {
+            return (function.Inputs ?? new List<VfInput>()).Where(i => i.Device.Length > 0 && i.Input.Length > 0)
+                .Select(i => i.Device.Trim().ToLowerInvariant() + "|" + i.Input.Trim().ToUpperInvariant()).Distinct().ToList();
+        }
+
+        // Per function (index into functions) and mode (index into Modes): does it work there? Without modes every
+        // function works (one implicit mode).
+        public bool[][] ActiveTable(IList<VirtualFunction> functions)
+        {
+            int count = functions == null ? 0 : functions.Count;
+            int modes = Math.Max(1, Modes == null ? 0 : Modes.Count);
+            bool[][] table = new bool[count][];
+            List<List<string>> keys = new List<List<string>>();
+            for (int i = 0; i < count; i++)
+            {
+                table[i] = new bool[modes];
+                keys.Add(functions[i] == null ? new List<string>() : InputKeys(functions[i]));
+            }
+            if (Modes == null || Modes.Count == 0)
+            {
+                for (int i = 0; i < count; i++)
+                    table[i][0] = true;
+                return table;
+            }
+            for (int m = 0; m < Modes.Count; m++)
+            {
+                HashSet<string> taken = new HashSet<string>();
+                foreach (string level in Lineage(Modes[m].Name))
+                {
+                    List<string> added = new List<string>();
+                    for (int i = 0; i < count; i++)
+                    {
+                        VirtualFunction function = functions[i];
+                        if (function == null || function.Modes == null || function.Modes.Count == 0 || !function.Modes.Contains(level, StringComparer.OrdinalIgnoreCase))
+                            continue;
+                        if (keys[i].Any(taken.Contains))
+                            continue;
+                        table[i][m] = true;
+                        added.AddRange(keys[i]);
+                    }
+                    taken.UnionWith(added);
+                }
+                for (int i = 0; i < count; i++)
+                {
+                    VirtualFunction function = functions[i];
+                    if (function != null && (function.Modes == null || function.Modes.Count == 0) && !keys[i].Any(taken.Contains))
+                        table[i][m] = true;
+                }
+            }
+            return table;
+        }
+
+        // The modes a function works in, in words ("Combat, Landing (inherited)"), for lists and the editor.
+        public string Describe(VirtualFunction function, IList<VirtualFunction> all)
+        {
+            if (Modes == null || Modes.Count == 0)
+                return string.Empty;
+            List<VirtualFunction> list = (all ?? new List<VirtualFunction>()).ToList();
+            int index = list.IndexOf(function);
+            if (index < 0)
+            {
+                list.Add(function);
+                index = list.Count - 1;
+            }
+            bool[] active = ActiveTable(list)[index];
+            List<string> parts = new List<string>();
+            for (int m = 0; m < Modes.Count; m++)
+            {
+                if (!active[m])
+                    continue;
+                bool own = function.Modes.Count == 0 || function.Modes.Contains(Modes[m].Name, StringComparer.OrdinalIgnoreCase);
+                parts.Add(own ? Modes[m].Name : Modes[m].Name + " (inherited)");
+            }
+            if (parts.Count == 0)
+                return "no mode (other functions take its input everywhere)";
+            return parts.Count == Modes.Count && function.Modes.Count == 0 ? "every mode" : string.Join(", ", parts);
+        }
+
+        // Problems of a function's modes against this set (unknown names).
+        public List<string> Check(VirtualFunction function)
+        {
+            List<string> problems = new List<string>();
+            foreach (string name in (function.Modes ?? new List<string>()).Where(n => Find(n) == null))
+                problems.Add("The mode \"" + name + "\" does not exist for this game.");
+            foreach (string name in (function.SwitchModes ?? new List<string>()).Where(n => Find(n) == null))
+                problems.Add("Mode switch: the mode \"" + name + "\" does not exist for this game.");
+            return problems;
         }
     }
 }

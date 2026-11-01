@@ -49,6 +49,11 @@ namespace JoyPro.Engine.VJoy
         public bool InverseUnknown { get; set; }
         public bool DevicesUnknown { get; set; }
         public bool AppsUnknown { get; set; }
+        // Program list entries HidHide itself cannot name: HidHideCLI prints them as --app-reg "" (the stored image path
+        // is on a volume that is not mounted any more, e.g. after the volume numbers changed). They are part of a
+        // complete answer, name no program on a drive of this PC and cannot be removed or added by path, so JoyPro
+        // leaves them as they are and only checks that their number stays the same.
+        public int UnnamedApps { get; set; }
 
         public HidHideState()
         {
@@ -82,7 +87,7 @@ namespace JoyPro.Engine.VJoy
                 case PartCloak: CloakUnknown = true; break;
                 case PartInverse: InverseUnknown = true; break;
                 case PartDevices: DevicesUnknown = true; Devices.Clear(); break;
-                case PartApps: AppsUnknown = true; Apps.Clear(); break;
+                case PartApps: AppsUnknown = true; Apps.Clear(); UnnamedApps = 0; break;
             }
         }
 
@@ -94,6 +99,7 @@ namespace JoyPro.Engine.VJoy
                 InverseOn = InverseOn,
                 Devices = new List<string>(Devices ?? new List<string>()),
                 Apps = new List<string>(Apps ?? new List<string>()),
+                UnnamedApps = UnnamedApps,
                 CloakUnknown = CloakUnknown,
                 InverseUnknown = InverseUnknown,
                 DevicesUnknown = DevicesUnknown,
@@ -148,9 +154,11 @@ namespace JoyPro.Engine.VJoy
                     state.DevicesUnknown = false;
                     return true;
                 case PartApps:
-                    if (parsed.Apps.Count == 0 && text.Trim().Length > 0)
+                    // Entries HidHide cannot name (--app-reg "") are an answer too.
+                    if (parsed.Apps.Count == 0 && parsed.UnnamedApps == 0 && text.Trim().Length > 0)
                         break;
                     state.Apps = parsed.Apps;
+                    state.UnnamedApps = parsed.UnnamedApps;
                     state.AppsUnknown = false;
                     return true;
             }
@@ -214,7 +222,9 @@ namespace JoyPro.Engine.VJoy
                             state.Devices.Add(value);
                         break;
                     case "--app-reg":
-                        if (value.Length > 0 && !state.HasApp(value))
+                        if (value.Length == 0)
+                            state.UnnamedApps++;
+                        else if (!state.HasApp(value))
                             state.Apps.Add(value);
                         break;
                 }
@@ -253,6 +263,8 @@ namespace JoyPro.Engine.VJoy
                 sb.Append("--dev-hide \"").Append(device).Append("\"\r\n");
             foreach (string app in Apps ?? new List<string>())
                 sb.Append("--app-reg \"").Append(app).Append("\"\r\n");
+            for (int i = 0; i < UnnamedApps; i++)
+                sb.Append("--app-reg \"\"\r\n");
             return sb.ToString();
         }
 
@@ -739,6 +751,9 @@ namespace JoyPro.Engine.VJoy
                 journal.SetCloak = true;
             }
 
+            if (current.UnnamedApps > 0)
+                plan.Notes.Add("HidHide's program list has " + current.UnnamedApps.ToString(CultureInfo.InvariantCulture) + " entr" + (current.UnnamedApps == 1 ? "y" : "ies") +
+                               " HidHide itself cannot name (a program on a drive that is not there any more, shown with an empty path). They name no program on this PC; JoyPro leaves them as they are.");
             if (args.Count == 0)
                 plan.Notes.Add("HidHide is already set up as virtual mode needs it.");
             return plan;
@@ -809,6 +824,9 @@ namespace JoyPro.Engine.VJoy
                 problems.Add("Program not listed: " + app);
             foreach (string app in actual.Apps.Where(a => !expected.HasApp(a)))
                 problems.Add("Program still listed: " + app);
+            if (expected.UnnamedApps != actual.UnnamedApps)
+                problems.Add("HidHide lists " + actual.UnnamedApps.ToString(CultureInfo.InvariantCulture) + " program(s) it cannot name, expected " +
+                             expected.UnnamedApps.ToString(CultureInfo.InvariantCulture) + ".");
             return problems;
         }
 

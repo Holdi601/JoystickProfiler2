@@ -51,7 +51,9 @@ public sealed class DuplicateActionViewModelTests
         Assert.Equal("96% sure: keep it only on MOZA AB9 FFB Base · BTN 4", card.SuggestionText);
         Assert.Contains("It was only in 'Trim Right' before", card.ReasonText);
         Assert.Equal("Keep only on MOZA AB9 FFB Base · BTN 4", card.Recommended!.Text);
-        Assert.Equal(["Keep only on Total Controls MFBB · BTN 39", "Keep both"], card.Fixes.Select(f => f.Text));
+        Assert.Equal(["Keep only on Total Controls MFBB · BTN 39", "Keep both",
+            "Replace 'Force Trim/Hold Mode Switch - AL/Right' on Total Controls MFBB · BTN 39 with...",
+            "Replace 'Force Trim/Hold Mode Switch - AL/Right' on MOZA AB9 FFB Base · BTN 4 with..."], card.Fixes.Select(f => f.Text));
         Assert.Equal(["Switch it off on both buttons"], card.MoreFixes.Select(f => f.Text));
         Assert.Equal(["Open 'Mode Button 07' (Total Controls MFBB · BTN 39)", "Open 'Trim Right' (MOZA AB9 FFB Base · BTN 4)"], card.OpenButtons.Select(f => f.Text));
         Assert.Empty(CheckTextGate.Problems([card]));

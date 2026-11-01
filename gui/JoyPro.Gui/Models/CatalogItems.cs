@@ -80,6 +80,22 @@ public sealed class CatalogRowItem
     public bool IsBound => BoundText.Length > 0;
 }
 
+// A row of the catalog's one list (MainWindowViewModel.CatalogEntries: each shown category, then its shown rows): the
+// action under the category it is listed in. An action in two categories (DCS "Control Stick; HOTAS") is one
+// CatalogRowItem with one entry per category, so every item of the list is its own object.
+public sealed class CatalogEntryRow
+{
+    public CatalogEntryRow(CatalogRowItem item, CatalogCategoryItem category)
+    {
+        Item = item;
+        Category = category;
+    }
+
+    public CatalogRowItem Item { get; }
+
+    public CatalogCategoryItem Category { get; }
+}
+
 // A category of the game ("HOTAS", "Landing gear panel") with its actions; the rows are made when it opens.
 public sealed partial class CatalogCategoryItem : ObservableObject
 {
@@ -102,7 +118,18 @@ public sealed partial class CatalogCategoryItem : ObservableObject
     public IReadOnlyList<CatalogRowItem> Rows { get; }
 
     // The rows shown (open and through the filters).
-    public ObservableCollection<CatalogRowItem> VisibleRows { get; } = [];
+    public RangeObservableCollection<CatalogRowItem> VisibleRows { get; } = [];
+
+    private Dictionary<CatalogRowItem, CatalogEntryRow>? entries;
+
+    // The list entry of one of this category's rows (made once, so an unchanged list stays the same objects).
+    public CatalogEntryRow EntryOf(CatalogRowItem row)
+    {
+        entries ??= new Dictionary<CatalogRowItem, CatalogEntryRow>(ReferenceEqualityComparer.Instance);
+        if (!entries.TryGetValue(row, out CatalogEntryRow? entry))
+            entries[row] = entry = new CatalogEntryRow(row, this);
+        return entry;
+    }
 
     [ObservableProperty]
     private bool isExpanded;

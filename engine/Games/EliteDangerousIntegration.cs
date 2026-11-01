@@ -297,8 +297,9 @@ namespace JoyPro.Engine.Games
             List<EliteWanted> allWants = wanted.Values.SelectMany(l => l).ToList();
             List<EliteElement> elements = file.Elements.Where(e => managed.Contains(e.Name)).ToList();
             // A joystick slot is JoyPro's when its device (and every joystick modifier) is connected: the import reads
-            // only those. Keyboard slots only count with --include-keyboard; mouse and pad slots never.
-            Func<EliteSlot, bool> joystickOwned = slot => !NonJoystickDevices.Contains(slot.Device) && map.Resolve(slot.Device) != null &&
+            // only those. Keyboard slots only count with --include-keyboard; mouse and pad slots never. A device JoyPro
+            // never clears (the vJoy device it tunnels into, an ignored device) is not JoyPro's either.
+            Func<EliteSlot, bool> joystickOwned = slot => !NonJoystickDevices.Contains(slot.Device) && map.Resolve(slot.Device) != null && !map.Resolve(slot.Device).Kept &&
                                                           slot.Modifiers.All(m => NonJoystickDevices.Contains(m.Key) || map.Resolve(m.Key) != null);
             foreach (EliteElement element in elements)
             {
@@ -333,7 +334,7 @@ namespace JoyPro.Engine.Games
                     // good; they stay.
                     if (IsHalfAxis(slot))
                     {
-                        result.Warnings.Add(element.Name + ": kept " + slot.Device + " " + slot.Key + " (half-axis binds and modifiers cannot be represented in JoyPro).");
+                        result.Warnings.Add(KeptHalfAxisText(element, slot, map, request.Catalog));
                         continue;
                     }
                     slot.Clear(element);
@@ -367,7 +368,7 @@ namespace JoyPro.Engine.Games
                                 Game = GameId_,
                                 Device = want.Binding == null ? want.Device : want.Binding.Device,
                                 Input = want.Binding == null ? want.Key : want.Binding.Input,
-                                ModifiersText = want.Binding == null ? string.Empty : string.Join("+", want.Binding.Reformers ?? new List<string>()),
+                                ModifiersText = want.Binding == null ? string.Empty : string.Join("+", (want.Binding.Reformers ?? new List<string>()).Select(ReformerName)),
                                 Relation = want.RelationName,
                                 Action = element.Name,
                                 GameAction = other.Name
@@ -375,9 +376,30 @@ namespace JoyPro.Engine.Games
                             continue;
                         }
                     }
-                    EliteSlot target = PickSlot(element, want, request.Mode, joystickOwned, result);
+                    string holders;
+                    EliteSlot target = PickSlot(element, want, wants, request.Mode, joystickOwned, map, request.Catalog, result, out holders);
                     if (target == null)
+                    {
+                        // Not written: the action has no slot left for this input (Elite keeps one axis slot, two
+                        // button slots: Primary and Secondary). Reported per bind, so the Check can name it.
+                        if (holders.Length > 0)
+                        {
+                            result.BindingsSkipped++;
+                            result.SkippedTakenInputs.Add(new ExportSkippedBind
+                            {
+                                Game = GameId_,
+                                Device = want.Binding == null ? want.Device : want.Binding.Device,
+                                Input = want.Binding == null ? want.Key : want.Binding.Input,
+                                ModifiersText = want.Binding == null ? string.Empty : string.Join("+", (want.Binding.Reformers ?? new List<string>()).Select(ReformerName)),
+                                Relation = want.RelationName,
+                                ActionId = element.Name,
+                                Action = ActionTitle(request.Catalog, element.Name),
+                                GameAction = holders,
+                                Reason = ExportSkippedBind.NoFreeSlot
+                            });
+                        }
                         continue;
+                    }
                     target.Set(want);
                     if (want.IsAxis)
                         element.SetAxisOptions(fileInverted, want.DeadzoneText);
@@ -519,9 +541,15 @@ namespace JoyPro.Engine.Games
         // Buttons have two slots. Add takes only a free slot; merge a free slot first and the slot of the same joystick
         // only when both are taken (the action keeps its other input where it can); merge-overwrite and clean the slot of
         // the same joystick first. An axis has one slot: written when free or (not add) when it holds a joystick. Keyboard,
-        // mouse and pad slots are never overwritten, nor button slots of devices that are not connected.
-        private static EliteSlot PickSlot(EliteElement element, EliteWanted want, GameExportMode mode, Func<EliteSlot, bool> joystickOwned, GameIoResult result)
+        // mouse and pad slots are never overwritten, nor button slots of devices that are not connected, nor a slot that
+        // already holds another of the profile's inputs for this action (two relations put one action on two buttons: the
+        // second must not take the first one's slot). Null = not written; holders then says in plain words what keeps
+        // the slots ("" when the element has no slot at all).
+        private static EliteSlot PickSlot(EliteElement element, EliteWanted want, List<EliteWanted> wants, GameExportMode mode, Func<EliteSlot, bool> joystickOwned,
+                                          EliteDevices map, GameCatalog catalog, GameIoResult result, out string holders)
         {
+            holders = string.Empty;
+            Func<EliteSlot, bool> heldByProfile = s => wants.Any(w => w != want && w.Matches(s));
             if (want.IsAxis)
             {
                 EliteSlot binding = element.Slots.FirstOrDefault(s => s.Kind == "Binding");
@@ -533,28 +561,104 @@ namespace JoyPro.Engine.Games
                 bool free = binding.Device == NoDevice || binding.Device.Length == 0;
                 // The element has one axis slot: the profile's axis takes it from any joystick (also one that is not
                 // connected; the profile binds this axis explicitly), never from the keyboard, mouse or a half axis.
-                if (free || (mode != GameExportMode.Add && !NonJoystickDevices.Contains(binding.Device) && !IsHalfAxis(binding)))
+                if (free || (mode != GameExportMode.Add && !NonJoystickDevices.Contains(binding.Device) && !IsHalfAxis(binding) && !heldByProfile(binding)))
                     return binding;
                 result.ConflictsKept++;
-                result.Warnings.Add(element.Name + ": kept the game's axis " + binding.Device + " " + binding.Key + " (" + ModeName(mode) + ").");
+                holders = SlotHolderWords(binding, wants, map);
+                result.Warnings.Add(NotWrittenHead(element, want, map, catalog) + " was not written: Elite keeps one input per axis action and it is in use (" + holders + ").");
                 return null;
             }
 
             List<EliteSlot> slots = element.Slots.Where(s => s.Kind != "Binding").ToList();
-            EliteSlot freeSlot = slots.FirstOrDefault(s => s.Device == NoDevice || s.Device.Length == 0);
-            EliteSlot sameDevice = want.Device == "Keyboard" ? null : slots.FirstOrDefault(s => s.Device == want.Device && !IsHalfAxis(s));
+            List<EliteSlot> open = slots.Where(s => !heldByProfile(s)).ToList();
+            EliteSlot freeSlot = open.FirstOrDefault(s => s.Device == NoDevice || s.Device.Length == 0);
+            EliteSlot sameDevice = want.Device == "Keyboard" ? null : open.FirstOrDefault(s => s.Device == want.Device && !IsHalfAxis(s));
             EliteSlot target = mode == GameExportMode.Add ? freeSlot : mode == GameExportMode.Merge ? freeSlot ?? sameDevice : sameDevice ?? freeSlot;
-            if (target == null)
+            if (target == null && slots.Count > 0)
             {
                 result.ConflictsKept++;
-                result.Warnings.Add(element.Name + ": both slots are taken by other devices or keys; " + want.Device + " " + want.Key + " skipped.");
+                holders = string.Join("; ", slots.Select(s => SlotHolderWords(s, wants, map)));
+                result.Warnings.Add(NotWrittenHead(element, want, map, catalog) + " was not written: Elite keeps two inputs per action (Primary and Secondary) and both are in use (" + holders + ").");
             }
             return target;
         }
 
-        private static string ModeName(GameExportMode mode)
+        // "'Primary Fire' (relation 'Fire B'): Smoke Stick button 8".
+        private static string NotWrittenHead(EliteElement element, EliteWanted want, EliteDevices map, GameCatalog catalog)
         {
-            return mode == GameExportMode.Add ? "add mode" : "not a connected joystick";
+            return "'" + ActionTitle(catalog, element.Name) + "'" + (want.RelationName.Length > 0 ? " (relation '" + want.RelationName + "')" : string.Empty) + ": " + InputWords(want.Device, want.Key, map);
+        }
+
+        // "Primary: keyboard key U" / "Secondary: Smoke Stick button 35 (relation 'Hardpoints B')".
+        private static string SlotHolderWords(EliteSlot slot, List<EliteWanted> wants, EliteDevices map)
+        {
+            EliteWanted mine = wants.FirstOrDefault(w => w.Matches(slot));
+            string what = slot.Device == NoDevice || slot.Device.Length == 0 ? "free" : InputWords(slot.Device, slot.Key, map);
+            if (slot.Modifiers.Count > 0)
+                what += " with " + string.Join(" and ", slot.Modifiers.Select(m => InputWords(m.Key, m.Value, map))) + " as modifier";
+            return (slot.Kind == "Binding" ? "Axis" : slot.Kind) + ": " + what + (mine != null && mine.RelationName.Length > 0 ? " (relation '" + mine.RelationName + "')" : string.Empty);
+        }
+
+        // An Elite input in plain words: "keyboard key U", "Smoke Stick button 35", "Smoke Stick hat 1 right",
+        // "Smoke Stick RZ axis, positive half". deviceName: the Elite device id as the user knows the device.
+        internal static string InputWords(string eliteDevice, string key, Func<string, string> deviceName)
+        {
+            key = key ?? string.Empty;
+            eliteDevice = eliteDevice ?? string.Empty;
+            if (string.Equals(eliteDevice, "Keyboard", StringComparison.OrdinalIgnoreCase))
+                return "keyboard key " + (key.StartsWith("Key_", StringComparison.Ordinal) ? key.Substring(4) : key);
+            if (NonJoystickDevices.Contains(eliteDevice))
+                return eliteDevice + " " + key;
+            string half = string.Empty;
+            if (IsHalfAxisKey(key))
+            {
+                half = key.StartsWith("Pos_", StringComparison.Ordinal) ? ", positive half" : ", negative half";
+                key = key.Substring(4);
+            }
+            string input = key;
+            Match axis = Regex.Match(key, @"^Joy_(\w+)Axis$");
+            Match pov = Regex.Match(key, @"^Joy_POV(\d)(Up|Right|Down|Left)$");
+            Match button = Regex.Match(key, @"^Joy_(\d+)$");
+            if (axis.Success)
+                input = axis.Groups[1].Value + " axis";
+            else if (pov.Success)
+                input = "hat " + pov.Groups[1].Value + " " + pov.Groups[2].Value.ToLowerInvariant();
+            else if (button.Success)
+                input = "button " + button.Groups[1].Value;
+            return deviceName(eliteDevice) + " " + input + half;
+        }
+
+        private static string InputWords(string eliteDevice, string key, EliteDevices map)
+        {
+            return InputWords(eliteDevice, key, id =>
+            {
+                GameDevice device = map.Resolve(id);
+                return device == null ? "device " + id : Regex.Replace(device.JoyProName, @"\s*\{[0-9A-Fa-f-]+\}$", string.Empty);
+            });
+        }
+
+        // The game's bind a clean, nuke or conflict release keeps (a half axis as input or modifier), in plain words.
+        private static string KeptHalfAxisText(EliteElement element, EliteSlot slot, EliteDevices map, GameCatalog catalog)
+        {
+            bool halfModifier = slot.Modifiers.Any(m => IsHalfAxisKey(m.Value));
+            string modifiers = slot.Modifiers.Count == 0 ? string.Empty
+                : " with " + string.Join(" and ", slot.Modifiers.Select(m => InputWords(m.Key, m.Value, map))) + " as modifier";
+            return "'" + ActionTitle(catalog, element.Name) + "': kept the game's bind " + InputWords(slot.Device, slot.Key, map) + modifiers + ". " +
+                   (halfModifier
+                       ? "Elite can use half of an axis as a modifier; a JoyPro profile cannot hold that, so the export leaves this bind in the game as it is."
+                       : "Elite can use half of an axis as a button; a JoyPro profile cannot hold that, so the export leaves this bind in the game as it is.");
+        }
+
+        private static string ActionTitle(GameCatalog catalog, string id)
+        {
+            GameAction action = catalog == null ? null : catalog.Find(id);
+            return action != null && !string.IsNullOrWhiteSpace(action.Title) ? action.Title : id;
+        }
+
+        // A profile modifier ("<token>§<device>§<token>§<flag>") by its name.
+        private static string ReformerName(string reformer)
+        {
+            return (reformer ?? string.Empty).Split('§')[0];
         }
 
         private static string Encode(GameInputBinding binding, EliteDevices map, Dictionary<string, string> keys, out EliteWanted want)

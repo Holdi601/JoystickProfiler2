@@ -1049,6 +1049,8 @@ namespace JoyPro.Engine
             mode = mode.Trim().ToLowerInvariant();
             if (mode != "auto" && mode != "same" && mode != "layout")
                 return Fail("--mode must be auto, same or layout.");
+            if (merge != null)
+                merge = merge.Trim().ToLowerInvariant();
             if (merge != null && merge != "add" && merge != "keep" && merge != "replace")
                 return Fail("--merge must be add, keep or replace.");
 

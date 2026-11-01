@@ -30,7 +30,12 @@ if ([string]::IsNullOrWhiteSpace($EngineExePath)) {
 if (-not (Test-Path $EngineExePath)) { throw "engine.exe not found: $EngineExePath" }
 
 $temp = Join-Path ([System.IO.Path]::GetTempPath()) ("joypro-support-" + [Guid]::NewGuid().ToString("N") + ".md")
+# The page shows what JoyPro ships: an empty data folder, so command lists refreshed on this PC do not change a mark.
+$dataDir = Join-Path ([System.IO.Path]::GetTempPath()) ("joypro-support-data-" + [Guid]::NewGuid().ToString("N"))
+$previousDataDir = $env:JOYPRO_DATA_DIR
 try {
+    New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
+    $env:JOYPRO_DATA_DIR = $dataDir
     & $EngineExePath games support --markdown --notes $notes --out $temp | Out-Null
     $exit = $LASTEXITCODE
     if (-not (Test-Path $temp)) { throw "engine games support wrote no page (exit code $exit)." }
@@ -38,7 +43,9 @@ try {
     $content = [System.IO.File]::ReadAllText($temp, [System.Text.Encoding]::UTF8)
 }
 finally {
+    $env:JOYPRO_DATA_DIR = $previousDataDir
     Remove-Item -Force -ErrorAction SilentlyContinue $temp
+    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $dataDir
 }
 
 if ($CheckOnly) {

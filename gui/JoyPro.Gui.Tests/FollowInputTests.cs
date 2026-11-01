@@ -70,7 +70,7 @@ public sealed class FollowInputTests
     // ---- The Binds page ----
 
     [Fact]
-    public async Task Follow_JumpsToTheRelation_AndCyclesUnshiftedFirst()
+    public Task Follow_JumpsToTheRelation_AndCyclesUnshiftedFirst() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, FollowCapture capture) = await CreateBindsPageAsync();
         Assert.True(vm.IsLiveInputMonitoring);
@@ -104,10 +104,10 @@ public sealed class FollowInputTests
         vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN30", true));
         Assert.Equal("Fire", vm.SelectedBind?.RelationName);
         Assert.Contains("nothing bound", vm.FollowInputToast);
-    }
+    });
 
     [Fact]
-    public async Task Follow_Axis_MovedALongWay_JumpsThroughItsRelations()
+    public Task Follow_Axis_MovedALongWay_JumpsThroughItsRelations() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0, 0, 0, 0, 0, 0]));
@@ -119,10 +119,10 @@ public sealed class FollowInputTests
         await Task.Delay((int)FollowInputTracker.AxisStepGapMs + 50);
         vm.OnLiveAxes(new JoystickAxisSnapshot(Throttle, [0.5, 0.5, 0.1, 0, 0, 0, 0, 0]));
         Assert.Equal("Zoom", vm.SelectedBind?.RelationName);
-    }
+    });
 
     [Fact]
-    public async Task Follow_DoesNotJump_WhileRecordingTypingOrSwitchedOff()
+    public Task Follow_DoesNotJump_WhileRecordingTypingOrSwitchedOff() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, FollowCapture capture) = await CreateBindsPageAsync();
         vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
@@ -149,12 +149,12 @@ public sealed class FollowInputTests
         Assert.True(vm.IsLiveInputMonitoring);
         vm.CurrentStage = UiStage.Export;
         Assert.False(vm.IsLiveInputMonitoring);
-    }
+    });
 
     // Tester report on 2.4.2: "JP always jumps to the button pressed in the Move dialogue box". While the Move panel is
     // open (pressing its new button, or any button), neither page's selection nor the open relation changes.
     [Fact]
-    public async Task Follow_NeverJumps_WhileTheMovePanelIsOpen_OnBindsAndRelations()
+    public Task Follow_NeverJumps_WhileTheMovePanelIsOpen_OnBindsAndRelations() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
@@ -180,12 +180,12 @@ public sealed class FollowInputTests
         await Task.Delay((int)FollowInputTracker.ButtonDebounceMs + 30);
         vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
         Assert.Equal("Gear", vm.SelectedRelation?.Name);
-    }
+    });
 
     // ---- The Relations page (same switch, same rules) ----
 
     [Fact]
-    public async Task Follow_OnTheRelationsPage_SelectsTheCard_AndCyclesUnshiftedFirst()
+    public Task Follow_OnTheRelationsPage_SelectsTheCard_AndCyclesUnshiftedFirst() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         vm.CurrentStage = UiStage.Relations;
@@ -224,10 +224,10 @@ public sealed class FollowInputTests
         vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
         Assert.Equal(string.Empty, vm.RelationSearchText);
         Assert.Equal("Gear", vm.SelectedRelation?.Name);
-    }
+    });
 
     [Fact]
-    public async Task Follow_OnTheRelationsPage_NotWhileTypingRecordingOrSwitchedOff()
+    public Task Follow_OnTheRelationsPage_NotWhileTypingRecordingOrSwitchedOff() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         vm.CurrentStage = UiStage.Relations;
@@ -247,7 +247,7 @@ public sealed class FollowInputTests
         Assert.False(vm.IsLiveInputMonitoring);
         vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true));
         Assert.Equal("Fire", vm.SelectedRelation?.Name);
-    }
+    });
 
     // A jump moves the list under a mouse that did not move: the window holds tooltips back until the mouse really
     // moves (screen path >= ReleasePath); synthetic moves at the same place, jitter, clicks and the wheel do not count.
@@ -361,6 +361,29 @@ public sealed class FollowInputTests
         });
     }
 
+    // Radio buttons with a GroupName in windows that were never shown share one global group: two such windows on two
+    // view models flipped each other's HUD preview choice for ever (the test run hung and grew to 18 GB).
+    [Fact]
+    public void TwoWindows_RadioChoices_StayInTheirOwnWindow()
+    {
+        AvaloniaRenderThread.Run(() =>
+        {
+            (MainWindowViewModel first, _) = AvaloniaRenderThread.Wait(CreateBindsPageAsync());
+            (MainWindowViewModel second, _) = AvaloniaRenderThread.Wait(CreateBindsPageAsync());
+            Views.MainWindow one = new() { DataContext = first, Width = 1280, Height = 800 };
+            Views.MainWindow two = new() { DataContext = second, Width = 1280, Height = 800 };
+            first.HudPreviewStream = true;
+            Assert.True(first.HudPreviewStream);
+            Assert.False(second.HudPreviewStream);
+            second.HudPreviewStream = true;
+            first.HudPreviewStream = false;
+            Assert.False(first.HudPreviewStream);
+            Assert.True(second.HudPreviewStream);
+            GC.KeepAlive(one);
+            GC.KeepAlive(two);
+        });
+    }
+
     private static void RaiseMove(Avalonia.Controls.Window main, Avalonia.Controls.Control source, Avalonia.Input.IPointer pointer, Avalonia.Point at) =>
         source.RaiseEvent(new Avalonia.Input.PointerEventArgs(Avalonia.Input.InputElement.PointerMovedEvent, source, pointer, main, at, 0,
             Avalonia.Input.PointerPointProperties.None, Avalonia.Input.KeyModifiers.None));
@@ -397,7 +420,7 @@ public sealed class FollowInputTests
     }
 
     [Fact]
-    public async Task Follow_TypingOnAnAnalogKeyboard_DoesNotJump_ARealAxisStillDoes_OptInCounts()
+    public Task Follow_TypingOnAnAnalogKeyboard_DoesNotJump_ARealAxisStillDoes_OptInCounts() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         int activity = 0;
@@ -430,10 +453,10 @@ public sealed class FollowInputTests
         vm.OnLiveAxes(new JoystickAxisSnapshot(Wooting, [0, 0, 0, 0, 0, 0, 0, 0]));
         vm.OnLiveAxes(new JoystickAxisSnapshot(Wooting, [0.9, 0, 0, 0, 0, 0, 0, 0]));
         Assert.Contains("on Wooting", vm.FollowInputToast);
-    }
+    });
 
     [Fact]
-    public async Task Follow_NotWhileAnotherWindowIsInFront_OrATextBoxHoldsTheFocus_NoteCanBeHidden()
+    public Task Follow_NotWhileAnotherWindowIsInFront_OrATextBoxHoldsTheFocus_NoteCanBeHidden() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
@@ -459,10 +482,10 @@ public sealed class FollowInputTests
         Assert.Equal("Gear", vm.SelectedBind?.RelationName);
         Assert.Equal(string.Empty, vm.FollowInputToast);
         Assert.False(vm.HasFollowInputToast);
-    }
+    });
 
     [Fact]
-    public async Task Record_LeavesTheAxesOfAnAnalogKeyboardOut_UnlessOptedIn()
+    public Task Record_LeavesTheAxesOfAnAnalogKeyboardOut_UnlessOptedIn() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, FollowCapture capture) = await CreateBindsPageAsync();
         vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Thrust");
@@ -476,7 +499,7 @@ public sealed class FollowInputTests
         vm.SetDeviceAxesInput(Wooting, true);
         await vm.RecordNextInputCommand.ExecuteAsync(null);
         Assert.False(capture.LastOptions!.IgnoreAxesOf!(Wooting));
-    }
+    });
 
     // A key pressed in the window (also one that makes follow input jump) and every jump arm the tooltip hold; no
     // control opens its tooltip at once because another one was open a moment ago.
@@ -520,13 +543,13 @@ public sealed class FollowInputTests
     }
 
     [Fact]
-    public async Task Follow_ARestingButtonOfTheFirstReport_DoesNotJump()
+    public Task Follow_ARestingButtonOfTheFirstReport_DoesNotJump() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, _) = await CreateBindsPageAsync();
         vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Thrust");
         vm.OnLiveInput(new JoystickInputEvent(Stick, "JOY_BTN8", true, FirstReport: true));
         Assert.Equal("Thrust", vm.SelectedBind?.RelationName);
-    }
+    });
 
     // ---- Visual Assign / Layout page: the shown device's inputs light up ----
 
@@ -556,7 +579,7 @@ public sealed class FollowInputTests
     }
 
     [Fact]
-    public async Task VisualAssign_PressedInputLightsUpItsRowAndStopsWithThePage()
+    public Task VisualAssign_PressedInputLightsUpItsRowAndStopsWithThePage() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, FollowCapture capture) = await CreateBindsPageAsync();
         vm.FollowInputOnBinds = false;
@@ -591,7 +614,7 @@ public sealed class FollowInputTests
         Assert.False(vm.IsLiveInputMonitoring);
         Assert.False(marker.IsLive);
         Assert.Empty(vm.WorkspaceLiveInput.Pressed);
-    }
+    });
 
     [Fact]
     public void Settings_FollowInputAndRecordRelease_ArePersisted()
@@ -632,14 +655,14 @@ public sealed class FollowInputTests
     }
 
     [Fact]
-    public async Task Record_PassesTheReleaseSettingToTheCapture()
+    public Task Record_PassesTheReleaseSettingToTheCapture() => UiThread.RunAsync(async () =>
     {
         (MainWindowViewModel vm, FollowCapture capture) = await CreateBindsPageAsync();
         vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Fire");
         vm.RecordReleaseOfHeldButtons = true;
         await vm.RecordNextInputCommand.ExecuteAsync(null);
         Assert.True(capture.LastOptions?.RecordReleaseOfHeldButtons);
-    }
+    });
 
     internal static async Task<(MainWindowViewModel Vm, FollowCapture Capture)> CreateBindsPageAsync()
     {

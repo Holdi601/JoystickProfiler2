@@ -172,6 +172,25 @@ public static class DeviceReferenceService
         public string? DrawingStyle { get; set; }
 
         public string? ExportDrawingStyle { get; set; }
+
+        // Rings on the spots of a photo that look like controls while the marker assistant is open (experimental,
+        // ControlSpotDetector); off by default.
+        public bool DetectedSpots { get; set; }
+    }
+
+    // The marker assistant's "Detected spots (experimental)" switch, kept across restarts.
+    public static bool DetectedSpotsEnabled
+    {
+        get => ReadSettings().DetectedSpots;
+        set
+        {
+            lock (Gate)
+            {
+                ReferenceSettings settings = ReadSettings();
+                settings.DetectedSpots = value;
+                WriteJson(SettingsFile(), settings);
+            }
+        }
     }
 
     // The drawing style on screen: cel-shaded in JoyPro's colours unless the user chose otherwise.

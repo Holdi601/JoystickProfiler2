@@ -223,6 +223,21 @@ try {
     Assert-Match $bmAfter "(?m)^GstKeyBinding\.helicopter\.ConceptFire\.0\.button 255$" "bf6 clean should release the other flight keys of the written keyboard."
     Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptPitch\.0\.button 208$" "bf6 clean must keep keys on axis actions (the import does not read them)."
     Assert-True ((Get-BmNonFlight $bmAfter) -eq $bmNonFlight) "bf6 clean + nuke must leave the non-flight lines identical."
+
+    # Clean without nuke is the same in every game: fire on a key (the keyboard is written); the joystick, connected but
+    # not written, keeps fire's slot. Only merge-overwrite frees it.
+    $bmCleanProfile = Join-Path $bmDir "modes-clean.pr0file"
+    Run-Engine @("--profile", $bmCleanProfile, "relations", "add", "BM Fire key", "--button", "--node", "Battlefield6:jet.ConceptFire", "--device", "Keyboard", "--input", "F", "--text") | Out-Null
+    [System.IO.File]::WriteAllText($bmFile, $bmText)
+    $bmCleanOnly = Run-Engine @("--profile", $bmCleanProfile, "bf6", "export", $bmFile, "--mode", "clean", "--include-keyboard", "--text")
+    Assert-True ($bmCleanOnly.ExitCode -eq 0) ("bf6 clean export failed: " + $bmCleanOnly.Output)
+    $bmAfter = [System.IO.File]::ReadAllText($bmFile)
+    Assert-Match $bmAfter "(?m)^GstKeyBinding\.jet\.ConceptFire\.\d\.button 33$" ("bf6 clean should write fire on F: " + $bmCleanOnly.Output)
+    Assert-True (Get-BmFireSlot $bmAfter 0) "bf6 clean must keep fire on the joystick the export does not write (only merge-overwrite frees it)."
+    [System.IO.File]::WriteAllText($bmFile, $bmText)
+    $bmOverwriteOnly = Run-Engine @("--profile", $bmCleanProfile, "bf6", "export", $bmFile, "--mode", "merge-overwrite", "--include-keyboard", "--text")
+    Assert-True ($bmOverwriteOnly.ExitCode -eq 0) ("bf6 merge-overwrite export failed: " + $bmOverwriteOnly.Output)
+    Assert-True (-not (Get-BmFireSlot ([System.IO.File]::ReadAllText($bmFile)) 0)) "bf6 merge-overwrite should free fire's joystick slot."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $bmPrevious.Devices

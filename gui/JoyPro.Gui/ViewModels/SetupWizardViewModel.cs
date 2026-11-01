@@ -307,7 +307,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             using JsonDocument doc = JsonDocument.Parse(MainWindowViewModel.ExtractJsonPayload(result.StandardOutput));
             allAircraft.Clear();
             foreach (JsonElement item in Array(doc.RootElement, "Aircraft"))
-                allAircraft.Add(new SetupAircraftItem(Text(item, T("Key")), Text(item, T("Game")), Text(item, "ClassTitle")));
+                allAircraft.Add(new SetupAircraftItem(Text(item, "Key"), Text(item, "Game"), Text(item, "ClassTitle")));
         }
         catch (JsonException)
         {
@@ -324,6 +324,63 @@ public sealed partial class SetupWizardViewModel : ObservableObject
         RemoveEmptyTiers();
         FilterAircraft();
         Status = T("{0} aircraft / games. Put the ones you fly most at the top; aircraft in one row count the same.", allAircraft.Count);
+        PutCockpitAircraftFirst();
+    }
+
+    // ---- a cockpit layout picked on the Cockpits page ("Use this layout", docs/cockpits.md) ----
+
+    private CockpitLayoutRequest? cockpitLayout;
+
+    public CockpitLayoutRequest? CockpitLayout => cockpitLayout;
+
+    public bool HasCockpitLayout => cockpitLayout != null;
+
+    public string CockpitLayoutText => cockpitLayout == null ? string.Empty
+        : T("Cockpit layout: {0} {1} (from the Cockpits page). Its aircraft comes first and the plan places its functions as in this cockpit.", cockpitLayout.AircraftName, cockpitLayout.VariantName);
+
+    // The variant picked on the Cockpits page: its aircraft goes to the top of the priority list (once the aircraft of
+    // the chosen games are read) and the plan reads that variant's stick and throttle layout (engine cockpits get
+    // <aircraft> <variant> --json) for it, instead of the aircraft's first variant.
+    public void UseCockpitLayout(CockpitLayoutRequest request)
+    {
+        cockpitLayout = request;
+        OnPropertyChanged(nameof(CockpitLayout));
+        OnPropertyChanged(nameof(HasCockpitLayout));
+        OnPropertyChanged(nameof(CockpitLayoutText));
+        InvalidatePlan();
+        PutCockpitAircraftFirst();
+        Status = CockpitLayoutText;
+    }
+
+    // An aircraft of the wizard's list that the picked cockpit names ("DCS:F-16C_50"; a game-wide entry by the game).
+    private bool IsCockpitLayoutAircraft(SetupAircraftItem plane)
+    {
+        if (cockpitLayout == null)
+            return false;
+        foreach (string entry in cockpitLayout.Games)
+        {
+            int colon = entry.IndexOf(':');
+            string name = colon < 0 ? entry : entry[(colon + 1)..];
+            if (string.Equals(name.Trim(), plane.Key, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
+
+    private void PutCockpitAircraftFirst()
+    {
+        if (cockpitLayout == null || allAircraft.Count == 0)
+            return;
+        SetupAircraftItem? plane = allAircraft.FirstOrDefault(IsCockpitLayoutAircraft);
+        if (plane == null || (Tiers.Count > 0 && Tiers[0].Aircraft.Contains(plane)))
+            return;
+        foreach (SetupTierItem tier in Tiers)
+            tier.Aircraft.Remove(plane);
+        RemoveEmptyTiers();
+        SetupTierItem first = new();
+        first.Aircraft.Add(plane);
+        Tiers.Insert(0, first);
+        AfterTierChange();
     }
 
     private void FilterAircraft()
@@ -575,7 +632,9 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             return files;
         foreach (SetupAircraftItem plane in Tiers.SelectMany(t => t.Aircraft).Take(12))
         {
-            EngineCommandResult? result = await runEngine(["cockpits", "get", plane.Key, "--json"], false, false, T("Reading the cockpit of {0}...", plane.Key), true);
+            // The variant picked on the Cockpits page for its aircraft, else the aircraft's first variant.
+            IReadOnlyList<string> get = IsCockpitLayoutAircraft(plane) ? cockpitLayout!.EngineArguments : ["cockpits", "get", plane.Key, "--json"];
+            EngineCommandResult? result = await runEngine(get, false, false, T("Reading the cockpit of {0}...", plane.Key), true);
             if (result == null || result.ExitCode != 0)
             {
                 // No cockpit database in this engine: stop asking.
@@ -899,7 +958,7 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             {
                 using JsonDocument doc = JsonDocument.Parse(MainWindowViewModel.ExtractJsonPayload(result.StandardOutput));
                 foreach (JsonElement item in Array(doc.RootElement, "Sheets"))
-                    list.Add(new SetupSheetItem(Text(item, T("Device")), string.Empty, Text(item, T("File"))));
+                    list.Add(new SetupSheetItem(Text(item, "Device"), string.Empty, Text(item, "File")));
             }
             catch (JsonException)
             {
@@ -964,11 +1023,11 @@ public sealed partial class SetupWizardViewModel : ObservableObject
     {
         SetupDevice device = new()
         {
-            Device = Text(item, T("Device")),
-            Model = Text(item, T("Model")),
+            Device = Text(item, "Device"),
+            Model = Text(item, "Model"),
             ModelId = Text(item, "ModelId"),
-            Kind = Text(item, T("Kind")),
-            Hand = Text(item, T("Hand")),
+            Kind = Text(item, "Kind"),
+            Hand = Text(item, "Hand"),
             Connected = Bool(item, "Connected"),
             Generic = Bool(item, "Generic"),
             ForceFeedback = Bool(item, "ForceFeedback"),
@@ -978,13 +1037,13 @@ public sealed partial class SetupWizardViewModel : ObservableObject
             Hats = Int(item, "Hats"),
             Axes = Int(item, "Axes"),
             ProfileUses = Int(item, "ProfileUses"),
-            Role = Text(item, T("Role")),
+            Role = Text(item, "Role"),
             ProposedRole = Text(item, "ProposedRole"),
-            Reason = Text(item, T("Reason")),
-            Grip = Text(item, T("Grip"))
+            Reason = Text(item, "Reason"),
+            Grip = Text(item, "Grip")
         };
         foreach (JsonElement grip in Array(item, "Grips"))
-            device.Grips.Add(new SetupGripChoice { Id = Text(grip, T("Id")), Name = Text(grip, T("Name")), Image = Text(grip, T("Image")) });
+            device.Grips.Add(new SetupGripChoice { Id = Text(grip, "Id"), Name = Text(grip, "Name"), Image = Text(grip, "Image") });
         return device;
     }
 

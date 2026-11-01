@@ -159,6 +159,9 @@
                     <TextBlock DockPanel.Dock="Top" Classes="h2" Text="{l:T 'Priority (top = most important)'}" Margin="0,0,0,6" />
                     <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Opacity="0.8" Margin="0,0,0,6"
                                Text="{l:T 'The higher an aircraft, the more its binds get the best places. Aircraft in one row count the same; aircraft you do not list count least. Drag aircraft onto a row or drag rows to reorder.'}" />
+                    <!-- "Use this layout" on the Cockpits page: that variant's layout for its aircraft -->
+                    <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" FontWeight="SemiBold" Margin="0,0,0,6"
+                               Text="{Binding CockpitLayoutText}" IsVisible="{Binding HasCockpitLayout}" />
                     <StackPanel DockPanel.Dock="Bottom" Spacing="6" Margin="0,8,0,0">
                         <WrapPanel ItemSpacing="6" LineSpacing="6">
                             <Button Content="{l:T 'Up'}" Command="{Binding PriorityUpCommand}" />

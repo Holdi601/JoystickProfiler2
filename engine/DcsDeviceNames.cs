@@ -53,7 +53,7 @@ namespace JoyPro.Engine
             {
                 try
                 {
-                    connected = DirectInputDeviceDiscovery.EnumerateConnectedDeviceInfos(new List<string>()) ?? new List<DirectInputDeviceDiscovery.DirectInputDeviceInfo>();
+                    connected = Games.GameDeviceDirectory.ConnectedInfos(new List<string>()) ?? new List<DirectInputDeviceDiscovery.DirectInputDeviceInfo>();
                 }
                 catch
                 {

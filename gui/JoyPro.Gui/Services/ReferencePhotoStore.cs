@@ -12,7 +12,7 @@ namespace JoyPro.Gui.Services;
 
 // The device reference photos on this PC (docs/device-reference.md "Reference photos on this PC"): JoyPro ships only
 // their addresses (DB\DevicePhotos, a SHA-256 per photo); the user's PC downloads them from the original address, checks
-// the SHA-256 and keeps them in <data>\DeviceReference\ReferencePhotos\<model>\<view>-<sha12>.<ext> with index.json.
+// the SHA-256 (or one of the photo's sha256Alt values: the same pixels, re-encoded by the shop) and keeps them in <data>\DeviceReference\ReferencePhotos\<model>\<view>-<sha12>.<ext> with index.json.
 // When the address fails or its content changed, the photo comes from its Wayback Machine snapshot (web.archive.org),
 // checked against the same SHA-256. A photo the maker changed and the archive does not have is kept as it is now
 // ("changed": JoyPro's curated positions do not apply to it). Only with the user's consent for the device
@@ -147,7 +147,7 @@ public sealed class ReferencePhotoStore
             (byte[]? data, string fetchError) = await FetchAsync(original, progress, cancellationToken).ConfigureAwait(false);
             if (data is { Length: > 0 } && IsPicture(data))
             {
-                if (expected.Length == 0 || Sha(data) == expected)
+                if (expected.Length == 0 || photo.HasContent(Sha(data)))
                     return Save(model, photo, data, "original", false);
                 changedOriginal = data;
                 error = T("The photo on the site has changed since JoyPro recorded it.");
@@ -160,7 +160,7 @@ public sealed class ReferencePhotoStore
         if (Uri.TryCreate(archive, UriKind.Absolute, out Uri? archiveUri))
         {
             (byte[]? data, string archiveError) = await FetchAsync(archiveUri, progress, cancellationToken).ConfigureAwait(false);
-            if (data is { Length: > 0 } && IsPicture(data) && (expected.Length == 0 || Sha(data) == expected))
+            if (data is { Length: > 0 } && IsPicture(data) && (expected.Length == 0 || photo.HasContent(Sha(data))))
                 return Save(model, photo, data, "archive", false);
             if (error.Length == 0)
                 error = archiveError.Length > 0 ? archiveError : T("The web archive has no copy of this photo.");

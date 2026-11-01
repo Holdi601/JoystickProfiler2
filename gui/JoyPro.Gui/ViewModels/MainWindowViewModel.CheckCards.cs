@@ -86,6 +86,13 @@ public sealed partial class MainWindowViewModel
         IsOpen = true
     };
 
+    private CheckFix ReplaceFix(string relation, string label, string game, string id, string title, IReadOnlyList<string> planes) => new()
+    {
+        Text = T("Replace {0} on {1} with...", CommandWords(title, false), label),
+        Tip = T("Opens '{0}' with Add actions searching for this command's name and its aircraft; tick the action that belongs on this button instead and press Replace. Ctrl+Z undoes it.", relation),
+        Command = new AsyncRelayCommand(() => ReplaceCheckActionAsync(relation, game, id, title, planes))
+    };
+
     // ---------------------------------------------------------------------------------------------------------
     // Same command on two buttons (engine relations duplicates: one group = one card)
     // ---------------------------------------------------------------------------------------------------------
@@ -170,6 +177,13 @@ public sealed partial class MainWindowViewModel
         List<CheckFix> fixes = choices.Where(c => !ReferenceEquals(c, recommendedChoice)).Select(c => new CheckFix { Text = c.KeepText, Tip = c.Tip, Command = c.KeepCommand }).ToList();
         fixes.Add(keepBoth);
         List<CheckFix> more = [];
+        // "Replace 'X' on <button> with...": one of the buttons should have another command (the [Dec] that should be
+        // [Inc]); with several commands on the card these go under More.
+        foreach ((string Relation, string Button, bool Bound) side in sides)
+        {
+            foreach ((string Id, string Title, List<string> Planes, List<string> Keys, bool Unknown) action in actions.Take(3))
+                (actions.Count == 1 ? fixes : more).Add(ReplaceFix(side.Relation, Label(side), game, action.Id, action.Title, action.Planes));
+        }
         if (!suggestOff)
             more.Add(switchOff);
         AddUnknownFixes(more, game, actions.Where(a => a.Unknown).Select(a => (a.Title, a.Keys)).ToList(), sides.Select(s => s.Relation).FirstOrDefault() ?? string.Empty);
@@ -673,8 +687,9 @@ public sealed partial class MainWindowViewModel
             StatusText = T("The relation '{0}' is not there any more.", relation);
             return;
         }
-        // Back (header, Alt+Left) returns to this Check list, scrolled to this card.
+        // Back (header, Alt+Left, and "Back to the check" in the editor) returns to this Check list, scrolled to this card.
         RememberPlace();
+        RememberCheckReturn(item.Name);
         pendingCheckHighlight = (item.Name, game, new HashSet<string>(ids, StringComparer.OrdinalIgnoreCase), new HashSet<string>(planes, StringComparer.OrdinalIgnoreCase));
         CurrentStage = UiStage.Relations;
         suppressRelationAutoLoad = true;

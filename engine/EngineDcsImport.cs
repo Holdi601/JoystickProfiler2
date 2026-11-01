@@ -1841,22 +1841,40 @@ namespace JoyPro.Engine
             string cleanPath = DefaultsProfilePath(backupPath, plane, keyboard);
             if (File.Exists(cleanPath))
             {
-                HashSet<string> defaults = new HashSet<string>(StringComparer.Ordinal);
-                HashSet<string> unused = new HashSet<string>(StringComparer.Ordinal);
-                try
-                {
-                    CollectBackupBindKeys(RunFileCache.ReadAllText(cleanPath), unused, defaults);
-                }
-                catch (IOException)
-                {
-                }
-                foreach (string bind in defaults)
+                foreach (string bind in CleanProfileDefaultBinds(cleanPath))
                 {
                     if (!removed.Contains(bind))
                         allowed.Add(bind);
                 }
             }
             return allowed;
+        }
+
+        // The default binds a clean profile lists (its "removed" entries), parsed once per file text: every .jp of an
+        // aircraft's devices asks for the same few profiles (2500 parses of ~100 files on a big Saved Games folder). The
+        // text instance comes from RunFileCache, so a profile changed since (a new run, a DB refresh) is parsed again.
+        // The set is only read by the callers.
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, KeyValuePair<string, HashSet<string>>> CleanProfileDefaults =
+            new System.Collections.Concurrent.ConcurrentDictionary<string, KeyValuePair<string, HashSet<string>>>(StringComparer.Ordinal);
+
+        private static HashSet<string> CleanProfileDefaultBinds(string cleanPath)
+        {
+            string text;
+            try
+            {
+                text = RunFileCache.ReadAllText(cleanPath);
+            }
+            catch (IOException)
+            {
+                return new HashSet<string>(StringComparer.Ordinal);
+            }
+            KeyValuePair<string, HashSet<string>> known;
+            if (CleanProfileDefaults.TryGetValue(cleanPath, out known) && ReferenceEquals(known.Key, text))
+                return known.Value;
+            HashSet<string> defaults = new HashSet<string>(StringComparer.Ordinal);
+            CollectBackupBindKeys(text, new HashSet<string>(StringComparer.Ordinal), defaults);
+            CleanProfileDefaults[cleanPath] = new KeyValuePair<string, HashSet<string>>(text, defaults);
+            return defaults;
         }
 
         // The defaults DCS applies to the device of an input file, as the DCS list refresh stored them: a device type

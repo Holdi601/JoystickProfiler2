@@ -116,6 +116,7 @@ namespace JoyPro.Engine
         {
             Dictionary<string, EngineInputConflict> byKey = new Dictionary<string, EngineInputConflict>(StringComparer.OrdinalIgnoreCase);
             List<EngineInputConflict> order = new List<EngineInputConflict>();
+            Dictionary<EngineConflictSide, HashSet<string>> sideIds = new Dictionary<EngineConflictSide, HashSet<string>>();
             foreach (KeyValuePair<string, Bind> kvp in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
             {
                 string relationName = kvp.Key ?? string.Empty;
@@ -164,13 +165,28 @@ namespace JoyPro.Engine
                             conflict.Sides.Add(side = new EngineConflictSide { Relation = resolvedName });
                         if (withTitles && !side.Actions.Any(a => string.Equals(a.Id, node.ID, StringComparison.OrdinalIgnoreCase)))
                             side.Actions.Add(ActionOf(game, node.ID, conflict.Plane, node));
+                        HashSet<string> ids;
+                        if (!sideIds.TryGetValue(side, out ids))
+                            sideIds[side] = ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                        ids.Add(node.ID ?? string.Empty);
                     }
                 }
             }
             HashSet<string> kept = Kept();
             List<EngineInputConflict> result = new List<EngineInputConflict>();
+            VehicleClasses classes = new VehicleClasses();
             foreach (EngineInputConflict conflict in order.Where(c => c.Sides.Count > 1))
             {
+                // A game without aircraft lists: relations whose actions are for different vehicle classes (the plane's
+                // throttle in one, the helicopter's collective in the other) do not share the input in the game.
+                if (!string.Equals(EngineRelationSuggest.GameKey(conflict.Game), "DCS", StringComparison.OrdinalIgnoreCase))
+                {
+                    Dictionary<EngineConflictSide, HashSet<string>> sideClasses = conflict.Sides.ToDictionary(
+                        s => s, s => new HashSet<string>((sideIds.ContainsKey(s) ? sideIds[s] : new HashSet<string>()).Select(id => classes.Of(conflict.Game, id)), StringComparer.OrdinalIgnoreCase));
+                    conflict.Sides = conflict.Sides.Where(s => conflict.Sides.Any(o => o != s && sideClasses[o].Overlaps(sideClasses[s]))).ToList();
+                    if (conflict.Sides.Count < 2)
+                        continue;
+                }
                 StringBuilder message = new StringBuilder();
                 message.Append("Button Item key found in multiple Relation: ").Append(conflict.Key).Append(" The Relations it was found in: ");
                 message.Append(string.Join(", ", conflict.Sides.Select(s => s.Relation)));
@@ -189,6 +205,7 @@ namespace JoyPro.Engine
         {
             HashSet<string> kept = Kept();
             List<EngineActionConflict> result = new List<EngineActionConflict>();
+            VehicleClasses classes = new VehicleClasses();
             foreach (Relation relation in (InternalDataManagement.AllRelations ?? new Dictionary<string, Relation>()).Values.Where(r => r != null))
             {
                 string relationName = string.IsNullOrWhiteSpace(relation.NAME) ? "<unnamed relation>" : relation.NAME;
@@ -218,6 +235,8 @@ namespace JoyPro.Engine
                 Bind bind = BindOf(relation, relationName);
                 foreach (EngineActionConflict conflict in order.Where(c => c.Actions.Count > 1))
                 {
+                    if (!SameVehicle(conflict, classes))
+                        continue;
                     conflict.Message = "The game " + conflict.Game + " has multiple active items for the plane " + conflict.Plane + " on the Relation " + relationName;
                     if (bind != null)
                     {
@@ -232,6 +251,59 @@ namespace JoyPro.Engine
                 }
             }
             return result;
+        }
+
+        // A game without aircraft lists (War Thunder, MSFS, Arma ...) names the game as the "aircraft" of every action, so
+        // one relation may carry the plane's throttle and the helicopter's collective, or the plane's throttle and the
+        // tank's or ship's: different vehicles, as different aircraft are in DCS. Only actions of the same vehicle class
+        // (EngineFunctionMap.ClassOf: helicopter, spaceship, ground vehicle, ship by the catalog's category, else fixed
+        // wing) on one relation are two actions of one aircraft; the conflict keeps just those.
+        internal sealed class VehicleClasses
+        {
+            private EngineFunctionMap.Map map;
+
+            // The vehicle class of a game's action ("" for DCS, whose aircraft are separate anyway, and for an action the
+            // function map does not know).
+            internal string Of(string game, string id)
+            {
+                string key = EngineRelationSuggest.GameKey(Game(game));
+                if (string.Equals(key, "DCS", StringComparison.OrdinalIgnoreCase))
+                    return string.Empty;
+                if (map == null)
+                {
+                    try
+                    {
+                        map = EngineFunctionMap.Load(new List<string>());
+                    }
+                    catch (Exception ex)
+                    {
+                        JoyPro.Logging.JoyProLog.Warn("Check", "Function map for the vehicle classes could not be read", ex);
+                        map = new EngineFunctionMap.Map();
+                    }
+                }
+                EngineFunctionMap.Entry entry;
+                return map.ByKey.TryGetValue(key + "|" + EngineRelationSuggest.NodeId(key, id ?? string.Empty) + "|" + key, out entry) ? entry.Class ?? string.Empty : string.Empty;
+            }
+        }
+
+        private static bool SameVehicle(EngineActionConflict conflict, VehicleClasses classes)
+        {
+            if (string.Equals(EngineRelationSuggest.GameKey(conflict.Game), "DCS", StringComparison.OrdinalIgnoreCase))
+                return true;
+            Dictionary<string, List<EngineConflictAction>> byClass = new Dictionary<string, List<EngineConflictAction>>(StringComparer.OrdinalIgnoreCase);
+            foreach (EngineConflictAction action in conflict.Actions)
+            {
+                string cls = classes.Of(conflict.Game, action.Id);
+                List<EngineConflictAction> list;
+                if (!byClass.TryGetValue(cls, out list))
+                    byClass[cls] = list = new List<EngineConflictAction>();
+                list.Add(action);
+            }
+            List<EngineConflictAction> same = byClass.Values.Where(l => l.Count > 1).SelectMany(l => l).ToList();
+            if (same.Count == 0)
+                return false;
+            conflict.Actions = conflict.Actions.Where(same.Contains).ToList();
+            return true;
         }
 
         // "Lpinky§<device>§JOY_BTN2§False" -> "Lpinky" (the modifier's name).

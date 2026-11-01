@@ -590,6 +590,9 @@ namespace JoyPro.Engine
         // "Only add": binds not written because the game uses their input for another function (ExportSkippedBinds.cs).
         public List<ExportSkippedBind> SkippedTakenInputs { get; set; } = new List<ExportSkippedBind>();
         public List<string> JoystickOptions { get; set; }
+        // Stale joystick slots removed from actionmaps.xml: "js3 (<product>) -> js1", the same connected device listed
+        // under more slots than there are devices of its product.
+        public List<string> StaleJoystickSlotsRemoved { get; set; } = new List<string>();
         public int OptionGroupsWritten { get; set; }
         public int DeviceOptionsWritten { get; set; }
         public List<string> AxisSettings { get; set; }
@@ -636,6 +639,9 @@ namespace JoyPro.Engine
         // Keyboard binds are written only when asked for; nuke releases ship binds of devices the export does not use.
         public bool IncludeKeyboard { get; set; }
         public bool NukeUnusedDevices { get; set; }
+        // Devices JoyPro never clears in any mode (the import's ignored devices, the vJoy device JoyPro tunnels into):
+        // their js slots keep every rebind, like the slot of a device that is not connected.
+        public List<string> KeepDevices { get; set; } = new List<string>();
         public Action<string> StatusSink { get; set; }
 
         public EngineStarCitizenExportOptions()

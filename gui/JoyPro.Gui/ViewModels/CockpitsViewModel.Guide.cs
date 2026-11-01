@@ -362,15 +362,11 @@ public sealed partial class CockpitsViewModel
         RefreshGuideRows();
     }
 
+    // Close all: every area closed, only the areas are listed.
     [RelayCommand]
     private void CollapseAllGuide()
     {
         expandedGuide.Clear();
-        if (guideTree != null)
-        {
-            foreach (CockpitGuideNode area in guideTree.Roots)
-                expandedGuide.Add(area.Key);
-        }
         RefreshGuideRows();
     }
 

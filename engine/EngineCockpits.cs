@@ -404,9 +404,11 @@ namespace JoyPro.Engine
             return problems.Count == 0 ? 0 : 1;
         }
 
-        // cockpits render <aircraft> [<variant>] --page all|overview|stick|throttle|<device>|panels|panel:<id> [--png <file>]
-        // [--pdf <file>] [--style dark|light] [--scale s] [--highlight words] [--pictures picture|drawing|none] [--drawing-style ...]: the Cockpits page's
-        // manual pages. Several pages with --png: <file>.<page>.png each.
+        // cockpits render <aircraft> [<variant>] --page all|overview|stick|throttle|<device>|panels|panel:<id>|photos|photo|photo:<sha12> [--png <file>]
+        // [--pdf <file>] [--style dark|light] [--scale s] [--highlight words] [--pictures picture|drawing|none] [--photos <folder>|none] [--drawing-style ...]: the Cockpits page's
+        // manual pages. Several pages with --png: <file>.<page>.png each. --photos: where the verified cockpit photos are
+        // (default: the GUI's downloads in <data>\CockpitPhotos; the maintainer's archive works too); the engine never
+        // downloads a photo.
         private static int CockpitsRenderPages(CockpitCatalog catalog, List<string> rest, string which, string png, string pdf, bool textOutput)
         {
             string style = (PopOptionValue(rest, "--style") ?? "light").ToLowerInvariant();
@@ -416,6 +418,9 @@ namespace JoyPro.Engine
             string pictures = (PopOptionValue(rest, "--pictures") ?? "picture").ToLowerInvariant();
             if (pictures != "picture" && pictures != "drawing" && pictures != "none")
                 return Fail("--pictures is picture, drawing or none.");
+            // Where the verified cockpit photos are on this PC: the GUI's store (default), the maintainer's archive
+            // (sha256\<hash>.<ext>), or none.
+            string photoFolder = PopOptionValue(rest, "--photos") ?? CockpitPhotos.StoreFolder();
             double scale = 1.0;
             if (scaleText != null && (!double.TryParse(scaleText, NumberStyles.Float, CultureInfo.InvariantCulture, out scale) || scale <= 0.1 || scale > 4))
                 return Fail("Invalid --scale: " + scaleText);
@@ -436,10 +441,13 @@ namespace JoyPro.Engine
                 options.PictureMode = pictures;
             }
             options.Guide = CockpitGuideTree.Build(catalog, v, options.Pictures, CockpitGuideLibrary.For(catalog.Folder));
+            if (!string.Equals(photoFolder, "none", StringComparison.OrdinalIgnoreCase))
+                options.PhotoFile = photo => CockpitPhotos.LocalFile(photoFolder, photo);
             List<ManualPage> all = CockpitManualPages.Build(catalog, v, options);
             string w = which.ToLowerInvariant();
             List<ManualPage> pages = all.Where(p =>
                 w == "all" || p.Id == w || p.Id == "device:" + w || p.Id == "game:" + w || (w == "panels" && p.Kind == "panel") || (w == "game" && p.Id.StartsWith("game:", StringComparison.Ordinal)) ||
+                (w == "photos" && p.Kind == "photo") || (w == "photo" && p.Kind == "photo" && !all.Any(x => x.Kind == "photo" && all.IndexOf(x) < all.IndexOf(p))) ||
                 (w == "stick" && p.Kind == "device" && CockpitCatalog.IsStickDevice(p.Id.Substring(7))) ||
                 (w == "throttle" && p.Kind == "device" && CockpitCatalog.IsThrottleDevice(p.Id.Substring(7)))).ToList();
             if (w == "stick" || w == "throttle")
@@ -805,12 +813,23 @@ namespace JoyPro.Engine
             return 0;
         }
 
+        // cockpits photos [query] [--coverage] [--verified]: the photo links (--verified: only the photos with a SHA-256, the
+        // ones the GUI downloads with "Download photos"; tools\backup_cockpit_photos.ps1 reads this list).
+        // cockpits photos --needed [--game G]: every listed variant without good pictures from a game (none on this PC, or
+        // a set rated low), with its verified photos: the list of cockpits that need real photos.
         private static int CockpitsPhotos(CockpitCatalog catalog, List<string> rest, string outPath, bool textOutput)
         {
             bool coverage = PopFlag(rest, "--coverage");
+            bool verified = PopFlag(rest, "--verified");
+            if (PopFlag(rest, "--needed"))
+                return CockpitsPhotosNeeded(catalog, PopOptionValue(rest, "--game") ?? string.Empty, outPath, textOutput);
             string query = string.Join(" ", rest);
             List<CockpitAircraft> aircraft = query.Trim().Length == 0 ? catalog.Listed.ToList() : catalog.Search(new CockpitFilter { Query = query });
-            var photos = aircraft.SelectMany(a => a.Photos.Select(p => new { Aircraft = a.Id, a.Fiction, p.Url, p.Page, p.View, p.Credit, p.License, p.Variant, p.Caption, p.Confidence })).ToList();
+            var photos = aircraft.SelectMany(a => a.Photos.Where(p => !verified || p.Verified).Select(p => new
+            {
+                Aircraft = a.Id, a.Fiction, p.Url, p.Page, p.View, p.Credit, p.License, p.Variant, p.Caption, p.Confidence,
+                p.Sha256, p.Sha256Alt, p.Archive, p.Width, p.Height, p.Source, Labels = p.Labels == null ? 0 : p.Labels.Labels.Count
+            })).ToList();
             if (textOutput)
             {
                 StringBuilder sb = new StringBuilder();
@@ -829,6 +848,45 @@ namespace JoyPro.Engine
                     ? (object)new { Photos = photos.Count, Aircraft = aircraft.Count, WithPhotos = aircraft.Count(a => a.Photos.Count > 0) }
                     : photos), outPath);
             }
+            return 0;
+        }
+
+        private static int CockpitsPhotosNeeded(CockpitCatalog catalog, string onlyGame, string outPath, bool textOutput)
+        {
+            List<object> rows = new List<object>();
+            StringBuilder sb = new StringBuilder();
+            int covered = 0;
+            foreach (CockpitAircraft a in catalog.Listed)
+            {
+                foreach (CockpitVariant raw in a.Variants)
+                {
+                    CockpitVariant v = catalog.Resolve(raw);
+                    if (onlyGame.Length > 0 && !v.Games.Any(g => CockpitCatalog.GameMatches(g.Game, onlyGame)))
+                        continue;
+                    CockpitPictureSet set = CockpitPictureSet.For(v);
+                    if (set != null && !set.LowQuality)
+                        continue;
+                    string reason = set != null ? "pictures from " + set.Game + " rated low (" + set.QualityScore.ToString(CultureInfo.InvariantCulture) + "/100)"
+                        : a.Fiction && !v.Games.Any() ? "a film or series design: no game pictures, no real cockpit"
+                        : a.Fiction ? "a game design JoyPro reads no pictures of (" + string.Join(", ", v.Games.Select(g => g.Game).Distinct()) + ")"
+                        : v.Games.Count == 0 ? "in no game JoyPro knows"
+                        : "no pictures from " + string.Join(", ", v.Games.Select(g => g.Game).Distinct());
+                    List<CockpitPhoto> photos = CockpitPhotos.Of(v);
+                    if (photos.Count > 0)
+                        covered++;
+                    rows.Add(new
+                    {
+                        Aircraft = a.Id, Variant = v.Id, Name = a.Name + " " + v.Name, a.Fiction, Games = v.Games.Select(g => g.Game).Distinct().ToList(), Reason = reason,
+                        Verified = photos.Count, Labelled = photos.Count(p => p.Labels != null)
+                    });
+                    sb.AppendLine("  " + a.Id + "/" + v.Id + " | " + reason + " | verified photos: " + photos.Count.ToString(CultureInfo.InvariantCulture) +
+                                  (photos.Count > 0 ? " (" + photos.Count(p => p.Labels != null).ToString(CultureInfo.InvariantCulture) + " with labels)" : string.Empty));
+                }
+            }
+            if (textOutput)
+                EmitPayload("Variants without good pictures from a game: " + rows.Count.ToString(CultureInfo.InvariantCulture) + ", with verified photos: " + covered.ToString(CultureInfo.InvariantCulture) + Environment.NewLine + sb, outPath);
+            else
+                EmitPayload(EngineSerialization.ToJson(new { Variants = rows.Count, WithPhotos = covered, Rows = rows }), outPath);
             return 0;
         }
 

@@ -242,7 +242,9 @@ namespace JoyPro.Engine
                     sb.Append('}');
                     EmitPayload(sb.ToString(), outPath);
                 }
-                return 0;
+                // The sheet check found problems (overlaps, slanted lines, ...): exit code 1, the picture and the file
+                // are written all the same.
+                return check.Ok ? 0 : 1;
             }
             catch (Exception ex)
             {

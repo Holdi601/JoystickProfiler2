@@ -256,8 +256,10 @@ namespace JoyPro.Engine.Games
             bool overwrite = request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite;
             HashSet<int> remove = new HashSet<int>();
             // A line JoyPro may release: the import reads it (connected devices, every trigger known; never the mouse), a
-            // flight command (not the vehicles of Cliffs of Dover), keyboard lines only when the export includes the keyboard.
-            Func<Existing, bool> releasable = l => l.JoyProDevice.Length > 0 && IsFlightSection(l.Section) && (l.FileDevice.Length > 0 || request.IncludeKeyboard);
+            // flight command (not the vehicles of Cliffs of Dover), keyboard lines only when the export includes the keyboard;
+            // never a line of a device JoyPro never clears (the vJoy device it tunnels into, an ignored device).
+            Func<Existing, bool> releasable = l => l.JoyProDevice.Length > 0 && IsFlightSection(l.Section) && (l.FileDevice.Length > 0 || request.IncludeKeyboard) &&
+                                                   !request.Devices.IsKept(l.JoyProDevice);
             Func<Existing, string> idOf = l => Il2LegacyInput.Id(l.Section, l.Command);
             Func<Existing, bool> wantedHere = l =>
             {

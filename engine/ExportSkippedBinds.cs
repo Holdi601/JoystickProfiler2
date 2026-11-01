@@ -8,11 +8,18 @@ namespace JoyPro.Engine
 {
     // A profile bind an export did not write because the game already uses that input (device, input and modifiers, in
     // that aircraft) for another function: "Only add" never deletes, so writing it would put two functions on one button.
+    // Also a bind a game has no place for (Reason NoFreeSlot: Elite keeps two inputs per function, so a third one, or a
+    // second profile input next to a kept keyboard key, is not written), in every export mode.
     // Every exporter fills its result's SkippedTakenInputs with these (DCS: EngineDcsExportResult, IL-2:
     // EngineIl2ExportResult, Star Citizen: EngineStarCitizenExportResult, the registry games: GameIoResult); the export
     // commands hand them to ExportSkipMarks, which marks them in the profile (docs/export.md "Only add").
     public sealed class ExportSkippedBind
     {
+        // Reason "": the game uses the input for another function (GameAction). NoFreeSlot: the game keeps a fixed number
+        // of inputs per function (Elite: Primary and Secondary) and all of them hold other inputs; GameAction then says in
+        // plain words what holds them.
+        public const string NoFreeSlot = "no-free-slot";
+
         // Game id as the backups and the sync record name it (DCS, IL2Game, StarCitizen, MSFS2020, ...).
         public string Game { get; set; }
         // The aircraft (DCS plane, ship, ...) as the profile names it; empty for a game without aircraft scopes.
@@ -27,10 +34,11 @@ namespace JoyPro.Engine
         // The function the game has on that input.
         public string GameActionId { get; set; }
         public string GameAction { get; set; }
+        public string Reason { get; set; }
 
         public ExportSkippedBind()
         {
-            Game = Aircraft = Device = Input = Relation = ActionId = Action = GameActionId = GameAction = string.Empty;
+            Game = Aircraft = Device = Input = Relation = ActionId = Action = GameActionId = GameAction = Reason = string.Empty;
             Modifiers = new List<string>();
         }
 
@@ -46,8 +54,11 @@ namespace JoyPro.Engine
         {
             string action = Action.Length > 0 ? Action : ActionId;
             string game = GameAction.Length > 0 ? GameAction : GameActionId;
-            return Relation + " (" + action + ") on " + Device + " " + (Modifiers.Count > 0 ? string.Join("+", Modifiers) + "+" : string.Empty) + Input +
-                   (Aircraft.Length > 0 ? " in " + Aircraft : string.Empty) + ": the game uses that input for " + game + ".";
+            string bind = Relation + " (" + action + ") on " + Device + " " + (Modifiers.Count > 0 ? string.Join("+", Modifiers) + "+" : string.Empty) + Input +
+                          (Aircraft.Length > 0 ? " in " + Aircraft : string.Empty);
+            if (Reason == NoFreeSlot)
+                return bind + ": not written, the game has no free place for another input of this function (" + game + ").";
+            return bind + ": the game uses that input for " + game + ".";
         }
     }
 
@@ -64,6 +75,8 @@ namespace JoyPro.Engine
         public List<string> Modifiers { get; set; }
         public string GameActionId { get; set; }
         public string GameAction { get; set; }
+        // ExportSkippedBind.Reason ("" = the input is taken by GameAction).
+        public string Reason { get; set; }
         // yyyy-MM-dd of the export that skipped it.
         public string Date { get; set; }
         // "Keep as is": the Check shows no card for it (a later export with the same conflict keeps it dismissed).
@@ -71,7 +84,7 @@ namespace JoyPro.Engine
 
         public ExportSkipMark()
         {
-            Game = Aircraft = Relation = ActionId = Action = Device = Input = GameActionId = GameAction = Date = string.Empty;
+            Game = Aircraft = Relation = ActionId = Action = Device = Input = GameActionId = GameAction = Reason = Date = string.Empty;
             Modifiers = new List<string>();
         }
     }
@@ -162,6 +175,7 @@ namespace JoyPro.Engine
                     Modifiers = bind.Modifiers == null ? new List<string>() : new List<string>(bind.Modifiers),
                     GameActionId = string.IsNullOrWhiteSpace(bind.GameActionId) ? bind.GameAction : bind.GameActionId,
                     GameAction = string.IsNullOrWhiteSpace(bind.GameAction) ? bind.GameActionId : bind.GameAction,
+                    Reason = bind.Reason,
                     Date = today
                 });
                 ExportSkipMark old;
@@ -210,17 +224,20 @@ namespace JoyPro.Engine
         public static string ToText(ExportSkipMarksDocument doc)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Binds not exported (input taken in the game): " + doc.Marks.Count.ToString(CultureInfo.InvariantCulture));
+            sb.AppendLine("Binds not exported (input taken in the game, or no free place for another input): " + doc.Marks.Count.ToString(CultureInfo.InvariantCulture));
             foreach (ExportSkipMark mark in doc.Marks)
             {
                 sb.AppendLine("  - " + mark.Game + (mark.Aircraft.Length > 0 ? " / " + mark.Aircraft : string.Empty) + ": " + mark.Relation +
                               " (" + (mark.Action.Length > 0 ? mark.Action : mark.ActionId) + ") on " + mark.Device + " " +
                               (mark.Modifiers.Count > 0 ? string.Join("+", mark.Modifiers) + "+" : string.Empty) + mark.Input +
-                              " - taken by " + (mark.GameAction.Length > 0 ? mark.GameAction : mark.GameActionId) + " (" + mark.Date + ")" +
+                              (mark.Reason == ExportSkippedBind.NoFreeSlot ? " - no free place: " : " - taken by ") +
+                              (mark.GameAction.Length > 0 ? mark.GameAction : mark.GameActionId) + " (" + mark.Date + ")" +
                               (mark.Dismissed ? " [kept as is]" : string.Empty));
             }
             if (doc.Changed > 0)
                 sb.AppendLine("Changed: " + doc.Changed.ToString(CultureInfo.InvariantCulture));
+            foreach (string warning in doc.Warnings ?? new List<string>())
+                sb.AppendLine("Warning: " + warning);
             return sb.ToString();
         }
 
@@ -232,7 +249,7 @@ namespace JoyPro.Engine
         private static string Key(ExportSkipMark mark)
         {
             return string.Join("\t", mark.Game, mark.Aircraft, mark.Relation, mark.ActionId, mark.Device, mark.Input,
-                string.Join("+", mark.Modifiers.OrderBy(m => m, StringComparer.OrdinalIgnoreCase)), mark.GameActionId).ToLowerInvariant();
+                string.Join("+", mark.Modifiers.OrderBy(m => m, StringComparer.OrdinalIgnoreCase)), mark.GameActionId, mark.Reason).ToLowerInvariant();
         }
 
         private static ExportSkipMark Normalize(ExportSkipMark mark)
@@ -247,6 +264,7 @@ namespace JoyPro.Engine
             mark.Modifiers = (mark.Modifiers ?? new List<string>()).Where(m => !string.IsNullOrWhiteSpace(m)).Select(m => m.Trim()).ToList();
             mark.GameActionId = (mark.GameActionId ?? string.Empty).Trim();
             mark.GameAction = (mark.GameAction ?? string.Empty).Trim();
+            mark.Reason = (mark.Reason ?? string.Empty).Trim();
             mark.Date = (mark.Date ?? string.Empty).Trim();
             return mark;
         }

@@ -161,16 +161,23 @@ itself.
   actions (InputUserSettings.conf only has an empty `CustomConfigs`).
 - Known rows keep id, title and category (relation names come from titles); the catalog is written only when a row is
   new. Workshop mods (`Documents\My Games\ArmaReforger\addons`) are not read.
-- First real run (1.9.0.13, 2026-10-11): 18 flight actions in HelicopterContext and AirplaneContext, 4 new, now in the
-  shipped catalog: HelicopterFire ("Fire"; no keybind entry, mouse button 0 / gamepad shoulder with
+- First real run (1.9.0.13, 2026-10-11): 18 flight actions of the game in HelicopterContext and AirplaneContext. JoyPro's
+  catalog lists them as 15 actions: the 8 half-axis actions (collective, anti-torque, cyclic forward/back and left/right)
+  as 4 axes, HelicopterSightZeroing as two buttons (up / down), the other 9 as they are. 4 catalog rows were new, now in
+  the shipped catalog: HelicopterFire ("Fire"; no keybind entry, mouse button 0 / gamepad shoulder with
   `InputFilterPressed`), HelicopterSightZeroing.Up / .Down ("Sight range up / down", `InputFilterRepeat`),
   HelicopterSightDeploy ("Toggle sights", `InputFilterClick`). Not checked in game yet.
 - **Export modes** (only the flight Action blocks; infantry / vehicle blocks never change; keyboard, mouse and gamepad
   sources and joysticks that are not connected always stay): `add` keeps every source and skips a bind whose joystick
   input another flight action uses (listed as a skipped multi-bind); `merge` adds the profile's sources and removes the
   source of another flight action on the same input (conflict), the action's old sources stay; `merge-overwrite` =
-  merge + the action loses its other joystick sources of connected devices; `clean` also drops the flight sources of
-  the devices the export writes, nuke those of connected devices without binds. A block left without sources is removed.
+  merge + the action loses its other joystick sources of connected devices; `clean` = merge + drops the other flight
+  sources of the devices the export writes (other devices keep theirs, as in every game), nuke those of connected
+  devices without binds. A block left without sources is removed.
+- **vJoy:** the game never detected a vJoy device (see the device order above), so the export writes no vJoy bind
+  (reported as skipped: "Arma Reforger does not see vJoy devices"), gives vJoy no `joystickN` slot and ignores a
+  `joystickSlot` set for it; the import reads no slot as vJoy. Up to 2.6.0 a vJoy bind took a slot and landed on
+  another device's `joystickN`.
 
 ## Pitfalls
 The game writes InputUserSettings.conf on every rebind and its settings files on changes: export only while it is

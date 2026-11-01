@@ -17,7 +17,7 @@ public sealed class ReferenceMarkerInput
     public double OffsetY { get; set; }
 }
 
-// A physical part of the device on the shown picture (DeviceReferenceView draws it as a numbered badge).
+// A physical part of the device on the shown picture (the Layout page draws it as a numbered badge).
 public sealed partial class ReferenceMarker : ObservableObject
 {
     public string Id { get; init; } = string.Empty;

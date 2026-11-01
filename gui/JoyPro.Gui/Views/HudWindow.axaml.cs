@@ -41,12 +41,18 @@ public partial class HudWindow : Window
         this.FindControl<LayoutTransformControl>("ScreenHost")!.LayoutTransform = screenScale;
         if (stream)
         {
+            // Not on top and never taking the focus from the game when it opens: it may sit behind the game, OBS's
+            // Window Capture (Windows 10 1903 and up) still captures it.
             Title = T("JoyPro HUD (stream)");
             SizeToContent = SizeToContent.Manual;
             CanResize = true;
-            Width = 960;
-            Height = 540;
+            Width = 1280;
+            Height = 720;
             ShowInTaskbar = true;
+            ShowActivated = false;
+            Topmost = false;
+            TransparencyLevelHint = [WindowTransparencyLevel.Transparent];
+            Background = Brushes.Transparent;
             this.FindControl<Control>("ScreenHost")!.IsVisible = false;
             this.FindControl<Control>("StreamHost")!.IsVisible = true;
         }
@@ -64,8 +70,17 @@ public partial class HudWindow : Window
         {
             if (stream)
             {
-                string color = (DataContext as MainWindowViewModel)?.HudStreamBackground ?? "#00FF00";
-                Background = new SolidColorBrush(Color.TryParse(color, out Color parsed) ? parsed : Colors.Lime);
+                // Transparent: real per-pixel alpha (OBS keeps it where the capture method can); else a chroma key colour.
+                string color = (DataContext as MainWindowViewModel)?.HudStreamBackground ?? MainWindowViewModel.HudTransparent;
+                if (Color.TryParse(color, out Color parsed))
+                {
+                    Background = new SolidColorBrush(parsed);
+                }
+                else
+                {
+                    TransparencyLevelHint = [WindowTransparencyLevel.Transparent];
+                    Background = Brushes.Transparent;
+                }
                 return;
             }
             ApplyWindowStyles();
@@ -132,15 +147,15 @@ public partial class HudWindow : Window
     private static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
 }
 
-// Opens the HUD window (on screen or as stream window) on Show and closes it on Hide.
+// Opens the HUD window on Show and closes it on Hide: one presenter for the on-screen HUD, one for the stream window
+// (both may be open at once).
 [SupportedOSPlatform("windows")]
-public sealed class OverlayPresenter : IOverlayPresenter
+public sealed class OverlayPresenter(bool stream = false) : IOverlayPresenter
 {
     private HudWindow? window;
 
     public void Show(object dataContext)
     {
-        bool stream = (dataContext as MainWindowViewModel)?.HudStreamWindow == true;
         if (window != null)
         {
             window.PlaceOnScreen();

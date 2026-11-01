@@ -374,6 +374,46 @@ try {
     $armAfter = [System.IO.File]::ReadAllText($armPreset)
     Assert-NotMatch $armAfter 'joystick0:axis1-"' "reforger clean should release the written stick's other helicopter sources."
     Assert-True ((Get-ArmNonFlight $armAfter) -eq $armNonFlight) "reforger clean + nuke must leave the infantry block identical."
+
+    # Clean without nuke is the same in every game: autohover on the throttle (joystick1) and the wheel brake on the
+    # stick (joystick0) are written; a third connected stick (joystick2 by VID/PID, not written) keeps its autohover
+    # source and its cyclic. Only merge-overwrite takes autohover off there.
+    $armSpareDevices = Join-Path $armDir "devices-spare.tsv"
+    [System.IO.File]::WriteAllText($armSpareDevices, ([System.IO.File]::ReadAllText((Join-Path $engineDir "tests\fixtures\wardogs\devices.tsv")).TrimEnd() + "`r`nSpare Stick {44444444-3333-2222-1111-000000000000}`tFFFF`t0001`tSpare Stick`r`n"))
+    $env:JOYPRO_FAKE_DEVICES = $armSpareDevices
+    $armCleanProfile = Join-Path $armDir "modes-clean.pr0file"
+    Run-Engine @("--profile", $armCleanProfile, "relations", "add", "ARM Hover", "--button", "--node", "ArmaReforger:HelicopterAutohoverToggle", "--device", $armThrottle, "--input", "JOY_BTN5", "--text") | Out-Null
+    Run-Engine @("--profile", $armCleanProfile, "relations", "add", "ARM Brake", "--button", "--node", "ArmaReforger:HelicopterWheelBrake", "--device", $armStick, "--input", "JOY_BTN1", "--text") | Out-Null
+    $armSpareText = $armText.Replace("Input `"joystick0:button1`"", "Input `"joystick2:button1`"").Replace("Input `"joystick0:axis1-`"", "Input `"joystick2:axis1-`"")
+    [System.IO.File]::WriteAllText($armPreset, $armSpareText)
+    $armCleanOnly = Run-Engine @("--profile", $armCleanProfile, "reforger", "export", $armPreset, "--mode", "clean", "--text")
+    Assert-True ($armCleanOnly.ExitCode -eq 0) ("reforger clean export failed: " + $armCleanOnly.Output)
+    $armAfter = [System.IO.File]::ReadAllText($armPreset)
+    Assert-Match $armAfter '(?s)Action HelicopterAutohoverToggle \{.*joystick2:button1".*joystick1:button4"' ("reforger clean must keep autohover on the connected stick the export does not write (only merge-overwrite moves it): " + $armAfter)
+    Assert-Match $armAfter 'joystick2:axis1-"' "reforger clean must keep the other helicopter sources of the stick it does not write."
+    [System.IO.File]::WriteAllText($armPreset, $armSpareText)
+    $armOverwriteOnly = Run-Engine @("--profile", $armCleanProfile, "reforger", "export", $armPreset, "--mode", "merge-overwrite", "--text")
+    Assert-True ($armOverwriteOnly.ExitCode -eq 0) ("reforger merge-overwrite export failed: " + $armOverwriteOnly.Output)
+    Assert-NotMatch ([System.IO.File]::ReadAllText($armPreset)) 'joystick2:button1"' "reforger merge-overwrite should take autohover off the connected stick."
+
+    # vJoy: Arma Reforger never detects a vJoy device (docs/games/arma-reforger.md), so a vJoy bind is not written (it
+    # used to land in another device's joystickN slot) but reported as skipped; it takes no slot from the others.
+    $armVJoyDevices = Join-Path $armDir "devices-vjoy.tsv"
+    [System.IO.File]::WriteAllText($armVJoyDevices, ([System.IO.File]::ReadAllText((Join-Path $engineDir "tests\fixtures\wardogs\devices.tsv")).TrimEnd() + "`r`nvJoy Device {89D63500-B53F-11F1-8002-444553540000}`t1234`tBEAD`tvJoy - Virtual Joystick`r`n"))
+    $env:JOYPRO_FAKE_DEVICES = $armVJoyDevices
+    $armVJoyProfile = Join-Path $armDir "modes-vjoy.pr0file"
+    Run-Engine @("--profile", $armVJoyProfile, "relations", "add", "ARM VJoy Hover", "--button", "--node", "ArmaReforger:HelicopterAutohoverToggle", "--device", "vJoy Device {89D63500-B53F-11F1-8002-444553540000}", "--input", "JOY_BTN7", "--text") | Out-Null
+    Run-Engine @("--profile", $armVJoyProfile, "relations", "add", "ARM Throttle Light", "--button", "--node", "ArmaReforger:HelicopterLightsLandingToggle", "--device", $armThrottle, "--input", "JOY_BTN3", "--text") | Out-Null
+    Run-Engine @("--profile", $armVJoyProfile, "relations", "add", "ARM Stick Brake", "--button", "--node", "ArmaReforger:HelicopterWheelBrake", "--device", $armStick, "--input", "JOY_BTN1", "--text") | Out-Null
+    [System.IO.File]::WriteAllText($armPreset, $armText)
+    $armVJoy = Run-Engine @("--profile", $armVJoyProfile, "reforger", "export", $armPreset, "--mode", "merge", "--text")
+    Assert-True ($armVJoy.ExitCode -eq 0) ("reforger export with a vJoy bind failed: " + $armVJoy.Output)
+    Assert-Match $armVJoy.Output "(?m)^Bindings Skipped:\s+1\s*$" ("reforger export should skip the vJoy bind: " + $armVJoy.Output)
+    Assert-Match $armVJoy.Output "ARM VJoy Hover.*Arma Reforger does not see vJoy devices" ("reforger export should say why the vJoy bind is not written: " + $armVJoy.Output)
+    $armAfter = [System.IO.File]::ReadAllText($armPreset)
+    Assert-NotMatch $armAfter 'button6"' "reforger export must not write the vJoy bind into another device's slot."
+    Assert-Match $armAfter '(?s)Action HelicopterAutohoverToggle \{\s*InputSource InputSourceSum "\{0000000000000004\}" \{\s*Sources \{\s*InputSourceValue "\{0000000000040000\}" \{\s*FilterPreset "click"\s*Input "joystick0:button1"\s*\}\s*InputSourceValue "\{0000000000040001\}"' "reforger export must leave autohover's sources as they were."
+    Assert-Match $armAfter '(?s)Action HelicopterLightsLandingToggle \{.*Input "joystick1:button2"' "the throttle keeps its slot after the stick (vJoy takes none)."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $armPreviousFakeDevices

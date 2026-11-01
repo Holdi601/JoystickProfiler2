@@ -622,6 +622,8 @@ namespace JoyPro.History
             policy = policy ?? ProfileHistoryPolicy.Default;
             ProfileHistoryPruneResult total = new ProfileHistoryPruneResult { DryRun = dryRun };
             List<string> folders = HistoryFolders().ToList();
+            // Dry run: each profile's log as the clean-up would leave it, for the global cap step below.
+            Dictionary<string, KeyValuePair<ProfileHistoryLog, HashSet<int>>> planned = new Dictionary<string, KeyValuePair<ProfileHistoryLog, HashSet<int>>>(StringComparer.OrdinalIgnoreCase);
             foreach (string folder in folders)
             {
                 using (FolderLock.Take(folder))
@@ -630,14 +632,18 @@ namespace JoyPro.History
                     ProfileHistoryPruneResult one = PruneLocked(log, policy, dryRun);
                     if (!dryRun)
                         SaveLog(log);
+                    else
+                        planned[folder] = new KeyValuePair<ProfileHistoryLog, HashSet<int>>(log, new HashSet<int>(one.Removed.Select(v => v.Id)));
                     total.Removed.AddRange(one.Removed);
                     total.BytesBefore += one.BytesBefore;
                     total.BytesAfter += one.BytesAfter;
                     total.VersionsLeft += one.VersionsLeft;
                 }
             }
-            if (dryRun || total.BytesAfter <= policy.GlobalCapBytes)
+            if (total.BytesAfter <= policy.GlobalCapBytes)
                 return total;
+            if (dryRun)
+                return PlanGlobalCap(planned, policy, total);
 
             // Over the global cap: the oldest removable version of all profiles goes, one at a time.
             Dictionary<string, long> bytesByFolder = folders.ToDictionary(f => f, FolderBytes, StringComparer.OrdinalIgnoreCase);
@@ -673,6 +679,48 @@ namespace JoyPro.History
                     }
                 }
                 long after = FolderBytes(oldestFolder);
+                sum += after - bytesByFolder[oldestFolder];
+                bytesByFolder[oldestFolder] = after;
+            }
+            total.BytesAfter = sum;
+            return total;
+        }
+
+        // The global cap step of a dry run: the same choice as the real one (the oldest removable version of all
+        // profiles, one at a time, until the stored bytes are under the cap), counted on the planned logs; nothing is
+        // deleted. The bytes are the stored versions' files (blobs shared by versions count once) plus each index.
+        private static ProfileHistoryPruneResult PlanGlobalCap(Dictionary<string, KeyValuePair<ProfileHistoryLog, HashSet<int>>> planned, ProfileHistoryPolicy policy, ProfileHistoryPruneResult total)
+        {
+            Func<ProfileHistoryLog, HashSet<int>, long> storedBytes = (log, removed) =>
+                FileLength(Path.Combine(log.Folder, IndexFile)) +
+                log.Versions.Where(v => !removed.Contains(v.Id)).Select(v => v.Hash).Distinct(StringComparer.Ordinal)
+                    .Sum(hash => FileLength(BlobPath(log.Folder, hash)) + FileLength(ItemsPath(log.Folder, hash)));
+            // What else the folder holds (drafts, the log of the clean-ups) counts as in the real run (FolderBytes).
+            Dictionary<string, long> otherBytes = planned.ToDictionary(p => p.Key, p => Math.Max(0, FolderBytes(p.Key) - storedBytes(p.Value.Key, new HashSet<int>())), StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, long> bytesByFolder = planned.ToDictionary(p => p.Key, p => otherBytes[p.Key] + storedBytes(p.Value.Key, p.Value.Value), StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, HashSet<int>> protectedByFolder = planned.ToDictionary(p => p.Key, p => ProtectedIds(p.Value.Key), StringComparer.OrdinalIgnoreCase);
+            long sum = bytesByFolder.Values.Sum();
+            for (int guard = 0; sum > policy.GlobalCapBytes && guard < 100000; guard++)
+            {
+                string oldestFolder = null;
+                ProfileVersion oldest = null;
+                foreach (KeyValuePair<string, KeyValuePair<ProfileHistoryLog, HashSet<int>>> entry in planned)
+                {
+                    HashSet<int> removed = entry.Value.Value;
+                    HashSet<int> protectedIds = protectedByFolder[entry.Key];
+                    ProfileVersion candidate = entry.Value.Key.Versions.Where(v => !protectedIds.Contains(v.Id) && !removed.Contains(v.Id)).OrderBy(v => v.Utc).FirstOrDefault();
+                    if (candidate != null && (oldest == null || candidate.Utc < oldest.Utc))
+                    {
+                        oldest = candidate;
+                        oldestFolder = entry.Key;
+                    }
+                }
+                if (oldest == null)
+                    break;
+                planned[oldestFolder].Value.Add(oldest.Id);
+                total.Removed.Add(oldest);
+                total.VersionsLeft--;
+                long after = otherBytes[oldestFolder] + storedBytes(planned[oldestFolder].Key, planned[oldestFolder].Value);
                 sum += after - bytesByFolder[oldestFolder];
                 bytesByFolder[oldestFolder] = after;
             }

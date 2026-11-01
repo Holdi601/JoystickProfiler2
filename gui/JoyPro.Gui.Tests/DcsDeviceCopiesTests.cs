@@ -139,7 +139,7 @@ public sealed class DcsDeviceCopiesTests
     }
 
     // profile validate, relations merge-copies (dry run: two families until merged), the DCS scan and import.
-    private sealed class CopiesFakeEngine : IEngineCliClient
+    internal sealed class CopiesFakeEngine : IEngineCliClient
     {
         public List<IReadOnlyList<string>> Calls { get; } = [];
         private readonly HashSet<string> merged = new(StringComparer.OrdinalIgnoreCase);

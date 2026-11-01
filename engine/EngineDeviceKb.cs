@@ -145,6 +145,18 @@ namespace JoyPro.Engine
                 .ToList();
         }
 
+        // devices kb list <words>: the devices whose id, name or maker contains every word (in any of them), like the other
+        // searches of the engine.
+        public static List<KbDevice> SearchWords(string query, List<string> warnings)
+        {
+            string[] words = (query ?? string.Empty).Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return Load(warnings)
+                .Where(d => words.All(w => d.Id.IndexOf(w, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                           d.Name.IndexOf(w, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                           d.Vendor.IndexOf(w, StringComparison.OrdinalIgnoreCase) >= 0))
+                .ToList();
+        }
+
         // The user's setup: connected devices identified against the knowledge base (grip choices for bases that take
         // several grips), plus devices the user added from the catalog. Unknown devices get a generic layout.
         public static List<RosterDevice> BuildRoster(GameDeviceDirectory directory, IDictionary<string, string> gripChoices, IEnumerable<string> addedIds, ICollection<string> ignored, List<string> warnings)

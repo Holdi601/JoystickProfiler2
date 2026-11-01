@@ -11,7 +11,8 @@ using JoyPro.Gui.Models;
 namespace JoyPro.Gui.Views.Controls;
 
 // The HUD's widgets on the 1920 x 1080 reference screen. Used by the on-screen HUD window and the stream window
-// (Designer off) and by the HUD page's preview (Designer on: outlines, click to select, drag to move).
+// (Designer off) and by the HUD page's preview (Designer on: outlines, click to select, drag to move). Each widget draws
+// with its own design (HudWidgetHost puts HudWidget.Look into its resources).
 public partial class HudSurface : UserControl
 {
     public static readonly StyledProperty<IEnumerable<HudWidget>?> WidgetsProperty =
@@ -26,6 +27,11 @@ public partial class HudSurface : UserControl
     public static readonly StyledProperty<bool> FixedProperty =
         AvaloniaProperty.Register<HudSurface, bool>(nameof(Fixed));
 
+    // A stream output (Browser Source page, stream window, the designer's stream preview): the widgets ticked for the
+    // stream instead of those for the screen.
+    public static readonly StyledProperty<bool> StreamProperty =
+        AvaloniaProperty.Register<HudSurface, bool>(nameof(Stream));
+
     public static readonly StyledProperty<HudWidget?> SelectedWidgetProperty =
         AvaloniaProperty.Register<HudSurface, HudWidget?>(nameof(SelectedWidget), defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
@@ -35,7 +41,6 @@ public partial class HudSurface : UserControl
     private HudWidget? dragging;
     private HudPanel? dragPanel;
     private Point dragOffset;
-    private HudContext? observedContext;
 
     public HudSurface()
     {
@@ -64,6 +69,12 @@ public partial class HudSurface : UserControl
     {
         get => GetValue(FixedProperty);
         set => SetValue(FixedProperty, value);
+    }
+
+    public bool Stream
+    {
+        get => GetValue(StreamProperty);
+        set => SetValue(StreamProperty, value);
     }
 
     public HudWidget? SelectedWidget
@@ -101,30 +112,6 @@ public partial class HudSurface : UserControl
         base.OnPropertyChanged(change);
         if (change.Property == DesignerProperty)
             DragCursor = Designer ? new Cursor(StandardCursorType.SizeAll) : null;
-        if (change.Property == ContextProperty)
-        {
-            if (observedContext != null)
-                observedContext.PropertyChanged -= OnContextChanged;
-            observedContext = Context;
-            if (observedContext != null)
-                observedContext.PropertyChanged += OnContextChanged;
-            ApplyContext();
-        }
-    }
-
-    private void OnContextChanged(object? sender, PropertyChangedEventArgs e) => ApplyContext();
-
-    // The templates use dynamic resources for the colours, so a new accent or style shows at once.
-    private void ApplyContext()
-    {
-        HudContext? context = observedContext;
-        if (context == null)
-            return;
-        Color accent = context.AccentColor;
-        Resources["HudAccent"] = new SolidColorBrush(accent);
-        Resources["HudAccentSoft"] = new SolidColorBrush(Color.FromArgb(0x66, accent.R, accent.G, accent.B));
-        Resources["HudCardBackground"] = context.CardBackground;
-        Resources["HudCardBorder"] = context.CardBorder;
     }
 
     private void WidgetPointerPressed(object? sender, PointerPressedEventArgs e)

@@ -119,7 +119,7 @@ recordings, delete after, raw data, one switch per game (what JoyPro reads, ACMI
 current state ("Recording DCS World - F-16C_50: <file> (1,234 frames)"), the recorded sessions (date, game, aircraft,
 duration, size, "recording" / "unfinished"), Show in folder, Export for Tacview (ACMI), Export CSV, Delete (asks
 first), and a small timeline of three channels of the selected session (altitude, speed, G or pitch; min and max per
-time bucket, so peaks stay). Code: `ViewModels/MainWindowViewModel.TelemetryRecording.cs`,
+time bucket, so peaks stay). A game hidden in Settings > Games is not listed and not recorded (2.6.0). Code: `ViewModels/MainWindowViewModel.TelemetryRecording.cs`,
 `Views/Controls/TelemetryRecordingPanel.axaml`, `Views/Controls/TelemetryTimelineView.cs`.
 
 ## Command line

@@ -6,8 +6,8 @@ a known device physically is (trigger, TMS hat, gear lever ...), and the functio
 belongs in a real cockpit.
 
 - CLI: `engine relations auto-assign [--grip <device>=<grip id>]... [--add-device <catalog id>]... [--ignore-device <device>]... [--relation <name>]... [--max-modifiers 0|1|2] [--phase-layers on|off|auto] [--overwrite [--include-missing]] [--no-style] [--explain <relation>]... [--dry-run]`
-- Devices: `engine devices kb identify` shows how your devices were recognised; `engine devices kb list [query]` and
-  `engine devices kb show <id>` browse the catalog.
+- Devices: `engine devices kb identify` shows how your devices were recognised; `engine devices kb list [words]` (every word must
+  be in the id, name or maker) and `engine devices kb show <id>` browse the catalog.
 
 Run it with `--dry-run` first: it prints every assignment and changes nothing.
 

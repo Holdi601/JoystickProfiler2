@@ -230,13 +230,17 @@ namespace JoyPro.CockpitPictures
             return at;
         }
 
-        private static bool Drawn(EdmMaterial m, Options o)
+        internal static bool Drawn(EdmMaterial m, Options o)
         {
             string name = (m.Name ?? string.Empty).ToLowerInvariant();
             string shader = (m.Shader ?? string.Empty).ToLowerInvariant();
             if (m.Blending == 3 || m.Blending >= 4)
                 return false; // additive light layers, glass
-            if (shader.Contains("glass") || shader.Contains("additive") || shader.Contains("fake_") || shader.Contains("bano") ||
+            // An opaque surface that only glows on top of its texture at night (additive_self_illum_material without
+            // blending): the C-130J's panel faces (PACK2..5, VC_PAN_01..12, the overhead's OH_PACK_3_ILLUMIN) are made of it
+            // and were left out, which showed the grey back plates without the panels' labels.
+            bool opaqueSelfIllum = m.Blending == 0 && shader == "additive_self_illum_material" && m.Textures.Count > 0;
+            if (shader.Contains("glass") || shader.Contains("additive") && !opaqueSelfIllum || shader.Contains("fake_") || shader.Contains("bano") ||
                 shader.Contains("mirror") || shader.Contains("transparent") || shader.Contains("lines_material") || shader.Contains("color_material") && m.Textures.Count == 0)
                 return false;
             foreach (string skip in o.SkipMaterials)

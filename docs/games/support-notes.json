@@ -1,6 +1,6 @@
 {
   "about": "Hand-kept part of docs/games/support.md (engine games support, tools/game_support.ps1): categories, bind files, command-list sources, anti-cheat, in-game test results, open points, the documented-only titles and the reasons for partial cells. The marks come from the code; a cell here may only lower a mark (with a note). Test levels: e2e (a green in-game run), partial (in game, not green or not complete), files (checked against installed game files only), blind (not installed), none (documented only).",
-  "updated": "2026-10-12",
+  "updated": "2026-11-01",
   "categories": [
     { "id": "flight", "title": "Flight simulators", "note": "Civil and general flight simulators. JoyPro takes over the devices it writes (clean and nuke clear every other bind of those devices)." },
     { "id": "combat", "title": "Combat flight", "note": "Combat flight sims and combat flight games that read several joysticks." },
@@ -11,11 +11,11 @@
   "games": [
     {
       "id": "MSFS2024", "category": "flight", "doc": "msfs.md",
-      "bindFile": "JoyPro's Community package (`joypro-input-profiles`, one preset XML per device); reads the Steam `inputprofile_*` XML",
+      "bindFile": "your own profile the sim uses per device and category (Steam `remote\\inputprofile_*` XML or the Microsoft Store save, `--user-profiles`) + JoyPro's Community package (`joypro-input-profiles`, one preset XML per device); import files in `Documents\\JoyPro2\\MSFS 2024 import files` where your profile cannot be written",
       "listSource": "Asobo's preset files, the flight events `fs-base\\en-US.locPak` names, the installed aircraft", "listSize": "1739",
-      "antiCheat": "none known; the checksummed `profile_00` is never written; the Microsoft Store version is read only",
+      "antiCheat": "none known; the checksummed `profile_00` is never written; Steam and Microsoft Store versions are both written",
       "test": { "level": "e2e", "result": "26/26", "date": "2026-10-11", "note": "controls and sensitivity pages" },
-      "open": "no per-aircraft export (presets reach only aircraft not configured yet); the sim's cloud copy can win",
+      "open": "aircraft-specific profile slots are not written (JoyPro's presets reach only aircraft the sim has not set up yet); the Xbox or Steam cloud copy can win",
       "cells": {
         "watcher": { "note": "Live watcher test 2026-10-17 (`tools\\e2e\\games\\Watchdog.ps1`): incomplete: the run reached Controls of the test aircraft, but the rebind of a button was not captured (the kit needs two clicks, fixed since); later runs did not reach the main menu on the portrait display." },
         "modifiers": { "note": "MSFS: modifier buttons of the same device only." }
@@ -25,7 +25,7 @@
       "id": "MSFS2020", "category": "flight", "doc": "msfs.md",
       "bindFile": "Steam `userdata\\<id>\\1250410\\remote\\inputprofile_*` (XML fragment per device)",
       "listSource": "as MSFS 2024", "listSize": "1580",
-      "antiCheat": "none known; the Microsoft Store version is not supported",
+      "antiCheat": "none known; the Microsoft Store version's profiles are imported, not written (export writes the Steam version's)",
       "test": { "level": "e2e", "result": "41/41", "date": "2026-10-10", "note": "controls, sensitivity and a flight" },
       "open": "the Steam cloud can put an older profile back",
       "cells": {
@@ -159,7 +159,7 @@
     {
       "id": "IL21946", "category": "combat", "doc": "il2-1946.md",
       "bindFile": "`<install>\\Users\\<pilot>\\settings.ini` (`[HotKey ...]`), responses in `conf.ini`",
-      "listSource": "JoyPro's own command list + the commands `Users\\default.ini`, `conf.ini` and the pilots' `settings.ini` name", "listSize": "187",
+      "listSource": "JoyPro's own command list + the commands `Users\\default.ini`, `conf.ini` and the pilots' `settings.ini` name", "listSize": "188",
       "devices": "4 joysticks (JoystickDevice0..3, by Windows' device order)",
       "antiCheat": "none known",
       "test": { "level": "partial", "result": "29/33", "date": "2026-10-12", "note": "IL-2 1946: 29 of 33 steps in game (seat hat, engine 4 throttle); fixed since, one green run pending." },
@@ -394,14 +394,14 @@
     {
       "id": "ArmaReforger", "category": "military", "doc": "arma-reforger.md",
       "bindFile": "JoyPro's own preset `...\\customInputConfigs\\JoyPro.conf` (Enfusion text) + device order in `ReforgerEngineSettings.conf`",
-      "listSource": "the game's `.pak` files and localization", "listSize": "15",
+      "listSource": "the game's `.pak` files and localization", "listSize": "15 (the game's 18 flight actions: 8 half axes as 4 axes, sight zeroing as up and down)",
       "devices": "4 joysticks at most (the first four that send input)",
       "antiCheat": "BattlEye (`ArmaReforger_BE`)",
       "test": { "level": "partial", "date": "2026-10-05", "note": "Arma Reforger: the settings menus were explored in game; no scored run, the export is not yet checked in game." },
       "open": "the export in game; the settings format; vJoy did not appear in the game in four starts",
       "cells": {
         "tuning": { "mark": "◐", "note": "Arma Reforger: multiplier and invert only; no dead zone or curve (the format is unknown)." },
-        "vjoy": { "mark": "◐", "note": "Arma Reforger: vJoy did not appear in the game in four starts; suggested only for more than four devices." }
+        "vjoy": { "mark": "—", "note": "Arma Reforger does not see vJoy devices (four starts): the export skips vJoy binds with a warning." }
       }
     },
     {

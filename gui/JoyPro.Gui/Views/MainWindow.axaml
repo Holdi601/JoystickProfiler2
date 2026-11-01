@@ -223,13 +223,13 @@
                             <TextBlock Classes="label" Text="{l:T 'Engine'}" />
                             <TextBox Grid.Column="1" Text="{Binding EnginePath}" Watermark="{l:T 'Path to engine.exe (empty = the one next to JoyPro)'}" />
                             <TextBlock Grid.Column="2" Classes="label" Text="{l:T 'Profile file'}" />
-                            <TextBox Grid.Column="3" Text="{Binding ProfilePath}" Watermark="Path to .pr0file" />
+                            <TextBox Grid.Column="3" Text="{Binding ProfilePath}" Watermark="{l:T 'Path to the profile (.pr0file)'}" />
                         </Grid>
                         <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
                             <TextBlock Classes="label" Text="{l:T 'Merge profile file'}" />
                             <TextBox Grid.Column="1" Text="{Binding MergeRightProfilePath}" Watermark="{l:T 'Profile to add (Add another profile... picks it)'}" />
                             <Button Grid.Column="2" Command="{Binding MergeProfileCommand}" Content="{l:T 'Merge'}" />
-                            <Button Grid.Column="3" Command="{Binding SaveLastProfileCommand}" Content="{l:T 'Save as last profile'}" ToolTip.Tip="engine profile save-last" />
+                            <Button Grid.Column="3" Command="{Binding SaveLastProfileCommand}" Content="{l:T 'Save as last profile'}" ToolTip.Tip="{l:T 'Also writes the open profile to the engine\'s last-profile file (the one the engine loads when it is given no profile)'}" />
                         </Grid>
                         <WrapPanel ItemWidth="190" ItemHeight="30">
                             <CheckBox Content="{l:T 'Auto Profile On Import'}" IsChecked="{Binding AutoCreateProfileOnImport}" />
@@ -1007,7 +1007,7 @@
                                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                                 <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Joystick}" /></Border>
                                                 <TextBlock Grid.Column="1" Classes="h2" Text="{l:T 'Your devices'}" TextTrimming="CharacterEllipsis" />
-                                                <Button Grid.Column="2" Classes="ghost small" Content="{l:T 'Manage'}" Command="{Binding GoSettingsCommand}" ToolTip.Tip="{l:T 'Settings &gt; Devices: move binds to another device, remove an old one'}" />
+                                                <Button Grid.Column="2" Classes="ghost small" Content="{l:T 'Manage'}" Command="{Binding OpenSettingsSectionCommand}" CommandParameter="devices" ToolTip.Tip="{l:T 'Settings &gt; Devices: move binds to another device, remove an old one'}" />
                                             </Grid>
                                             <TextBlock Classes="caption" IsVisible="{Binding !HasDashboardDevices}"
                                                        Text="{l:T 'No devices found yet. Connect your sticks, throttle and pedals and press Refresh.'}" />
@@ -1182,7 +1182,7 @@
                                     </ToggleButton>
                                     <ToggleButton x:Name="RelationsFollowInputToggle" Grid.Column="3" Classes="filterChip" VerticalAlignment="Center"
                                                   IsChecked="{Binding FollowInputOnBinds}"
-                                                  ToolTip.Tip="{l:T 'Follow input: press a button or move an axis a long way and the list jumps to its relation; press it again for the next relation on it (without modifiers first). Not while recording or typing. Settings > Binds switches it off for good.'}">
+                                                  ToolTip.Tip="{l:T 'Follow input: press a button or move an axis a long way and the list jumps to its relation; press it again for the next relation on it (without modifiers first). Not while recording or typing. The switch is kept for the next start (Settings > Binds has it too).'}">
                                         <PathIcon Data="{StaticResource Icon.Cursor}" Width="13" Height="13" />
                                     </ToggleButton>
                                     <Button Grid.Column="4" Classes="icon accent small" Tag="{StaticResource Icon.Plus}" Content="{l:T 'New'}" Command="{Binding StartNewRelationCommand}"
@@ -1191,8 +1191,17 @@
                                 <TextBox x:Name="RelationSearchBox" Grid.Row="1" Classes="search" Text="{Binding RelationSearchText}" Watermark="{l:T 'Search relations (Ctrl+F)'}"
                                          ToolTip.Tip="{l:T 'Shows only the relations with these words; the box next to it says where JoyPro looks (name, name and action titles, or everything). Devices and games: the filters below.'}" />
                                 <!-- Filters: groups, games and their aircraft, devices, bound, axis / button (ListFilterViewModel) -->
-                                <!-- The pane is narrow: the sort button goes under the filters -->
-                                <StackPanel Grid.Row="2" Spacing="4">
+                                <!-- The pane is narrow: the sort button goes under the filters. The whole block folds up into one
+                                     line that names the active filters (MainWindowViewModel.RelationFilterPanel.cs; remembered). -->
+                                <Expander x:Name="RelationFiltersExpander" Grid.Row="2" Classes="compact" HorizontalAlignment="Stretch" IsExpanded="{Binding IsRelationFiltersOpen}">
+                                    <Expander.Header>
+                                        <StackPanel Spacing="1" Background="Transparent" ToolTip.Tip="{l:T 'Show or hide the filters, the sort and what the search looks at (remembered)'}">
+                                            <TextBlock Text="{l:T 'Filters'}" FontWeight="SemiBold" />
+                                            <TextBlock x:Name="RelationFiltersSummaryText" Classes="caption" Text="{Binding RelationFiltersSummary}" TextWrapping="Wrap" MaxLines="2"
+                                                       TextTrimming="CharacterEllipsis" IsVisible="{Binding !IsRelationFiltersOpen}" />
+                                        </StackPanel>
+                                    </Expander.Header>
+                                <StackPanel Spacing="4">
                                     <controls:ListFilterBar x:Name="RelationFilterBar" DataContext="{Binding RelationFilter}" />
                                     <!-- The sort and what the search looks at (name / name + actions / everything; remembered): one line,
                                          so the list keeps its height in the narrow pane -->
@@ -1207,6 +1216,7 @@
                                         </ComboBox>
                                     </WrapPanel>
                                 </StackPanel>
+                                </Expander>
 
                                 <!-- Several relations ticked (Ctrl/Shift+click): what to do with all of them -->
                                 <Border Grid.Row="3" Classes="callout" IsVisible="{Binding HasRelationMultiSelection}">
@@ -1481,7 +1491,7 @@
                                                       ToolTip.Tip="{l:T 'Every relation with the games and aircraft it lacks (no AI): review, tick, add'}" />
                                             <Separator />
                                             <MenuItem Header="{l:T 'Import...'}" Command="{Binding OpenImportWorkspaceCommand}" />
-                                            <MenuItem Header="{l:T 'Import Relations JSON...'}" Click="ImportRelationsJsonClicked" ToolTip.Tip="{l:T 'Adds relations (with their binds) from a JSON file to the profile'}" />
+                                            <MenuItem Header="{l:T 'Import Relations JSON...'}" Click="ImportRelationsJsonClicked" ToolTip.Tip="{l:T 'Replaces all relations and binds of the profile with those of a JSON file (asks first; Undo brings them back)'}" />
                                             <MenuItem Header="{l:T 'Export Relations JSON...'}" Click="ExportRelationsJsonClicked" ToolTip.Tip="{l:T 'Saves all relations of the profile to a JSON file'}" />
                                             <Separator />
                                             <MenuItem Header="{l:T 'Save Profile'}" Command="{Binding SaveProfileCommand}" />
@@ -1726,7 +1736,7 @@
                                                     </Grid>
                                                     <WrapPanel ItemSpacing="6" LineSpacing="4" Margin="24,0,0,0">
                                                         <Button Classes="small accent" Command="{Binding OnlyWhereSameMeaningCommand}"
-                                                                ToolTip.Tip="{l:T 'Switches this relation off in those aircraft, except the ones ticked use here in the list. They stay listed, one tick brings one back; Ctrl+Z undoes it.'}" >
+                                                                ToolTip.Tip="{l:T 'Switches this relation off in those aircraft, except the ones ticked use here in the list. They stay listed, one tick brings one back; Ctrl+Z undoes it, one step per action.'}" >
                                                             <TextBlock Text="{Binding RelationCheckOnlyLabel}" TextTrimming="CharacterEllipsis" />
                                                         </Button>
                                                         <Button Classes="small" Content="{l:T 'Keep for all'}" Command="{Binding KeepRelationCheckForAllCommand}"
@@ -1768,7 +1778,7 @@
                                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
                                                         <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding AircraftCheckText}" VerticalAlignment="Center" />
                                                         <Button Grid.Column="1" Classes="small" Content="{l:T 'Switch them all off'}" Command="{Binding RepairAircraftCommand}" VerticalAlignment="Center"
-                                                                ToolTip.Tip="{l:T 'Switches those aircraft off in every one of these actions: they stay listed, one tick brings one back; Ctrl+Z undoes it.'}" />
+                                                                ToolTip.Tip="{l:T 'Switches those aircraft off in every one of these actions: they stay listed, one tick brings one back; Ctrl+Z undoes it (one step; one per action when you kept some aircraft).'}" />
                                                     </Grid>
                                                     <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                                         <ItemsControl ItemsSource="{Binding AircraftCheckItems}">
@@ -1813,6 +1823,10 @@
                                         </StackPanel>
                                         <Panel>
                                             <StackPanel IsVisible="{Binding HasRelationSelected}" Spacing="6">
+                                                <!-- Opened from a Check card: the way back to that card -->
+                                                <Button x:Name="ReturnToCheckButton" Classes="icon small accent" Tag="{StaticResource Icon.ArrowLeft}" Content="{Binding ReturnToCheckLabel}"
+                                                        HorizontalAlignment="Left" IsVisible="{Binding CanReturnToCheck}" Command="{Binding ReturnToCheckCommand}"
+                                                        ToolTip.Tip="{Binding ReturnToCheckTip}" />
                                                 <TextBox x:Name="RelationNameEditBox" Text="{Binding BuilderRenameText}" FontSize="{DynamicResource JP.FontSize.17}" FontWeight="Bold"
                                                          KeyDown="RelationNameEditKeyDown" LostFocus="RelationNameEditLostFocus"
                                                          ToolTip.Tip="{l:T 'The relation\'s name: click to change it, Enter saves, Esc cancels (Ctrl+Z undoes a rename)'}" />
@@ -1888,7 +1902,7 @@
                                                     <Button Classes="icon small accent" Tag="{StaticResource Icon.Lightbulb}" Content="{Binding SuggestMissingLabel}" Command="{Binding SuggestMissingCommand}"
                                                             ToolTip.Tip="{l:T 'Expand this relation: the same function in the games and aircraft it does not have yet, without the actions other relations use (no AI). Tick, add.'}" />
                                                     <Button Classes="icon small" Tag="{StaticResource Icon.Wand}" Content="{l:T 'Expand with AI'}" Command="{Binding ExpandWithAiCommand}"
-                                                            ToolTip.Tip="{l:T 'Explain in your own words what else belongs in this relation, or what does not: the JoyPro assistant adds or removes it at once (one Undo takes it back)'}" />
+                                                            ToolTip.Tip="{l:T 'Opens the JoyPro assistant for this relation: say in your own words what else belongs in it, or what does not, and it adds or removes it (one Undo per answer)'}" />
                                                     <Button x:Name="RelationDuplicateButton" Classes="icon small" Tag="{StaticResource Icon.Copy}" Content="{l:T 'Duplicate'}"
                                                             ToolTip.Tip="{l:T 'Copy this relation as a new relation named (copy) and open it, with or without its bind (Ctrl+Z undoes it)'}">
                                                         <Button.Flyout>
@@ -2174,6 +2188,15 @@
                                             </Grid>
                                             <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                                                 <StackPanel Spacing="2">
+                                                    <!-- Replace from a Check card: what the ticked action takes the place of -->
+                                                    <Border x:Name="BuilderReplaceBanner" Classes="callout" IsVisible="{Binding IsBuilderReplacing}" Margin="0,0,0,4">
+                                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                                            <PathIcon Data="{StaticResource Icon.Swap}" Width="16" Height="16" Classes="info" VerticalAlignment="Top" />
+                                                            <TextBlock Grid.Column="1" Text="{Binding BuilderReplaceText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="2" Classes="small ghost" Content="{l:T 'Cancel'}" Command="{Binding CancelBuilderReplaceCommand}" VerticalAlignment="Top"
+                                                                    ToolTip.Tip="{l:T 'Add actions adds again instead of replacing'}" />
+                                                        </Grid>
+                                                    </Border>
                                                     <Button Classes="small ghost" HorizontalAlignment="Left" Padding="2,0" IsVisible="{Binding HasBuilderDidYouMean}" Command="{Binding UseBuilderDidYouMeanCommand}"
                                                             Content="{l:T 'Did you mean: {0}?', Arg0={Binding BuilderDidYouMean}}" ToolTip.Tip="{l:T 'Search for this instead'}" />
                                                     <TextBlock Classes="caption" Text="{Binding BuilderSearchStatus}" TextWrapping="Wrap"
@@ -2193,11 +2216,27 @@
                                                 <ProgressBar Grid.Column="2" IsIndeterminate="True" Width="60" VerticalAlignment="Top" IsVisible="{Binding IsBuilderSearching}" />
                                             </Grid>
                                             <ScrollViewer x:Name="BuilderSearchScroll" Grid.Row="4" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MinHeight="0">
-                                                <ItemsControl ItemsSource="{Binding BuilderSearchRows}" Margin="0,0,12,0">
+                                                <ItemsControl x:Name="BuilderSearchList" ItemsSource="{Binding BuilderSearchRows}" Margin="0,0,12,0">
+                                                    <!-- Only the rows in view are built: a search over every game lists up to 160 rows, and building
+                                                         all of them blocked the window for a second and more per keystroke on a big profile -->
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <VirtualizingStackPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.Styles>
+                                                        <!-- Actions already in the open relation: greyed at the bottom, no tick box -->
+                                                        <Style Selector="StackPanel.inRelation">
+                                                            <Setter Property="Opacity" Value="0.55" />
+                                                        </Style>
+                                                        <Style Selector="CheckBox.noBox /template/ Border#NormalRectangle">
+                                                            <Setter Property="IsVisible" Value="False" />
+                                                        </Style>
+                                                    </ItemsControl.Styles>
                                                     <ItemsControl.DataTemplates>
                                                         <DataTemplate x:DataType="models:BuilderSearchGroupItem">
                                                             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" Margin="0,8,0,2">
-                                                                <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding HasTickable}" VerticalAlignment="Center"
+                                                                <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding HasTickable}" VerticalAlignment="Center" IsVisible="{Binding !IsInRelationGroup}"
                                                                           ToolTip.Tip="{l:T 'Select all / none: tick or untick every action of this group shown here'}" />
                                                                 <Button Grid.Column="3" Classes="small ghost" Content="{Binding ExpandLabel}" IsVisible="{Binding CanExpand}" VerticalAlignment="Center"
                                                                         Command="{Binding #RootWindow.DataContext.ToggleBuilderGameExpandedCommand}" CommandParameter="{Binding}"
@@ -2205,8 +2244,11 @@
                                                                 <Panel Grid.Column="1" Width="24" Height="24" VerticalAlignment="Center" IsVisible="{Binding IsGame}">
                                                                     <controls:GameBadge GameId="{Binding Game}" Title="{Binding Label}" />
                                                                 </Panel>
-                                                                <PathIcon Grid.Column="1" Data="{StaticResource Icon.Lightbulb}" Width="16" Height="16" IsVisible="{Binding !IsGame}"
+                                                                <PathIcon Grid.Column="1" Data="{StaticResource Icon.Lightbulb}" Width="16" Height="16" IsVisible="{Binding IsFunctionGroup}"
                                                                           Foreground="{DynamicResource JP.AccentTextBrush}" VerticalAlignment="Center" />
+                                                                <PathIcon Grid.Column="1" Data="{StaticResource Icon.Check}" Width="16" Height="16" IsVisible="{Binding IsInRelationGroup}"
+                                                                          Foreground="{DynamicResource JP.TextMutedBrush}" VerticalAlignment="Center"
+                                                                          ToolTip.Tip="{l:T 'These actions are in the relation already; they are listed here for the search, not to add'}" />
                                                                 <TextBlock Grid.Column="2" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
                                                                     <Run Text="{Binding Label}" FontWeight="Bold" />
                                                                     <Run Text="  " />
@@ -2215,9 +2257,9 @@
                                                             </Grid>
                                                         </DataTemplate>
                                                         <DataTemplate x:DataType="models:BuilderSearchResultItem">
-                                                          <StackPanel Margin="26,1,0,1" Spacing="2">
+                                                          <StackPanel Margin="26,1,0,1" Spacing="2" Classes.inRelation="{Binding IsInOpenRelation}">
                                                             <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding CanCheck}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                                                      ToolTip.Tip="{Binding PlanesTooltip}">
+                                                                      Classes.noBox="{Binding IsInOpenRelation}" ToolTip.Tip="{Binding PlanesTooltip}">
                                                                 <StackPanel Spacing="1">
                                                                     <controls:HighlightTextBlock SourceText="{Binding DisplayTitle}" Query="{Binding #RootWindow.DataContext.BuilderSearchText}" FontWeight="SemiBold" ToolTip.Tip="{Binding IdTip}"
                                                                                                  TextTrimming="CharacterEllipsis" />
@@ -2243,6 +2285,24 @@
                                                                     <TextBlock Classes="warnText" FontSize="{DynamicResource JP.FontSize.11}" TextTrimming="CharacterEllipsis" Text="{Binding InOtherRelationsText}" IsVisible="{Binding HasNote}" />
                                                                 </StackPanel>
                                                             </CheckBox>
+                                                            <!-- Switched on in other relations: one tag ("in 'X'" opens it, "in 3 relations" lists them) -->
+                                                            <StackPanel Margin="28,0,0,0" Spacing="2" IsVisible="{Binding HasOtherRelations}">
+                                                                <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" ToolTip.Tip="{Binding OtherRelationsTip}"
+                                                                        Command="{Binding #RootWindow.DataContext.OpenOtherRelationsTagCommand}" CommandParameter="{Binding}">
+                                                                    <Border Classes="chip warn">
+                                                                        <TextBlock Text="{Binding OtherRelationsTag}" TextTrimming="CharacterEllipsis" MaxWidth="320" />
+                                                                    </Border>
+                                                                </Button>
+                                                                <ItemsControl ItemsSource="{Binding OtherRelations}" IsVisible="{Binding ShowOtherRelationsList}" Margin="8,0,0,0">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate x:DataType="x:String">
+                                                                            <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" Content="{Binding}"
+                                                                                    Command="{Binding #RootWindow.DataContext.OpenRelationFromSearchCommand}" CommandParameter="{Binding}"
+                                                                                    ToolTip.Tip="{l:T 'Opens this relation; Back returns to this search'}" />
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </StackPanel>
                                                             <!-- The row's aircraft, each with its own title of the id: only the ticked ones go in -->
                                                             <StackPanel Margin="28,0,0,0" Spacing="4" IsVisible="{Binding HasAircraft}">
                                                                 <WrapPanel ItemSpacing="6" LineSpacing="4">
@@ -2388,7 +2448,22 @@
                                                                     <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11.5}" Text="{Binding MissingText}" IsVisible="{Binding IsMissing}" TextTrimming="CharacterEllipsis"
                                                                                Foreground="{DynamicResource JP.AccentTextBrush}" />
                                                                     <TextBlock Classes="caption" Text="{Binding Why}" TextTrimming="CharacterEllipsis" />
-                                                                    <TextBlock Classes="warnText" Text="{Binding ConflictText}" IsVisible="{Binding HasConflict}" FontSize="{DynamicResource JP.FontSize.11.5}" TextTrimming="CharacterEllipsis" />
+                                                                    <!-- Switched on in other relations: the same tag as in Add actions ("Move here" takes it over) -->
+                                                                    <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" IsVisible="{Binding HasOtherRelations}" ToolTip.Tip="{Binding OtherRelationsTip}"
+                                                                            Command="{Binding #RootWindow.DataContext.OpenOtherRelationsTagCommand}" CommandParameter="{Binding}">
+                                                                        <Border Classes="chip warn">
+                                                                            <TextBlock Text="{Binding OtherRelationsTag}" TextTrimming="CharacterEllipsis" MaxWidth="320" />
+                                                                        </Border>
+                                                                    </Button>
+                                                                    <ItemsControl ItemsSource="{Binding OtherRelations}" IsVisible="{Binding ShowOtherRelationsList}" Margin="8,0,0,0">
+                                                                        <ItemsControl.ItemTemplate>
+                                                                            <DataTemplate x:DataType="x:String">
+                                                                                <Button Classes="small ghost" Padding="4,0" HorizontalAlignment="Left" Content="{Binding}"
+                                                                                        Command="{Binding #RootWindow.DataContext.OpenRelationFromSearchCommand}" CommandParameter="{Binding}"
+                                                                                        ToolTip.Tip="{l:T 'Opens this relation; Back returns to this search'}" />
+                                                                            </DataTemplate>
+                                                                        </ItemsControl.ItemTemplate>
+                                                                    </ItemsControl>
                                                                     <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding MeaningNote}" IsVisible="{Binding HasMeaningNote}" TextTrimming="CharacterEllipsis"
                                                                                ToolTip.Tip="{l:T 'Aircraft where the same id means something else are not in this suggestion'}" />
                                                                     <Button Classes="small ghost" HorizontalAlignment="Left" Padding="4,0" IsVisible="{Binding HasAlternatives}"
@@ -2552,7 +2627,7 @@
                                     <!-- Follow input: pressing a button (or moving an axis a long way) selects its relation. -->
                                     <ToggleButton x:Name="FollowInputToggle" Grid.Column="2" Classes="filterChip" VerticalAlignment="Center"
                                                   IsChecked="{Binding FollowInputOnBinds}"
-                                                  ToolTip.Tip="{l:T 'Follow input: press a button or move an axis a long way and the list jumps to its relation; press it again for the next relation on it (without modifiers first). Not while recording or typing. Settings > Binds switches it off for good.'}">
+                                                  ToolTip.Tip="{l:T 'Follow input: press a button or move an axis a long way and the list jumps to its relation; press it again for the next relation on it (without modifiers first). Not while recording or typing. The switch is kept for the next start (Settings > Binds has it too).'}">
                                         <StackPanel Orientation="Horizontal" Spacing="5">
                                             <PathIcon Data="{StaticResource Icon.Cursor}" Width="13" Height="13" />
                                             <TextBlock Text="{l:T 'Follow input'}" />
@@ -4202,6 +4277,7 @@
                                                                          SourceWidth="{Binding WorkspaceWidth}"
                                                                          SourceHeight="{Binding WorkspaceHeight}"
                                                                          Markers="{Binding WorkspaceMarkers}"
+                                                                         SnapSpots="{Binding WorkspaceDetectedSpots}"
                                                                          SelectedMarker="{Binding WorkspaceSelectedMarker}"
                                                                          Mode="{Binding LayoutCanvasMode}"
                                                                          Zoom="{Binding LayoutEditorZoom}"
@@ -4534,6 +4610,9 @@
                                                 <WrapPanel ItemSpacing="6" LineSpacing="6" IsVisible="{Binding ShowMoreTools}">
                                                     <Button Classes="small" Content="{l:T 'Axis'}" Command="{Binding CaptureAxisCommand}" ToolTip.Tip="{l:T 'Move an axis of the device next'}" />
                                                     <Button Classes="small" Content="{l:T 'Stop'}" Command="{Binding StopCommand}" />
+                                                    <CheckBox x:Name="AssistantDetectedSpots" Content="{l:T 'Detected spots (experimental)'}"
+                                                              IsChecked="{Binding #RootWindow.DataContext.DeviceReference.ShowDetectedSpots}"
+                                                              ToolTip.Tip="{l:T 'Rings on the spots of the photo that look like buttons, hats or switches; a click near a ring puts the marker on its centre. JoyPro does not know which input a spot is.'}" />
                                                 </WrapPanel>
                                                 <!-- Add a control JoyPro does not know (a hat the device reports as buttons ...) by its kind -->
                                                 <WrapPanel ItemSpacing="6" LineSpacing="6" IsVisible="{Binding ShowMoreTools}">
@@ -4979,7 +5058,7 @@
                                                         ToolTip.Tip="{l:T 'Use your own photo of the device (or drop a picture file on the picture)'}" />
                                                 <Button Classes="small" Content="{l:T 'Remove photo'}" Command="{Binding DeviceReference.RemoveUserPhotoCommand}" IsVisible="{Binding DeviceReference.HasUserPhoto}" />
                                                 <Button Classes="icon small" Tag="{StaticResource Icon.Refresh}" Content="{l:T 'Reset markers'}" Command="{Binding ResetReferenceMarkersCommand}"
-                                                        ToolTip.Tip="{l:T 'Put the markers back where JoyPro puts them'}" />
+                                                        ToolTip.Tip="{l:T 'Removes your marker positions on this picture: JoyPro\'s own positions come back (a photo JoyPro has no positions for is then without markers)'}" />
                                                 <Button Classes="small danger" Content="{l:T 'Reset to default...'}" Command="{Binding ResetDeviceLayoutCommand}"
                                                         ToolTip.Tip="{l:T 'Everything you changed of this device\'s picture goes: marker positions, tables and lines, renamed parts, your photo, your definition and the layout file the profile uses. Asks first; Undo reset puts it back.'}" />
                                                 <Button Classes="small" Content="{Binding UndoLayoutResetLabel}" Command="{Binding UndoLayoutResetCommand}" IsVisible="{Binding CanUndoLayoutReset}" />
@@ -5223,7 +5302,7 @@
                                                 <CheckBox Content="{l:T 'One per aircraft'}" IsChecked="{Binding LayoutIncludePlanes}" />
                                                 <CheckBox Content="{l:T 'Skip devices without a picture'}" IsChecked="{Binding LayoutSkipMissing}" />
                                                 <CheckBox Content="{l:T 'One page with all devices'}" IsChecked="{Binding LayoutCombinePages}"
-                                                          ToolTip.Tip="Also a page per aircraft (and for the overview) with the sheets of all devices under each other: All devices.png" />
+                                                          ToolTip.Tip="{l:T 'Also a page per aircraft (and for the overview) with the sheets of all devices under each other: All devices.png'}" />
                                             </WrapPanel>
 
                                             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
@@ -5726,8 +5805,15 @@
                     </ScrollViewer>
                 </Border>
 
+                <!-- HUD Designer (docs/hud.md): outputs (screen, page for OBS, stream window), widgets (screen / stream), the
+                     look (presets, own styles, design options per element type), the live preview, the selected widget. -->
                 <Border IsVisible="{Binding IsHudStage}" CornerRadius="12" Padding="10">
-                    <Grid ColumnDefinitions="310,*,300" ColumnSpacing="14">
+                    <Border.Resources>
+                        <DataTemplate x:Key="HudChoiceTemplate" x:DataType="models:HudChoice">
+                            <TextBlock Text="{Binding Name, Converter={x:Static l:TConverter.Instance}}" TextTrimming="CharacterEllipsis" />
+                        </DataTemplate>
+                    </Border.Resources>
+                    <Grid ColumnDefinitions="320,*,300" ColumnSpacing="14">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel Spacing="10" Margin="0,0,8,0">
                                 <StackPanel Orientation="Horizontal" Spacing="10">
@@ -5737,25 +5823,54 @@
                                 <TextBlock Text="{Binding HudStatus}" TextWrapping="Wrap" Opacity="0.8" />
                                 <Button Command="{Binding ToggleOverlayCommand}" Content="{Binding OverlayToggleLabel}" Classes="accent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" />
                                 <TextBlock Text="{Binding OverlayStatus}" TextWrapping="Wrap" FontWeight="SemiBold" />
-                                <CheckBox Content="{l:T 'Stream window (for OBS) instead of on screen'}" IsChecked="{Binding HudStreamWindow}"
-                                          ToolTip.Tip="{l:T 'A normal window with a plain background: add it in OBS as Window Capture and key out the background colour'}" />
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" IsVisible="{Binding HudStreamWindow}">
-                                    <TextBlock Text="{l:T 'Background'}" VerticalAlignment="Center" />
-                                    <TextBox Grid.Column="1" Text="{Binding HudStreamBackground}" Watermark="#00FF00" />
+
+                                <!-- Outputs: independent of each other. -->
+                                <TextBlock Text="{l:T 'Where the HUD shows'}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                <CheckBox Content="{l:T 'On my screen (over the game)'}" IsChecked="{Binding HudOnScreen}"
+                                          ToolTip.Tip="{l:T 'The transparent HUD on top of the game. Untick it to keep your own screen clean while the stream still shows the HUD.'}" />
+                                <CheckBox Content="{l:T 'Page for OBS (Browser Source, transparent)'}" IsChecked="{Binding HudStreamBrowser}"
+                                          ToolTip.Tip="{l:T 'JoyPro serves the HUD as a web page on this PC only. In OBS add a Browser Source with this address: the background is transparent, no custom CSS needed.'}" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" IsVisible="{Binding HudStreamBrowser}">
+                                    <TextBox Text="{Binding HudStreamUrl, Mode=OneWay}" IsReadOnly="True" FontFamily="{DynamicResource JP.MonoFont}" />
+                                    <Button Grid.Column="1" Command="{Binding CopyHudStreamUrlCommand}" Content="{l:T 'Copy'}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" IsVisible="{Binding HudStreamBrowser}">
+                                    <TextBlock Text="{l:T 'Port'}" VerticalAlignment="Center" />
+                                    <NumericUpDown Grid.Column="1" Value="{Binding HudStreamPort}" Minimum="1024" Maximum="65535" Increment="1" FormatString="0" />
+                                </Grid>
+                                <CheckBox Content="{l:T 'Stream window (Window Capture)'}" IsChecked="{Binding HudStreamWindow}"
+                                          ToolTip.Tip="{l:T 'A window of its own, not on top: it may sit behind the game. In OBS: Window Capture with the capture method Windows 10 (1903 and up); with a chroma key colour add a Chroma Key filter.'}" />
+                                <ComboBox ItemsSource="{Binding HudStreamBackgrounds}" SelectedItem="{Binding SelectedHudStreamBackground}" ItemTemplate="{StaticResource HudChoiceTemplate}"
+                                          HorizontalAlignment="Stretch" IsVisible="{Binding HudStreamWindow}" />
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8" RowDefinitions="Auto" IsVisible="{Binding HudStreamIsChroma}">
+                                    <TextBlock Text="{l:T 'Colour'}" VerticalAlignment="Center" IsVisible="{Binding HudStreamWindow}" />
+                                    <TextBox Grid.Column="1" Text="{Binding HudStreamBackground}" Watermark="#00FF00" IsVisible="{Binding HudStreamWindow}" />
+                                </Grid>
+                                <TextBlock Text="{Binding HudStreamStatus}" TextWrapping="Wrap" Opacity="0.85" FontSize="{DynamicResource JP.FontSize.12}"
+                                           IsVisible="{Binding HudStreamStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <TextBlock Text="{l:T 'Updates per second at most'}" VerticalAlignment="Center" TextWrapping="Wrap"
+                                               ToolTip.Tip="{l:T 'The HUD draws only what changed, at most this often (on screen and in the stream). 30 is smooth and light.'}" />
+                                    <ComboBox Grid.Column="1" ItemsSource="{Binding HudFpsChoices}" SelectedItem="{Binding HudMaxFps}" MinWidth="80" />
                                 </Grid>
 
                                 <TextBlock Text="{l:T 'Widgets'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                <Grid ColumnDefinitions="28,28,*" ColumnSpacing="6" Margin="12,0,0,0">
+                                    <PathIcon Data="{StaticResource Icon.Monitor}" Width="14" Height="14" ToolTip.Tip="{l:T 'Shown on your screen'}" HorizontalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="OBS" FontSize="{DynamicResource JP.FontSize.11}" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Shown in the stream'}" />
+                                </Grid>
                                 <ListBox ItemsSource="{Binding HudWidgets}" SelectedItem="{Binding SelectedHudWidget}" MaxHeight="340">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate x:DataType="models:HudWidget">
-                                            <Grid ColumnDefinitions="Auto,40,*" ColumnSpacing="8">
-                                                <CheckBox IsChecked="{Binding Visible}" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Show on the HUD'}" />
-                                                <Border Grid.Column="1" Width="40" Height="40" CornerRadius="6" Background="{DynamicResource JP.ImageWellBrush}" ClipToBounds="True">
+                                            <Grid ColumnDefinitions="28,28,40,*" ColumnSpacing="6">
+                                                <CheckBox IsChecked="{Binding Visible}" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Show on your screen'}" />
+                                                <CheckBox Grid.Column="1" IsChecked="{Binding StreamVisible}" VerticalAlignment="Center" ToolTip.Tip="{l:T 'Show in the stream'}" />
+                                                <Border Grid.Column="2" Width="40" Height="40" CornerRadius="6" Background="{DynamicResource JP.ImageWellBrush}" ClipToBounds="True">
                                                     <Image Source="{Binding Device.ListIcon}" Stretch="Uniform" />
                                                 </Border>
-                                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                                    <TextBlock Text="{Binding Subtitle}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.8" TextTrimming="CharacterEllipsis" />
+                                                <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Title, Converter={x:Static l:TConverter.Instance}}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding Subtitle, Converter={x:Static l:TConverter.Instance}}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.8" TextTrimming="CharacterEllipsis" />
                                                 </StackPanel>
                                             </Grid>
                                         </DataTemplate>
@@ -5768,13 +5883,16 @@
                                     <Button Command="{Binding ResetHudLayoutCommand}" Content="{l:T 'Reset places'}" Margin="0,0,6,6" />
                                 </WrapPanel>
 
+                                <!-- Look: presets, own styles and the design options per element type. -->
                                 <TextBlock Text="{l:T 'Look'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
-                                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
                                     <TextBlock Text="{l:T 'Style'}" VerticalAlignment="Center" />
-                                    <ComboBox Grid.Column="1" ItemsSource="{Binding HudStyles}" SelectedItem="{Binding HudStyle}" HorizontalAlignment="Stretch" />
-                                    <TextBlock Grid.Row="1" Text="{l:T 'Opacity'}" VerticalAlignment="Center" />
-                                    <Slider Grid.Row="1" Grid.Column="1" Minimum="0.3" Maximum="1" Value="{Binding HudOpacity}" />
+                                    <ComboBox x:Name="HudStyleBox" Grid.Column="1" ItemsSource="{Binding HudStyleOptions}" SelectedItem="{Binding SelectedHudStyleOption}" ItemTemplate="{StaticResource HudChoiceTemplate}"
+                                              HorizontalAlignment="Stretch" MaxDropDownHeight="520" PlaceholderText="{l:T 'Own design (changed)'}"
+                                              ToolTip.Tip="{l:T 'Presets and your own styles. Every option below changes the style; save it under a name of your own to keep it.'}" />
+                                    <Button Grid.Column="2" Command="{Binding NextHudStyleCommand}" Content="›" ToolTip.Tip="{l:T 'Next style'}" />
                                 </Grid>
+                                <TextBlock Text="{l:T 'Presets: {0}', Arg0={Binding HudPresetCount}}" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.11}" />
                                 <ItemsControl ItemsSource="{Binding HudAccentOptions}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -5784,10 +5902,101 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="models:HudAccentOption">
                                             <Button Command="{Binding #RootWindow.DataContext.SetHudAccentCommand}" CommandParameter="{Binding Hex}" Padding="0" Margin="0,0,6,6"
-                                                    Width="28" Height="28" CornerRadius="14" Background="{Binding Brush}" BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" ToolTip.Tip="{l:T 'Accent colour'}" />
+                                                    Width="24" Height="24" CornerRadius="12" Background="{Binding Brush}" BorderBrush="{DynamicResource JP.BorderStrongBrush}" BorderThickness="1" ToolTip.Tip="{l:T 'Accent colour'}" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+                                <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                    <TextBlock Text="{l:T 'Accent'}" VerticalAlignment="Center" />
+                                    <controls:ColorField Grid.Column="1" Value="{Binding HudLookEditor.Accent}" />
+                                    <TextBlock Grid.Row="1" Text="{l:T 'Pressed'}" VerticalAlignment="Center" />
+                                    <controls:ColorField Grid.Row="1" Grid.Column="1" Value="{Binding HudLookEditor.PressedOrAccent}" />
+                                    <TextBlock Grid.Row="2" Text="{l:T 'Opacity'}" VerticalAlignment="Center" />
+                                    <Slider Grid.Row="2" Grid.Column="1" Minimum="0.2" Maximum="1" Value="{Binding HudLookEditor.Opacity}" />
+                                </Grid>
+                                <Expander Header="{l:T 'Cards'}" HorizontalAlignment="Stretch">
+                                    <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                        <TextBlock Text="{l:T 'Background'}" VerticalAlignment="Center" />
+                                        <controls:ColorField Grid.Column="1" Value="{Binding HudLookEditor.CardBackground}" />
+                                        <TextBlock Grid.Row="1" Text="{l:T 'Border'}" VerticalAlignment="Center" />
+                                        <controls:ColorField Grid.Row="1" Grid.Column="1" Value="{Binding HudLookEditor.CardBorderOrAccent}" />
+                                        <TextBlock Grid.Row="2" Text="{l:T 'Border opacity'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding HudLookEditor.CardBorderAlpha}" />
+                                        <TextBlock Grid.Row="3" Text="{l:T 'Border width'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="6" TickFrequency="0.5" IsSnapToTickEnabled="True" Value="{Binding HudLookEditor.CardBorderThickness}" />
+                                        <TextBlock Grid.Row="4" Text="{l:T 'Corners'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="32" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding HudLookEditor.CardRadius}" />
+                                        <TextBlock Grid.Row="5" Text="{l:T 'Shadow'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding HudCardShadows}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.CardShadow}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                    </Grid>
+                                </Expander>
+                                <Expander Header="{l:T 'Text'}" HorizontalAlignment="Stretch">
+                                    <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                        <TextBlock Text="{l:T 'Font'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding HudFonts}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.Font}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                        <TextBlock Grid.Row="1" Text="{l:T 'Text size'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="1" Grid.Column="1" Minimum="0.7" Maximum="2" Value="{Binding HudLookEditor.TextScale}" />
+                                        <TextBlock Grid.Row="2" Text="{l:T 'Letter spacing'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="4" Value="{Binding HudLookEditor.LetterSpacing}" />
+                                        <TextBlock Grid.Row="3" Text="{l:T 'Text colour'}" VerticalAlignment="Center" />
+                                        <controls:ColorField Grid.Row="3" Grid.Column="1" Value="{Binding HudLookEditor.Text}" />
+                                        <TextBlock Grid.Row="4" Text="{l:T 'Captions'}" VerticalAlignment="Center" />
+                                        <controls:ColorField Grid.Row="4" Grid.Column="1" Value="{Binding HudLookEditor.TextDim}" />
+                                        <CheckBox Grid.Row="5" Grid.ColumnSpan="2" Content="{l:T 'Bold names'}" IsChecked="{Binding HudLookEditor.BoldTitles}" />
+                                    </Grid>
+                                </Expander>
+                                <Expander Header="{l:T 'Stick element'}" HorizontalAlignment="Stretch">
+                                    <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                        <TextBlock Text="{l:T 'Shape'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding HudGimbalShapes}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.GimbalShape}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                        <TextBlock Grid.Row="1" Text="{l:T 'Size'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="1" Grid.Column="1" Minimum="50" Maximum="160" Value="{Binding HudLookEditor.GimbalSize}" />
+                                        <TextBlock Grid.Row="2" Text="{l:T 'Glow'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding HudLookEditor.Glow}" />
+                                    </Grid>
+                                </Expander>
+                                <Expander Header="{l:T 'Bars and levers'}" HorizontalAlignment="Stretch">
+                                    <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                        <TextBlock Text="{l:T 'Axis bars'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding HudBarShapes}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.BarShape}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                        <TextBlock Grid.Row="1" Text="{l:T 'Bar height'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="1" Grid.Column="1" Minimum="2" Maximum="16" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding HudLookEditor.BarHeight}" />
+                                        <TextBlock Grid.Row="2" Text="{l:T 'Levers'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding HudBarShapes}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.LeverShape}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                        <TextBlock Grid.Row="3" Text="{l:T 'Lever width'}" VerticalAlignment="Center" />
+                                        <Slider Grid.Row="3" Grid.Column="1" Minimum="6" Maximum="36" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding HudLookEditor.LeverWidth}" />
+                                        <TextBlock Grid.Row="4" Text="{l:T 'Empty part'}" VerticalAlignment="Center" />
+                                        <controls:ColorField Grid.Row="4" Grid.Column="1" Value="{Binding HudLookEditor.Track}" />
+                                    </Grid>
+                                </Expander>
+                                <Expander Header="{l:T 'Buttons and chips'}" HorizontalAlignment="Stretch">
+                                    <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="6">
+                                        <TextBlock Text="{l:T 'Buttons'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding HudButtonShapes}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.ButtonShape}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                        <TextBlock Grid.Row="1" Text="{l:T 'Chips'}" VerticalAlignment="Center" />
+                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding HudChipShapes}" SelectedValueBinding="{Binding Id}" SelectedValue="{Binding HudLookEditor.ChipShape}"
+                                                  ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                    </Grid>
+                                </Expander>
+                                <TextBlock Text="{l:T 'Your styles'}" FontWeight="SemiBold" Margin="0,4,0,0" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                                    <TextBox Text="{Binding HudStyleName}" Watermark="{l:T 'Name of your style'}" />
+                                    <Button Grid.Column="1" Command="{Binding SaveHudStyleCommand}" Content="{l:T 'Save style'}" />
+                                </Grid>
+                                <WrapPanel>
+                                    <Button Click="ImportHudStyleClicked" Content="{l:T 'Import style...'}" Margin="0,0,6,6" />
+                                    <Button Click="ExportHudStyleClicked" Content="{l:T 'Export style...'}" Margin="0,0,6,6" />
+                                    <Button Command="{Binding ResetHudStyleCommand}" Content="{l:T 'Undo changes'}" Margin="0,0,6,6" ToolTip.Tip="{l:T 'Back to the style picked above'}" />
+                                    <Button Command="{Binding DeleteHudStyleCommand}" Content="{l:T 'Delete'}" IsVisible="{Binding HudStyleIsOwn}" Margin="0,0,6,6" />
+                                </WrapPanel>
+                                <TextBlock Text="{Binding HudStyleStatus}" TextWrapping="Wrap" Opacity="0.85" FontSize="{DynamicResource JP.FontSize.12}"
+                                           IsVisible="{Binding HudStyleStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
                                 <TextBlock Text="{l:T 'What the button does'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
                                 <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
@@ -5805,7 +6014,7 @@
                                 <TextBlock Text="{l:T 'DCS aircraft'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" Margin="0,6,0,0" />
                                 <ComboBox ItemsSource="{Binding OverlayPlaneOptions}" SelectedItem="{Binding OverlayPlaneChoice}" HorizontalAlignment="Stretch" />
                                 <TextBlock TextWrapping="Wrap" Opacity="0.8"
-                                           Text="Or let DCS tell JoyPro the aircraft: a small addition to Saved Games\DCS\Scripts\Export.lua (keeps SRS, Tacview and other scripts working, backed up first). Close DCS before installing." />
+                                           Text="{l:T 'Or let DCS tell JoyPro the aircraft: a small addition to Saved Games\\DCS\\Scripts\\Export.lua (keeps SRS, Tacview and other scripts working, backed up first). Close DCS before installing.'}" />
                                 <WrapPanel>
                                     <Button Command="{Binding InstallDcsHookCommand}" Content="{l:T 'Install DCS hook'}" IsEnabled="{Binding CanRun}" Margin="0,0,6,6" />
                                     <Button Command="{Binding RemoveDcsHookCommand}" Content="{l:T 'Remove'}" IsEnabled="{Binding CanRun}" Margin="0,0,6,6" />
@@ -5816,14 +6025,19 @@
                             </StackPanel>
                         </ScrollViewer>
 
-                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto" RowSpacing="8">
+                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
                             <TextBlock Text="{l:T 'Preview with live input: move the axes of your devices, press buttons. Drag a widget to move it; click it to edit it on the right.'}" TextWrapping="Wrap" Opacity="0.8" />
-                            <Border Grid.Row="1" CornerRadius="12" ClipToBounds="True" Background="{DynamicResource JP.Chart.PanelBrush}" BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1">
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12">
+                                <TextBlock Text="{l:T 'Preview'}" VerticalAlignment="Center" FontWeight="SemiBold" />
+                                <RadioButton Content="{l:T 'My screen'}" IsChecked="{Binding !HudPreviewStream}" />
+                                <RadioButton Content="{l:T 'The stream'}" IsChecked="{Binding HudPreviewStream}" />
+                            </StackPanel>
+                            <Border Grid.Row="2" CornerRadius="12" ClipToBounds="True" Background="{DynamicResource JP.Chart.PanelBrush}" BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1">
                                 <Viewbox Stretch="Uniform">
                                     <Grid Width="1920" Height="1080">
                                         <Image Source="{Binding HudPreviewBackground}" Stretch="UniformToFill" />
                                         <Border Background="{DynamicResource JP.OverlayDimBrush}" Opacity="0.42" />
-                                        <controls:HudSurface x:Name="HudDesignerSurface" Designer="True" Fixed="True" Widgets="{Binding HudWidgets}" Context="{Binding HudContext}" SelectedWidget="{Binding SelectedHudWidget}" />
+                                        <controls:HudSurface x:Name="HudDesignerSurface" Designer="True" Fixed="True" Stream="{Binding HudPreviewStream}" Widgets="{Binding HudWidgets}" Context="{Binding HudContext}" SelectedWidget="{Binding SelectedHudWidget}" />
                                     </Grid>
                                 </Viewbox>
                             </Border>
@@ -5831,17 +6045,27 @@
 
                         <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Auto">
                             <StackPanel Spacing="8" IsVisible="{Binding HasSelectedHudWidget}">
-                                <TextBlock Text="{Binding SelectedHudWidget.Title}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                <TextBlock Text="{Binding SelectedHudWidget.Subtitle}" Opacity="0.7" TextWrapping="Wrap" />
-                                <CheckBox Content="{l:T 'Show on the HUD'}" IsChecked="{Binding SelectedHudWidget.Visible}" />
+                                <TextBlock Text="{Binding SelectedHudWidget.Title, Converter={x:Static l:TConverter.Instance}}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding SelectedHudWidget.Subtitle, Converter={x:Static l:TConverter.Instance}}" Opacity="0.7" TextWrapping="Wrap" />
+                                <CheckBox Content="{l:T 'Show on my screen'}" IsChecked="{Binding SelectedHudWidget.Visible}" />
+                                <CheckBox Content="{l:T 'Show in the stream'}" IsChecked="{Binding SelectedHudWidget.StreamVisible}" />
                                 <TextBlock Text="{l:T 'Size'}" />
                                 <Slider Minimum="0.4" Maximum="2.5" Value="{Binding SelectedHudWidget.Scale}" />
+                                <TextBlock Text="{l:T 'Style of this widget'}" />
+                                <ComboBox ItemsSource="{Binding HudWidgetStyleOptions}" SelectedItem="{Binding SelectedHudWidgetStyle}" ItemTemplate="{StaticResource HudChoiceTemplate}"
+                                          HorizontalAlignment="Stretch" MaxDropDownHeight="520" />
+                                <TextBlock Text="{l:T 'Show'}" FontWeight="SemiBold" Margin="0,6,0,0" />
+                                <CheckBox Content="{l:T 'Name'}" IsChecked="{Binding SelectedHudWidget.ShowName}" IsVisible="{Binding !SelectedHudWidgetIsHeader}" />
+                                <CheckBox Content="{l:T 'Picture'}" IsChecked="{Binding SelectedHudWidget.ShowHeaderPicture}" IsVisible="{Binding SelectedHudWidgetIsHeader}" />
                                 <StackPanel Spacing="6" IsVisible="{Binding SelectedHudWidgetIsDevice}">
-                                    <CheckBox Content="{l:T 'Name'}" IsChecked="{Binding SelectedHudWidget.ShowName}" />
+                                    <CheckBox Content="{l:T 'Kind (stick, throttle)'}" IsChecked="{Binding SelectedHudWidget.ShowKind}" />
                                     <CheckBox Content="{l:T 'Picture'}" IsChecked="{Binding SelectedHudWidget.ShowPicture}" />
                                     <CheckBox Content="{l:T 'Picture tilts with the stick'}" IsChecked="{Binding SelectedHudWidget.Tilt}" />
                                     <CheckBox Content="{l:T 'Buttons light up'}" IsChecked="{Binding SelectedHudWidget.ShowButtons}" />
+                                    <CheckBox Content="{l:T 'Held buttons by name'}" IsChecked="{Binding SelectedHudWidget.ShowChips}" />
                                     <CheckBox Content="{l:T 'Axes and levers'}" IsChecked="{Binding SelectedHudWidget.ShowAxes}" />
+                                    <CheckBox Content="{l:T 'Axis names'}" IsChecked="{Binding SelectedHudWidget.ShowLabels}" />
+                                    <CheckBox Content="{l:T 'Axis values'}" IsChecked="{Binding SelectedHudWidget.ShowValues}" />
                                     <CheckBox Content="{l:T 'Stick position (gimbal)'}" IsChecked="{Binding SelectedHudWidget.ShowGimbal}" />
                                     <CheckBox Content="{l:T 'Hats'}" IsChecked="{Binding SelectedHudWidget.ShowHats}" />
                                     <TextBlock Text="{l:T 'Picture'}" Margin="0,4,0,0" />
@@ -5867,6 +6091,22 @@
                                                   ToolTip.Tip="{l:T 'Where the stick element\'s twist comes from'}" />
                                     </Grid>
                                     <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" Text="{Binding HudAxisAutomaticText}" />
+                                </StackPanel>
+                                <!-- The aircraft's own stick and throttle. -->
+                                <StackPanel Spacing="6" IsVisible="{Binding SelectedHudWidgetIsAircraft}">
+                                    <CheckBox Content="{l:T 'Stick'}" IsChecked="{Binding SelectedHudWidget.ShowStick}" />
+                                    <CheckBox Content="{l:T 'Throttle'}" IsChecked="{Binding SelectedHudWidget.ShowThrottle}" />
+                                    <CheckBox Content="{l:T 'Throttle travel bar'}" IsChecked="{Binding SelectedHudWidget.ShowAxes}" />
+                                    <CheckBox Content="{l:T 'Stick position (gimbal)'}" IsChecked="{Binding SelectedHudWidget.ShowGimbal}" />
+                                    <CheckBox Content="{l:T 'Controls light up'}" IsChecked="{Binding SelectedHudWidget.ShowButtons}" />
+                                    <CheckBox Content="{l:T 'Held controls by name'}" IsChecked="{Binding SelectedHudWidget.ShowChips}" />
+                                    <TextBlock Text="{l:T 'Aircraft'}" Margin="0,4,0,0" />
+                                    <ComboBox ItemsSource="{Binding HudAircraftChoices}" SelectedItem="{Binding SelectedHudAircraftChoice}" ItemTemplate="{StaticResource HudChoiceTemplate}"
+                                              HorizontalAlignment="Stretch" MaxDropDownHeight="520" />
+                                    <TextBlock Text="{l:T 'Moves with'}" Margin="0,4,0,0" />
+                                    <ComboBox ItemsSource="{Binding HudStickDeviceChoices}" SelectedItem="{Binding SelectedHudStickDevice}" ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                    <ComboBox ItemsSource="{Binding HudThrottleDeviceChoices}" SelectedItem="{Binding SelectedHudThrottleDevice}" ItemTemplate="{StaticResource HudChoiceTemplate}" HorizontalAlignment="Stretch" />
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" Text="{Binding HudAircraftStatus}" />
                                 </StackPanel>
                             </StackPanel>
                         </ScrollViewer>
@@ -6006,7 +6246,7 @@
                                             <StackPanel Spacing="8">
                                                 <Grid ColumnDefinitions="Auto,320,*,Auto" ColumnSpacing="8">
                                                     <TextBlock Text="{l:T 'Game'}" FontSize="{DynamicResource JP.FontSize.16}" FontWeight="SemiBold" VerticalAlignment="Center" />
-                                                    <ComboBox Grid.Column="1" ItemsSource="{Binding FfbTelemetryGames}" SelectedItem="{Binding SelectedFfbTelemetryGame}" HorizontalAlignment="Stretch" />
+                                                    <ComboBox Grid.Column="1" ItemsSource="{Binding VisibleFfbTelemetryGames}" SelectedItem="{Binding SelectedFfbTelemetryGame}" HorizontalAlignment="Stretch" />
                                                     <Button Grid.Column="3" Command="{Binding RefreshFfbTelemetryStatusCommand}" Content="{l:T 'Reload settings'}" />
                                                 </Grid>
                                                 <ContentControl Content="{Binding SelectedFfbTelemetryGame}">
@@ -6467,7 +6707,7 @@
                                                     <Button Classes="icon small" Tag="{StaticResource Icon.Export}" Content="{l:T 'Export...'}" Click="ExportThemeClicked"
                                                             ToolTip.Tip="{l:T 'Save the theme as a file to share it'}" />
                                                     <Button Classes="icon small" Tag="{StaticResource Icon.Undo}" Content="{l:T 'Reset colours'}" Command="{Binding ResetEditingThemeCommand}"
-                                                            ToolTip.Tip="{l:T 'Every colour back to the theme it is based on'}" />
+                                                            ToolTip.Tip="{l:T 'Every colour back to the theme it is based on, and the fonts back to JoyPro\'s'}" />
                                                     <Button Classes="icon small danger" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Delete'}" Command="{Binding DeleteEditingThemeCommand}" />
                                                 </WrapPanel>
                                             </StackPanel>
@@ -6498,10 +6738,10 @@
                                     <TextBlock TextWrapping="Wrap" Opacity="0.8"
                                                Text="{l:T 'Command lists: JoyPro comes without game data. It builds each game\'s command list on this PC from your own installation (Start page notice, or Update on the game\'s card).'}" />
                                     <CheckBox Content="{l:T 'War Thunder: read the full command list from the game\'s archives'}" IsChecked="{Binding ReadWarThunderArchives}"
-                                              ToolTip.Tip="{l:T 'On (default): JoyPro unpacks gui.vromfs.bin and lang.vromfs.bin (read only) for every aircraft and helicopter action. Off: JoyPro uses only its own list of the War Thunder actions it knows. Gaijin\'s EULA restricts unpacking game files; you decide.'}" />
+                                              ToolTip.Tip="{l:T 'On (default): JoyPro unpacks gui.vromfs.bin and lang.vromfs.bin (read only) for every aircraft and helicopter action. Off: JoyPro uses only its own list of the War Thunder actions it knows.'}" />
                                     <WrapPanel ItemSpacing="8" LineSpacing="4">
                                         <CheckBox Content="{l:T 'Hell Let Loose: Vietnam: use the Oodle library of another installed game to read its files'}" IsChecked="{Binding HllvOodleAllowed}"
-                                                  ToolTip.Tip="{l:T 'Hell Let Loose: Vietnam\'s files are Oodle-compressed and the game ships no Oodle library of its own. With your yes JoyPro uses the one another game on this PC ships (from where it is, never copied; it belongs to its maker and is licensed with that game; private use only). Off: JoyPro\'s own list of the gamepad keys, which is all the Xbox-pad mode needs.'}" />
+                                                  ToolTip.Tip="{l:T 'Hell Let Loose: Vietnam\'s files are Oodle-compressed and the game ships no Oodle library of its own. With your yes JoyPro uses the one another game on this PC ships (from where it is, never copied). Off: JoyPro\'s own list of the gamepad keys, which is all the Xbox-pad mode needs.'}" />
                                         <Button Classes="small" Content="{l:T 'Ask again'}" Command="{Binding AskHllvOodleAgainCommand}" />
                                     </WrapPanel>
                                     <TextBlock Text="{Binding HllvOodleStatus}" TextWrapping="Wrap" Opacity="0.7" FontSize="{DynamicResource JP.FontSize.12}" />
@@ -7058,7 +7298,7 @@
                                                         </Button>
                                                         <StackPanel Grid.Column="1" Spacing="3">
                                                             <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" ToolTip.Tip="{Binding Tooltip}" />
-                                                            <TextBlock Text="{Binding DeviceName}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.75" TextWrapping="Wrap" IsVisible="{Binding ShowsDeviceName}" />
+                                                            <TextBlock Text="{Binding DeviceName}" FontSize="{DynamicResource JP.FontSize.11}" Foreground="{DynamicResource JP.TextMutedBrush}" TextWrapping="Wrap" IsVisible="{Binding ShowsDeviceName}" />
                                                             <Border Classes="chip device" HorizontalAlignment="Left" IsVisible="{Binding HasKindLabel}"><TextBlock Text="{Binding KindLabel}" /></Border>
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <PathIcon Data="{StaticResource Icon.Ok}" Width="13" Height="13" Classes="ok" IsVisible="{Binding Connected}" />
@@ -7067,7 +7307,7 @@
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Spacing="5">
                                                                 <PathIcon Data="{StaticResource Icon.Link}" Width="13" Height="13" Classes="info" IsVisible="{Binding InProfile}" />
-                                                                <TextBlock Text="{Binding ProfileText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.85" VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding ProfileText}" FontSize="{DynamicResource JP.FontSize.11}" Foreground="{DynamicResource JP.TextMutedBrush}" VerticalAlignment="Center" />
                                                             </StackPanel>
                                                             <CheckBox IsVisible="{Binding IsKeyboardLike}" IsChecked="{Binding UsesAxes}" FontSize="{DynamicResource JP.FontSize.12}"
                                                                       Content="{l:T 'Use its axes for follow input and recording'}"
@@ -7187,13 +7427,13 @@
                                         <Button Grid.Column="4" Command="{Binding AutoDetectSettingsPathsCommand}" Content="{l:T 'Find the folders'}" Classes="icon" Tag="{StaticResource Icon.Search}" />
                                     </Grid>
                                     <CheckBox Content="{l:T 'Strip DCS default binds in the DCS install'}" IsChecked="{Binding DcsStripDefaults}" IsEnabled="{Binding CanRunDcs}"
-                                              ToolTip.Tip="{l:T 'Every joystick input file of DCS gets its default binds switched off (combos = nil); each original is kept as &lt;file&gt;.nocombo.bak. Works together with the DCS_STRIP_JOYSTICK_DEFAULTS script.'}" />
+                                              ToolTip.Tip="{l:T 'Every joystick input file of DCS gets its default binds switched off (combos = nil); each original is kept as &lt;file&gt;.nocombo.bak.'}" />
                                     <StackPanel Orientation="Horizontal" Spacing="6" Margin="24,0,0,0">
                                         <PathIcon Data="{StaticResource Icon.Warning}" Width="14" Height="14" Classes="warn" VerticalAlignment="Top" />
                                         <TextBlock Text="{l:T 'Changes DCS\'s own files. Multiplayer servers that check file integrity (pure scripts / IC) do not let you in while it is on; Restore puts DCS\'s files back. A DCS update or repair brings the original files back, JoyPro then switches it on again at its next start and before each DCS list update.'}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.12}" Foreground="{DynamicResource JP.WarnTextBrush}" MaxWidth="900" />
                                     </StackPanel>
                                     <CheckBox Content="{l:T 'Keep the UI layer\'s default binds (menus, VR)'}" IsChecked="{Binding DcsStripSkipUiLayer}" Margin="24,0,0,0" IsEnabled="{Binding CanRunDcs}"
-                                              ToolTip.Tip="{l:T 'Leaves the UI layer (Config > Input > UiLayer) as DCS ships it (same as --skip-ui-layer of the strip script)'}" />
+                                              ToolTip.Tip="{l:T 'Leaves the UI layer (Config > Input > UiLayer) as DCS ships it'}" />
                                     <CheckBox Content="{l:T 'Remove DCS\'s device-specific default files from the install'}" IsChecked="{Binding DcsRemoveDeviceFiles}" IsEnabled="{Binding CanRunDcs}"
                                               ToolTip.Tip="{l:T 'Files such as &quot;Joystick - HOTAS Warthog.lua&quot; move into JoyPro\'s backup folder, so DCS uses default.lua for every device (what JoyPro 1 did). Files another DCS file uses stay, and so do the UI layer\'s VR controller files.'}" />
                                     <TextBlock Text="{Binding DcsDefaultsStatus}" TextWrapping="Wrap" Opacity="0.8" FontSize="{DynamicResource JP.FontSize.12}" />
@@ -7296,7 +7536,7 @@
                                         <Button Command="{Binding RefreshStarCitizenDbCommand}" Content="{l:T 'Refresh Star Citizen DB'}" IsEnabled="{Binding CanRun}" />
                                     </WrapPanel>
                                     <TextBlock Text="{l:T 'IL-2 Great Battles DB'}" FontWeight="SemiBold" Margin="0,8,0,0" />
-                                    <TextBlock Text="Adds the actions of the installed game's key mapping files (data\input\*.actions, or the IL-2 export path when set) that JoyPro's IL-2 list lacks. Known actions keep their titles; the list is written only when something is new." Opacity="0.75" TextWrapping="Wrap" />
+                                    <TextBlock Text="{l:T 'Adds the actions of the installed game\'s key mapping files (data\\input\\*.actions, or the IL-2 export path when set) that JoyPro\'s IL-2 list lacks. Known actions keep their titles; the list is written only when something is new.'}" Opacity="0.75" TextWrapping="Wrap" />
                                     <WrapPanel>
                                         <CheckBox Content="{l:T 'Dry Run'}" IsChecked="{Binding Il2RefreshDryRun}" Margin="0,0,10,0" />
                                         <Button Command="{Binding RefreshIl2DbCommand}" Content="{l:T 'Refresh IL-2 DB'}" IsEnabled="{Binding CanRun}" />
@@ -7609,13 +7849,13 @@
                         <Border x:Name="MoveActionTakenBox" Classes="callout warn" Padding="10,8" IsVisible="{Binding MoveActionTaken}">
                             <StackPanel Spacing="6">
                                 <TextBlock Text="{Binding MoveActionTakenText}" TextWrapping="Wrap" />
-                                <RadioButton GroupName="MoveActionTaken" IsChecked="{Binding IsMoveActionSwap}">
+                                <RadioButton IsChecked="{Binding IsMoveActionSwap}">
                                     <TextBlock Text="{Binding MoveActionSwapText}" TextWrapping="Wrap" />
                                 </RadioButton>
-                                <RadioButton GroupName="MoveActionTaken" IsChecked="{Binding IsMoveActionReplace}">
+                                <RadioButton IsChecked="{Binding IsMoveActionReplace}">
                                     <TextBlock Text="{Binding MoveActionReplaceText}" TextWrapping="Wrap" />
                                 </RadioButton>
-                                <RadioButton GroupName="MoveActionTaken" IsChecked="{Binding IsMoveActionKeepBoth}">
+                                <RadioButton IsChecked="{Binding IsMoveActionKeepBoth}">
                                     <TextBlock Text="{Binding MoveActionKeepBothText}" TextWrapping="Wrap" />
                                 </RadioButton>
                             </StackPanel>

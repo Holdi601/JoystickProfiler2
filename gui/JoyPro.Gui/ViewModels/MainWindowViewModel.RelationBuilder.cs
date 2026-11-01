@@ -104,7 +104,7 @@ public sealed partial class MainWindowViewModel
         {
             BuilderRelationName = string.Empty;
             ClearBuilderSuggestions();
-            MarkBuilderRowsInRelation();
+            RefreshBuilderRowsInRelation();
             return;
         }
         // What the panel shows belongs to the relation it was asked for, never to the one opened now (a stale list would
@@ -622,6 +622,8 @@ public sealed partial class MainWindowViewModel
             await LoadBuilderSuggestionsAsync(relation);
             return false;
         }
+        if (CanReturnToCheck)
+            checkChangedSinceOpen = true;
         if (!reload)
             return true;
         await ReloadBuilderRelationAsync(relation);
@@ -653,7 +655,7 @@ public sealed partial class MainWindowViewModel
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
             RebuildRelationSubjects();
         }
-        MarkBuilderRowsInRelation();
+        RefreshBuilderRowsInRelation();
         await LoadBuilderSuggestionsAsync(relation);
         if (AircraftCheckDrop > 0)
             _ = RefreshAircraftCheckAsync();
@@ -791,7 +793,8 @@ public sealed partial class MainWindowViewModel
     // The relation's nodes changed: rows in it are marked, and its kind may now decide the search.
     private void OnBuilderNodesChanged()
     {
-        MarkBuilderRowsInRelation();
+        // A search row that came into the relation (or left it) moves to (or from) the greyed group at the bottom.
+        RefreshBuilderRowsInRelation();
         OnBuilderKindChanged();
         if (!string.Equals(builderLastSearchKind, BuilderEffectiveKind, StringComparison.Ordinal) && (BuilderSearchText ?? string.Empty).Trim().Length > 0)
             _ = DebouncedBuilderSearchAsync();
@@ -805,7 +808,9 @@ public sealed partial class MainWindowViewModel
 
     public bool HasBuilderChecked => BuilderCheckedCount > 0;
 
-    public string BuilderAddButtonLabel => SelectedRelation != null
+    public string BuilderAddButtonLabel => IsBuilderReplacing
+        ? T("Replace with the ticked ({0})", BuilderCheckedCount.ToString(CultureInfo.InvariantCulture))
+        : SelectedRelation != null
         ? T("Add selected ({0})", BuilderCheckedCount.ToString(CultureInfo.InvariantCulture))
         : T("Create relation with {0}{1}", BuilderCheckedCount.ToString(CultureInfo.InvariantCulture), (BuilderCheckedCount == 1 ? " action" : " actions"));
 
@@ -849,6 +854,11 @@ public sealed partial class MainWindowViewModel
     }
 
     partial void OnBuilderPlaneFilterTextChanged(string value) => RebuildBuilderPlaneOptions();
+
+    // The query whose results the list shows (tests wait for it).
+    private string builderLastSearchedQuery = string.Empty;
+
+    internal string BuilderLastSearchedQueryForTests => builderLastSearchedQuery;
 
     private async Task DebouncedBuilderSearchAsync()
     {
@@ -1010,11 +1020,17 @@ public sealed partial class MainWindowViewModel
             // The same query again: the games the user expanded show all their rows again.
             if (builderExpandedGames.Count > 0)
                 await ExpandBuilderGamesAsync(builderExpandedGames.ToList());
-            int gameCount = found.Select(r => r.Game).Distinct(StringComparer.OrdinalIgnoreCase).Count();
-            string understood = functions.Count > 0 ? T(" · understood as {0}", string.Join(", ", functions.Take(4))) : string.Empty;
-            BuilderSearchStatus = found.Count == 0
+            // The count is what can be added; the actions already in the open relation are named apart (greyed at the bottom).
+            List<BuilderSearchResultItem> offered = allBuilderSearchResults.Where(r => !r.IsInOpenRelation).ToList();
+            int already = allBuilderSearchResults.Count - offered.Count;
+            int gameCount = offered.Select(r => r.Game).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+            string understood = (already > 0 ? T(" + {0} already in this relation", already.ToString(CultureInfo.InvariantCulture)) : string.Empty) +
+                                (functions.Count > 0 ? T(" · understood as {0}", string.Join(", ", functions.Take(4))) : string.Empty);
+            total = Math.Max(0, total - already);
+            builderLastSearchedQuery = query;
+            BuilderSearchStatus = allBuilderSearchResults.Count == 0
                 ? T("Nothing found for \"{0}\"{1}{2}{3}. Try other words: what it does, or its name in the game.", query, (BuilderSearchPlanes.Count > 0 ? T(" with these aircraft") : string.Empty), (kind != "any" ? T(" among the {0}{1}", kind, (kind == "axis" ? "es" : "s")) : string.Empty), (games.Count > 0 ? T(" in the ticked games") : string.Empty))
-                : T("{0}{1}{2} in {3}{4}{5}", found.Count.ToString(CultureInfo.InvariantCulture), (total > found.Count ? T(" of {0}", total.ToString(CultureInfo.InvariantCulture)) : string.Empty), (found.Count == 1 ? " action" : " actions"), gameCount.ToString(CultureInfo.InvariantCulture), (gameCount == 1 ? " game" : " games"), understood);
+                : T("{0}{1}{2} in {3}{4}{5}", offered.Count.ToString(CultureInfo.InvariantCulture), (total > offered.Count ? T(" of {0}", total.ToString(CultureInfo.InvariantCulture)) : string.Empty), (offered.Count == 1 ? " action" : " actions"), gameCount.ToString(CultureInfo.InvariantCulture), (gameCount == 1 ? " game" : " games"), understood);
         }
         finally
         {
@@ -1085,10 +1101,14 @@ public sealed partial class MainWindowViewModel
         List<object> next = [];
         int budget = BuilderRowsShown;
         bool filtered = BuilderSearchGames.Any(c => c.IsSelected);
+        // Actions already in the open relation are not offered at their rank: greyed, without a tick box, in a group of
+        // their own at the bottom (after every action that can be added).
+        List<BuilderSearchResultItem> addable = allBuilderSearchResults.Where(r => !r.IsInOpenRelation).ToList();
+        List<BuilderSearchResultItem> inRelation = allBuilderSearchResults.Where(r => r.IsInOpenRelation).ToList();
         if (BuilderGroupByFunction)
         {
             List<string> order = builderFunctionGroups.Select(g => g.Name).Where(n => n.Length > 0).ToList();
-            foreach (IGrouping<string, BuilderSearchResultItem> function in allBuilderSearchResults.GroupBy(r => r.FunctionName.Length > 0 ? r.FunctionName : "Other matches", StringComparer.OrdinalIgnoreCase)
+            foreach (IGrouping<string, BuilderSearchResultItem> function in addable.GroupBy(r => r.FunctionName.Length > 0 ? r.FunctionName : "Other matches", StringComparer.OrdinalIgnoreCase)
                          .OrderBy(g => order.IndexOf(g.Key) is int i && i >= 0 ? i : int.MaxValue).ThenByDescending(g => g.Count()))
             {
                 List<BuilderSearchResultItem> rows = function.ToList();
@@ -1102,7 +1122,7 @@ public sealed partial class MainWindowViewModel
         }
         else
         {
-            IEnumerable<IGrouping<string, BuilderSearchResultItem>> gameGroups = allBuilderSearchResults.GroupBy(r => r.Game, StringComparer.OrdinalIgnoreCase)
+            IEnumerable<IGrouping<string, BuilderSearchResultItem>> gameGroups = addable.GroupBy(r => r.Game, StringComparer.OrdinalIgnoreCase)
                 .OrderByDescending(g => builderGameTotals.TryGetValue(g.Key, out int all) && all > 0 ? all : g.Count()).ThenBy(g => DisplayText.Game(g.Key), StringComparer.OrdinalIgnoreCase);
             // A first sort level "Game" orders the games by name; otherwise the games with the most matches come first.
             if (BuilderSearchSort.PrimaryKey == "game")
@@ -1124,12 +1144,20 @@ public sealed partial class MainWindowViewModel
                 // The best matches are shown (and "Show n more" loads the rest); the sort levels order what is shown.
                 List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
                 budget = Math.Max(0, budget - shown.Count);
-                int all = !filtered && builderGameTotals.TryGetValue(game.Key, out int known) && known > rows.Count ? known : rows.Count;
+                int known = 0;
+                int all = !filtered && builderGameTotals.TryGetValue(game.Key, out known) && known - inRelation.Count(r => string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase)) > rows.Count
+                    ? known - inRelation.Count(r => string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase)) : rows.Count;
                 next.Add(new BuilderSearchGroupItem(game.Key, shown, Math.Max(0, all - shown.Count)) { IsExpanded = expanded });
                 foreach (BuilderSearchResultItem row in shown)
                     next.Add(row);
             }
         }
+        if (inRelation.Count > 0)
+        {
+            next.Add(BuilderSearchGroupItem.InRelation(inRelation));
+            next.AddRange(inRelation);
+        }
+        builderShownInRelation = inRelation.Count;
         BuilderSearchRows.ReplaceAll(next);
         OnPropertyChanged(nameof(CanExpandAllBuilderGames));
         OnPropertyChanged(nameof(CanCollapseAllBuilderGames));
@@ -1137,12 +1165,25 @@ public sealed partial class MainWindowViewModel
         OnBuilderCheckedChanged();
     }
 
+    // How many rows of the search are already in the open relation (shown greyed at the bottom).
+    private int builderShownInRelation;
+
     private List<BuilderSearchResultItem> SortBuilderRows(IEnumerable<BuilderSearchResultItem> rows) =>
         BuilderSearchSort.HasLevels ? BuilderSearchSort.Sort(rows, r => SortRowOfAction(r)).ToList() : rows.ToList();
 
     // Rows whose every aircraft is in the open relation are shown as "already in this relation".
-    private void MarkBuilderRowsInRelation()
+    // The rows' marks after the open relation changed; a search row that came into the relation (or left it) moves to
+    // (or from) the greyed group at the bottom.
+    private void RefreshBuilderRowsInRelation()
     {
+        if (MarkBuilderRowsInRelation())
+            RebuildBuilderSearchRows();
+    }
+
+    // True when a row of the search came into the open relation or left it.
+    private bool MarkBuilderRowsInRelation()
+    {
+        bool changed = false;
         Dictionary<string, HashSet<string>> present = new(StringComparer.OrdinalIgnoreCase);
         if (SelectedRelation != null)
         {
@@ -1157,15 +1198,20 @@ public sealed partial class MainWindowViewModel
                     planes.Add(node.Game);
             }
         }
+        string open = SelectedRelation?.Name ?? string.Empty;
         foreach (BuilderSearchResultItem row in allBuilderSearchResults.Concat(CatalogRows()))
         {
+            row.OpenRelationName = open;
             bool inside = present.TryGetValue(row.Game + "|" + row.Id, out HashSet<string>? planes) &&
                           (row.Game != "DCS" || row.SelectedPlanes.Count > 0 && row.SelectedPlanes.All(p => planes.Contains(p)));
+            if (row.IsInOpenRelation != inside && allBuilderSearchResults.Contains(row))
+                changed = true;
             row.IsInOpenRelation = inside;
             if (inside)
                 row.IsChecked = false;
         }
         OnBuilderCheckedChanged();
+        return changed;
     }
 
     [RelayCommand]
@@ -1188,6 +1234,11 @@ public sealed partial class MainWindowViewModel
     internal async Task AddCheckedBuilderResultsAsync()
     {
         List<BuilderSearchResultItem> chosen = allBuilderSearchResults.Where(r => r.IsChecked && r.CanCheck).ToList();
+        if (IsBuilderReplacing)
+        {
+            await ReplaceWithBuilderRowsAsync(chosen);
+            return;
+        }
         await AddBuilderRowsAsync(chosen, text => BuilderSearchStatus = text, seedSearch: (BuilderSearchText ?? string.Empty).Trim().Length == 0);
     }
 
@@ -1285,7 +1336,7 @@ public sealed partial class MainWindowViewModel
             if (seedSearch)
                 SeedBuilderSearch(SelectedRelation.Name);
             await ShowRelationAsync(SelectedRelation.Name);
-            MarkBuilderRowsInRelation();
+            RefreshBuilderRowsInRelation();
             await LoadBuilderSuggestionsAsync(SelectedRelation.Name);
             _ = EnsureBuilderLlmStatusAsync();
         }
@@ -1324,7 +1375,7 @@ public sealed partial class MainWindowViewModel
         SelectedRelation = null;
         ShowNewRelationForm = true;
         SetBuilderPanel(BuilderPanelKind.Add);
-        MarkBuilderRowsInRelation();
+        RefreshBuilderRowsInRelation();
         OnBuilderKindChanged();
         NewRelationFormRequested?.Invoke(this, EventArgs.Empty);
     }

@@ -334,6 +334,7 @@ public sealed class VirtualJoystickTests : IDisposable
     [InlineData(HidHideState.PartInverse, "--inv-on", true)]
     [InlineData(HidHideState.PartApps, "--app-reg \"C:\\x.exe\"", true)]
     [InlineData(HidHideState.PartApps, "", true)]
+    [InlineData(HidHideState.PartApps, "--app-reg \"\"\r\n--app-reg \"\"\r\n", true)] // entries HidHide cannot name (this PC, 2026-11-01)
     [InlineData(HidHideState.PartDevices, "Error code 0x0005 - Access is denied.", false)]
     [InlineData(HidHideState.PartCloak, "", false)]
     [InlineData(HidHideState.PartInverse, "Zugriff verweigert", false)]
@@ -347,6 +348,40 @@ public sealed class VirtualJoystickTests : IDisposable
         Assert.Equal(ok, parsed);
         Assert.Equal(!ok, !state.Complete);
         Assert.Equal(ok, problem.Length == 0);
+    }
+
+    // HidHideCLI prints program entries whose stored path is on a volume that is not mounted any more as --app-reg ""
+    // (the development PC after its volume numbers changed, 2026-11-01): five such entries made the program list
+    // "unknown", so no session could start. They are a complete answer: left as they are, their number checked.
+    [Fact]
+    public void Enable_ProgramEntriesHidHideCannotName_AreLeftAsTheyAreAndRestoredExactly()
+    {
+        HidHideState parsed = new();
+        Assert.True(HidHideState.TryParsePart(HidHideState.PartApps, "--app-reg \"\"\r\n--app-reg \"" + Msfs + "\"\r\n--app-reg \"\"\r\n", parsed, out string problem), problem);
+        Assert.Equal(2, parsed.UnnamedApps);
+        Assert.Equal([Msfs], parsed.Apps);
+
+        HidHideState before = State(cloak: false, inverse: true, devices: [UserDevice], apps: [Msfs]);
+        before.UnnamedApps = 5;
+        (FakeHidHideCli cli, HidHideSession session) = Session(before);
+
+        HidHideResult enabled = session.Enable(Request(owner: 0), dryRun: false);
+
+        Assert.True(enabled.Ok, enabled.Message + " " + string.Join(" ", enabled.Problems));
+        Assert.Contains(enabled.Notes, n => n.Contains("cannot name", StringComparison.Ordinal));
+        HidHideState during = cli.ReadState();
+        Assert.Equal(5, during.UnnamedApps);
+        Assert.Equal([Dcs], during.Apps);
+        Assert.DoesNotContain(cli.Calls[0], a => a.Length == 0); // never --app-unreg "" / --app-reg ""
+
+        Assert.True(session.Disable(dryRun: false).Ok);
+
+        HidHideState after = cli.ReadState();
+        AssertSame(before, after);
+        Assert.Equal(5, after.UnnamedApps);
+        Assert.Empty(HidHidePlanner.Verify(before, after));
+        Assert.Contains(HidHidePlanner.Verify(new HidHideState { CloakOn = after.CloakOn, InverseOn = after.InverseOn, Devices = after.Devices, Apps = after.Apps }, after),
+            p => p.Contains("cannot name", StringComparison.Ordinal));
     }
 
     [Fact]
@@ -513,6 +548,32 @@ public sealed class VirtualJoystickTests : IDisposable
         Assert.Contains(engine.Calls, c => Seq(c, "vjoy", "mode", "IL2Game", "virtual") && c.Contains("--profile"));
     }
 
+    // The live view switch sends JoyPro.VJoy's protocol words, never their translation (in German the forwarder got
+    // "Überwachung an" and the live view stayed empty; found in the vJoy live test 2026-11-01).
+    [Fact]
+    public async Task LiveView_SendsTheProtocolCommandUntranslated()
+    {
+        try
+        {
+            JoyPro.Gui.Localization.Loc.SetLanguage("de");
+            (MainWindowViewModel vm, _, FakeFfbLauncher launcher) = await CreateVmAsync();
+            await vm.TestVirtualJoystickCommand.ExecuteAsync(null);
+            FakeFfbHostProcess host = Assert.Single(launcher.Started);
+
+            vm.VirtualJoystickLiveView = !vm.VirtualJoystickLiveView;
+            vm.VirtualJoystickLiveView = !vm.VirtualJoystickLiveView;
+
+            Assert.Contains("monitor on", host.Sent);
+            Assert.Contains("monitor off", host.Sent);
+            Assert.All(host.Sent, line => Assert.Matches("^(monitor on|monitor off|stop)$", line));
+            await vm.StopVirtualJoystickCommand.ExecuteAsync(null);
+        }
+        finally
+        {
+            JoyPro.Gui.Localization.Loc.SetLanguage("en");
+        }
+    }
+
     [Fact]
     public async Task Test_StartsTheDryForwarderWithoutHidHideAndShowsTheLiveView()
     {
@@ -539,6 +600,27 @@ public sealed class VirtualJoystickTests : IDisposable
         Assert.Contains("stop", host.Sent);
         Assert.DoesNotContain(engine.Calls, c => c.Contains("restore-hidhide"));
         Assert.False(vm.VirtualJoystickRunning);
+    }
+
+    // Test changes nothing in the profile: the mapping is only checked (vjoy map --dry-run, no history version); Start
+    // saves it.
+    [Fact]
+    public async Task Test_ChecksTheMappingWithoutSavingIt_StartSavesIt()
+    {
+        (MainWindowViewModel vm, VJoyFakeEngine engine, _) = await CreateVmAsync();
+
+        await vm.TestVirtualJoystickCommand.ExecuteAsync(null);
+        IReadOnlyList<string> check = engine.Calls.Single(c => Seq(c, "vjoy", "map"));
+        Assert.Contains("--dry-run", check);
+        Assert.DoesNotContain("--history-note", check);
+        await vm.StopVirtualJoystickCommand.ExecuteAsync(null);
+
+        engine.Calls.Clear();
+        await vm.StartVirtualJoystickCommand.ExecuteAsync(null);
+        IReadOnlyList<string> save = engine.Calls.Single(c => Seq(c, "vjoy", "map"));
+        Assert.DoesNotContain("--dry-run", save);
+        Assert.Contains("--history-note", save);
+        await vm.StopVirtualJoystickCommand.ExecuteAsync(null);
     }
 
     [Fact]

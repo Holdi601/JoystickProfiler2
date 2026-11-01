@@ -9,8 +9,9 @@ namespace JoyPro.Engine.Games
 {
     // Where a Rewired game keeps its user data: key/value pairs with Rewired's own keys
     // ("RewiredSaveData|playerName=Player0|dataType=ControllerMap|kv=2|..."), each value a string (the joystick maps
-    // are JoystickMap XML). Nuclear Option: Unity PlayerPrefs in the registry (value name = key + "_h<hash>");
-    // Tiny Combat Arena: Rewired's UserDataStore_File (RewiredSaveData.json, value name = key).
+    // are JoystickMap XML). Both games use Unity PlayerPrefs in the registry (UnityPrefsStore, value name = key +
+    // "_h<hash>"): Nuclear Option under its own key, Tiny Combat Arena under HKCU\Software\TinyCombat\Arena (its
+    // RewiredSaveData.json store is in the game but not used, see TinyCombatArenaIntegration).
     internal abstract class RewiredStore
     {
         // The stored value names, in their stored order.
@@ -298,6 +299,11 @@ namespace JoyPro.Engine.Games
                 bool written = value.Duplicate == "0" && hardwareNames.ContainsKey(value.Identifier);
                 List<RewiredElementMap> mine = joyPro ? wanted[slot] : new List<RewiredElementMap>();
                 bool moving = request.Mode == GameExportMode.MergeOverwrite && boundActions.Count > 0;
+                // A device JoyPro never clears (the vJoy device it tunnels into, an ignored device; Rewired keys maps by
+                // the model, so any connected device of that model): only the profile's own binds go in, like merge.
+                bool kept = request.Devices != null && request.Devices.Devices.Any(d => d.Kept && HardwareIdentifier(d) == value.Identifier);
+                if (kept && !joyPro)
+                    continue;
                 if (!joyPro && !nuke && !moving && !(written && request.Mode == GameExportMode.Clean))
                     continue;
                 // Nuke and merge-overwrite: only devices the import can read (connected, one of its model). The maps of
@@ -323,7 +329,7 @@ namespace JoyPro.Engine.Games
                 }
                 else
                 {
-                    PlanDevice(request.Mode, existing, mine, owned, boundActions, actions, value.Identifier, drop, add, sources, result);
+                    PlanDevice(kept && request.Mode != GameExportMode.Add ? GameExportMode.Merge : request.Mode, existing, mine, owned, boundActions, actions, value.Identifier, drop, add, sources, result);
                 }
                 string updated;
                 if (!RewiredJoystickMap.TryEdit(value.Xml, m => drop.Any(d => Same(d, m)), add, out updated))
@@ -358,7 +364,7 @@ namespace JoyPro.Engine.Games
                 foreach (GameDevice device in request.Devices.Devices.Where(d => d.HasVidPid && !string.IsNullOrWhiteSpace(d.HidProductString)))
                 {
                     string identifier = HardwareIdentifier(device);
-                    if (hardwareNames.ContainsKey(identifier) || request.Devices.Devices.Count(d => HardwareIdentifier(d) == identifier) > 1)
+                    if (hardwareNames.ContainsKey(identifier) || device.Kept || request.Devices.Devices.Count(d => HardwareIdentifier(d) == identifier) > 1)
                         continue;
                     foreach (int category in categories.OrderBy(c => c))
                     {

@@ -110,7 +110,8 @@ public sealed partial class CockpitsViewModel
             Mark = compared.Count == 0 ? null : CompareMark,
             Pictures = pictures,
             PictureMode = PictureModeKey,
-            Guide = GuideTree
+            Guide = GuideTree,
+            PhotoFile = photo => PhotoStore.FileOf(photo.Url)
         };
     }
 
@@ -135,7 +136,7 @@ public sealed partial class CockpitsViewModel
         {
             foreach (ManualPage page in CockpitManualPages.Build(catalog, v, PageOptions(PageSearchText)))
             {
-                CockpitPageItem item = new(page, page.Kind == "panel" ? T("Panels") : page.Kind == "device" ? T("Grips") : T("Overview"));
+                CockpitPageItem item = new(page, page.Kind == "panel" ? T("Panels") : page.Kind == "device" ? T("Grips") : page.Kind == "photo" ? T("Photos") : T("Overview"));
                 Pages.Add(item);
                 if (page.Kind == "panel")
                     PanelPages.Add(item);

@@ -407,6 +407,7 @@ public sealed partial class MainWindowViewModel
             args.Add("--include-keyboard");
         if (ExportNukeUntouchedDevices)
             args.Add("--nuke-untouched-devices");
+        AddExportKeptDeviceArgs(args);
         if (SelectedRegistryGame!.SupportsAircraft && !string.IsNullOrWhiteSpace(RegistryGameAircraft))
             args.AddRange(["--aircraft", RegistryGameAircraft.Trim()]);
         AddMsfsUserProfileOptions(args);

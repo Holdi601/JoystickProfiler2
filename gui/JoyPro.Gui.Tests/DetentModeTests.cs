@@ -238,7 +238,7 @@ public sealed class DetentModeTests
     // ---- the Binds page -----------------------------------------------------------------------------------------------
 
     [Fact]
-    public async Task Panel_ShowsGroupsCalibrationAndWarnings()
+    public Task Panel_ShowsGroupsCalibrationAndWarnings() => UiThread.RunAsync(async () =>
     {
         DetentFakeEngine fake = new();
         MainWindowViewModel vm = await CreateVmAsync(fake);
@@ -260,10 +260,10 @@ public sealed class DetentModeTests
         Assert.Contains("afterburner detent at 80 % of the travel (measured 2026-10-17)", vm.DetentCalibrationText);
         Assert.Equal(0.8, vm.DetentCalibratedTravel, 9);
         Assert.StartsWith("Detent mode is on: 4 aircraft in 3 groups.", vm.DetentStatus);
-    }
+    });
 
     [Fact]
-    public async Task Panel_SwitchesAndGroupValues_RunTheEngine()
+    public Task Panel_SwitchesAndGroupValues_RunTheEngine() => UiThread.RunAsync(async () =>
     {
         DetentFakeEngine fake = new();
         MainWindowViewModel vm = await CreateVmAsync(fake);
@@ -285,11 +285,11 @@ public sealed class DetentModeTests
         int calls = fake.Calls.Count;
         await vm.SetDetentGroupAbCommand.ExecuteAsync(group);
         Assert.Equal(calls, fake.Calls.Count);
-    }
+    });
 
     // The wizard reads the bound axis live (JOY_RX = axis 3), refuses impossible steps and sends raw positions.
     [Fact]
-    public async Task Wizard_StepsValidateAndSave()
+    public Task Wizard_StepsValidateAndSave() => UiThread.RunAsync(async () =>
     {
         DetentFakeEngine fake = new();
         AxisTuningFakeCapture capture = new();
@@ -334,11 +334,11 @@ public sealed class DetentModeTests
         Assert.False(vm.IsDetentWizardOpen);
         Assert.True(capture.LastToken.IsCancellationRequested);
         Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "binds", "detent", "calibrate", "Throttle", "--idle", "0.03"));
-    }
+    });
 
     // A reversed axis and a cut-off behind the idle detent.
     [Fact]
-    public async Task Wizard_ReversedAxisWithCutoff()
+    public Task Wizard_ReversedAxisWithCutoff() => UiThread.RunAsync(async () =>
     {
         DetentFakeEngine fake = new();
         MainWindowViewModel vm = await CreateVmAsync(fake);
@@ -361,10 +361,10 @@ public sealed class DetentModeTests
         Assert.Equal(3, vm.DetentWizardStep);
         vm.CancelDetentWizardCommand.Execute(null);
         Assert.False(vm.IsDetentWizardOpen);
-    }
+    });
 
     [Fact]
-    public async Task Merge_PreviewApplyUndo()
+    public Task Merge_PreviewApplyUndo() => UiThread.RunAsync(async () =>
     {
         DetentFakeEngine fake = new();
         MainWindowViewModel vm = await CreateVmAsync(fake);
@@ -382,7 +382,7 @@ public sealed class DetentModeTests
         Assert.True(vm.DetentMergeUndoAvailable);
         Assert.Empty(vm.DetentMergeProposals);
         Assert.StartsWith("Merged Throttle, ThrottleMig29, ThrottleNoAB into Throttle.", vm.DetentMergeStatus);
-    }
+    });
 
     // The panel's texts go through the localization; the engine's English group texts are translated by pattern.
     [Fact]

@@ -128,6 +128,7 @@ public sealed partial class MainWindowViewModel
         foreach (string device in devices)
         {
             layoutTemplateByDevice.Remove(device);
+            ForgetLayoutPick(device);
             savedLayoutDevices.Remove(device);
         }
         await RefreshAfterLayoutChangeAsync(devices);

@@ -6,8 +6,9 @@
 # Folders of <engine>\DB that are JoyPro's own work and ship with JoyPro. DevicePhotos holds only the web addresses of
 # the makers' photos (JoyPro fetches them on the user's PC), DeviceLayouts only JoyPro's marker positions, DeviceDrawings
 # JoyPro's own line drawings of the devices (vector path data), Cockpits JoyPro's cockpit database (drawings as vector
-# data, photos only as addresses): no photo.
-$script:ShippedDbFolders = @("Functions", "Devices", "Llm", "DevicePhotos", "DeviceLayouts", "DeviceDrawings", "Cockpits", "Detents", "DeviceTurntables", "DeviceLayouts2D")
+# data, photos only as addresses), DeviceDetect the numbers of the spot scorer (docs/device-reference.md, "Detected
+# control spots"): no photo.
+$script:ShippedDbFolders = @("Functions", "Devices", "Llm", "DevicePhotos", "DeviceLayouts", "DeviceDrawings", "Cockpits", "Detents", "DeviceTurntables", "DeviceLayouts2D", "DeviceDetect")
 
 # Pictures never ship in DB (a maker's photo or a user's picture that slipped into the catalog folders).
 $script:PictureExtensions = @(".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".img", ".tif", ".tiff")

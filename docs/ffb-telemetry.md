@@ -30,6 +30,9 @@ nodes with min/max normalisation, group nodes, Bezier curve nodes, output nodes 
 
 `<data>` is `JOYPRO_DATA_DIR`, else `%LOCALAPPDATA%\JoyPro2` (the engine's data folder).
 
+The page's game list leaves out the games hidden in Settings > Games (2.6.0, `VisibleFfbTelemetryGames`); a hidden
+game is not looked for either, so JoyPro.Ffb never starts for it. Its settings stay in the settings file.
+
 ## How it runs
 
 ```

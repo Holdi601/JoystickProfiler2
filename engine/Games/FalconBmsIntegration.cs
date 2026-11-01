@@ -636,13 +636,20 @@ namespace JoyPro.Engine.Games
             string ownershipBase = OwnershipBase(request.ConfigPath);
             Dictionary<string, HashSet<string>> owned = GameOwnershipStore.Load(ownershipBase, result.Warnings);
             // JoyPro clears binds only on connected devices: the device file of one that is not connected may belong to
-            // another stick of the same name or come back later, so its binds stay whatever the mode.
-            Func<DeviceFile, bool> connected = f => request.Devices != null && request.Devices.FindByInstanceGuid(f.Guid) != null;
+            // another stick of the same name or come back later, so its binds stay whatever the mode. The same for a device
+            // JoyPro never clears (the vJoy device it tunnels into, an ignored device).
+            Func<DeviceFile, bool> connected = f =>
+            {
+                GameDevice device = request.Devices == null ? null : request.Devices.FindByInstanceGuid(f.Guid);
+                return device != null && !device.Kept;
+            };
             if (request.Mode == GameExportMode.Clean || request.Mode == GameExportMode.MergeOverwrite)
             {
                 // "My profile wins": every action the profile binds loses its other inputs on connected devices, so a
-                // moved bind fully moves. Inputs JoyPro wrote before count like any other bind of the game.
-                ReleaseOtherInputs(files.Where(connected).ToList(), wanted);
+                // moved bind fully moves. Inputs JoyPro wrote before count like any other bind of the game. Clean
+                // clears only the devices it writes (below), as in every game.
+                if (request.Mode == GameExportMode.MergeOverwrite)
+                    ReleaseOtherInputs(files.Where(connected).ToList(), wanted);
                 owned.Clear();
             }
             if (request.Mode == GameExportMode.Clean || request.NukeUnusedDevices)

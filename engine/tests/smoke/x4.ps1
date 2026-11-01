@@ -220,6 +220,22 @@ try {
     $x4mClean = Run-Engine @("--profile", $x4mProfile, "x4", "export", "--path", $x4mMap, "--mode", "clean", "--nuke-untouched-devices", "--text")
     Assert-True ($x4mClean.ExitCode -eq 0) ("x4 clean + nuke export failed: " + $x4mClean.Output)
     Assert-True ((Get-X4mNonFlight $x4mMap) -eq $x4mNonFlight) "x4 clean + nuke must leave the menu and on-foot lines identical."
+
+    # Clean without nuke is the same in every game: fire on the throttle (slot 3, written); the connected stick (slot 2,
+    # not written) keeps fire's right shoulder. Only merge-overwrite moves it.
+    $x4mCleanProfile = Join-Path $tempDir "x4-modes-clean.pr0file"
+    Run-Engine @("--profile", $x4mCleanProfile, "relations", "add", "X4M Fire", "--button", "--node", "X4:INPUT_STATE_FIRE_PRIMARY_WEAPON", "--device", "Smoke Throttle {66666666-7777-8888-9999-000000000000}", "--input", "JOY_BTN1", "--text") | Out-Null
+    $x4mShoulder = 'INPUT_STATE_FIRE_PRIMARY_WEAPON" source="INPUT_SOURCE_JOYBUTTONS_2" code="INPUT_XBUTTON_RIGHT_SHOULDER"'
+    Copy-Item -Path (Join-Path $engineDir "tests\fixtures\x4\1234\inputmap.xml") -Destination $x4mMap -Force
+    $x4mCleanOnly = Run-Engine @("--profile", $x4mCleanProfile, "x4", "export", "--path", $x4mMap, "--mode", "clean", "--text")
+    Assert-True ($x4mCleanOnly.ExitCode -eq 0) ("x4 clean export failed: " + $x4mCleanOnly.Output)
+    $x4mText = [IO.File]::ReadAllText($x4mMap)
+    Assert-Match $x4mText 'INPUT_STATE_FIRE_PRIMARY_WEAPON" source="INPUT_SOURCE_JOYBUTTONS_3" code="INPUT_XBUTTON_A"' "x4 clean should write fire on the throttle."
+    Assert-Match $x4mText $x4mShoulder "x4 clean must keep fire on the connected stick the export does not write (only merge-overwrite moves it)."
+    Copy-Item -Path (Join-Path $engineDir "tests\fixtures\x4\1234\inputmap.xml") -Destination $x4mMap -Force
+    $x4mOverwriteOnly = Run-Engine @("--profile", $x4mCleanProfile, "x4", "export", "--path", $x4mMap, "--mode", "merge-overwrite", "--text")
+    Assert-True ($x4mOverwriteOnly.ExitCode -eq 0) ("x4 merge-overwrite export failed: " + $x4mOverwriteOnly.Output)
+    Assert-NotMatch ([IO.File]::ReadAllText($x4mMap)) $x4mShoulder "x4 merge-overwrite should take fire off the connected stick."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $x4mPreviousDevices

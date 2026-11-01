@@ -137,6 +137,23 @@ try {
     Assert-Match $fsxText "<Name>Smoke Throttle \{66666666-7777-8888-9999-000000000000\}</Name>" "nuke keeps the (empty) map."
     Assert-Match (Get-FsxMap $fsxText "Smoke Stick{11111111-2222-3333-4444-555555555555}") "AXIS_AILERONS_SET" "nuke must keep the exported stick bind."
 
+    # Clean is the same in every game: brakes on the throttle (written); the connected stick (not written) keeps its
+    # brakes button. Only merge-overwrite takes it off there.
+    $fsxCleanProfile = Join-Path $tempDir "fsx-clean.pr0file"
+    Run-Engine @("--profile", $fsxCleanProfile, "relations", "add", "FSX Throttle Brakes", "--button", "--node", "FSX:BRAKES", "--device", "Smoke Throttle {66666666-7777-8888-9999-000000000000}", "--input", "JOY_BTN6", "--text") | Out-Null
+    foreach ($fsxMode in @("clean", "merge-overwrite")) {
+        $fsxModeFile = Join-Path $fsxDir ("clean-check-" + $fsxMode + "\Standard.XML")
+        New-Item -Path (Split-Path $fsxModeFile) -ItemType Directory -Force | Out-Null
+        Copy-Item -Path (Join-Path $engineDir "tests\fixtures\fsx\Microsoft\FSX\Controls\Standard.XML") -Destination $fsxModeFile -Force
+        $fsxModeRun = Run-Engine @("--profile", $fsxCleanProfile, "fsx", "export", $fsxModeFile, "--mode", $fsxMode, "--text")
+        Assert-True ($fsxModeRun.ExitCode -eq 0) ("fsx " + $fsxMode + " export (throttle brakes) failed: " + $fsxModeRun.Output)
+        $fsxModeText = Get-FsxText $fsxModeFile
+        Assert-Match (Get-FsxMap $fsxModeText "Smoke Throttle {66666666-7777-8888-9999-000000000000}") "<Index>5</Index>\n\s*<Down>BRAKES</Down>" ("fsx " + $fsxMode + " should write the brakes on the throttle.")
+        $fsxStickBrakes = (Get-FsxMap $fsxModeText "Smoke Stick{11111111-2222-3333-4444-555555555555}") -match "<Index>0</Index>\n\s*<Down>BRAKES</Down>"
+        if ($fsxMode -eq "clean") { Assert-True $fsxStickBrakes "fsx clean must keep the brakes on the connected stick the export does not write (only merge-overwrite moves them)." }
+        else { Assert-True (-not $fsxStickBrakes) "fsx merge-overwrite should take the brakes off the connected stick." }
+    }
+
     # Prepar3D reads the same format.
     $p3dFile = Join-Path $fsxDir "p3d5-Standard.xml"
     Copy-Item -Path (Join-Path $engineDir "tests\fixtures\fsx\Microsoft\FSX\Controls\Standard.XML") -Destination $p3dFile -Force

@@ -223,6 +223,33 @@ public sealed class ReferencePhotoStoreTests : IDisposable
         Assert.Equal("archive", store.Entry(photo.Url)!.Origin);
     }
 
+    // A shop re-encoded the picture (same pixels, other bytes): its hash is on record as sha256Alt, so the download is
+    // the photo on record (not "changed", no archive asked) and the photo keeps its identity (Sha256) for the positions.
+    [Fact]
+    public async Task ReencodedPhoto_WithAnAcceptedHash_IsThePhotoOnRecord()
+    {
+        byte[] recorded = Png(40), reencoded = Png(41);
+        string json = "{ \"photos\": [ { \"model\": \"test-stick\", \"url\": \"https://maker.example/three.png\", \"view\": \"three-quarter\", \"sha256\": \"" + Sha(recorded) +
+                      "\", \"sha256Alt\": [\"" + Sha(reencoded).ToUpperInvariant() + "\"] } ] }";
+        DevicePhoto photo = DevicePhotoDb.ParsePhotoFile(json).Single();
+        Assert.Equal([Sha(reencoded)], photo.Sha256Alt);
+        Assert.True(photo.HasContent(Sha(recorded)));
+        Assert.True(photo.HasContent(Sha(reencoded)));
+        Assert.False(photo.HasContent(Sha(Png(42))));
+        Assert.Equal(photo.Sha256Alt, ((List<object>)DevicePhotoDb.PhotoToJson(photo)["sha256Alt"]).Cast<string>());
+        Assert.Equal(photo.Sha256Alt, photo.Clone().Sha256Alt);
+
+        FakeServer server = new();
+        server.Files["https://maker.example/three.png"] = reencoded;
+        ReferencePhotoStore store = StoreWith(server);
+        ReferencePhotoStore.PhotoResult result = await store.EnsureAsync("test-stick", photo);
+        Assert.Equal("original", result.Origin);
+        Assert.False(result.Changed);
+        Assert.Equal(reencoded, File.ReadAllBytes(result.File!));
+        Assert.DoesNotContain(server.Requests, r => r.Contains("web.archive.org"));
+        Assert.Equal(Sha(recorded), photo.Sha256);
+    }
+
     [Fact]
     public async Task DeadLink_UsesTheNewestSnapshot_AndAChangedPhotoWithoutCopyIsMarked()
     {

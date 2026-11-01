@@ -205,7 +205,10 @@ namespace JoyPro.Engine.Games
                 bool joyPro = wanted.TryGetValue(entry.Key, out mine);
                 mine = mine ?? new List<RewiredElementMap>();
                 string identifier = KeyPart(entry.Key, "hardwareIdentifier");
-                bool connected = request.Devices != null && request.Devices.Devices.Any(d => HardwareIdentifier(d) == identifier);
+                // (a model a device JoyPro never clears has, the vJoy device it tunnels into or an ignored device, is not
+                // JoyPro's to clear: the maps are keyed by the model)
+                bool connected = request.Devices != null && request.Devices.Devices.Any(d => HardwareIdentifier(d) == identifier) &&
+                                 !request.Devices.Devices.Any(d => d.Kept && HardwareIdentifier(d) == identifier);
                 List<RewiredElementMap> existing;
                 if (!RewiredJoystickMap.TryRead(entry.Value, out existing))
                 {
@@ -255,7 +258,7 @@ namespace JoyPro.Engine.Games
                         // without binds in the export lose theirs; "my profile wins": the profile's actions leave their
                         // other axes.
                         return owns && ((request.Mode == GameExportMode.Clean && joyPro) || (request.NukeUnusedDevices && !joyPro) ||
-                                        (overwrite && boundActions.Contains(m.ActionId)));
+                                        (request.Mode == GameExportMode.MergeOverwrite && boundActions.Contains(m.ActionId)));
                     };
                 }
                 string updated;

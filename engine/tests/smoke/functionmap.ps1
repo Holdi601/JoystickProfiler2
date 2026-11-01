@@ -120,6 +120,25 @@ try {
     $fmResolvePitch = Invoke-FmJson @("relations", "resolve", "pitch", "--game", "MSFS2024")
     Assert-True ($fmResolvePitch.Games[0].Actions[0].Id -eq "KEY_AXIS_ELEVATOR_SET") ("resolve 'pitch' did not list MSFS's elevator axis first (" + $fmResolvePitch.Games[0].Actions[0].Id + ").")
 
+    # "Lock" by its meaning (2.5.1, the author's profile: the CH-47F ramp valve lock went into Radar Lock): a bare
+    # "lock" / "unlock" is the target lock only with a targeting word in the title (function-map.json "bare"/"context").
+    $fmDump = Join-Path $fmDir "map-dump.tsv"
+    $null = Invoke-FmJson @("relations", "functions", "--dump", $fmDump)
+    $fmMapped = @{}
+    foreach ($line in [IO.File]::ReadAllLines($fmDump)) {
+        $cols = $line.Split("`t")
+        if ($cols.Length -ge 8 -and $cols[1] -eq "Z-99 Testjet") { $fmMapped[$cols[2].Substring(0, 5)] = $cols[7] }
+    }
+    foreach ($notLock in @("d9907", "d9908", "d9909")) {
+        Assert-True ($fmMapped.ContainsKey($notLock)) ("the map dump lacks the fixture action " + $notLock + ".")
+        Assert-True (-not ($fmMapped[$notLock] -match 'target_(un)?lock')) ("a mechanical lock was read as the target lock: " + $notLock + " = " + $fmMapped[$notLock])
+    }
+    foreach ($isLock in @(@("d9910", "target_lock"), @("d9911", "target_lock"), @("d9912", "target_unlock"))) {
+        Assert-True ($fmMapped[$isLock[0]] -match ('(^|;)' + $isLock[1] + '@')) ("" + $isLock[0] + " should still read as " + $isLock[1] + " (" + $fmMapped[$isLock[0]] + ").")
+    }
+    $fmLockSearch = Invoke-FmJson @("relations", "search", "lock", "--limit", "80")
+    Assert-True (@($fmLockSearch.Resolved | Where-Object { $_.Id -eq "target_lock" -and -not $_.Related }).Count -ge 1) "a typed 'lock' must still be read as the target lock."
+
     $fmTypo = Invoke-FmJson @("relations", "search", "throtle")
     Assert-True ($fmTypo.DidYouMean -eq "throttle") ("search 'throtle' gave no 'did you mean throttle' (" + $fmTypo.DidYouMean + ").")
     Assert-True (@($fmTypo.FunctionIds) -contains "throttle") "search 'throtle' did not find the throttle function."

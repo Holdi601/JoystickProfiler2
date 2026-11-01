@@ -61,7 +61,7 @@ Measured with a release-like engine folder (game data removed by `tools/ReleaseC
 | G-Rebels | `grebels refresh-db` | **JoyPro's own table** (axis roles, buttons) | failed (no refresh) | 7 | 7 | — |
 | Battlefield 6 / ACE COMBAT 8 | `bf6` / `ac8 refresh-db` | the user's profile / `System.sav` | 65 / 13 | same | — | — |
 | ACE COMBAT 7 | `ac7 refresh-db` | `Input.ini` the game writes | failed | failed | — | the game must have been started once |
-| IL-2 Sturmovik: 1946 | `il21946 refresh-db` | **JoyPro's own command list** + the commands `Users\default.ini`, `conf.ini` and the pilots' `settings.ini` name | 187 | 187 | 125 | titles of commands JoyPro does not list are humanized ids |
+| IL-2 Sturmovik: 1946 | `il21946 refresh-db` | **JoyPro's own command list** + the commands `Users\default.ini`, `conf.ini` and the pilots' `settings.ini` name | 187 | 187 | 188 (refreshed from Steam's install after this measurement) | titles of commands JoyPro does not list are humanized ids |
 | Cliffs of Dover / Blitz | `il2cod` / `il2codblitz refresh-db` | **JoyPro's own command list** + the user's and the install's `confUser.ini` | 227 / 228 | same | 106 | as above |
 | FSX / FSX-SE / Prepar3D v4-v6 | `fsx` / `fsxse` / `p3d4` / `p3d5` / `p3d6 refresh-db` | **JoyPro's own event list** (public SDK ids, own titles) + the events of the user's control files, FSX's install template, Prepar3D's `Standard.xmlx` | 149 own (not installed) | same | 149 | — |
 

@@ -378,7 +378,8 @@ public sealed class TrayHostResourceTests : IDisposable
         Assert.InRange(reports, 1, 5);
         (int handlesAfter, long managedAfter) = Measure();
         output.WriteLine($"1000 writes: notifications={reports}, handles {handlesBefore} -> {handlesAfter}, managed {managedBefore / 1024} KB -> {managedAfter / 1024} KB");
-        Assert.InRange(handlesAfter - handlesBefore, -50, 20);
+        // The process's handle count also moves with the tests running next to this one: only growth counts (a leak).
+        Assert.InRange(handlesAfter - handlesBefore, int.MinValue, 20);
         Assert.InRange(managedAfter - managedBefore, long.MinValue, 2 * 1024 * 1024);
 
         // 200 GUI starts and exits: the watcher is released and re-created each time.
@@ -394,7 +395,7 @@ public sealed class TrayHostResourceTests : IDisposable
         await Task.Delay(200);
         (int handlesCycled, long managedCycled) = Measure();
         output.WriteLine($"200 hand-overs: handles {handlesAfter} -> {handlesCycled}, managed {managedAfter / 1024} KB -> {managedCycled / 1024} KB, watchers created {real.Count}");
-        Assert.InRange(handlesCycled - handlesAfter, -50, 20);
+        Assert.InRange(handlesCycled - handlesAfter, int.MinValue, 20);
         Assert.Equal(1, real.Count(w => w.HandleCount > 0));
         lock (gate)
             host.Dispose();

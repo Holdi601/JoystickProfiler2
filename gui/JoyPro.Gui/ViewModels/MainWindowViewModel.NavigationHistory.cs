@@ -118,7 +118,8 @@ public sealed partial class MainWindowViewModel
             ["check"] = CheckSearchText ?? string.Empty,
             ["check-kind"] = SelectedCheckKind?.Rule ?? string.Empty,
             ["check-sort"] = SelectedCheckSort?.Rule ?? string.Empty,
-            ["settings"] = SettingsSearchText ?? string.Empty
+            ["settings"] = SettingsSearchText ?? string.Empty,
+            ["builder-search"] = BuilderSearchText ?? string.Empty
         };
 
         Dictionary<string, bool> expanded = new(StringComparer.Ordinal);
@@ -159,6 +160,10 @@ public sealed partial class MainWindowViewModel
             RestoreNavigationSubView(entry);
             RestoreNavigationSelection(entry);
             RestoreNavigationExpanded(entry);
+            // The relation editor's Add actions search as it was (opening the relation would search for its name).
+            if (entry.Stage == UiStage.Relations && entry.Texts.TryGetValue("builder-search", out string? query) &&
+                !string.Equals(BuilderSearchText ?? string.Empty, query, StringComparison.Ordinal))
+                BuilderSearchText = query;
         }
         NavigationScrollHost?.RestoreScroll(entry.Scroll);
     }

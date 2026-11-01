@@ -35,10 +35,12 @@ namespace JoyPro.Engine
         public const string ReplacedFolderName = "Replaced";
 
         // DB folders that are JoyPro's own data (tools/ReleaseContent.psm1 ships exactly these).
-        private static readonly HashSet<string> ShippedDbFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly string[] ShippedDbFolderNames =
         {
             "Functions", "Devices", "Llm", "DevicePhotos", "DeviceLayouts", "DeviceDrawings", "Cockpits", "Detents"
         };
+
+        private static readonly HashSet<string> ShippedDbFolders = new HashSet<string>(ShippedDbFolderNames, StringComparer.OrdinalIgnoreCase);
 
         // Top folders of built data next to DB: one subfolder per game.
         private static readonly string[] CleanProfileFolders = { "CleanProfile", "KeyboardCleanProfile" };

@@ -448,11 +448,16 @@ public sealed class CockpitDatabaseTests
             Assert.NotEmpty(vm.Cockpits.AircraftList);
             Assert.True(vm.Cockpits.Show("f-16"));
             CockpitLayoutRequest? raised = null;
+            int wizardOpened = 0;
             vm.CockpitLayoutRequested += (_, r) => raised = r;
+            vm.SetupWizardRequested += () => wizardOpened++;
             vm.Cockpits.UseLayoutCommand.Execute(null);
             Assert.NotNull(raised);
-            Assert.Same(raised, vm.TakePendingCockpitLayout());
+            // "Use this layout" opens the setup wizard, which takes the layout (nothing stays pending).
+            Assert.Equal(1, wizardOpened);
+            Assert.Same(raised, vm.SetupWizard!.CockpitLayout);
             Assert.Null(vm.PendingCockpitLayout);
+            Assert.Null(vm.TakePendingCockpitLayout());
         }
         finally
         {
@@ -497,7 +502,8 @@ public sealed class CockpitDatabaseTests
             foreach (CockpitAircraftItem item in vm.AircraftList.Where(a => a.Aircraft.Photos.Count > 0).Take(5).ToList())
             {
                 vm.SelectedAircraft = item;
-                Assert.True(vm.AskPhotos);
+                // The question, or "Download photos" for the verified photos of a cockpit no game has.
+                Assert.True(vm.AskPhotos || vm.HasPhotoOffer);
                 Assert.All(vm.Photos, p => Assert.Null(p.Image));
             }
             Assert.Empty(downloads);

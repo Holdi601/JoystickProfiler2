@@ -1,4 +1,4 @@
-# Arma 2 and Arma 2: Operation Arrowhead (experimental, not tested in game)
+# Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by `tools\e2e\games\Arma2Settings.ps1`: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)
 
 CLI: `engine arma2oa` (Operation Arrowhead, Combined Operations, BAF, PMC, ACR, DayZ mod) and `engine arma2` (Arma 2 standalone). Code: `engine/Games/Arma2Integration.cs` on top of the Arma profile code shared with Arma 3 (`ArmaProfileIntegration.cs`). Catalogs: `EngineOnly_Runtime/DB/Arma2OA`, `DB/Arma2`, `DB/Functions/Arma2OA.tsv`, `Arma2.tsv`. Test fixtures: `engine/tests/fixtures/arma2` (synthetic profiles with the smoke-test devices).
 
@@ -71,6 +71,11 @@ Fields, from the OA load (0x6DA02B) and save (0x6DA749) routines; A2 1.11 has th
 - No per-device `deadZone[]` or `steepness[]` (Arma 3 only). [OBS-exe: not referenced]
 - Class names `Joystick1..N` are renumbered on each save (list order); identify devices by `guid` only. [OBS-exe save loop]
 - **When the game first sees a device it appends every joystick default of `CfgDefaultKeysMapping` (offset 0 in the config) with the new device's offset** to the user binds - for every device, pedals and throttles included. Flight actions affected: HeliCyclicLeft X-, HeliCyclicRight X+, HeliForward Y-, HeliBack Y+, LookUp/LookRightUp/.../LookLeftUp POV 0..7, ToggleWeapons btn 2, LockTargets/VehLockTargets btn 1, PrevAction btn 6, NextAction btn 4, Action btn 5, ZoomIn btn 3; plus Car*/Seagull* axes. [OBS-exe OA 0x6F6A26, A2 0x73FCA8; SRC forum 106686 "Arma thinks the flight pedals have buttons and maps all sorts of things"]. The Customize dialog's "Default" re-applies them, "Unmap" removes all codes of that device. [OBS-exe 0x8B21F9 / 0x8B20F3, OBS config `RscDisplayCustomizeController`]
+  - So an import of such a profile brings, for example, Action on button 6 and pitch on Y for **every** device the game
+    has seen: each is a code of its own device (its `offset`), not one device-agnostic bind (checked 2026-11-01 on a
+    profile with 13 devices: `keyAction[]` holds `0x20005 + offset` for each of them). JoyPro imports them as they are;
+    "Unmap" in the game, or JoyPro's clean / nuke, removes them. Codes with offset 0 (no `JoysticksList` entry) are
+    ignored by the game and by the import.
 - Game reads only the first 32 buttons (`DIJOYSTATE`, 0x50 bytes), 8 axes and the first POV hat. Axis range is set to -100..+100 (`DIPROP_RANGE`) and a fixed 7 % DirectInput deadzone (`DIPROP_DEADZONE` 700) on the main axes. [OBS-exe 0x6D8199, 0x6DA3E0; stringtable has stick buttons #1..#32 only]
 
 ## 4. Input codes
@@ -162,7 +167,7 @@ Device switch (`engine ffb set --device "<name> {GUID}" --game Arma2|Arma2OA --p
 or `"Disable"`. A device in mode Disable or Scheme that gets binds is switched to Custom by the export (with a step
 message) instead of being refused, unless `enabled=0` is set.
 
-In-game check (prepared, not run): `tools\e2e\games\Arma2Settings.ps1 -Game arma2oa|arma2` (test profiles
+In-game check (Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05): `tools\e2e\games\Arma2Settings.ps1 -Game arma2oa|arma2` (test profiles
 `JoyProE2E_OA` / `JoyProE2E_A2`, main menu > Options > Controls only, ArmA2OA.exe / arma2.exe without BattlEye).
 
 ## 7. What a writer must do / keep

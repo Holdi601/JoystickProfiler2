@@ -136,10 +136,10 @@ try {
         Assert-Match $mupStatus.Output '"Directory":"[^"]*SystemAppData\\\\wgs","Filters":\["containers.index"\],"IncludeSubdirectories":true' ("sync status should watch the Store's save index: " + $mupStatus.Output)
         Assert-NotMatch $mupStatus.Output '"State":"missing"' "MSFS 2024 with Store profiles but without JoyPro's package is not 'missing' for the watcher."
 
-        # Store profiles are read only: an export there is refused (the package in Community2024 is the way).
+        # The Store save folder is no export path: an export there is refused (the export to the package in Community2024 writes the Store profiles).
         $mupExport = Run-Engine @("--profile", $mupProfile, "msfs2024", "export", $mupWgs, "--text")
         Assert-True ($mupExport.ExitCode -ne 0) "an export into the Store's save folder must be refused."
-        Assert-Match $mupExport.Output "read only" "the refused export should say why."
+        Assert-Match $mupExport.Output "cannot be an export path" "the refused export should say why."
 
         # An index of another layout: every blob is checked instead.
         [System.IO.File]::WriteAllBytes((Join-Path (Get-ChildItem -Path $mupWgs -Directory | Select-Object -First 1).FullName "containers.index"), [byte[]](255, 255, 255, 255, 1, 2, 3))

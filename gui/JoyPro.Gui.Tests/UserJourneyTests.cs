@@ -2222,6 +2222,7 @@ public sealed partial class UserJourneyTests
                 if (list.ItemsPanel?.Build() is VirtualizingPanel)
                     list.ItemsPanel = new Avalonia.Controls.Templates.FuncTemplate<Panel?>(() => new StackPanel());
             }
+            RenderPanels.UnvirtualizeItemsControls(window);
             for (int pass = 0; pass < 6; pass++)
             {
                 window.Measure(size);

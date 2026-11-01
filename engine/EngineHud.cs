@@ -102,6 +102,13 @@ namespace JoyPro.Engine
                     if (!hud.Labels.ContainsKey(control.Input))
                         hud.Labels[control.Input] = control.Label;
                 }
+                // What each button is in the control vocabulary (the HUD's aircraft widget lights the aircraft's control
+                // of the same name: "stick.hat.tms.up" -> the A-10C's TMS).
+                foreach (KbControl control in controls.Where(c => c.Control.Length > 0 && c.Input.StartsWith("JOY_BTN", StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (!hud.Controls.ContainsKey(control.Input))
+                        hud.Controls[control.Input] = control.Control;
+                }
 
                 hud.Layout = Layout(device.JoyProName, templates, warnings);
                 result.Devices.Add(hud);
@@ -277,6 +284,8 @@ namespace JoyPro.Engine
         public int Hats { get; set; }
         public List<EngineHudAxis> Axes { get; set; }
         public Dictionary<string, string> Labels { get; set; }
+        // Button -> its control vocabulary id ("JOY_BTN3" -> "stick.hat.tms.up"), from the catalog.
+        public Dictionary<string, string> Controls { get; set; }
         public List<EngineHudChoice> GripChoices { get; set; }
         public EngineHudLayout Layout { get; set; }
 
@@ -286,6 +295,7 @@ namespace JoyPro.Engine
             Kind = "other";
             Axes = new List<EngineHudAxis>();
             Labels = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            Controls = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             GripChoices = new List<EngineHudChoice>();
         }
     }

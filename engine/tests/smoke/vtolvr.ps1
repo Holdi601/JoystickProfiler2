@@ -107,10 +107,11 @@ try {
     $vtBrakePreview = Run-Engine @("--profile", $vtNativeImportProfile, "binds", "tuning", "preview", "Left wheel brake (toe brake)", "--game", "VTOLVRNative", "--points", "3", "--text")
     Assert-Match $vtBrakePreview.Output "-1\.000 -> \+1\.000000[\s\S]*\+0\.000 -> \+0\.000000[\s\S]*\+1\.000 -> -1\.000000" "the vtolnative preview should show the whole travel for axisRange 1 + invert."
 
-    # Only Wheel Brake R: the game never takes the brakes from the hardware.
+    # Only Wheel Brake R: the game never takes the brakes from the hardware. (Nuke too: clean alone leaves the connected
+    # T-Rudder, which the export does not write, its Wheel Brake L.)
     $vtOnlyR = Join-Path $tempDir "vtol-only-r.pr0file"
     Run-Engine @("--profile", $vtOnlyR, "relations", "add", "VR Brake R", "--axis", "--node", "VTOLVRNative:Wheel Brake R", "--device", $vtPedals, "--input", "JOY_Y", "--text") | Out-Null
-    $vtOnlyRExport = Run-Engine @("--profile", $vtOnlyR, "vtolvr-native", "export", $vtBindings, "--mode", "clean", "--dry-run", "--text")
+    $vtOnlyRExport = Run-Engine @("--profile", $vtOnlyR, "vtolvr-native", "export", $vtBindings, "--mode", "clean", "--nuke-untouched-devices", "--dry-run", "--text")
     Assert-Match $vtOnlyRExport.Output "Only Wheel Brake R is bound" "vtolvr-native export should warn when only the right brake is bound."
 
     # Settings > Controls (device "*", game VTOLVR) in gameSettings.cfg: bools 1/-1, % values, a missing key added
@@ -222,6 +223,21 @@ try {
     }
     Assert-Match $vmSeats["merge-overwrite"] "<Key>G</Key>" "vtolvr merge-overwrite without --include-keyboard must keep the keyboard bind."
     Assert-NotMatch $vmSeats["kb"] "<Key>G</Key>" "vtolvr merge-overwrite with --include-keyboard should drop the gear's key."
+    # Clean is the same in every game: the written stick keeps only the profile's binds; the connected throttle (not
+    # written) keeps its Fire Weapon on B5. Only merge-overwrite takes it off there.
+    $vmThrottleId = "66666666-7777-8888-9999-000000000000"
+    $vmThrottleXml = $vmSeatXml.Replace("  </JoystickBindings>", "    <JoystickBinding>`n      <Target>Fire Weapon</Target>`n      <JoystickId>$vmThrottleId</JoystickId>`n      <Input>B5</Input>`n      <RequiresModifier>false</RequiresModifier>`n      <Invert>false</Invert>`n      <Deadzone>0</Deadzone>`n      <POVDirection>None</POVDirection>`n    </JoystickBinding>`n  </JoystickBindings>")
+    foreach ($vmMode in @("clean", "merge-overwrite")) {
+        $vmSave = Join-Path $tempDir ("vtol-modes-throttle-" + $vmMode + "\steamapps\common\VTOL VR\SaveData")
+        New-Item -Path $vmSave -ItemType Directory -Force | Out-Null
+        [System.IO.File]::WriteAllText((Join-Path $vmSave "BYOJ_FA26B.xml"), $vmThrottleXml.Replace("`r`n", "`n").Replace("`n", "`r`n"), (New-Object System.Text.UTF8Encoding($false)))
+        $vmRun = Run-Engine @("--profile", $vmProfile, "vtolvr", "export", "--path", $vmSave, "--mode", $vmMode, "--text")
+        Assert-True ($vmRun.ExitCode -eq 0) ("vtolvr " + $vmMode + " export (throttle) failed: " + $vmRun.Output)
+        $vmSeats["throttle-" + $vmMode] = [System.IO.File]::ReadAllText((Join-Path $vmSave "BYOJ_FA26B.xml"))
+    }
+    Assert-True ((& $vmBind $vmSeats["throttle-clean"] "Fire Weapon" $vmStickId "B3") -and -not (& $vmBind $vmSeats["throttle-clean"] "Fire Weapon" $vmStickId "B1") -and -not (& $vmBind $vmSeats["throttle-clean"] "Fire Countermeasures" $vmStickId "B2")) "vtolvr clean should give the written stick only the profile's binds."
+    Assert-True (& $vmBind $vmSeats["throttle-clean"] "Fire Weapon" $vmThrottleId "B5") "vtolvr clean must keep Fire Weapon on the connected throttle the export does not write (only merge-overwrite moves it)."
+    Assert-True (-not (& $vmBind $vmSeats["throttle-merge-overwrite"] "Fire Weapon" $vmThrottleId "B5")) "vtolvr merge-overwrite should take Fire Weapon off the connected throttle."
 
     # Native (Crosswind and T-Rudder connected): the profile puts Rudder on the Crosswind's X (Wheel Brake L there,
     # Rudder on RZ). Add reports it and changes nothing; merge replaces Brake L and keeps RZ; merge-overwrite drops RZ
@@ -229,7 +245,7 @@ try {
     $nmProfile = Join-Path $tempDir "vtol-native-modes.pr0file"
     Run-Engine @("--profile", $nmProfile, "relations", "add", "NM Rudder", "--axis", "--node", "VTOLVRNative:Rudder", "--device", $vtPedals, "--input", "JOY_X", "--text") | Out-Null
     $nmText = @{}
-    foreach ($nmMode in @("add", "merge", "merge-overwrite", "disconnected")) {
+    foreach ($nmMode in @("add", "merge", "merge-overwrite", "disconnected", "clean")) {
         $nmDir = Join-Path $tempDir ("vtol-native-modes-" + $nmMode)
         New-Item -Path $nmDir -ItemType Directory -Force | Out-Null
         $nmFile = Join-Path $nmDir "inputbindings.cfg"
@@ -259,6 +275,12 @@ try {
     $nmRudder = & $nmMap $nmText["merge-overwrite"] "T-Rudder"
     Assert-True ((-not $nmRudder.Contains((& $nmEl 0 2))) -and $nmRudder.Contains((& $nmEl 5 0))) "vtolvr-native merge-overwrite should drop the rudder from the other connected pedals and keep their brakes."
     Assert-True ((& $nmMap $nmText["disconnected"] "T-Rudder").Contains((& $nmEl 0 2))) "vtolvr-native merge-overwrite must keep the rudder of pedals that are not connected."
+    # Clean is the same in every game: the Crosswind (written) keeps only the rudder on X; the connected T-Rudder (not
+    # written) keeps its rudder and brakes.
+    $nmCross = & $nmMap $nmText["clean"] "MFG Crosswind V2"
+    Assert-True ($nmCross.Contains((& $nmEl 0 0)) -and -not $nmCross.Contains((& $nmEl 0 2)) -and -not $nmCross.Contains((& $nmEl 6 1))) "vtolvr-native clean should give the written pedals only the profile's rudder."
+    $nmRudder = & $nmMap $nmText["clean"] "T-Rudder"
+    Assert-True ($nmRudder.Contains((& $nmEl 0 2)) -and $nmRudder.Contains((& $nmEl 5 0))) "vtolvr-native clean must keep the rudder of the connected pedals the export does not write (only merge-overwrite moves it)."
 }
 finally {
     $env:JOYPRO_FAKE_DEVICES = $previousFakeDevices

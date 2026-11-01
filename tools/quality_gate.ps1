@@ -4,7 +4,9 @@
 #     -Data user|shipped   user (default): a copy of the game lists of this PC (%LOCALAPPDATA%\JoyPro2\GameData, or -GameData)
 #                          shipped: only what the program folder ships (a CI-like run)
 #     -Profile             the profile the checks work on (always a copy; without it the profile checks are skipped)
-#     -Only I1,I5          only these invariants (I1..I11)
+#     -Only I1,I5          only these invariants (I1..I12)
+#     -HudSoakMinutes n    also I12: the HUD and the stream page under a fake device stream for n minutes (opt-in)
+#     -Website             also the website: build it, its completeness gate and its public-content check (website/README.md)
 #     -Planes / -Relations  limit the DCS aircraft / profile relations opened (default: all)
 #     -Configuration       Release (default) or Debug; -NoBuild skips the build
 # Exit code 0 = no findings; 1 = findings (see <Out>\report.md, findings.json, timings.csv, engine-calls.csv).
@@ -19,6 +21,8 @@ param(
     [string]$Planes = "",
     [string]$Relations = "",
     [ValidateSet("Release", "Debug")][string]$Configuration = "Release",
+    [double]$HudSoakMinutes = 0,
+    [switch]$Website,
     [switch]$NoBuild
 )
 
@@ -44,6 +48,7 @@ if ($ProfileFile) {
 }
 if ($Planes) { $env:JOYPRO_QUALITY_GATE_PLANES = $Planes }
 if ($Relations) { $env:JOYPRO_QUALITY_GATE_RELATIONS = $Relations }
+if ($HudSoakMinutes -gt 0) { $env:JOYPRO_QUALITY_GATE_HUD_SOAK = [string]$HudSoakMinutes }
 
 $filter = "FullyQualifiedName~JoyPro.Gui.Tests.QualityGate"
 $Only = @($Only | ForEach-Object { $_ -split "," } | Where-Object { $_.Trim() })
@@ -53,6 +58,13 @@ if ($Only.Count -gt 0) {
 Write-Host "Quality gate: data $Data, profile '$ProfileFile', output $Out"
 & dotnet test (Join-Path $root "gui\JoyPro.Gui.Tests") -c $Configuration --no-build --filter $filter --logger "trx;LogFileName=quality-gate.trx" --results-directory $Out
 $code = $LASTEXITCODE
+if ($Website) {
+    Write-Host "Website: build, completeness gate, public-content check"
+    & python (Join-Path $root "website\build.py") --check
+    if ($LASTEXITCODE -ne 0) { $code = 1 }
+    & powershell -ExecutionPolicy Bypass -File (Join-Path $root "website\check_public.ps1")
+    if ($LASTEXITCODE -ne 0) { $code = 1 }
+}
 $report = Join-Path $Out "report.md"
 if (Test-Path $report) {
     Write-Host ""

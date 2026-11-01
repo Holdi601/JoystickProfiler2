@@ -73,7 +73,7 @@ public sealed class GameSetupRenderTests
             Assert.Contains(texts, t => t.StartsWith("Marker found: bin\\game\\Il-2.exe", StringComparison.Ordinal));
             Assert.Contains(texts, t => t == "The folder does not exist.");
             Assert.Contains(texts, t => t.Contains("DCS.openbeta  (yours)", StringComparison.Ordinal));
-            Assert.Contains(texts, t => t.StartsWith("JoyPro found 3 of its 7 games", StringComparison.Ordinal));
+            Assert.Contains(texts, t => t.StartsWith("JoyPro found 4 of its 8 games", StringComparison.Ordinal));
 
             string file = Path.Combine(outDir, "game-setup.png");
             using (RenderTargetBitmap bitmap = new(new PixelSize((int)size.Width, (int)size.Height)))
@@ -120,7 +120,7 @@ public sealed class GameSetupRenderTests
         return true;
     }
 
-    private sealed class SetupFakeEngine : IEngineCliClient
+    internal sealed class SetupFakeEngine : IEngineCliClient
     {
         public bool MsfsDisabled { get; set; }
 
@@ -150,7 +150,7 @@ public sealed class GameSetupRenderTests
         }
     }
 
-    private sealed class NoCapture : IJoystickCaptureService
+    internal sealed class NoCapture : IJoystickCaptureService
     {
         public string LastDiagnostics => string.Empty;
 

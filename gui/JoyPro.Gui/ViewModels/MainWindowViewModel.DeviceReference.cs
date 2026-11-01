@@ -25,8 +25,8 @@ public sealed class ReferenceDeviceItem
     public override string ToString() => DisplayName;
 }
 
-// The device reference of the layout pages (docs/device-reference.md): DeviceReference is the DeviceReferenceViewModel a
-// page puts into a DeviceReferenceView. A device picked in the layout suggestions (or in DeviceReferenceDevices) is shown
+// The device reference of the layout pages (docs/device-reference.md): DeviceReference is the DeviceReferenceViewModel the
+// Layout page and Bind Studio draw with DeviceMarkerCanvas. A device picked in the layout suggestions (or in DeviceReferenceDevices) is shown
 // at once with its picture, markers and the binds of the profile.
 public sealed partial class MainWindowViewModel
 {
@@ -50,6 +50,8 @@ public sealed partial class MainWindowViewModel
         DeviceReferenceService.EnginePath = EnginePath ?? string.Empty;
         DeviceReferenceService.ApplySettings();
         DeviceReferenceViewModel reference = new() { CaptureService = joystickCaptureService };
+        reference.ShowDetectedSpots = persistUiFiles && DeviceReferenceService.DetectedSpotsEnabled;
+        reference.PersistDetectedSpots = persistUiFiles;
         ObserveDeviceReference(reference);
         return reference;
     }

@@ -45,6 +45,11 @@ namespace JoyPro.Engine
             public List<string> Synonyms = new List<string>();
             public Dictionary<string, List<string>> Terms = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             public List<string> Not = new List<string>();
+            // Synonyms that are too general on their own ("lock": a valve, door or tank lock is no target lock): matched
+            // in a title they count only with one of the "context" words there too ("Lock on nearest aircraft", "Radar -
+            // STT Lock", "Target toggle lock"), never as the last word of another thing's name ("Valve Lock - LOCK").
+            public List<string> Bare = new List<string>();
+            public List<string> Context = new List<string>();
             public Dictionary<string, List<string>> Dirs = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             public List<SlotLink> Slots = new List<SlotLink>();
             public List<string> Related = new List<string>();
@@ -64,6 +69,8 @@ namespace JoyPro.Engine
             internal readonly List<Phrase> Phrases = new List<Phrase>();
             internal readonly List<Phrase> KeywordPhrases = new List<Phrase>();
             internal readonly List<string[]> NotTokens = new List<string[]>();
+            internal readonly HashSet<string> BareKeys = new HashSet<string>(StringComparer.Ordinal);
+            internal readonly List<string[]> ContextTokens = new List<string[]>();
             internal readonly List<KeyValuePair<string[], string>> DirTokens = new List<KeyValuePair<string[], string>>();
 
             public bool AxisKind
@@ -140,6 +147,10 @@ namespace JoyPro.Engine
             public Dictionary<string, List<string>> ClassPlanes = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, List<string>> ClassGames = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, List<string[]>> ClassWords = new Dictionary<string, List<string[]>>(StringComparer.OrdinalIgnoreCase);
+            // Vehicle classes by the game catalog's category (ground vehicles, ships): class -> (game or "", the category's
+            // leading part in tokens), and the games a class's categories do not apply in (a space game's "Ship: flight").
+            public Dictionary<string, List<KeyValuePair<string, string>>> ClassCategories = new Dictionary<string, List<KeyValuePair<string, string>>>(StringComparer.OrdinalIgnoreCase);
+            public Dictionary<string, List<string>> ClassNotGames = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
             public Dictionary<string, string> PlaneTypes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             public HashSet<string> Stopwords = new HashSet<string>(StringComparer.Ordinal);
             // Filler of a described query ("make the plane go faster"): left out of the document search.
@@ -302,6 +313,16 @@ namespace JoyPro.Engine
             return tokens.ToArray();
         }
 
+        private static readonly Regex LoneSign = new Regex(@"(?<=^|\s)[-+]+(?=\s|$)", RegexOptions.Compiled);
+
+        // What a typed query means: a "-" or "+" on its own (no word glued to it: "tacan channel (xx0x) -", "- [inc]") is
+        // a separator while typing, not a direction; "zoom-", "rng+" and the spelled-out words still are. Titles keep
+        // theirs ("Zoom -" is zoom out).
+        internal static string QueryText(string query)
+        {
+            return string.IsNullOrEmpty(query) ? string.Empty : LoneSign.Replace(query, " ");
+        }
+
         internal static string Stem(string word)
         {
             if (word.Length > 3 && word[word.Length - 1] == 's' && !NoStem.Contains(word) && !word.EndsWith("ss", StringComparison.Ordinal) &&
@@ -317,6 +338,8 @@ namespace JoyPro.Engine
         // A title without the game's internal names in brackets ("Plane airbrake (HeliThrottleNeg, full axis)" is no
         // throttle), DCS module prefixes ("29Fulcrum:Inp:", "Input.Yak52.") and seat or panel tags ("[FWD]", "[SimPit]",
         // Falcon BMS "GEAR: ").
+        private static readonly Regex TrailingSeatTag = new Regex(@"\s*(-\s*)?\[(FWD|AFT|SimPit|WSO|Pilot|PLT|CPG|RIO|Copilot|Gunner)\]\s*$", RegexOptions.Compiled);
+
         internal static string CleanTitle(string game, string title)
         {
             if (string.IsNullOrEmpty(title))
@@ -325,7 +348,10 @@ namespace JoyPro.Engine
             text = Regex.Replace(text, @"^\s*[0-9A-Za-z]+:Inp:", string.Empty);
             text = Regex.Replace(text, @"^\s*Input\.[A-Za-z0-9]+\.", string.Empty);
             text = Regex.Replace(text, @"^(\s*\[[^\]]*\])+", string.Empty);
-            text = Regex.Replace(text, @"\[[A-Za-z][A-Za-z0-9]*\]\s*$", string.Empty);
+            // A trailing seat or panel tag goes too; a trailing tag that says what the command does stays: DCS "TACAN
+            // Channel (xx0x) - [Inc]", "Anti-Skid - [Toggle]", "Boresight Roll - [CW]" (cut off, the dash before it read
+            // as "minus" and every [Inc], [Next] and [Toggle] became a "decrease").
+            text = TrailingSeatTag.Replace(text, string.Empty);
             if (string.Equals(game, "FalconBMS", StringComparison.OrdinalIgnoreCase))
                 text = Regex.Replace(text, @"^\s*[A-Z0-9][A-Z0-9 ]{1,14}:\s+", string.Empty);
             return text;
@@ -409,6 +435,18 @@ namespace JoyPro.Engine
                 map.ClassPlanes[cls.Key] = Strings(Get(body, "planes")).ToList();
                 map.ClassGames[cls.Key] = Strings(Get(body, "games")).ToList();
                 map.ClassWords[cls.Key] = Strings(Get(body, "words")).Select(Tokenize).Where(t => t.Length > 0).ToList();
+                // "categories": the category names of the games' catalogs that are this vehicle class ("Tank", "Ship",
+                // Star Citizen's "Ground vehicle: ..."); "Game:name" only in that game. "notGames": where they do not apply.
+                map.ClassCategories[cls.Key] = Strings(Get(body, "categories"))
+                    .Select(c =>
+                    {
+                        int colon = c.IndexOf(':');
+                        string game = colon > 0 ? c.Substring(0, colon).Trim() : string.Empty;
+                        return new KeyValuePair<string, string>(game, string.Join(" ", Tokenize(colon > 0 ? c.Substring(colon + 1) : c)));
+                    })
+                    .Where(c => c.Value.Length > 0)
+                    .ToList();
+                map.ClassNotGames[cls.Key] = Strings(Get(body, "notGames")).ToList();
             }
 
             foreach (object raw in List(Get(root, "functions")))
@@ -442,6 +480,8 @@ namespace JoyPro.Engine
                 foreach (KeyValuePair<string, object> scope in Dict(Get(item, "terms")))
                     f.Terms[scope.Key] = Strings(scope.Value).ToList();
                 f.Not = Strings(Get(item, "not")).ToList();
+                f.Bare = Strings(Get(item, "bare")).ToList();
+                f.Context = Strings(Get(item, "context")).ToList();
                 f.Related = Strings(Get(item, "related")).ToList();
                 foreach (KeyValuePair<string, object> dir in Dict(Get(item, "dirs")))
                     f.Dirs[dir.Key] = Strings(dir.Value).ToList();
@@ -575,6 +615,18 @@ namespace JoyPro.Engine
                 if (tokens.Length > 0)
                     f.NotTokens.Add(tokens);
             }
+            foreach (string bare in f.Bare)
+            {
+                string[] tokens = Tokenize(bare);
+                if (tokens.Length > 0)
+                    f.BareKeys.Add(string.Join(" ", tokens));
+            }
+            foreach (string context in f.Context)
+            {
+                string[] tokens = Tokenize(context);
+                if (tokens.Length > 0)
+                    f.ContextTokens.Add(tokens);
+            }
             foreach (KeyValuePair<string, List<string>> dir in f.Dirs)
             {
                 foreach (string alias in dir.Value)
@@ -589,10 +641,19 @@ namespace JoyPro.Engine
 
         // ---- Classification ----
 
-        // The class of the thing the action flies: "heli", "space" or "" (fixed wing / the game's default).
+        // The class of the thing the action flies or drives: "heli", "space", "ground", "naval" or "" (fixed wing / the
+        // game's default).
         internal static string ClassOf(Map map, string game, string plane, string title, string category)
         {
             string type;
+            // A game with several kinds of vehicles names them in its catalog's categories ("Tank", "Ship", Star
+            // Citizen's "Ground vehicle: driver"): that decides before the game's own class (a space game's ground vehicle).
+            if (game != "DCS")
+            {
+                string byCategory = ClassOfCategory(map, game, category);
+                if (byCategory.Length > 0)
+                    return byCategory;
+            }
             if (game == "DCS")
             {
                 if (map.PlaneTypes.TryGetValue(plane ?? string.Empty, out type))
@@ -626,6 +687,31 @@ namespace JoyPro.Engine
                 foreach (string[] word in cls.Value)
                 {
                     if (Find(context, word, 0) >= 0)
+                        return cls.Key;
+                }
+            }
+            return string.Empty;
+        }
+
+        // The vehicle class whose catalog category the action has: the category's leading part (before ':') is one of the
+        // class's category names; "" when none.
+        private static string ClassOfCategory(Map map, string game, string category)
+        {
+            string text = (category ?? string.Empty).Trim();
+            if (text.Length == 0 || map.ClassCategories.Count == 0)
+                return string.Empty;
+            int colon = text.IndexOf(':');
+            string head = string.Join(" ", Tokenize(colon > 0 ? text.Substring(0, colon) : text));
+            if (head.Length == 0)
+                return string.Empty;
+            foreach (KeyValuePair<string, List<KeyValuePair<string, string>>> cls in map.ClassCategories)
+            {
+                List<string> notGames;
+                if (map.ClassNotGames.TryGetValue(cls.Key, out notGames) && notGames.Contains(game ?? string.Empty, StringComparer.OrdinalIgnoreCase))
+                    continue;
+                foreach (KeyValuePair<string, string> name in cls.Value)
+                {
+                    if ((name.Key.Length == 0 || string.Equals(name.Key, game, StringComparison.OrdinalIgnoreCase)) && string.Equals(name.Value, head, StringComparison.Ordinal))
                         return cls.Key;
                 }
             }
@@ -785,6 +871,9 @@ namespace JoyPro.Engine
                         continue;
                     if (Vetoed(f, tokens, positions) || (title != null && Vetoed(f, title, new int[0])))
                         continue;
+                    if (f.BareKeys.Contains(string.Join(" ", phrase.Tokens)) &&
+                        !HasContext(f, tokens, positions) && (title == null || !HasContext(f, title, new int[0])))
+                        continue;
                     int gaps = positions[positions.Length - 1] - positions[0] + 1 - positions.Length;
                     double score = phrase.Tokens.Length + (phrase.Scope.Length > 0 ? 0.75 : 0) + f.Priority * 0.25 - gaps * 0.6;
                     // An axis action is more likely an axis function, a button more likely a button function.
@@ -796,6 +885,31 @@ namespace JoyPro.Engine
                 }
             }
             return best.Values.ToList();
+        }
+
+        // A bare synonym's meaning: one of the function's "context" words outside the matched words (a function without
+        // context words takes its bare synonyms everywhere).
+        private static bool HasContext(Function f, string[] tokens, int[] matched)
+        {
+            if (f.ContextTokens.Count == 0)
+                return true;
+            foreach (string[] context in f.ContextTokens)
+            {
+                int from = 0;
+                while (true)
+                {
+                    int position = Find(tokens, context, from);
+                    if (position < 0)
+                        break;
+                    bool inside = true;
+                    for (int i = position; i < position + context.Length && inside; i++)
+                        inside = Array.IndexOf(matched, i) >= 0;
+                    if (!inside)
+                        return true;
+                    from = position + 1;
+                }
+            }
+            return false;
         }
 
         // A "not" word anywhere outside the matched words rules the function out ("Throttle Cutoff" is no throttle axis).
@@ -1278,7 +1392,7 @@ namespace JoyPro.Engine
         internal static Understanding Resolve(Map map, string query, ICollection<string> games)
         {
             Understanding u = new Understanding();
-            string[] tokens = Tokenize(query).Where(t => !map.Stopwords.Contains(t)).ToArray();
+            string[] tokens = Tokenize(QueryText(query)).Where(t => !map.Stopwords.Contains(t)).ToArray();
             if (tokens.Length == 0)
                 return u;
             string[] corrected = tokens.Select(t => Correct(map, t)).ToArray();

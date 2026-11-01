@@ -237,7 +237,6 @@ public sealed class CheckFix
     // An "Open '<relation>'" button (drawn as a link; the light card shows it with an arrow).
     public bool IsOpen { get; init; }
     public string Label => IsOpen ? "→ " + Text : Text;
-    public string RecommendedLabel => IsRecommended ? "✓ " + Text : Text;
 }
 
 // One row of a card's table: the aircraft (or game) and its command(s); an unknown command says so.

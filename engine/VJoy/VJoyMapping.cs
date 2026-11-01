@@ -35,6 +35,9 @@ namespace JoyPro.Engine.VJoy
         // Virtual functions per game (VirtualFunctions.cs): evaluated by the forwarder between the physical inputs and
         // the virtual outputs. Their vJoy outputs are reserved in the table (the planner never gives them to an input).
         public Dictionary<string, List<VirtualFunction>> Functions { get; set; }
+        // Modes (layers) of the virtual functions per game (VfModeSet): named modes with inheritance, switched by mode
+        // switch functions; a function lists the modes it works in (none: every mode).
+        public Dictionary<string, VfModeSet> Modes { get; set; }
 
         public VJoySettings()
         {
@@ -46,6 +49,29 @@ namespace JoyPro.Engine.VJoy
             Slots = new List<VJoySlot>();
             XboxSlots = new Dictionary<string, List<VJoySlot>>(StringComparer.OrdinalIgnoreCase);
             Functions = new Dictionary<string, List<VirtualFunction>>(StringComparer.OrdinalIgnoreCase);
+            Modes = new Dictionary<string, VfModeSet>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        // The modes of a game (null without any).
+        public VfModeSet ModesOf(string gameId)
+        {
+            VfModeSet set;
+            return Modes != null && Modes.TryGetValue((gameId ?? string.Empty).Trim(), out set) && set != null && set.Modes.Count > 0 ? set : null;
+        }
+
+        // The modes of a game, made when missing (the stored set).
+        public VfModeSet ModeSetOf(string gameId)
+        {
+            if (Modes == null)
+                Modes = new Dictionary<string, VfModeSet>(StringComparer.OrdinalIgnoreCase);
+            string key = (gameId ?? string.Empty).Trim();
+            VfModeSet set;
+            if (!Modes.TryGetValue(key, out set) || set == null)
+            {
+                set = new VfModeSet { Group = key };
+                Modes[key] = set;
+            }
+            return set;
         }
 
         // The functions of a game (empty list when none; the list is the stored one).
@@ -160,6 +186,22 @@ namespace JoyPro.Engine.VJoy
                 else
                     Functions[game] = list;
             }
+            Modes = Modes == null
+                ? new Dictionary<string, VfModeSet>(StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, VfModeSet>(Modes, StringComparer.OrdinalIgnoreCase);
+            foreach (string game in Modes.Keys.ToList())
+            {
+                VfModeSet set = Modes[game];
+                if (set == null)
+                {
+                    Modes.Remove(game);
+                    continue;
+                }
+                set.Group = game;
+                set.Normalize();
+                if (set.Modes.Count == 0)
+                    Modes.Remove(game);
+            }
             FirstDevice = Math.Max(1, Math.Min(MaxDevices, FirstDevice <= 0 ? 1 : FirstDevice));
             LastDevice = Math.Max(FirstDevice, Math.Min(MaxDevices, LastDevice <= 0 ? MaxDevices : LastDevice));
         }
@@ -189,7 +231,7 @@ namespace JoyPro.Engine.VJoy
         [System.Web.Script.Serialization.ScriptIgnore]
         public bool IsEmpty
         {
-            get { return AllVirtualGames().Count == 0 && (Slots == null || Slots.Count == 0) && (XboxSlots == null || XboxSlots.Count == 0) && (Functions == null || Functions.Count == 0) && FirstDevice == 1 && LastDevice == MaxDevices && !AutoStart && HideDevices; }
+            get { return AllVirtualGames().Count == 0 && (Slots == null || Slots.Count == 0) && (XboxSlots == null || XboxSlots.Count == 0) && (Functions == null || Functions.Count == 0) && (Modes == null || Modes.Count == 0) && FirstDevice == 1 && LastDevice == MaxDevices && !AutoStart && HideDevices; }
         }
 
         private static VJoySettings Fresh()
@@ -475,7 +517,7 @@ namespace JoyPro.Engine.VJoy
                     if (output.Target.Length == 0 || !VfTokens.TryParseOutput(output.Target, out kind, out index, out mask) || (kind != "button" && kind != "axis" && kind != "hat") ||
                         !VJoyInput.TryParseSlotToken(output.Target, out target))
                         continue;
-                    int device = output.VJoyDevice <= 0 ? 1 : output.VJoyDevice;
+                    int device = output.VJoyDevice <= 0 ? settings.FirstDevice : output.VJoyDevice;
                     string label = VJoyFunctionLabel(entry.Key, function, output.Role);
                     plan.FunctionTargets.Add(new VJoySlot { Source = entry.Key, Input = function.Id + ":" + output.Role, Device = device, Target = target.ToSlotToken() });
                     if (device < settings.FirstDevice || device > settings.LastDevice)

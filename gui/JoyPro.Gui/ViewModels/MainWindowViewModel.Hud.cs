@@ -33,6 +33,10 @@ public sealed partial class MainWindowViewModel
     private readonly Dictionary<string, HudDevice?> hudDeviceByInputName = new(StringComparer.OrdinalIgnoreCase);
     private int hudSaveVersion;
     private bool hudLoaded;
+    // hud.json was read (or there was none): only then is the HUD saved. Before, the HUD page's controls (bound from the
+    // window's start, also while the page is hidden) could write a value back and the never-read defaults went over
+    // the user's hud.json (2.5.1 bug: the page for OBS and the stream window came up off).
+    private bool hudLayoutRead;
 
     public ObservableCollection<HudWidget> HudWidgets { get; } = [];
 
@@ -41,33 +45,16 @@ public sealed partial class MainWindowViewModel
 
     public HudContext HudContext => hudContext ??= new HudContext(OverlayLines);
 
-    public IReadOnlyList<string> HudAccents { get; } = ["#38BDF8", "#22D3EE", "#A3E635", "#F59E0B", "#F97316", "#EF4444", "#EC4899", "#A855F7", "#F8FAFC"];
+    public IReadOnlyList<string> HudAccents { get; } = ["#38BDF8", "#22D3EE", "#A3E635", "#39FF14", "#FFB000", "#F59E0B", "#F97316", "#EF4444", "#EC4899", "#A855F7", "#FCEE09", "#F8FAFC"];
 
     public IReadOnlyList<HudAccentOption> HudAccentOptions => hudAccentOptions ??= HudAccents.Select(a => new HudAccentOption(a, new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse(a)))).ToList();
 
     private List<HudAccentOption>? hudAccentOptions;
 
-    public IReadOnlyList<string> HudStyles { get; } = ["Glass", "Neon", "Minimal"];
-
     public IReadOnlyList<string> HudPictureSources { get; } = ["Auto", "Photo", "Layout"];
 
     [ObservableProperty]
     private HudWidget? selectedHudWidget;
-
-    [ObservableProperty]
-    private string hudAccent = "#38BDF8";
-
-    [ObservableProperty]
-    private string hudStyle = "Glass";
-
-    [ObservableProperty]
-    private double hudOpacity = 1;
-
-    [ObservableProperty]
-    private bool hudStreamWindow;
-
-    [ObservableProperty]
-    private string hudStreamBackground = "#00FF00";
 
     [ObservableProperty]
     private string hudStatus = "Open the HUD page to see your devices.";
@@ -99,45 +86,20 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(HasSelectedHudWidget));
         OnPropertyChanged(nameof(SelectedHudWidgetIsDevice));
         OnPropertyChanged(nameof(SelectedHudGrip));
+        OnPropertyChanged(nameof(SelectedHudWidgetIsAircraft));
+        OnPropertyChanged(nameof(SelectedHudWidgetIsHeader));
+        OnPropertyChanged(nameof(SelectedHudWidgetStyle));
+        OnPropertyChanged(nameof(SelectedHudAircraftChoice));
+        OnPropertyChanged(nameof(SelectedHudStickDevice));
+        OnPropertyChanged(nameof(SelectedHudThrottleDevice));
         NotifyHudAxisSelection();
-    }
-
-    partial void OnHudAccentChanged(string value) => ApplyHudLook();
-    partial void OnHudStyleChanged(string value) => ApplyHudLook();
-    partial void OnHudOpacityChanged(double value) => ApplyHudLook();
-
-    partial void OnHudStreamWindowChanged(bool value)
-    {
-        hudLayout.StreamWindow = value;
-        ScheduleHudSave();
-        // A running HUD switches between the transparent on-screen window and the stream window.
-        if (IsOverlayRunning)
-        {
-            OverlayPresenter?.Hide();
-            OverlayPresenter?.Show(this);
-        }
-    }
-
-    partial void OnHudStreamBackgroundChanged(string value)
-    {
-        hudLayout.StreamBackground = value;
-        ScheduleHudSave();
     }
 
     [RelayCommand]
     private void SetHudAccent(string? accent)
     {
         if (!string.IsNullOrWhiteSpace(accent))
-            HudAccent = accent;
-    }
-
-    private void ApplyHudLook()
-    {
-        HudContext.Apply(HudAccent, HudStyle, HudOpacity);
-        hudLayout.Accent = HudAccent;
-        hudLayout.Style = HudStyle;
-        hudLayout.Opacity = HudOpacity;
-        ScheduleHudSave();
+            HudLookEditor.Accent = accent;
     }
 
     [RelayCommand]
@@ -161,6 +123,8 @@ public sealed partial class MainWindowViewModel
         if (!hudLoaded)
             await LoadHudDevicesAsync();
         StartInputMonitor();
+        RefreshHudAircraftChoices();
+        _ = RefreshHudAircraftAsync();
         if (HudPreviewBackground == null)
             HudPreviewBackground = await LoadHudPreviewBackgroundAsync();
     }
@@ -191,9 +155,17 @@ public sealed partial class MainWindowViewModel
         return grips;
     }
 
+    // Reads hud.json once (the HUD page, Start HUD, the devices read for the HUD).
+    private void EnsureHudLayoutRead()
+    {
+        if (!hudLayoutRead)
+            LoadHudLayout();
+    }
+
     private void LoadHudLayout()
     {
         hudLayout = new HudLayout();
+        bool readable = true;
         if (persistUiFiles)
         {
             try
@@ -201,17 +173,26 @@ public sealed partial class MainWindowViewModel
                 if (File.Exists(HudLayoutPath))
                     hudLayout = JsonSerializer.Deserialize<HudLayout>(File.ReadAllText(HudLayoutPath), HudJsonOptions) ?? new HudLayout();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 hudLayout = new HudLayout();
+                readable = KeepUnreadableHudLayout(ex);
             }
         }
-        HudAccent = string.IsNullOrWhiteSpace(hudLayout.Accent) ? "#38BDF8" : hudLayout.Accent;
-        HudStyle = HudStyles.Contains(hudLayout.Style) ? hudLayout.Style : T("Glass");
-        HudOpacity = hudLayout.Opacity <= 0 ? 1 : hudLayout.Opacity;
-        HudStreamWindow = hudLayout.StreamWindow;
-        HudStreamBackground = string.IsNullOrWhiteSpace(hudLayout.StreamBackground) ? "#00FF00" : hudLayout.StreamBackground;
-        ApplyHudLook();
+        hudLayoutRead = readable;
+        // A 2.5.0 file has its style by name with accent and opacity: the same look as a full design.
+        if (hudLayout.Look == null)
+        {
+            HudLookSettings look = HudStylePresets.Find(hudLayout.Style) ?? HudStylePresets.Default;
+            look.Accent = string.IsNullOrWhiteSpace(hudLayout.Accent) ? look.Accent : hudLayout.Accent;
+            look.Opacity = hudLayout.Opacity <= 0 ? 1 : hudLayout.Opacity;
+            hudLayout.Look = look;
+        }
+        hudLayout.UserStyles = (hudLayout.UserStyles ?? []).Where(s => s != null && !string.IsNullOrWhiteSpace(s.Name)).Select(s => s.Normalized()).ToList();
+        LoadHudOutputs();
+        RefreshHudStyleOptions();
+        LoadHudLookIntoEditor(hudLayout.Look.Normalized());
+        hudStyleBeforeChanges = hudLayout.Look.Normalized();
     }
 
     // Saves a moment after the last change (dragging changes the position many times a second).
@@ -225,9 +206,34 @@ public sealed partial class MainWindowViewModel
         }, TaskScheduler.Default);
     }
 
+    // Saves at once (tests; a restart right after a change).
+    internal void SaveHudLayoutNow()
+    {
+        ++hudSaveVersion;
+        SaveHudLayout();
+    }
+
+    // A hud.json that cannot be read is kept next to it (hud.json.unreadable-<time>) before JoyPro writes its own.
+    // False: it could not be kept, so it is not replaced either (the HUD runs with its defaults without saving).
+    private bool KeepUnreadableHudLayout(Exception ex)
+    {
+        string kept = HudLayoutPath + ".unreadable-" + DateTime.Now.ToString("yyyyMMdd-HHmmss", System.Globalization.CultureInfo.InvariantCulture);
+        try
+        {
+            File.Copy(HudLayoutPath, kept, overwrite: true);
+            JoyPro.Logging.JoyProLog.Warn("Hud", "hud.json could not be read; kept as " + kept + ", the HUD starts with its defaults", ex);
+            return true;
+        }
+        catch (Exception copyError)
+        {
+            JoyPro.Logging.JoyProLog.Warn("Hud", "hud.json could not be read and not be kept (" + copyError.Message + "); it is not overwritten", ex);
+            return false;
+        }
+    }
+
     private void SaveHudLayout()
     {
-        if (!persistUiFiles)
+        if (!persistUiFiles || !hudLayoutRead)
             return;
         try
         {
@@ -243,8 +249,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task LoadHudDevicesAsync()
     {
-        if (!hudLoaded)
-            LoadHudLayout();
+        EnsureHudLayoutRead();
         hudLoaded = true;
         List<string> args = HudDevicesArguments();
         foreach (HudWidgetConfig config in hudLayout.Widgets.Where(w => w.Kind == "device" && w.Grip.Length > 0))
@@ -295,8 +300,18 @@ public sealed partial class MainWindowViewModel
             foreach (JsonElement grip in gripList.EnumerateArray())
                 grips.Add((ReadJsonString(grip, "Id"), ReadJsonString(grip, "Name")));
         }
+        Dictionary<string, string> controls = new(StringComparer.OrdinalIgnoreCase);
+        if (item.TryGetProperty("Controls", out JsonElement controlMap) && controlMap.ValueKind == JsonValueKind.Object)
+        {
+            foreach (JsonProperty control in controlMap.EnumerateObject())
+                controls[control.Name] = control.Value.GetString() ?? string.Empty;
+        }
         HudDevice device = new(ReadJsonString(item, "Device"), ReadJsonString(item, "Name"), ReadJsonString(item, "Model"), ReadJsonString(item, "Kind"),
-            ReadJsonInt(item, "Buttons"), ReadJsonInt(item, "Hats"), axes, labels, grips, ReadJsonString(item, "Hand"));
+            ReadJsonInt(item, "Buttons"), ReadJsonInt(item, "Hats"), axes, labels, grips, ReadJsonString(item, "Hand"))
+        {
+            Controls = controls,
+            VidPid = ReadJsonString(item, "VidPid")
+        };
         string layoutPicture = string.Empty;
         List<(string, double, double)> markers = [];
         if (item.TryGetProperty("Layout", out JsonElement layout) && layout.ValueKind == JsonValueKind.Object)
@@ -321,14 +336,24 @@ public sealed partial class MainWindowViewModel
     {
         string? selectedId = SelectedHudWidget?.Config.Id;
         foreach (HudWidget old in HudWidgets)
+        {
             old.PropertyChanged -= OnHudWidgetChanged;
+            old.Detach();
+            if (old.Device != null)
+                old.Device.Moved = null;
+        }
         HudWidgets.Clear();
         hudDeviceByInputName.Clear();
 
+        bool fresh = hudLayout.Widgets.Count == 0;
         HudWidgetConfig header = hudLayout.Widgets.FirstOrDefault(w => w.Kind == "header") ?? AddHudConfig(new HudWidgetConfig { Id = "header", Kind = "header", X = 40, Y = 36 });
         HudWidgetConfig binds = hudLayout.Widgets.FirstOrDefault(w => w.Kind == "binds") ?? AddHudConfig(new HudWidgetConfig { Id = "binds", Kind = "binds", X = 40, Y = 104 });
+        // The aircraft's own stick and throttle (2.5.1): shown on a new HUD, ticked by hand on an older one.
+        HudWidgetConfig aircraft = hudLayout.Widgets.FirstOrDefault(w => w.Kind == "aircraft")
+                                   ?? AddHudConfig(new HudWidgetConfig { Id = "aircraft", Kind = "aircraft", X = 1460, Y = 80, Scale = 0.85, Visible = fresh, StreamVisible = fresh, ShowAxes = true });
         AddHudWidget(new HudWidget(header, HudContext, null));
         AddHudWidget(new HudWidget(binds, HudContext, null));
+        AddHudWidget(new HudWidget(aircraft, HudContext, null) { Aircraft = hudAircraft });
 
         HashSet<string> usedSlots = new(hudLayout.Widgets.Where(w => w.Kind == "device").Select(w => SlotOf(w.X, w.Y)));
         // A HUD without placed devices yet is arranged once the pictures are in (sizes known).
@@ -346,7 +371,10 @@ public sealed partial class MainWindowViewModel
         }
         // Where each stick element's axes come from (a grip without X/Y takes them from its base).
         ApplyHudAxisSources();
-        SelectedHudWidget =HudWidgets.FirstOrDefault(w => w.Config.Id == selectedId) ?? HudWidgets.FirstOrDefault(w => w.IsDevice && w.Visible) ?? HudWidgets.FirstOrDefault();
+        SelectedHudWidget = HudWidgets.FirstOrDefault(w => w.Config.Id == selectedId) ?? HudWidgets.FirstOrDefault(w => w.IsDevice && w.Visible) ?? HudWidgets.FirstOrDefault();
+        RefreshHudDeviceChoices();
+        RebindHudAircraft();
+        HudStreamLayoutChanged();
         ScheduleHudSave();
     }
 
@@ -437,13 +465,18 @@ public sealed partial class MainWindowViewModel
 
     private void OnHudWidgetChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(HudWidget.IsSelected))
+        if (e.PropertyName is nameof(HudWidget.IsSelected) or nameof(HudWidget.Aircraft) or nameof(HudWidget.AircraftStickVisible) or nameof(HudWidget.AircraftThrottleVisible))
             return;
         ScheduleHudSave();
+        HudStreamLayoutChanged();
         if (e.PropertyName == nameof(HudWidget.Grip) && sender is HudWidget { IsDevice: true })
             _ = LoadHudDevicesAsync();
         else if (e.PropertyName is nameof(HudWidget.AxisX) or nameof(HudWidget.AxisY) or nameof(HudWidget.AxisTwist))
             ApplyHudAxisSources();
+        else if (e.PropertyName == nameof(HudWidget.AircraftChoice))
+            _ = RefreshHudAircraftAsync();
+        else if (e.PropertyName is nameof(HudWidget.StickDevice) or nameof(HudWidget.ThrottleDevice))
+            RebindHudAircraft();
     }
 
     // Default places on the 1920 x 1080 screen: right-hand stick bottom right, left stick / throttle bottom left,
@@ -499,6 +532,7 @@ public sealed partial class MainWindowViewModel
             device.Icon = DeviceIconFor(device.Device);
             widget?.RefreshVisibility();
         }
+        HudStreamLayoutChanged();
         if (hudArrangePending)
         {
             hudArrangePending = false;
@@ -533,16 +567,19 @@ public sealed partial class MainWindowViewModel
         return plane == null ? null : await DeviceImageCache.LoadAsync(index.AircraftBackgrounds[plane], 1280);
     }
 
-    // One DirectInput monitor feeds the HUD widgets (live preview and on-screen HUD) and the binds ticker.
+    // One DirectInput monitor feeds the HUD widgets (live preview, on-screen HUD, stream outputs) and the binds ticker.
+    // Axis reports go through the pump: the newest report per device, applied at most HudMaxFps times a second (the
+    // poll runs at about 66 Hz; the HUD draws only what changed, at most that often).
     private void StartInputMonitor()
     {
         if (inputCts != null)
             return;
         inputCts = new CancellationTokenSource();
         CancellationToken token = inputCts.Token;
+        HudInputPump pump = HudPump;
         _ = joystickCaptureService.MonitorAsync(
             e => Dispatcher.UIThread.Post(() => OnHudInput(e)),
-            s => Dispatcher.UIThread.Post(() => OnHudAxes(s)),
+            pump.Offer,
             token);
     }
 
@@ -554,16 +591,34 @@ public sealed partial class MainWindowViewModel
         inputCts = null;
         foreach (HudWidget widget in HudWidgets.Where(w => w.Device != null))
             widget.Device!.ReleaseAll();
+        hudAircraft?.ReleaseAll();
     }
 
     internal void OnHudInput(JoystickInputEvent input)
     {
-        HudDeviceFor(input.Device)?.SetInput(input.Input, input.Down);
+        HudDevice? device = HudDeviceFor(input.Device);
+        if (device != null)
+        {
+            device.SetInput(input.Input, input.Down);
+            hudAircraft?.OnInput(device, input.Input, input.Down);
+        }
         if (IsOverlayRunning)
             OnOverlayInput(input);
+        HudPump.Kick();
     }
 
     internal void OnHudAxes(JoystickAxisSnapshot snapshot) => HudDeviceFor(snapshot.Device)?.ApplyAxes(snapshot.Axes);
+
+    // After the pump applied the reports: the aircraft widget moves, the stream page gets the new state.
+    private void OnHudPumpFlushed()
+    {
+        hudAircraft?.Flush();
+        hudStreamHub?.Publish();
+    }
+
+    private HudInputPump? hudPump;
+
+    internal HudInputPump HudPump => hudPump ??= new HudInputPump(OnHudAxes, OnHudPumpFlushed) { MaxFps = hudLayout.MaxFps };
 
     private HudDevice? HudDeviceFor(string inputName)
     {

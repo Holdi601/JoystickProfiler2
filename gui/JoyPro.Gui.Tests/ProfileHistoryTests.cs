@@ -507,7 +507,14 @@ public sealed class ProfileHistoryTests : IDisposable
             }
         }
         ProfileHistoryPolicy policy = new() { GlobalCapBytes = 140 * 1024 };
-        ProfileHistory.PruneAll(policy);
+        // The dry run counts the global cap step too (engine profile history prune --all --dry-run) and removes nothing.
+        long bytesBefore = ProfileHistory.UsageAll().Bytes;
+        ProfileHistoryPruneResult planned = ProfileHistory.PruneAll(policy, dryRun: true);
+        Assert.Equal(bytesBefore, ProfileHistory.UsageAll().Bytes);
+        Assert.NotEmpty(planned.Removed);
+        Assert.True(planned.BytesAfter <= policy.GlobalCapBytes, "planned " + planned.BytesAfter);
+        ProfileHistoryPruneResult done = ProfileHistory.PruneAll(policy);
+        Assert.Equal(done.Removed.Select(v => v.Id + "@" + v.Utc.Ticks).OrderBy(s => s), planned.Removed.Select(v => v.Id + "@" + v.Utc.Ticks).OrderBy(s => s));
         ProfileHistoryUsage usage = ProfileHistory.UsageAll();
         Assert.Equal(2, usage.Profiles);
         Assert.True(usage.Bytes <= policy.GlobalCapBytes, "usage " + usage.Bytes);

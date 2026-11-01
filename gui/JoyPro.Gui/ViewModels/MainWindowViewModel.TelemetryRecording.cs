@@ -32,6 +32,10 @@ public sealed partial class MainWindowViewModel
 {
     public ObservableCollection<TelemetryRecordingGameItem> TelemetryRecordingGames { get; } = [];
 
+    // The panel's game list: TelemetryRecordingGames without the hidden games (Settings > Games shows them again); a
+    // hidden game is not recorded.
+    public ObservableCollection<TelemetryRecordingGameItem> VisibleTelemetryRecordingGames { get; } = [];
+
     public ObservableCollection<TelemetrySessionItem> TelemetrySessions { get; } = [];
 
     public IReadOnlyList<TelemetryChoice> TelemetrySampleRates { get; } =
@@ -126,6 +130,7 @@ public sealed partial class MainWindowViewModel
             item.Changed += OnTelemetryRecordingGameChanged;
             TelemetryRecordingGames.Add(item);
         }
+        RebuildVisibleTelemetryRecordingGames();
         TelemetrySessions.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasTelemetrySessions));
         TelemetryRecordingConfig config = new();
         if (readConfigFile)
@@ -140,6 +145,16 @@ public sealed partial class MainWindowViewModel
             }
         }
         ApplyTelemetryRecordingConfig(config);
+    }
+
+    internal void RebuildVisibleTelemetryRecordingGames()
+    {
+        List<TelemetryRecordingGameItem> visible = TelemetryRecordingGames.Where(g => !IsGameHidden(g.Id)).ToList();
+        if (visible.SequenceEqual(VisibleTelemetryRecordingGames))
+            return;
+        VisibleTelemetryRecordingGames.Clear();
+        foreach (TelemetryRecordingGameItem game in visible)
+            VisibleTelemetryRecordingGames.Add(game);
     }
 
     internal void ApplyTelemetryRecordingConfig(TelemetryRecordingConfig config)
@@ -498,7 +513,7 @@ public sealed partial class MainWindowViewModel
         }
         foreach (TelemetryRecordingGameItem game in TelemetryRecordingGames)
         {
-            if (!game.Enabled)
+            if (!game.Enabled || IsGameHidden(game.Id))
                 continue;
             int? pid = FfbFindGameProcess(game.ProcessNames);
             if (pid is int found && found != telemetryRecordBlockedPid && !FfbCoversRecordingGame(game.Id, found))

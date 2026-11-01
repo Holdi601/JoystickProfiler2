@@ -103,6 +103,41 @@ public sealed partial class MainWindowViewModel
 
     public bool HasXboxGames => VirtualJoystickGames.Any(g => g.IsXbox);
 
+    // Games whose virtual Xbox pad must be created after their title screen shows (docs/virtual-joystick.md "When to
+    // start the pad"): a pad that exists before the launch never reaches them.
+    internal static readonly string[] XboxPadAfterTitleGames = ["HLLVietnam", "AceCombat8"];
+
+    // The exception for those games: named when the page knows them set to "Xbox pad", hidden when the page knows the
+    // games and neither is, a general note naming both while the games are not loaded yet.
+    public string VirtualXboxPadTimingNote
+    {
+        get
+        {
+            if (VirtualJoystickGames.Count == 0)
+                return T("Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: these games only see a pad created after their title screen shows. Press Start there, or press Stop and Start once the title screen shows.");
+            List<VirtualJoystickGameItem> late = VirtualJoystickGames
+                .Where(g => g.IsXbox && XboxPadAfterTitleGames.Contains(g.Id, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+            if (late.Count == 0)
+                return string.Empty;
+            if (late.Count > 1)
+                return T("Exception, the virtual Xbox pad of Hell Let Loose: Vietnam and ACE COMBAT 8: these games only see a pad created after their title screen shows. Press Start there, or press Stop and Start once the title screen shows.");
+            return T("Exception, the virtual Xbox pad of {0}: the game only sees a pad created after its title screen shows. Press Start there, or press Stop and Start once the title screen shows.", late[0].Name);
+        }
+    }
+
+    public bool HasVirtualXboxPadTimingNote => VirtualXboxPadTimingNote.Length > 0;
+
+    public string VirtualJoystickStartTip => WithXboxPadTimingNote(T("Hides your physical devices from the games set to Virtual (Windows asks once for administrator rights) and copies their inputs to vJoy live. Press it before you start the game."));
+
+    public string VirtualJoystickAutoStartTip => WithXboxPadTimingNote(T("JoyPro looks for the game every 3 seconds while this is on. Pressing Start before the game is still the safest: some games only look for devices when they start."));
+
+    private string WithXboxPadTimingNote(string text)
+    {
+        string note = VirtualXboxPadTimingNote;
+        return note.Length == 0 ? text : text + " " + note;
+    }
+
     [ObservableProperty]
     private bool hidHideInstalled;
 
@@ -177,6 +212,10 @@ public sealed partial class MainWindowViewModel
     {
         OnPropertyChanged(nameof(HasVirtualJoystickGames));
         OnPropertyChanged(nameof(HasXboxGames));
+        OnPropertyChanged(nameof(VirtualXboxPadTimingNote));
+        OnPropertyChanged(nameof(HasVirtualXboxPadTimingNote));
+        OnPropertyChanged(nameof(VirtualJoystickStartTip));
+        OnPropertyChanged(nameof(VirtualJoystickAutoStartTip));
         OnPropertyChanged(nameof(CanStartVirtualJoystick));
         OnPropertyChanged(nameof(VirtualJoystickSlotsHeader));
     }
@@ -198,7 +237,9 @@ public sealed partial class MainWindowViewModel
         UpdateVirtualJoystickPolling();
     }
 
-    partial void OnVirtualJoystickLiveViewChanged(bool value) => vjoyHost?.Send(value ? T("monitor on") : "monitor off");
+    // Protocol words for JoyPro.VJoy, never translated (a translated "monitor on" left the live view empty in every
+    // language but English).
+    partial void OnVirtualJoystickLiveViewChanged(bool value) => vjoyHost?.Send(value ? "monitor on" : "monitor off");
 
     // ---- Status
 
@@ -281,6 +322,7 @@ public sealed partial class MainWindowViewModel
                 {
                     VirtualJoystickHideDevices = ReadJsonBool(settings, "HideDevices");
                     VirtualJoystickAutoStart = ReadJsonBool(settings, "AutoStart");
+                    ApplyVirtualTunnelStatus(settings);
                 }
 
                 if (root.TryGetProperty("RefreshRateHz", out JsonElement rate) && rate.TryGetInt32(out int hz))
@@ -469,7 +511,11 @@ public sealed partial class MainWindowViewModel
             return false;
         }
 
-        EngineCommandResult? map = await RunEngineAsync(["vjoy", "map"], includeProfile: true, mutatesProfile: true, busyLabel: N("Updating the vJoy mapping..."), forceText: false);
+        // Start saves the mapping in the profile; Test only checks it (--dry-run: nothing is written, no history
+        // version), the forwarding table below is built from the same plan either way.
+        EngineCommandResult? map = test
+            ? await RunEngineAsync(["vjoy", "map", "--dry-run"], includeProfile: true, mutatesProfile: false, busyLabel: N("Checking the vJoy mapping..."), forceText: false)
+            : await RunEngineAsync(["vjoy", "map"], includeProfile: true, mutatesProfile: true, busyLabel: N("Updating the vJoy mapping..."), forceText: false);
         if (map == null || map.ExitCode != 0)
         {
             VirtualJoystickMessage = T("The mapping is not ready: {0} {1}", FirstLine(map?.StandardError), FirstLine(map?.StandardOutput));
@@ -697,6 +743,10 @@ public sealed partial class MainWindowViewModel
             VirtualJoystickStatsText = DescribeVirtualJoystickStats(line);
             return;
         }
+
+        // "mode <game> <mode>": the forwarder's current mode of a game's functions.
+        if (line.StartsWith("mode ", StringComparison.Ordinal))
+            ApplyVirtualModeLive(line);
 
         if (line.StartsWith("ready ", StringComparison.Ordinal))
             VirtualJoystickForwarderText = (VirtualJoystickTestMode ? T("Test running: ") : T("Running: ")) + DescribeVirtualJoystickReady(line);

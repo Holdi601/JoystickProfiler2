@@ -59,7 +59,12 @@ public sealed partial class MainWindowViewModel
         ? T("No virtual functions yet.")
         : T("{0} virtual function(s)", VirtualFunctions.Count.ToString(CultureInfo.InvariantCulture));
 
-    partial void OnVirtualFunctionGameChanged(VirtualJoystickGameItem? value) => OnPropertyChanged(nameof(CanAddVirtualFunction));
+    partial void OnVirtualFunctionGameChanged(VirtualJoystickGameItem? value)
+    {
+        OnPropertyChanged(nameof(CanAddVirtualFunction));
+        RefreshVirtualModes();
+        RefreshVirtualFunctionGraph();
+    }
 
     partial void OnNewVirtualFunctionTypeChanged(VfTypeOption? value) => OnPropertyChanged(nameof(CanAddVirtualFunction));
 
@@ -67,6 +72,8 @@ public sealed partial class MainWindowViewModel
     {
         oldValue?.Close();
         OnPropertyChanged(nameof(HasVirtualFunctionEditor));
+        OnPropertyChanged(nameof(VirtualFunctionShowEditor));
+        OnPropertyChanged(nameof(VirtualFunctionShowHint));
     }
 
     // ---- status
@@ -107,6 +114,22 @@ public sealed partial class MainWindowViewModel
             }
         }
 
+        // The games' modes (layers).
+        virtualModeSets.Clear();
+        if (root.TryGetProperty("Games", out JsonElement modeGames) && modeGames.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement game in modeGames.EnumerateArray())
+            {
+                if (!game.TryGetProperty("Modes", out JsonElement modes) || modes.ValueKind != JsonValueKind.Array || modes.GetArrayLength() == 0)
+                    continue;
+                VfModeSet set = new() { Group = ReadJsonString(game, "Id"), Start = ReadJsonString(game, "StartMode") };
+                foreach (JsonElement mode in modes.EnumerateArray())
+                    set.Modes.Add(new VfMode { Name = ReadJsonString(mode, "Name"), Parent = ReadJsonString(mode, "Parent") });
+                set.Normalize();
+                virtualModeSets[set.Group] = set;
+            }
+        }
+
         VirtualFunctions.Clear();
         if (root.TryGetProperty("Functions", out JsonElement functions) && functions.ValueKind == JsonValueKind.Array)
         {
@@ -135,6 +158,8 @@ public sealed partial class MainWindowViewModel
             : T("Now: {0}. vJoy's maximum: 8 axes, 128 buttons, 4 hats per device. Games that read only 32 buttons are warned about on their card.", string.Join("; ", below));
         OnPropertyChanged(nameof(HasVirtualFunctions));
         OnPropertyChanged(nameof(VirtualFunctionsHeader));
+        RefreshVirtualModes();
+        RefreshVirtualFunctionGraph();
         // An open editor keeps its edits; the engine's notes for it are refreshed on save.
     }
 
@@ -157,7 +182,8 @@ public sealed partial class MainWindowViewModel
             }
         }
 
-        return new VirtualFunctionListItem(ReadJsonString(entry, "Game"), ReadJsonString(entry, "GameName"), function, ReadStringArray(entry, "Problems"), ReadStringArray(entry, "Warnings"), outputs);
+        return new VirtualFunctionListItem(ReadJsonString(entry, "Game"), ReadJsonString(entry, "GameName"), function, ReadStringArray(entry, "Problems"), ReadStringArray(entry, "Warnings"), outputs,
+            ReadJsonString(entry, "ModesText"), ReadStringArray(entry, "ReadBy"));
     }
 
     // ---- add / edit / save / remove
@@ -209,14 +235,20 @@ public sealed partial class MainWindowViewModel
         if (item == null)
             return;
         bool xbox = VirtualJoystickGames.FirstOrDefault(g => g.Id == item.Game)?.IsXbox ?? false;
-        VirtualFunctionEditor = new VirtualFunctionEditorViewModel(item.Game, item.GameName, item.Function, VirtualFunctionDevices, xbox, item.Problems.Concat(item.Warnings).ToList())
+        VirtualFunctionEditor = new VirtualFunctionEditorViewModel(item.Game, item.GameName, item.Function, VirtualFunctionDevices, xbox, item.Problems.Concat(item.Warnings).ToList(),
+            ModesOfGame(item.Game), VirtualFunctions.Where(f => f.Game == item.Game).Select(f => f.Function).ToList())
         {
             BindHandler = BindVirtualFunctionOutputAsync
         };
+        VirtualFunctionShowGraph = false;
     }
 
     [RelayCommand]
-    private void CloseVirtualFunctionEditor() => VirtualFunctionEditor = null;
+    private void CloseVirtualFunctionEditor()
+    {
+        VirtualFunctionEditor = null;
+        VirtualFunctionShowGraph = true;
+    }
 
     [RelayCommand]
     private async Task SaveVirtualFunctionAsync()
@@ -255,7 +287,10 @@ public sealed partial class MainWindowViewModel
             busyLabel: "Removing " + item.Name + "...", forceText: false);
         VirtualFunctionMessage = result == null ? string.Empty : result.ExitCode == 0 ? ReadMessage(result.StandardOutput, "Removed.") : T("Not removed: {0}", FirstLine(result.StandardError));
         if (VirtualFunctionEditor?.Id == item.Id)
+        {
             VirtualFunctionEditor = null;
+            VirtualFunctionShowGraph = true;
+        }
         await RefreshVirtualJoystickAsync();
     }
 

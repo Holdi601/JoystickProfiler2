@@ -155,6 +155,7 @@ public sealed partial class MainWindowViewModel
             RememberSort(BindSort);
         };
         RelationFilter.ClearSearchRequested += (_, _) => RelationSearchText = string.Empty;
+        WireRelationFilterSummary();
         BindFilter.ClearSearchRequested += (_, _) => BindSearchText = string.Empty;
     }
 

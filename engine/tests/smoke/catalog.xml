@@ -1,0 +1,39 @@
+<ActionMaps>
+ <ActionProfiles version="1" optionsVersion="2" rebindVersion="2" profileName="joypro_generated">
+  <optiontree type="joystick" instances="8" name="root" UISensitivityMin="0.01" UISensitivityMax="2.0">
+   <optiongroup name="master" UILabel="@ui_COMasterSensitivity" UIShowCurve="0" UIShowInvert="0">
+    <optiongroup name="flight" UILabel="@ui_COFlight" UIShowCurve="-1" UIShowInvert="-1">
+     <optiongroup name="flight_move" UILabel="@ui_COFlightMove" UIShowCurve="-1" UIShowInvert="-1">
+      <optiongroup name="flight_move_pitch" UILabel="@ui_COFlightPitch" UIShowCurve="1" UIShowInvert="1" />
+      <optiongroup name="flight_move_yaw" UILabel="@ui_COFlightYaw" UIShowCurve="1" UIShowInvert="1" />
+      <optiongroup name="flight_move_roll" UILabel="@ui_COFlightRoll" UIShowCurve="1" UIShowInvert="1" />
+      <optiongroup name="flight_move_strafe_vertical" UILabel="@ui_COStrafeUpDown" UIShowCurve="1" UIShowInvert="1" />
+     </optiongroup>
+     <optiongroup name="flight_view" exponent="2.5" UILabel="@ui_COFreeLook" UIShowCurve="1" UIShowInvert="-1">
+      <nonlinearity_curve reset="1" />
+      <optiongroup name="flight_view_pitch" UILabel="@ui_COFlightViewY" UIShowCurve="1" UIShowInvert="1" />
+     </optiongroup>
+     <optiongroup name="flight_zoom" UILabel="@ui_co_dynamic_zoom_rel" UIShowInvert="1" />
+    </optiongroup>
+    <optiongroup name="mining" UILabel="@ui_COMining" UIShowCurve="1" UIShowInvert="1">
+     <optiongroup name="mining_throttle" UILabel="@ui_COMiningThrottle" invert="1" UIShowCurve="1" UIShowInvert="1" />
+    </optiongroup>
+   </optiongroup>
+  </optiontree>
+  <actionmap name="spaceship_movement">
+   <action name="v_fire"><!--Fire//false--></action>
+   <action name="v_pitch"><!--@ui_CIPitch//true--><optionGroup name="flight_move_pitch"/></action>
+   <action name="v_pitch_mouse"><!--@ui_CIPitch//true--><optionGroup name="flight_move_pitch"/></action>
+   <action name="v_roll"><!--@ui_CIRoll//true--><optionGroup name="flight_move_roll"/></action>
+   <action name="v_strafe_vertical"><!--@ui_CIStrafeUpDown//true--><optionGroup name="flight_move_strafe_vertical"/></action>
+   <action name="v_yaw"><!--@ui_CIYaw//true--><optionGroup name="flight_move_yaw"/></action>
+  </actionmap>
+  <actionmap name="spaceship_view">
+   <action name="v_view_dynamic_zoom_rel"><!--@ui_CIDynamicZoomInOut//true--><optionGroup name="flight_zoom"/></action>
+   <action name="v_view_pitch"><!--@ui_CIPitchView//true--><optionGroup name="flight_view_pitch"/></action>
+  </actionmap>
+  <actionmap name="spaceship_mining">
+   <action name="v_mining_throttle"><!--@ui_CIMiningThrottle//true--><optionGroup name="mining_throttle"/></action>
+  </actionmap>
+ </ActionProfiles>
+</ActionMaps>

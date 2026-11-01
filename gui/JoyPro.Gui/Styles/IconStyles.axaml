@@ -36,6 +36,12 @@
         </Setter>
     </Style>
 
+    <!-- A switched-off icon button: the icon takes the switched-off text colour too (it stayed full black / white next to
+         the grey text) -->
+    <Style Selector="Button.icon:disabled PathIcon, ToggleButton.icon:disabled PathIcon">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundDisabled}" />
+    </Style>
+
     <!-- The page buttons in the colours of the theme's bottom bar (Settings > Appearance) -->
     <Style Selector=":is(Button).nav">
         <Setter Property="Background" Value="{DynamicResource JP.Nav.ButtonBrush}" />
