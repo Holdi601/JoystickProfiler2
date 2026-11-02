@@ -69,9 +69,16 @@ namespace JoyPro.Engine
         public double? GuiScaleOverride { get; set; }
         public DcsWindowRect WindowOverride { get; set; }
         public Action<string> StatusSink { get; set; }
+        // The Input Command Injector's commands (<Saved Games>\InputCommands, DcsModInputs): "auto" merges them when the
+        // injector is installed in this DCS (as DCS does), "on" always, "off" never.
+        public string InputCommandsMode { get; set; }
+        // Set by the refresh (ResolveModInputs): the InputCommands folder whose files the headless Lua merges; empty = none.
+        internal string InputCommandsRoot { get; set; }
 
         public DcsRefreshOptions()
         {
+            InputCommandsMode = "auto";
+            InputCommandsRoot = string.Empty;
             SavedGamesPath = string.Empty;
             InstallPath = string.Empty;
             ClicksXmlPath = string.Empty;
@@ -231,6 +238,11 @@ namespace JoyPro.Engine
         public int DeviceCleanFilesWritten { get; set; }
         // Device types (DCS template names) the clean refresh cleared with a fake stick of their own.
         public List<string> CoveredDeviceTypes { get; set; } = new List<string>();
+        // Commands of DCS mods (DcsModInputs): the InputCommands folder used ("" = none), how the Input Command Injector
+        // is installed ("hook", "data.lua", ""), and the InputCommands files DCS's loader merged.
+        public string InputCommandsPath { get; set; } = string.Empty;
+        public string InputCommandInjector { get; set; } = string.Empty;
+        public List<string> InputCommandsFilesMerged { get; set; } = new List<string>();
         public int InputFilesBackedUp { get; set; }
         public int InputFilesRestored { get; set; }
         public List<DcsResolvedClick> Clicks { get; set; }
@@ -622,6 +634,7 @@ namespace JoyPro.Engine
             DcsRefreshOptions normalizedOptions = NormalizeOptions(options);
             ReportStatus(normalizedOptions, "DCS refresh clean started.");
             DcsRefreshResult result = BuildRefreshResult("clean", normalizedOptions);
+            ResolveModInputs(normalizedOptions, result);
 
             if (!ValidateRequiredPaths(result, requireSavedGames: true, requireInstall: true))
                 return result;
@@ -933,6 +946,7 @@ namespace JoyPro.Engine
             DcsRefreshOptions normalizedOptions = NormalizeOptions(options);
             ReportStatus(normalizedOptions, "DCS refresh id started.");
             DcsRefreshResult result = BuildRefreshResult("id", normalizedOptions);
+            ResolveModInputs(normalizedOptions, result);
 
             if (!ValidateRequiredPaths(result, requireSavedGames: true, requireInstall: true))
                 return result;
@@ -1260,6 +1274,42 @@ namespace JoyPro.Engine
                 normalized.ModulesToScan = 0;
             normalized.PlaneFilter = NormalizePlaneFilters(normalized.PlaneFilter);
             return normalized;
+        }
+
+        // The refresh reads what the installed DCS reads (DcsModInputs): the Saved Games folder of its variant (Saved
+        // Games\DCS.openbeta for an OpenBeta install, also when Saved Games\DCS was given), so its Saved Games modules,
+        // InputCommands and binds are the ones DCS uses; and the Input Command Injector's InputCommands, merged by the
+        // headless Lua as the injector does (InputCommandsMode auto: when the injector is installed in this DCS).
+        private static void ResolveModInputs(DcsRefreshOptions options, DcsRefreshResult result)
+        {
+            string note;
+            string own = DcsModInputs.ForInstall(options.SavedGamesPath, options.InstallPath, out note);
+            if (note.Length > 0)
+            {
+                options.SavedGamesPath = NormalizePath(own);
+                result.SavedGamesPath = options.SavedGamesPath;
+                result.Steps.Add(note);
+            }
+            options.InputCommandsRoot = string.Empty;
+            string mode = (options.InputCommandsMode ?? "auto").Trim().ToLowerInvariant();
+            int files = DcsModInputs.InputCommandFiles(options.SavedGamesPath).Count;
+            string injector = DcsModInputs.InjectorInstall(options.InstallPath);
+            result.InputCommandInjector = injector;
+            if (files == 0)
+                return;
+            bool use = mode == "on" || (mode != "off" && injector.Length > 0);
+            if (use)
+            {
+                options.InputCommandsRoot = Path.Combine(options.SavedGamesPath, DcsModInputs.InputCommandsFolderName);
+                result.InputCommandsPath = options.InputCommandsRoot;
+                result.Steps.Add("InputCommands (" + files.ToString(CultureInfo.InvariantCulture) + " file(s)) are merged into the DCS controls the way the Input Command Injector does" +
+                                 (injector.Length > 0 ? " (installed: " + injector + ")." : " (--input-commands on)."));
+            }
+            else if (mode == "off")
+                result.Steps.Add("InputCommands (" + files.ToString(CultureInfo.InvariantCulture) + " file(s)) are left out (--input-commands off).");
+            else
+                result.Steps.Add("Saved Games\\" + Path.GetFileName(options.SavedGamesPath.TrimEnd('\\', '/')) + "\\InputCommands has " + files.ToString(CultureInfo.InvariantCulture) +
+                                    " file(s), but the Input Command Injector is not installed in this DCS (Scripts\\Hooks), so DCS does not show them and the command list leaves them out.");
         }
 
         private static List<string> NormalizePlaneFilters(IEnumerable<string> rawFilters)
@@ -3773,11 +3823,12 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             bool withDefaults = true,
             string exportPath = null,
             int fakePart = 0,
-            int fakeParts = 1)
+            int fakeParts = 1,
+            string inputCommandsRoot = null)
         {
             StringBuilder script = new StringBuilder();
             script.AppendLine("-- JoyPro headless DCS " + (exportHtml ? "ID" : "clean") + " refresh");
-            AppendHeadlessPrelude(script, savedGamesPath, candidates, deviceTemplates, exportHtml, assignedIndexes, withDefaults, exportPath, fakePart, fakeParts);
+            AppendHeadlessPrelude(script, savedGamesPath, candidates, deviceTemplates, exportHtml, assignedIndexes, withDefaults, exportPath, fakePart, fakeParts, inputCommandsRoot);
             return AppendHeadlessRefreshBody(script, exportHtml);
         }
 
@@ -3801,10 +3852,16 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             bool withDefaults = true,
             string exportPath = null,
             int fakePart = 0,
-            int fakeParts = 1)
+            int fakeParts = 1,
+            string inputCommandsRoot = null)
         {
             bool exportHtml = requireMakeLayout;
             string savedGames = ToLuaFolder(savedGamesPath);
+            // The Input Command Injector's folder whose files are merged into DCS's input files (nil = none).
+            if (string.IsNullOrWhiteSpace(inputCommandsRoot))
+                script.AppendLine("local jpInputCommands = nil");
+            else
+                script.AppendLine("local jpInputCommands = '" + EscapeLuaString(ToLuaFolder(inputCommandsRoot)) + "'");
 
             script.AppendLine("local savedGamesPath = '" + EscapeLuaString(savedGames) + "'");
             // lfs.writedir(): DCS reads the user's files through it (autoexec.cfg, wizard.lua); MakeLayoutText writes its
@@ -3927,6 +3984,10 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("    return true");
             script.AppendLine("  end");
             script.AppendLine("  function M.attributes(p)");
+            // An older Input Command Injector patched DCS's Data.lua to merge <writedir>\InputCommands itself; the refresh
+            // merges them its own way (AppendInputCommandsInjection), so the patched Data.lua finds none (no twice-merged
+            // commands, nothing read from the wrong Saved Games folder).
+            script.AppendLine("    if type(p) == 'string' and string.find(string.lower((p:gsub('\\\\', '/'))), '/inputcommands/', 1, true) then return nil end");
             script.AppendLine("    local f = io.open(p, 'rb')");
             script.AppendLine("    if f then f:close(); return { mode = 'file' } end");
             script.AppendLine("    local ok, _, code = os.rename(p, p)");
@@ -3978,6 +4039,7 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("  local InputData = require('Input.Data')");
             script.AppendLine("  local ProfileDatabase = require('Input.ProfileDatabase')");
             script.AppendLine("  local InputUtils = require('Input.Utils')");
+            AppendInputCommandsInjection(script);
             if (exportHtml)
                 script.AppendLine("  local MakeLayoutText = require('Input.MakeLayoutText')");
             script.AppendLine("  local userConfigPath = savedGamesPath .. 'Config/Input/'");
@@ -4033,6 +4095,103 @@ print('JOYPRO_PROBE_DONE|' .. tostring(#modules))");
             script.AppendLine("    if pcall(InputData.createProfile, info) then");
             script.AppendLine("      pcall(InputData.getProfileKeyCommands, info.name)");
             script.AppendLine("      pcall(InputData.getProfileAxisCommands, info.name)");
+            script.AppendLine("    end");
+            script.AppendLine("  end");
+        }
+
+        // The Input Command Injector's merge (Quaggles, github.com/Quaggles/dcs-input-command-injector), done the way its
+        // hook does it (QuagglesInputCommandInjector.lua 1.1.0; a patched Data.lua before that did the same): DCS's loader
+        // of the input files (Input.Data loadDeviceProfileFromFile) gets a loadfile of its own; every input file it runs
+        // in a profile environment is followed by InputCommands\<the file's place> when that file exists, run in the same
+        // environment, its keyCommands and axisCommands (no axes for the keyboard) joined to the file's (env.join). The
+        // place: a file under the install's Mods\aircraft\ (its folder too) or Config\Input\ (its folder too), or one named
+        // "Config/Input/..." (Aircrafts\common_joystick_binding.lua), keeps the rest of its path; files of Saved Games
+        // modules get nothing (the injector only matches DCS's relative paths). DCS then gives the merged commands their
+        // ids itself, exactly as in the game. Each merged file is printed (JOYPRO_INPUTCOMMANDS|<place>), a broken one too
+        // (JOYPRO_INPUTCOMMANDS_ERR; DCS shows an error and leaves it out).
+        private static void AppendInputCommandsInjection(StringBuilder script)
+        {
+            script.AppendLine("  if jpInputCommands and type(getfenv) == 'function' and type(setfenv) == 'function' and type(InputData.loadDeviceProfileFromFile) == 'function' then");
+            script.AppendLine("    local jpLoader = InputData.loadDeviceProfileFromFile");
+            script.AppendLine("    local jpLoaderEnv = getfenv(jpLoader)");
+            script.AppendLine("    if type(jpLoaderEnv) == 'table' and not jpLoaderEnv.__joyproInputCommands then");
+            script.AppendLine("      local jpOriginalLoadfile = jpLoaderEnv.loadfile or loadfile");
+            // Paths with forward slashes, relative ones under the install (luae runs in it), '.', '..' and '//' resolved.
+            script.AppendLine("      local jpCwd = (tostring(cwd or '.'):gsub('\\\\', '/'))");
+            script.AppendLine("      local function jp_norm(p)");
+            script.AppendLine("        p = (tostring(p or ''):gsub('\\\\', '/'))");
+            script.AppendLine("        if not p:match('^%a:/') then p = jpCwd .. '/' .. p end");
+            script.AppendLine("        local prefix = p:sub(1, 3)");
+            script.AppendLine("        local parts = {}");
+            script.AppendLine("        for part in p:sub(4):gmatch('[^/]+') do");
+            script.AppendLine("          if part == '..' then if #parts > 0 then table.remove(parts) end");
+            script.AppendLine("          elseif part ~= '.' then table.insert(parts, part) end");
+            script.AppendLine("        end");
+            script.AppendLine("        return prefix .. table.concat(parts, '/')");
+            script.AppendLine("      end");
+            script.AppendLine("      local jpRoot = string.lower(jp_norm(jpCwd)) .. '/'");
+            script.AppendLine("      local jpAircraft = jpRoot .. 'mods/aircraft/'");
+            script.AppendLine("      local jpConfig = jpRoot .. 'config/input/'");
+            script.AppendLine("      local jpMerged = {}");
+            script.AppendLine("      local function jp_starts(s, p) return string.sub(s, 1, #p) == p end");
+            script.AppendLine("      local function jp_clean(s) return (tostring(s or ''):gsub('[|\\r\\n]', ' ')) end");
+            script.AppendLine("      local function jp_ic_place(filename, folder)");
+            script.AppendLine("        if type(filename) ~= 'string' then return nil end");
+            script.AppendLine("        local full = jp_norm(filename)");
+            script.AppendLine("        local lowerFull = string.lower(full)");
+            script.AppendLine("        local lowerFolder = string.lower(jp_norm(type(folder) == 'string' and folder or '')) .. '/'");
+            script.AppendLine("        if jp_starts(lowerFull, jpAircraft) and jp_starts(lowerFolder, jpAircraft) then return string.sub(full, #jpAircraft + 1) end");
+            script.AppendLine("        if jp_starts(lowerFull, jpConfig) and jp_starts(lowerFolder, jpConfig) then return string.sub(full, #jpConfig + 1) end");
+            script.AppendLine("        local slashed = (filename:gsub('\\\\', '/'))");
+            script.AppendLine("        if jp_starts(slashed, 'Config/Input/') then return string.sub(slashed, 14) end");
+            script.AppendLine("        return nil");
+            script.AppendLine("      end");
+            script.AppendLine("      local function jp_ic_merge(deviceGenericName, filename, folder, env, result)");
+            script.AppendLine("        local place = jp_ic_place(filename, folder)");
+            script.AppendLine("        if not place or place == '' then return end");
+            script.AppendLine("        local path = jpInputCommands .. place");
+            script.AppendLine("        local probe = io.open(path, 'rb')");
+            script.AppendLine("        if not probe then return end");
+            script.AppendLine("        probe:close()");
+            script.AppendLine("        local f, err = rawLoadfile(path)");
+            script.AppendLine("        if not f then");
+            script.AppendLine("          print('JOYPRO_INPUTCOMMANDS_ERR|' .. jp_clean(place .. ': ' .. tostring(err)))");
+            script.AppendLine("          return");
+            script.AppendLine("        end");
+            script.AppendLine("        setfenv(f, env)");
+            script.AppendLine("        local okInj, injected = pcall(f)");
+            script.AppendLine("        if not okInj or type(injected) ~= 'table' then");
+            script.AppendLine("          print('JOYPRO_INPUTCOMMANDS_ERR|' .. jp_clean(place .. ': ' .. tostring(injected)))");
+            script.AppendLine("          return");
+            script.AppendLine("        end");
+            script.AppendLine("        if result.keyCommands and injected.keyCommands then env.join(result.keyCommands, injected.keyCommands)");
+            script.AppendLine("        elseif injected.keyCommands then result.keyCommands = injected.keyCommands end");
+            script.AppendLine("        if deviceGenericName ~= 'Keyboard' then");
+            script.AppendLine("          if result.axisCommands and injected.axisCommands then env.join(result.axisCommands, injected.axisCommands)");
+            script.AppendLine("          elseif injected.axisCommands then result.axisCommands = injected.axisCommands end");
+            script.AppendLine("        end");
+            script.AppendLine("        if not jpMerged[string.lower(place)] then");
+            script.AppendLine("          jpMerged[string.lower(place)] = true");
+            script.AppendLine("          print('JOYPRO_INPUTCOMMANDS|' .. jp_clean(place))");
+            script.AppendLine("        end");
+            script.AppendLine("      end");
+            script.AppendLine("      local jpEnv = setmetatable({ __joyproInputCommands = true }, { __index = jpLoaderEnv })");
+            script.AppendLine("      jpEnv.loadfile = function(filename)");
+            script.AppendLine("        local f, err = jpOriginalLoadfile(filename)");
+            script.AppendLine("        if not f then return nil, err end");
+            script.AppendLine("        return function(...)");
+            script.AppendLine("          local env = getfenv(1)");
+            script.AppendLine("          setfenv(f, env)");
+            script.AppendLine("          local result = f(...)");
+            script.AppendLine("          if type(env) ~= 'table' or env.filename ~= filename or type(env.folder) ~= 'string' or type(env.join) ~= 'function' or type(result) ~= 'table' then return result end");
+            script.AppendLine("          local deviceGenericName");
+            script.AppendLine("          if env.deviceName ~= nil then deviceGenericName = InputUtils.getDeviceTemplateName(env.deviceName) end");
+            script.AppendLine("          local okMerge, mergeErr = pcall(jp_ic_merge, deviceGenericName, filename, env.folder, env, result)");
+            script.AppendLine("          if not okMerge then print('JOYPRO_INPUTCOMMANDS_ERR|' .. jp_clean(tostring(filename) .. ': ' .. tostring(mergeErr))) end");
+            script.AppendLine("          return result");
+            script.AppendLine("        end");
+            script.AppendLine("      end");
+            script.AppendLine("      setfenv(jpLoader, jpEnv)");
             script.AppendLine("    end");
             script.AppendLine("  end");
         }

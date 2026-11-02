@@ -21,6 +21,11 @@ by the check**. What each kind of card means and how the fixes work: [[page:flow
 - **Expand all** / **Collapse all** open or close every section.
 - A card's blue button with a tick is JoyPro's suggestion; **More** has the other fixes; **Open '<relation>'** jumps
   to the relation with the card's commands marked.
+- **Ignore** on a card keeps the binds as they are and hides the warning. It comes back by itself, marked **New** and
+  "Shown again: now also on ...", when the command lands on one more button. So you work through the list once and
+  afterwards see only what is new.
+- **Ignored warnings (n)** (only while you ignored some) lists the hidden ones with **Show again** for each and
+  **Show all again**. Typing "ignore list", "hidden" or "muted" into the search opens it too.
 :::
 
 :::layer advanced
@@ -50,6 +55,19 @@ Opens every section and card of the list.
 
 <!-- entry: CollapseAllCheckCardsCommand -->
 Closes every section, so only the section titles with their counts show.
+
+<!-- entry: ToggleIgnoredWarningsCommand -->
+"Ignored warnings (n)": opens or closes the list of the warnings you ignored with **Ignore** on their card. It shows
+only while there are some. Each one is described with the card's words (the buttons with their relations, the aircraft
+and the command) and has **Show again**, which puts the card back on the check (one Ctrl+Z takes it back). The search
+above filters the list as well; searching for "ignore list", "hidden warnings", "dismissed" or "muted" opens it. An
+ignored warning also comes back on its own when one more button, relation or command joins it: the card then says
+"Shown again: now also on ..." and is marked **New**. Engine: [[cli:relations duplicates]] `--list-kept`,
+[[cli:relations conflicts]] `--list-kept`, `--forget-kept --keys`.
+
+<!-- entry: ShowAllIgnoredAgainCommand -->
+Puts every ignored warning back on the check at once; the binds do not change. One engine command, so one Ctrl+Z
+hides them all again. Engine: [[cli:relations duplicates]] `--forget-kept`.
 
 <!-- entry: ToggleDuplicateRuleCommand -->
 Opens the rule panel: one rule for every card of the section; **Preview** lists each change with a tick before
@@ -93,6 +111,11 @@ A fix of a card (the blue one with the tick is JoyPro's suggestion) or an **Open
 engine command, so it is one undo step (Ctrl+Z). **Open** shows the relation with exactly the card's commands and
 aircraft marked; **Back to the check** above the relation's name (or **Back**, Alt+Left) returns to the card. In the
 game: the fix takes effect at the next export.
+
+**Ignore** (on "Same command on two buttons", "One button does two things" and "One button runs two commands"; it
+was called "Keep both" before 2.6.1) changes no bind: the card goes away and JoyPro remembers it in the profile. It
+comes back when the command lands on one more button (one more relation on the button, one more command in the
+relation), marked "Shown again: now also on ...". In the list **Ignored warnings**, **Show again** puts one card back.
 
 On "Same command on two buttons", **Replace '...' on <button> with...** is for the case where one button should do
 something else (the [Dec] that should be [Inc]): the relation opens with **Add actions** searching for the command's

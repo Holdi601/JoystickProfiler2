@@ -220,9 +220,11 @@ engine relations conflicts --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.
   - `--keep <relation>`: the input stays only in that relation, the aircraft is switched off in the others;
   - `--keep-action <id>`: keeps one action of the relation;
   - `--off`: switches all of them off;
-  - `--keep-both`: records it as intended (`KeptDuplicates`, not shown again);
+  - `--ignore` (formerly `--keep-both`): records it as intended (`KeptDuplicates`); not listed again until one more
+    relation joins the input (one more action the relation), then it is listed with `ShownAgain` and `NowAlsoIn`;
   - `--remove-actions`: takes unknown actions out.
-- `--include-kept` also lists the ones kept with `--keep-both`.
+- `--include-kept` also lists the ignored ones (`Kept`), `--list-kept` only them; `--forget-kept [--keys]` lists them
+  again (without keys every ignored conflict). A fix also forgets ignored conflicts that are gone.
 - Each fix is one profile version (one undo step).
 :::
 

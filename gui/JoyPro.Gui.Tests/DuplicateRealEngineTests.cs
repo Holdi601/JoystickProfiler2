@@ -20,7 +20,7 @@ namespace JoyPro.Gui.Tests;
 
 // The check's "actions in several relations" with the real engine on a small copy of a tester's profile and its
 // history (DuplicateFixture): four cards in words with 96% suggestions from the history, "Fix the sure ones" as one
-// profile version that Undo takes back, "Keep both" saved in the profile, an instruction in words. Offscreen pictures
+// profile version that Undo takes back, "Ignore" saved in the profile, an instruction in words. Offscreen pictures
 // of the panel (1280 and 2267 wide, Light and Dark) when JOYPRO_DUP_RENDER_OUT names a folder.
 [SupportedOSPlatform("windows")]
 [Collection("EngineServer")]
@@ -98,9 +98,9 @@ public sealed class DuplicateRealEngineTests
                 AvaloniaRenderThread.Wait(vm.ValidateProfileCommand.ExecuteAsync(null));
                 Assert.Equal(4, vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Count);
 
-                // Keep both: saved in the profile, the card stays away after a reload.
+                // Ignore: saved in the profile, the card stays away after a reload.
                 CheckIssueCard caution = vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Single(c => c.Sentence.Contains("Master Caution", StringComparison.Ordinal));
-                AvaloniaRenderThread.Wait(((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)caution.KeepBothCommand!).ExecuteAsync(null));
+                AvaloniaRenderThread.Wait(((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)caution.IgnoreCommand!).ExecuteAsync(null));
                 Assert.Equal(3, vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Count);
                 MainWindowViewModel again = new(new EngineCliClient(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false) { EnginePath = engine, ProfilePath = profile };
                 AvaloniaRenderThread.Wait(again.ValidateProfileCommand.ExecuteAsync(null));

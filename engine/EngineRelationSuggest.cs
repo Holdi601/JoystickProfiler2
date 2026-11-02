@@ -28,6 +28,12 @@ namespace JoyPro.Engine
             public string Title = string.Empty;
             public string Category = string.Empty;
             public bool IsAxis;
+            // A DCS command found in the user's bind files, not in DCS's list (DcsFoundCommands; told by its category,
+            // which the function map cache keeps).
+            public bool FromYourFiles
+            {
+                get { return Game == "DCS" && InternalDataManagement.IsFoundInYourFiles(Category); }
+            }
         }
 
         private sealed class Candidate
@@ -1631,6 +1637,8 @@ namespace JoyPro.Engine
             string dcs = ListFolder("DCS");
             if (Directory.Exists(dcs))
                 files.AddRange(Directory.GetFiles(dcs, "*.html").OrderBy(f => f, StringComparer.OrdinalIgnoreCase));
+            // The commands found in the user's DCS bind files join the DCS lists (DcsFoundCommands).
+            files.Add(DcsFoundCommands.FilePath());
             files.Add(Path.Combine(ListFolder("IL2"), "IL2.actions"));
             files.Add(Path.Combine(ListFolder("StarCitizen"), "AllBinds.xml"));
             foreach (IGameIntegration game in GameRegistry.All)

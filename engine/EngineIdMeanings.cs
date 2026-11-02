@@ -661,7 +661,8 @@ namespace JoyPro.Engine
                 report.Aircraft.Add(new EngineNodeAircraftEntry
                 {
                     Plane = c.Plane, Title = c.Title, Category = c.Category, State = state,
-                    Match = kind == Kind.Same ? "same" : kind == Kind.Near ? "near" : "differs", Note = note, SameFunction = sameFunction
+                    Match = kind == Kind.Same ? "same" : kind == Kind.Near ? "near" : "differs", Note = note, SameFunction = sameFunction,
+                    FromYourFiles = c.FromYourFiles
                 });
             }
             // Aircraft of the node without the id in their list (an old list, a removed module).
@@ -981,6 +982,9 @@ namespace JoyPro.Engine
         public string Note { get; set; }
         // Differs in title, but the function map reads it as the same function and direction.
         public bool SameFunction { get; set; }
+        // A DCS command JoyPro knows from the user's own bind files, not from DCS's list (a mod added it after the list
+        // was built; DcsFoundCommands): the GUI shows a small hint.
+        public bool FromYourFiles { get; set; }
 
         public EngineNodeAircraftEntry()
         {

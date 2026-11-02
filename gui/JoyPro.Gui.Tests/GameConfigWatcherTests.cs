@@ -186,7 +186,8 @@ public sealed class GameConfigWatcherTests : IDisposable
         Assert.Equal(0, watcher.HandleCount);
         (int handlesAfter, long managedAfter, _) = Measure();
         output.WriteLine($"200 x re-create: handles {handlesBefore} -> {handlesAfter}, managed {managedBefore / 1024} KB -> {managedAfter / 1024} KB");
-        Assert.InRange(handlesAfter - handlesBefore, -50, 20);
+        // The process's handle count also moves with the tests running next to this one: only growth counts (a leak).
+        Assert.InRange(handlesAfter - handlesBefore, int.MinValue, 20);
         Assert.InRange(managedAfter - managedBefore, long.MinValue, 2 * 1024 * 1024);
     }
 

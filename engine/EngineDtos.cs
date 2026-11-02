@@ -243,6 +243,9 @@ namespace JoyPro.Engine
         public int EntriesParsed { get; set; }
         public int ForceFeedbackEntriesParsed { get; set; }
         public int DefaultEntriesParsed { get; set; }
+        // Commands of the user's .diff.lua files that the aircraft's command list lacked (a mod added them after the list
+        // was built), newly recorded as "found in your DCS files" (DcsFoundCommands): "<aircraft>: <name> (<id>)".
+        public List<string> CommandsFoundInYourFiles { get; set; } = new List<string>();
         // Include defaults: defaults not added because the user's file removes them, he bound the action on that device
         // himself, or he uses the input (key and modifiers) for another action of that aircraft.
         public int DefaultEntriesRemovedByUser { get; set; }

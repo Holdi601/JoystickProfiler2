@@ -53,6 +53,10 @@ namespace JoyPro.Engine
             // The title has every typed word (LiteralHits); LiteralShare: how much of the title they are, in percent.
             public bool Literal;
             public double LiteralShare;
+            // The functions of the query that found it (FunctionHits), and whether the game id or command key typed found
+            // it (KeyHits): the precision rule keeps those rows.
+            public readonly HashSet<string> FoundBy = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            public bool Key;
             public readonly SortedSet<string> Planes = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
@@ -114,24 +118,45 @@ namespace JoyPro.Engine
                     result.DidYouMean = u.DidYouMean;
                     words = u.DidYouMean.Split(' ').Where(t => t.Length > 0 && !Filler.Contains(t)).Distinct().ToArray();
                 }
+                bool keyHit = Collect(map, u, words, result.Query, wanted, rows);
+                // Precision (docs/relation-builder.md "Every word covered"): a query of several words that some result covers
+                // completely - a title with every word, or a function whose name, synonym, description or direction
+                // explains every word - lists only what covers all of them. "master reset" in the F-14 is MASTER RESET
+                // and Master Caution Reset, not every "master" function by its first word. With nothing that covers
+                // every word, the partial meanings stay (plain-language queries).
+                string[] needed = NeededWords(map, words);
+                if (needed.Length >= 2)
+                {
+                    HashSet<string> covering = new HashSet<string>(u.Functions.Where(r => Covers(map, r, needed)).Select(r => r.Function.Id), StringComparer.OrdinalIgnoreCase);
+                    if (rows.Values.Any(r => r.Literal || r.FoundBy.Overlaps(covering)))
+                    {
+                        if (u.Functions.Any(r => !covering.Contains(r.Function.Id)))
+                        {
+                            // Once more with only the covering functions: their rows rank and read as before, without
+                            // the functions that explain a part of the query.
+                            u = new EngineFunctionMap.Understanding
+                            {
+                                Functions = u.Functions.Where(r => covering.Contains(r.Function.Id)).ToList(),
+                                Dir = u.Dir,
+                                Words = u.Words,
+                                Extra = u.Extra,
+                                DidYouMean = u.DidYouMean
+                            };
+                            rows.Clear();
+                            keyHit = Collect(map, u, words, result.Query, wanted, rows);
+                        }
+                        foreach (string key in rows.Where(r => !r.Value.Literal && !r.Value.Key && !r.Value.FoundBy.Overlaps(covering)).Select(r => r.Key).ToList())
+                            rows.Remove(key);
+                    }
+                }
                 foreach (EngineFunctionMap.Resolved r in u.Functions)
                 {
                     result.Functions.Add(r.Function.Name);
                     result.FunctionIds.Add(r.Function.Id);
                     result.Resolved.Add(new EngineSearchFunction { Id = r.Function.Id, Name = r.Function.Name, Category = r.Function.Category, Kind = r.Function.Kind, Dir = r.Dir, Term = r.Term, Related = r.Related, Described = r.Described });
                 }
-                FunctionHits(map, u, words, wanted, rows);
-                string[] content = words.Where(w => !map.QueryFiller.Contains(w)).ToArray();
-                // A function named with all of the query's words: plain word matches must have all of them too.
-                int contentWords = (content.Length > 0 ? content : words).Count(w => !map.Stopwords.Contains(w));
-                bool named = u.Functions.Any(r => !r.Related && r.Covered >= contentWords);
-                WordHits(map, content.Length > 0 ? content : words, words, wanted, rows, named);
-                // Every title with all the typed words is a hit, and it leads unless the query names a function with
-                // all its words ("pitch", "gear up": that function's rows lead as before).
-                bool literalLeads = !u.Functions.Any(r => !r.Related && !r.Described) || u.Extra.Count > 0;
-                LiteralHits(map, LiteralWords(result.Query), wanted, rows, literalLeads);
                 // A command id is no description: the functions guessed from its letters are not "understood as".
-                if (KeyHits(map, result.Query, wanted, rows) && DcsCommandNames.LooksLikeCommandId(result.Query))
+                if (keyHit && DcsCommandNames.LooksLikeCommandId(result.Query))
                 {
                     result.Functions.Clear();
                     result.FunctionIds.Clear();
@@ -256,6 +281,91 @@ namespace JoyPro.Engine
             if (!wholeList)
                 Choose(map, result.Results, false);
             return result;
+        }
+
+        // The rows of a query: the functions it names, plain word matches, titles with every word, a typed id or key.
+        // True when the id or key found rows.
+        private static bool Collect(EngineFunctionMap.Map map, EngineFunctionMap.Understanding u, string[] words, string query, Func<EngineRelationSuggest.Command, bool> wanted, Dictionary<string, Row> rows)
+        {
+            FunctionHits(map, u, words, wanted, rows);
+            string[] content = words.Where(w => !map.QueryFiller.Contains(w)).ToArray();
+            // A function named with all of the query's words: plain word matches must have all of them too.
+            int contentWords = (content.Length > 0 ? content : words).Count(w => !map.Stopwords.Contains(w));
+            bool named = u.Functions.Any(r => !r.Related && r.Covered >= contentWords);
+            WordHits(map, content.Length > 0 ? content : words, words, wanted, rows, named);
+            // Every title with all the typed words is a hit, and it leads unless the query names a function with
+            // all its words ("pitch", "gear up": that function's rows lead as before).
+            bool literalLeads = !u.Functions.Any(r => !r.Related && !r.Described) || u.Extra.Count > 0;
+            LiteralHits(map, LiteralWords(query), wanted, rows, literalLeads);
+            return KeyHits(map, query, wanted, rows);
+        }
+
+        // The words a result must cover for the precision rule: the query's words without filler ("the", "please",
+        // "turn"), stop words, numbers and fragments of one or two letters that are no direction ("xx", "0", "x" of
+        // "tacan channel (xx0x) - inc": the TACAN channel step still covers that query).
+        internal static string[] NeededWords(EngineFunctionMap.Map map, string[] words)
+        {
+            return words.Where(w => !Filler.Contains(w) && !map.QueryFiller.Contains(w) && !map.Stopwords.Contains(w) && !w.All(char.IsDigit) &&
+                                    (w.Length > 2 || map.DirectionWords.Contains(w))).Distinct().ToArray();
+        }
+
+        // A function of the query explains every needed word: by the phrase or description that found it, by its name or
+        // one of its synonyms and terms ("Master caution reset" has "master" and "reset"), or by the direction it was
+        // read with when the function has actions in that direction ("gear up": up; not "reset" for the master power,
+        // which has no reset), or the key of a keyed function ("osb 12": 12).
+        internal static bool Covers(EngineFunctionMap.Map map, EngineFunctionMap.Resolved r, string[] needed)
+        {
+            HashSet<string> names = null;
+            HashSet<string> dirWords = null;
+            foreach (string w in needed)
+            {
+                if (r.Words.Contains(w))
+                    continue;
+                if (names == null)
+                {
+                    names = new HashSet<string>(EngineFunctionMap.Tokenize(r.Function.Name), StringComparer.Ordinal);
+                    foreach (EngineFunctionMap.Phrase phrase in r.Function.Phrases)
+                        names.UnionWith(phrase.Tokens);
+                }
+                if (names.Contains(w))
+                    continue;
+                if (r.Dir.Length == 0)
+                    return false;
+                if (string.Equals(w, r.Dir, StringComparison.OrdinalIgnoreCase) && r.Function.Keyed.Length > 0)
+                    continue;
+                if (dirWords == null)
+                {
+                    dirWords = new HashSet<string>(StringComparer.Ordinal);
+                    if (HasDirection(map, r.Function, r.Dir))
+                    {
+                        foreach (KeyValuePair<string[], string> table in r.Function.DirTokens.Concat(map.GlobalDirs).Where(d => d.Value == r.Dir))
+                            dirWords.UnionWith(table.Key);
+                    }
+                }
+                if (!dirWords.Contains(w))
+                    return false;
+            }
+            return true;
+        }
+
+        // The function has that direction: its own list of directions names it, or a fair share of its actions goes that
+        // way (at least two and one in twenty: one air-conditioning "master switch - RESET" gives the master power no
+        // reset).
+        private static bool HasDirection(EngineFunctionMap.Map map, EngineFunctionMap.Function f, string dir)
+        {
+            if (f.HasDirs && f.Dirs.ContainsKey(dir))
+                return true;
+            List<EngineFunctionMap.Entry> entries;
+            if (!map.ByFunction.TryGetValue(f.Id, out entries))
+                return false;
+            int count = 0;
+            foreach (EngineFunctionMap.Entry entry in entries)
+            {
+                EngineFunctionMap.Assignment a = entry.Of(f.Id);
+                if (a != null && string.Equals(a.Dir, dir, StringComparison.OrdinalIgnoreCase))
+                    count++;
+            }
+            return count >= 2 && count * 20 >= entries.Count;
         }
 
         // relations browse ("Open catalog" on the Relations page): what exists, not what matches. Without a game every
@@ -517,7 +627,7 @@ namespace JoyPro.Engine
                         ? "Function catalog: '" + EngineFunctionMap.Describe(r.Function, a.Dir, c.IsAxis) + "' (the title does not say so)"
                         : "Function '" + EngineFunctionMap.Describe(r.Function, a.Dir, c.IsAxis) + "'" +
                           (match == "synonym" || match == "described" ? (a.Term.StartsWith("slot ", StringComparison.Ordinal) ? " (function catalog)" : " ('" + a.Term + "')") : string.Empty);
-                    Add(rows, entry, score, why, match, a, primary >= 0 && (mainTerm || own));
+                    Add(rows, entry, score, why, match, a, primary >= 0 && (mainTerm || own)).FoundBy.Add(r.Function.Id);
                 }
             }
         }
@@ -717,7 +827,7 @@ namespace JoyPro.Engine
                     if (string.Equals(command.Id, q, StringComparison.OrdinalIgnoreCase) ||
                         command.Id.EndsWith("|" + q, StringComparison.OrdinalIgnoreCase))
                     {
-                        Add(rows, entry, ExactScore + 500, "Game id", "exact", null);
+                        Add(rows, entry, ExactScore + 500, "Game id", "exact", null).Key = true;
                         found = true;
                     }
                 }
@@ -732,7 +842,7 @@ namespace JoyPro.Engine
                     continue;
                 if (string.Equals(command.Id, q, StringComparison.OrdinalIgnoreCase))
                 {
-                    Add(rows, entry, ExactScore + 500, "Command id", "exact", null);
+                    Add(rows, entry, ExactScore + 500, "Command id", "exact", null).Key = true;
                     found = true;
                     continue;
                 }
@@ -740,7 +850,7 @@ namespace JoyPro.Engine
                     catalog = InternalDataManagement.DcsEnglishNames();
                 if (DcsCommandNames.KeyMatches(q, command.Title, catalog))
                 {
-                    Add(rows, entry, ExactScore + 400, "Command key", "exact", null);
+                    Add(rows, entry, ExactScore + 400, "Command key", "exact", null).Key = true;
                     found = true;
                 }
             }

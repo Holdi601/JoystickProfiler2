@@ -20,6 +20,9 @@ namespace JoyPro.Engine
         // up-to-date | game-updated | no-catalog | baseline-recorded | no-baseline | not-installed
         public string State { get; set; }
         public string Message { get; set; }
+        // Why a game-updated list may lack commands: "game" (a new version or modules), "mods" (DCS: the mods' input
+        // files changed), "binds" (DCS: the user's bind files use commands the list lacks); empty otherwise.
+        public string Reason { get; set; }
         public string RefreshCommand { get; set; }
         public List<string> Details { get; set; }
 
@@ -31,6 +34,7 @@ namespace JoyPro.Engine
             DbVersion = string.Empty;
             State = string.Empty;
             Message = string.Empty;
+            Reason = string.Empty;
             RefreshCommand = string.Empty;
             Details = new List<string>();
         }
@@ -135,7 +139,12 @@ namespace JoyPro.Engine
                 if (recorded.Count == 0 || accept)
                 {
                     if (record)
+                    {
                         WriteStamp(probe.DbFolder, current);
+                        // "Keep DB" also stops asking about the commands found in the user's DCS bind files.
+                        if (accept && probe.Game == "DCS")
+                            DcsFoundCommands.KeepAll();
+                    }
                     state.State = recorded.Count == 0 ? "baseline-recorded" : "up-to-date";
                     state.Message = recorded.Count == 0
                         ? "Recorded " + probe.DisplayName + " " + state.InstalledVersion + " as the build the DB belongs to."
@@ -143,20 +152,39 @@ namespace JoyPro.Engine
                     continue;
                 }
 
-                List<string> changes = Compare(recorded, current);
+                // Why the list may lack commands: the game changed (version, new modules), its mods changed (DCS: the
+                // mod input files, also when a list built before JoyPro knew them has no fingerprint yet), or the
+                // user's own bind files use commands the list does not have (DCS: DcsFoundCommands).
+                List<string> changes = Compare(Without(recorded, ModInputsKey), Without(current, ModInputsKey));
                 if (probe.NewCommands != null)
                     changes.AddRange(probe.NewCommands(current));
-                if (changes.Count == 0)
+                List<string> modChanges = CompareModInputs(recorded, current);
+                List<string> found = probe.Game == "DCS" ? FoundInBindFiles() : new List<string>();
+                if (changes.Count == 0 && modChanges.Count == 0 && found.Count == 0)
                 {
                     state.State = "up-to-date";
                     continue;
                 }
 
                 state.State = "game-updated";
-                state.Details = changes;
-                state.Message = probe.DisplayName + " was updated since its DB was built (" + state.DbVersion + " -> " + state.InstalledVersion +
-                                "). New key commands may be missing; refresh the " + probe.DisplayName + " DB" +
-                                (probe.RefreshCommand.Length > 0 ? " (" + probe.RefreshCommand + ")" : string.Empty) + ".";
+                state.Details = changes.Concat(modChanges).Concat(found).ToList();
+                string refresh = probe.RefreshCommand.Length > 0 ? " (" + probe.RefreshCommand + ")" : string.Empty;
+                if (changes.Count > 0)
+                {
+                    state.Reason = "game";
+                    state.Message = probe.DisplayName + " was updated since its DB was built (" + state.DbVersion + " -> " + state.InstalledVersion +
+                                    "). New key commands may be missing; refresh the " + probe.DisplayName + " DB" + refresh + ".";
+                }
+                else if (modChanges.Count > 0)
+                {
+                    state.Reason = "mods";
+                    state.Message = "Your DCS mods changed the controls list; rebuild the command list" + refresh + ".";
+                }
+                else
+                {
+                    state.Reason = "binds";
+                    state.Message = "Your DCS bind files use commands the command list does not have; rebuild the command list" + refresh + ".";
+                }
                 report.Outdated++;
             }
             foreach (DbUpdateState state in report.Games)
@@ -309,8 +337,17 @@ namespace JoyPro.Engine
             }
             if (modules.Count > 0)
                 fields["modules"] = string.Join(",", modules.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(m => m, StringComparer.OrdinalIgnoreCase));
+
+            // Mods change the controls list without a new DCS version: the Input Command Injector's InputCommands and
+            // the input files of Saved Games modules (names, sizes and dates; DcsModInputs). Only when there are any, so
+            // a DCS without mods never counts as changed.
+            string modInputs = DcsModInputs.Fingerprint(install, DcsModInputs.SavedGamesFor(install, warnings));
+            if (modInputs.Length > 0)
+                fields[ModInputsKey] = modInputs;
             return fields;
         }
+
+        private const string ModInputsKey = "mod-inputs";
 
         private static Dictionary<string, string> ReadStarCitizen(List<string> warnings)
         {
@@ -399,6 +436,47 @@ namespace JoyPro.Engine
             return null;
         }
 
+        private static Dictionary<string, string> Without(Dictionary<string, string> fields, string key)
+        {
+            Dictionary<string, string> copy = new Dictionary<string, string>(fields, StringComparer.Ordinal);
+            copy.Remove(key);
+            return copy;
+        }
+
+        // The mod input sources (DcsModInputs.Fingerprint): added (also a list recorded before JoyPro knew them, which
+        // never had their commands), changed or removed since the list was built.
+        private static List<string> CompareModInputs(Dictionary<string, string> recorded, Dictionary<string, string> current)
+        {
+            List<string> changes = new List<string>();
+            string before, now;
+            recorded.TryGetValue(ModInputsKey, out before);
+            current.TryGetValue(ModInputsKey, out now);
+            before = before ?? string.Empty;
+            now = now ?? string.Empty;
+            if (string.Equals(before, now, StringComparison.Ordinal))
+                return changes;
+            if (now.Length == 0)
+                changes.Add("DCS mod input files removed since the command list was built");
+            else if (before.Length == 0)
+                changes.Add("DCS mod input files the command list does not include yet: " + DcsModInputs.DescribeFingerprint(now));
+            else
+                changes.Add("DCS mod input files changed since the command list was built: " + DcsModInputs.DescribeFingerprint(now));
+            return changes;
+        }
+
+        // The commands of the user's DCS bind files that the command lists lack, recorded since the last refresh.
+        private static List<string> FoundInBindFiles()
+        {
+            List<DcsFoundCommands.Entry> pending = DcsFoundCommands.Pending();
+            if (pending.Count == 0)
+                return new List<string>();
+            return new List<string>
+            {
+                pending.Count.ToString(CultureInfo.InvariantCulture) + " command(s) of your DCS bind files missing from the command list, e.g. " +
+                string.Join(", ", pending.Take(3).Select(e => (e.Title.Length > 0 ? "'" + e.Title + "'" : e.Id) + " in " + e.Plane))
+            };
+        }
+
         private static List<string> Compare(Dictionary<string, string> recorded, Dictionary<string, string> current)
         {
             List<string> changes = new List<string>();
@@ -428,6 +506,8 @@ namespace JoyPro.Engine
             {
                 if (entry.Key == "modules")
                     parts.Add(entry.Value.Split(',').Length.ToString(CultureInfo.InvariantCulture) + " modules");
+                else if (entry.Key == ModInputsKey)
+                    continue;
                 else
                     parts.Add(entry.Key == "version" ? entry.Value : entry.Key + " " + entry.Value);
             }

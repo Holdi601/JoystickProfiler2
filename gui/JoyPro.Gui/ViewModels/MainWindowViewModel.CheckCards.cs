@@ -16,14 +16,17 @@ namespace JoyPro.Gui.ViewModels;
 // "relation item key"), why it matters in the game, and what to click. Errors have their own icon and fixes like the
 // warnings:
 //   - "Same command on two buttons" (engine relations duplicates): the two buttons with their relations, what happens,
-//     aircraft -> command, the history entry that caused it, one recommended fix, Keep only on X / Keep both / More;
+//     aircraft -> command, the history entry that caused it, one recommended fix, Keep only on X / Ignore / More;
 //   - "One button does two things" (engine relations conflicts: an input bound in two relations that both have an
 //     action of the same aircraft on) and "One button runs two commands" (a relation with two actions of one
-//     aircraft): keep one, keep both, move one to another button, switch off;
+//     aircraft): keep one, ignore, move one to another button, switch off;
 //   - "Not written to the game" ("Only add" left a bind out), copied relations, the other errors and notes.
 // Every card has an "Open" button per relation: the relation opens with exactly the causing actions and aircraft
 // marked and scrolled into view; Back returns to the card. An unknown command (not in the aircraft's current list)
 // shows the name the relation stored and where it is, with Remove / Find similar.
+// "Ignore" hides a warning while nothing new joins it (the engine keeps it in the profile); an ignored warning that shows
+// again because one more button, relation or command joined says so on its card ("Shown again: now also on ...") and
+// counts as new. The ignored ones are listed under "Ignored warnings (n)" with "Show again" (CheckIgnored.cs).
 public sealed partial class MainWindowViewModel
 {
     // The input conflicts and relations with two actions as cards (engine relations conflicts), and the validate lines
@@ -133,6 +136,14 @@ public sealed partial class MainWindowViewModel
                 : T("In {0}, both buttons do {1}. Usually only one of them is wanted.", PlanesWords(game, actions[0].Planes), CommandWords(actions[0].Title, actions[0].Unknown)))
             : T("These buttons send the same {0} commands to the game (aircraft below). Usually only one of them is wanted.", actions.Count);
         List<CheckTableRow> rows = actions.Select(a => new CheckTableRow { Left = PlanesWords(game, a.Planes), Right = CommandWords(a.Title, a.Unknown), IsUnknown = a.Unknown }).ToList();
+        List<string> relationNames = sides.Select(s => s.Relation).ToList();
+        if (ReadJsonBool(g, "Kept"))
+            return IgnoredCard("duplicates", "warning", title, buttons, sentence, rows, T("Aircraft"), T("Command"), keys, game, relationNames, allPlanes);
+        // Ignored before; one more button got it since.
+        HashSet<string> joined = new(ReadStringArray(g, "NowAlsoIn"), StringComparer.OrdinalIgnoreCase);
+        string shownAgain = ReadJsonBool(g, "ShownAgain")
+            ? ShownAgainWords(false, sides.Where(s => joined.Contains(s.Relation)).Select(s => SideWords(s.Button, s.Relation)).ToList())
+            : string.Empty;
 
         List<string> reasons = [];
         if (g.TryGetProperty("Reasons", out JsonElement rs) && rs.ValueKind == JsonValueKind.Array)
@@ -157,11 +168,11 @@ public sealed partial class MainWindowViewModel
             Tip = T("The command stays on {0} ('{1}'); on the other buttons these aircraft get it switched off (a tick brings it back). Ctrl+Z undoes it.", s.Button, s.Relation),
             KeepCommand = new AsyncRelayCommand(() => KeepDuplicatesInAsync(keys, s.Relation))
         }).ToList();
-        CheckFix keepBoth = new()
+        CheckFix ignore = new()
         {
-            Text = T("Keep both"),
-            Tip = T("Both buttons keep it; JoyPro remembers this in your profile and does not show it again. Ctrl+Z undoes it."),
-            Command = new AsyncRelayCommand(() => KeepBothDuplicatesAsync(keys))
+            Text = T("Ignore"),
+            Tip = T("The binds stay as they are and this warning is hidden. It comes back when the command lands on one more button. Ctrl+Z undoes it."),
+            Command = new AsyncRelayCommand(() => IgnoreDuplicatesAsync(keys))
         };
         CheckFix switchOff = new()
         {
@@ -175,7 +186,7 @@ public sealed partial class MainWindowViewModel
             ? new CheckFix { Text = recommendedChoice.KeepText, Tip = recommendedChoice.Tip, Command = recommendedChoice.KeepCommand, IsRecommended = true }
             : suggestOff ? switchOff : null;
         List<CheckFix> fixes = choices.Where(c => !ReferenceEquals(c, recommendedChoice)).Select(c => new CheckFix { Text = c.KeepText, Tip = c.Tip, Command = c.KeepCommand }).ToList();
-        fixes.Add(keepBoth);
+        fixes.Add(ignore);
         List<CheckFix> more = [];
         // "Replace 'X' on <button> with...": one of the buttons should have another command (the [Dec] that should be
         // [Inc]); with several commands on the card these go under More.
@@ -193,7 +204,6 @@ public sealed partial class MainWindowViewModel
             details.Add(suggestion);
         details.AddRange(reasons.Take(4));
         string caused = CausedWords(ReadJsonString(g, "CausedBy"), ReadJsonString(g, "CausedSummary"), ReadJsonString(g, "CausedAt"));
-        List<string> relationNames = sides.Select(s => s.Relation).ToList();
         return new CheckIssueCard
         {
             Kind = "duplicates",
@@ -214,7 +224,8 @@ public sealed partial class MainWindowViewModel
             SuggestionText = suggestion,
             ReasonText = string.Join(" ", reasons.Take(3)),
             Confidence = confidence,
-            IsNew = keys.Any(newKeys.Contains),
+            IsNew = keys.Any(newKeys.Contains) || shownAgain.Length > 0,
+            ShownAgainText = shownAgain,
             Game = game,
             RelationsSort = string.Join(" / ", relationNames),
             AircraftSort = string.Join(", ", allPlanes),
@@ -226,7 +237,7 @@ public sealed partial class MainWindowViewModel
             Suggested = suggestedRelation,
             SuggestOff = suggestOff,
             Choices = choices,
-            KeepBothCommand = keepBoth.Command,
+            IgnoreCommand = ignore.Command,
             SwitchOffAllCommand = switchOff.Command
         };
     }
@@ -272,22 +283,33 @@ public sealed partial class MainWindowViewModel
 
     private async Task LoadConflictIssuesAsync()
     {
-        EngineCommandResult? result = await RunEngineAsync(["relations", "conflicts"], includeProfile: true, mutatesProfile: false,
+        EngineCommandResult? result = await RunEngineAsync(["relations", "conflicts", "--include-kept"], includeProfile: true, mutatesProfile: false,
             busyLabel: N("Looking at buttons that do two things..."), forceText: false, background: true);
         string output = result == null || result.ExitCode != 0 ? string.Empty : result.StandardOutput;
         string sort = CheckSortRule;
-        (List<CheckIssueCard> Inputs, List<CheckIssueCard> Actions, HashSet<string> Messages) data = await Task.Run(() => ParseConflicts(output));
+        ConflictData data = await Task.Run(() => ParseConflicts(output));
         ApplyConflictData(data, sort);
     }
 
     public void ApplyConflicts(string output) => ApplyConflictData(ParseConflicts(output), CheckSortRule);
 
-    private void ApplyConflictData((List<CheckIssueCard> Inputs, List<CheckIssueCard> Actions, HashSet<string> Messages) data, string sort)
+    private sealed class ConflictData
+    {
+        public List<CheckIssueCard> Inputs { get; } = [];
+        public List<CheckIssueCard> Actions { get; } = [];
+        public HashSet<string> Messages { get; } = new(StringComparer.Ordinal);
+        // The ignored ones, for the list "Ignored warnings".
+        public List<CheckIssueCard> Ignored { get; } = [];
+    }
+
+    private void ApplyConflictData(ConflictData data, string sort)
     {
         inputConflictCards.Clear();
         inputConflictCards.AddRange(data.Inputs);
         actionConflictCards.Clear();
         actionConflictCards.AddRange(data.Actions);
+        ignoredConflictCards.Clear();
+        ignoredConflictCards.AddRange(data.Ignored);
         conflictMessages.Clear();
         conflictMessages.UnionWith(data.Messages);
         checkPresortedCards["input-conflicts"] = (sort, SortCheckCards(inputConflictCards, sort));
@@ -302,53 +324,70 @@ public sealed partial class MainWindowViewModel
         public List<(string Id, string Title, bool Unknown)> Actions = [];
     }
 
-    // Reads the answer; one card per input (with its modifiers) and set of relations, the aircraft in its table.
-    private (List<CheckIssueCard> Inputs, List<CheckIssueCard> Actions, HashSet<string> Messages) ParseConflicts(string output)
+    // Reads the answer; one card per input (with its modifiers) and set of relations, the aircraft in its table. The
+    // ignored ones (Kept) are cards of their own for the list "Ignored warnings".
+    private ConflictData ParseConflicts(string output)
     {
-        List<CheckIssueCard> inputs = [];
-        List<CheckIssueCard> actions = [];
-        HashSet<string> messages = new(StringComparer.Ordinal);
+        ConflictData data = new();
         if (string.IsNullOrWhiteSpace(output))
-            return (inputs, actions, messages);
+            return data;
         try
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
             JsonElement root = doc.RootElement;
             ReadPlaneNameList(root, "PlaneNames", "DCS");
-            List<(string Key, string Game, string Plane, string Device, string Input, List<string> Modifiers, List<ConflictSide> Sides)> found = [];
+            List<InputConflictItem> found = [];
             if (root.TryGetProperty("InputConflicts", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement c in list.EnumerateArray())
                 {
-                    messages.Add(ReadJsonString(c, "Message"));
+                    bool kept = ReadJsonBool(c, "Kept");
+                    if (!kept)
+                        data.Messages.Add(ReadJsonString(c, "Message"));
                     List<ConflictSide> sides = [];
                     if (c.TryGetProperty("Sides", out JsonElement ss) && ss.ValueKind == JsonValueKind.Array)
                         foreach (JsonElement s in ss.EnumerateArray())
                             sides.Add(new ConflictSide { Relation = ReadJsonString(s, "Relation"), Actions = ReadConflictActions(s) });
-                    found.Add((ReadJsonString(c, "Key"), ReadJsonString(c, "Game"), ReadJsonString(c, "Plane"), ReadJsonString(c, "Device"), ReadJsonString(c, "Input"),
-                        ReadStringArray(c, "Modifiers"), sides));
+                    found.Add(new InputConflictItem(ReadJsonString(c, "Key"), ReadJsonString(c, "Game"), ReadJsonString(c, "Plane"), ReadJsonString(c, "Device"), ReadJsonString(c, "Input"),
+                        ReadStringArray(c, "Modifiers"), sides, kept, ReadJsonBool(c, "ShownAgain"), ReadStringArray(c, "NowAlsoIn")));
                 }
             }
-            foreach (var group in found.GroupBy(f => f.Game + "|" + f.Device + "|" + f.Input + "|" + string.Join("+", f.Modifiers) + "|" + string.Join("\t", f.Sides.Select(s => s.Relation)), StringComparer.OrdinalIgnoreCase))
-                inputs.Add(BuildInputConflictCard(group.ToList()));
-            List<(string Key, string Game, string Plane, string Relation, string Device, string Input, List<string> Modifiers, List<(string Id, string Title, bool Unknown)> Actions)> twice = [];
+            foreach (var group in found.GroupBy(f => f.Game + "|" + f.Device + "|" + f.Input + "|" + string.Join("+", f.Modifiers) + "|" + string.Join("\t", f.Sides.Select(s => s.Relation)) + "|" + f.Kept, StringComparer.OrdinalIgnoreCase))
+            {
+                CheckIssueCard card = BuildInputConflictCard(group.ToList());
+                (group.First().Kept ? data.Ignored : data.Inputs).Add(card);
+            }
+            List<ActionConflictItem> twice = [];
             if (root.TryGetProperty("ActionConflicts", out JsonElement alist) && alist.ValueKind == JsonValueKind.Array)
             {
                 foreach (JsonElement c in alist.EnumerateArray())
                 {
-                    messages.Add(ReadJsonString(c, "Message"));
-                    twice.Add((ReadJsonString(c, "Key"), ReadJsonString(c, "Game"), ReadJsonString(c, "Plane"), ReadJsonString(c, "Relation"), ReadJsonString(c, "Device"),
-                        ReadJsonString(c, "Input"), ReadStringArray(c, "Modifiers"), ReadConflictActions(c)));
+                    bool kept = ReadJsonBool(c, "Kept");
+                    if (!kept)
+                        data.Messages.Add(ReadJsonString(c, "Message"));
+                    twice.Add(new ActionConflictItem(ReadJsonString(c, "Key"), ReadJsonString(c, "Game"), ReadJsonString(c, "Plane"), ReadJsonString(c, "Relation"), ReadJsonString(c, "Device"),
+                        ReadJsonString(c, "Input"), ReadStringArray(c, "Modifiers"), ReadConflictActions(c), kept, ReadJsonBool(c, "ShownAgain"), ReadStringArray(c, "NowAlsoIn")));
                 }
             }
-            foreach (var group in twice.GroupBy(t => t.Relation + "|" + string.Join("\t", t.Actions.Select(a => a.Id).OrderBy(i => i, StringComparer.OrdinalIgnoreCase)), StringComparer.OrdinalIgnoreCase))
-                actions.Add(BuildActionConflictCard(group.ToList()));
+            foreach (var group in twice.GroupBy(t => t.Relation + "|" + string.Join("\t", t.Actions.Select(a => a.Id).OrderBy(i => i, StringComparer.OrdinalIgnoreCase)) + "|" + t.Kept, StringComparer.OrdinalIgnoreCase))
+            {
+                CheckIssueCard card = BuildActionConflictCard(group.ToList());
+                (group.First().Kept ? data.Ignored : data.Actions).Add(card);
+            }
         }
         catch (JsonException)
         {
         }
-        return (inputs, actions, messages);
+        return data;
     }
+
+    // One input of an aircraft bound in several relations (engine relations conflicts' InputConflicts).
+    private sealed record InputConflictItem(string Key, string Game, string Plane, string Device, string Input, List<string> Modifiers, List<ConflictSide> Sides,
+        bool Kept, bool ShownAgain, List<string> NowAlsoIn);
+
+    // One relation with several actions of an aircraft (engine relations conflicts' ActionConflicts).
+    private sealed record ActionConflictItem(string Key, string Game, string Plane, string Relation, string Device, string Input, List<string> Modifiers,
+        List<(string Id, string Title, bool Unknown)> Actions, bool Kept, bool ShownAgain, List<string> NowAlsoIn);
 
     private static List<(string Id, string Title, bool Unknown)> ReadConflictActions(JsonElement item)
     {
@@ -375,7 +414,7 @@ public sealed partial class MainWindowViewModel
         return words;
     }
 
-    private CheckIssueCard BuildInputConflictCard(List<(string Key, string Game, string Plane, string Device, string Input, List<string> Modifiers, List<ConflictSide> Sides)> group)
+    private CheckIssueCard BuildInputConflictCard(List<InputConflictItem> group)
     {
         var first = group[0];
         string game = first.Game;
@@ -404,6 +443,13 @@ public sealed partial class MainWindowViewModel
             Right = r.Key,
             IsUnknown = r.First().IsUnknown
         }).ToList();
+        if (first.Kept)
+            return IgnoredCard("input-conflicts", "error", title, buttons, sentence, rows, T("Aircraft"), T("Commands on this button"), keys, game, relations, planes);
+        // Ignored before; one more relation got this button since: what it runs now too.
+        HashSet<string> joined = new(group.SelectMany(g => g.NowAlsoIn), StringComparer.OrdinalIgnoreCase);
+        string shownAgain = group.Any(g => g.ShownAgain)
+            ? ShownAgainWords(true, first.Sides.Where(s => joined.Contains(s.Relation)).Select(s => CommandsWords(s.Actions)).ToList())
+            : string.Empty;
         List<CheckFix> fixes = relations.Select(r => new CheckFix
         {
             Text = T("Keep only '{0}' on this button", r),
@@ -412,9 +458,9 @@ public sealed partial class MainWindowViewModel
         }).ToList();
         fixes.Add(new CheckFix
         {
-            Text = T("Keep both (it is intended)"),
-            Tip = T("Both stay on this button; JoyPro remembers it in your profile and does not show it again. Ctrl+Z undoes it."),
-            Command = new AsyncRelayCommand(() => FixConflictsAsync(["--keep-both"], keys, T("Kept both; the check does not show it again. Ctrl+Z undoes it.")))
+            Text = T("Ignore"),
+            Tip = T("The binds stay as they are and this warning is hidden. It comes back when one more relation lands on this button. Ctrl+Z undoes it."),
+            Command = new AsyncRelayCommand(() => FixConflictsAsync(["--ignore"], keys, IgnoredStatus()))
         });
         List<CheckFix> more = relations.Select(r => new CheckFix
         {
@@ -445,10 +491,12 @@ public sealed partial class MainWindowViewModel
             Fixes = fixes,
             MoreFixes = more,
             OpenButtons = first.Sides.Select(s => OpenFix(s.Relation, button, game, s.Actions.Select(a => a.Id).ToList(), planes)).ToList(),
-            DetailLines = [T("In the game every press of this button runs each of these commands. Keep one, move one to another button, or keep both if you want it like that.")],
+            DetailLines = [T("In the game every press of this button runs each of these commands. Keep one, move one to another button, or ignore the warning if you want it like that.")],
             TechnicalLine = unknownIds.Count == 0 ? string.Empty
                 : UnknownTechnicalLine(game, group.SelectMany(g => g.Sides.SelectMany(s => s.Actions.Where(a => a.Unknown).Select(a => (a.Id, a.Title, Plane: g.Plane))))
                     .GroupBy(a => a.Id).Select(a => (a.Key, a.First().Title, a.Select(x => x.Plane).Distinct().ToList())).ToList(), relations),
+            IsNew = shownAgain.Length > 0,
+            ShownAgainText = shownAgain,
             Game = game,
             GroupLabel = DisplayText.ShortDevice(first.Device),
             RelationsSort = string.Join(" / ", relations),
@@ -461,7 +509,7 @@ public sealed partial class MainWindowViewModel
         };
     }
 
-    private CheckIssueCard BuildActionConflictCard(List<(string Key, string Game, string Plane, string Relation, string Device, string Input, List<string> Modifiers, List<(string Id, string Title, bool Unknown)> Actions)> group)
+    private CheckIssueCard BuildActionConflictCard(List<ActionConflictItem> group)
     {
         var first = group[0];
         string relation = first.Relation;
@@ -478,6 +526,14 @@ public sealed partial class MainWindowViewModel
             .Select(g => new CheckTableRow { Left = PlanesWords(g.Key, g.Select(x => x.Plane).ToList()), Right = string.Join("  +  ", NumberedCommands(g.First().Actions)), IsUnknown = g.First().Actions.Any(a => a.Unknown) })
             .ToList();
         List<string> named = NumberedCommands(first.Actions);
+        if (first.Kept)
+            return IgnoredCard("action-conflicts", "error", title, buttons, sentence, rows,
+                games.Count > 1 || !games[0].Equals("DCS", StringComparison.OrdinalIgnoreCase) ? T("Game") : T("Aircraft"), T("Commands on this button"), keys, first.Game, [relation], planes);
+        // Ignored before; one more command joined the relation since.
+        HashSet<string> joined = new(group.SelectMany(g => g.NowAlsoIn), StringComparer.OrdinalIgnoreCase);
+        string shownAgain = group.Any(g => g.ShownAgain)
+            ? ShownAgainWords(true, first.Actions.Select((a, i) => (a.Id, Name: named[i])).Where(a => joined.Contains(a.Id)).Select(a => a.Name).ToList())
+            : string.Empty;
         List<CheckFix> fixes = first.Actions.Select((a, i) => new CheckFix
         {
             Text = T("Keep only {0}", named[i]),
@@ -486,9 +542,9 @@ public sealed partial class MainWindowViewModel
         }).ToList();
         fixes.Add(new CheckFix
         {
-            Text = T("Keep both (it is intended)"),
-            Tip = T("Both commands stay; JoyPro remembers it in your profile and does not show it again. Ctrl+Z undoes it."),
-            Command = new AsyncRelayCommand(() => FixConflictsAsync(["--keep-both"], keys, T("Kept both; the check does not show it again. Ctrl+Z undoes it.")))
+            Text = T("Ignore"),
+            Tip = T("The commands stay as they are and this warning is hidden. It comes back when one more command joins this button. Ctrl+Z undoes it."),
+            Command = new AsyncRelayCommand(() => FixConflictsAsync(["--ignore"], keys, IgnoredStatus()))
         });
         List<CheckFix> more =
         [
@@ -521,6 +577,8 @@ public sealed partial class MainWindowViewModel
             MoreFixes = more,
             OpenButtons = [OpenFix(relation, button, first.Game, first.Actions.Select(a => a.Id).ToList(), planes)],
             DetailLines = [T("One relation is one function on one button. When it has two commands for the same aircraft, the game runs both on every press.")],
+            IsNew = shownAgain.Length > 0,
+            ShownAgainText = shownAgain,
             Game = first.Game,
             GroupLabel = DisplayText.ShortDevice(first.Device),
             RelationsSort = relation,

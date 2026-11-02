@@ -144,8 +144,8 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check] [--status]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore (--restore) puts the originals back; status (--status) shows the state; auto re-applies after a DCS update; patched files fail server integrity checks)
   engine dcs device-luas [list|remove|restore] [--dry-run] [--remove] [--restore] [--status] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back; list (also --status) shows them)
   engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>] [--dump-active <file>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only)
-  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)
-  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft)
+  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--input-commands auto|on|off] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)
+  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--input-commands auto|on|off] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft; the Saved Games folder of the install's DCS variant is read, e.g. DCS.openbeta; --input-commands auto merges the Input Command Injector's Saved Games InputCommands like DCS when the injector is installed, on always, off never)
   engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]
   engine dcs ffb list [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--confirm true|false]
   engine dcs ffb set <device-name> [--path <saved-games-path>] [--invert-x true|false] [--invert-y true|false] [--swap-axis true|false] [--confirm true|false]
@@ -468,10 +468,11 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations aircraft <relation> [--node game:id[:aircraft]]
   engine relations aircraft set <relation> --node game:id [--on p1|p2] [--off p3|p4] [--only p1|p2]
   engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]
-  engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]
+  engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --ignore]
+  engine relations duplicates --list-kept | --forget-kept [--keys "game|id|aircraft;..."]
   engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]
   engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]
-  engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]
+  engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions | --forget-kept] [--include-kept | --list-kept]
   engine relations merge-copies [--dry-run] [--name <relation>]
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g] [--all-examples]
@@ -1216,7 +1217,7 @@ engine dcs verify-clean 'C:\Users\Pilot\Saved Games\DCS' --text
 engine dcs verify-clean --planes 'FA-18C_hornet' --include-disconnected true --text
 ```
 
-### `engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)`
+### `engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--input-commands auto|on|off] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)`
 What it does: Rebuilds JoyPro's DCS clean profiles (the default binds DCS gives every device type). By default DCS's own Lua (luae.exe) does it without starting DCS; only --headless-lua false starts DCS and clicks Controls -> Clear All.
 
 Arguments and example values:
@@ -1232,6 +1233,7 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--input-commands`: Command argument. See examples for typical values.
 - `--dry-run`: Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS.
 - `--confirm`: Ask 'Type yes' before the run in an interactive console (true, default); false runs without asking.
 - `--menu-wait-seconds`: Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45.
@@ -1267,7 +1269,7 @@ engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eag
 engine dcs refresh clean 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --headless-lua false --ocr false --preview-clicks --preview-image 'C:\JoyPro\logs\dcs_refresh_clean_preview.png' --confirm false --text
 ```
 
-### `engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft)`
+### `engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--input-commands auto|on|off] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft; the Saved Games folder of the install's DCS variant is read, e.g. DCS.openbeta; --input-commands auto merges the Input Command Injector's Saved Games InputCommands like DCS when the injector is installed, on always, off never)`
 What it does: Rebuilds JoyPro's DCS command lists (DB HTML per aircraft). By default DCS's own Lua (luae.exe) writes them without starting DCS; only --headless-lua false starts DCS and clicks Controls -> Make HTML per aircraft.
 
 Arguments and example values:
@@ -1283,6 +1285,7 @@ Arguments and example values:
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `--planes`: Include planes/modules as CSV. Example: --planes A-10C_2,FA-18C_hornet.
 - `<csv>`: Comma-separated values. Example: 0.1,0.2,0.3 or VKB,LEFT VPC Throttle.
+- `--input-commands`: Command argument. See examples for typical values.
 - `--dry-run`: Headless: list the aircraft, write nothing. Click flow: plan the clicks without starting DCS.
 - `--confirm`: Ask 'Type yes' before the run in an interactive console (true, default); false runs without asking.
 - `--menu-wait-seconds`: Non-OCR wait time before click automation starts. Example: --menu-wait-seconds 45.
@@ -6787,8 +6790,8 @@ Examples:
 engine relations check-aircraft --text
 ```
 
-### `engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]`
-What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step).
+### `engine relations duplicates [--keys "game|id|aircraft;..." | --node game:id --plane p1|p2] [--keep <relation> | --off | --ignore]`
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --ignore decide one, --rule or --instruction many (preview first, --apply as one undo step); --list-kept lists the ignored warnings, --forget-kept [--keys] shows them again. An ignored warning comes back when one more relation gets the action (ShownAgain, NowAlsoIn).
 
 Arguments and example values:
 - `--keys`: Command argument. See examples for typical values.
@@ -6797,15 +6800,28 @@ Arguments and example values:
 - `--keep`: Command argument. See examples for typical values.
 - `<relation>`: Command argument. See examples for typical values.
 - `--off`: Command argument. See examples for typical values.
-- `--keep-both`: Command argument. See examples for typical values.
+- `--ignore`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell
 engine relations duplicates [--keys "game|id|aircraft;" --text
 ```
 
+### `engine relations duplicates --list-kept | --forget-kept [--keys "game|id|aircraft;..."]`
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --ignore decide one, --rule or --instruction many (preview first, --apply as one undo step); --list-kept lists the ignored warnings, --forget-kept [--keys] shows them again. An ignored warning comes back when one more relation gets the action (ShownAgain, NowAlsoIn).
+
+Arguments and example values:
+- `--list-kept`: Command argument. See examples for typical values.
+- `--forget-kept`: Command argument. See examples for typical values.
+- `--keys`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine relations duplicates --list-kept --text
+```
+
 ### `engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]`
-What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step).
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --ignore decide one, --rule or --instruction many (preview first, --apply as one undo step); --list-kept lists the ignored warnings, --forget-kept [--keys] shows them again. An ignored warning comes back when one more relation gets the action (ShownAgain, NowAlsoIn).
 
 Arguments and example values:
 - `--rule`: Command argument. See examples for typical values.
@@ -6820,7 +6836,7 @@ engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<
 ```
 
 ### `engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]`
-What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --keep-both decide one, --rule or --instruction many (preview first, --apply as one undo step).
+What it does: Actions of an aircraft that more than one relation has switched on, as cards per relation pair with a suggestion and its confidence; --keep, --off or --ignore decide one, --rule or --instruction many (preview first, --apply as one undo step); --list-kept lists the ignored warnings, --forget-kept [--keys] shows them again. An ignored warning comes back when one more relation gets the action (ShownAgain, NowAlsoIn).
 
 Arguments and example values:
 - `--instruction`: Command argument. See examples for typical values.
@@ -6832,8 +6848,8 @@ Examples:
 engine relations duplicates --instruction "keep trim in the Trim relations, everything else in " --text
 ```
 
-### `engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]`
-What it does: The check's errors in detail: an input bound in several relations that have an action of the same aircraft on, and a relation with two actions of one aircraft on; --keep, --keep-action, --off, --keep-both or --remove-actions fix them (one undo step each).
+### `engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions | --forget-kept] [--include-kept | --list-kept]`
+What it does: The check's errors in detail: an input bound in several relations that have an action of the same aircraft on, and a relation with two actions of one aircraft on; --keep, --keep-action, --off, --ignore or --remove-actions fix them (one undo step each); --list-kept lists the ignored ones, --forget-kept [--keys] shows them again. An ignored one comes back when one more relation or action joins.
 
 Arguments and example values:
 - `--keys`: Command argument. See examples for typical values.
@@ -6842,9 +6858,11 @@ Arguments and example values:
 - `--keep-action`: Command argument. See examples for typical values.
 - `<id>`: Command argument. See examples for typical values.
 - `--off`: Command argument. See examples for typical values.
-- `--keep-both`: Command argument. See examples for typical values.
+- `--ignore`: Command argument. See examples for typical values.
 - `--remove-actions`: Command argument. See examples for typical values.
+- `--forget-kept`: Command argument. See examples for typical values.
 - `--include-kept`: Command argument. See examples for typical values.
+- `--list-kept`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

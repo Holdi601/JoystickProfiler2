@@ -558,8 +558,12 @@ switched off, so it may be suggested again. Ctrl+Z undoes it. Engine: [[cli:rela
 
 <!-- entry: ShowBuilderFindCommand -->
 Right panel: **Add actions** (Ctrl+Shift+F) shows the search over every game and aircraft at once; tick what belongs
-and add it with one click. An action whose title has every word you typed comes first (brackets and punctuation do not
-matter: "tacan channel (xx0x) - inc" finds "TACAN Channel (xx0x) - [Inc]"); what only means the same comes after it.
+and add it with one click. The list has two parts: **Name has every word** (the action's title has every word you
+typed; brackets and punctuation do not matter: "tacan channel (xx0x) - inc" finds "TACAN Channel (xx0x) - [Inc]") and,
+below it, **Same meaning** (found by what the action does: the same function, a synonym or a description). The name
+matches stay on top whatever the sort, by game or by function. When something matches all of several words, actions
+that match only some of them are left out: "master reset" in the F-14 lists MASTER RESET and Master Caution Reset, not
+every "master" switch. A single word, or a sentence nothing matches completely, still finds everything that means it.
 
 <!-- entry: ShowBuilderSuggestedCommand -->
 Right panel: **Suggested for this relation (n)** shows what means the same in your other games and aircraft, from
@@ -592,7 +596,7 @@ Add actions: **Collapse all** shows only the best rows of each game again; ticks
 
 <!-- entry: bind:BuilderGroupByFunction -->
 Add actions: **By function** groups the result rows by the function they are (throttle, collective ...) instead of by
-game.
+game. The groups of **Name has every word** still come before those of **Same meaning**.
 
 <!-- entry: CheckAllShownBuilderResultsCommand -->
 Add actions: **Tick all shown** ticks every action in the list; narrow the list with the game chips first. Actions

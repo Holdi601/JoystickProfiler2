@@ -59,6 +59,8 @@ namespace JoyPro.Engine
             public string NamesCount;
             public bool FastClear;
             public List<string> Templates = new List<string>();
+            // The InputCommands files DCS's loader merged in this run (JOYPRO_INPUTCOMMANDS, relative to InputCommands).
+            public HashSet<string> InputCommandFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             public List<string> Warnings = new List<string>();
             public List<string> Errors = new List<string>();
         }
@@ -376,7 +378,7 @@ namespace JoyPro.Engine
             {
                 foreach (DcsLuaJob job in jobs)
                 {
-                    string script = BuildHeadlessLuaRefreshScript(job.SavedGames, allCandidates, exportHtml, job.DeviceTemplates, job.AssignedIndexes, job.WithDefaults, job.ExportPath, job.FakePart, job.FakeParts);
+                    string script = BuildHeadlessLuaRefreshScript(job.SavedGames, allCandidates, exportHtml, job.DeviceTemplates, job.AssignedIndexes, job.WithDefaults, job.ExportPath, job.FakePart, job.FakeParts, options.InputCommandsRoot);
                     job.ScriptPath = Path.Combine(Path.GetTempPath(), "joypro_dcs_headless_refresh_" + (exportHtml ? "id_" : "clean_") + Guid.NewGuid().ToString("N") + ".lua");
                     // Lua 5.1 opens files with the ANSI code page, so embedded paths must use it too.
                     File.WriteAllText(job.ScriptPath, script, Encoding.Default);
@@ -423,7 +425,7 @@ namespace JoyPro.Engine
                                 again.ScriptPath = Path.Combine(Path.GetTempPath(), "joypro_dcs_headless_refresh_retry_" + Guid.NewGuid().ToString("N") + ".lua");
                                 try
                                 {
-                                    File.WriteAllText(again.ScriptPath, BuildHeadlessLuaRefreshScript(again.SavedGames, allCandidates, exportHtml, again.DeviceTemplates, again.AssignedIndexes, again.WithDefaults, again.ExportPath, again.FakePart, again.FakeParts), Encoding.Default);
+                                    File.WriteAllText(again.ScriptPath, BuildHeadlessLuaRefreshScript(again.SavedGames, allCandidates, exportHtml, again.DeviceTemplates, again.AssignedIndexes, again.WithDefaults, again.ExportPath, again.FakePart, again.FakeParts, options.InputCommandsRoot), Encoding.Default);
                                     RunLuaJob(luaePath, workingDirectory, again, exportHtml, null, what, () => Volatile.Read(ref abort) != 0);
                                 }
                                 finally
@@ -615,6 +617,10 @@ namespace JoyPro.Engine
                                 double.TryParse(parts[2].Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out seconds))
                                 job.Costs[candidate] = seconds;
                         }
+                        else if (line.StartsWith("JOYPRO_INPUTCOMMANDS|", StringComparison.Ordinal))
+                            job.InputCommandFiles.Add(line.Substring("JOYPRO_INPUTCOMMANDS|".Length).Trim());
+                        else if (line.StartsWith("JOYPRO_INPUTCOMMANDS_ERR|", StringComparison.Ordinal))
+                            job.Warnings.Add("[headless-lua] InputCommands file could not be merged (DCS shows an error for it too): " + line.Substring("JOYPRO_INPUTCOMMANDS_ERR|".Length));
                         else if (line.StartsWith("JOYPRO_FASTCLEAR|", StringComparison.Ordinal))
                             job.FastClear = line.EndsWith("|1", StringComparison.Ordinal);
                         else if (line.StartsWith("JOYPRO_DONE|", StringComparison.Ordinal))
@@ -681,9 +687,17 @@ namespace JoyPro.Engine
             string deviceCount = null;
             string namesCount = null;
             bool fastClear = false;
+            HashSet<string> inputCommandFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (DcsLuaJob job in ordered)
             {
-                result.Warnings.AddRange(job.Warnings);
+                // Every run reports a broken InputCommands file of the aircraft it loads: once is enough.
+                foreach (string warning in job.Warnings)
+                {
+                    if (warning.Contains("InputCommands file could not be merged") && result.Warnings.Contains(warning))
+                        continue;
+                    result.Warnings.Add(warning);
+                }
+                inputCommandFiles.UnionWith(job.InputCommandFiles);
                 foreach (string template in job.Templates)
                 {
                     if (!result.CoveredDeviceTypes.Contains(template))
@@ -719,6 +733,11 @@ namespace JoyPro.Engine
                 result.Steps.Add("English DCS command names: " + namesCount + ".");
                 if (namesCount == "0")
                     result.Warnings.Add("DCS's English command names (l10n/en/LC_MESSAGES/input.mo) were not found; modules that name their commands by a key keep the key.");
+            }
+            if (inputCommandFiles.Count > 0)
+            {
+                result.InputCommandsFilesMerged = inputCommandFiles.OrderBy(f => f, StringComparer.OrdinalIgnoreCase).ToList();
+                result.Steps.Add("InputCommands files merged into the DCS controls (Input Command Injector): " + inputCommandFiles.Count.ToString(CultureInfo.InvariantCulture) + ".");
             }
             result.Steps.Add("Headless Lua " + modeLabel + " summary: " + string.Join("|", summary.Select(v => v.ToString(CultureInfo.InvariantCulture))));
             result.PlanesScanned = Math.Max(result.PlanesScanned, succeeded);

@@ -127,6 +127,7 @@ public partial class CheckIssueCard : ObservableObject
     public List<CheckTableRow> Rows { get; init; } = [];
     public const int CollapsedRows = 3;
     public bool HasRows => Rows.Count > 0;
+    public bool HasSeveralRows => Rows.Count > 1;
     public bool HasHiddenRows => Rows.Count > CollapsedRows;
     public IReadOnlyList<CheckTableRow> ShownRows => ShowAllRows || Rows.Count <= CollapsedRows ? Rows : Rows.Take(CollapsedRows).ToList();
     public string ShowRowsText => ShowAllRows ? Localization.Loc.T("Show fewer") : Localization.Loc.T("Show all {0}", Rows.Count);
@@ -174,8 +175,16 @@ public partial class CheckIssueCard : ObservableObject
     // The card while its details are open (the panel builds them only then).
     public CheckIssueCard? DetailsHost => IsDetailsOpen ? this : null;
 
-    // Brought by the last import or take-over.
+    // Brought by the last import or take-over, or an ignored warning that shows again.
     public bool IsNew { get; init; }
+
+    // "Shown again: now also on Throttle · BTN 9 ('Hat Up')": the warning was ignored and one more button (relation,
+    // command) joined it since (empty: not ignored before).
+    public string ShownAgainText { get; init; } = string.Empty;
+    public bool HasShownAgain => ShownAgainText.Length > 0;
+
+    // An ignored warning (the check's "Ignored warnings" list): its "Show again" button.
+    public CheckFix? ShowAgain { get; init; }
 
     // A header above the card when it starts a new group of the chosen order ("A10 - DMS Down", "F-16C Block 50").
     [ObservableProperty]
@@ -207,7 +216,8 @@ public partial class CheckIssueCard : ObservableObject
     // "Keep only on ..." per relation (a duplicate card's choices, also among Fixes).
     public List<DuplicateRelationChoice> Choices { get; init; } = [];
     public bool HasChoices => Choices.Count > 0;
-    public ICommand? KeepBothCommand { get; init; }
+    // "Ignore" (formerly "Keep both"): the binds stay, the warning hides until something new joins it.
+    public ICommand? IgnoreCommand { get; init; }
     public ICommand? SwitchOffAllCommand { get; init; }
 
     [ObservableProperty]

@@ -404,6 +404,10 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
     // The function's main control in this game (relations search "Primary": MSFS "AXIS ELEVATOR SET" for "pitch").
     public bool Primary { get; init; }
 
+    // The title has every word of the query (relations search "Literal"): listed under "Name has every word", above
+    // the rows that only mean the same, in every sort and grouping.
+    public bool IsNameMatch { get; init; }
+
     // The title as shown: "AXIS ELEVATOR SET — Pitch axis (elevator)" when the title does not name the function
     // (relations search "Display").
     public string Display { get; init; } = string.Empty;
@@ -560,6 +564,30 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
         else if (Aircraft.HasChanges)
             IsChecked = true;
     }
+}
+
+// A section of the search list: "Name has every word (2)" (titles with every typed word) above "Same meaning (9)" (found
+// by what the action does: the function, a synonym, a description or some of the words). The game or function headers
+// and their rows follow it; the actions already in the open relation stay greyed at the bottom, after both.
+public sealed class BuilderSearchSectionItem
+{
+    public BuilderSearchSectionItem(bool nameMatches, int count)
+    {
+        IsNameMatches = nameMatches;
+        Count = count;
+    }
+
+    public bool IsNameMatches { get; }
+
+    public int Count { get; }
+
+    public string Label => IsNameMatches
+        ? T("Name has every word ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture))
+        : T("Same meaning ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture));
+
+    public string Tooltip => IsNameMatches
+        ? T("The action's title has every word you typed")
+        : T("Found by what the action does: the same function, a synonym, a description or some of the words");
 }
 
 // The header of one game's rows in the search list ("DCS · 48"), with a box that ticks all of its rows.
@@ -778,9 +806,10 @@ public sealed partial class BuilderGameChip : ObservableObject
 // or node's meaning ("same", "near", "differs", "unknown") and the tick.
 public sealed partial class AircraftChoiceItem : ObservableObject
 {
-    public AircraftChoiceItem(string plane, string title, string category, string match, string note, bool isChecked, bool sameFunction = false)
+    public AircraftChoiceItem(string plane, string title, string category, string match, string note, bool isChecked, bool sameFunction = false, bool fromYourFiles = false)
     {
         SameFunction = sameFunction;
+        FromYourFiles = fromYourFiles;
         Plane = plane;
         Title = title;
         Category = category;
@@ -825,7 +854,12 @@ public sealed partial class AircraftChoiceItem : ObservableObject
 
     public bool IsUnknown => Match == "unknown";
 
-    public string MarkerText => IsDiffers ? (SameFunction ? "same function" : "differs") : IsNear ? "near" : IsUnknown ? T("not in its list") : string.Empty;
+    // A DCS command JoyPro knows from the user's own bind files, not from the game's list: a mod added it after the list
+    // was built (engine "FromYourFiles"; the next rebuild of the list brings it with its category).
+    public bool FromYourFiles { get; }
+
+    public string MarkerText => IsDiffers ? (SameFunction ? "same function" : "differs") : IsNear ? "near" : IsUnknown ? T("not in its list") :
+        FromYourFiles ? T("from your DCS files") : string.Empty;
 
     // The selector lists the aircraft by meaning: the same meaning, near, not in its list, another meaning.
     public int MeaningGroup => IsOtherFunction ? 4 : IsUnknown ? 3 : IsDiffers ? 2 : IsNear ? 1 : 0;
@@ -843,7 +877,8 @@ public sealed partial class AircraftChoiceItem : ObservableObject
     public string MeaningText => Title.Length == 0 ? Note : Category.Length > 0 ? Title + " · " + Category : Title;
 
     public string Tooltip => Plane + ": " + (Title.Length > 0 ? "'" + Title + "'" + (Category.Length > 0 ? " [" + Category + "]" : string.Empty) : T("the id is not in its list")) +
-                             (IsOtherFunction ? T(" - this command does something else here") : IsDiffers ? T(" - another name here, but it does the same") : IsNear ? T(" - close to the row's meaning ({0})", Note) : string.Empty);
+                             (IsOtherFunction ? T(" - this command does something else here") : IsDiffers ? T(" - another name here, but it does the same") : IsNear ? T(" - close to the row's meaning ({0})", Note) : string.Empty) +
+                             (FromYourFiles ? T(" - found in your DCS bind files (from a mod); rebuild the DCS command list to get it from DCS") : string.Empty);
 }
 
 // The aircraft of one id with a tick each (the search rows of Add actions and the actions of the open relation):

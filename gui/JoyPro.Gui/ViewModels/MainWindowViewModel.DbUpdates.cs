@@ -167,6 +167,16 @@ public sealed partial class MainWindowViewModel
         return text.Trim();
     }
 
+    // The DCS command list lacks commands without a new DCS version (engine db check-updates "Reason"): the mods' input
+    // files changed (the Input Command Injector's InputCommands, Saved Games modules), or the user's DCS bind files use
+    // commands the list does not have. Null for the other reasons (the engine's message is used).
+    internal static string? DbUpdateReasonMessage(string reason) => reason switch
+    {
+        "mods" => T("Your DCS mods changed the controls list; rebuild the command list."),
+        "binds" => T("Your DCS bind files use commands the command list does not have; rebuild the command list."),
+        _ => null
+    };
+
     private async Task RunDbUpdateCheckAsync(string[] args, string busyLabel)
     {
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: false, mutatesProfile: false, busyLabel: busyLabel, forceText: false);
@@ -185,7 +195,8 @@ public sealed partial class MainWindowViewModel
                     string details = game.TryGetProperty("Details", out JsonElement detailsEl) && detailsEl.ValueKind == JsonValueKind.Array
                         ? string.Join("; ", detailsEl.EnumerateArray().Select(d => d.GetString()))
                         : string.Empty;
-                    string message = FriendlyDbUpdateMessage(GetJsonString(game, "Message")) + (details.Length > 0 ? " [" + details + "]" : string.Empty);
+                    string message = DbUpdateReasonMessage(GetJsonString(game, "Reason")) ?? FriendlyDbUpdateMessage(GetJsonString(game, "Message"));
+                    message += details.Length > 0 ? " [" + details + "]" : string.Empty;
                     DbUpdateMessages.Add(message);
                     string id = GetJsonString(game, "Game");
                     string name = GetJsonString(game, "DisplayName");

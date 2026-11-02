@@ -76,7 +76,81 @@
             </ComboBox>
             <Button Classes="small ghost" Content="{l:T 'Expand all'}" Command="{Binding ExpandAllCheckCardsCommand}" />
             <Button Classes="small ghost" Content="{l:T 'Collapse all'}" Command="{Binding CollapseAllCheckCardsCommand}" />
+            <!-- The warnings the user ignored: opens their list below (only while there are some) -->
+            <ToggleButton x:Name="IgnoredWarningsToggle" Classes="small" IsVisible="{Binding HasIgnoredWarnings}" IsChecked="{Binding IsIgnoredWarningsOpen, Mode=OneWay}"
+                          Command="{Binding ToggleIgnoredWarningsCommand}"
+                          ToolTip.Tip="{l:T 'The warnings you ignored. Each one comes back by itself when something new joins it; Show again brings it back now.'}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <PathIcon Data="{StaticResource Icon.EyeOff}" Width="14" Height="14" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding IgnoredWarningsText}" VerticalAlignment="Center" />
+                </StackPanel>
+            </ToggleButton>
         </WrapPanel>
+
+        <!-- The ignored warnings in the cards' words, each with "Show again" (MainWindowViewModel.CheckIgnored.cs) -->
+        <Border x:Name="IgnoredWarningsPanel" Classes="sunken" Padding="10,8" CornerRadius="8" IsVisible="{Binding IsIgnoredWarningsOpen}">
+            <StackPanel Spacing="6">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                    <PathIcon Data="{StaticResource Icon.EyeOff}" Width="16" Height="16" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{Binding IgnoredWarningsText}" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Column="2" Classes="small" VerticalAlignment="Center" Command="{Binding ShowAllIgnoredAgainCommand}"
+                            ToolTip.Tip="{l:T 'Every ignored warning comes back on the check; the binds do not change. Ctrl+Z undoes it.'}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Data="{StaticResource Icon.Eye}" Width="13" Height="13" VerticalAlignment="Center" />
+                            <TextBlock Text="{l:T 'Show all again'}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Column="3" Classes="small ghost" Padding="4,2" VerticalAlignment="Center" Command="{Binding ToggleIgnoredWarningsCommand}"
+                            ToolTip.Tip="{l:T 'Close the list'}">
+                        <PathIcon Data="{StaticResource Icon.Close}" Width="11" Height="11" />
+                    </Button>
+                </Grid>
+                <TextBlock Classes="hint" TextWrapping="Wrap"
+                           Text="{l:T 'Hidden on purpose: the binds stay as they are. A warning comes back by itself, marked Shown again, when one more button or command joins it.'}" />
+                <TextBlock Classes="hint" Text="{Binding IgnoredFilterText}" IsVisible="{Binding HasIgnoredFilterText}" />
+                <ScrollViewer MaxHeight="460" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="IgnoredWarningsList" ItemsSource="{Binding IgnoredWarnings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:CheckIssueCard">
+                                <Border Classes="card checkCard" Classes.checkError="{Binding IsError}" Classes.checkWarn="{Binding IsWarning}" Padding="10,8" Margin="0,0,0,6">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                        <Panel VerticalAlignment="Top" Margin="0,2,0,0">
+                                            <PathIcon Data="{StaticResource Icon.Error}" Width="15" Height="15" Classes="error" IsVisible="{Binding IsError}" />
+                                            <PathIcon Data="{StaticResource Icon.Warning}" Width="15" Height="15" Classes="warn" IsVisible="{Binding IsWarning}" />
+                                        </Panel>
+                                        <StackPanel Grid.Column="1" Spacing="3">
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <TextBlock Classes="checkButtons" Text="{Binding ButtonsLine}" IsVisible="{Binding HasButtonsLine}" />
+                                            <TextBlock Text="{Binding Sentence}" TextWrapping="Wrap" IsVisible="{Binding HasSentence}" />
+                                            <!-- Aircraft -> command where the sentence says "list below" -->
+                                            <ItemsControl ItemsSource="{Binding ShownRows}" IsVisible="{Binding HasSeveralRows}" Margin="0,2,0,0">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:CheckTableRow">
+                                                        <Grid ColumnDefinitions="2*,3*" ColumnSpacing="12" Margin="0,1">
+                                                            <TextBlock Classes="hint" Text="{Binding Left}" TextWrapping="Wrap" />
+                                                            <TextBlock Grid.Column="1" Classes="hint" Text="{Binding Right}" TextWrapping="Wrap" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <Button Classes="small ghost" HorizontalAlignment="Left" Padding="4,1" Command="{Binding ToggleRowsCommand}" IsVisible="{Binding HasHiddenRows}">
+                                                <TextBlock Text="{Binding ShowRowsText}" />
+                                            </Button>
+                                        </StackPanel>
+                                        <Button Grid.Column="2" Classes="small" VerticalAlignment="Top" Command="{Binding ShowAgain.Command}" ToolTip.Tip="{Binding ShowAgain.Tip}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <PathIcon Data="{StaticResource Icon.Eye}" Width="13" Height="13" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding ShowAgain.Text}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
 
         <!-- Fixes for many -->
         <Border Classes="sunken" Padding="10,8" CornerRadius="8" IsVisible="{Binding HasDuplicates}">
@@ -234,6 +308,11 @@
                                                                   ToolTip.Tip="{l:T 'Show or hide this card'}">
                                                         <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="12" Height="12" />
                                                     </ToggleButton>
+                                                </Grid>
+                                                <!-- An ignored warning that is back: what joined it since -->
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6" IsVisible="{Binding HasShownAgain}">
+                                                    <PathIcon Data="{StaticResource Icon.Eye}" Width="13" Height="13" Classes="warn" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                                    <TextBlock Grid.Column="1" Classes="warnText" FontWeight="SemiBold" Text="{Binding ShownAgainText}" TextWrapping="Wrap" />
                                                 </Grid>
                                                 <StackPanel Spacing="6" IsVisible="{Binding IsExpanded}">
                                                     <TextBlock Classes="checkButtons" Text="{Binding ButtonsLine}" IsVisible="{Binding HasButtonsLine}" />

@@ -2426,6 +2426,45 @@ public sealed class MainWindowViewModelSmokeTests
         Assert.Contains(fake.Calls, c => ContainsSequence(c, "db", "check-updates", "--accept-all"));
     }
 
+    // A tester's DCS showed commands of a mod (the Input Command Injector) that JoyPro's list lacked: the engine reports the
+    // list outdated because of the mods (Reason "mods"); the Start page says so in plain words and its Refresh DB runs
+    // the headless DCS refresh, after which the notice is gone.
+    [Fact]
+    public async Task DbUpdates_ModsChanged_ShowPlainMessageAndRebuildClearsIt()
+    {
+        FakeEngineCliClient fake = new() { UseDbUpdatesModsScenario = true };
+        MainWindowViewModel vm = CreateVm(fake);
+        vm.DcsSavedGamesPath = "C:/Users/x/Saved Games/DCS.openbeta";
+        vm.DcsInstallPath = "E:/Games/DCS World OpenBeta";
+
+        await vm.CheckDbUpdatesCommand.ExecuteAsync(null);
+
+        Assert.True(vm.HasDbUpdates);
+        DbUpdateItem item = Assert.Single(vm.DbUpdateItems);
+        Assert.Equal("DCS", item.Game);
+        Assert.True(item.CanRefresh);
+        Assert.StartsWith("Your DCS mods changed the controls list; rebuild the command list.", item.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain("(engine", item.Message, StringComparison.Ordinal);
+        Assert.Contains("InputCommands", vm.DbUpdateMessages[0], StringComparison.Ordinal);
+
+        await vm.RefreshDbUpdateCommand.ExecuteAsync(item);
+
+        IReadOnlyList<string> refresh = Assert.Single(fake.Calls, c => ContainsSequence(c, "dcs", "refresh", "id"));
+        Assert.True(ContainsSequence(refresh, "--path", "C:/Users/x/Saved Games/DCS.openbeta"));
+        Assert.True(ContainsSequence(refresh, "--headless-lua", "true"));
+        Assert.False(vm.HasDbUpdates);
+        Assert.Empty(vm.DbUpdateItems);
+    }
+
+    [Fact]
+    public void DbUpdates_ReasonMessages()
+    {
+        Assert.Equal("Your DCS mods changed the controls list; rebuild the command list.", MainWindowViewModel.DbUpdateReasonMessage("mods"));
+        Assert.Equal("Your DCS bind files use commands the command list does not have; rebuild the command list.", MainWindowViewModel.DbUpdateReasonMessage("binds"));
+        Assert.Null(MainWindowViewModel.DbUpdateReasonMessage("game"));
+        Assert.Null(MainWindowViewModel.DbUpdateReasonMessage(""));
+    }
+
     [Fact]
     public async Task DbUpdates_PerGameRefreshAndKeep_BuildEngineArguments()
     {
@@ -2904,6 +2943,9 @@ public sealed class MainWindowViewModelSmokeTests
         public bool UseHiddenGamesScenario { get; set; }
         public bool UseDbUpdatesPerGameScenario { get; set; }
 
+        // db check-updates: the DCS list is outdated because of the user's mods (Reason "mods").
+        public bool UseDbUpdatesModsScenario { get; set; }
+
         public async Task<EngineCommandResult> RunAsync(
             string engineExePath,
             IReadOnlyList<string> arguments,
@@ -3080,6 +3122,13 @@ public sealed class MainWindowViewModelSmokeTests
                     "DCS (2)",
                     "  - A-10C_2",
                     "  - FA-18C_hornet");
+            }
+
+            if (UseDbUpdatesModsScenario && MainWindowViewModelSmokeTests.ContainsSequence(args, "db", "check-updates"))
+            {
+                if (args.Contains("--accept") || args.Contains("--accept-all") || Calls.Any(c => MainWindowViewModelSmokeTests.ContainsSequence(c, "dcs", "refresh", "id")))
+                    return "{\"Games\":[{\"Game\":\"DCS\",\"DisplayName\":\"DCS World\",\"State\":\"up-to-date\",\"Reason\":\"\",\"Message\":\"\",\"Details\":[]}],\"Outdated\":0,\"Warnings\":[]}";
+                return "{\"Games\":[{\"Game\":\"DCS\",\"DisplayName\":\"DCS World\",\"State\":\"game-updated\",\"Reason\":\"mods\",\"Message\":\"Your DCS mods changed the controls list; rebuild the command list (engine dcs refresh id).\",\"RefreshCommand\":\"engine dcs refresh id\",\"Details\":[\"DCS mod input files the command list does not include yet: 248 InputCommands file(s) (Input Command Injector: hook), 0 Saved Games module input file(s)\"]}],\"Outdated\":1,\"Warnings\":[]}";
             }
 
             if (UseDbUpdatesPerGameScenario && MainWindowViewModelSmokeTests.ContainsSequence(args, "db", "check-updates"))

@@ -1361,6 +1361,10 @@ namespace JoyPro.Engine
             public bool Related;
             // Found by what the query describes (the function documents), not by a name or synonym.
             public bool Described;
+            // The query words this function explains: the words of the phrase that found it, the words its document has
+            // (a description, "drop" of "drop countermeasures"); a related function has those of the one it rides with.
+            // The search's precision rule (EngineRelationSearch.Covers) reads them.
+            public readonly HashSet<string> Words = new HashSet<string>(StringComparer.Ordinal);
         }
 
         internal sealed class Understanding
@@ -1435,9 +1439,12 @@ namespace JoyPro.Engine
                 if (union[i] || map.DirectionWords.Contains(tokens[i]) || map.QueryFiller.Contains(tokens[i]))
                     continue;
                 // A word a named function's own description has only says more about it ("drop countermeasures").
-                if (chosen.Any(c => DocHas(map, c.Function, tokens[i])))
+                List<Resolved> explaining = chosen.Where(c => DocHas(map, c.Function, tokens[i])).ToList();
+                if (explaining.Count > 0)
                 {
                     union[i] = true;
+                    foreach (Resolved c in explaining)
+                        c.Words.Add(tokens[i]);
                     continue;
                 }
                 open.Add(i);
@@ -1491,7 +1498,11 @@ namespace JoyPro.Engine
                     string[] parts = related.Split(':');
                     Function f;
                     if (map.ById.TryGetValue(parts[0], out f) && u.Functions.All(x => x.Function != f))
-                        u.Functions.Add(new Resolved { Function = f, Dir = parts.Length > 1 ? parts[1] : r.Dir, Score = r.Score * 0.6, Term = r.Term, Covered = r.Covered, Related = true });
+                    {
+                        Resolved ride = new Resolved { Function = f, Dir = parts.Length > 1 ? parts[1] : r.Dir, Score = r.Score * 0.6, Term = r.Term, Covered = r.Covered, Related = true };
+                        ride.Words.UnionWith(r.Words);
+                        u.Functions.Add(ride);
+                    }
                 }
             }
             return u;
@@ -1551,10 +1562,14 @@ namespace JoyPro.Engine
                     Resolved existing;
                     if (best.TryGetValue(f.Id, out existing) && existing.Score >= score)
                         continue;
-                    best[f.Id] = new Resolved { Function = f, Score = score, Term = phrase.Text, Covered = words.Length, Described = phrase.IsKeyword };
+                    Resolved found = new Resolved { Function = f, Score = score, Term = phrase.Text, Covered = words.Length, Described = phrase.IsKeyword };
+                    best[f.Id] = found;
                     bool[] covered = new bool[tokens.Length];
                     foreach (int i in positions)
+                    {
                         covered[i] = true;
+                        found.Words.Add(tokens[i]);
+                    }
                     coverage[f.Id] = covered;
                 }
             }
@@ -1693,7 +1708,9 @@ namespace JoyPro.Engine
                 bool[] mine = hits[s.Key];
                 for (int w = 0; w < words.Length; w++)
                     explained[w] |= mine[w];
-                result.Add(new Resolved { Function = s.Key, Score = Math.Round(8 * s.Value / top, 1), Term = string.Join(" ", words.Where((x, i) => mine[i])), Covered = mine.Count(h => h), Described = true });
+                Resolved described = new Resolved { Function = s.Key, Score = Math.Round(8 * s.Value / top, 1), Term = string.Join(" ", words.Where((x, i) => mine[i])), Covered = mine.Count(h => h), Described = true };
+                described.Words.UnionWith(words.Where((x, i) => mine[i]));
+                result.Add(described);
             }
             return result;
         }

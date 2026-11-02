@@ -3436,6 +3436,7 @@ namespace JoyPro
         internal static List<DCSInput> ParseDcsHtmlInputs(string filePath, string plane)
         {
             List<DCSInput> result = ParseDcsHtmlInputsRaw(filePath, plane);
+            AppendFoundInYourFiles(result, filePath, plane);
             if (!result.Any(i => DcsCommandNames.IsRawTitle(i.Title, i.ID) || DcsCommandNames.HasLocalizationKey(i.Cat)))
                 return result;
 
@@ -3466,6 +3467,59 @@ namespace JoyPro
                 input.Cat = DcsCommandNames.ResolveCategory(input.Cat, catalog);
             }
             return result;
+        }
+
+        // The commands of the user's own DCS bind files that the list lacks (DcsFoundCommands: a mod added them after the
+        // list was built), category DcsFoundCommands.Category, only for JoyPro's DCS lists.
+        private static void AppendFoundInYourFiles(List<DCSInput> result, string filePath, string plane)
+        {
+            List<DcsFoundCommands.Entry> found;
+            try
+            {
+                found = DcsFoundCommands.ForList(filePath, plane);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            if (found.Count == 0)
+                return;
+            HashSet<string> ids = new HashSet<string>(result.Select(i => i.ID ?? string.Empty), StringComparer.Ordinal);
+            foreach (DcsFoundCommands.Entry entry in found)
+            {
+                if (!ids.Add(entry.Id))
+                    continue;
+                result.Add(new DCSInput
+                {
+                    ID = entry.Id,
+                    Plane = plane ?? string.Empty,
+                    Title = entry.Title.Length > 0 ? entry.Title : entry.Id,
+                    Cat = DcsFoundCommands.Category,
+                    IsAxis = entry.IsAxis || entry.Id.StartsWith("a", StringComparison.OrdinalIgnoreCase)
+                });
+            }
+        }
+
+        // Whether a DCS command of a list came from the user's bind files, not from DCS's own list (DcsFoundCommands).
+        internal static bool IsFoundInYourFiles(string category)
+        {
+            return string.Equals((category ?? string.Empty).Trim(), DcsFoundCommands.Category, StringComparison.Ordinal);
+        }
+
+        // The command ids of one DCS command list as DCS wrote it (without commands found in the user's files).
+        internal static HashSet<string> DcsListIds(string filePath)
+        {
+            return new HashSet<string>(ParseDcsHtmlInputsRaw(filePath, string.Empty).Select(i => (i.ID ?? string.Empty).Trim()).Where(i => i.Length > 0), StringComparer.Ordinal);
+        }
+
+        // The DCS command lists changed (commands found in the user's files): the indexes are built again on next use.
+        internal static void ForgetDcsCommandLists()
+        {
+            lock (KeptCorrectionIndexSync)
+                keptCorrectionIndex = null;
+            planeLookupIndex = null;
+            // The command index of the relation tools (search, meanings, function map) too (the engine server keeps it).
+            EngineFunctionMap.Reset();
         }
 
         // The title to show for a DCS command of one aircraft: the DB's (readable) title, else the title the profile stored

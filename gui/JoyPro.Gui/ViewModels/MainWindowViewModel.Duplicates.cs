@@ -189,7 +189,8 @@ public sealed partial class MainWindowViewModel
     // The duplicates as cards (one more served engine call after the check).
     private async Task LoadDuplicateIssuesAsync()
     {
-        EngineCommandResult? result = await RunEngineAsync(["relations", "duplicates"], includeProfile: true, mutatesProfile: false,
+        // With the ignored ones: they make the list "Ignored warnings" (the engine scores them anyway).
+        EngineCommandResult? result = await RunEngineAsync(["relations", "duplicates", "--include-kept"], includeProfile: true, mutatesProfile: false,
             busyLabel: N("Looking for actions on in several relations..."), forceText: false, background: true);
         if (result == null || result.ExitCode != 0)
             return;
@@ -208,6 +209,8 @@ public sealed partial class MainWindowViewModel
     private sealed class DuplicateData
     {
         public List<CheckIssueCard> Cards { get; } = [];
+        // The ignored ones, for the list "Ignored warnings".
+        public List<CheckIssueCard> Ignored { get; } = [];
         public HashSet<string> GroupMessages { get; } = new(StringComparer.Ordinal);
         public Dictionary<string, int> Confidence { get; } = new(StringComparer.OrdinalIgnoreCase);
         public int Actions { get; set; }
@@ -229,6 +232,8 @@ public sealed partial class MainWindowViewModel
             {
                 foreach (JsonElement d in list.EnumerateArray())
                 {
+                    if (ReadJsonBool(d, "Kept"))
+                        continue;
                     data.Actions++;
                     bool hasSuggestion = ReadJsonString(d, "Suggested").Length > 0 || ReadJsonBool(d, "SuggestOff");
                     if (hasSuggestion)
@@ -242,6 +247,11 @@ public sealed partial class MainWindowViewModel
             {
                 foreach (JsonElement g in groups.EnumerateArray())
                 {
+                    if (ReadJsonBool(g, "Kept"))
+                    {
+                        data.Ignored.Add(BuildDuplicateCard(g, newKeys));
+                        continue;
+                    }
                     data.GroupMessages.Add(ReadJsonString(g, "Message"));
                     data.Cards.Add(BuildDuplicateCard(g, newKeys));
                 }
@@ -259,6 +269,8 @@ public sealed partial class MainWindowViewModel
     {
         duplicateCards.Clear();
         duplicateCards.AddRange(data.Cards);
+        ignoredDuplicateCards.Clear();
+        ignoredDuplicateCards.AddRange(data.Ignored);
         checkPresortedCards["duplicates"] = (data.Sort, data.Sorted);
         duplicateGroupMessages.Clear();
         duplicateGroupMessages.UnionWith(data.GroupMessages);
@@ -391,7 +403,7 @@ public sealed partial class MainWindowViewModel
         "meaning" => T("Its meaning fits the other aircraft in '{0}'.", relation),
         "differs" => T("In '{0}' it means something else than for the other aircraft there.", relation),
         "position" => T("'{0}' is a button position (different functions per aircraft).", relation),
-        "dismissed-pair" => T("You kept both for this pair of relations before."),
+        "dismissed-pair" => T("You ignored this warning for this pair of relations before."),
         _ => string.Empty
     };
 
@@ -465,6 +477,7 @@ public sealed partial class MainWindowViewModel
         int noteCards = allValidationIssues.Count(i => i.Kind == "Warning");
         CheckSummaryText = errorCards == 0 && warningCards == 0 && noteCards == 0 ? string.Empty
             : T("To look at: {0} errors, {1} warnings, {2} notes", errorCards, warningCards, noteCards);
+        UpdateIgnoredWarnings(words);
 
         for (int i = CheckSections.Count - 1; i >= 0; i--)
         {
@@ -668,14 +681,15 @@ public sealed partial class MainWindowViewModel
         StatusText = T("Now on in '{0}' only. Ctrl+Z undoes it.", relation);
     }
 
-    internal async Task KeepBothDuplicatesAsync(IReadOnlyList<string> keys)
+    // "Ignore": the binds stay, the warning hides until the command lands on one more button (one undo step).
+    internal async Task IgnoreDuplicatesAsync(IReadOnlyList<string> keys)
     {
-        EngineCommandResult? result = await RunEngineAsync(["relations", "duplicates", "--keep-both", "--keys", KeysArg(keys)],
-            includeProfile: true, mutatesProfile: true, busyLabel: N("Keeping both..."), forceText: false);
+        EngineCommandResult? result = await RunEngineAsync(["relations", "duplicates", "--ignore", "--keys", KeysArg(keys)],
+            includeProfile: true, mutatesProfile: true, busyLabel: N("Ignoring the warning..."), forceText: false);
         if (result == null || result.ExitCode != 0)
             return;
         await AfterDuplicatesChangedAsync();
-        StatusText = T("Kept in both relations; the check does not warn about it any more. Ctrl+Z undoes it.");
+        StatusText = IgnoredStatus();
     }
 
     internal async Task SwitchOffDuplicatesAsync(IReadOnlyList<string> keys)

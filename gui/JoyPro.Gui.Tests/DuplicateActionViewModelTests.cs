@@ -51,7 +51,7 @@ public sealed class DuplicateActionViewModelTests
         Assert.Equal("96% sure: keep it only on MOZA AB9 FFB Base · BTN 4", card.SuggestionText);
         Assert.Contains("It was only in 'Trim Right' before", card.ReasonText);
         Assert.Equal("Keep only on MOZA AB9 FFB Base · BTN 4", card.Recommended!.Text);
-        Assert.Equal(["Keep only on Total Controls MFBB · BTN 39", "Keep both",
+        Assert.Equal(["Keep only on Total Controls MFBB · BTN 39", "Ignore",
             "Replace 'Force Trim/Hold Mode Switch - AL/Right' on Total Controls MFBB · BTN 39 with...",
             "Replace 'Force Trim/Hold Mode Switch - AL/Right' on MOZA AB9 FFB Base · BTN 4 with..."], card.Fixes.Select(f => f.Text));
         Assert.Equal(["Switch it off on both buttons"], card.MoreFixes.Select(f => f.Text));
@@ -95,14 +95,14 @@ public sealed class DuplicateActionViewModelTests
     }
 
     [Fact]
-    public async Task KeepBoth_SwitchOff_AndThePreviewApplyExactlyTheTickedChanges()
+    public async Task Ignore_SwitchOff_AndThePreviewApplyExactlyTheTickedChanges()
     {
         DuplicatesFakeEngine fake = new();
         MainWindowViewModel vm = NewVm(fake);
         await vm.ValidateProfileCommand.ExecuteAsync(null);
         CheckIssueCard card = vm.CheckSections.Single(s => s.Kind == "duplicates").Cards.Single();
-        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)card.KeepBothCommand!).ExecuteAsync(null);
-        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "duplicates", "--keep-both", "--keys"));
+        await ((CommunityToolkit.Mvvm.Input.IAsyncRelayCommand)card.IgnoreCommand!).ExecuteAsync(null);
+        Assert.Contains(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "duplicates", "--ignore", "--keys"));
 
         fake.Resolved = false;
         await vm.ValidateProfileCommand.ExecuteAsync(null);
@@ -252,7 +252,7 @@ public sealed class DuplicateActionViewModelTests
             }
             else if (AxisTuningTests.Seq(arguments, "relations", "duplicates"))
             {
-                bool fixes = arguments.Contains("--keep") || arguments.Contains("--off") || arguments.Contains("--keep-both") || arguments.Contains("--changes") || arguments.Contains("--apply");
+                bool fixes = arguments.Contains("--keep") || arguments.Contains("--off") || arguments.Contains("--ignore") || arguments.Contains("--changes") || arguments.Contains("--apply");
                 string changes = arguments.Contains("--rule") || arguments.Contains("--instruction") ? Change("AH-64D_BLK_II_CPG", 96) + "," + Change("AH-64D_BLK_II_PLT", 92) : string.Empty;
                 string understood = arguments.Contains("--instruction") ? "\"keep trim functions in the Trim relations\"" : string.Empty;
                 if (arguments.Contains("--keys-only"))

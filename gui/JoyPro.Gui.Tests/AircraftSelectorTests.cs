@@ -335,6 +335,26 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
             s.Visible.Where(i => i.HasGroupHeader).Select(i => i.GroupHeader).ToArray());
     }
 
+    // A DCS command JoyPro knows from the user's bind files (a mod added it after the list was built; engine
+    // "FromYourFiles") is a normal choice with a small "from your DCS files" hint, never "not in its list".
+    [Fact]
+    public void Selector_CommandFromYourDcsFilesHasAHint()
+    {
+        AircraftSelector s = new("C & I Knob - UFC else BACKUP (2-way Switch)",
+        [
+            new AircraftChoiceItem("F-16C_50", "C & I Knob - UFC else BACKUP (2-way Switch)", "Found in your DCS files", "same", "", true, fromYourFiles: true),
+            new AircraftChoiceItem("F-16C_blk30", "", "", "unknown", "", false),
+        ]);
+        AircraftChoiceItem found = s.Items.Single(i => i.Plane == "F-16C_50");
+        Assert.True(found.FromYourFiles);
+        Assert.False(found.IsUnknown);
+        Assert.True(found.HasMarker);
+        Assert.Equal("from your DCS files", found.MarkerText);
+        Assert.Contains("found in your DCS bind files", found.Tooltip, StringComparison.Ordinal);
+        Assert.Equal("not in its list", s.Items.Single(i => i.Plane == "F-16C_blk30").MarkerText);
+        Assert.Equal(["F-16C_50"], s.CheckedPlanes.ToArray());
+    }
+
     // Another title of the same function (a helicopter's "Flight Control Cyclic Pitch" for "Pitch") is its own group, no
     // mixed meaning and no "differs" warning; only another function is.
     [Fact]

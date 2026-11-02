@@ -1196,8 +1196,9 @@ The actions a fix is about: `--keys "game|id|aircraft;..."` or `--node game:id -
 |---|---|
 | `--keep <relation>` | stays on only in this relation, off in the others |
 | `--off` | off in every relation |
-| `--keep-both` | both stay; recorded as intended and not listed again |
-| `--forget-kept` | everything kept on purpose is listed again |
+| `--ignore` | all stay; recorded as intended and not listed again until one more relation gets the action (then it is listed with `ShownAgain` and `NowAlsoIn`); `--keep-both` is the old name |
+| `--forget-kept` | the ignored ones of `--keys` are listed again; without keys every ignored warning (also the conflicts') |
+| `--list-kept` | lists only the ignored ones (the app's "Ignored warnings") |
 | `--rule <rule>` | a preview of one rule for all cards; `--apply` applies it |
 | `--instruction "<words>"` | a preview from a sentence; `--apply` applies it |
 | `--apply-suggested` | `--rule suggested --apply` |
@@ -1209,13 +1210,15 @@ The actions a fix is about: `--keys "game|id|aircraft;..."` or `--node game:id -
 - `--instruction` reads simple sentences with JoyPro's phrase rules; `--llm auto` (default) or `on` asks the local
   model only for the parts the rules did not understand, `off` never.
 - The suggestion comes from the profile history first, else from each relation's function and name.
-- `--include-kept` lists the kept ones too. Each fix is one profile version (one undo step).
+- `--include-kept` lists the ignored ones too (`Kept`). An ignored one stays hidden while these relations or fewer of
+  them have the action. Each fix is one profile version (one undo step); a fix also forgets ignored ones whose action
+  is on in one relation only now.
 :::
 
 :::layer technical
 - Output: JSON (`Count`, `Duplicates`, `Groups`, `Changes`, `Understood`, `NotUnderstood`, `SwitchedOff`, `Resolved`,
   `Warnings`), or `--text`. The profile is saved with `--profile` only after a fix.
-- Exit code `1` with `relations duplicates: --keep, --off and --keep-both exclude each other.`, `relations
+- Exit code `1` with `relations duplicates: --keep, --off and --ignore exclude each other.`, `relations
   duplicates: --rule and --instruction exclude each other.`, `Unknown rule '...'`, `--min-confidence needs a number
   from 0 to 100.`, `... needs the actions: --keys ...` or `Those actions are on in one relation only (nothing to
   resolve).`

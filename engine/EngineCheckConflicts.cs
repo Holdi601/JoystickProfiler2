@@ -13,8 +13,9 @@ namespace JoyPro.Engine
     //   - two actions on one input: one relation has two actions of the same aircraft switched on.
     // Each one names the aircraft, the relations with their actions as the game calls them (an action the game's list
     // no longer has is marked unknown) and the validate line it stands for (Message), so the app can show it in words
-    // and offer fixes: keep it in one relation (the aircraft switched off in the others), keep one action, keep both
-    // (remembered in the profile, the check does not warn again), switch it off everywhere.
+    // and offer fixes: keep it in one relation (the aircraft switched off in the others), keep one action, ignore (the
+    // former "keep both": remembered in the profile, the check does not warn again until one more relation or action
+    // joins, EngineIgnoredWarnings), switch it off everywhere.
     public sealed class EngineConflictAction
     {
         public string Id { get; set; } = string.Empty;
@@ -41,7 +42,11 @@ namespace JoyPro.Engine
         public List<string> Modifiers { get; set; } = new List<string>();
         public bool IsAxis { get; set; }
         public List<EngineConflictSide> Sides { get; set; } = new List<EngineConflictSide>();
+        // Ignored by the user; ShownAgain: ignored before, back because these relations joined (NoLongerIn: left) since.
         public bool Kept { get; set; }
+        public bool ShownAgain { get; set; }
+        public List<string> NowAlsoIn { get; set; } = new List<string>();
+        public List<string> NoLongerIn { get; set; } = new List<string>();
     }
 
     public sealed class EngineActionConflict
@@ -56,7 +61,11 @@ namespace JoyPro.Engine
         public string Input { get; set; } = string.Empty;
         public List<string> Modifiers { get; set; } = new List<string>();
         public List<EngineConflictAction> Actions { get; set; } = new List<EngineConflictAction>();
+        // Ignored by the user; ShownAgain: ignored before, back because these actions (ids) joined (NoLongerIn: left) since.
         public bool Kept { get; set; }
+        public bool ShownAgain { get; set; }
+        public List<string> NowAlsoIn { get; set; } = new List<string>();
+        public List<string> NoLongerIn { get; set; } = new List<string>();
     }
 
     public sealed class EngineConflictsResult
@@ -72,8 +81,8 @@ namespace JoyPro.Engine
 
     internal static class EngineCheckConflicts
     {
-        private const string InputPrefix = "input|";
-        private const string ActionPrefix = "active|";
+        private const string InputPrefix = EngineIgnoredWarnings.InputPrefix;
+        private const string ActionPrefix = EngineIgnoredWarnings.ActionPrefix;
 
         // A kept entry of these errors (Pr0file.KeptDuplicates holds them next to the kept duplicates).
         internal static bool IsConflictEntry(string entry)
@@ -95,19 +104,20 @@ namespace JoyPro.Engine
             return bind;
         }
 
-        private static HashSet<string> Kept()
+        // Kept (ignored: these relations or actions, or fewer of them), or shown again with what joined since.
+        private static bool Ignored(EngineIgnoredWarnings.Index ignored, string kind, string key, List<string> now, out List<string> joined, out List<string> left)
         {
-            return new HashSet<string>((InternalDataManagement.KeptDuplicates ?? new List<string>()).Where(IsConflictEntry), StringComparer.OrdinalIgnoreCase);
-        }
-
-        private static string InputEntry(EngineInputConflict conflict)
-        {
-            return InputPrefix + conflict.Key + "|" + string.Join("\t", conflict.Sides.Select(s => s.Relation).OrderBy(r => r, StringComparer.OrdinalIgnoreCase));
-        }
-
-        private static string ActionEntry(EngineActionConflict conflict)
-        {
-            return ActionPrefix + conflict.Key + "|" + string.Join("\t", conflict.Actions.Select(a => a.Id).OrderBy(i => i, StringComparer.OrdinalIgnoreCase));
+            joined = new List<string>();
+            left = new List<string>();
+            if (ignored.Covers(kind, key, now))
+                return true;
+            EngineIgnoredWarnings.Entry before = ignored.ShownAgain(kind, key, now);
+            if (before != null)
+            {
+                joined = now.Where(n => !before.Set.Contains(n)).ToList();
+                left = before.Set.Where(n => !now.Contains(n, StringComparer.OrdinalIgnoreCase)).OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+            }
+            return false;
         }
 
         // Every input bound in several relations that have an action of the same aircraft on (in the order and with the
@@ -172,7 +182,7 @@ namespace JoyPro.Engine
                     }
                 }
             }
-            HashSet<string> kept = Kept();
+            EngineIgnoredWarnings.Index ignored = EngineIgnoredWarnings.Read();
             List<EngineInputConflict> result = new List<EngineInputConflict>();
             VehicleClasses classes = new VehicleClasses();
             foreach (EngineInputConflict conflict in order.Where(c => c.Sides.Count > 1))
@@ -191,9 +201,14 @@ namespace JoyPro.Engine
                 message.Append("Button Item key found in multiple Relation: ").Append(conflict.Key).Append(" The Relations it was found in: ");
                 message.Append(string.Join(", ", conflict.Sides.Select(s => s.Relation)));
                 conflict.Message = message.ToString();
-                conflict.Kept = kept.Contains(InputEntry(conflict));
+                List<string> joined;
+                List<string> left;
+                conflict.Kept = Ignored(ignored, InputPrefix, conflict.Key, conflict.Sides.Select(s => s.Relation).ToList(), out joined, out left);
                 if (conflict.Kept && !includeKept)
                     continue;
+                conflict.ShownAgain = joined.Count > 0 || left.Count > 0;
+                conflict.NowAlsoIn = joined;
+                conflict.NoLongerIn = left;
                 result.Add(conflict);
             }
             return result;
@@ -203,7 +218,7 @@ namespace JoyPro.Engine
         // active items" lines).
         internal static List<EngineActionConflict> ActionConflicts(bool includeKept, bool withTitles)
         {
-            HashSet<string> kept = Kept();
+            EngineIgnoredWarnings.Index ignored = EngineIgnoredWarnings.Read();
             List<EngineActionConflict> result = new List<EngineActionConflict>();
             VehicleClasses classes = new VehicleClasses();
             foreach (Relation relation in (InternalDataManagement.AllRelations ?? new Dictionary<string, Relation>()).Values.Where(r => r != null))
@@ -244,9 +259,14 @@ namespace JoyPro.Engine
                         conflict.Input = (relation.ISAXIS ? bind.JAxis : bind.JButton) ?? string.Empty;
                         conflict.Modifiers = (bind.AllReformers ?? new List<string>()).Select(ModifierName).Where(m => m.Length > 0).ToList();
                     }
-                    conflict.Kept = kept.Contains(ActionEntry(conflict));
+                    List<string> joined;
+                    List<string> left;
+                    conflict.Kept = Ignored(ignored, ActionPrefix, conflict.Key, conflict.Actions.Select(a => a.Id).ToList(), out joined, out left);
                     if (conflict.Kept && !includeKept)
                         continue;
+                    conflict.ShownAgain = joined.Count > 0 || left.Count > 0;
+                    conflict.NowAlsoIn = joined;
+                    conflict.NoLongerIn = left;
                     result.Add(conflict);
                 }
             }
@@ -363,18 +383,20 @@ namespace JoyPro.Engine
             return changed;
         }
 
-        // "Keep both": the check stops naming these while exactly these relations (actions) have them.
+        // "Ignore" (formerly "Keep both"): the check stops naming these while these relations (actions), or fewer of them,
+        // have them; an older entry of the same conflict is replaced.
         internal static int KeepBoth(IEnumerable<EngineInputConflict> inputs, IEnumerable<EngineActionConflict> actions)
         {
-            if (InternalDataManagement.KeptDuplicates == null)
-                InternalDataManagement.KeptDuplicates = new List<string>();
             int added = 0;
-            foreach (string entry in inputs.Select(InputEntry).Concat(actions.Select(ActionEntry)))
+            foreach (EngineInputConflict conflict in inputs)
             {
-                if (InternalDataManagement.KeptDuplicates.Contains(entry, StringComparer.OrdinalIgnoreCase))
-                    continue;
-                InternalDataManagement.KeptDuplicates.Add(entry);
-                added++;
+                if (EngineIgnoredWarnings.Add(InputPrefix, conflict.Key, conflict.Sides.Select(s => s.Relation)))
+                    added++;
+            }
+            foreach (EngineActionConflict conflict in actions)
+            {
+                if (EngineIgnoredWarnings.Add(ActionPrefix, conflict.Key, conflict.Actions.Select(a => a.Id)))
+                    added++;
             }
             return added;
         }
@@ -419,10 +441,13 @@ namespace JoyPro.Engine
                 sb.AppendLine("  - " + c.Game + " " + c.Plane + ": " + EngineRelationDuplicates.ShortDevice(c.Device) + " " + EngineRelationDuplicates.ShortInput(c.Input) +
                               (c.Modifiers.Count > 0 ? " + " + string.Join(" + ", c.Modifiers) : string.Empty) + " in " +
                               string.Join(" and ", c.Sides.Select(s => "'" + s.Relation + "' (" + string.Join(", ", s.Actions.Select(a => a.Title.Length > 0 ? a.Title : a.Id)) + ")")) +
-                              (c.Kept ? " [kept]" : string.Empty));
+                              (c.Kept ? " [ignored]" : c.ShownAgain ? " [shown again" + (c.NowAlsoIn.Count > 0 ? ", now also in " + string.Join(", ", c.NowAlsoIn.Select(r => "'" + r + "'")) : string.Empty) + "]" : string.Empty));
             sb.AppendLine("Relations with two actions of one aircraft: " + result.ActionConflicts.Count.ToString(CultureInfo.InvariantCulture));
             foreach (EngineActionConflict c in result.ActionConflicts)
-                sb.AppendLine("  - '" + c.Relation + "' " + c.Game + " " + c.Plane + ": " + string.Join(", ", c.Actions.Select(a => a.Title.Length > 0 ? a.Title : a.Id)) + (c.Kept ? " [kept]" : string.Empty));
+                sb.AppendLine("  - '" + c.Relation + "' " + c.Game + " " + c.Plane + ": " + string.Join(", ", c.Actions.Select(a => a.Title.Length > 0 ? a.Title : a.Id)) +
+                              (c.Kept ? " [ignored]" : c.ShownAgain ? " [shown again" + (c.NowAlsoIn.Count > 0 ? ", now also " + string.Join(", ", c.Actions.Where(a => c.NowAlsoIn.Contains(a.Id)).Select(a => a.Title.Length > 0 ? a.Title : a.Id)) : string.Empty) + "]" : string.Empty));
+            if (result.KeptCount > 0)
+                sb.AppendLine("Ignored: " + result.KeptCount.ToString(CultureInfo.InvariantCulture));
             if (result.Changed > 0)
                 sb.AppendLine("Changed: " + result.Changed.ToString(CultureInfo.InvariantCulture));
             foreach (string warning in result.Warnings)

@@ -66,6 +66,8 @@ public sealed class BindPeekTests
         MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake, "bind-peek-titles.pr0file");
         try
         {
+            // Tests have no UI thread: the start-up loads must be done before the binds refresh rebuilds the same lists.
+            await RelationEditorRealProfileTests.SettleAsync(vm);
             vm.CurrentStage = UiStage.Binds;
             await vm.RefreshBindsCommand.ExecuteAsync(null);
             vm.IsBindPeekOpen = true;

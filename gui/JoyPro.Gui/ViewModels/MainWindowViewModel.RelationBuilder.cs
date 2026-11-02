@@ -871,6 +871,10 @@ public sealed partial class MainWindowViewModel
     // The aircraft of every game JoyPro has a list for, filtered by the typed text.
     private void RebuildBuilderPlaneOptions()
     {
+        // Only a loaded catalog: while it loads in the background its dictionary is being filled (reading it then threw
+        // "Collection was modified"); opening the picker waits for it and lists the aircraft.
+        if (!dbNodeCatalogLoaded)
+            return;
         string filter = (BuilderPlaneFilterText ?? string.Empty).Trim();
         IEnumerable<string> planes = dbNodeCatalogByGame
             .SelectMany(p => p.Value.Select(e => e.Plane))
@@ -1094,7 +1098,10 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(BuilderAddButtonLabel));
     }
 
-    // A header per game (or per function), then its rows; at most BuilderRowsShown rows.
+    // Two sections - "Name has every word" (titles with every typed word), then "Same meaning" - each with a header per
+    // game (or per function) and its rows; at most BuilderRowsShown rows. A name match stays above every row that only
+    // means the same in every sort and grouping: the sort levels order the rows within a section (a "Game" level with
+    // the title as its tie-break put "Exterior Lights Master" above "MASTER RESET" for "master reset").
     private void RebuildBuilderSearchRows()
     {
         EnsureActionSorts();
@@ -1105,19 +1112,27 @@ public sealed partial class MainWindowViewModel
         // their own at the bottom (after every action that can be added).
         List<BuilderSearchResultItem> addable = allBuilderSearchResults.Where(r => !r.IsInOpenRelation).ToList();
         List<BuilderSearchResultItem> inRelation = allBuilderSearchResults.Where(r => r.IsInOpenRelation).ToList();
+        // Per section: its headers and rows, in order.
+        List<object> named = [];
+        List<object> meaning = [];
+        int namedCount = addable.Count(r => r.IsNameMatch);
         if (BuilderGroupByFunction)
         {
             List<string> order = builderFunctionGroups.Select(g => g.Name).Where(n => n.Length > 0).ToList();
-            foreach (IGrouping<string, BuilderSearchResultItem> function in addable.GroupBy(r => r.FunctionName.Length > 0 ? r.FunctionName : "Other matches", StringComparer.OrdinalIgnoreCase)
-                         .OrderBy(g => order.IndexOf(g.Key) is int i && i >= 0 ? i : int.MaxValue).ThenByDescending(g => g.Count()))
+            foreach (bool nameMatches in new[] { true, false })
             {
-                List<BuilderSearchResultItem> rows = function.ToList();
-                int take = Math.Max(Math.Min(rows.Count, 6), Math.Min(rows.Count, budget));
-                List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
-                budget = Math.Max(0, budget - shown.Count);
-                next.Add(new BuilderSearchGroupItem(string.Empty, shown, rows.Count - shown.Count, function.Key));
-                foreach (BuilderSearchResultItem row in shown)
-                    next.Add(row);
+                List<object> section = nameMatches ? named : meaning;
+                foreach (IGrouping<string, BuilderSearchResultItem> function in addable.Where(r => r.IsNameMatch == nameMatches)
+                             .GroupBy(r => r.FunctionName.Length > 0 ? r.FunctionName : "Other matches", StringComparer.OrdinalIgnoreCase)
+                             .OrderBy(g => order.IndexOf(g.Key) is int i && i >= 0 ? i : int.MaxValue).ThenByDescending(g => g.Count()))
+                {
+                    List<BuilderSearchResultItem> rows = function.ToList();
+                    int take = Math.Max(Math.Min(rows.Count, 6), Math.Min(rows.Count, budget));
+                    List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
+                    budget = Math.Max(0, budget - shown.Count);
+                    section.Add(new BuilderSearchGroupItem(string.Empty, shown, rows.Count - shown.Count, function.Key));
+                    section.AddRange(shown);
+                }
             }
         }
         else
@@ -1131,7 +1146,8 @@ public sealed partial class MainWindowViewModel
                     : gameGroups.OrderBy(g => DisplayText.Game(g.Key), Comparer<string>.Create(ListSortRow.Natural));
             foreach (IGrouping<string, BuilderSearchResultItem> game in gameGroups)
             {
-                List<BuilderSearchResultItem> rows = game.ToList();
+                // The game's name matches first (in the engine's order), so a capped game shows them before the rest.
+                List<BuilderSearchResultItem> rows = game.Where(r => r.IsNameMatch).Concat(game.Where(r => !r.IsNameMatch)).ToList();
                 bool expanded = builderExpandedGames.Contains(game.Key);
                 // An expanded game shows every row it has; the others their best rows: every game at least a few, the
                 // big ones share what is left (without a ticked game chip at most BuilderSearchPerGame); "Show n more"
@@ -1141,16 +1157,38 @@ public sealed partial class MainWindowViewModel
                     take = rows.Count;
                 else if (!filtered)
                     take = Math.Min(take, Math.Max(BuilderSearchPerGame, Math.Min(rows.Count, 6)));
-                // The best matches are shown (and "Show n more" loads the rest); the sort levels order what is shown.
-                List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
-                budget = Math.Max(0, budget - shown.Count);
+                List<BuilderSearchResultItem> best = rows.Take(take).ToList();
+                budget = Math.Max(0, budget - best.Count);
                 int known = 0;
                 int all = !filtered && builderGameTotals.TryGetValue(game.Key, out known) && known - inRelation.Count(r => string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase)) > rows.Count
                     ? known - inRelation.Count(r => string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase)) : rows.Count;
-                next.Add(new BuilderSearchGroupItem(game.Key, shown, Math.Max(0, all - shown.Count)) { IsExpanded = expanded });
-                foreach (BuilderSearchResultItem row in shown)
-                    next.Add(row);
+                int hidden = Math.Max(0, all - best.Count);
+                // The best matches are shown (and "Show n more" loads the rest); the sort levels order what is shown
+                // within each section. "Show more" sits on the game's last header.
+                List<BuilderSearchResultItem> shownNamed = SortBuilderRows(best.Where(r => r.IsNameMatch));
+                List<BuilderSearchResultItem> shownMeaning = SortBuilderRows(best.Where(r => !r.IsNameMatch));
+                if (shownNamed.Count > 0)
+                {
+                    bool last = shownMeaning.Count == 0;
+                    named.Add(new BuilderSearchGroupItem(game.Key, shownNamed, last ? hidden : 0) { IsExpanded = last && expanded });
+                    named.AddRange(shownNamed);
+                }
+                if (shownMeaning.Count > 0)
+                {
+                    meaning.Add(new BuilderSearchGroupItem(game.Key, shownMeaning, hidden) { IsExpanded = expanded });
+                    meaning.AddRange(shownMeaning);
+                }
             }
+        }
+        if (named.Count > 0)
+        {
+            next.Add(new BuilderSearchSectionItem(true, namedCount));
+            next.AddRange(named);
+        }
+        if (meaning.Count > 0)
+        {
+            next.Add(new BuilderSearchSectionItem(false, addable.Count - namedCount));
+            next.AddRange(meaning);
         }
         if (inRelation.Count > 0)
         {

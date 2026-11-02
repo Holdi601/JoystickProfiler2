@@ -6382,6 +6382,16 @@ namespace JoyPro.Engine
             string dcsExePath = PopOptionValue(args, "--dcs-exe");
             string defaultStick = PopOptionValue(args, "--default-stick");
             string previewImagePath = PopOptionValue(args, "--preview-image");
+            // The Input Command Injector's InputCommands (DcsModInputs): auto = when the injector is installed in DCS.
+            string inputCommandsMode = (PopOptionValue(args, "--input-commands") ?? string.Empty).Trim().ToLowerInvariant();
+            if (inputCommandsMode.Length == 0)
+                inputCommandsMode = "auto";
+            if (inputCommandsMode == "true")
+                inputCommandsMode = "on";
+            if (inputCommandsMode == "false")
+                inputCommandsMode = "off";
+            if (inputCommandsMode != "auto" && inputCommandsMode != "on" && inputCommandsMode != "off")
+                return Fail("Invalid --input-commands value (auto, on or off): '" + inputCommandsMode + "'.");
             List<string> planeOptions = PopOptionValues(args, "--plane");
             planeOptions.AddRange(PopOptionValues(args, "--planes"));
             string menuWaitSecondsRaw = PopOptionValue(args, "--menu-wait-seconds");
@@ -6542,6 +6552,7 @@ namespace JoyPro.Engine
             options.PlaneFilter = requestedPlaneFilters;
             options.GuiScaleOverride = guiScaleOverride;
             options.WindowOverride = windowOverride;
+            options.InputCommandsMode = inputCommandsMode;
             options.StatusSink = BuildStatusSink("dcs refresh " + action);
 
             switch (action)
@@ -6576,7 +6587,12 @@ namespace JoyPro.Engine
                         if (refresh.Errors != null && refresh.Errors.Count > 0)
                             return Fail("dcs refresh id failed: " + string.Join(" | ", refresh.Errors));
                         if (!options.DryRun)
+                        {
                             DbUpdateCheck.RecordCurrent("DCS", null);
+                            // The commands found in the user's bind files that the new lists have are now DCS's own;
+                            // the others stay known without asking for another rebuild (DcsFoundCommands).
+                            DcsFoundCommands.AfterRefresh(options.PlaneFilter);
+                        }
                         return 0;
                     }
                 default:
@@ -11393,6 +11409,7 @@ namespace JoyPro.Engine
                 AddUnique(result.RelationWarnings, group.Message);
                 AddUnique(result.Warnings, group.Message);
             }
+            result.IgnoredCount = InternalDataManagement.KeptDuplicates == null ? 0 : InternalDataManagement.KeptDuplicates.Count;
 
             // One input bound in several relations that have an action of the same aircraft on (EngineCheckConflicts; kept
             // ones are not listed).
@@ -13704,6 +13721,14 @@ namespace JoyPro.Engine
             sb.AppendLine("Device Clean Files Written: " + result.DeviceCleanFilesWritten);
             sb.AppendLine("Input Files Backed Up: " + result.InputFilesBackedUp);
             sb.AppendLine("Input Files Restored: " + result.InputFilesRestored);
+            sb.AppendLine("Input Command Injector: " + (string.IsNullOrWhiteSpace(result.InputCommandInjector) ? "<not installed>" : result.InputCommandInjector));
+            sb.AppendLine("InputCommands: " + (string.IsNullOrWhiteSpace(result.InputCommandsPath) ? "<not used>" : result.InputCommandsPath));
+            if (result.InputCommandsFilesMerged != null && result.InputCommandsFilesMerged.Count > 0)
+            {
+                sb.AppendLine("InputCommands Files Merged: " + result.InputCommandsFilesMerged.Count);
+                foreach (string merged in result.InputCommandsFilesMerged)
+                    sb.AppendLine("  - " + merged);
+            }
             sb.AppendLine("Preview Image: " + (string.IsNullOrWhiteSpace(result.PreviewImagePath) ? "<none>" : result.PreviewImagePath));
 
             if (result.Clicks != null && result.Clicks.Count > 0)
@@ -14018,6 +14043,8 @@ namespace JoyPro.Engine
             sb.AppendLine("Fail On Warnings: " + data.FailOnWarnings);
             sb.AppendLine("Warnings: " + data.WarningCount.ToString(CultureInfo.InvariantCulture));
             sb.AppendLine("Errors: " + data.ErrorCount.ToString(CultureInfo.InvariantCulture));
+            if (data.IgnoredCount > 0)
+                sb.AppendLine("Ignored: " + data.IgnoredCount.ToString(CultureInfo.InvariantCulture));
 
             sb.AppendLine("Relation Warnings: " + data.RelationWarnings.Count.ToString(CultureInfo.InvariantCulture));
             for (int i = 0; i < data.RelationWarnings.Count; i++)
@@ -14877,8 +14904,8 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine dcs strip-defaults [apply|restore|status|auto] [--dry-run] [--restore] [--skip-ui-layer true|false] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>] [--luae <luae.exe>] [--no-load-check] [--status]   (switches DCS's default joystick binds off in the DCS install: wraps every joystick profile lua, combos = nil, backup <file>.nocombo.bak; restore (--restore) puts the originals back; status (--status) shows the state; auto re-applies after a DCS update; patched files fail server integrity checks)");
             Console.WriteLine("  engine dcs device-luas [list|remove|restore] [--dry-run] [--remove] [--restore] [--status] [--remember true|false] [--install-path <dcs-install-path>] [--saved-games <saved-games-path>]   (moves the device-specific default files of the DCS install (<device type>.lua, template diffs) into JoyPro's backup folder so default.lua applies; restore puts them back; list (also --status) shows them)");
             Console.WriteLine("  engine dcs verify-clean [<saved-games-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--plane <name>] [--planes <csv>] [--device <name>] [--devices <csv>] [--include-disconnected true|false] [--max-listed <n>] [--dump-active <file>]   (DCS's own Lua lists the default binds still active on the joysticks with the files of that Saved Games folder; --dump-active writes every active bind, one sorted line each, to compare before and after an export; read only)");
-            Console.WriteLine("  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)");
-            Console.WriteLine("  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft)");
+            Console.WriteLine("  engine dcs refresh clean [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--input-commands auto|on|off] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--settle-seconds <n>] [--default-stick <name>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua builds the clean profiles without starting DCS; only --headless-lua false starts DCS and clicks through its menus)");
+            Console.WriteLine("  engine dcs refresh id [<saved-games-path>] [<dcs-install-path>] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--ocr true|false] [--launch true|false] [--keep-running true|false] [--headless-lua true|false] [--plane <name>] [--planes <csv>] [--input-commands auto|on|off] [--dry-run] [--confirm true|false] [--menu-wait-seconds <n>] [--ocr-menu-timeout-seconds <n>] [--modules-to-scan <n>] [--clicks-xml <path>] [--clicks-dir <path>] [--dcs-exe <path>] [--preview-clicks] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]   (default --headless-lua true: DCS's own Lua writes the command lists without starting DCS; only --headless-lua false starts DCS and clicks Make HTML per aircraft; the Saved Games folder of the install's DCS variant is read, e.g. DCS.openbeta; --input-commands auto merges the Input Command Injector's Saved Games InputCommands like DCS when the injector is installed, on always, off never)");
             Console.WriteLine("  engine dcs refresh preview-clicks [--ocr true|false] [--path <saved-games-path>] [--install-path <dcs-install-path>] [--clicks-xml <path>] [--clicks-dir <path>] [--preview-image <path>] [--gui-scale <value>] [--window-left <n> --window-top <n> --window-width <n> --window-height <n>]");
             Console.WriteLine("  engine dcs ffb list [--path <saved-games-path>] [--device <name>] [--devices <csv>] [--connected] [--profile-devices] [--confirm true|false]");
             Console.WriteLine("  engine dcs ffb set <device-name> [--path <saved-games-path>] [--invert-x true|false] [--invert-y true|false] [--swap-axis true|false] [--confirm true|false]");
@@ -15072,20 +15099,25 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine relations check-aircraft [--relation <name>] [--apply] [--include-same-function]");
             Console.WriteLine("      actions with switched-on aircraft where the same id means something else than in the others (\"Pitch\" in jets,");
             Console.WriteLine("      \"Collective\" in a helicopter); --apply switches those aircraft off (they stay listed, one tick brings one back).");
-            Console.WriteLine("  engine relations duplicates [--keys \"game|id|aircraft;...\" | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both]");
+            Console.WriteLine("  engine relations duplicates [--keys \"game|id|aircraft;...\" | --node game:id --plane p1|p2] [--keep <relation> | --off | --ignore]");
             Console.WriteLine("      actions of an aircraft that more than one relation has switched on (the game gets them on each input), as cards per");
             Console.WriteLine("      relation pair with a suggestion and its confidence (the profile history, else the meaning); --keep switches them off");
-            Console.WriteLine("      in the other relations, --off in all, --keep-both remembers them as intended (one undo step each).");
+            Console.WriteLine("      in the other relations, --off in all, --ignore (formerly --keep-both) hides the warning until one more relation gets");
+            Console.WriteLine("      the action: it then shows again with ShownAgain and NowAlsoIn (one undo step each).");
+            Console.WriteLine("  engine relations duplicates --list-kept | --forget-kept [--keys \"game|id|aircraft;...\"]");
+            Console.WriteLine("      the ignored warnings (Kept); --forget-kept shows these again, without --keys every ignored warning, also the");
+            Console.WriteLine("      conflicts' (one undo step). A fix drops ignored entries whose action is on in one relation only now.");
             Console.WriteLine("  engine relations duplicates --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]");
             Console.WriteLine("  engine relations duplicates --instruction \"keep trim in the Trim relations, everything else in ...\" [--llm off|auto|on] [--apply]");
             Console.WriteLine("      a fix for many: a preview of every change, applied with --apply as one undo step; --changes \"key=>relation;key=>-\"");
-            Console.WriteLine("      applies a preview's ticked changes exactly; --apply-suggested = --rule suggested --apply; --forget-kept, --include-kept,");
+            Console.WriteLine("      applies a preview's ticked changes exactly; --apply-suggested = --rule suggested --apply; --include-kept,");
             Console.WriteLine("      --keys-only, --evaluate <older.pr0file> [--no-history] (the suggestions against the version before the duplicates).");
-            Console.WriteLine("  engine relations conflicts [--keys \"k;k\"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]");
+            Console.WriteLine("  engine relations conflicts [--keys \"k;k\"] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions | --forget-kept] [--include-kept | --list-kept]");
             Console.WriteLine("      the check's errors in detail: an input bound in several relations that have an action of the same aircraft on, and");
             Console.WriteLine("      a relation with two actions of one aircraft on, with the actions' titles (unknown ones marked); --keep switches the");
-            Console.WriteLine("      aircraft off in the other relations, --keep-action keeps one action, --off switches them off, --keep-both stops the");
-            Console.WriteLine("      check naming them, --remove-actions takes \"game|id|aircraft\" actions out of every relation (one undo step each).");
+            Console.WriteLine("      aircraft off in the other relations, --keep-action keeps one action, --off switches them off, --ignore (formerly");
+            Console.WriteLine("      --keep-both) stops the check naming them until one more relation or action joins, --remove-actions takes");
+            Console.WriteLine("      \"game|id|aircraft\" actions out of every relation, --forget-kept shows ignored ones again (one undo step each).");
             Console.WriteLine("  engine relations merge-copies [--dry-run] [--name <relation>]");
             Console.WriteLine("      relations an import copied (\"<name>__N\") with the same device, input and modifiers as \"<name>\" are merged back");
             Console.WriteLine("      into one: their aircraft, groups and per-aircraft tuning; one undo step. --dry-run lists them only.");
@@ -15314,6 +15346,8 @@ namespace JoyPro.Engine
             public List<string> BindErrors { get; set; }
             public List<string> ModifierErrors { get; set; }
             public List<string> DuplicateActiveErrors { get; set; }
+            // Warnings the user ignored (the profile's entries; the app then also lists the ignored ones).
+            public int IgnoredCount { get; set; }
 
             public int WarningCount
             {

@@ -7053,12 +7053,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             ApplyValidation(data);
             // Actions on in several relations: cards with the action titles, aircraft and fixes instead of the plain lines.
-            if (allValidationIssues.Any(i => i.Kind == "Warning"))
+            // (The ignored ones too: they make the list "Ignored warnings".)
+            if (allValidationIssues.Any(i => i.Kind == "Warning") || data.IgnoredCount > 0)
                 await LoadDuplicateIssuesAsync();
             else
                 ApplyDuplicates("{\"Duplicates\":[],\"Groups\":[]}");
             // One button that does two things, a relation with two commands: cards with the commands and their fixes.
-            if (allValidationIssues.Any(i => i.Kind == "Error"))
+            if (allValidationIssues.Any(i => i.Kind == "Error") || data.IgnoredCount > 0)
                 await LoadConflictIssuesAsync();
             else
                 ApplyConflicts(string.Empty);
@@ -7222,6 +7223,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public Dictionary<ValidationIssueItem, CheckIssueCard> Cards { get; } = new(ReferenceEqualityComparer.Instance);
         public int ErrorCount { get; set; }
         public int WarningCount { get; set; }
+        // Warnings the user ignored ("Ignored: n"): the duplicates and conflicts are read for the list even without others.
+        public int IgnoredCount { get; set; }
         public string Sort { get; set; } = string.Empty;
         public List<CheckIssueCard> SortedErrors { get; set; } = [];
         public List<CheckIssueCard> SortedNotes { get; set; } = [];
@@ -7249,6 +7252,12 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             if (line.StartsWith("Errors:", StringComparison.OrdinalIgnoreCase))
             {
                 int.TryParse(line["Errors:".Length..].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out errorCount);
+                continue;
+            }
+            if (line.StartsWith("Ignored:", StringComparison.OrdinalIgnoreCase))
+            {
+                int.TryParse(line["Ignored:".Length..].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int ignored);
+                data.IgnoredCount = ignored;
                 continue;
             }
             if (line.StartsWith("Passed:", StringComparison.OrdinalIgnoreCase) || line.StartsWith("Fail On Warnings:", StringComparison.OrdinalIgnoreCase))

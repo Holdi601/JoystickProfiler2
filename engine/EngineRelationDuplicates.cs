@@ -64,8 +64,12 @@ namespace JoyPro.Engine
         // Where it was before the second relation got it (the profile history): one relation, "-" for none, "" unknown.
         public string FirstIn { get; set; } = string.Empty;
         public List<EngineDuplicateReason> Reasons { get; set; } = new List<EngineDuplicateReason>();
-        // The user keeps it in these relations on purpose ("Keep both"): no warning.
+        // The user ignores it in these relations ("Ignore", formerly "Keep both"): no warning.
         public bool Kept { get; set; }
+        // Ignored before, shown again because another relation got it since (NowAlsoIn; NoLongerIn: left since).
+        public bool ShownAgain { get; set; }
+        public List<string> NowAlsoIn { get; set; } = new List<string>();
+        public List<string> NoLongerIn { get; set; } = new List<string>();
         public string GroupKey { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         // The game's current list of the aircraft has no such action (an old or renamed one); Title is then the name
@@ -116,6 +120,10 @@ namespace JoyPro.Engine
         public string SuggestionSource { get; set; } = string.Empty;
         public List<EngineDuplicateReason> Reasons { get; set; } = new List<EngineDuplicateReason>();
         public bool Kept { get; set; }
+        // Some of its actions were ignored before and show again: the relations that joined (left) since.
+        public bool ShownAgain { get; set; }
+        public List<string> NowAlsoIn { get; set; } = new List<string>();
+        public List<string> NoLongerIn { get; set; } = new List<string>();
         public string Message { get; set; } = string.Empty;
         // The history version that brought most of its actions into the second relation (see EngineDuplicateAction).
         public string CausedBy { get; set; } = string.Empty;
@@ -209,19 +217,15 @@ namespace JoyPro.Engine
             return game.Length > 0 && id.Length > 0 && plane.Length > 0;
         }
 
-        private static string KeptEntry(string key, IEnumerable<string> relations)
-        {
-            return key + "|" + string.Join("\t", relations.OrderBy(r => r, StringComparer.OrdinalIgnoreCase));
-        }
-
         private static string RelationSet(string keptEntry)
         {
             int bar = keptEntry.LastIndexOf('|');
             return bar < 0 ? string.Empty : keptEntry.Substring(bar + 1);
         }
 
-        // Every action of an aircraft that more than one relation has switched on, in a stable order; kept ones (the user
-        // keeps both) only with includeKept.
+        // Every action of an aircraft that more than one relation has switched on, in a stable order; ignored ones (the
+        // user's "Ignore": these relations or fewer of them) only with includeKept. One that shows again because another
+        // relation got it since it was ignored says which (ShownAgain, NowAlsoIn).
         internal static List<EngineDuplicateAction> Find(bool includeKept = false)
         {
             Dictionary<string, List<KeyValuePair<Relation, RelationItem>>> owners = new Dictionary<string, List<KeyValuePair<Relation, RelationItem>>>(StringComparer.OrdinalIgnoreCase);
@@ -250,7 +254,8 @@ namespace JoyPro.Engine
                 }
             }
 
-            HashSet<string> kept = new HashSet<string>(InternalDataManagement.KeptDuplicates ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
+            List<string> kept = InternalDataManagement.KeptDuplicates ?? new List<string>();
+            EngineIgnoredWarnings.Index ignored = new EngineIgnoredWarnings.Index(kept);
             HashSet<string> keptPairs = new HashSet<string>(kept.Where(k => !EngineCheckConflicts.IsConflictEntry(k)).Select(RelationSet), StringComparer.OrdinalIgnoreCase);
             Context context = new Context();
             List<EngineDuplicateAction> result = new List<EngineDuplicateAction>();
@@ -258,9 +263,17 @@ namespace JoyPro.Engine
             {
                 string[] p = parts[entry.Key];
                 EngineDuplicateAction duplicate = new EngineDuplicateAction { Key = entry.Key, Game = p[0], Id = p[1], Plane = p[2] };
-                duplicate.Kept = kept.Contains(KeptEntry(entry.Key, entry.Value.Select(o => o.Key.NAME ?? string.Empty)));
+                List<string> names = entry.Value.Select(o => o.Key.NAME ?? string.Empty).ToList();
+                duplicate.Kept = ignored.Covers(string.Empty, entry.Key, names);
                 if (duplicate.Kept && !includeKept)
                     continue;
+                EngineIgnoredWarnings.Entry before = duplicate.Kept ? null : ignored.ShownAgain(string.Empty, entry.Key, names);
+                if (before != null)
+                {
+                    duplicate.ShownAgain = true;
+                    duplicate.NowAlsoIn = names.Where(n => !before.Set.Contains(n)).OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+                    duplicate.NoLongerIn = before.Set.Where(n => !names.Contains(n, StringComparer.OrdinalIgnoreCase)).OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+                }
                 bool unknown;
                 duplicate.Title = TitleOf(p[0], p[1], p[2], entry.Value.Select(o => o.Value), out unknown);
                 duplicate.Unknown = unknown;
@@ -301,8 +314,9 @@ namespace JoyPro.Engine
                 .ToList();
         }
 
-        // Only the keys of the actions on in several relations (no evidence, no history): before and after an import.
-        internal static List<string> FindKeys()
+        // Only the keys of the actions on in several relations (no evidence, no history): before and after an import;
+        // the ignored ones only with includeKept.
+        internal static List<string> FindKeys(bool includeKept = false)
         {
             Dictionary<string, HashSet<string>> owners = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
             foreach (Relation relation in (InternalDataManagement.AllRelations ?? new Dictionary<string, Relation>()).Values.Where(r => r != null))
@@ -321,8 +335,8 @@ namespace JoyPro.Engine
                     }
                 }
             }
-            HashSet<string> kept = new HashSet<string>(InternalDataManagement.KeptDuplicates ?? new List<string>(), StringComparer.OrdinalIgnoreCase);
-            return owners.Where(o => o.Value.Count > 1 && !kept.Contains(KeptEntry(o.Key, o.Value))).Select(o => o.Key).OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
+            EngineIgnoredWarnings.Index ignored = EngineIgnoredWarnings.Read();
+            return owners.Where(o => o.Value.Count > 1 && (includeKept || !ignored.Covers(string.Empty, o.Key, o.Value))).Select(o => o.Key).OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         // Per run: the function catalog, the function map and the relations' verdicts, device kinds.
@@ -763,15 +777,19 @@ namespace JoyPro.Engine
         internal static List<EngineDuplicateGroup> Group(List<EngineDuplicateAction> duplicates)
         {
             List<EngineDuplicateGroup> groups = new List<EngineDuplicateGroup>();
-            foreach (IGrouping<string, EngineDuplicateAction> set in duplicates.GroupBy(d => d.GroupKey, StringComparer.OrdinalIgnoreCase))
+            // Ignored ones and the others of the same relations are cards of their own (the check and its ignored list).
+            foreach (IGrouping<string, EngineDuplicateAction> set in duplicates.GroupBy(d => d.GroupKey + (d.Kept ? "\u0001" : string.Empty), StringComparer.OrdinalIgnoreCase))
             {
                 List<EngineDuplicateAction> members = set.ToList();
                 EngineDuplicateAction first = members[0];
                 EngineDuplicateGroup group = new EngineDuplicateGroup
                 {
-                    Key = set.Key,
+                    Key = first.GroupKey,
                     Game = first.Game,
                     Kept = members.All(m => m.Kept),
+                    ShownAgain = members.Any(m => m.ShownAgain),
+                    NowAlsoIn = members.SelectMany(m => m.NowAlsoIn).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(r => r, StringComparer.OrdinalIgnoreCase).ToList(),
+                    NoLongerIn = members.SelectMany(m => m.NoLongerIn).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(r => r, StringComparer.OrdinalIgnoreCase).ToList(),
                     Keys = members.Select(m => m.Key).ToList(),
                     Planes = members.Select(m => m.Plane).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList()
                 };
@@ -817,7 +835,7 @@ namespace JoyPro.Engine
                 group.Message = GroupMessage(group);
                 groups.Add(group);
             }
-            return groups.OrderBy(g => g.Game, StringComparer.OrdinalIgnoreCase).ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase).ToList();
+            return groups.OrderBy(g => g.Game, StringComparer.OrdinalIgnoreCase).ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase).ThenBy(g => g.Kept).ToList();
         }
 
         private static readonly Dictionary<string, EngineDuplicatePlaneName> planeNames = new Dictionary<string, EngineDuplicatePlaneName>(StringComparer.OrdinalIgnoreCase);
@@ -1020,19 +1038,15 @@ namespace JoyPro.Engine
             return changed;
         }
 
-        // "Keep both": the check stops warning about these actions while exactly these relations have them.
+        // "Ignore" (formerly "Keep both"): the check stops warning about these actions while these relations (or fewer of
+        // them) have them; an older entry of the same action is replaced.
         internal static int KeepBoth(IEnumerable<EngineDuplicateAction> duplicates)
         {
-            if (InternalDataManagement.KeptDuplicates == null)
-                InternalDataManagement.KeptDuplicates = new List<string>();
             int added = 0;
             foreach (EngineDuplicateAction duplicate in duplicates)
             {
-                string entry = KeptEntry(duplicate.Key, duplicate.Places.Select(p => p.Relation));
-                if (InternalDataManagement.KeptDuplicates.Contains(entry, StringComparer.OrdinalIgnoreCase))
-                    continue;
-                InternalDataManagement.KeptDuplicates.Add(entry);
-                added++;
+                if (EngineIgnoredWarnings.Add(string.Empty, duplicate.Key, duplicate.Places.Select(p => p.Relation)))
+                    added++;
             }
             return added;
         }
@@ -1041,9 +1055,9 @@ namespace JoyPro.Engine
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Actions on in more than one relation: " + result.Count.ToString(CultureInfo.InvariantCulture) +
-                          " (with a suggestion: " + result.WithSuggestion.ToString(CultureInfo.InvariantCulture) + ", kept on purpose: " + result.KeptCount.ToString(CultureInfo.InvariantCulture) + ")");
+                          " (with a suggestion: " + result.WithSuggestion.ToString(CultureInfo.InvariantCulture) + ", ignored: " + result.KeptCount.ToString(CultureInfo.InvariantCulture) + ")");
             if (result.Count > 0)
-                sb.AppendLine("Resolve: engine relations duplicates --keep <relation> --keys <game|id|aircraft;...>, --off, --keep-both, --rule suggested|name|first|device:<kind>|relation:<words> [--apply], --instruction \"...\" [--apply]");
+                sb.AppendLine("Resolve: engine relations duplicates --keep <relation> --keys <game|id|aircraft;...>, --off, --ignore, --rule suggested|name|first|device:<kind>|relation:<words> [--apply], --instruction \"...\" [--apply]");
             if (result.Resolved > 0 || result.SwitchedOff > 0)
                 sb.AppendLine("Resolved: " + result.Resolved.ToString(CultureInfo.InvariantCulture) + ", switched off in " + result.SwitchedOff.ToString(CultureInfo.InvariantCulture) + " relation(s)");
             if (result.Rule.Length > 0)
@@ -1057,7 +1071,8 @@ namespace JoyPro.Engine
                               (change.SwitchOffIn.Count > 0 ? ", off in " + string.Join(", ", change.SwitchOffIn.Select(r => "'" + r + "'")) : string.Empty) +
                               " (" + change.Confidence.ToString(CultureInfo.InvariantCulture) + "%, " + change.Rule + ")");
             foreach (EngineDuplicateGroup group in result.Groups)
-                sb.AppendLine("  - " + group.Message);
+                sb.AppendLine("  - " + group.Message + (group.Kept ? " [ignored]" : group.ShownAgain
+                    ? " [shown again" + (group.NowAlsoIn.Count > 0 ? ", now also in " + string.Join(", ", group.NowAlsoIn.Select(r => "'" + r + "'")) : string.Empty) + "]" : string.Empty));
             foreach (EngineDuplicateEvaluationRow row in result.Evaluation)
                 sb.AppendLine("  >= " + row.Threshold.ToString(CultureInfo.InvariantCulture) + "%: " + row.Correct.ToString(CultureInfo.InvariantCulture) + " of " +
                               row.Proposals.ToString(CultureInfo.InvariantCulture) + " as before (precision " + row.Precision.ToString("0.000", CultureInfo.InvariantCulture) + "), +" +

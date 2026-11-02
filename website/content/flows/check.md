@@ -20,7 +20,7 @@ flowchart LR
   D --> E{"Fix"}
   E -->|recommended| F["One engine command<br/>= one undo step"]
   E -->|Open relation| G["Relation opens with the<br/>card's commands marked"]
-  E -->|Keep both| H["Saved in the profile,<br/>not shown again"]
+  E -->|Ignore| H["Saved in the profile, hidden<br/>until something new joins it"]
 ```
 
 :::layer beginner
@@ -57,15 +57,18 @@ kind filter shows one kind; the order (By relation, By aircraft, By game, By con
 
 | Section | Kind | What it means in the game | Fixes |
 |---|---|---|---|
-| One button does two things | error | An input is bound in two relations that both have a command of the same aircraft on: one press runs both. | Keep only 'X' on this button (the aircraft is switched off in the other relations), Keep both; More: Move 'X' to another button, Switch off all of them |
-| One button runs two commands | error | One relation has two commands of the same aircraft (or game) on. | Keep only 'A', Keep both; More: Move one to another button, Switch all off |
+| One button does two things | error | An input is bound in two relations that both have a command of the same aircraft on: one press runs both. | Keep only 'X' on this button (the aircraft is switched off in the other relations), Ignore; More: Move 'X' to another button, Switch off all of them |
+| One button runs two commands | error | One relation has two commands of the same aircraft (or game) on. | Keep only 'A', Ignore; More: Move one to another button, Switch all off |
 | Other errors | error | For example a modifier button that is also a normal button. | as the card says |
-| Same command on two buttons | warning | One command of an aircraft is on in two relations: the game gets it on two buttons. | Keep only on X (JoyPro's suggestion), Keep both; More: Switch it off on both |
+| Same command on two buttons | warning | One command of an aircraft is on in two relations: the game gets it on two buttons. | Keep only on X (JoyPro's suggestion), Ignore; More: Switch it off on both |
 | Copied relations | warning | An import made copies of a relation on the same button. | Merge into one; Merge all copied relations |
 | Not written to the game | warning | "Only add" left a bind out because the game uses the button for something else, or the game has no free place (Elite: Primary and Secondary in use). | Export with 'Update' to replace it, Move to another button, Keep as is |
 | Notes | note | Harmless, worth a look. | |
 
-- **Keep both** is saved in the profile: the Check does not show it again while exactly these relations have it.
+- **Ignore** keeps the binds as they are and hides the card (saved in the profile, one Ctrl+Z). It comes back by
+  itself, marked **New** with "Shown again: now also on ...", when the command lands on one more button (one more
+  relation on the button, one more command in the relation). **Ignored warnings (n)** lists the hidden ones with
+  **Show again** and **Show all again**.
 - **Caused by**: when the profile history knows which change brought a problem, the card says so ("Caused by: Manage
   with AI (366 relation changes) on 21.10.2026").
 - **Unknown commands**: a command the aircraft's current list no longer has (an old module version, a mod that is not
@@ -95,7 +98,8 @@ kind filter shows one kind; the order (By relation, By aircraft, By game, By con
   step under 400 ms).
 - **Engine**: `relations conflicts` (`engine\EngineCheckConflicts.cs`) gives validate's two errors in detail:
   `InputConflicts` (key `game:plane§device§input[§modifier]`) and `ActionConflicts` (key `game|plane|relation`). Fixes:
-  `--keep <relation>`, `--keep-action <id>`, `--off`, `--keep-both` (saved in `Pr0file.KeptDuplicates`),
+  `--keep <relation>`, `--keep-action <id>`, `--off`, `--ignore` (saved in `Pr0file.KeptDuplicates`; `--list-kept`,
+  `--forget-kept [--keys]`),
   `--remove-actions`. `relations duplicates` finds the same command on two buttons and copies; `export-marks list`
   the binds an export left out. Each fix is one profile version (one undo step).
 - **Text gate**: `CheckTextGate` fails a test when a card text shows an id, "node" or another internal word.

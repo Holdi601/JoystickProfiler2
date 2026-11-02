@@ -10,19 +10,24 @@ namespace JoyPro.Engine
     {
         private static readonly HashSet<string> DuplicatesMutatingFlags = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "--keep", "--off", "--keep-both", "--forget-kept", "--apply", "--apply-suggested", "--changes"
+            "--keep", "--off", "--keep-both", "--ignore", "--forget-kept", "--apply", "--apply-suggested", "--changes"
         };
 
         // relations duplicates: the actions of aircraft that more than one relation has switched on (the game gets them on
         // each input), as cards per relation pair with a suggestion and its confidence (EngineRelationDuplicates).
         //   [--keys "game|id|plane;..."] or [--node game:id --plane p1|p2]   the actions a fix is about
-        //   --keep <relation> | --off | --keep-both                          one card's fix (one undo step)
-        //   --forget-kept                                                    warn again about everything kept on purpose
+        //   --keep <relation> | --off | --ignore                             one card's fix (one undo step); --ignore (formerly
+        //                                                                    --keep-both, still read) hides the warning until
+        //                                                                    one more relation gets the action
+        //   --forget-kept [--keys k;k]                                       show these ignored warnings again (without keys:
+        //                                                                    every ignored warning, also the conflicts')
+        //   --list-kept                                                      only the ignored ones (the app's ignored list)
         //   --rule suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]
         //   --instruction "<words>" [--llm off|auto|on] [--apply]           a fix for many in words (phrase rules, local AI model)
         //   --apply-suggested [--min-confidence N]                          = --rule suggested --apply
         //   --changes "game|id|plane=>relation;...=>-"                      a preview's ticked changes exactly as shown
         //   --include-kept, --no-history, --evaluate <truth.pr0file>        listing and calibration
+        // A fix (and --forget-kept) also drops ignored entries whose action is on in one relation only now.
         private static int RelationDuplicatesCommand(List<string> command, string outPath, bool textOutput)
         {
             List<string> args = command.Skip(1).ToList();
@@ -30,9 +35,11 @@ namespace JoyPro.Engine
             bool apply = PopFlag(args, "--apply") || applySuggested;
             bool offEverywhere = PopFlag(args, "--off");
             bool keepBoth = PopFlag(args, "--keep-both");
+            keepBoth = PopFlag(args, "--ignore") || keepBoth;
             bool forgetKept = PopFlag(args, "--forget-kept");
             bool noHistory = PopFlag(args, "--no-history");
             bool includeKept = PopFlag(args, "--include-kept");
+            bool listKept = PopFlag(args, "--list-kept");
             bool keysOnly = PopFlag(args, "--keys-only");
             string keep = PopOptionValue(args, "--keep");
             string nodeOption = PopOptionValue(args, "--node");
@@ -46,9 +53,9 @@ namespace JoyPro.Engine
             string changesOption = PopOptionValue(args, "--changes");
             if (args.Count > 0)
                 return Fail("Unknown relations duplicates argument(s): " + string.Join(" ", args) +
-                            ". Usage: relations duplicates [--keys k;k | --node game:id --plane p1|p2] [--keep <relation> | --off | --keep-both] [--rule <rule> | --instruction \"...\"] [--min-confidence N] [--apply]");
+                            ". Usage: relations duplicates [--keys k;k | --node game:id --plane p1|p2] [--keep <relation> | --off | --ignore] [--rule <rule> | --instruction \"...\"] [--min-confidence N] [--apply] [--forget-kept] [--include-kept | --list-kept]");
             if (new[] { keep != null, offEverywhere, keepBoth }.Count(b => b) > 1)
-                return Fail("relations duplicates: --keep, --off and --keep-both exclude each other.");
+                return Fail("relations duplicates: --keep, --off and --ignore exclude each other.");
             if (!EngineNlGroup.LlmModes.Contains(llm))
                 return Fail("Invalid --llm value: " + llm + ". Use " + string.Join(", ", EngineNlGroup.LlmModes) + ".");
             int minConfidence = 0;
@@ -104,7 +111,7 @@ namespace JoyPro.Engine
             if (keep != null || offEverywhere || keepBoth)
             {
                 if (keys.Count == 0)
-                    return Fail("relations duplicates --keep/--off/--keep-both needs the actions: --keys \"game|id|aircraft;...\" or --node game:id --plane <aircraft>.");
+                    return Fail("relations duplicates --keep/--off/--ignore needs the actions: --keys \"game|id|aircraft;...\" or --node game:id --plane <aircraft>.");
                 List<EngineDuplicateAction> targets = all.Where(d => keys.Contains(d.Key)).ToList();
                 if (targets.Count == 0)
                     return Fail("Those actions are on in one relation only (nothing to resolve).");
@@ -159,11 +166,21 @@ namespace JoyPro.Engine
                 if (result.Resolved > 0 && string.IsNullOrWhiteSpace(EngineProfileHistory.Note))
                     EngineProfileHistory.Note = "Resolving " + result.Resolved.ToString(CultureInfo.InvariantCulture) + " actions on in several relations";
             }
+            // "Show again": the ignored warnings of these actions (keys), or every ignored warning.
             if (forgetKept)
             {
-                result.Resolved += InternalDataManagement.KeptDuplicates == null ? 0 : InternalDataManagement.KeptDuplicates.Count;
-                InternalDataManagement.KeptDuplicates = new List<string>();
+                if (keys.Count > 0)
+                {
+                    result.Resolved += EngineIgnoredWarnings.Forget(new[] { string.Empty }, keys);
+                }
+                else
+                {
+                    result.Resolved += InternalDataManagement.KeptDuplicates == null ? 0 : InternalDataManagement.KeptDuplicates.Count;
+                    InternalDataManagement.KeptDuplicates = new List<string>();
+                }
                 changedProfile = true;
+                if (string.IsNullOrWhiteSpace(EngineProfileHistory.Note))
+                    EngineProfileHistory.Note = "Showing ignored warnings again";
             }
             if (rule != null || instruction != null)
             {
@@ -202,9 +219,10 @@ namespace JoyPro.Engine
             if (changedProfile)
             {
                 InternalDataManagement.ResyncRelations();
+                EngineIgnoredWarnings.Prune();
                 all = EngineRelationDuplicates.Find(includeKept: true);
             }
-            result.Duplicates = all.Where(d => includeKept || !d.Kept).ToList();
+            result.Duplicates = all.Where(d => listKept ? d.Kept : includeKept || !d.Kept).ToList();
             result.Groups = EngineRelationDuplicates.Group(result.Duplicates);
             result.KeptCount = all.Count(d => d.Kept);
             result.Count = all.Count(d => !d.Kept);
@@ -215,7 +233,7 @@ namespace JoyPro.Engine
 
         private static readonly HashSet<string> ConflictsMutatingFlags = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "--keep", "--keep-action", "--off", "--keep-both", "--remove-actions"
+            "--keep", "--keep-action", "--off", "--keep-both", "--ignore", "--remove-actions", "--forget-kept"
         };
 
         // relations conflicts: the check's errors in detail (EngineCheckConflicts) - inputs bound in several relations that
@@ -225,24 +243,30 @@ namespace JoyPro.Engine
         //   --keep <relation>              an input conflict's aircraft stays on only in this relation (off in the others)
         //   --keep-action <id>             a relation's two actions: only this one stays on for the aircraft
         //   --off                          switched off in every relation of the conflict (all actions of a relation)
-        //   --keep-both                    both stay; the check does not name them again (kept in the profile)
+        //   --ignore                       all stay; the check does not name them again until one more relation (action)
+        //                                  joins (kept in the profile; formerly --keep-both, still read)
         //   --remove-actions               takes these actions of these aircraft out of every relation (unknown ones)
-        //   --include-kept                 lists the kept ones too
+        //   --forget-kept                  shows these ignored conflicts again (--keys), without keys every ignored conflict
+        //   --include-kept                 lists the ignored ones too; --list-kept only them
+        // A fix (and --forget-kept) also drops ignored entries whose conflict is not there any more.
         private static int RelationConflictsCommand(List<string> command, string outPath, bool textOutput)
         {
             List<string> args = command.Skip(1).ToList();
             bool offEverywhere = PopFlag(args, "--off");
             bool keepBoth = PopFlag(args, "--keep-both");
+            keepBoth = PopFlag(args, "--ignore") || keepBoth;
             bool removeActions = PopFlag(args, "--remove-actions");
             bool includeKept = PopFlag(args, "--include-kept");
+            bool listKept = PopFlag(args, "--list-kept");
+            bool forgetKept = PopFlag(args, "--forget-kept");
             string keep = PopOptionValue(args, "--keep");
             string keepAction = PopOptionValue(args, "--keep-action");
             string keysOption = PopOptionValue(args, "--keys");
             if (args.Count > 0)
                 return Fail("Unknown relations conflicts argument(s): " + string.Join(" ", args) +
-                            ". Usage: relations conflicts [--keys k;k] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions] [--include-kept]");
-            if (new[] { keep != null, keepAction != null, offEverywhere, keepBoth, removeActions }.Count(b => b) > 1)
-                return Fail("relations conflicts: --keep, --keep-action, --off, --keep-both and --remove-actions exclude each other.");
+                            ". Usage: relations conflicts [--keys k;k] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions | --forget-kept] [--include-kept | --list-kept]");
+            if (new[] { keep != null, keepAction != null, offEverywhere, keepBoth, removeActions, forgetKept }.Count(b => b) > 1)
+                return Fail("relations conflicts: --keep, --keep-action, --off, --ignore, --remove-actions and --forget-kept exclude each other.");
             HashSet<string> keys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (string key in (keysOption ?? string.Empty).Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
                 keys.Add(key.Trim());
@@ -289,10 +313,21 @@ namespace JoyPro.Engine
                 }
                 if (result.Changed > 0)
                     InternalDataManagement.ResyncRelations();
+                EngineIgnoredWarnings.Prune();
             }
-            result.InputConflicts = EngineCheckConflicts.InputConflicts(includeKept, withTitles: true);
-            result.ActionConflicts = EngineCheckConflicts.ActionConflicts(includeKept, withTitles: true);
-            result.KeptCount = (InternalDataManagement.KeptDuplicates ?? new List<string>()).Count(EngineCheckConflicts.IsConflictEntry);
+            // "Show again": the ignored conflicts of these keys, or every ignored conflict (one undo step).
+            if (forgetKept)
+            {
+                result.Changed = EngineIgnoredWarnings.Forget(new[] { EngineIgnoredWarnings.InputPrefix, EngineIgnoredWarnings.ActionPrefix }, keys.Count > 0 ? keys : null);
+                EngineIgnoredWarnings.Prune();
+                if (string.IsNullOrWhiteSpace(EngineProfileHistory.Note))
+                    EngineProfileHistory.Note = "Showing ignored warnings again";
+            }
+            List<EngineInputConflict> allInputs = EngineCheckConflicts.InputConflicts(includeKept: true, withTitles: true);
+            List<EngineActionConflict> allActions = EngineCheckConflicts.ActionConflicts(includeKept: true, withTitles: true);
+            result.InputConflicts = allInputs.Where(c => listKept ? c.Kept : includeKept || !c.Kept).ToList();
+            result.ActionConflicts = allActions.Where(c => listKept ? c.Kept : includeKept || !c.Kept).ToList();
+            result.KeptCount = allInputs.Count(c => c.Kept) + allActions.Count(c => c.Kept);
             result.PlaneNames = result.InputConflicts.Select(c => c.Game + "\u0001" + c.Plane).Concat(result.ActionConflicts.Select(c => c.Game + "\u0001" + c.Plane))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .Select(k => k.Split('\u0001'))

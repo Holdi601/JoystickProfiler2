@@ -87,6 +87,10 @@ modifier list. Axis curves show in **Axis Tune** of the axis. Other aircraft you
   clear my other devices**, or see *Default binds* below.
 - **Two identical devices**: DCS tells them apart by their instance ID; keep **Treat devices with the same name as one
   device** on, so a device that Windows gave a new ID is read as the same device.
+- **A command DCS shows is "not in its list"**: a mod added it (for example the Input Command Injector with a
+  community keybinds pack). When the Start page says *Your DCS mods changed the controls list; rebuild the command
+  list*, press **Refresh DB** on it once: JoyPro reads the mod's commands the way DCS does. Commands JoyPro finds in
+  your DCS bind files before that are known already and marked *from your DCS files*.
 :::
 
 :::layer advanced
@@ -102,6 +106,29 @@ modifier list. Axis curves show in **Axis Tune** of the axis. Other aircraft you
 `<aircraft>` is the input profile name the module declares (for example `F-16C_50`, `FA-18C_hornet`). Another Saved
 Games folder (`DCS.openbeta`) is set in Settings > Games. The files are written without a byte order mark, because
 DCS's Lua cannot load one.
+
+## Commands from mods
+
+Some mods add commands to DCS's controls list:
+
+- **Input Command Injector** (by Quaggles, often with a community keybinds pack): the extra commands live in
+  `Saved Games\DCS\InputCommands\<module>\Input\<profile>\joystick\default.lua` (and `keyboard`), and the injector in
+  the DCS installation (`Scripts\Hooks`) joins them to the module's own list when DCS loads the controls.
+- **Modules in `Saved Games\DCS\Mods\aircraft`**: they bring their own command lists.
+
+JoyPro's command list (**Build List** / **Refresh DB**) reads them the way DCS does: from the Saved Games folder your
+DCS installation really uses (`DCS.openbeta` for an OpenBeta installation), with the injector's commands joined when
+the injector is installed, with the same command ids DCS gives them. When your mods change, the Start page says
+*Your DCS mods changed the controls list; rebuild the command list*; one **Refresh DB** brings the new commands.
+
+A command that is in your DCS bind files but not yet in the command list (for example a mod you added after the list
+was built) is known anyway: JoyPro takes its exact id and name from the file and marks it *from your DCS files* on the
+Relations page, and the Start page suggests a rebuild.
+
+| File | What it is |
+|---|---|
+| `Saved Games\DCS\InputCommands\...` | the Input Command Injector's extra commands (read only) |
+| `<data>\GameData\DcsCommandsFromYourFiles.tsv` | commands found in your DCS bind files that the command list lacks |
 
 ## The export modes in DCS
 

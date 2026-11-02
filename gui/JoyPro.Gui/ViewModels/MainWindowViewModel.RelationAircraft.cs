@@ -33,6 +33,7 @@ public sealed partial class MainWindowViewModel
         {
             Match = ReadJsonString(item, "Match"),
             Primary = ReadJsonBool(item, "Primary"),
+            IsNameMatch = ReadJsonBool(item, "Literal"),
             Display = ReadJsonString(item, "Display"),
             FunctionName = builderFunctionGroups.FirstOrDefault(g => string.Equals(g.Id, function, StringComparison.OrdinalIgnoreCase)).Name is { Length: > 0 } groupName ? groupName : ReadJsonString(item, "FunctionName"),
             MeaningNote = ReadJsonString(item, "MeaningNote"),
@@ -252,7 +253,8 @@ public sealed partial class MainWindowViewModel
                     foreach (JsonElement a in aircraft.EnumerateArray())
                     {
                         choices.Add(new AircraftChoiceItem(ReadJsonString(a, "Plane"), ReadJsonString(a, "Title"), ReadJsonString(a, "Category"),
-                            ReadJsonString(a, "Match"), ReadJsonString(a, "Note"), ReadJsonString(a, "State") == "on", ReadJsonBool(a, "SameFunction")));
+                            ReadJsonString(a, "Match"), ReadJsonString(a, "Note"), ReadJsonString(a, "State") == "on", ReadJsonBool(a, "SameFunction"),
+                            ReadJsonBool(a, "FromYourFiles")));
                     }
                 }
                 item.MeaningTitle = ReadJsonString(node, "Title");

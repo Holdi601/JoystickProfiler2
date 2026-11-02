@@ -28,6 +28,8 @@ Errors first (red, with their own icon), then warnings (amber), then notes:
 The counts at the top count cards ("To look at: 9 errors, 167 warnings, 0 notes"). The search finds cards by relation,
 aircraft, button and command; the kind filter shows one kind; the order ("By relation", "By aircraft", "By game", "By
 confidence") also groups the cards under a header (the relation, the aircraft) where a group has several cards.
+"Ignored warnings (n)" next to them (only while there are some) opens the list of the warnings you ignored (see
+[Ignored warnings](#ignored-warnings)).
 
 ## A card
 
@@ -42,7 +44,7 @@ confidence") also groups the cards under a header (the relation, the aircraft) w
    relation changes) on 21.10.2026"). A history entry whose change names other relations only is not taken (the
    history thins out old versions).
 6. **The fixes**: one recommended fix as the accent button with a tick (JoyPro's suggestion: "Keep only on VKB-Sim
-   Gunfighter · BTN 16"), the other fixes ("Keep only on ...", "Keep both"), and "More" with a down arrow (the tick and
+   Gunfighter · BTN 16"), the other fixes ("Keep only on ...", "Ignore"), and "More" with a down arrow (the tick and
    the arrow are drawn icons since 2.6.0: the ✓ and ▾ characters came from a fallback font whose taller line made
    those buttons higher than their neighbours) (switch it off on both buttons, remove an
    unknown command, find similar). Every fix is one undo step.
@@ -57,14 +59,34 @@ Fixes per kind:
 
 | Card | Recommended | Others | More |
 |---|---|---|---|
-| Same command on two buttons | the suggestion (keep it on one button, or switch it off) | Keep only on X, Keep both, Replace 'command' on X with... (one per button; under More when the card has several commands) | Switch it off on both buttons, unknown commands |
-| One button does two things | - | Keep only 'X' on this button (the aircraft is switched off in the other relations), Keep both (it is intended) | Move 'X' to another button, Switch off all of them, unknown commands |
-| One button runs two commands | - | Keep only 'A' (the other commands of the relation are switched off for these aircraft), Keep both | Move one to another button, Switch all of them off, unknown commands |
+| Same command on two buttons | the suggestion (keep it on one button, or switch it off) | Keep only on X, Ignore, Replace 'command' on X with... (one per button; under More when the card has several commands) | Switch it off on both buttons, unknown commands |
+| One button does two things | - | Keep only 'X' on this button (the aircraft is switched off in the other relations), Ignore | Move 'X' to another button, Switch off all of them, unknown commands |
+| One button runs two commands | - | Keep only 'A' (the other commands of the relation are switched off for these aircraft), Ignore | Move one to another button, Switch all of them off, unknown commands |
 | Not written to the game | Export with 'Update' to replace it (not for "no free place") | Move to another button, Keep as is | - |
 | Copied relations | Merge into one | - | Merge all copied relations |
 
-"Keep both" is saved in the profile (`KeptDuplicates`); the check does not show it again while exactly these relations
-(commands) have it.
+## Ignored warnings
+
+"Ignore" (2.6.1; "Keep both" before, which was the wrong word for three or more buttons) is on every card of "Same
+command on two buttons", "One button does two things" and "One button runs two commands". The binds stay as they are;
+the card goes away and JoyPro remembers it in the profile (`KeptDuplicates`, one undo step). It stays hidden while the
+same buttons (relations, commands) or fewer of them have it. When the command lands on one more button (one more
+relation on the button, one more command in the relation) the card comes back on its own, marked **New** and with a
+line "Shown again: now also on MOZA AB9 FFB Base · BTN 3 ('Trim Nose Down')" ("...now also runs 'Gear Up'" for the
+errors), so you can work through the warnings once and only see what is new afterwards. Ignoring it again hides it
+with the new set.
+
+"Ignored warnings (n)" (only while there are some) opens the list of the hidden ones in the cards' words: the title,
+the buttons with their relations, the sentence (aircraft and command), the table where a card has several commands.
+Each has **Show again** (the card comes back, one undo step); **Show all again** brings every ignored warning back
+(one undo step). The Check's search filters the list too, and finds the list itself by what people call it ("ignore
+list", "hidden warnings", "dismissed", "muted", "keep both"): it opens.
+
+Old entries clean up after themselves: when a fix of the check runs, an ignored warning whose command is on one
+button only now (the button runs one command) is forgotten, so it comes back as a new warning if it ever happens
+again. The check itself never changes the profile. Engine: `relations duplicates --ignore | --list-kept |
+--forget-kept [--keys]`, `relations conflicts --ignore | --list-kept | --forget-kept [--keys]` (`ShownAgain`,
+`NowAlsoIn`, `engine/EngineIgnoredWarnings.cs`).
 
 "Replace 'X' on <button> with..." (2.6.0) is for a button that should do something else, e.g. the F-4E's "TACAN
 Channel (xx0x) - [Dec]" on both COMM 2 CW and CCW where CW should be [Inc]: the relation opens (the card's command

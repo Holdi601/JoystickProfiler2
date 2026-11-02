@@ -190,7 +190,13 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    the open relation are not shown at their rank: greyed, without a tick box, in a group **Already in this relation** at
    the bottom of every list (by game, by function, with game chips, after Show more, with or without the aircraft
    filter); Tick all shown and Add selected leave them out, and the header counts only what can be added (`10 actions
-   in 1 game + 1 already in this relation`). Only the rows in view are built (a virtualizing list): a search over every
+   in 1 game + 1 already in this relation`). The list has two sections (2.6.1): **Name has every word (n)** (titles
+   with every typed word, the engine's `Literal`) and below it **Same meaning (n)** (found by what the action does: the
+   function, a synonym, a description or some of the words); a name match stays above every row that only means the
+   same in every sort (own order, `Sort: Game` and the other levels order the rows within a section), by game and by
+   function, with game chips and after Show more (a game in both sections has its `Show n more` on its last header).
+   Before 2.6.1 a `Game` sort level sorted a game's rows by title, which put "Exterior Lights Master ..." above `MASTER
+   RESET` for `master reset`. Only the rows in view are built (a virtualizing list): a search over every
    game lists up to 160 rows. Each game's **main control** of the function comes first, marked `main control`; a title that
    does not name the function says it: `AXIS ELEVATOR SET — Pitch axis (elevator)`.
 4. Filters: `All` / `Axes` / `Buttons` (a relation holds one kind; an open relation with actions shows only its own,
@@ -239,6 +245,19 @@ command and meaning, with every aircraft where the command means that and the re
   `[Dec]`, `[Next]`, `[Toggle]`, `[CW]`); only seat and panel tags (`[FWD]`, `[SimPit]`, `[WSO]` ...) are dropped
   (before 2.6.0 every trailing tag was dropped and the dash before it read as "minus": `[Inc]`, `[Next]` and
   `[Toggle]` were "decrease").
+- **Every word covered** (2.6.1): a query of several words that some result covers completely lists only what covers
+  all of them. A result covers the query when its title has every word (above), or when it was found as a function
+  that explains every word: by the name, synonym or description that found it, by one of its names and synonyms
+  (`Master caution reset` has `master` and `reset`), or by the direction it was read with when the function really has
+  actions in that direction (at least two and one in twenty, or its own list of directions: `gear up` is the gear's up;
+  one air-conditioning "master switch - RESET" gives the master power no reset). The functions and rows that explain
+  only some of the words go, also from "understood as": `master reset` in the F-14 lists `MASTER RESET` and `Master
+  Caution Reset` and is understood as the master caution reset, not every `master` function by its first word. Filler
+  and stop words (`the`, `please`, `turn`), numbers and fragments of one or two letters that are no direction (`xx`,
+  `0`, `x` of `tacan channel (xx0x) - inc`: the TACAN channel step still covers that query) need no cover. A function found through a synonym of the whole phrase still
+  covers it (`undercarriage up`, `drop flares`, `fahrwerk ausfahren`), and when nothing covers every word the partial
+  meanings stay, so plain-language queries (`make the plane go faster`) work as before. A single word is never cut
+  (`master` lists all 35 F-14 titles with it, `reset` still lists `MASTER RESET`).
 - **Ranking**: the exact title first, then the function by its own words (`Throttle Left`), then by a synonym or game
   term (`Collective`), then by what the query describes, then plain word matches. Rows of the function's natural kind
   (a throttle axis, a gear button) rank before the others. The function's **primary axis** leads its game (see
@@ -634,8 +653,11 @@ on a MFBB and a MOZA button).
 `relations duplicates` lists them as cards per relation pair (`Groups`: the relations with device and input, the actions
 with their aircraft as the cockpit catalog names them, `Suggested` or `SuggestOff`, `Confidence` 0-100, `Reasons`) and as
 single actions (`Duplicates`, key `game|id|aircraft`). Fixes, each one profile version (one undo step):
-`--keep <relation> --keys "k;k"` (or `--node game:id --plane p1|p2`), `--off`, `--keep-both` (saved in the profile,
-`Pr0file.KeptDuplicates`: no warning while exactly these relations have it; `--forget-kept` warns again), `--rule
+`--keep <relation> --keys "k;k"` (or `--node game:id --plane p1|p2`), `--off`, `--ignore` (formerly `--keep-both`,
+still read; saved in the profile, `Pr0file.KeptDuplicates`: no warning while these relations or fewer of them have it;
+when one more relation gets it the warning shows again with `ShownAgain` and `NowAlsoIn`/`NoLongerIn`; `--list-kept`
+lists the ignored ones, `--forget-kept [--keys]` warns again about these or, without keys, about every ignored
+warning; a fix drops entries whose action is on in one relation only now, `engine/EngineIgnoredWarnings.cs`), `--rule
 suggested|name|first|device:<kind>|relation:<words> [--min-confidence N] [--apply]`, `--instruction "<words>" [--llm
 off|auto|on] [--apply]` (phrase rules: "keep <words> in <relation words>", "everything else in ...", "switch off ...",
 "prefer the throttle"; the local AI model only rewrites what they do not understand into such phrases), `--changes
@@ -662,7 +684,7 @@ their relation ("LEFT VPC Throttle MT-50 CM · BTN 9 ('A10 - DMS Down') ↔ VKB-
 Aft')"), one sentence what happens in the game, aircraft -> command (3 rows, "Show all"), "Caused by: <history entry> on
 <date>" when the profile history tells (`CausedBy`, `CausedSummary`, `CausedAt` of the group: the version that brought
 most of its actions into the second relation; one whose change names other relations only is skipped), one recommended
-fix (the suggestion), "Keep only on X" / "Keep both" / "More" (switch it off on both buttons), an "Open '<relation>'"
+fix (the suggestion), "Keep only on X" / "Ignore" / "More" (switch it off on both buttons), an "Open '<relation>'"
 button per relation that opens it with exactly the card's commands and aircraft marked (Back returns to the card), and
 the confidence with its reasons in the collapsed details. Only aircraft ticked in both relations count. A command the
 aircraft's current list no longer has is `Unknown` (its `Title` is the name the relation stored): the card says "unknown
@@ -675,8 +697,9 @@ when they put actions into a second relation ("Review them" opens the check).
 
 ### The check's errors
 
-`relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --keep-both | --remove-actions]
-[--include-kept]` (`engine/EngineCheckConflicts.cs`) gives profile validate's two errors in detail; validate prints the
+`relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions |
+--forget-kept] [--include-kept | --list-kept]` (`engine/EngineCheckConflicts.cs`) gives profile validate's two errors in
+detail; validate prints the
 same lines from it:
 
 - `InputConflicts`: an input (device, input, modifiers) bound in several relations that all have an action of the same
@@ -691,9 +714,14 @@ same lines from it:
   helicopter's collective on one axis are no error (2.6.0). Only actions of the same class are, and the conflict lists
   just those. The same holds for `InputConflicts`: two relations on one input count only when they carry actions of
   the same vehicle class of such a game.
-- `--keep-both` saves "input|<key>|<relations>" / "active|<key>|<ids>" in `Pr0file.KeptDuplicates`: the check does not
-  name it again while exactly these relations (actions) have it. `--remove-actions --keys "game|id|plane;..."` takes
-  actions (unknown ones) out of every relation. Each fix is one profile version (one undo step).
+- `--ignore` (formerly `--keep-both`, still read) saves "input|<key>|<relations>" / "active|<key>|<ids>" in
+  `Pr0file.KeptDuplicates` (an older entry of the same key is replaced): the check does not name it again while these
+  relations (actions) or fewer of them have it. One more joins: it is listed again with `ShownAgain` and `NowAlsoIn`
+  (relations; for `ActionConflicts` action ids). `--list-kept` lists only the ignored ones (`Kept`), `--forget-kept
+  [--keys]` names them again (without keys every ignored conflict). A fix drops entries whose conflict is gone.
+  `--remove-actions --keys "game|id|plane;..."` takes actions (unknown ones) out of every relation. Each fix is one
+  profile version (one undo step). `profile validate --text` prints "Ignored: n" (the profile's entries) when there are
+  some, so the app reads the ignored ones for its list even when nothing else is left.
 
 ### Dismissed suggestions
 

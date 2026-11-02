@@ -54,6 +54,12 @@ namespace JoyPro.Engine
             sb.AppendLine("Entries Parsed: " + result.EntriesParsed);
             sb.AppendLine("Force Feedback Entries Parsed: " + result.ForceFeedbackEntriesParsed);
             sb.AppendLine("Default Entries Parsed: " + result.DefaultEntriesParsed);
+            if (result.CommandsFoundInYourFiles != null && result.CommandsFoundInYourFiles.Count > 0)
+            {
+                sb.AppendLine("Commands Found In Your DCS Files (not in the command list): " + result.CommandsFoundInYourFiles.Count);
+                foreach (string found in result.CommandsFoundInYourFiles.Take(20))
+                    sb.AppendLine("  - " + found);
+            }
             if (result.IncludeDefaults)
             {
                 sb.AppendLine("Defaults Removed In DCS (skipped): " + result.DefaultEntriesRemovedByUser);
@@ -174,6 +180,7 @@ namespace JoyPro.Engine
                 result.EntriesParsed.ToString() +
                 ", ffb entries: " +
                 result.ForceFeedbackEntriesParsed.ToString() + ".");
+            RecordCommandsFoundInYourFiles(parsed, result);
             if (effectiveOptions.IncludeDefaults)
             {
                 ReportStatus(effectiveOptions, "Appending defaults from clean profile database.");
@@ -197,6 +204,56 @@ namespace JoyPro.Engine
                 (result.OlderDeviceCopyFilesSkipped > 0 ? ", older copies of a device skipped: " + result.OlderDeviceCopyEntriesSkipped.ToString() + " bind(s)" : string.Empty) +
                 (result.OnlyConnected ? ", not connected devices skipped: " + result.NotConnectedEntriesSkipped.ToString() + " bind(s)" : string.Empty) + ".");
             return result;
+        }
+
+        // The safety net for commands DCS shows that JoyPro's list lacks (a mod added them after the list was built): the
+        // commands of DCS's own .diff.lua files (exact id and DCS's name; JoyPro's .jp copies do not count) that are not
+        // in their aircraft's command list are recorded (DcsFoundCommands), so JoyPro knows them and the update check
+        // suggests rebuilding the list.
+        private static void RecordCommandsFoundInYourFiles(List<ParsedBind> parsed, EngineDcsImportResult result)
+        {
+            try
+            {
+                List<DcsFoundCommands.Entry> candidates = new List<DcsFoundCommands.Entry>();
+                foreach (ParsedBind bind in parsed)
+                {
+                    string source = bind.SourceFile ?? string.Empty;
+                    if (string.IsNullOrWhiteSpace(bind.Plane) || bind.Plane == "UnknownPlane" || string.IsNullOrWhiteSpace(bind.Id))
+                        continue;
+                    // A bind read from JoyPro's .jp copy counts when DCS's own .diff.lua next to it has the command too.
+                    if (IsBackupFile(source))
+                    {
+                        string diff = source.Substring(0, source.Length - ".jp".Length) + ".diff.lua";
+                        string diffText;
+                        try
+                        {
+                            diffText = RunFileCache.ReadAllText(diff) ?? string.Empty;
+                        }
+                        catch (Exception)
+                        {
+                            diffText = string.Empty;
+                        }
+                        if (diffText.IndexOf("[\"" + bind.Id.Trim() + "\"]", StringComparison.Ordinal) < 0)
+                            continue;
+                        source = diff;
+                    }
+                    else if (!source.EndsWith(".diff.lua", StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    string relative = source;
+                    if (!string.IsNullOrEmpty(result.InputPath) && source.StartsWith(result.InputPath, StringComparison.OrdinalIgnoreCase))
+                        relative = source.Substring(result.InputPath.Length).TrimStart('\\', '/');
+                    candidates.Add(new DcsFoundCommands.Entry { Plane = bind.Plane, Id = bind.Id, Title = bind.Name, IsAxis = bind.IsAxis, Source = relative });
+                }
+                foreach (DcsFoundCommands.Entry added in DcsFoundCommands.Record(candidates))
+                    result.CommandsFoundInYourFiles.Add(added.Plane + ": " + (added.Title.Length > 0 ? added.Title : added.Id) + " (" + added.Id + ")");
+                if (result.CommandsFoundInYourFiles.Count > 0)
+                    result.Warnings.Add(result.CommandsFoundInYourFiles.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+                                        " command(s) of your DCS bind files are not in JoyPro's DCS command list (a mod or a DCS update added them): JoyPro knows them now; rebuild the DCS command list to get their categories.");
+            }
+            catch (Exception ex)
+            {
+                result.Warnings.Add("Could not check the bind files' commands against the DCS command list: " + ex.Message);
+            }
         }
 
         private static List<ParsedBind> ParseAllInputFiles(

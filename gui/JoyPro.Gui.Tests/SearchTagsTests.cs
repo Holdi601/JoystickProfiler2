@@ -322,4 +322,104 @@ public sealed class SearchTagsRealEngineTests
             try { Directory.Delete(folder, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
     }
+
+    // The tester's 2.6.0 report (docs/relation-builder.md "Ranking"): "master reset" in the F-14 lists only the two
+    // titles with both words and is understood as the master caution reset; "Name has every word" stays above "Same
+    // meaning" in Sort: Game (the title tie-break of a "Game" level put meaning rows first), in By function and through
+    // "Show more".
+    [Fact]
+    public async Task F14_NameMatchesAboveSameMeaning_InEverySortAndGrouping()
+    {
+        string? engine = Engine();
+        if (engine == null)
+            return;
+        string folder = Path.Combine(Path.GetTempPath(), "JoyPro2.Gui.Tests", "search-sections-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(folder);
+        try
+        {
+            DataDirEngineClient client = new(Path.Combine(folder, "data"));
+            string profile = Path.Combine(folder, "f14.pr0file");
+            EngineCommandResult made = await client.RunAsync(engine, ["--profile", profile, "--status", "false", "relations", "add", "Button VMAX 07", "--button", "--node", "DCS:" + WingSweepFwd + ":F-14"]);
+            Assert.True(made.ExitCode == 0, made.StandardError);
+            MainWindowViewModel vm = new(client, new AxisTuningFakeCapture(), loadPersistedUiSettings: false) { EnginePath = engine, ProfilePath = profile };
+            try
+            {
+                await vm.RefreshRelationsCommand.ExecuteAsync(null);
+                vm.CurrentStage = UiStage.Relations;
+                await RelationBuilderTests.OpenAsync(vm, "Button VMAX 07");
+                vm.ShowBuilderFindCommand.Execute(null);
+                await vm.AddBuilderSearchPlaneCommand.ExecuteAsync("F-14");
+
+                // "master reset": exactly the two titles with both words, understood as the master caution reset only.
+                vm.BuilderSearchText = "master reset";
+                await RelationBuilderTests.WaitForAsync(() => !vm.IsBuilderSearching && vm.BuilderLastSearchedQueryForTests == "master reset");
+                Assert.Equal(["MASTER RESET", "Master Caution Reset"], vm.BuilderSearchResults.Select(r => r.Title).ToArray());
+                Assert.All(vm.BuilderSearchResults, r => Assert.True(r.IsNameMatch));
+                Assert.Contains("understood as Master caution reset", vm.BuilderSearchStatus);
+                Assert.DoesNotContain("Master arm", vm.BuilderSearchStatus);
+                BuilderSearchSectionItem only = Assert.IsType<BuilderSearchSectionItem>(vm.BuilderSearchRows[0]);
+                Assert.True(only.IsNameMatches);
+                Assert.Equal("Name has every word (2)", only.Label);
+                Assert.Single(vm.BuilderSearchRows.OfType<BuilderSearchSectionItem>());
+
+                // "reset": titles with the word and rows that only mean it (the view's center). The game's best rows
+                // are the name matches; "Show more" sits on that header while the rest is not loaded.
+                vm.BuilderSearchText = "reset";
+                await RelationBuilderTests.WaitForAsync(() => !vm.IsBuilderSearching && vm.BuilderLastSearchedQueryForTests == "reset");
+                Assert.Contains(vm.BuilderSearchResults, r => r.IsNameMatch);
+                List<object> rows = vm.BuilderSearchRows.ToList();
+                Assert.True(Assert.IsType<BuilderSearchSectionItem>(rows[0]).IsNameMatches);
+                Assert.All(rows.OfType<BuilderSearchResultItem>(), r => Assert.True(r.IsNameMatch));
+                BuilderSearchGroupItem capped = rows.OfType<BuilderSearchGroupItem>().Single(g => g.IsGame);
+                Assert.True(capped.CanExpand, "the capped game has no Show more");
+                await vm.ExpandAllBuilderGamesCommand.ExecuteAsync(null);
+                await RelationBuilderTests.WaitForAsync(() => !vm.IsBuilderSearching && !vm.IsBusy);
+                Assert.Contains(vm.BuilderSearchResults, r => !r.IsNameMatch && !r.IsInOpenRelation);
+
+                // Every mode: the default order, Sort: Game (the title decides within a game) and By function.
+                foreach (string mode in new[] { "own order", "Sort: Game", "By function", "By function, Sort: Game" })
+                {
+                    vm.BuilderSearchSort.Reset();
+                    vm.BuilderGroupByFunction = mode.StartsWith("By function", StringComparison.Ordinal);
+                    if (mode.EndsWith("Sort: Game", StringComparison.Ordinal))
+                        vm.BuilderSearchSort.Add("game", false);
+                    rows = vm.BuilderSearchRows.ToList();
+                    List<BuilderSearchSectionItem> sections = rows.OfType<BuilderSearchSectionItem>().ToList();
+                    Assert.Equal(2, sections.Count);
+                    Assert.True(sections[0].IsNameMatches, mode);
+                    Assert.False(sections[1].IsNameMatches, mode);
+                    int meaningAt = rows.IndexOf(sections[1]);
+                    Assert.Same(sections[0], rows[0]);
+                    List<BuilderSearchResultItem> above = rows.Take(meaningAt).OfType<BuilderSearchResultItem>().ToList();
+                    List<BuilderSearchResultItem> below = rows.Skip(meaningAt).OfType<BuilderSearchResultItem>().Where(r => !r.IsInOpenRelation).ToList();
+                    Assert.True(above.Count > 0 && below.Count > 0, mode);
+                    Assert.All(above, r => Assert.True(r.IsNameMatch, mode + ": '" + r.Title + "' is above the meaning rows without every word"));
+                    Assert.All(below, r => Assert.False(r.IsNameMatch, mode + ": '" + r.Title + "' has every word but is below 'Same meaning'"));
+                    Assert.Equal("Name has every word (" + above.Count + ")", sections[0].Label);
+                    Assert.Equal("Same meaning (" + below.Count + ")", sections[1].Label);
+                    Assert.Contains(above, r => r.Title == "MASTER RESET");
+                    // By function: the first group is one of name matches.
+                    if (vm.BuilderGroupByFunction)
+                        Assert.All(Assert.IsType<BuilderSearchGroupItem>(rows[1]).Rows, r => Assert.True(r.IsNameMatch, mode));
+                    // Sort: Game: within the section the titles are in order (the sort still works).
+                    if (mode == "Sort: Game")
+                    {
+                        List<string> titles = above.Select(r => r.DisplayTitle).ToList();
+                        Assert.Equal(titles.OrderBy(t => t, StringComparer.OrdinalIgnoreCase).ToList(), titles);
+                    }
+                }
+                vm.BuilderSearchSort.Reset();
+                vm.BuilderGroupByFunction = false;
+            }
+            finally
+            {
+                vm.StopGameConfigWatcher();
+                EngineServerPool.Recycle("search tags test done");
+            }
+        }
+        finally
+        {
+            try { Directory.Delete(folder, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
+    }
 }

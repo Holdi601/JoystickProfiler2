@@ -49,6 +49,71 @@ A list built before (the user's, until the next DB refresh) is translated when i
 `InternalDataManagement.ParseDcsHtmlInputs` and the GUI's title lookups) from the installed DCS's `input.mo`; without a
 DCS install the sibling list's title (`_easy`, `CW`) or a readable form of the key ("Pitch minus") is shown.
 
+## Commands from mods
+Mods add commands to DCS's controls list without a new DCS version. JoyPro's list must have them too, else a relation
+says "the id is not in its list" for a command DCS shows (tester report, 2026-11-02: the F-16C's "C & I Knob - UFC
+else BACKUP (2-way Switch)", `d3001pnilu3001cd35vd1vpnilvu0`, and about 140 more "X else Y (2-way Switch)" commands
+in "Special For Joystick").
+
+- **Quaggles' DCS Input Command Injector** (github.com/Quaggles/dcs-input-command-injector), mostly with a community
+  pack such as munkwolf's dcs-community-keybinds. Version 1.1.0 (2026-08) is a hook,
+  `<DCS>\Scripts\Hooks\QuagglesInputCommandInjector.lua`; older versions replaced `<DCS>\Scripts\Input\Data.lua`. Both
+  wrap DCS's loader of the input files (`Input.Data` `loadDeviceProfileFromFile`): after DCS runs an input file under
+  `./Mods/aircraft/<x>` (its folder there too) or `(./)Config/Input/<x>`, the file
+  `<Saved Games>\<variant>\InputCommands\<x>` runs in the same environment (the module's `devices`, command tables and
+  `_`), and its `keyCommands` and `axisCommands` (no axes for the keyboard) are joined to the module's. Examples:
+  `InputCommands\F-16C\Input\F-16C\joystick\default.lua`, `InputCommands\AJS37\Input\joystick\default.lua` (a module
+  without a profile folder), `InputCommands\Aircrafts\common_joystick_binding.lua` (included by many modules through
+  `external_profile("Config/Input/Aircrafts/common_joystick_binding.lua")`). Files of Saved Games modules get nothing
+  (the injector only matches DCS's relative paths). DCS then gives the joined commands their ids itself.
+- **Modules in `<Saved Games>\<variant>\Mods\aircraft`**: DCS loads them like installed modules; the refresh lists
+  them.
+
+**Why the tester's list lacked them** (DCS 2.9.31, `E:\Games\Eagle Dynamics\DCS World Openbeta`, binds in
+`Saved Games\DCS.openbeta`): the headless refresh runs DCS's own Lua in `luae.exe`, where no hook of
+`Scripts\Hooks` runs, so the 1.1.0 injector never merged anything; and his refresh read `Saved Games\DCS` (the old
+GUI default), not `DCS.openbeta` where the pack is.
+
+**The refresh** (`dcs refresh id` / `clean`, `EngineDcsRefresh.ResolveModInputs`, `DcsModInputs`):
+- reads the Saved Games folder of the install's variant: `dcs_variant.txt` "openbeta" (or an install folder named
+  OpenBeta) means `Saved Games\DCS.openbeta`, also when `--path` names `Saved Games\DCS` beside it (not when that folder
+  is the user's config location in Settings > Games); the step list says so;
+- merges InputCommands the way the injector does (`AppendInputCommandsInjection`: the same loader wrapper and the same
+  mapping of paths, with JoyPro's own copy of the merge, so it works whether DCS's Data.lua is patched or not; a
+  patched Data.lua's own merge is turned off in the sandbox so nothing is joined twice). `--input-commands auto` (the
+  GUI) merges when the injector is installed in this DCS (a `Scripts\Hooks\*.lua` with "InputCommandInjector", or a
+  patched Data.lua), as DCS does; `on` always, `off` never. The injector's `settings.lua` and `state.lua` are not
+  command files. Every merged file is listed ("InputCommands Files Merged"), a broken one is a warning (DCS shows an
+  error for it and leaves it out).
+
+Checked with the user's DCS 2.9.30 (read only, temporary Saved Games with the tester's pack of 248 files, temporary
+data folder): 134 files merged (the others are device files of devices not connected, modules not installed, or the
+old Flaming Cliffs layout DCS does not load), 15425 more commands in 44 lists, none lost, e.g. F-16C_50 1125 -> 1494,
+FA-18C_hornet 1082 -> 1415, AJS37 994 -> 998, AH-64D_BLK_II_PLT 741 -> 1064; both C & I ids as in his .diff.lua
+(`...vd1vpnilvu0`, `...vd0vpnilvu1`). Of the 4495 command ids in his bind files, 59 were missing from the list without
+the pack and 13 with it (F-14, F-4E, TF-51D, Mosquito: commands of his DCS 2.9.31 or old binds).
+
+**Outdated list** (`db check-updates`): the recorded state (`DB\DCS\source-version.txt`) has `mod-inputs` =
+a fingerprint (names, sizes, dates; no file is read) of the InputCommands files and of the Saved Games modules' input
+files and `entry.lua`, plus how the injector is installed, in the Saved Games folder of the installed DCS (Settings >
+Games, else the variant's folder). Only when there are any: a DCS without mods never counts as changed. A list
+recorded without it while mod files exist (every list built before 2.6.1), a changed, added or removed file, or an
+injector installed later make the DCS list "game-updated" with `Reason` "mods": "Your DCS mods changed the controls
+list; rebuild the command list." The Start page shows it with **Refresh DB**; the refresh records the new state.
+
+**Safety net: commands in your bind files** (`DcsFoundCommands`): an import or scan that reads a command in DCS's own
+`.diff.lua` (a `.jp` copy only when the `.diff.lua` beside it has the id) whose aircraft has a list without that id
+records it with the file's exact id and DCS's name in `<data>\GameData\DcsCommandsFromYourFiles.tsv` (outside
+`DB\DCS`, so the load correction's fingerprint does not change). Every DCS list read adds them (category "Found in
+your DCS files"), so JoyPro knows them instead of "not in its list"; the Relations page marks them "from your DCS
+files". New ones make `db check-updates` say "Your DCS bind files use commands the command list does not have; rebuild
+the command list." (`Reason` "binds"). A refresh drops the ones the new list has and keeps the others as "kept"
+(known, no more hints); **Keep DB** keeps them all. Nothing is guessed: aircraft without a list record nothing.
+
+Tests: `engine\tests\smoke\dcsmodcommands.ps1` (variant folder, auto/on/off, the outdated states, the safety net and,
+with the DCS install on the PC, the real refresh of F-16C_50 and AJS37 with JoyPro's own small pack in
+`tests\fixtures\dcsmodcommands`).
+
 ## Default binds and clean profiles
 For each aircraft DCS loads the device's defaults from the profile's `joystick` folder: `<device type>.lua` when it
 exists, else `default.lua`; then the module-independent `Config\Input\Aircrafts\Default\joystick\` files. A template

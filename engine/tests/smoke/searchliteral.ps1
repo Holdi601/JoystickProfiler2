@@ -68,6 +68,36 @@ try {
     Assert-True (@($slCaution.Results | Where-Object { $_.Title -eq "Master Caution Reset" }).Count -eq 1) "search 'master caution' (F-14) does not find Master Caution Reset."
     $slResetOnly = Invoke-SlJson @("relations", "search", "reset", "--plane", "F-14", "--game", "DCS", "--limit", "400")
     Assert-True (@($slResetOnly.Results | Where-Object { $_.Title -eq "MASTER RESET" }).Count -eq 1) "search 'reset' (F-14) does not list MASTER RESET."
+
+    # Every word covered (2.6.1, the tester's report on 2.6.0): "master reset" in the F-14 is exactly the two titles with
+    # both words, understood as the master caution reset only (not every "master" function by its first word).
+    $slBoth = Invoke-SlJson @("relations", "search", "master reset", "--plane", "F-14", "--game", "DCS", "--limit", "400")
+    $slBothTitles = @($slBoth.Results | ForEach-Object { $_.Title })
+    Assert-True ($slBothTitles.Count -eq 2 -and $slBothTitles[0] -eq "MASTER RESET" -and $slBothTitles[1] -eq "Master Caution Reset") ("search 'master reset' (F-14) does not list exactly MASTER RESET, Master Caution Reset: " + ($slBothTitles -join " / "))
+    Assert-True (@($slBoth.Results | Where-Object { -not $_.Literal }).Count -eq 0) "search 'master reset' (F-14): a row without both words is listed."
+    $slBothFunctions = @($slBoth.Resolved | ForEach-Object { $_.Name })
+    Assert-True ($slBothFunctions.Count -eq 1 -and $slBothFunctions[0] -eq "Master caution reset") ("search 'master reset' (F-14) is understood as " + ($slBothFunctions -join ", ") + ", not only as Master caution reset.")
+    # A single word is never cut: all 35 F-14 titles with "master".
+    Assert-True ($slMasterRows.Count -ge 35 -and $slWithWord.Count -ge 35) ("search 'master' (F-14) lists " + $slMasterRows.Count + " rows, " + $slWithWord.Count + " with the word (35 expected).")
+    # Must keep: a single word, a direction, a meaning of the whole phrase, a step query, a sentence and German.
+    $slPinky = Invoke-SlJson @("relations", "search", "pinky", "--limit", "200", "--per-game", "6")
+    Assert-True (@($slPinky.Results | Where-Object { $_.Title -match "(?i)\bpinky" }).Count -ge 3) "search 'pinky' finds fewer than three pinky switches."
+    foreach ($case in @(
+            @{ Q = "gear up"; F = "gear"; Dir = "up" },
+            @{ Q = "recenter view"; F = "view_center"; Dir = "" },
+            @{ Q = "increase tacan channel"; F = "nav_radio"; Dir = "increase" },
+            @{ Q = "drop flares"; F = "flare"; Dir = "" },
+            @{ Q = "make the plane go faster"; F = "throttle"; Dir = "increase" },
+            @{ Q = "fahrwerk ausfahren"; F = "gear"; Dir = "" })) {
+        $r = Invoke-SlJson @("relations", "search", $case.Q, "--limit", "200", "--per-game", "6")
+        $top = @($r.Resolved | Where-Object { -not $_.Related } | Select-Object -First 1)
+        Assert-True ($top.Count -eq 1 -and $top[0].Id -eq $case.F) ("search '" + $case.Q + "' is no longer understood as " + $case.F + " first (" + (@($r.Resolved | ForEach-Object { $_.Id }) -join ", ") + ").")
+        if ($case.Dir) { Assert-True ($top[0].Dir -eq $case.Dir) ("search '" + $case.Q + "' reads the direction " + $top[0].Dir + ", not " + $case.Dir + ".") }
+        $own = @($r.Results | Where-Object { @($_.Functions | Where-Object { $_ -like ($case.F + "*") }).Count -gt 0 })
+        Assert-True ($own.Count -ge 5) ("search '" + $case.Q + "' lists only " + $own.Count + " rows of " + $case.F + ".")
+    }
+    $slInc = Invoke-SlJson @("relations", "search", "tacan channel (xx0x) - inc", "--plane", $slF4, "--game", "DCS", "--limit", "400")
+    Assert-True (@($slInc.Results | Where-Object { $_.Title -eq "TACAN Channel (xx0x) - [Inc]" }).Count -eq 2) "search 'tacan channel (xx0x) - inc' does not list both seats' [Inc]."
 }
 finally {
     $env:JOYPRO_DATA_DIR = $slPreviousData

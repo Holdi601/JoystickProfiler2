@@ -2234,6 +2234,13 @@
                                                         </Style>
                                                     </ItemsControl.Styles>
                                                     <ItemsControl.DataTemplates>
+                                                        <!-- "Name has every word (n)" above "Same meaning (n)": titles with every typed word first in every sort -->
+                                                        <DataTemplate x:DataType="models:BuilderSearchSectionItem">
+                                                            <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="0,0,0,1" Margin="0,12,0,0" Padding="0,0,0,3" Background="Transparent"
+                                                                    ToolTip.Tip="{Binding Tooltip}">
+                                                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" Foreground="{DynamicResource JP.AccentTextBrush}" TextTrimming="CharacterEllipsis" />
+                                                            </Border>
+                                                        </DataTemplate>
                                                         <DataTemplate x:DataType="models:BuilderSearchGroupItem">
                                                             <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8" Margin="0,8,0,2">
                                                                 <CheckBox IsChecked="{Binding IsChecked}" IsEnabled="{Binding HasTickable}" VerticalAlignment="Center" IsVisible="{Binding !IsInRelationGroup}"
