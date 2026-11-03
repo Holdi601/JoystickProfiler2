@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -1404,6 +1404,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
 
         List<string> preferred = ParseCsv(value.ActivePlanesText);
         _ = RefreshRelationNodePlaneOptionsAsync(preferred);
+        RevealRelationNode(value);
     }
     partial void OnSelectedLayoutSuggestionChanged(LayoutSuggestionItem? value)
     {
@@ -2371,6 +2372,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 await RunDeviceAutoRemapAsync();
                 // The device names of the profile (after the remap: an alias moves with its device).
                 await LoadDeviceAliasesAsync();
+                // Aircraft an earlier load correction switched on without the user: a notice offers to take them out.
+                await CheckAutoAddRepairAsync();
             }
             finally
             {
@@ -12337,6 +12340,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             ShowStatisticsPage = state.ShowStatisticsPage;
             UseUsageStyle = state.UsageStyle ?? true;
             SupportIncludeProfile = state.SupportIncludeProfile ?? true;
+            BuilderShowSameMeaning = state.AddActionsSameMeaning ?? true;
             if (state.MarkerAssistantX is double assistantX && double.IsFinite(assistantX) && state.MarkerAssistantY is double assistantY && double.IsFinite(assistantY))
                 SetMarkerAssistantOffset(Math.Min(assistantX, 4000), Math.Min(assistantY, 3000), keep: false);
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
@@ -12417,6 +12421,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 ShowStatisticsPage = ShowStatisticsPage,
                 UsageStyle = UseUsageStyle,
                 SupportIncludeProfile = SupportIncludeProfile,
+                AddActionsSameMeaning = BuilderShowSameMeaning,
                 MarkerAssistantX = MarkerAssistantOffsetX > 0 || MarkerAssistantOffsetY > 0 ? MarkerAssistantOffsetX : null,
                 MarkerAssistantY = MarkerAssistantOffsetX > 0 || MarkerAssistantOffsetY > 0 ? MarkerAssistantOffsetY : null
             };
@@ -12694,6 +12699,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // Settings > Report a problem: the support file holds the open profile, its history and the games' bind files
         // (null: on).
         public bool? SupportIncludeProfile { get; set; }
+
+        // Relations > Add actions (and Settings > Relations): also the actions found by what they do, not only the titles
+        // with every typed word (null: on).
+        public bool? AddActionsSameMeaning { get; set; }
 
         // The Layout page's switches, the picks of Apply Selected and the cheat-sheet options (MainWindowViewModel.LayoutUiSettings.cs).
         public LayoutUiSettings? Layout { get; set; }

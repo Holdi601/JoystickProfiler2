@@ -138,6 +138,7 @@ public sealed partial class MainWindowViewModel
 
     partial void OnIsAxisTuningExpandedChanged(bool value)
     {
+        RememberAxisResponseOpen(value);
         if (value && SelectedBindIsAxis && SelectedBind != null &&
             !string.Equals(axisTuningRelation, SelectedBind.RelationName, StringComparison.OrdinalIgnoreCase))
         {
@@ -168,6 +169,7 @@ public sealed partial class MainWindowViewModel
     {
         OnPropertyChanged(nameof(CanClearAxisTuning));
         OnPropertyChanged(nameof(CanSaveAxisTuning));
+        OnPropertyChanged(nameof(CanCopyAxisTuning));
     }
 
     // Called when the bind selection changes (not for a re-selection after a list rebuild).
@@ -187,7 +189,9 @@ public sealed partial class MainWindowViewModel
         AxisTuningValidation = string.Empty;
         AxisTuningModelText = string.Empty;
         AxisTuningStatus = SelectedBindIsAxis ? T("Loading...") : T("Select an axis relation.");
-        if (IsAxisTuningExpanded && SelectedBindIsAxis && SelectedBind != null)
+        // An axis: the section opens by itself, unless the user closed it last time (that open loads it).
+        bool opened = ApplyAxisResponseOpen();
+        if (!opened && IsAxisTuningExpanded && SelectedBindIsAxis && SelectedBind != null)
             _ = LoadAxisTuningScopesAsync();
         UpdateAxisTuningMonitor();
     }
@@ -811,7 +815,8 @@ public sealed partial class MainWindowViewModel
         await LoadAxisTuningScopeAsync();
     }
 
-    internal List<string>? BuildAxisTuningSetArguments(out string error)
+    // targetRelation: another axis gets these values (Copy to another axis); withInvert false leaves its invert as it is.
+    internal List<string>? BuildAxisTuningSetArguments(out string error, string? targetRelation = null, bool withInvert = true)
     {
         AxisTuningScopeItem? scope = SelectedAxisTuningScope;
         error = string.Empty;
@@ -829,7 +834,7 @@ public sealed partial class MainWindowViewModel
         if (tuning == null)
             return null;
 
-        List<string> args = ["binds", "tuning", "set", axisTuningRelation, "--scope", scope.Scope];
+        List<string> args = ["binds", "tuning", "set", string.IsNullOrWhiteSpace(targetRelation) ? axisTuningRelation : targetRelation, "--scope", scope.Scope];
         bool userCurve = AxisTuningEditors.Any(e => e.IsUserCurve && e.IsOn);
         foreach (AxisParameterEditor editor in AxisTuningEditors)
         {
@@ -837,7 +842,10 @@ public sealed partial class MainWindowViewModel
             {
                 case AxisParameterKind.Toggle:
                     if (editor.Key == "invert")
-                        args.AddRange(["--inverted", editor.IsOn ? "true" : "false"]);
+                    {
+                        if (withInvert)
+                            args.AddRange(["--inverted", editor.IsOn ? "true" : "false"]);
+                    }
                     else if (editor.Key == "slider")
                         args.AddRange(["--slider", editor.IsOn ? "true" : "false"]);
                     break;
@@ -867,7 +875,7 @@ public sealed partial class MainWindowViewModel
         {
             if (AxisTuningUseControlPoints)
                 args.AddRange(["--curve-points", string.Join(",", AxisTuningControlPoints.Select(p => Num(p.X) + ":" + Num(p.Y)))]);
-            else if (axisTuningLoadedValues.HasControlPoints)
+            else if (axisTuningLoadedValues.HasControlPoints || !string.IsNullOrWhiteSpace(targetRelation))
                 args.AddRange(["--curve-points", "none"]);
         }
         return args;

@@ -70,7 +70,23 @@ public sealed class HighlightTextBlock : TextBlock
             Inlines?.Add(new Run(text.Substring(cursor)));
     }
 
-    private static List<(int Start, int Length)> FindHighlightSegments(string text, string query)
+    // "brakes" also marks "Brake", "switches" "Switch", "batteries" "Battery": the search reads a plural as its singular
+    // (engine EngineFunctionMap.Stem), so the title it found by it shows the word marked.
+    internal static string Singular(string word)
+    {
+        string w = word ?? string.Empty;
+        if (w.Length <= 3 || !w.EndsWith('s') || w.EndsWith("ss", StringComparison.OrdinalIgnoreCase) || w.EndsWith("us", StringComparison.OrdinalIgnoreCase) ||
+            w.EndsWith("is", StringComparison.OrdinalIgnoreCase))
+            return w;
+        if (w.EndsWith("ies", StringComparison.OrdinalIgnoreCase) && w.Length > 4)
+            return w[..^3];
+        if (w.Length >= 5 && (w.EndsWith("ches", StringComparison.OrdinalIgnoreCase) || w.EndsWith("shes", StringComparison.OrdinalIgnoreCase) ||
+                              w.EndsWith("sses", StringComparison.OrdinalIgnoreCase) || w.EndsWith("xes", StringComparison.OrdinalIgnoreCase)))
+            return w[..^2];
+        return w[..^1];
+    }
+
+    internal static List<(int Start, int Length)> FindHighlightSegments(string text, string query)
     {
         if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(query))
             return [];
@@ -78,6 +94,7 @@ public sealed class HighlightTextBlock : TextBlock
         string[] terms = query
             .Split([' ', '\t', ',', ';'], StringSplitOptions.RemoveEmptyEntries)
             .Where(v => !string.IsNullOrWhiteSpace(v))
+            .SelectMany(v => new[] { v, Singular(v) })
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         if (terms.Length == 0)

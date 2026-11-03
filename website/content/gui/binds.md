@@ -104,9 +104,10 @@ and "Also take a button that rests pressed when it is released" (for the middle 
 
 **Modifiers on this bind**: tick modifiers and **Attach Selected To Bind** / **Detach Selected From Bind**, or create
 one (**Create a modifier**: name, device and input or **Record Modifier Input**, **Invert** for a switch that is
-"on" when released).
+"on" when released). Its **x** closes it down to the title line (remembered); **Show** opens it again.
 
-**Axis response: curve, dead zone, saturation** (axis relations only), see below. **Detent mode** (throttles with an
+**Axis response: curve, dead zone, saturation** (axis relations only; it opens by itself when you pick an axis, and
+stays closed for the next axis once you close it), see below. **Detent mode** (throttles with an
 afterburner detent), see below. **Bind behavior (advanced)**: inverted, slider, double tap. **Unbind an input
 everywhere (advanced)**: free one physical input in the whole profile.
 
@@ -129,9 +130,16 @@ curve in blue and the base as a dashed orange line while the scope inherits. Eac
 X-Plane: free curve points), so the sliders on the right change with the scope. When a game falls back to the base,
 JoyPro fits that game's parameters to the base curve as closely as the game can express it.
 
-Drag the white points to shape the curve, or use the sliders. Edits preview at once (also with the live position of
-your stick as a dot); nothing is stored until **Save for this scope**. **Inherit (clear)** removes the scope's own
-settings. **Reload** reads them again.
+Drag the white points to shape the curve, or use the sliders. Every setting also has a number box with its range
+next to it ("0 .. 1"): type the exact value, or press Up / Down (Shift: ten steps) or turn the mouse wheel over the
+box you are in; a number outside the range goes back to its nearest end when you press Enter or leave the box. The
+**user curve** has 11 number boxes, one per 10 % of stick travel (0 % ... 100 %), in step with the white points on
+the curve. Edits preview at once (also with the live position of your stick as a dot); **Save for this scope** stores
+them. **Inherit (clear)** removes the scope's own settings. **Reload** reads them again.
+
+**Copy to another axis...** puts the same settings on another bound axis in one step, e.g. Thrust Left to Thrust
+Right: pick the axis, tick **Copy invert too** only if both should invert alike, then **Copy**. It goes to the same
+scope of the other axis; one Ctrl+Z takes it back.
 
 ## Detent mode: one throttle for all aircraft
 
@@ -604,3 +612,23 @@ the afterburner starts at your detent for these aircraft.
 <!-- entry: ResetDetentGroupCommand -->
 Detent mode, an aircraft group: **Game data** removes your own afterburner values of these aircraft; they use the
 start JoyPro's game data has. Engine: [[cli:binds detent set]].
+
+<!-- entry: CloseBindModifiersCommand -->
+The **x** of **Modifiers on this bind**: closes the panel down to its title line, so the axis response and the rest
+of the page move up. JoyPro remembers it (also after a restart); **Show** opens it again.
+
+<!-- entry: OpenBindModifiersCommand -->
+**Show** on the closed **Modifiers on this bind** line: opens the modifier list of the bind again (remembered).
+
+<!-- entry: PrepareAxisTuningCopyCommand -->
+**Copy to another axis...** in the axis response: opens a small panel to pick another bound axis (the other side
+first: Thrust Left offers Thrust Right). It copies the settings shown for the scope (dead zone, saturation X/Y,
+curvature or the user curve, slider and the game's own settings) to the same scope of that axis.
+
+<!-- entry: bind:AxisTuningCopyInvert -->
+**Copy invert too** in Copy to another axis: off, the other axis keeps its own invert (left and right often differ
+there); on, it gets this axis's invert as well.
+
+<!-- entry: CopyAxisTuningToAxisCommand -->
+**Copy** in Copy to another axis: writes the settings to the picked axis in one step, [[cli:binds tuning set]] for
+the other relation with the same `--scope`. One Ctrl+Z takes it back; this axis keeps its values.

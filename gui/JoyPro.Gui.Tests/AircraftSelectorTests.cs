@@ -226,11 +226,15 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
         await RelationBuilderTests.WaitForAsync(() => vm.RelationNodes.Any(n => n.HasAircraft));
         await vm.RefreshAircraftCheckAsync();
         Assert.True(vm.HasAircraftCheckNotice);
-        Assert.Equal("In some aircraft this command does something else.", vm.RelationCheckHeadline);
-        Assert.Equal("The 'Countermeasures Management Switch - Fwd' command of the F-16C_50 has another meaning in 1 aircraft (e.g. F-15E: 'Canopy Open'). " +
-                     "Should this relation also apply there?", vm.RelationCheckText);
+        Assert.Equal("This button does different things in different aircraft.", vm.RelationCheckHeadline);
+        // The button, the aircraft by name and what the command is in each; the buttons say the outcome.
+        string f16 = vm.AircraftWords("DCS", ["F-16C_50"]);
+        string f15 = vm.AircraftWords("DCS", ["F-15E"]);
+        Assert.Equal("BTN 5 does different things in these aircraft: " + f16 + ": Countermeasures Management Switch - Fwd · " + f15 + ": Canopy Open. " +
+                     "Where should BTN 5 work?", vm.RelationCheckText);
         Assert.Equal("Show what this command does in the other 1 aircraft", vm.RelationCheckToggleText);
-        Assert.Equal("Only where it is 'Countermeasures Management Switch - Fwd'", vm.RelationCheckOnlyLabel);
+        Assert.Equal("Only in the " + f16 + " (take it off the " + f15 + ")", vm.RelationCheckOnlyLabel);
+        Assert.Equal("Keep it in both (" + f15 + " keeps Canopy Open)", vm.RelationCheckKeepLabel);
         AircraftCheckItem mine = Assert.Single(vm.RelationCheckItems);
         AircraftCheckPlane plane = Assert.Single(mine.Planes);
         Assert.Equal(("F-15E", "Canopy Open", false), (plane.Plane, plane.Title, plane.UseHere));
@@ -267,7 +271,7 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
         Assert.False(vm.HasAircraftCheckNotice);
         Assert.Equal("Check all relations (2 actions)", vm.ProfileCheckLinkText);
 
-        // "Keep for all": remembered, the check does not ask about it again.
+        // "Keep it in both": remembered on this PC (the profile does not change), the check does not ask about it again.
         vm.KeepRelationCheckForAllCommand.Execute(null);
         Assert.Contains("Flare|DCS|d3014pnil|F-15E", vm.ListPrefs.KeptAircraft);
         await vm.RefreshAircraftCheckAsync();
@@ -447,7 +451,8 @@ public sealed class AircraftSelectorTests : IAsyncLifetime
         Assert.Equal("MSFS2024|KEY_AXIS_ELEVATOR_SET|AXIS ELEVATOR SET", elevator.RowKey);
 
         BuilderSearchResultItem burner = new("MSFS2024", "KEY_BURNER_PITCH_INC", "BURNER PITCH INC", "", false, ["MSFS2024"], [], "Title match (97%)") { Match = "words" };
-        Assert.Equal("word match", burner.MatchLabel);
+        // A plain word match without every word is "related" (2.6.2: "word match" said nothing).
+        Assert.Equal("related", burner.MatchLabel);
         Assert.Equal("BURNER PITCH INC", burner.DisplayTitle);
     }
 

@@ -977,6 +977,16 @@ namespace JoyPro.History
 
         // ---- internals --------------------------------------------------------------------------------------------
 
+        // Versions JoyPro made by itself that stay alone even when the user's next click follows within the coalescing
+        // time (the load correction's step, its repair): one undo takes exactly them back.
+        private static readonly string[] StandaloneLabelPrefixes = { "Updated to the new command lists", "Took out aircraft JoyPro added" };
+
+        internal static bool IsStandaloneLabel(string label)
+        {
+            string text = (label ?? string.Empty).Trim();
+            return StandaloneLabelPrefixes.Any(p => text.StartsWith(p, StringComparison.Ordinal));
+        }
+
         private static ProfileVersion RecordLocked(ProfileHistoryLog log, byte[] content, ProfileHistoryRecordOptions options, ProfileHistoryPolicy policy)
         {
             string kind = string.IsNullOrWhiteSpace(options.Kind) ? ProfileVersionKind.Change : options.Kind;
@@ -998,7 +1008,8 @@ namespace JoyPro.History
 
             ProfileVersion parent = log.Logical(cursor);
             if (kind == ProfileVersionKind.Change && options.Coalesce && latest != null && latest == cursor && latest.Kind == ProfileVersionKind.Change &&
-                !latest.Keep && latest.Parent > 0 && (now - latest.Utc).TotalSeconds >= 0 && (now - latest.Utc).TotalSeconds < policy.CoalesceSeconds)
+                !latest.Keep && latest.Parent > 0 && (now - latest.Utc).TotalSeconds >= 0 && (now - latest.Utc).TotalSeconds < policy.CoalesceSeconds &&
+                !IsStandaloneLabel(latest.Label))
             {
                 // One click, several saves: one version, made on the version before the first save.
                 log.Versions.Remove(latest);

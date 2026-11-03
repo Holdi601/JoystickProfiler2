@@ -63,6 +63,9 @@ public partial class MainWindow : Window
         RelationNodeList.AddHandler(DragDrop.DropEvent, RelationNodeListDrop);
         // Before the list's own arrow keys (which would move the selection instead).
         RelationNodeList.AddHandler(KeyDownEvent, RelationNodeListKeyDown, RoutingStrategies.Tunnel);
+        // The fold "Other aircraft (n)" under the Games filter is a header row, not a card (Styles: ListBoxItem.groupHeader).
+        RelationNodeList.ContainerPrepared += (_, e) =>
+            e.Container.Classes.Set("groupHeader", (e.Container as ContentControl)?.Content is JoyPro.Gui.Models.RelationNodeOthersHeader);
         AttachNavPagesDrag();
         AttachNavigationHistory();
         AttachContextMenuLog();
@@ -1128,6 +1131,9 @@ public partial class MainWindow : Window
 
     // A pick in the function picker closes it (the command does the change).
     private void RelationFunctionPicked(object? sender, RoutedEventArgs e) => this.FindControl<Button>("RelationFunctionChip")?.Flyout?.Hide();
+
+    // Copy to another axis was pressed: its flyout closes.
+    private void AxisTuningCopyClicked(object? sender, RoutedEventArgs e) => this.FindControl<Button>("AxisTuningCopyButton")?.Flyout?.Hide();
 
     // The open relation's name, edited in place: Enter renames, Esc puts the old name back, leaving the box renames.
     private async void RelationNameEditKeyDown(object? sender, KeyEventArgs e)

@@ -254,6 +254,30 @@ public sealed partial class ListFilterViewModel : ObservableObject
 
     public bool HasDeviceFilter => devices.Count > 0;
 
+    // Only aircraft of games are ticked (no whole game): the relation editor calls the rest "Other aircraft".
+    public bool HasOnlyPlaneFilter => planes.Count > 0 && wholeGames.Count == 0;
+
+    // Only whole games are ticked.
+    public bool HasOnlyWholeGameFilter => wholeGames.Count > 0 && planes.Count == 0;
+
+    // The relation editor's actions under the Games filter: which games / aircraft of the filter an action of `game`
+    // with these switched-on aircraft is for ("F-100D"; "DCS World" for a whole game ticked). Empty: none of them.
+    public IReadOnlyList<string> GameFilterMatches(string game, IEnumerable<string> activePlanes)
+    {
+        if ((wholeGames.Count == 0 && planes.Count == 0) || string.IsNullOrWhiteSpace(game))
+            return [];
+        if (wholeGames.Contains(game))
+            return [DisplayText.Game(game)];
+        bool dcs = game.Equals("DCS", StringComparison.OrdinalIgnoreCase);
+        if (!dcs)
+            return planes.Contains(FilterSubject.Key(game, game)) ? [DisplayText.Game(game)] : [];
+        return (activePlanes ?? []).Where(p => planes.Contains(FilterSubject.Key(game, p))).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    // One aircraft of an action's aircraft list is one the filter is set to.
+    public bool IsFilteredPlane(string game, string plane) =>
+        !string.IsNullOrWhiteSpace(game) && (wholeGames.Contains(game) || planes.Contains(FilterSubject.Key(game, plane)));
+
     public bool HasGroups => Groups.Count > 0;
 
     public bool HasDevices => Devices.Count > 0;
@@ -812,6 +836,8 @@ public sealed partial class ListFilterViewModel : ObservableObject
         OnPropertyChanged(nameof(HasGroupFilter));
         OnPropertyChanged(nameof(HasGameFilter));
         OnPropertyChanged(nameof(HasDeviceFilter));
+        OnPropertyChanged(nameof(HasOnlyPlaneFilter));
+        OnPropertyChanged(nameof(HasOnlyWholeGameFilter));
         OnPropertyChanged(nameof(ResultText));
     }
 

@@ -1682,6 +1682,11 @@ namespace JoyPro.Engine
             "VoiceChat", "ground_unit", "TrackIR", "Headtracker"
         };
 
+        internal static bool IsNonAircraftLayer(string plane)
+        {
+            return !string.IsNullOrWhiteSpace(plane) && NonAircraftLayers.Contains(plane.Trim());
+        }
+
         // JoyPro1 behaviour: in every plane the profile exports, each connected joystick the profile does not use there
         // gets a file that only removes the plane's DCS defaults, so it has no binds at all. Force feedback settings of
         // the file stay. Keyboard files and other planes are not touched. Not connected devices (an import with "only

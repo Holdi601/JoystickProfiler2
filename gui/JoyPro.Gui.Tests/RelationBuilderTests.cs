@@ -61,8 +61,9 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         await OpenAsync(vm, "Flare");
         await WaitForAsync(() => vm.RelationNodes.Count > 0);
         Assert.True(vm.ShowRelationNodeList);
-        // Add actions searches for what the opened relation is.
-        Assert.Equal("Flare", vm.BuilderSearchText);
+        // Add actions starts with an empty box (2.6.2): where to start instead of a search for the relation's name.
+        Assert.Equal(string.Empty, vm.BuilderSearchText);
+        Assert.True(vm.ShowBuilderSearchStart);
 
         fake.Calls.Clear();
         await vm.RefreshRelationsCommand.ExecuteAsync(null);
@@ -361,10 +362,15 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         Assert.False(vm.CanChangeBuilderKind);
         Assert.True(vm.IsBuilderKindButton);
 
-        // Grouped by game, a header per game; the row already in the relation cannot be ticked.
+        // Grouped by game, a header per game; the row already in the relation cannot be ticked. The plain word matches
+        // are "Related", folded until opened (2.6.2).
         Assert.Equal(5, vm.BuilderSearchResults.Count);
+        Assert.Equal(["function", "related"], vm.BuilderSearchRows.OfType<BuilderSearchSectionItem>().Select(s => s.Kind).ToArray());
+        Assert.DoesNotContain(vm.BuilderSearchRows, r => r is BuilderSearchResultItem { Id: "ID_FLARES" });
+        vm.ToggleBuilderRelatedCommand.Execute(null);
         List<BuilderSearchGroupItem> groups = vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>().ToList();
-        Assert.Equal(["DCS", "FalconBMS", "WarThunder"], groups.Where(g => g.IsGame).Select(g => g.Game).ToArray());
+        // A game with rows in both sections has a header in each.
+        Assert.Equal(["DCS", "FalconBMS", "DCS", "WarThunder"], groups.Where(g => g.IsGame).Select(g => g.Game).ToArray());
         Assert.Equal(3, vm.BuilderSearchGames.Count);
         BuilderSearchResultItem inside = vm.BuilderSearchResults.Single(r => r.Id == "d3014pnil");
         Assert.True(inside.IsInOpenRelation);
@@ -377,7 +383,9 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         // The match tier and the function of each row; grouped by function on request.
         Assert.Equal("same function", vm.BuilderSearchResults.Single(r => r.Id == "d3084").MatchLabel);
         Assert.Equal("Countermeasures dispense", vm.BuilderSearchResults.Single(r => r.Id == "d3084").FunctionName);
-        Assert.Equal("word match", used.MatchLabel);
+        // A plain word match is "related" (2.6.2: "word match" said nothing); its tooltip says why.
+        Assert.Equal("related", used.MatchLabel);
+        Assert.StartsWith("Related:", used.ReasonText);
         vm.BuilderGroupByFunction = true;
         Assert.Equal(["Countermeasures dispense", "Other matches", "Already in this relation"], vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>().Select(g => g.Label).ToArray());
         vm.BuilderGroupByFunction = false;
@@ -399,7 +407,8 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         vm.BuilderSearchResults.Single(r => r.Id == "d3084").IsChecked = true;
         Assert.Equal(3, vm.BuilderCheckedCount);
         Assert.Equal("Add selected (3)", vm.BuilderAddButtonLabel);
-        Assert.Null(groups.Single(g => g.Game == "DCS").IsChecked);
+        // DCS has a header in Same function (d3084, ticked) and in Related (d3001, not ticked).
+        Assert.Equal([true, false], groups.Where(g => g.Game == "DCS").Select(g => g.IsChecked).ToArray());
         fake.Calls.Clear();
         await vm.AddCheckedBuilderResultsCommand.ExecuteAsync(null);
         IReadOnlyList<string> apply = Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "relations", "suggest", "apply"));
@@ -632,22 +641,11 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         Assert.False(vm.IsAnyRelationToolOpen);
     }
 
-    // A name that says nothing ("Relation 024") is not searched for ("Nothing found for 'Relation 024'"): the box stays
-    // empty; a real name is searched.
-    [Theory]
-    [InlineData("Relation 024", true)]
-    [InlineData("Relation", true)]
-    [InlineData("New relation", true)]
-    [InlineData("New relation (2)", true)]
-    [InlineData("Relation 024 (copy)", true)]
-    [InlineData("Pitch", false)]
-    [InlineData("Relation lights", false)]
-    [InlineData("Flaps 2", false)]
-    public void PlaceholderRelationNames_AreRecognized(string name, bool placeholder) =>
-        Assert.Equal(placeholder, MainWindowViewModel.IsPlaceholderRelationName(name));
-
+    // An opened relation starts with an empty search box (2.6.2, tester: the relation's name as the search is "usually
+    // irrelevant"), whatever its name and whatever the last relation was searched for; the empty box says where to start
+    // (the suggestions for the relation, the catalog), and no search runs for it.
     [Fact]
-    public async Task OpeningAPlaceholderNamedRelation_LeavesTheSearchEmpty()
+    public async Task OpeningARelation_StartsWithAnEmptySearch()
     {
         LocalAiFakeEngine fake = new() { RelationCount = 30 };
         MainWindowViewModel vm = await CreateVmAsync(fake, "relation-placeholder.pr0file");
@@ -655,6 +653,20 @@ public sealed class RelationBuilderTests : IAsyncLifetime
         vm.SelectedRelation = vm.Relations.Single(r => r.Name == "Relation 024");
         await WaitForAsync(() => vm.BuilderRelationName == "Relation 024" && !vm.IsBusy);
         Assert.Equal(string.Empty, vm.BuilderSearchText);
+        Assert.True(vm.ShowBuilderSearchStart);
+        Assert.False(vm.ShowBuilderSearchHint);
+        Assert.Contains("Suggested for this relation", vm.BuilderSearchStartText);
+        Assert.Contains("'Relation 024'", vm.BuilderSearchStartText);
+        Assert.Empty(vm.BuilderSearchRows);
+
+        // A relation with a real name: empty too (no search for "Pitch").
+        vm.BuilderSearchText = "gear";
+        Assert.False(vm.ShowBuilderSearchStart);
+        RelationListItem other = vm.Relations.First(r => r.Name != "Relation 024");
+        vm.SelectedRelation = other;
+        await WaitForAsync(() => vm.BuilderRelationName == other.Name && !vm.IsBusy);
+        Assert.Equal(string.Empty, vm.BuilderSearchText);
+        Assert.True(vm.ShowBuilderSearchStart);
     }
 
     // An answer the app cannot read says so; it never claims that JoyPro does not know the relation's function.

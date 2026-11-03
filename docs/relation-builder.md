@@ -177,7 +177,10 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
 ## Make a relation, step by step
 
 1. `New relation` (Ctrl+N), type its name (`Throttle ALL`). Left empty, it is named after its first action.
-2. `Add actions`: type what it does (`throttle`). The search runs while you type (300 ms after the last key) over every
+2. `Add actions`: type what it does (`throttle`). An opened relation starts with an empty box (2.6.2; before, the box
+   held the relation's name, which testers found "usually irrelevant"); the empty box says where to start and offers
+   `Suggested for this relation` (which suggests by the relation itself) and `Open catalog`. The box is only filled by
+   Find similar and Replace of a Check card and by Back (the search as it was). The search runs while you type (300 ms after the last key) over every
    game and aircraft (`engine relations search "<words>" [--axis|--button] [--plane ...] --limit 400`). The engine knows
    synonyms: `throttle` also finds thrust and the helicopter collective, `flare` the countermeasure dispense switches.
 3. The rows come grouped by game (`DCS · 48 actions`), each with a tick box, the title (the words you typed marked),
@@ -190,13 +193,16 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    the open relation are not shown at their rank: greyed, without a tick box, in a group **Already in this relation** at
    the bottom of every list (by game, by function, with game chips, after Show more, with or without the aircraft
    filter); Tick all shown and Add selected leave them out, and the header counts only what can be added (`10 actions
-   in 1 game + 1 already in this relation`). The list has two sections (2.6.1): **Name has every word (n)** (titles
-   with every typed word, the engine's `Literal`) and below it **Same meaning (n)** (found by what the action does: the
-   function, a synonym, a description or some of the words); a name match stays above every row that only means the
-   same in every sort (own order, `Sort: Game` and the other levels order the rows within a section), by game and by
-   function, with game chips and after Show more (a game in both sections has its `Show n more` on its last header).
-   Before 2.6.1 a `Game` sort level sorted a game's rows by title, which put "Exterior Lights Master ..." above `MASTER
-   RESET` for `master reset`. Only the rows in view are built (a virtualizing list): a search over every
+   in 1 game + 1 already in this relation`). The list has three sections (2.6.2, see
+   [Same function and Related](#same-function-and-related)): **Name has every word (n)** (titles with every typed word,
+   the engine's `Literal`), **Same function (n)** (actions of the function the words were read as, by its name, a
+   synonym or a description) and **Related (n)** (looser links, folded until a click opens it; open by itself when
+   nothing is above it). A section stays above the next in every sort (own order, `Sort: Game` and the other levels
+   order the rows within a section), by game and by function, with game chips and after Show more (a game in several
+   sections has its `Show n more` on its last header in view). Before 2.6.1 a `Game` sort level sorted a game's rows by
+   title, which put "Exterior Lights Master ..." above `MASTER RESET` for `master reset`; 2.6.1 had two sections, the
+   second, **Same meaning**, held everything that was no name match, and the testers' "brakes" showed only landing gear
+   and hook switches there. Only the rows in view are built (a virtualizing list): a search over every
    game lists up to 160 rows. Each game's **main control** of the function comes first, marked `main control`; a title that
    does not name the function says it: `AXIS ELEVATOR SET — Pitch axis (elevator)`.
 4. Filters: `All` / `Axes` / `Buttons` (a relation holds one kind; an open relation with actions shows only its own,
@@ -204,7 +210,11 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    game, the best 12 rows of each: `--limit 200 --per-game 12`; a ticked chip searches that game again for all its
    rows; the first eight as chips, `+n more games` for the rest), and the aircraft picker. `By function` groups the
    rows by the function they are (the engine's `FunctionGroups`) instead of by game. Each row shows how it was found
-   (`exact title`, `same function`, `synonym`, `described`, `word match`), and a typo offers `Did you mean: throttle?`.
+   (`main control`, `exact title`, `same function`, `synonym`, `by description`, `name match`, `related`; the chip's
+   tooltip says why in a sentence), and a typo offers `Did you mean: throttle?`. **Same meaning** next to All / Axes /
+   Buttons (on by default, remembered in `ui-settings.json` `addActionsSameMeaning`, the same switch in Settings >
+   Relations): off lists only the name matches, the status line says how many it hides, and a search without a name
+   match says so plainly with **Show same meaning** to switch it on in one click.
    The search needs no open profile (the profile only marks which relations use a row). Under a game, `Show n more`
    loads the rest of that game's hits for the same search (`--game <game> --limit 400`), `Show less` folds them;
    `Expand all` / `Collapse all` above the list do every game. The state stays while the query, kind and aircraft stay
@@ -266,6 +276,48 @@ command and meaning, with every aircraft where the command means that and the re
 - **Grouped**: `Groups` (per game) and `FunctionGroups` (per function, then game). Within `--limit` every game with a
   function hit keeps its best rows, so a search over all games shows every game's throttle; `--per-game N` caps the
   rows of one game.
+- **Singular and plural** are one word: the tokenizer drops a plural `s` (`brakes` = `brake`, `flaps`, `lights`), `ies`
+  is `y` (`batteries`), and since 2.6.2 `es` after ch, sh, ss and x (`switches` = `switch`, `flashes`, `passes`,
+  `boxes`; not `axes`, `caches`, `aches` ...: `EngineFunctionMap.Stem`). Titles, ids, phrases and queries go through
+  the same rule, so `brakes` name-matches "Wheel Brake" and `master switches` "MASTER Switch - ALL". The title's
+  highlight marks the singular too ("Brake" for `brakes`; before 2.6.2 the name matches looked unmatched).
+
+### Same function and Related
+
+Every search row has a `Section` (relations search JSON, `EngineRelationSearch.Explain`), decided from what found it
+(2.6.2, the testers' `brakes` report on 2.6.1: "Same meaning" showed only F-4E sim-pit gear and hook switches, "I don't
+see any connection"):
+
+| Section | Rule (engine data) | List |
+|---|---|---|
+| `name` | the title has every typed word (`Literal`: whole words or word starts from three letters, plurals as above) | **Name has every word**, first |
+| `function` | not `name`, found as an action of a function the query was read as (`Resolved`, not `Related`) with match `exact`, `function` (its own words), `synonym` (a synonym or game term) or `described` (what the query describes); or the game id or key typed | **Same function**, open |
+| `related` | everything else: a function only related to the query (`RelatedBy: function`), the function catalog alone, its title without the function's words (`catalog`), a word found only in the category (`category`: "Gears, Brakes, Hook" for `brakes`; the engine's `Why` says `Category match`, before 2.6.2 `Title match (32%)`), some of the words in the title (`some-words`), only a word start, a typo or the game id (`similar`) | **Related**, folded, with its count |
+
+The reasons in words come from the row's `Understood` (the function the query was read as, "Wheel brakes"),
+`UnderstoodBy` (`name`, `synonym`, `description`, `related`), `QueryTerm` (the word or phrase that read it: `thrust`,
+`go faster`), `ActionFunction` (the row's own function: "Wheel brakes axis"), `GameTerm` (the game's word when it is
+another: `collective`), `RelatedBy`, `TitleWords`, `CategoryWords` and `CloseWords` (the typed words found in the
+title, only in the category, only as something similar). The GUI's tooltip on the row's chip and the line under its
+title (`BuilderSearchResultItem.ReasonText`):
+
+- name: "The title has every word you typed; its function is 'Wheel brakes axis'."
+- function: "'brakes' is understood as 'Wheel brakes'; this action's function is 'Wheel brakes axis'.", "'thrust' is a
+  synonym of 'Throttle'; this action's function is 'Throttle (left) axis'.", "What you typed describes 'Throttle'; this
+  action's function is 'Throttle increase'." (+ "The game calls it 'collective'.")
+- related: "Related: its category 'Gears, Brakes, Hook' has the word 'brakes'; its title has none of the words you
+  typed.", "Related: its title has only some of the words you typed ('landing').", "Related: only something like
+  'flare' was found (a word start, a typo or the game's id), not the word itself.", "Related: JoyPro's function list
+  reads this action as '...', but its title does not say so.", "Related: '...' is close to what you typed, but it is
+  not the same function; this action is '...'."
+
+The ranking does not change (the sections only group what the search finds; `engine relations phrase-check` gives the
+same pass rates and the same failing phrases before and after 2.6.2). `relations browse` rows have no section.
+
+**Sim-pit switch axes**: the F-4E lists 199 `[SimPit] ... (Switch)` / `(Button)` / `(Knob)` commands (pilot and WSO) as
+axis commands (DCS ids `a3016cd20` ...): Heatblur made them for home cockpits that wire a switch or a potentiometer as
+an axis. They are axes in the game, so the search lists them among axes; the row says `axis (sim-pit switch)` with a
+tooltip instead of a bare `axis` (`BuilderSearchResultItem.IsSimPitSwitchAxis`).
 
 ## Same id, different meaning
 
@@ -317,6 +369,9 @@ other titles of the function), `Only same title`, `Invert` (on the shown aircraf
 ticked and the other meanings unticked and adds only its ticked aircraft; an action's `Apply` saves its ticks in one
 step (`relations aircraft set`, one undo step) and the list stays open. Actions whose ticked aircraft mix meanings are
 flagged inside their card (`In 1 ticked aircraft this command is not '...' but something else`; only another function counts, not another title of the same function).
+The card's title is the action's main meaning, not a list of every title (2.6.2): each other meaning of its ticked
+aircraft is a line under it (`F-16C Block 50: KY-58 MODE Knob - RV (different function)`), the other names of the same
+function one line (`also called: Thrust (13), Power Levers (Both) (2)`).
 Other games' actions show their title in the game (`Pitch axis`, `AXIS ELEVATOR SET`), not their id. Opening a
 relation puts its name into the `Add actions` search; a game's header counts like its chip (`12 of 44 actions`).
 Games with one list per game have no selector.
@@ -324,15 +379,25 @@ Games with one list per game have no selector.
 ![An action with its aircraft open, a search row with its aircraft, the profile check](ui/relation-builder-aircraft-1920-dark.png)
 
 **Repair**: `relations check-aircraft` finds actions with switched-on aircraft whose meaning differs from the action's;
-those the function map reads as the same function (`Cyclic Pitch` in a `Pitch` action) are listed but kept. The
-open relation shows a neutral question (blue, info icon; orange is kept for real problems) that counts only this
-relation, with a real example: `In some aircraft this command does something else. The 'Rudder' command of the AH-64D
-has another meaning in 35 aircraft (e.g. F-16C_50: 'Nosewheel steering'). Should this relation also apply there?`.
-`Show what this command does in the other 35 aircraft` opens the list: per aircraft its name, what the command is
-called there and a `use here` tick. `Only where it is 'Rudder'` switches the others off (`relations aircraft set
---off`, one undo step per action; they stay listed), `Keep for all` keeps them, `Ask me later` hides the question
-until the next start. Kept aircraft (`Keep for all`, `use here`) are remembered in `list-preferences.json`
-(`KeptAircraft`: relation|game|id|plane) and not asked about again. The profile-wide number is the small link
+those the function map reads as the same function (`Cyclic Pitch` in a `Pitch` action) are listed but kept, and so is a
+helicopter's engine throttle against the throttle or power levers of other aircraft (the Ka-50 III's `Throttle`
+against the AH-64D's `Power Levers (Both)` or the A-10C's `Throttle Both`: one control, the engine's power; the check's
+own rule, `EngineIdMeanings.SameEnginePower`). An aircraft that came from the user's own bind files (a DCS import or a
+take-over, `RelationItem.FromGameFiles`, recorded since 2.6.2) is never the side proposed to go (`Imported` in the
+answer, never in `Drop`), and when the node has such aircraft switched on, their meaning is the node's meaning
+(`Title`; an aircraft a builder or an old load correction added never outvotes them). `Planes` lists the switched-on
+aircraft with the node's meaning. The open relation shows a neutral question (blue, info icon; orange is kept for real
+problems) that counts only this relation and names the button, the aircraft and what the command does in each (up to
+three aircraft per meaning, then `and n more`; 2.6.2): `This button does different things in different aircraft.
+BTN 20 does different things in these aircraft: F/A-18C: RADAR Switch - EMERG · F-16C Block 50: KY-58 MODE Knob - RV.
+Where should BTN 20 work?`. `Show what this command does in the other 35 aircraft` opens the list: per aircraft its
+name, what the command is called there and a `use here` tick. The buttons say the outcome: `Only in the F/A-18C (take
+it off the F-16C Block 50)` switches the others off (`relations aircraft set --off`, one undo step per action; they stay
+listed), `Keep it in both (F-16C Block 50 keeps KY-58 MODE Knob - RV)` (`Keep it in all (...)` for more meanings, `Keep
+it everywhere` for several actions) changes nothing in the profile and only stops asking on this PC (its tooltip says
+so), `Decide later` hides the question until the next start. Kept aircraft (`Keep it in both`, `use here`) are
+remembered in `list-preferences.json` (`KeptAircraft`: relation|game|id|plane, this PC only, not undoable) and not
+asked about again. The profile-wide number is the small link
 `Check all relations (n actions)` above the editor: it runs the check again and lists every flagged action (a click
 opens its relation) with `Switch them all off` (`--apply`, one undo step; one run per action when the user keeps
 aircraft). On the user's HoldiFeb23 profile (443 relations, 2 760 actions): 220 actions with differing
@@ -650,6 +715,51 @@ Before 2.3.1 it switched the aircraft on in every node of the id, so a profile c
 any user action (a tester's DCS import of 21 Oct added 330 aircraft, 77 of them duplicates such as the AH-64 force trim
 on a MFBB and a MOZA button).
 
+### Load correction: only aircraft new in the command lists (2.6.2)
+
+"Auto Add DB Items" is for a module that came into the command lists after the profile was corrected or saved (JoyPro
+1's "Auto Add on new DB Items": its nodes held every aircraft of their id, so an aircraft missing in a node was one the
+lists had not had). JoyPro 2's imports put only the bound aircraft into a node, so up to 2.6.1 every change of the
+lists (Refresh DB, which 2.6.1 asked everyone with DCS mods to do, or a JoyPro update with new lists) switched on every
+aircraft of a node's id the user had never bound, as long as nothing else was on that input and the meaning fitted: a
+tester's `THROTTLE - SLIDER -HELO POWER BOTH` (AH-64D CPG and Pilot, Ka-50 III, Mosquito) got F-15C, A-10C, MiG-29,
+Su-25 and `Default` by the shared FC3 thrust id, 446 aircraft in 180 relations in one step, saved under the label of
+his next click. Since 2.6.2:
+
+- the profile keeps the aircraft of the lists next to its DB fingerprint (`Pr0file.DatabasePlanes`, `game<TAB>aircraft`;
+  DCS one list per aircraft, IL-2 and Star Citizen one per game), stamped with the fingerprint (a command that loads
+  without corrections keeps the set the profile had);
+- the pass switches an aircraft on only when it is not in that set (a newly added module or aircraft), and never a
+  pseudo aircraft (`Default`, the cameras, the radio menu: `EngineDcsExport.IsNonAircraftLayer`); an aircraft that was in
+  the lists and simply not chosen stays out of the node (not even "left out"); the other checks stay (nothing else on
+  the input, no other relation with the action, the meaning fits);
+- a profile without a set (every profile before 2.6.2) gets it recorded and nothing switched on that time; so does a game
+  whose lists the set does not have yet (a game installed later);
+- an id that a DCS patch or a mod adds to an aircraft that was in the lists already is not switched on: that aircraft
+  was the user's to set up, and JoyPro 1's purpose was new modules; the command shows in the aircraft's list and in
+  `Add actions` (the mod commands since 2.6.1 as "Found in your DCS files") for the user to add;
+- what the pass changes in the relations (an aircraft switched on, a remapped command, a command no longer in a list
+  taken out) is a history step of its own, `Updated to the new command lists: n aircraft in m relations`, saved before
+  the command's own step (never folded into it, never merged with the next click); only a command that saves the
+  profile anyway saves it, and opening a profile (`profile load`); a preview or read-only command (`relations suggest`,
+  a dry run, `sync diff`, `setup plan`) shows the corrected profile but leaves the file alone;
+- the correction report (`--correction-report`) has an `added` entry per aircraft switched on
+  (`relation-item-auto-add`) next to the `left-out` ones, and a `db-plane-set` entry (`recorded` or `compared`, the new
+  aircraft).
+
+**Repair for profiles 2.6.1 and earlier filled up**: `engine profile auto-added` reads the profile history: a step made
+by a change (not an undo, a restore, an import, a take-over or a builder like Auto Group) whose version has another DB
+fingerprint than the one it was made on and in which aircraft went from "not in the node" to "on" in existing nodes of
+at least 3 relations (relations its label names, such as `Adding 1 actions to 'Pitch'`, are the user's). Offered are
+the aircraft of those steps that are still on now and that no import brought since; `Relations` says per relation what
+goes (`Remove`) and what stays (`Keeps`). On the tester's profile (history of 2 and 3 Nov) it finds step #117: 448
+aircraft in 180 relations, `THROTTLE - SLIDER -HELO POWER BOTH` back to its 4 aircraft. `--apply [--skip "key;key"]`
+takes them out (the node gets back to the aircraft it had; the skipped ones stay), `--keep` stops asking; either is one
+profile version (`Took out aircraft JoyPro added: n aircraft in m relations` / `Kept the aircraft JoyPro added`, one
+undo step) and marks the steps as looked at (`Pr0file.ReviewedAutoAdds`). Nothing changes without one of them. The app
+asks after a profile opens (a notice under the bar: `JoyPro added 448 aircraft to 180 relations on 03.11.2026 after the
+command lists changed.`, the list per relation and aircraft to untick, `Take them out`, `Keep these aircraft`, `Later`).
+
 `relations duplicates` lists them as cards per relation pair (`Groups`: the relations with device and input, the actions
 with their aircraft as the cockpit catalog names them, `Suggested` or `SuggestOff`, `Confidence` 0-100, `Reasons`) and as
 single actions (`Duplicates`, key `game|id|aircraft`). Fixes, each one profile version (one undo step):
@@ -789,6 +899,15 @@ function id when the map proposed it); `Source` is `function map` for those rows
   and without `--axis` as the GUI asks: the main control first and `Primary` in MSFS 2020 / 2024, X-Plane 11 / 12, DCS,
   FSX / P3D, IL-2, War Thunder and Falcon BMS; in every game the function's rows before the word matches; MSFS's
   `AXIS ELEVATOR SET — Pitch axis (elevator)`, the balloon's `BURNER PITCH INC` a plain word match.
+- Engine: `engine/tests/smoke/searchliteral.ps1` (real game lists): titles with every word, every word covered, and
+  (2.6.2) the sections: `brakes` with Axes for the F-4E and the Spitfire names every Wheel Brake axis (`name`), the
+  seven category hits `related` by `category` with `Category match`, `thrust` the throttles as `function` by a synonym,
+  `make the plane go faster` by its description, `master switches` name-matches "MASTER Switch", Browse has no sections.
+- GUI: `gui/JoyPro.Gui.Tests/SameMeaningTests.cs`: the real engine with "Wheel Brakes (analog)" (the Spitfire's axis)
+  for the tester's aircraft: the empty start, "brakes" (name matches, `Related (7)` folded and opened, the reasons,
+  `axis (sim-pit switch)`), Same meaning off (only names, the hidden count; `thrust`: "no name match" and Show same
+  meaning), the switch surviving a restart and in Settings > Relations, the reason texts, the plural highlight;
+  `JOYPRO_SAMEMEANING_RENDER_OUT=<folder>` renders it light and dark.
 - Engine: `engine/tests/smoke/peraircraft.ps1` (same id, different meaning, on fixtures in
   `engine\tests\fixtures\per-aircraft\DB` where `a2001cdnil` is "Pitch" in three jets and "Collective" in the UH-1H, a
   cockpit switch id is another switch per module, `dnilp95u215` is nose up / nose down, and `Pitch Trim Up` / `Trim

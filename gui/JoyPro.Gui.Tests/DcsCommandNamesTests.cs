@@ -310,15 +310,27 @@ public sealed class DcsCommandNamesTests
         vm.BuilderSearchText = "flare";
         await vm.SearchBuilderActionsAsync();
         List<string> Dcs() => vm.BuilderSearchRows.OfType<BuilderSearchResultItem>().Where(r => r.Game == "DCS").Select(r => r.Title).ToList();
-        Assert.Equal(["DLC Toggle / Countermeasure Dispense", "AN/ALE-39 Flare SGL", "Countermeasures Management Switch - Fwd"], Dcs());
+        // The plain word match is "Related" (2.6.2), folded; opened, it stays below the Same function rows in every sort.
+        vm.ToggleBuilderRelatedCommand.Execute(null);
+        Assert.Equal(["DLC Toggle / Countermeasure Dispense", "Countermeasures Management Switch - Fwd", "AN/ALE-39 Flare SGL"], Dcs());
 
         vm.BuilderSearchSort.Add("name", false);
-        Assert.Equal(["AN/ALE-39 Flare SGL", "Countermeasures Management Switch - Fwd", "DLC Toggle / Countermeasure Dispense"], Dcs());
+        Assert.Equal(["Countermeasures Management Switch - Fwd", "DLC Toggle / Countermeasure Dispense", "AN/ALE-39 Flare SGL"], Dcs());
 
         vm.BuilderSearchSort.SetPrimary("game");
         vm.BuilderSearchSort.SetPrimary("game");
         Assert.True(vm.BuilderSearchSort.PrimaryDescending);
-        List<string> games = vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>().Select(g => g.Game).ToList();
-        Assert.Equal(games.OrderByDescending(g => DisplayText.Game(g), Comparer<string>.Create(ListSortRow.Natural)).ToList(), games);
+        // Within each section (a game can have a header in several).
+        List<List<string>> sections = [];
+        foreach (object row in vm.BuilderSearchRows)
+        {
+            if (row is BuilderSearchSectionItem)
+                sections.Add([]);
+            else if (row is BuilderSearchGroupItem { IsGame: true } group && sections.Count > 0)
+                sections[^1].Add(group.Game);
+        }
+        Assert.True(sections.Count >= 2);
+        foreach (List<string> games in sections)
+            Assert.Equal(games.OrderByDescending(g => DisplayText.Game(g), Comparer<string>.Create(ListSortRow.Natural)).ToList(), games);
     }
 }

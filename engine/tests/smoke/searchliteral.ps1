@@ -98,6 +98,36 @@ try {
     }
     $slInc = Invoke-SlJson @("relations", "search", "tacan channel (xx0x) - inc", "--plane", $slF4, "--game", "DCS", "--limit", "400")
     Assert-True (@($slInc.Results | Where-Object { $_.Title -eq "TACAN Channel (xx0x) - [Inc]" }).Count -eq 2) "search 'tacan channel (xx0x) - inc' does not list both seats' [Inc]."
+
+    # Same function and Related (2.6.2, the testers' "brakes" report on 2.6.1; docs/relation-builder.md "Same function and
+    # Related"): "brakes" with Axes in DCS for the tester's aircraft (F-4E pilot and WSO, Spitfire). "brakes" is "brake":
+    # every Wheel Brake axis has every word (section "name"); the switches found only by their category "Gears, Brakes,
+    # Hook" are "related", by "category", with the word as typed, and no "Title match".
+    $slBrakes = Invoke-SlJson @("relations", "search", "brakes", "--axis", "--game", "DCS", "--plane", ($slF4 + "|SpitfireLFMkIX"), "--limit", "400")
+    foreach ($title in @("Wheel Brake", "Wheel Brake Left", "Wheel Brake Right", "Wheel Brake (Both)", "Wheel Brake (Left)", "Wheel Brake (Right)", "Wheel Brakes (analog)")) {
+        $row = @($slBrakes.Results | Where-Object { $_.Title -eq $title })
+        Assert-True ($row.Count -eq 1 -and $row[0].Literal -and $row[0].Section -eq "name" -and $row[0].Function -eq "wheel_brakes") ("search 'brakes' (F-4E, Spitfire): '" + $title + "' is no name match of the wheel brakes (" + (@($row | ForEach-Object { $_.Section + " " + $_.Function }) -join ", ") + ").")
+    }
+    $slBrakeRelated = @($slBrakes.Results | Where-Object { $_.Section -eq "related" })
+    Assert-True ($slBrakeRelated.Count -eq 7) ("search 'brakes' (F-4E, Spitfire): " + $slBrakeRelated.Count + " related rows, 7 expected: " + (@($slBrakeRelated | ForEach-Object { $_.Title }) -join " / "))
+    foreach ($row in $slBrakeRelated) {
+        Assert-True ($row.RelatedBy -eq "category" -and @($row.CategoryWords) -contains "brakes" -and $row.Why -like "Category match*") ("search 'brakes': related row '" + $row.Title + "' is not marked as found by its category (" + $row.RelatedBy + ", " + $row.Why + ").")
+    }
+    Assert-True (@($slBrakes.Results | Where-Object { $_.Title -match "(?i)\bbrake" -and $_.Section -ne "name" }).Count -eq 0) "search 'brakes': a title with 'Brake' is not a name match."
+    Assert-True (@($slBrakes.Results | Where-Object { $_.Section -eq "name" -and $_.Function -eq "wheel_brakes" -and $_.Understood -eq "Wheel brakes" -and $_.UnderstoodBy -eq "name" }).Count -ge 6) "search 'brakes': the wheel brakes rows do not say they were understood as Wheel brakes by name."
+    # A synonym: "thrust" finds the throttles as the same function, by a synonym of Throttle.
+    $slThrust = Invoke-SlJson @("relations", "search", "thrust", "--axis", "--game", "DCS", "--plane", ($slF4 + "|SpitfireLFMkIX"), "--limit", "400")
+    Assert-True (@($slThrust.Results).Count -ge 5 -and @($slThrust.Results | Where-Object { $_.Section -ne "function" -or $_.UnderstoodBy -ne "synonym" -or $_.Understood -ne "Throttle" }).Count -eq 0) ("search 'thrust' (F-4E, Spitfire): the throttles are not 'function' rows found by a synonym of Throttle (" + (@($slThrust.Results | ForEach-Object { $_.Title + ":" + $_.Section + "/" + $_.UnderstoodBy }) -join ", ") + ").")
+    Assert-True (@($slThrust.Results | Where-Object { $_.Title -eq "Throttle Left" -and $_.ActionFunction -eq "Throttle (left) axis" -and $_.QueryTerm -eq "thrust" }).Count -eq 1) "search 'thrust': Throttle Left does not name its function and the synonym that found it."
+    # A description stays "Same function" (search by meaning keeps working with the sections).
+    $slFaster = Invoke-SlJson @("relations", "search", "make the plane go faster", "--limit", "200", "--per-game", "6")
+    Assert-True (@($slFaster.Results | Where-Object { $_.Section -eq "function" -and $_.UnderstoodBy -eq "description" -and $_.Function -eq "throttle" }).Count -ge 5) "search 'make the plane go faster': the throttles are no 'function' rows found by the description."
+    # Plurals with "es": "switches" has every word of "MASTER Switch" (before 2.6.2: "switche" matched no "Switch").
+    $slSwitches = Invoke-SlJson @("relations", "search", "master switches", "--plane", "F-16C_50", "--game", "DCS", "--limit", "400")
+    Assert-True (@($slSwitches.Results | Where-Object { $_.Literal -and $_.Title -like "MASTER Switch*" }).Count -ge 3) "search 'master switches' (F-16C) does not name-match the MASTER Switch titles."
+    # The whole catalog (Browse) has no sections: it lists, it does not search.
+    $slBrowse = Invoke-SlJson @("relations", "browse", "--game", "DCS", "--plane", "F-4E-45MC", "--axis")
+    Assert-True (@($slBrowse.Results | Where-Object { $_.Section }).Count -eq 0) "relations browse marks rows with a search section."
 }
 finally {
     $env:JOYPRO_DATA_DIR = $slPreviousData

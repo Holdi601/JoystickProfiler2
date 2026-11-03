@@ -44,6 +44,8 @@ namespace JoyPro
         // Pr0file.DismissedSuggestions (EngineDismissedSuggestions).
         public static List<string> DismissedSuggestions = new List<string>();
         public static List<string> SyncedGames = new List<string>();
+        // Pr0file.ReviewedAutoAdds (EngineAutoAddRepair).
+        public static List<string> ReviewedAutoAdds = new List<string>();
         public static bool OverwriteExistingRelationOnInsertInEngine = false;
         public static bool EnableLegacyLoadCorrections = true;
         public static bool AutoAddDbItemsOnLoad = true;
@@ -242,6 +244,9 @@ namespace JoyPro
             ExportSkipMarks = new List<string>();
             DismissedSuggestions = new List<string>();
             SyncedGames = new List<string>();
+            ReviewedAutoAdds = new List<string>();
+            LoadCorrectionChanges = new List<string>();
+            SetLoadedDatabasePlanes(null);
             CurrentDatabaseFingerprint = string.Empty;
             LoadedProfileDatabaseFingerprint = string.Empty;
             ProfileMatchesCurrentDatabase = true;
@@ -551,6 +556,9 @@ namespace JoyPro
                 : string.Empty;
             LoadedProfileDatabaseFingerprint = profileFingerprint;
             CurrentDatabaseFingerprint = currentFingerprint;
+            SetLoadedDatabasePlanes(profile == null ? null : profile.DatabasePlanes);
+            LoadCorrectionChanges = new List<string>();
+            ReviewedAutoAdds = profile == null || profile.ReviewedAutoAdds == null ? new List<string>() : profile.ReviewedAutoAdds.Where(k => !string.IsNullOrWhiteSpace(k)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
             bool fingerprintMatch =
                 !string.IsNullOrWhiteSpace(profileFingerprint) &&
@@ -616,6 +624,9 @@ namespace JoyPro
             if (corrected != null)
             {
                 RestoreCorrectedLoadState(corrected);
+                LoadCorrectionChanges = corrected.Changes == null ? new List<string>() : new List<string>(corrected.Changes);
+                if (corrected.DatabasePlanes != null)
+                    currentDatabasePlanes = new List<string>(corrected.DatabasePlanes);
                 ApplyDeviceLoadCorrections();
                 ResyncRelations();
                 RecalcFigures();
@@ -715,6 +726,7 @@ namespace JoyPro
                     if (sink != null)
                         sink(message);
                 };
+                Dictionary<string, bool> beforeCorrection = CorrectionSnapshot();
                 try
                 {
                     ApplyDbLoadCorrections(autoAddDbItems);
@@ -723,8 +735,16 @@ namespace JoyPro
                 {
                     LoadCorrectionMessageSink = sink;
                 }
+                LoadCorrectionChanges = DescribeCorrectionChanges(beforeCorrection, CorrectionSnapshot());
+                if (LoadCorrectionChanges.Count > 0)
+                    JoyPro.Logging.JoyProLog.Info("Corrections", LoadCorrectionNote(40));
                 if (correctionKey != null)
-                    EngineLoadCorrectionCache.Keep(correctionKey, CaptureCorrectedLoadState(entriesBefore, messages));
+                {
+                    CorrectedLoadState kept = CaptureCorrectedLoadState(entriesBefore, messages);
+                    kept.Changes = new List<string>(LoadCorrectionChanges);
+                    kept.DatabasePlanes = currentDatabasePlanes == null ? null : new List<string>(currentDatabasePlanes);
+                    EngineLoadCorrectionCache.Keep(correctionKey, kept);
+                }
                 ApplyDeviceLoadCorrections();
             }
             ResyncRelations();
@@ -782,6 +802,9 @@ namespace JoyPro
             public List<string> SyncedGames;
             public List<LoadCorrectionReportEntry> Entries;
             public List<string> Messages;
+            // What the DB part changed (LoadCorrectionChanges) and the lists' aircraft it saw.
+            public List<string> Changes;
+            public List<string> DatabasePlanes;
         }
 
         // Null when nothing may be kept: an interactive confirmation could answer differently next time.
@@ -837,11 +860,13 @@ namespace JoyPro
         internal static string LoadedStateDigest()
         {
             StringBuilder sb = new StringBuilder();
+            Pr0file snapshot = BuildProfileSnapshot();
+            sb.Append("db-planes=").Append(snapshot.DatabasePlanes == null ? "-" : snapshot.DatabasePlanes.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + string.Join(",", snapshot.DatabasePlanes)).Append('\n');
             using (MemoryStream buffer = new MemoryStream())
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 formatter.Binder = new LegacyJoyProSerializationBinder();
-                formatter.Serialize(buffer, BuildProfileSnapshot());
+                formatter.Serialize(buffer, snapshot);
                 using (System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create())
                     sb.Append("profile=").Append(Convert.ToBase64String(sha.ComputeHash(buffer.ToArray()))).Append('\n');
             }
@@ -1555,6 +1580,13 @@ namespace JoyPro
         {
             DbCorrectionIndex index = BuildDbCorrectionIndex();
             CorrectModifiersInBindsForLoad();
+            // The aircraft of the lists now; only those the profile's set lacks may be switched on (IsPlaneNewInDb).
+            List<string> planes = DatabasePlanesOf(index);
+            if (planes.Count > 0)
+            {
+                currentDatabasePlanes = planes;
+                RecordDatabasePlanesEntry(planes);
+            }
 
             // Which actions are switched on where: an added aircraft never gets an action another relation has on.
             BeginCorrectionActiveIndex();
@@ -1807,6 +1839,10 @@ namespace JoyPro
                     DCSInput inExisting = InputContainsPlane(currentInputs, db.Plane);
                     if (inExisting != null)
                         continue;
+                    // An aircraft the lists had before and the user did not put into the node stays out of it (an
+                    // import puts only the bound aircraft in): only an aircraft new in the lists is added (2.6.2).
+                    if (!item.AIRCRAFT.ContainsKey(db.Plane) && !IsPlaneNewInDb("DCS", db.Plane))
+                        continue;
 
                     DCSInput inKeep = InputContainsPlane(toKeep, db.Plane);
                     toKeep.Add(db.Copy());
@@ -1833,7 +1869,10 @@ namespace JoyPro
                         }
                         item.AIRCRAFT[db.Plane] = canActivate;
                         if (canActivate)
+                        {
                             NoteCorrectionActivated("DCS", item.ID, db.Plane, relation);
+                            RecordAutoAddAdded(relation, item, "DCS", db.Plane);
+                        }
                     }
                 }
 
@@ -1926,6 +1965,9 @@ namespace JoyPro
                     OtherGameInput inExisting = InputContainsPlane(currentInputs, dbPlane);
                     if (inExisting != null)
                         continue;
+                    // As for DCS: only an aircraft (here: a game's list) new in the lists is added.
+                    if (!item.AIRCRAFT.ContainsKey(dbPlane) && !IsPlaneNewInDb(game, dbPlane))
+                        continue;
 
                     OtherGameInput inKeep = InputContainsPlane(toKeep, dbPlane);
                     toKeep.Add(db.Copy());
@@ -1952,7 +1994,10 @@ namespace JoyPro
                         }
                         item.AIRCRAFT[dbPlane] = canActivate;
                         if (canActivate)
+                        {
                             NoteCorrectionActivated(game, item.ID, dbPlane, relation);
+                            RecordAutoAddAdded(relation, item, game, dbPlane);
+                        }
                     }
                 }
 
@@ -4229,6 +4274,11 @@ namespace JoyPro
             profile.DismissedSuggestions = DismissedSuggestions == null || DismissedSuggestions.Count == 0 ? null : DismissedSuggestions.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
             profile.SyncedGames = SyncedGames == null || SyncedGames.Count == 0 ? null : SyncedGames.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
             profile.DatabaseFingerprint = fingerprint ?? string.Empty;
+            // Strings of their own: the saved bytes do not depend on which other object of the graph shares a string (the
+            // engine server's kept correction copies them).
+            List<string> planes = DatabasePlanesToSave();
+            profile.DatabasePlanes = planes == null ? null : planes.Select(p => new string(p.ToCharArray())).ToList();
+            profile.ReviewedAutoAdds = ReviewedAutoAdds == null || ReviewedAutoAdds.Count == 0 ? null : ReviewedAutoAdds.OrderBy(k => k, StringComparer.OrdinalIgnoreCase).ToList();
             return profile;
         }
     }

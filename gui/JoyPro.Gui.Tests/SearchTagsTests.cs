@@ -127,7 +127,8 @@ public sealed class SearchTagsTests
         Assert.Equal("Already in this relation", group.Label);
         // The header counts what can be added.
         Assert.StartsWith("4 actions in 3 games + 1 already in this relation", vm.BuilderSearchStatus);
-        // Tick all shown and Add selected leave it out.
+        // Tick all shown and Add selected leave it out ("Related" opened first: folded rows are not shown).
+        vm.ToggleBuilderRelatedCommand.Execute(null);
         vm.CheckAllShownBuilderResultsCommand.Execute(null);
         Assert.Equal(4, vm.BuilderCheckedCount);
         Assert.False(inside.IsChecked);
@@ -376,6 +377,10 @@ public sealed class SearchTagsRealEngineTests
                 await RelationBuilderTests.WaitForAsync(() => !vm.IsBuilderSearching && !vm.IsBusy);
                 Assert.Contains(vm.BuilderSearchResults, r => !r.IsNameMatch && !r.IsInOpenRelation);
 
+                // "Related" opened (it starts folded): every section's rows are in the list.
+                if (vm.BuilderSearchRows.OfType<BuilderSearchSectionItem>().Any(s => s.IsRelated && !s.IsExpanded))
+                    vm.ToggleBuilderRelatedCommand.Execute(null);
+
                 // Every mode: the default order, Sort: Game (the title decides within a game) and By function.
                 foreach (string mode in new[] { "own order", "Sort: Game", "By function", "By function, Sort: Game" })
                 {
@@ -385,18 +390,28 @@ public sealed class SearchTagsRealEngineTests
                         vm.BuilderSearchSort.Add("game", false);
                     rows = vm.BuilderSearchRows.ToList();
                     List<BuilderSearchSectionItem> sections = rows.OfType<BuilderSearchSectionItem>().ToList();
-                    Assert.Equal(2, sections.Count);
+                    Assert.True(sections.Count >= 2, mode);
                     Assert.True(sections[0].IsNameMatches, mode);
-                    Assert.False(sections[1].IsNameMatches, mode);
+                    Assert.All(sections.Skip(1), s => Assert.False(s.IsNameMatches, mode));
+                    // Name, Same function, Related: in this order, each once.
+                    string[] kinds = sections.Select(s => s.Kind).ToArray();
+                    Assert.Equal(new[] { "name", "function", "related" }.Where(kinds.Contains).ToArray(), kinds);
                     int meaningAt = rows.IndexOf(sections[1]);
                     Assert.Same(sections[0], rows[0]);
                     List<BuilderSearchResultItem> above = rows.Take(meaningAt).OfType<BuilderSearchResultItem>().ToList();
                     List<BuilderSearchResultItem> below = rows.Skip(meaningAt).OfType<BuilderSearchResultItem>().Where(r => !r.IsInOpenRelation).ToList();
                     Assert.True(above.Count > 0 && below.Count > 0, mode);
                     Assert.All(above, r => Assert.True(r.IsNameMatch, mode + ": '" + r.Title + "' is above the meaning rows without every word"));
-                    Assert.All(below, r => Assert.False(r.IsNameMatch, mode + ": '" + r.Title + "' has every word but is below 'Same meaning'"));
+                    Assert.All(below, r => Assert.False(r.IsNameMatch, mode + ": '" + r.Title + "' has every word but is below the name matches"));
                     Assert.Equal("Name has every word (" + above.Count + ")", sections[0].Label);
-                    Assert.Equal("Same meaning (" + below.Count + ")", sections[1].Label);
+                    Assert.Equal(below.Count, sections.Skip(1).Sum(s => s.Count));
+                    // Every row is in the section of its kind.
+                    for (int i = 1; i < sections.Count; i++)
+                    {
+                        int from = rows.IndexOf(sections[i]);
+                        int to = i + 1 < sections.Count ? rows.IndexOf(sections[i + 1]) : rows.Count;
+                        Assert.All(rows.Skip(from).Take(to - from).OfType<BuilderSearchResultItem>().Where(r => !r.IsInOpenRelation), r => Assert.Equal(sections[i].Kind, r.SectionKind));
+                    }
                     Assert.Contains(above, r => r.Title == "MASTER RESET");
                     // By function: the first group is one of name matches.
                     if (vm.BuilderGroupByFunction)

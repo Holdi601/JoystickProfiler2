@@ -85,6 +85,48 @@ public sealed partial class RelationNodeItem : ObservableObject
 
     public bool HasExportSkip => ExportSkipText.Length > 0;
 
+    // ---- The Relations page's Games filter (a game or aircraft ticked): the actions for it come first, marked ----
+
+    // The action is for a game / aircraft the filter is set to: an accent edge and the aircraft named.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterMatchText))]
+    [NotifyPropertyChangedFor(nameof(ShowFilterChipInHeader))]
+    [NotifyPropertyChangedFor(nameof(ShowFilterChipOnAircraftLine))]
+    private bool isFilterMatch;
+
+    // The filter's aircraft of this action ("F-100D", "F-5E-3, F-16C_50"; the game for a whole game).
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FilterMatchText))]
+    private string filterMatchNames = string.Empty;
+
+    // "Filter: F-100D"
+    public string FilterMatchText => IsFilterMatch ? T("Filter: {0}", FilterMatchNames) : string.Empty;
+
+    // The mark goes on the aircraft line ("1 of 4 aircraft"); an action without one (another game) shows it under its title.
+    public bool ShowFilterChipOnAircraftLine => IsFilterMatch && HasAircraft;
+
+    public bool ShowFilterChipInHeader => IsFilterMatch && !HasAircraft;
+
+    // Sets the filter's mark (null or empty: not for the filter) and ticks the filter's aircraft in the aircraft list.
+    public void SetFilterMatch(System.Collections.Generic.IReadOnlyList<string>? names, System.Func<string, bool>? isFilteredPlane)
+    {
+        bool match = names is { Count: > 0 };
+        FilterMatchNames = match ? string.Join(", ", names!) : string.Empty;
+        IsFilterMatch = match;
+        filteredPlane = isFilteredPlane;
+        MarkFilteredAircraft();
+    }
+
+    private System.Func<string, bool>? filteredPlane;
+
+    private void MarkFilteredAircraft()
+    {
+        if (Aircraft == null)
+            return;
+        foreach (AircraftChoiceItem item in Aircraft.Items)
+            item.IsFilterMatch = filteredPlane != null && filteredPlane(item.Plane);
+    }
+
     // The game's own title of the action (engine relations aircraft), for the games whose node id is no title
     // ("KEY_AXIS_ELEVATOR_SET" -> "Elevator Axis", "elevator" -> "Pitch axis"); explanation: what it does (the cockpit
     // guide or the game's own description), in the tooltip.
@@ -96,6 +138,24 @@ public sealed partial class RelationNodeItem : ObservableObject
         TitlesDisplay = title.Trim() + " (" + Id + ")" + (string.IsNullOrWhiteSpace(explanation) ? string.Empty : System.Environment.NewLine + explanation.Trim());
         OnPropertyChanged(nameof(TitlesSummary));
         OnPropertyChanged(nameof(TitlesDisplay));
+    }
+
+    // DCS, one id with several titles in its ticked aircraft: the main meaning is the title, every other meaning a line
+    // of its own under it ("F-16C: KY-58 MODE Knob - RV (different function)", "also called: Thrust (13)").
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMeaningNote))]
+    private string meaningNote = string.Empty;
+
+    public bool HasMeaningNote => MeaningNote.Length > 0;
+
+    public void UseMeanings(string title, string note)
+    {
+        if (!string.IsNullOrWhiteSpace(title) && !string.Equals(TitlesSummary, title.Trim(), System.StringComparison.Ordinal))
+        {
+            TitlesSummary = title.Trim();
+            OnPropertyChanged(nameof(TitlesSummary));
+        }
+        MeaningNote = note ?? string.Empty;
     }
 
     // MeaningTitle, Differs or Excluded were set (from engine relations aircraft).
@@ -114,6 +174,9 @@ public sealed partial class RelationNodeItem : ObservableObject
             oldValue.SelectionChanged -= OnSelectionChanged;
         if (newValue != null)
             newValue.SelectionChanged += OnSelectionChanged;
+        MarkFilteredAircraft();
+        OnPropertyChanged(nameof(ShowFilterChipInHeader));
+        OnPropertyChanged(nameof(ShowFilterChipOnAircraftLine));
     }
 
     private void OnSelectionChanged(object? sender, System.EventArgs e)
@@ -122,4 +185,30 @@ public sealed partial class RelationNodeItem : ObservableObject
         OnPropertyChanged(nameof(MixedText));
         OnPropertyChanged(nameof(BadgeText));
     }
+}
+
+// The fold of the relation editor's action list under a Games filter: "Other aircraft (4)", the actions that are not for
+// the filtered games / aircraft (they stay in the relation; a click shows or hides them).
+public sealed partial class RelationNodeOthersHeader : ObservableObject
+{
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Label))]
+    private int count;
+
+    // "aircraft", "games" or "both": what the filter has ticked.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Label))]
+    private string kind = "aircraft";
+
+    [ObservableProperty]
+    private bool isExpanded;
+
+    public string Label => Kind switch
+    {
+        "games" => T("Other games ({0})", Count),
+        "both" => T("Other games and aircraft ({0})", Count),
+        _ => T("Other aircraft ({0})", Count)
+    };
+
+    public void Refresh() => OnPropertyChanged(nameof(Label));
 }

@@ -32,6 +32,9 @@ walk-through with diagrams and the in-game meaning is on [[page:flows/relations.
 - **Follow input**: press a button on your stick and its relation opens.
 - A DCS action card opens its aircraft ("82 of 84 aircraft"); untick aircraft where the command should not apply.
   **Only same meaning** keeps only aircraft where the id means the same.
+- With the **Games** filter on one aircraft ("DCS World: F-100D") the open relation still shows all its actions, so
+  nothing is edited by mistake: the ones for the F-100D come first with a blue edge and **Filter: F-100D**, the rest
+  is folded in **Other aircraft (n)**; a click opens it.
 - **Suggest missing (n)** on the open relation lists what other games and aircraft lack; **More > Suggest missing
   for every relation...** does all relations at once.
 - The function chip says which function JoyPro thinks the relation is; change it if the guess is wrong (it steers the
@@ -473,17 +476,22 @@ By description: **Create** makes the ticked relations of the preview; unticked a
 answer as the preview (the local AI only when the preview used it). Engine: [[cli:relations from-text]] `--select`.
 
 <!-- entry: OnlyWhereSameMeaningCommand -->
-Aircraft check: **Only where it is '...'** (several actions: **Only where the meaning is the same**) switches the
+Aircraft check: the question names the button and what it does in each aircraft ("BTN 20 does different things in
+these aircraft: F/A-18C: RADAR Switch - EMERG · F-16C: KY-58 MODE Knob - RV. Where should BTN 20 work?").
+**Only in the F/A-18C (take it off the F-16C)** (several actions: **Only where it does the same**) switches the
 relation off in the aircraft where its command does something else, except those ticked **use here**. They stay
-listed, one tick brings one back; Ctrl+Z undoes it, one step per action. Engine: [[cli:relations aircraft set]]
-`--off`. In the game: those aircraft no longer get the action on this input.
+listed, one tick brings one back; Ctrl+Z undoes it, one step per action. Aircraft that came from your own game files
+(an import) are never the ones it takes off, and a helicopter's engine throttle counts as the same as the throttle or
+power levers of the other aircraft. Engine: [[cli:relations aircraft set]] `--off`. In the game: those aircraft no
+longer get the action on this input.
 
 <!-- entry: KeepRelationCheckForAllCommand -->
-Aircraft check: **Keep for all** keeps the relation in every listed aircraft and remembers that, so JoyPro does not
-ask about them again (kept across restarts). Nothing changes in the profile.
+Aircraft check: **Keep it in both (F-16C keeps KY-58 MODE Knob - RV)** (more meanings: **Keep it in all**, several
+actions: **Keep it everywhere**) changes nothing in the profile: every aircraft keeps what the button does now, and
+JoyPro stops asking about them on this PC (kept across restarts, not part of the profile and not undone by Ctrl+Z).
 
 <!-- entry: DismissAircraftCheckCommand -->
-Aircraft check: **Ask me later** hides the question for this relation until JoyPro starts again. Nothing changes.
+Aircraft check: **Decide later** hides the question for this relation until JoyPro starts again. Nothing changes.
 
 <!-- entry: bind:UseHere -->
 Aircraft check: **use here** keeps the relation in this aircraft too when you press **Only where ...**; the aircraft
@@ -558,12 +566,34 @@ switched off, so it may be suggested again. Ctrl+Z undoes it. Engine: [[cli:rela
 
 <!-- entry: ShowBuilderFindCommand -->
 Right panel: **Add actions** (Ctrl+Shift+F) shows the search over every game and aircraft at once; tick what belongs
-and add it with one click. The list has two parts: **Name has every word** (the action's title has every word you
-typed; brackets and punctuation do not matter: "tacan channel (xx0x) - inc" finds "TACAN Channel (xx0x) - [Inc]") and,
-below it, **Same meaning** (found by what the action does: the same function, a synonym or a description). The name
-matches stay on top whatever the sort, by game or by function. When something matches all of several words, actions
-that match only some of them are left out: "master reset" in the F-14 lists MASTER RESET and Master Caution Reset, not
-every "master" switch. A single word, or a sentence nothing matches completely, still finds everything that means it.
+and add it with one click. When you open a relation the search box starts empty: type what you want to add, or use
+**Suggested for this relation**, which suggests by the relation itself. The list has three parts:
+**Name has every word** (the action's title has every word you typed; singular and plural are the same word, "brakes"
+finds "Wheel Brake"; brackets and punctuation do not matter: "tacan channel (xx0x) - inc" finds "TACAN Channel (xx0x) -
+[Inc]"), **Same function** (the action does what your words mean: the same function, found by a synonym or a
+description, "thrust" finds the throttles) and **Related** (looser links: a word of the action's category, some of
+your words, a similar word; folded, a click on its header shows them). Hover the little label on a row to read why it
+was found, for example "'thrust' is a synonym of 'Throttle'" or "Related: its category 'Gears, Brakes, Hook' has the
+word 'brakes'". The parts keep their order whatever the sort, by game or by function. When something matches all of
+several words, actions that match only some of them are left out: "master reset" in the F-14 lists MASTER RESET and
+Master Caution Reset, not every "master" switch. A single word, or a sentence nothing matches completely, still finds
+everything that means it. The F-4E's "[SimPit] ... (Switch)" commands are axes in DCS (for home cockpits that wire a
+switch as an axis); they say **axis (sim-pit switch)**.
+
+<!-- entry: bind:BuilderShowSameMeaning -->
+Add actions: **Same meaning** (on by default) also lists, below the actions whose name has every word you typed, the
+ones that do the same (**Same function**) and the looser ones (**Related**, folded). Off: only the name matches; the
+line above the list says how many are hidden. Kept for the next start; the same switch is in Settings > Relations.
+
+<!-- entry: ShowBuilderSameMeaningCommand -->
+Add actions: **Same meaning** next to All / Axes / Buttons switches the Same function and Related parts on or off. Off,
+only actions whose name has every word you typed are listed, and the line above the list says how many are hidden.
+When no name has every word, the list says so and **Show same meaning** switches it on again in one click. The switch
+is remembered and is the same as Settings > Relations.
+
+<!-- entry: ToggleBuilderRelatedCommand -->
+Add actions: a click on **Related (n)** shows or hides the related actions (folded at first; open by itself when the
+search found nothing else). A new search folds it again.
 
 <!-- entry: ShowBuilderSuggestedCommand -->
 Right panel: **Suggested for this relation (n)** shows what means the same in your other games and aircraft, from
@@ -596,7 +626,7 @@ Add actions: **Collapse all** shows only the best rows of each game again; ticks
 
 <!-- entry: bind:BuilderGroupByFunction -->
 Add actions: **By function** groups the result rows by the function they are (throttle, collective ...) instead of by
-game. The groups of **Name has every word** still come before those of **Same meaning**.
+game. The groups of **Name has every word** still come before those of **Same function**, and those before **Related**.
 
 <!-- entry: CheckAllShownBuilderResultsCommand -->
 Add actions: **Tick all shown** ticks every action in the list; narrow the list with the game chips first. Actions
@@ -654,3 +684,9 @@ whole profile.
 
 <!-- entry: OpenAssistantRelationCommand -->
 JoyPro assistant: a relation name in an answer opens that relation in the editor.
+
+<!-- entry: ToggleRelationNodeOthersCommand -->
+**Other aircraft (n)** under the open relation's actions, shown while the Games filter is on a game or aircraft: the
+relation's actions for other games and aircraft than the filter's. They stay in the relation; a click shows or hides
+them (another relation starts with them folded). The filter's own actions stand above it with a blue edge and
+**Filter: F-100D** on their aircraft line. Clearing the filter brings the plain list back.

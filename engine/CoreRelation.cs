@@ -13,6 +13,10 @@ namespace JoyPro
         public DCSInput[] AllInputs;
         public string Game;
         public OtherGameInput[] OtherInputs;
+        // DCS: the aircraft an import or a take-over put into the node from the user's own bind files (2.6.2; empty for
+        // older nodes). The check "same id, different meaning" never proposes to take these out (EngineIdMeanings.Check).
+        [OptionalField]
+        public List<string> FromGameFiles;
 
         public RelationItem()
         {
@@ -47,7 +51,24 @@ namespace JoyPro
             copy.AIRCRAFT = new Dictionary<string, bool>(AIRCRAFT ?? new Dictionary<string, bool>(), StringComparer.OrdinalIgnoreCase);
             copy.AllInputs = AllInputs == null ? new DCSInput[0] : AllInputs.Select(i => i == null ? null : i.Copy()).ToArray();
             copy.OtherInputs = OtherInputs == null ? new OtherGameInput[0] : OtherInputs.Select(i => i == null ? null : i.Copy()).ToArray();
+            copy.FromGameFiles = FromGameFiles == null ? null : new List<string>(FromGameFiles);
             return copy;
+        }
+
+        // An import or take-over put this aircraft in from the user's own bind files.
+        public void NoteFromGameFiles(string plane)
+        {
+            if (string.IsNullOrWhiteSpace(plane))
+                return;
+            if (FromGameFiles == null)
+                FromGameFiles = new List<string>();
+            if (!FromGameFiles.Contains(plane.Trim(), StringComparer.OrdinalIgnoreCase))
+                FromGameFiles.Add(plane.Trim());
+        }
+
+        public bool IsFromGameFiles(string plane)
+        {
+            return FromGameFiles != null && !string.IsNullOrWhiteSpace(plane) && FromGameFiles.Contains(plane.Trim(), StringComparer.OrdinalIgnoreCase);
         }
 
         public PlaneState GetStateAircraft(string plane)
@@ -242,6 +263,8 @@ namespace JoyPro
                 if (plane.Value)
                     existing.SetAircraftActivity(plane.Key, true);
             }
+            foreach (string plane in item.FromGameFiles ?? new List<string>())
+                existing.NoteFromGameFiles(plane);
 
             RecalculateElementCount();
         }

@@ -1752,6 +1752,7 @@ namespace JoyPro.Engine
         private static void MergeIntoExistingRelation(ParsedBind parsedBind, Relation relation, Bind bind, EngineDcsImportOptions options, bool addGroups = true)
         {
             relation.AddNode(parsedBind.Id, "DCS", parsedBind.IsAxis, parsedBind.Plane, false);
+            NoteImportedPlane(relation, parsedBind.Id, parsedBind.Plane);
 
             // This plane's axis filter: if it differs from the relation's (the first plane's), it becomes the
             // relation's tuning for this aircraft instead of being dropped.
@@ -1781,6 +1782,18 @@ namespace JoyPro.Engine
                 bind.AdditionalImportInfo = parsedBind.Name;
         }
 
+        // The aircraft came from the user's own bind files (RelationItem.FromGameFiles): the meaning check never
+        // proposes to take it out.
+        internal static void NoteImportedPlane(Relation relation, string id, string plane)
+        {
+            if (relation == null || relation.NODES == null || string.IsNullOrWhiteSpace(plane))
+                return;
+            RelationItem node = relation.NODES.FirstOrDefault(n => n != null && string.Equals(n.ID, id, StringComparison.Ordinal) &&
+                                                                   string.Equals(string.IsNullOrWhiteSpace(n.Game) ? "DCS" : n.Game, "DCS", StringComparison.OrdinalIgnoreCase));
+            if (node != null)
+                node.NoteFromGameFiles(plane);
+        }
+
         private static Relation CreateRelation(ParsedBind parsedBind, string relationName)
         {
             Relation relation = new Relation();
@@ -1791,6 +1804,7 @@ namespace JoyPro.Engine
                 relation.Groups.Add("DCS");
             relation.NODES = new List<RelationItem>();
             relation.AddNode(parsedBind.Id, "DCS", parsedBind.IsAxis, parsedBind.Plane, false);
+            NoteImportedPlane(relation, parsedBind.Id, parsedBind.Plane);
             return relation;
         }
 

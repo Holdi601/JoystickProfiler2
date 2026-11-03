@@ -3551,7 +3551,7 @@ return diff
     # $tempDir and $engineDir, and clean up what they change.
     # The parts that read real game catalogs (DB\<game>, CleanProfile) run only with the development game lists. A new
     # part that needs them goes into this list (check: it must pass in a checkout without EngineOnly_Runtime\DB\<game>).
-    $smokeNeedingGameData = @("aiallgames.ps1", "arma.ps1", "bms.ps1", "elite.ps1", "grebels.ps1", "il2.ps1", "legacyids.ps1", "msfs.ps1",
+    $smokeNeedingGameData = @("aiallgames.ps1", "arma.ps1", "autoaddcorrection.ps1", "bms.ps1", "elite.ps1", "grebels.ps1", "il2.ps1", "legacyids.ps1", "msfs.ps1",
         "nlgroup.ps1", "nuclearoption.ps1", "progress.ps1", "reforger.ps1", "roundtrip.ps1", "relationassistant.ps1", "relationbuilder.ps1", "searchliteral.ps1", "searchranking.ps1", "autogroupown.ps1", "autogroupslots.ps1", "setupwizard.ps1", "autoassignmatrix.ps1", "sync.ps1",
         "tinycombatarena.ps1", "vtolvr.ps1", "wardogs.ps1", "warthunder.ps1", "x4.ps1", "xplane.ps1")
     foreach ($gameSmoke in @(Get-ChildItem -Path (Join-Path $engineDir "tests\smoke") -Filter "*.ps1" -ErrorAction SilentlyContinue | Sort-Object Name)) {

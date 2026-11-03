@@ -19,6 +19,7 @@ public sealed partial class MainWindowViewModel
     [
         ("games", N("Games"), "hidden games hide show installed folder portable watch config detect setup war thunder archives hell let loose vietnam oodle vjoy tunnel voiceattack", N("Games")),
         ("binds", N("Binds"), "follow input record button held pressed switch binds page", N("Binds")),
+        ("relations", N("Relations"), "relations add actions search same meaning same function related synonyms name matches every word", N("Relations")),
         ("startup", N("Startup"), "last profile open start autosave history versions", N("Startup")),
         ("pages", N("Pages in the bottom bar"), "pages tabs navigation bottom bar menu hide show order reorder move drag", N("Pages")),
         ("language", N("Language"), "language translation locale english deutsch windows", N("Language")),

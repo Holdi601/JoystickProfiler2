@@ -514,6 +514,21 @@ namespace JoyPro.Engine
                 long keptMs = watch.ElapsedMilliseconds;
                 bool wasKept = EngineLoadCorrectionCache.Misses == misses + 1 && EngineLoadCorrectionCache.Hits == hits + 1;
                 bool sameState = string.Equals(ran, kept, StringComparison.Ordinal);
+                if (!sameState)
+                {
+                    // The first line where the kept state differs from the run (support: what the cache lost).
+                    string[] a = ran.Split('\n');
+                    string[] b = kept.Split('\n');
+                    for (int i = 0; i < Math.Max(a.Length, b.Length); i++)
+                    {
+                        string x = i < a.Length ? a[i] : "(none)";
+                        string y = i < b.Length ? b[i] : "(none)";
+                        if (x == y)
+                            continue;
+                        Console.WriteLine("load corrections: kept state differs at line " + i.ToString(CultureInfo.InvariantCulture) + ": ran '" + x + "', kept '" + y + "'");
+                        break;
+                    }
+                }
                 bool corrected = ran.Contains("entry=db-fingerprint-check|auto|");
 
                 // The file changed (time stamp): the correction runs again and gives the same.

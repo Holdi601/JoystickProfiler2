@@ -332,7 +332,14 @@ namespace JoyPro.Engine
                     return 0;
                 });
             WriteLoadCorrectionReportIfRequested();
-            SaveLoadModifierMerges(profilePath, command);
+            // What the load correction changed is a history step of its own (never part of this command's), and only
+            // a command that saves the profile anyway saves it: a preview (suggest, a dry run, sync diff) shows the
+            // corrected profile but leaves the file alone.
+            bool saveCorrections = !string.IsNullOrWhiteSpace(profilePath) && IsMutatingCommand(area, command) &&
+                                   !command.Any(c => string.Equals(c, "--dry-run", StringComparison.OrdinalIgnoreCase));
+            SaveLoadCorrections(profilePath, saveCorrections);
+            if (saveCorrections || InternalDataManagement.LoadCorrectionChanges.Count == 0)
+                SaveLoadModifierMerges(profilePath, command);
 
             bool shouldAutoSaveProfile = ShouldAutoSaveProfile(profilePath, area, command);
             EngineProfileHistory.CommandLabel = EngineProfileHistory.DescribeCommand(area, command);
@@ -739,6 +746,49 @@ namespace JoyPro.Engine
             return 0;
         }
 
+        // engine profile auto-added [--apply [--skip "key;key"] | --keep]: the aircraft an earlier load correction switched on
+        // without the user (EngineAutoAddRepair); --apply takes them out (except the skipped ones), --keep stops asking.
+        // Either is one profile version.
+        private static int RunProfileAutoAdded(List<string> args, string outPath, bool textOutput)
+        {
+            bool apply = PopFlag(args, "--apply");
+            bool keep = PopFlag(args, "--keep");
+            string skipRaw = PopOptionValue(args, "--skip");
+            if (args.Count > 0)
+                return Fail("Unknown profile auto-added argument(s): " + string.Join(" ", args));
+            if (apply && keep)
+                return Fail("profile auto-added: --apply or --keep, not both.");
+            string profile = EngineProfileHistory.ProfilePath;
+            if (string.IsNullOrWhiteSpace(profile) || !File.Exists(profile))
+                return Fail("engine profile auto-added needs --profile <file>.");
+            List<string> skip = (skipRaw ?? string.Empty).Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Where(s => s.Length > 0).ToList();
+            EngineAutoAddRepairResult result = EngineAutoAddRepair.Run(profile, apply, keep, skip);
+            if ((result.Applied || result.Kept) && result.HistoryLabel.Length > 0)
+            {
+                string note = EngineProfileHistory.Note;
+                string label = EngineProfileHistory.CommandLabel;
+                try
+                {
+                    EngineProfileHistory.Note = result.HistoryLabel;
+                    EngineProfileHistory.CommandLabel = result.HistoryLabel;
+                    EngineProfileHistory.NoCoalesce = true;
+                    InternalDataManagement.SaveProfileTo(profile);
+                }
+                finally
+                {
+                    EngineProfileHistory.Note = note;
+                    EngineProfileHistory.CommandLabel = label;
+                }
+                JoyPro.Logging.JoyProLog.Info("Corrections", result.Message);
+            }
+            else if (apply || keep)
+            {
+                CommandChangedNothing = true;
+            }
+            EmitPayload(textOutput ? EngineAutoAddRepair.ToText(result) : EngineSerialization.ToJson(result), outPath);
+            return 0;
+        }
+
         private static int RunProfile(List<string> command, string outPath, bool textOutput)
         {
             string action = command.Count == 0 ? "summary" : command[0].ToLowerInvariant();
@@ -758,12 +808,17 @@ namespace JoyPro.Engine
                 case "summary":
                     Console.WriteLine(Summary());
                     return 0;
+                case "auto-added":
+                    return RunProfileAutoAdded(command.Skip(1).ToList(), outPath, textOutput);
                 case "load":
                     if (command.Count < 2)
                         return Fail("profile load requires a .pr0file path.");
                     string sourcePath = NormalizePath(command[1]);
                     InternalDataManagement.LoadProfile(sourcePath);
                     WriteLoadCorrectionReportIfRequested();
+                    // Opening a profile keeps what the correction changed as a step of its own, before the step that
+                    // takes out actions without aircraft (both are saves of the opened profile).
+                    SaveLoadCorrections(sourcePath, true);
                     RemoveUntickedActionsOnLoad(sourcePath);
                     Console.WriteLine("Loaded profile: " + sourcePath);
                     Console.WriteLine(Summary());
@@ -14244,6 +14299,52 @@ namespace JoyPro.Engine
             return "Ambiguous " + kind + " query '" + query + "'. Matches: " + sample;
         }
 
+        // What the load correction changed in the relations (InternalDataManagement.LoadCorrectionChanges: an aircraft new
+        // in the command lists switched on, a command that changed id remapped, one no longer in a list taken out) is saved
+        // right away as one history step of its own ("Updated to the new command lists: 3 aircraft in 2 relations"), so
+        // one undo takes exactly it back and the next command's step does not carry it (a tester's 2.6.1 profile had
+        // 446 aircraft switched on under the label of his next click). save false (a read-only command, a dry run): not
+        // saved; the next command that saves does it.
+        private static void SaveLoadCorrections(string profilePath, bool save)
+        {
+            List<string> changes = InternalDataManagement.LoadCorrectionChanges;
+            if (changes == null || changes.Count == 0)
+                return;
+            string label = InternalDataManagement.LoadCorrectionLabel();
+            if (!save || string.IsNullOrWhiteSpace(profilePath) || !File.Exists(profilePath))
+            {
+                JoyPro.Logging.JoyProLog.Info("Corrections", label + " (not saved: this command does not save the profile)");
+                return;
+            }
+            string note = EngineProfileHistory.Note;
+            string commandLabel = EngineProfileHistory.CommandLabel;
+            List<string> merges = InternalDataManagement.LoadModifierMerges ?? new List<string>();
+            try
+            {
+                EngineProfileHistory.Note = label;
+                EngineProfileHistory.CommandLabel = label;
+                EngineProfileHistory.NoCoalesce = true;
+                InternalDataManagement.SaveProfileTo(profilePath);
+                Status(InternalDataManagement.LoadCorrectionNote());
+                if (merges.Count > 0)
+                    Status("Merged modifiers of the same key: " + string.Join("; ", merges));
+                // The modifiers merged in the same load are in this save.
+                InternalDataManagement.LoadModifierMerges = new List<string>();
+                InternalDataManagement.LoadCorrectionChanges = new List<string>();
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException)
+            {
+                JoyPro.Logging.JoyProLog.Warn("Profile", "Could not save what the load correction changed", ex);
+            }
+            finally
+            {
+                EngineProfileHistory.Note = note;
+                EngineProfileHistory.CommandLabel = commandLabel;
+                // The command's own save in this run stays a step of its own too (it is not merged into this one).
+                EngineProfileHistory.NoCoalesce = true;
+            }
+        }
+
         // Modifiers of one key under several names that the profile load merged (InternalDataManagement.LoadModifierMerges):
         // saved right away as one history step of their own, whatever the command (not in a dry run), so the binds keep
         // their modifier and the next change is not mixed with it.
@@ -14889,6 +14990,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)");
             Console.WriteLine("  engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)");
             Console.WriteLine("  engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks; --game takes the game id or an alias (il2, wt); --aircraft: only the marks of that aircraft; a warning when no open mark matches)");
+            Console.WriteLine("  engine profile auto-added [--apply [--skip \"key;key\"] | --keep]   (aircraft an earlier load correction switched on that you never bound, found in the profile history; --apply takes them out, --keep stops asking; one undo step)");
             Console.WriteLine("  engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)");
             Console.WriteLine("  engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--overwrite-mode left|right|ask] [--save <path.pr0file>] [--save-profile <path.pr0file>]   (the files are merged left to right; a relation both have: right = the later file wins (default), left = the first file keeps it, ask = the console asks; --overwrite-mode is another name for --mode, --save-profile for --save)");
             Console.WriteLine("  engine profile history [list]   (the versions of --profile, newest first: every save is one, kept in <data>\\ProfileHistory; undo/redo state)");

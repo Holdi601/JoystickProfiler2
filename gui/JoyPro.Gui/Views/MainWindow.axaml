@@ -349,6 +349,41 @@
                         </StackPanel>
                     </Grid>
                 </Border>
+
+                <!-- Aircraft an earlier load correction switched on without the user (MainWindowViewModel.AutoAddRepair.cs):
+                     the list to untick, Take them out (one undo step), Keep them, Later. -->
+                <Border x:Name="AutoAddRepairNotice" Classes="callout warn" IsVisible="{Binding HasAutoAddRepairNotice}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <PathIcon Data="{StaticResource Icon.Warning}" Width="18" Height="18" Classes="warn" VerticalAlignment="Top" />
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="{Binding AutoAddRepairTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding AutoAddRepairText}" TextWrapping="Wrap" />
+                            <WrapPanel ItemSpacing="8" LineSpacing="4">
+                                <Button Classes="small accent" Content="{l:T 'Take them out'}" Command="{Binding TakeOutAutoAddedCommand}" IsEnabled="{Binding CanRun}"
+                                        ToolTip.Tip="{l:T 'Takes the ticked aircraft out of these relations again: back to how you had them. One version of your profile; Ctrl+Z takes all of it back.'}" />
+                                <Button Classes="small" Content="{l:T 'Keep these aircraft'}" Command="{Binding KeepAutoAddedCommand}" IsEnabled="{Binding CanRun}"
+                                        ToolTip.Tip="{l:T 'The aircraft stay switched on; JoyPro does not ask about them again.'}" />
+                                <Button Classes="small ghost" Content="{l:T 'Later'}" Command="{Binding DismissAutoAddRepairCommand}"
+                                        ToolTip.Tip="{l:T 'Hide this until the profile is opened again'}" />
+                                <Button Classes="small ghost" Content="{Binding AutoAddRepairListToggleText}" Command="{Binding ToggleAutoAddRepairListCommand}" />
+                            </WrapPanel>
+                            <StackPanel Spacing="4" IsVisible="{Binding IsAutoAddRepairListOpen}">
+                                <ScrollViewer MaxHeight="260" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding AutoAddRepairItems}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:DuplicateChangeItem">
+                                                <CheckBox IsChecked="{Binding IsTicked}" Margin="0,1">
+                                                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" />
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                                <Button Classes="small" HorizontalAlignment="Left" Content="{l:T 'Tick all / none'}" Command="{Binding TickAllAutoAddRepairCommand}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </StackPanel>
         </Border>
 
@@ -1739,10 +1774,12 @@
                                                                 ToolTip.Tip="{l:T 'Switches this relation off in those aircraft, except the ones ticked use here in the list. They stay listed, one tick brings one back; Ctrl+Z undoes it, one step per action.'}" >
                                                             <TextBlock Text="{Binding RelationCheckOnlyLabel}" TextTrimming="CharacterEllipsis" />
                                                         </Button>
-                                                        <Button Classes="small" Content="{l:T 'Keep for all'}" Command="{Binding KeepRelationCheckForAllCommand}"
-                                                                ToolTip.Tip="{l:T 'The relation stays for all these aircraft; JoyPro does not ask about them again'}" />
-                                                        <Button Classes="small ghost" Content="{l:T 'Ask me later'}" Command="{Binding DismissAircraftCheckCommand}"
-                                                                ToolTip.Tip="{l:T 'Hide this question for now'}" />
+                                                        <Button Classes="small" Command="{Binding KeepRelationCheckForAllCommand}"
+                                                                ToolTip.Tip="{l:T 'Changes nothing in your profile: every aircraft keeps what it does now, and JoyPro stops asking about them on this PC.'}">
+                                                            <TextBlock Text="{Binding RelationCheckKeepLabel}" TextTrimming="CharacterEllipsis" />
+                                                        </Button>
+                                                        <Button Classes="small ghost" Content="{l:T 'Decide later'}" Command="{Binding DismissAircraftCheckCommand}"
+                                                                ToolTip.Tip="{l:T 'Hide this question until JoyPro starts again'}" />
                                                     </WrapPanel>
                                                     <Button Classes="small ghost" Margin="24,0,0,0" Padding="4,0" Content="{Binding RelationCheckToggleText}" Command="{Binding ToggleRelationCheckExpandedCommand}" />
                                                     <ScrollViewer Margin="24,0,0,0" MaxHeight="200" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding RelationCheckExpanded}">
@@ -1938,16 +1975,33 @@
                                         </Panel>
 
                                         <Panel Grid.Row="2" MinHeight="0">
-                                            <!-- The order of the actions: drag a card by its grip, or Alt+Up / Alt+Down (also in its context menu) -->
-                                            <ListBox x:Name="RelationNodeList" Classes="cards" ItemsSource="{Binding RelationNodes}" SelectedItem="{Binding SelectedRelationNode}" IsVisible="{Binding ShowRelationNodeList}"
+                                            <!-- The order of the actions: drag a card by its grip, or Alt+Up / Alt+Down (also in its context menu).
+                                                 Under the Games filter the filter's actions come first (accent edge, "Filter: F-100D"), the others
+                                                 in the fold "Other aircraft (n)" (RelationNodeListItems, MainWindowViewModel.RelationNodeFilter.cs). -->
+                                            <ListBox x:Name="RelationNodeList" Classes="cards" ItemsSource="{Binding RelationNodeListItems}" SelectedItem="{Binding SelectedRelationNode}" IsVisible="{Binding ShowRelationNodeList}"
                                                      DragDrop.AllowDrop="True"
                                                      ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                                <ListBox.DataTemplates>
+                                                    <DataTemplate DataType="{x:Type models:RelationNodeOthersHeader}" x:DataType="models:RelationNodeOthersHeader">
+                                                        <Button x:Name="RelationNodeOthersToggle" Classes="ghost" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="8,6"
+                                                                Command="{Binding #RootWindow.DataContext.ToggleRelationNodeOthersCommand}"
+                                                                ToolTip.Tip="{l:T 'The actions of this relation for other games and aircraft than your filter. They stay in the relation; click to show or hide them.'}">
+                                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                                                                <Panel Width="14" Height="14" VerticalAlignment="Center">
+                                                                    <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="14" Height="14" IsVisible="{Binding !IsExpanded}" />
+                                                                    <PathIcon Data="{StaticResource Icon.ChevronUp}" Width="14" Height="14" IsVisible="{Binding IsExpanded}" />
+                                                                </Panel>
+                                                                <TextBlock Grid.Column="1" Classes="h3" Text="{Binding Label}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                                            </Grid>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ListBox.DataTemplates>
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate x:DataType="models:RelationNodeItem">
                                                       <!-- The whole card answers a right-click (title, game line, aircraft line and the card's padding):
                                                            a hit-testable background over the list item's padding (2.5.0 tester report: only the title
                                                            line had the menu). -->
-                                                      <Border x:Name="RelationNodeRow" Background="Transparent" Margin="-10,-8" Padding="10,8">
+                                                      <Border x:Name="RelationNodeRow" Classes="nodeRow" Classes.filterMatch="{Binding IsFilterMatch}" Background="Transparent" Margin="-10,-8">
                                                         <Border.ContextMenu>
                                                             <ContextMenu>
                                                                 <MenuItem Header="{l:T 'Move up'}" InputGesture="Alt+Up" Command="{Binding #RootWindow.DataContext.MoveRelationNodeUpCommand}" CommandParameter="{Binding}" />
@@ -1976,7 +2030,16 @@
                                                             </Panel>
                                                             <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
                                                                 <TextBlock Text="{Binding TitlesSummary}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding TitlesDisplay}" />
+                                                                <TextBlock Classes="caption" Text="{Binding MeaningNote}" IsVisible="{Binding HasMeaningNote}" TextWrapping="Wrap" />
                                                                 <TextBlock Classes="caption" Text="{Binding DetailsText}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding PlanesDisplay}" />
+                                                                <!-- For the Games filter (an action without an aircraft line: another game) -->
+                                                                <Border x:Name="RelationNodeFilterChip" Classes="chip filter" IsVisible="{Binding ShowFilterChipInHeader}"
+                                                                        ToolTip.Tip="{l:T 'This action is for the games and aircraft of your filter'}">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                        <PathIcon Data="{StaticResource Icon.Airplane}" />
+                                                                        <TextBlock Text="{Binding FilterMatchText}" />
+                                                                    </StackPanel>
+                                                                </Border>
                                                                 <!-- "Only add" did not write it: the game uses the button for another function (engine export-marks) -->
                                                                 <Border x:Name="RelationNodeExportSkip" Classes="chip warn" HorizontalAlignment="Left" IsVisible="{Binding HasExportSkip}"
                                                                         ToolTip.Tip="{Binding ExportSkipText}">
@@ -2012,6 +2075,14 @@
                                                                         <TextBlock Grid.Column="1" Text="{Binding Aircraft.ExpandLabel, FallbackValue=''}" FontSize="{DynamicResource JP.FontSize.11.5}" TextWrapping="Wrap" />
                                                                     </Grid>
                                                                 </Button>
+                                                                <!-- The Games filter's aircraft among this action's aircraft -->
+                                                                <Border x:Name="RelationNodeAircraftFilterChip" Classes="chip filter" IsVisible="{Binding ShowFilterChipOnAircraftLine}"
+                                                                        ToolTip.Tip="{l:T 'This action is for the games and aircraft of your filter'}">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                        <PathIcon Data="{StaticResource Icon.Airplane}" />
+                                                                        <TextBlock Text="{Binding FilterMatchText}" />
+                                                                    </StackPanel>
+                                                                </Border>
                                                                 <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding ExcludedText}" IsVisible="{Binding HasExcluded}" VerticalAlignment="Center" />
                                                                 <Button Classes="small accent" Content="{l:T 'Apply'}" IsVisible="{Binding Aircraft.HasChanges, FallbackValue=False}"
                                                                         Command="{Binding #RootWindow.DataContext.ApplyNodeAircraftCommand}" CommandParameter="{Binding}"
@@ -2108,6 +2179,9 @@
                                                                   IsEnabled="{Binding CanChangeBuilderKind}" ToolTip.Tip="{l:T 'Only axes. {0}', Arg0={Binding BuilderKindHint}}" />
                                                     <ToggleButton Classes="filterChip trimmed" Content="{l:T 'Buttons'}" IsChecked="{Binding IsBuilderKindButton, Mode=OneWay}" Command="{Binding SetBuilderKindCommand}" CommandParameter="button"
                                                                   IsEnabled="{Binding CanChangeBuilderKind}" ToolTip.Tip="{l:T 'Only buttons. {0}', Arg0={Binding BuilderKindHint}}" />
+                                                    <!-- Same meaning on / off (remembered; also in Settings > Relations) -->
+                                                    <ToggleButton x:Name="BuilderSameMeaningToggle" Classes="filterChip trimmed" Margin="6,0,0,0" Content="{l:T 'Same meaning'}" IsChecked="{Binding BuilderShowSameMeaning}"
+                                                                  ToolTip.Tip="{l:T 'On: below the actions whose name has every word you typed come the ones that do the same (Same function) and looser ones (Related, folded). Off: only the name matches. Remembered; also in Settings > Relations.'}" />
                                                 </StackPanel>
                                                 <Button Classes="icon iconOnly" Tag="{StaticResource Icon.Airplane}" Command="{Binding OpenBuilderPlanePickerCommand}"
                                                         ToolTip.Tip="{l:T 'Only some aircraft: pick them here'}">
@@ -2202,7 +2276,16 @@
                                                     <TextBlock Classes="caption" Text="{Binding BuilderSearchStatus}" TextWrapping="Wrap"
                                                                IsVisible="{Binding BuilderSearchStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                     <TextBlock Classes="caption" Text="{Binding BuilderSearchHint}" TextWrapping="Wrap"
-                                                               IsVisible="{Binding BuilderSearchStatus, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                                                               IsVisible="{Binding ShowBuilderSearchHint}" />
+                                                    <!-- Same meaning off and no title with every word: said plainly, one click switches it on -->
+                                                    <Border x:Name="BuilderNoNameMatchesCallout" Classes="callout" IsVisible="{Binding ShowBuilderNoNameMatches}" Margin="0,4,0,0">
+                                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                                            <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" VerticalAlignment="Top" />
+                                                            <TextBlock Grid.Column="1" Text="{Binding BuilderNoNameMatchesText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="2" Classes="small accent" Content="{l:T 'Show same meaning'}" Command="{Binding ShowBuilderSameMeaningCommand}" VerticalAlignment="Top"
+                                                                    ToolTip.Tip="{l:T 'Switches Same meaning on: the actions that do the same and the related ones are listed again'}" />
+                                                        </Grid>
+                                                    </Border>
                                                 </StackPanel>
                                                 <WrapPanel Grid.Column="1" ItemSpacing="4" LineSpacing="4" VerticalAlignment="Top" IsVisible="{Binding HasBuilderSearchResults}" MaxWidth="260">
                                                     <Button Classes="small ghost" Content="{l:T 'Expand all'}" IsVisible="{Binding CanExpandAllBuilderGames}" Command="{Binding ExpandAllBuilderGamesCommand}"
@@ -2215,6 +2298,17 @@
                                                 </WrapPanel>
                                                 <ProgressBar Grid.Column="2" IsIndeterminate="True" Width="60" VerticalAlignment="Top" IsVisible="{Binding IsBuilderSearching}" />
                                             </Grid>
+                                            <!-- The empty box (an opened relation starts with it): where to start, not an empty list -->
+                                            <StackPanel x:Name="BuilderSearchStart" Grid.Row="4" Spacing="8" Margin="0,8,0,0" MaxWidth="620" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                        IsVisible="{Binding ShowBuilderSearchStart}">
+                                                <TextBlock Text="{Binding BuilderSearchStartText}" TextWrapping="Wrap" />
+                                                <WrapPanel ItemSpacing="6" LineSpacing="4">
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Lightbulb}" Content="{Binding BuilderSuggestedTabLabel}" Command="{Binding ShowBuilderSuggestedCommand}"
+                                                            IsVisible="{Binding HasRelationSelected}" ToolTip.Tip="{l:T 'What JoyPro suggests for the open relation by itself, without typing'}" />
+                                                    <Button Classes="icon small" Tag="{StaticResource Icon.Database}" Content="{l:T 'Open catalog'}" Command="{Binding OpenCatalogCommand}"
+                                                            ToolTip.Tip="{l:T 'Browse every action of a game or aircraft by its categories (not only what the search finds)'}" />
+                                                </WrapPanel>
+                                            </StackPanel>
                                             <ScrollViewer x:Name="BuilderSearchScroll" Grid.Row="4" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MinHeight="0">
                                                 <ItemsControl x:Name="BuilderSearchList" ItemsSource="{Binding BuilderSearchRows}" Margin="0,0,12,0">
                                                     <!-- Only the rows in view are built: a search over every game lists up to 160 rows, and building
@@ -2234,11 +2328,22 @@
                                                         </Style>
                                                     </ItemsControl.Styles>
                                                     <ItemsControl.DataTemplates>
-                                                        <!-- "Name has every word (n)" above "Same meaning (n)": titles with every typed word first in every sort -->
+                                                        <!-- "Name has every word (n)", "Same function (n)", "Related (n)" (folded, a click opens it): in every sort -->
                                                         <DataTemplate x:DataType="models:BuilderSearchSectionItem">
                                                             <Border BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="0,0,0,1" Margin="0,12,0,0" Padding="0,0,0,3" Background="Transparent"
                                                                     ToolTip.Tip="{Binding Tooltip}">
-                                                                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" Foreground="{DynamicResource JP.AccentTextBrush}" TextTrimming="CharacterEllipsis" />
+                                                                <Panel>
+                                                                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" Foreground="{DynamicResource JP.AccentTextBrush}" TextTrimming="CharacterEllipsis"
+                                                                               IsVisible="{Binding IsFixed}" />
+                                                                    <Button Classes="ghost small" Padding="0" HorizontalAlignment="Left" IsVisible="{Binding CanFold}"
+                                                                            Command="{Binding #RootWindow.DataContext.ToggleBuilderRelatedCommand}" ToolTip.Tip="{Binding Tooltip}">
+                                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                            <PathIcon Data="{StaticResource Icon.ChevronRight}" Width="10" Height="10" IsVisible="{Binding !IsExpanded}" Foreground="{DynamicResource JP.AccentTextBrush}" />
+                                                                            <PathIcon Data="{StaticResource Icon.ChevronDown}" Width="10" Height="10" IsVisible="{Binding IsExpanded}" Foreground="{DynamicResource JP.AccentTextBrush}" />
+                                                                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" Foreground="{DynamicResource JP.AccentTextBrush}" TextTrimming="CharacterEllipsis" />
+                                                                        </StackPanel>
+                                                                    </Button>
+                                                                </Panel>
                                                             </Border>
                                                         </DataTemplate>
                                                         <DataTemplate x:DataType="models:BuilderSearchGroupItem">
@@ -2273,10 +2378,10 @@
                                                                     <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="6">
                                                                         <TextBlock Classes="caption" TextTrimming="CharacterEllipsis" Text="{Binding PlanesText}" />
                                                                         <Border Grid.Column="1" Classes="chip" Classes.ok="{Binding IsStrongMatch}" IsVisible="{Binding HasMatch}"
-                                                                                ToolTip.Tip="{l:T 'How JoyPro found it: main control (the function\'s own axis in this game), exact title, same function, synonym, described, or a word match'}">
+                                                                                ToolTip.Tip="{Binding ReasonText}">
                                                                             <TextBlock Text="{Binding MatchLabel}" />
                                                                         </Border>
-                                                                        <TextBlock Grid.Column="2" Classes="caption" Text="{Binding KindLabel}" VerticalAlignment="Center" />
+                                                                        <TextBlock Grid.Column="2" Classes="caption" Text="{Binding KindLabel}" VerticalAlignment="Center" ToolTip.Tip="{Binding KindTip}" />
                                                                     </Grid>
                                                                     <WrapPanel ItemSpacing="6" IsVisible="{Binding IsRecommended}">
                                                                         <Border Classes="chip recommended" ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
@@ -2286,7 +2391,8 @@
                                                                     <TextBlock Classes="warnText" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding VariantText}" IsVisible="{Binding HasVariant}" TextWrapping="Wrap" />
                                                                     <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding OnlyForText}" IsVisible="{Binding HasOnlyFor}" TextTrimming="CharacterEllipsis"
                                                                                ToolTip.Tip="{l:T 'This action exists only for these aircraft (their own controls): adding it ticks them alone'}" />
-                                                                    <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" TextTrimming="CharacterEllipsis" Text="{Binding WhyText}" IsVisible="{Binding HasWhy}" />
+                                                                    <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" TextTrimming="CharacterEllipsis" Text="{Binding WhyText}" IsVisible="{Binding HasWhy}"
+                                                                               ToolTip.Tip="{Binding ReasonText}" />
                                                                     <TextBlock Classes="caption" FontSize="{DynamicResource JP.FontSize.11}" Text="{Binding Explanation}" IsVisible="{Binding HasExplanation}" TextWrapping="Wrap" MaxLines="2"
                                                                                TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding ExplanationTip}" />
                                                                     <TextBlock Classes="warnText" FontSize="{DynamicResource JP.FontSize.11}" TextTrimming="CharacterEllipsis" Text="{Binding InOtherRelationsText}" IsVisible="{Binding HasNote}" />
@@ -3424,17 +3530,26 @@
                                         </StackPanel>
                                     </Border>
 
-                                    <!-- Modifiers on this bind -->
-                                    <Border Classes="surface" IsVisible="{Binding HasBindSelected}">
+                                    <!-- Modifiers on this bind; its close button leaves only this title line (with Show), remembered
+                                         (list-preferences.json "BindModifiersOpen") -->
+                                    <Border x:Name="BindModifiersPanel" Classes="surface" IsVisible="{Binding HasBindSelected}">
                                         <StackPanel Spacing="10">
-                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
                                                 <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Keycap}" /></Border>
-                                                <StackPanel Grid.Column="1">
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                                     <TextBlock Classes="h2" Text="{l:T 'Modifiers on this bind'}" />
-                                                    <TextBlock Classes="caption" Text="{l:T 'While you hold a modifier (shift button) this input does something else. Tick modifiers and attach them.'}" />
+                                                    <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding IsBindModifiersOpen}"
+                                                               Text="{l:T 'While you hold a modifier (shift button) this input does something else. Tick modifiers and attach them.'}" />
                                                 </StackPanel>
-                                                <Button Grid.Column="2" Classes="ghost small" Command="{Binding OpenModifierManagerCommand}" Content="{l:T 'Open Modifier Page'}" />
+                                                <Button Grid.Column="2" Classes="ghost small" Command="{Binding OpenModifierManagerCommand}" Content="{l:T 'Open Modifier Page'}" VerticalAlignment="Center" />
+                                                <Button x:Name="BindModifiersClose" Grid.Column="3" Classes="icon small ghost iconOnly" Tag="{StaticResource Icon.Close}" VerticalAlignment="Center"
+                                                        Command="{Binding CloseBindModifiersCommand}" IsVisible="{Binding IsBindModifiersOpen}"
+                                                        ToolTip.Tip="{l:T 'Close the modifiers of this bind (Show opens them again)'}" />
+                                                <Button x:Name="BindModifiersShow" Grid.Column="3" Classes="small" Content="{l:T 'Show'}" VerticalAlignment="Center"
+                                                        Command="{Binding OpenBindModifiersCommand}" IsVisible="{Binding !IsBindModifiersOpen}"
+                                                        ToolTip.Tip="{l:T 'Show the modifiers of this bind again'}" />
                                             </Grid>
+                                            <StackPanel x:Name="BindModifiersBody" Spacing="10" IsVisible="{Binding IsBindModifiersOpen}">
                                             <Grid ColumnDefinitions="*,12,*">
                                                 <StackPanel Spacing="6">
                                                     <TextBlock Classes="label" Text="{l:T 'Your modifiers (tick to attach or detach)'}" />
@@ -3515,12 +3630,13 @@
                                                     <TextBlock Classes="caption" Text="{l:T 'Create without a relation = a temporary modifier; it is kept once it is attached to a bind. Rename it on the Modifiers page.'}" />
                                                 </StackPanel>
                                             </Expander>
+                                            </StackPanel>
                                         </StackPanel>
                                     </Border>
 
-                                    <!-- The axis response curve -->
-                                    <Border IsVisible="{Binding SelectedBindIsAxis}">
-                                <Expander Header="{l:T 'Axis response: curve, dead zone, saturation'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsAxisTuningExpanded}">
+                                    <!-- The axis response curve: opens by itself for an axis (closing it is remembered) -->
+                                    <Border x:Name="AxisResponsePanel" IsVisible="{Binding SelectedBindIsAxis}">
+                                <Expander x:Name="AxisResponseExpander" Header="{l:T 'Axis response: curve, dead zone, saturation'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsAxisTuningExpanded}">
                                     <StackPanel Margin="0,6,0,0" Spacing="8">
                                         <TextBlock Text="{l:T 'The response curve of this axis: one setting for all games, or its own per game, DCS aircraft or game family. The most specific one wins (aircraft, game, family, all games).'}"
                                                    FontSize="{DynamicResource JP.FontSize.11}"
@@ -3562,8 +3678,10 @@
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:AxisParameterEditor">
                                                             <StackPanel Spacing="2" Margin="0,0,0,4">
-                                                                <Grid IsVisible="{Binding IsNumber}" ColumnDefinitions="150,*,80" ColumnSpacing="8">
-                                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" ToolTip.Tip="{Binding RangeText}" />
+                                                                <!-- A slider for the feel, a number box for the exact value (typed, Up / Down, the wheel when
+                                                                     focused; outside the range it goes back to the nearest end), the range next to it -->
+                                                                <Grid IsVisible="{Binding IsNumber}" ColumnDefinitions="140,*,76,64" ColumnSpacing="8">
+                                                                    <TextBlock Text="{Binding Label}" VerticalAlignment="Center" ToolTip.Tip="{Binding RangeText}" TextTrimming="CharacterEllipsis" />
                                                                     <Slider Grid.Column="1"
                                                                             Minimum="{Binding Minimum}"
                                                                             Maximum="{Binding Maximum}"
@@ -3574,31 +3692,41 @@
                                                                             Value="{Binding Value}"
                                                                             IsEnabled="{Binding IsActive}" />
                                                                     <TextBox Grid.Column="2"
+                                                                             x:Name="AxisParameterNumber"
                                                                              Text="{Binding Text}"
                                                                              IsEnabled="{Binding IsActive}"
+                                                                             views:NumberBox.Minimum="{Binding Minimum}"
+                                                                             views:NumberBox.Maximum="{Binding Maximum}"
+                                                                             views:NumberBox.Step="{Binding Step}"
+                                                                             ToolTip.Tip="{l:T 'Type the exact value. Up / Down or the mouse wheel: one step, with Shift: ten steps.'}"
                                                                              VerticalAlignment="Center" />
+                                                                    <TextBlock Grid.Column="3" Classes="caption" Text="{Binding RangeText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                                               ToolTip.Tip="{l:T 'The values this setting takes'}" />
                                                                 </Grid>
                                                                 <CheckBox IsVisible="{Binding IsToggle}" Content="{Binding Label}" IsChecked="{Binding IsOn}" />
-                                                                <StackPanel IsVisible="{Binding IsUserCurve}" IsEnabled="{Binding IsActive}" Spacing="2">
+                                                                <StackPanel IsVisible="{Binding IsUserCurve}" IsEnabled="{Binding IsActive}" Spacing="4">
                                                                     <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn}" />
-                                                                    <ItemsControl ItemsSource="{Binding Points}" IsVisible="{Binding IsOn}">
+                                                                    <!-- The 11 points as number boxes (2.6.2: no second set of sliders next to the curve's points) -->
+                                                                    <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding IsOn}"
+                                                                               Text="{l:T 'The output (0 .. 1) at each point of the stick travel: type it, use Up / Down or the mouse wheel, or drag the white points on the curve.'}" />
+                                                                    <ItemsControl x:Name="AxisUserCurvePoints" ItemsSource="{Binding Points}" IsVisible="{Binding IsOn}">
                                                                         <ItemsControl.ItemsPanel>
                                                                             <ItemsPanelTemplate>
-                                                                                <StackPanel Orientation="Horizontal" Spacing="2" />
+                                                                                <WrapPanel ItemSpacing="4" LineSpacing="6" />
                                                                             </ItemsPanelTemplate>
                                                                         </ItemsControl.ItemsPanel>
                                                                         <ItemsControl.ItemTemplate>
                                                                             <DataTemplate x:DataType="models:AxisCurvePointEditor">
-                                                                                <StackPanel Width="28" Spacing="1">
-                                                                                    <Slider Orientation="Vertical"
-                                                                                            Height="110"
-                                                                                            Minimum="0"
-                                                                                            Maximum="1"
-                                                                                            SmallChange="0.01"
-                                                                                            LargeChange="0.05"
-                                                                                            Value="{Binding Value}"
-                                                                                            HorizontalAlignment="Center" />
-                                                                                    <TextBlock Text="{Binding PositionLabel}" FontSize="{DynamicResource JP.FontSize.9}" HorizontalAlignment="Center" Opacity="0.8" />
+                                                                                <StackPanel Width="54" Spacing="2">
+                                                                                    <TextBlock Text="{Binding PositionLabel}" FontSize="{DynamicResource JP.FontSize.11}" HorizontalAlignment="Center" Opacity="0.8" />
+                                                                                    <TextBox x:Name="AxisUserCurvePoint"
+                                                                                             Classes="numberCell"
+                                                                                             Classes.invalid="{Binding !IsValid}"
+                                                                                             Text="{Binding Text}"
+                                                                                             views:NumberBox.Minimum="0"
+                                                                                             views:NumberBox.Maximum="1"
+                                                                                             views:NumberBox.Step="0.01"
+                                                                                             ToolTip.Tip="{Binding Tooltip}" />
                                                                                 </StackPanel>
                                                                             </DataTemplate>
                                                                         </ItemsControl.ItemTemplate>
@@ -3645,6 +3773,38 @@
                                                             IsEnabled="{Binding CanClearAxisTuning}"
                                                             ToolTip.Tip="{l:T 'Remove this scope\'s own settings; it then uses the next broader scope.'}"
                                                             Margin="0,0,8,0" />
+                                                    <!-- The same response on another axis in one step (Thrust Left -> Thrust Right; Ctrl+Z undoes it) -->
+                                                    <Button x:Name="AxisTuningCopyButton"
+                                                            Classes="icon"
+                                                            Tag="{StaticResource Icon.Copy}"
+                                                            Content="{l:T 'Copy to another axis...'}"
+                                                            Command="{Binding PrepareAxisTuningCopyCommand}"
+                                                            IsEnabled="{Binding CanSaveAxisTuning}"
+                                                            ToolTip.Tip="{l:T 'The same dead zone, saturation, curve and slider on another bound axis (e.g. Thrust Left to Thrust Right), in one step'}">
+                                                        <Button.Flyout>
+                                                            <Flyout Placement="TopEdgeAlignedLeft">
+                                                                <StackPanel x:Name="AxisTuningCopyPanel" Width="360" Spacing="8">
+                                                                    <TextBlock Classes="h3" Text="{l:T 'Copy to another axis'}" />
+                                                                    <TextBlock Classes="caption" TextWrapping="Wrap" Text="{Binding AxisTuningCopyText}" />
+                                                                    <ComboBox x:Name="AxisTuningCopyTargetBox" HorizontalAlignment="Stretch" ItemsSource="{Binding AxisTuningCopyTargets}" SelectedItem="{Binding AxisTuningCopyTarget}"
+                                                                              PlaceholderText="{l:T 'Pick the other axis'}" IsVisible="{Binding HasAxisTuningCopyTargets}">
+                                                                        <ComboBox.ItemTemplate>
+                                                                            <DataTemplate x:DataType="models:AxisTuningCopyTarget">
+                                                                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                                                                            </DataTemplate>
+                                                                        </ComboBox.ItemTemplate>
+                                                                    </ComboBox>
+                                                                    <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding !HasAxisTuningCopyTargets}"
+                                                                               Text="{l:T 'No other bound axis yet: bind another axis first.'}" />
+                                                                    <CheckBox Content="{l:T 'Copy invert too'}" IsChecked="{Binding AxisTuningCopyInvert}"
+                                                                              ToolTip.Tip="{l:T 'Off: the other axis keeps its own invert (left and right often differ there)'}" />
+                                                                    <Button x:Name="AxisTuningCopyConfirm" Classes="icon accent" Tag="{StaticResource Icon.Copy}" Content="{l:T 'Copy'}"
+                                                                            Command="{Binding CopyAxisTuningToAxisCommand}" IsEnabled="{Binding CanCopyAxisTuning}" Click="AxisTuningCopyClicked"
+                                                                            ToolTip.Tip="{l:T 'One step: Ctrl+Z undoes it'}" />
+                                                                </StackPanel>
+                                                            </Flyout>
+                                                        </Button.Flyout>
+                                                    </Button>
                                                 </WrapPanel>
                                                 <TextBlock Text="{l:T 'Changed, not saved yet.'}"
                                                            Foreground="{DynamicResource JP.WarnTextBrush}"
@@ -6838,6 +6998,16 @@
                                               ToolTip.Tip="{l:T 'The short note at the bottom of the list (BTN 8 on WarBRD: Gear) after follow input jumped. The list still jumps when it is off.'}" />
                                     <CheckBox Content="{l:T 'Record: also take a button that rests pressed when it is released'}" IsChecked="{Binding RecordReleaseOfHeldButtons}"
                                               ToolTip.Tip="{l:T 'Record only takes a button that changes state; a button already pressed when recording starts (a 3-way switch\'s middle, a mode switch) never counts. Ticked: letting it go counts as that button.'}" />
+                                </StackPanel>
+                            </controls:SettingsSection>
+
+                            <!-- Settings > Relations: the Add actions search's "Same meaning" switch (the same binding as the chip
+                                 next to All / Axes / Buttons, docs/relation-builder.md "Same function and Related") -->
+                            <controls:SettingsSection SectionId="relations" Title="{l:T 'Relations'}" Icon="{StaticResource Icon.Link}">
+                                <StackPanel Spacing="6">
+                                    <CheckBox x:Name="SettingsSameMeaningCheckBox" Content="{l:T 'Add actions: also list actions with the same meaning, not only those whose name has every word'}"
+                                              IsChecked="{Binding BuilderShowSameMeaning}"
+                                              ToolTip.Tip="{l:T 'On: below the name matches come Same function (the same function, found by a synonym or a description) and Related (folded). Off: only actions whose name has every word you typed. The same switch is next to All / Axes / Buttons.'}" />
                                 </StackPanel>
                             </controls:SettingsSection>
 

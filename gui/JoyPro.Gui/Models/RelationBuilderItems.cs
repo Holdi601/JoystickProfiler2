@@ -329,7 +329,18 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
 
     public bool CanCheck => !IsInOpenRelation;
 
-    public string KindLabel => IsAxis ? "axis" : "button";
+    public string KindLabel => IsSimPitSwitchAxis ? T("axis (sim-pit switch)") : IsAxis ? "axis" : "button";
+
+    // A DCS axis command that sets a cockpit switch (the F-4E's "[SimPit] Landing Gear (Switch)", 199 of them): made
+    // for home cockpits that wire a switch or a potentiometer as an axis. The game lists it as an axis, so it is one;
+    // the label says what it is.
+    public bool IsSimPitSwitchAxis => IsAxis && Game == "DCS" &&
+                                      (Title.StartsWith("[SimPit]", System.StringComparison.OrdinalIgnoreCase) ||
+                                       System.Text.RegularExpressions.Regex.IsMatch(Title, @"\((Switch|Button|Knob|Selector|Lever|Handle)\)\s*$"));
+
+    public string? KindTip => IsSimPitSwitchAxis
+        ? T("DCS lists this as an axis command: home cockpit builders move this cockpit switch with an analog input (a potentiometer, or a switch wired as an axis). It is no flight control axis.")
+        : null;
 
     // No raw id on screen (only in the title's tooltip, IdTip); the catalog filter and the search still find it.
     public string IdHint => string.Empty;
@@ -450,26 +461,119 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
 
     public bool HasIdText => IdText.Length > 0;
 
-    public string MatchLabel => Primary ? "main control" : Match switch
+    // The chip: how it was found, in words (its tooltip, ReasonText, says why in a sentence). The engine's "Title match
+    // (32%)" and "word match" are gone from the row (2.6.2): they said nothing, and a category word was called a title
+    // match.
+    public string MatchLabel => Primary ? T("main control") : SectionKind switch
     {
-        "exact" => "exact title",
-        "function" => "same function",
-        "synonym" => "synonym",
-        "described" => "described",
-        "words" => "word match",
-        "catalog" => "catalog only",
-        "category" => "category",
+        "name" => Match == "exact" ? T("exact title") : Match is "function" or "synonym" or "described" ? T("same function") : T("name match"),
+        "function" => Match == "exact" ? T("exact title") : Match == "synonym" ? T("synonym") : Match == "described" ? T("by description") : T("same function"),
+        "related" => T("related"),
         _ => string.Empty
     };
 
     public bool HasMatch => MatchLabel.Length > 0;
 
     // Strong evidence (the title or the function itself) is shown in the accent colour.
-    public bool IsStrongMatch => Primary || Match is "exact" or "function";
+    public bool IsStrongMatch => Primary || (Match is "exact" or "function" && !IsRelated);
 
-    public string WhyText => Why.StartsWith("function", System.StringComparison.OrdinalIgnoreCase) ? T("same function: {0}", Why[(Why.IndexOf('\'') + 1)..].TrimEnd('\'')) : Why;
+    // The line under the title: the function it was found as ("same function: Wheel brakes axis"), or for a related row
+    // why it is only related (the whole sentence in the tooltip).
+    public string WhyText => IsRelated
+        ? ReasonText
+        : ActionFunction.Length > 0 ? T("same function: {0}", ActionFunction)
+        : Why.StartsWith("function", System.StringComparison.OrdinalIgnoreCase) ? T("same function: {0}", Why[(Why.IndexOf('\'') + 1)..].TrimEnd('\'')) : string.Empty;
 
-    public bool HasWhy => Why.Length > 0;
+    // The part of a DCS category ("Gears, Brakes, Hook; Left Console") that has the word.
+    private string CategoryWithWord()
+    {
+        string[] parts = Category.Split(';', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries);
+        foreach (string part in parts)
+        {
+            if (CategoryWords.Any(w => part.Contains(Views.Controls.HighlightTextBlock.Singular(w), System.StringComparison.OrdinalIgnoreCase)))
+                return part;
+        }
+        return Category;
+    }
+
+    public bool HasWhy => WhyText.Length > 0;
+
+    // ---- The section and why it was found (relations search "Section", docs/relation-builder.md "Same function and
+    // Related") ----
+
+    // "name", "function" or "related" (an older engine without it: from Literal and Match).
+    public string Section { get; set; } = string.Empty;
+
+    // The words typed in the search box (the reasons quote them).
+    public string Query { get; set; } = string.Empty;
+
+    // The function the query was read as ("Wheel brakes"), how ("name", "synonym", "description", "related") and by
+    // which word ("thrust"); the row's own function ("Wheel brakes axis") and the game's word for it ("collective").
+    public string Understood { get; set; } = string.Empty;
+
+    public string UnderstoodBy { get; set; } = string.Empty;
+
+    public string QueryTerm { get; set; } = string.Empty;
+
+    public string ActionFunction { get; set; } = string.Empty;
+
+    public string GameTerm { get; set; } = string.Empty;
+
+    // A related row: "function", "catalog", "category", "some-words" or "similar"; the typed words in its title, only in
+    // its category, or only as something similar (a word start, a typo, the game's id).
+    public string RelatedBy { get; set; } = string.Empty;
+
+    public IReadOnlyList<string> TitleWords { get; set; } = [];
+
+    public IReadOnlyList<string> CategoryWords { get; set; } = [];
+
+    public IReadOnlyList<string> CloseWords { get; set; } = [];
+
+    public string SectionKind => IsNameMatch ? "name"
+        : Section is "function" or "related" ? Section
+        : Match is "exact" or "function" or "synonym" or "described" ? "function" : "related";
+
+    public bool IsSameFunction => SectionKind == "function";
+
+    public bool IsRelated => SectionKind == "related";
+
+    // Why it was found, in plain words (the tooltip of the row's chip and of the line under its title).
+    public string ReasonText
+    {
+        get
+        {
+            string query = Query.Trim();
+            string function = ActionFunction.Length > 0 ? ActionFunction : FunctionName;
+            static string Words(IReadOnlyList<string> words) => string.Join("', '", words);
+            switch (SectionKind)
+            {
+                case "name":
+                    return function.Length > 0 ? T("The title has every word you typed; its function is '{0}'.", function) : T("The title has every word you typed.");
+                case "function":
+                {
+                    string head = Understood.Length == 0
+                        ? T("You typed the game's own name or id of this action.")
+                        : UnderstoodBy switch
+                        {
+                            "synonym" => T("'{0}' is a synonym of '{1}'; this action's function is '{2}'.", QueryTerm.Length > 0 ? QueryTerm : query, Understood, function),
+                            "description" => T("What you typed describes '{0}'; this action's function is '{1}'.", Understood, function),
+                            _ => T("'{0}' is understood as '{1}'; this action's function is '{2}'.", query, Understood, function)
+                        };
+                    return GameTerm.Length > 0 ? head + " " + T("The game calls it '{0}'.", GameTerm) : head;
+                }
+                default:
+                    return RelatedBy switch
+                    {
+                        "function" when Understood.Length > 0 => T("Related: '{0}' is close to what you typed, but it is not the same function; this action is '{1}'.", Understood, function),
+                        "catalog" when function.Length > 0 => T("Related: JoyPro's function list reads this action as '{0}', but its title does not say so.", function),
+                        "category" => T("Related: its category '{0}' has the word '{1}'; its title has none of the words you typed.", CategoryWithWord(), Words(CategoryWords)),
+                        "similar" => T("Related: only something like '{0}' was found (a word start, a typo or the game's id), not the word itself.", Words(CloseWords)),
+                        "some-words" when TitleWords.Count > 0 => T("Related: its title has only some of the words you typed ('{0}').", Words(TitleWords)),
+                        _ => T("Related: found by some of the words, not by its name or its function.")
+                    };
+            }
+        }
+    }
 
     public string Game { get; }
 
@@ -566,28 +670,49 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
     }
 }
 
-// A section of the search list: "Name has every word (2)" (titles with every typed word) above "Same meaning (9)" (found
-// by what the action does: the function, a synonym, a description or some of the words). The game or function headers
-// and their rows follow it; the actions already in the open relation stay greyed at the bottom, after both.
+// A section of the search list (docs/relation-builder.md "Same function and Related"): "Name has every word (2)" (titles
+// with every typed word), "Same function (9)" (actions of the function the words were read as: its name, a synonym, a
+// description) and "Related (7)" (looser links: a related function, a category word, some of the words), folded until
+// opened. The game or function headers and their rows follow it; the actions already in the open relation stay greyed
+// at the bottom, after all of them.
 public sealed class BuilderSearchSectionItem
 {
-    public BuilderSearchSectionItem(bool nameMatches, int count)
+    public BuilderSearchSectionItem(string kind, int count, bool expanded = true)
     {
-        IsNameMatches = nameMatches;
+        Kind = kind;
         Count = count;
+        IsExpanded = expanded;
     }
 
-    public bool IsNameMatches { get; }
+    // "name", "function" or "related".
+    public string Kind { get; }
+
+    public bool IsNameMatches => Kind == "name";
+
+    public bool IsRelated => Kind == "related";
 
     public int Count { get; }
 
-    public string Label => IsNameMatches
-        ? T("Name has every word ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture))
-        : T("Same meaning ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture));
+    // Only "Related" folds; folded, its rows are not in the list.
+    public bool IsExpanded { get; }
 
-    public string Tooltip => IsNameMatches
-        ? T("The action's title has every word you typed")
-        : T("Found by what the action does: the same function, a synonym, a description or some of the words");
+    public bool CanFold => IsRelated;
+
+    public bool IsFixed => !CanFold;
+
+    public string Label => Kind switch
+    {
+        "name" => T("Name has every word ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+        "function" => T("Same function ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+        _ => T("Related ({0})", Count.ToString(System.Globalization.CultureInfo.InvariantCulture))
+    };
+
+    public string Tooltip => Kind switch
+    {
+        "name" => T("The action's title has every word you typed"),
+        "function" => T("The action does what your words mean: the same function, found by its name, a synonym or a description. Hover a row to see why."),
+        _ => T("Looser links: a related function, a word of the category, some of your words or a similar word. Hover a row to see why. A click shows or hides them.")
+    };
 }
 
 // The header of one game's rows in the search list ("DCS · 48"), with a box that ticks all of its rows.
@@ -837,6 +962,10 @@ public sealed partial class AircraftChoiceItem : ObservableObject
     // Opened from a card of the check: this aircraft is one the card is about (tinted).
     [ObservableProperty]
     private bool isHighlighted;
+
+    // The Relations page's Games filter is set to this aircraft (the relation editor marks it in the action's list).
+    [ObservableProperty]
+    private bool isFilterMatch;
 
     public bool IsSame => Match == "same";
 
@@ -1115,6 +1244,9 @@ public sealed class AircraftCheckItem
     public string Title { get; }
 
     public IReadOnlyList<AircraftCheckPlane> Planes { get; }
+
+    // The switched-on aircraft with the action's own meaning (engine check-aircraft "Planes"): they keep it.
+    public IReadOnlyList<string> KeepPlanes { get; init; } = [];
 
     public IReadOnlyList<string> Drop => Planes.Select(p => p.Plane).ToList();
 

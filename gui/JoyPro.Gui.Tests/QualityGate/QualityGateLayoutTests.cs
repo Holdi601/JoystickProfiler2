@@ -337,7 +337,9 @@ public sealed class QualityGateLayoutTests
             await Task.Delay(400);
             await s.SettleAsync(() => true, 30000);
         }
-        // The search of Add actions: pre-filled words must find something.
+        // The search of Add actions: pre-filled words must find something. Since 2.6.2 an opened relation starts with an
+        // empty box (no finding); the box is still filled by Find similar, Replace from a Check card and Back, which this
+        // keeps guarding.
         string query = (vm.BuilderSearchText ?? string.Empty).Trim();
         if (query.Length > 0 && vm.BuilderSearchResults.Count == 0 && !vm.IsBuilderSearching)
             Gate.Fail("I10", "search pre-filled with words that find nothing", string.Empty, variant.Name + ": '" + query + "'", Gate.Short(vm.BuilderSearchStatus, 120));

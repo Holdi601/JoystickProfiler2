@@ -2241,6 +2241,8 @@ namespace JoyPro.Engine
         private static void AddNode(SyncGame game, Relation relation, SyncChange change)
         {
             relation.AddNode(change.ActionId, game.Id, change.IsAxis, change.Plane, false);
+            if (game.Kind == "dcs")
+                EngineDcsImport.NoteImportedPlane(relation, change.ActionId, change.Plane);
         }
 
         // A relation that holds no action any more after a take-over (its last action was removed or moved in the game)

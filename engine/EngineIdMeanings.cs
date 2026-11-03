@@ -412,6 +412,30 @@ namespace JoyPro.Engine
             return false;
         }
 
+        // The meaning check (relations aircraft / check-aircraft): a helicopter's engine throttle or power levers ("Throttle"
+        // of the Ka-50 III, the function map's engine_power_lever) and the throttle of other aircraft ("Power Levers
+        // (Both)" of the AH-64D, "Throttle Both", "Thrust") are one control on one axis: the engine's power. The function
+        // map keeps them apart for the search (a collective is a helicopter's "throttle" there); here they are the same
+        // function, same side.
+        internal static bool SameEnginePower(string game, string id, string reference, string plane)
+        {
+            EngineFunctionMap.Map map = EngineFunctionMap.Load(null);
+            string g = EngineRelationSuggest.GameKey(game ?? string.Empty);
+            string nid = EngineRelationSuggest.NodeId(g, id);
+            EngineFunctionMap.Entry a;
+            EngineFunctionMap.Entry b;
+            if (!map.ByKey.TryGetValue(g + "|" + nid + "|" + reference, out a) || !map.ByKey.TryGetValue(g + "|" + nid + "|" + plane, out b))
+                return false;
+            if (a.Command == null || b.Command == null || !a.Command.IsAxis || !b.Command.IsAxis)
+                return false;
+            Func<EngineFunctionMap.Entry, List<string>> sides = entry => entry.Functions
+                .Where(f => f.Weight >= 0.5 && f.Function != null && (f.Function.Id == "throttle" || f.Function.Id == "engine_power_lever"))
+                .Select(f => (f.Dir ?? string.Empty).Trim().ToLowerInvariant()).Distinct().ToList();
+            List<string> x = sides(a);
+            List<string> y = sides(b);
+            return x.Count > 0 && y.Count > 0 && x.Any(y.Contains);
+        }
+
         // A function the catalog gives this aircraft's command only by its slot, while the aircraft's own title names
         // another function, for an id that means different things in different aircraft: the catalog row is for another
         // aircraft's meaning of the id (e.g. "Pitch" filed for an id whose title here is "Collective"). Resolve, the
@@ -636,7 +660,10 @@ namespace JoyPro.Engine
                 return report;
             }
             HashSet<string> active = new HashSet<string>(aircraft.Where(p => p.Value).Select(p => p.Key), StringComparer.OrdinalIgnoreCase);
-            List<Cluster> activeClusters = Clusters(all.Where(c => active.Contains(c.Plane)));
+            // The node's meaning is the one of the aircraft the user's own bind files brought (an import), when it has
+            // such aircraft switched on: an aircraft a builder or an old load correction added never outvotes them.
+            HashSet<string> imported = new HashSet<string>(active.Where(node.IsFromGameFiles), StringComparer.OrdinalIgnoreCase);
+            List<Cluster> activeClusters = Clusters(all.Where(c => (imported.Count > 0 ? imported : active).Contains(c.Plane)));
             Cluster main = MainCluster(activeClusters, relation.NAME);
             Variant head = main == null ? null : main.Head;
             if (head == null && all.Count > 0)
@@ -655,14 +682,14 @@ namespace JoyPro.Engine
                     continue;
                 string note = string.Empty;
                 Kind kind = head == null ? Kind.Same : Compare(head, VariantOf(c), out note);
-                bool sameFunction = kind == Kind.Different && reference.Length > 0 && SameFunction(game, node.ID, reference, c.Plane);
+                bool sameFunction = kind == Kind.Different && reference.Length > 0 && (SameFunction(game, node.ID, reference, c.Plane) || SameEnginePower(game, node.ID, reference, c.Plane));
                 bool on;
                 string state = aircraft.TryGetValue(c.Plane, out on) ? (on ? "on" : "off") : "absent";
                 report.Aircraft.Add(new EngineNodeAircraftEntry
                 {
                     Plane = c.Plane, Title = c.Title, Category = c.Category, State = state,
                     Match = kind == Kind.Same ? "same" : kind == Kind.Near ? "near" : "differs", Note = note, SameFunction = sameFunction,
-                    FromYourFiles = c.FromYourFiles
+                    FromYourFiles = c.FromYourFiles, Imported = node.IsFromGameFiles(c.Plane)
                 });
             }
             // Aircraft of the node without the id in their list (an old list, a removed module).
@@ -756,13 +783,17 @@ namespace JoyPro.Engine
                     List<EngineNodeAircraftEntry> bad = report.Aircraft.Where(a => a.State == "on" && a.Match == "differs").ToList();
                     if (bad.Count == 0)
                         continue;
-                    List<EngineNodeAircraftEntry> drop = bad.Where(a => includeSameFunction || !a.SameFunction).ToList();
+                    // An aircraft the user's own bind files brought (an import) is never the side proposed to go.
+                    List<EngineNodeAircraftEntry> drop = bad.Where(a => (includeSameFunction || !a.SameFunction) && !a.Imported).ToList();
                     EngineAircraftCheckNode found = new EngineAircraftCheckNode
                     {
                         Relation = relation.NAME, Game = report.Game, Id = report.Id, Title = report.Title, Category = report.Category,
                         Active = report.Active, Available = report.Available,
                         Drop = drop.Select(a => a.Plane).ToList(),
-                        SameFunction = bad.Where(a => a.SameFunction && !includeSameFunction).Select(a => a.Plane).ToList()
+                        SameFunction = bad.Where(a => a.SameFunction && !includeSameFunction).Select(a => a.Plane).ToList(),
+                        Imported = bad.Where(a => a.Imported && (includeSameFunction || !a.SameFunction)).Select(a => a.Plane).ToList(),
+                        // The switched-on aircraft with the node's own meaning (what stays with "Only where ...").
+                        Planes = report.Aircraft.Where(a => a.State == "on" && (a.Match == "same" || a.Match == "near" || (a.Match == "differs" && a.SameFunction))).Select(a => a.Plane).ToList()
                     };
                     foreach (IGrouping<string, EngineNodeAircraftEntry> meaning in bad.GroupBy(a => a.Title + "\u0001" + a.Category))
                     {
@@ -985,6 +1016,8 @@ namespace JoyPro.Engine
         // A DCS command JoyPro knows from the user's own bind files, not from DCS's list (a mod added it after the list
         // was built; DcsFoundCommands): the GUI shows a small hint.
         public bool FromYourFiles { get; set; }
+        // An import or take-over put this aircraft into the node from the user's own bind files (RelationItem.FromGameFiles).
+        public bool Imported { get; set; }
 
         public EngineNodeAircraftEntry()
         {
@@ -1050,6 +1083,10 @@ namespace JoyPro.Engine
         public List<string> Drop { get; set; }
         // Differ in title but the function map reads them as the same function: kept.
         public List<string> SameFunction { get; set; }
+        // Differ, but came from the user's own bind files (an import): kept, never proposed to go.
+        public List<string> Imported { get; set; }
+        // The switched-on aircraft that have the node's meaning (Title).
+        public List<string> Planes { get; set; }
 
         public EngineAircraftCheckNode()
         {
@@ -1057,6 +1094,8 @@ namespace JoyPro.Engine
             Meanings = new List<EngineAircraftVariant>();
             Drop = new List<string>();
             SameFunction = new List<string>();
+            Imported = new List<string>();
+            Planes = new List<string>();
         }
     }
 

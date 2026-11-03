@@ -323,6 +323,13 @@ namespace JoyPro.Engine
             return string.IsNullOrEmpty(query) ? string.Empty : LoneSign.Replace(query, " ");
         }
 
+        // Plurals with "es" after ch, sh, ss and x ("switches", "flashes", "passes", "boxes"): the "es" goes, so a query
+        // "switches" finds "Switch" as "brakes" finds "Brake". These end in "e" in the singular and keep it.
+        private static readonly HashSet<string> PluralEsKeepsE = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "axes", "caches", "niches", "aches", "headaches", "avalanches", "moustaches", "mustaches", "cliches", "psyches"
+        };
+
         internal static string Stem(string word)
         {
             if (word.Length > 3 && word[word.Length - 1] == 's' && !NoStem.Contains(word) && !word.EndsWith("ss", StringComparison.Ordinal) &&
@@ -330,6 +337,10 @@ namespace JoyPro.Engine
             {
                 if (word.EndsWith("ies", StringComparison.Ordinal) && word.Length > 4)
                     return word.Substring(0, word.Length - 3) + "y";
+                if (word.Length >= 5 && (word.EndsWith("ches", StringComparison.Ordinal) || word.EndsWith("shes", StringComparison.Ordinal) ||
+                                        word.EndsWith("sses", StringComparison.Ordinal) || word.EndsWith("xes", StringComparison.Ordinal)) &&
+                    !PluralEsKeepsE.Contains(word))
+                    return word.Substring(0, word.Length - 2);
                 return word.Substring(0, word.Length - 1);
             }
             return word;

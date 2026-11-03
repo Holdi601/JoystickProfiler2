@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using JoyPro.Engine.Axis;
 
@@ -58,7 +59,14 @@ public sealed partial class AxisParameterEditor : ObservableObject
             for (int i = 0; i < AxisModels.UserCurvePoints; i++)
             {
                 AxisCurvePointEditor point = new(i / (double)(AxisModels.UserCurvePoints - 1));
-                point.PropertyChanged += (_, _) => Changed?.Invoke(this, EventArgs.Empty);
+                point.PropertyChanged += (_, e) =>
+                {
+                    if (e.PropertyName is not (nameof(AxisCurvePointEditor.Value) or nameof(AxisCurvePointEditor.ValidationMessage)))
+                        return;
+                    // A point that is no number 0..1 makes the curve invalid (the message says which point).
+                    ValidationMessage = Points.FirstOrDefault(p => !p.IsValid)?.ValidationMessage ?? string.Empty;
+                    Changed?.Invoke(this, EventArgs.Empty);
+                };
                 Points.Add(point);
             }
         }
@@ -126,7 +134,7 @@ public sealed partial class AxisParameterEditor : ObservableObject
     public void LoadCurve(System.Collections.Generic.IReadOnlyList<double> points)
     {
         for (int i = 0; i < Points.Count && i < points.Count; i++)
-            Points[i].Value = points[i];
+            Points[i].Load(points[i]);
     }
 
     partial void OnValueChanged(double value)
@@ -144,8 +152,7 @@ public sealed partial class AxisParameterEditor : ObservableObject
     {
         if (syncing)
             return;
-        if (!double.TryParse((value ?? string.Empty).Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out double number) ||
-            double.IsNaN(number) || double.IsInfinity(number))
+        if (!TryParseNumber(value, out double number))
         {
             ValidationMessage = T("{0}: enter a number ({1}).", Parameter.Label, RangeText);
             Changed?.Invoke(this, EventArgs.Empty);
@@ -153,7 +160,7 @@ public sealed partial class AxisParameterEditor : ObservableObject
         }
         if (number < Parameter.Min || number > Parameter.Max)
         {
-            ValidationMessage = Parameter.Label + " must be " + RangeText + ".";
+            ValidationMessage = T("{0} must be {1}.", Parameter.Label, RangeText);
             Changed?.Invoke(this, EventArgs.Empty);
             return;
         }
@@ -178,6 +185,11 @@ public sealed partial class AxisParameterEditor : ObservableObject
     }
 
     internal static string Format(double number) => number.ToString("0.######", CultureInfo.InvariantCulture);
+
+    // A typed number: "0.35", "0,35" (a decimal comma), no NaN or infinity.
+    internal static bool TryParseNumber(string? text, out double number) =>
+        double.TryParse((text ?? string.Empty).Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out number) &&
+        !double.IsNaN(number) && !double.IsInfinity(number);
 }
 
 // One free control point of a game curve (binds tuning set --curve-points x:y,...): stick travel X and output Y, 0..1.
@@ -252,23 +264,103 @@ public sealed partial class AxisControlPointEditor : ObservableObject
         value >= 0 && value <= 1;
 }
 
+// Another bound axis the axis response can be copied to ("Thrust Right · T.16000M · Z").
+public sealed class AxisTuningCopyTarget
+{
+    public AxisTuningCopyTarget(string relation, string label)
+    {
+        Relation = relation;
+        Label = label;
+    }
+
+    public string Relation { get; }
+
+    public string Label { get; }
+
+    public override string ToString() => Label;
+}
+
 // A handle dragged on the curve preview (AxisCurveView.Handles): its index and the new position in curve coordinates
 // (stick -1..1, output -1..1).
 public sealed record AxisCurveHandleMove(int Index, double X, double Y);
 
-// One point of a DCS user curve (the output at Position, 0..1).
+// One point of a DCS user curve (the output at Position, 0..1): a number box under the curve (2.6.2: the 11 vertical
+// sliders were hard to set exactly), and a white point on the preview to drag. Both edit Value; Text follows it.
 public sealed partial class AxisCurvePointEditor : ObservableObject
 {
+    private bool syncing;
+
     public AxisCurvePointEditor(double position)
     {
         Position = position;
         value = position;
+        text = AxisParameterEditor.Format(position);
     }
+
+    public const double Minimum = 0.0;
+
+    public const double Maximum = 1.0;
+
+    public const double Step = 0.01;
 
     public double Position { get; }
 
-    public string PositionLabel => (Position * 100).ToString("0", CultureInfo.InvariantCulture);
+    // "50%": how far the stick is at this point.
+    public string PositionLabel => (Position * 100).ToString("0", CultureInfo.InvariantCulture) + "%";
+
+    public string Tooltip => T("Output at {0} of the stick travel: 0 .. 1 (arrow keys or the mouse wheel: 0.01, Shift: 0.1)", PositionLabel);
 
     [ObservableProperty]
     private double value;
+
+    [ObservableProperty]
+    private string text;
+
+    [ObservableProperty]
+    private string validationMessage = string.Empty;
+
+    public bool IsValid => ValidationMessage.Length == 0;
+
+    partial void OnValueChanged(double value)
+    {
+        if (syncing)
+            return;
+        syncing = true;
+        Text = AxisParameterEditor.Format(Math.Round(value, 4));
+        ValidationMessage = string.Empty;
+        syncing = false;
+    }
+
+    // A typed value: a number 0..1 sets the point; anything else is shown as a message (and not sent).
+    partial void OnTextChanged(string value)
+    {
+        if (syncing)
+            return;
+        if (!AxisParameterEditor.TryParseNumber(value, out double number))
+        {
+            ValidationMessage = T("User curve at {0}: enter a number (0 .. 1).", PositionLabel);
+            return;
+        }
+        if (number < Minimum || number > Maximum)
+        {
+            ValidationMessage = T("User curve at {0} must be 0 .. 1.", PositionLabel);
+            return;
+        }
+        syncing = true;
+        ValidationMessage = string.Empty;
+        Value = number;
+        syncing = false;
+    }
+
+    partial void OnValidationMessageChanged(string value) => OnPropertyChanged(nameof(IsValid));
+
+    // Sets the point from a loaded curve (also over a typed value that was no number).
+    public void Load(double number)
+    {
+        syncing = true;
+        Value = number;
+        Text = AxisParameterEditor.Format(Math.Round(number, 4));
+        ValidationMessage = string.Empty;
+        syncing = false;
+    }
 }

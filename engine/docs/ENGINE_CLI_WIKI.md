@@ -129,6 +129,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine profile game-state --game <id> [--path <config>]   (has this profile imported from or exported to the game, and does the game have binds of its own: the GUI asks 'Import first?' before the first export)
   engine export-marks list [--game <id>]   (binds an 'Only add' export did not write because the game uses their button for another function, with the game's function and the date; they clear at the next export that writes the bind or finds the button free)
   engine export-marks dismiss --game <id> --relation <name> [--aircraft <a>]   ('Keep as is': the Check shows no card for these marks; --game takes the game id or an alias (il2, wt); --aircraft: only the marks of that aircraft; a warning when no open mark matches)
+  engine profile auto-added [--apply [--skip "key;key"] | --keep]   (aircraft an earlier load correction switched on that you never bound, found in the profile history; --apply takes them out, --keep stops asking; one undo step)
   engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)
   engine profile merge <left.pr0file> <right.pr0file> [<more.pr0file> ...] [--mode left|right|ask] [--overwrite-mode left|right|ask] [--save <path.pr0file>] [--save-profile <path.pr0file>]   (the files are merged left to right; a relation both have: right = the later file wins (default), left = the first file keeps it, ask = the console asks; --overwrite-mode is another name for --mode, --save-profile for --save)
   engine profile history [list]   (the versions of --profile, newest first: every save is one, kept in <data>\ProfileHistory; undo/redo state)
@@ -877,6 +878,20 @@ Arguments and example values:
 Examples:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' export-marks dismiss --game il2 --relation 'Gear Toggle' --text
+```
+
+### `engine profile auto-added [--apply [--skip "key;key"] | --keep]   (aircraft an earlier load correction switched on that you never bound, found in the profile history; --apply takes them out, --keep stops asking; one undo step)`
+What it does: The repair for profiles an earlier load correction filled up (2.6.1 and older switched on, after Refresh DB or an update, every aircraft of an action's command id you had never bound): reads the profile history for such a step and lists the aircraft it switched on that are still on, per relation what goes (Remove) and what stays (Keeps). --apply takes them out (--skip keeps the listed keys), --keep stops asking; either is one profile version (one undo step). Without either nothing changes.
+
+Arguments and example values:
+- `--apply`: Takes the listed aircraft out of their actions again (back to how the node was before the correction).
+- `--skip`: Keys (from the listing, 'Key') of aircraft to leave switched on, separated by ;. Example: --skip '3fa1c2d9e0b7;90ab12cd34ef'.
+- `--keep`: Keeps every listed aircraft and stops asking (the profile remembers the answer).
+
+Examples:
+```powershell
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile auto-added --text
+engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile auto-added --apply --skip '3fa1c2d9e0b7' --text
 ```
 
 ### `engine profile games   (games and DCS aircraft the profile has relations for, with how many are bound: what each export writes)`

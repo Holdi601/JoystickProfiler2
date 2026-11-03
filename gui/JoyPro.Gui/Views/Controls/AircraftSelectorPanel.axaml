@@ -34,7 +34,7 @@
                             <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0"
                                       Tapped="AircraftChoiceTapped" ToolTip.Tip="{Binding Tooltip}">
                                 <Grid ColumnDefinitions="140,*,Auto" ColumnSpacing="8">
-                                    <TextBlock Text="{Binding Plane}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding Plane}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Classes.filterMatch="{Binding IsFilterMatch}" />
                                     <TextBlock Grid.Column="1" Classes="caption" Text="{Binding MeaningText}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                                     <Border Grid.Column="2" Classes="chip" Classes.warn="{Binding IsOtherFunction}" IsVisible="{Binding HasMarker}" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding MarkerText}" />

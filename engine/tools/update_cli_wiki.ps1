@@ -293,6 +293,7 @@ function Get-CommandSummaryForDocs {
         "devices alias list" { return "Names of your own for devices (display only; exports use the real device): list them, set one, or clear one." }
         "devices auto-remap" { return "A profile device that is not connected gets the connected device of the same product with a new GUID (alias: remap); --dry-run previews." }
         "devices reference" { return "Device reference pictures (docs/device-reference.md): list and identify catalog models, show JoyPro's schematic, check and list photo references, add one (photo-add), check the curated marker positions (layout-check, exit code 1 on a problem), JoyPro's own drawings (drawings), whether every input has a position (completeness), a game's grip rendered for a drawing (mesh-render) and, experimental, where the controls of a device photo probably are (detect)." }
+        "profile auto-added" { return "The repair for profiles an earlier load correction filled up (2.6.1 and older switched on, after Refresh DB or an update, every aircraft of an action's command id you had never bound): reads the profile history for such a step and lists the aircraft it switched on that are still on, per relation what goes (Remove) and what stays (Keeps). --apply takes them out (--skip keeps the listed keys), --keep stops asking; either is one profile version (one undo step). Without either nothing changes." }
         "export-marks dismiss" { return "'Keep as is' for the marks of an 'Only add' export: the Check shows no card for them. --game takes the game id or an alias (il2, wt); --aircraft limits it to that aircraft's marks. When no open mark matches, the output says so." }
         "db fingerprint" { return "Prints the fingerprint of the game lists JoyPro reads (DB): a load of a profile compares it to decide whether the DB correction pass must run." }
         "version" { return "Prints the engine's version." }
@@ -446,6 +447,13 @@ function Get-CommandArgumentDocLine {
         "relations aircraft" {
             switch ($token) {
                 "--node" { return "Only this action: game:id; an aircraft part (game:id:F-16C_50 or game:id:a|b) only names the node, the report lists every aircraft. Example: --node DCS:d3001pnilunilcdnilvdnilvpnilvunil." }
+            }
+        }
+        "profile auto-added" {
+            switch ($token) {
+                "--apply" { return "Takes the listed aircraft out of their actions again (back to how the node was before the correction)." }
+                "--skip" { return "Keys (from the listing, 'Key') of aircraft to leave switched on, separated by ;. Example: --skip '3fa1c2d9e0b7;90ab12cd34ef'." }
+                "--keep" { return "Keeps every listed aircraft and stops asking (the profile remembers the answer)." }
             }
         }
         "export-marks dismiss" {
@@ -1141,6 +1149,7 @@ function Get-ExampleCommand {
         "binds export" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds export 'C:\JoyPro\exports\binds.json'") }
         "binds import" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds import 'C:\JoyPro\exports\binds.json'", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' binds import 'C:\JoyPro\exports\throttle-binds.json' --replace") }
         "devices replace" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace 'Old Stick' 'New Stick' --dry-run --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace --from 'Old Stick' --to 'New Stick' --mode layout --merge keep --text") }
+        "profile auto-added" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile auto-added --text", "engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' profile auto-added --apply --skip '3fa1c2d9e0b7' --text") }
         "export-marks dismiss" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' export-marks dismiss --game il2 --relation 'Gear Toggle' --text") }
         "dcs defaults cut" { return @("engine dcs defaults cut 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --dry-run --text", "engine dcs defaults cut 'C:\Users\Pilot\Saved Games\DCS.openbeta' 'D:\Games\Eagle Dynamics\DCS World OpenBeta' --text") }
         "relations aircraft" { return @("engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' relations aircraft 'Gear Toggle' --node DCS:d3001pnilunilcdnilvdnilvpnilvunil:F-16C_50 --text") }

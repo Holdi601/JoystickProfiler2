@@ -134,6 +134,8 @@ public sealed partial class MainWindowViewModel
         {
             ApplyRelationFilter();
             RememberFilter(RelationFilter);
+            // The open relation's actions: the filter's first, marked; the others folded (RelationNodeFilter.cs).
+            RebuildRelationNodesShown();
         };
         BindFilter.Changed += (_, _) =>
         {

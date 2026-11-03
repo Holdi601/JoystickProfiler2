@@ -474,6 +474,17 @@ internal sealed class AxisTuningFakeEngine : IEngineCliClient
     // Adds an X-Plane node (a game curve with free control points).
     public bool IncludeXPlane { get; set; }
 
+    // More bound DCS axis relations ("Thrust Right" on JOY_Z, ...): targets of Copy to another axis.
+    public List<(string Name, string Axis)> OtherAxes { get; } = [];
+
+    private string OtherRelations() => string.Concat(OtherAxes.Select(a =>
+        ",{\"Name\":\"" + a.Name + "\",\"IsAxis\":true,\"Groups\":[],\"Nodes\":[{\"Id\":\"a2004cdnil\",\"Game\":\"DCS\",\"Aircraft\":{\"F-16C_50\":true}}]," +
+        "\"Bind\":{\"Joystick\":\"" + AxisTuningTests.Stick + "\",\"JAxis\":\"" + a.Axis + "\",\"JButton\":\"\"}}"));
+
+    private string OtherBinds() => string.Concat(OtherAxes.Select(a =>
+        ",{\"RelationName\":\"" + a.Name + "\",\"IsAxis\":true,\"Joystick\":\"" + AxisTuningTests.Stick + "\",\"JAxis\":\"" + a.Axis + "\",\"JButton\":\"\"," +
+        "\"Inverted\":false,\"Slider\":false,\"Deadzone\":0,\"Curvature\":[0],\"SaturationX\":1,\"SaturationY\":1,\"AllReformers\":[],\"DoubleTap\":false}"));
+
     public Dictionary<string, string> Scopes { get; } = new(StringComparer.OrdinalIgnoreCase)
     {
         ["base"] = "inv=0;sl=0;dz=0.05;sx=1;sy=1;cv=0.3",
@@ -499,7 +510,7 @@ internal sealed class AxisTuningFakeEngine : IEngineCliClient
             return "{\"Relations\":[{\"Name\":\"Pitch\",\"IsAxis\":true,\"Groups\":[\"Flight\"],\"Nodes\":[" +
                    "{\"Id\":\"a2001cdnil\",\"Game\":\"DCS\",\"Aircraft\":{\"A-10C\":true,\"F-16C_50\":true}}," +
                    "{\"Id\":\"pitch\",\"Game\":\"IL2Korea\",\"Aircraft\":{\"IL2Korea\":true}}]," +
-                   "\"Bind\":{\"Joystick\":\"" + AxisTuningTests.Stick + "\",\"JAxis\":\"JOY_Y\",\"JButton\":\"\"}}]}";
+                   "\"Bind\":{\"Joystick\":\"" + AxisTuningTests.Stick + "\",\"JAxis\":\"JOY_Y\",\"JButton\":\"\"}}" + OtherRelations() + "]}";
         }
         if (AxisTuningTests.Seq(args, "relations", "show"))
         {
@@ -513,7 +524,7 @@ internal sealed class AxisTuningFakeEngine : IEngineCliClient
         if (AxisTuningTests.Seq(args, "binds", "list"))
         {
             return "{\"Binds\":[{\"RelationName\":\"Pitch\",\"IsAxis\":true,\"Joystick\":\"" + AxisTuningTests.Stick + "\",\"JAxis\":\"JOY_Y\",\"JButton\":\"\"," +
-                   "\"Inverted\":false,\"Slider\":false,\"Deadzone\":0.05,\"Curvature\":[0.3],\"SaturationX\":1,\"SaturationY\":1,\"AllReformers\":[],\"DoubleTap\":false}]}";
+                   "\"Inverted\":false,\"Slider\":false,\"Deadzone\":0.05,\"Curvature\":[0.3],\"SaturationX\":1,\"SaturationY\":1,\"AllReformers\":[],\"DoubleTap\":false}" + OtherBinds() + "]}";
         }
         if (AxisTuningTests.Seq(args, "binds", "tuning", "clear"))
         {

@@ -175,6 +175,7 @@ public sealed partial class MainWindowViewModel
             OnPropertyChanged(nameof(HasBuilderNoNodes));
             OnPropertyChanged(nameof(BuilderSuggestEmptyText));
             OnBuilderNodesChanged();
+            RebuildRelationNodesShown();
         };
         RelationNodeSearchResults.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasRelationSearchResults));
         PropertyChanged += OnDesignPropertyChanged;

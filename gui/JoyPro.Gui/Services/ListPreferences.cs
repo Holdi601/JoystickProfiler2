@@ -19,6 +19,13 @@ public sealed class ListPreferences
     // The Binds page's peek at the selected relation's actions is open.
     public bool BindPeekOpen { get; set; } = true;
 
+    // The Binds page's "Axis response" section: open by itself for an axis bind until the user closes it (then closed
+    // until they open it again).
+    public bool AxisResponseOpen { get; set; } = true;
+
+    // The Binds page's "Modifiers on this bind" panel is open (its close button: only the title line stays).
+    public bool BindModifiersOpen { get; set; } = true;
+
     // The Relations page's filter block (groups, games, devices, bound, axes / buttons, sort, search scope) is open.
     public bool RelationFiltersOpen { get; set; } = true;
 

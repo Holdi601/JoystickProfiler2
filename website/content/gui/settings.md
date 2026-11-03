@@ -933,6 +933,12 @@ Off by default: recording only takes a button that changes state, so a button al
 3-way switch's middle position, a mode switch) never counts. Ticked: letting such a button go counts as that button.
 Used by every recording, also **Move to another button**.
 
+<!-- entry: bind:BuilderShowSameMeaning -->
+Settings > Relations, on by default: the Add actions search also lists the actions that do what your words mean
+(**Same function**: the same function, found by a synonym or a description) and the looser ones (**Related**, folded),
+below the actions whose name has every word you typed. Off: only those name matches. The same switch is **Same meaning**
+next to All / Axes / Buttons on the Relations page. Kept for the next start.
+
 <!-- entry: MoveNavPageUpCommand -->
 Moves this page one place up in the list, which is one place to the left in the bottom bar. The order is kept for the
 next start.

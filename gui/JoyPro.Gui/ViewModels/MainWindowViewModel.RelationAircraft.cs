@@ -48,6 +48,7 @@ public sealed partial class MainWindowViewModel
         };
         row.Aircraft = ParseAircraftVariants(item, row.Title);
         row.OnlyForText = OnlyForText(row.Game, row.Id);
+        ReadBuilderReason(row, item);
         return row;
     }
 
@@ -258,6 +259,12 @@ public sealed partial class MainWindowViewModel
                     }
                 }
                 item.MeaningTitle = ReadJsonString(node, "Title");
+                // Several meanings in the ticked aircraft: the main one is the title (not "A, B"), the others lines under it.
+                if (game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
+                {
+                    string meaningNote = NodeMeaningNote(game, item.MeaningTitle, choices);
+                    item.UseMeanings(meaningNote.Length > 0 ? DisplayText.ActionTitle(item.MeaningTitle) : string.Empty, meaningNote);
+                }
                 // Another title of the same function (a helicopter's cyclic pitch) is no mixed meaning.
                 item.Differs = Math.Max(0, ReadJsonInt(node, "Differs") - ReadJsonInt(node, "DiffersSameFunction"));
                 item.Excluded = ReadJsonInt(node, "Excluded");
@@ -291,6 +298,34 @@ public sealed partial class MainWindowViewModel
         UpdateRelationCheck();
         // Opened from a card of the check: its aircraft are marked now that they are there.
         ApplyCheckHighlight();
+    }
+
+    // The lines under a node's title when its ticked aircraft call the id differently: another function per meaning
+    // ("F-16C: KY-58 MODE Knob - RV (different function)"), the other names of the same function in one line ("also
+    // called: Thrust (13), Power Levers (Both) (2)"). Empty: one meaning.
+    internal string NodeMeaningNote(string game, string mainTitle, IReadOnlyList<AircraftChoiceItem> choices)
+    {
+        List<AircraftChoiceItem> ticked = choices.Where(c => c.IsChecked && c.Title.Length > 0 && !string.Equals(c.Title, mainTitle, StringComparison.OrdinalIgnoreCase)).ToList();
+        List<string> lines = [];
+        foreach (IGrouping<string, AircraftChoiceItem> other in ticked.Where(c => c.IsOtherFunction).GroupBy(c => c.Title, StringComparer.OrdinalIgnoreCase))
+            lines.Add(T("{0}: {1} (different function)", PlaneNamesShort(game, other.Select(c => c.Plane).ToList()), other.First().Title));
+        List<string> names = ticked.Where(c => !c.IsOtherFunction).GroupBy(c => c.Title, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First().Title + " (" + g.Count().ToString(CultureInfo.CurrentCulture) + ")").ToList();
+        if (names.Count > 0)
+            lines.Add(T("also called: {0}", string.Join(", ", names)));
+        return string.Join(Environment.NewLine, lines);
+    }
+
+    // Up to three aircraft by the names people use ("F/A-18C, F-16C Block 50 and 2 more"); another game: the game.
+    internal string PlaneNamesShort(string game, IReadOnlyList<string> planes)
+    {
+        if (!game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
+            return DisplayText.Game(game);
+        List<string> names = planes.Select(p => AircraftWords(game, [p])).Where(n => n.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        if (names.Count <= 3)
+            return CheckIssueText.Join(names, T("and"));
+        return T("{0} and {1} more", string.Join(", ", names.Take(3)), names.Count - 3);
     }
 
     // A game node whose aircraft report lists aircraft of the game's list (MSFS), not only the game itself.
@@ -408,10 +443,30 @@ public sealed partial class MainWindowViewModel
 
     private int RelationCheckPlaneCount => RelationCheckItems.Sum(i => i.Planes.Count);
 
-    public string RelationCheckHeadline => T("In some aircraft this command does something else.");
+    public string RelationCheckHeadline => T("This button does different things in different aircraft.");
 
-    // "The 'Rudder' command of the AH-64D has another meaning in 35 aircraft (e.g. F-16C_50: 'Nosewheel steering').
-    // Should this relation also apply there?"
+    // The open relation's button as on the key caps ("BTN 20"), else its name in quotes.
+    private string RelationCheckButtonWords =>
+        SelectedRelation is { IsBound: true } bound && bound.BindInput.Length > 0 ? DeviceMarkerText.ShortLabel(bound.BindInput) : "'" + (SelectedRelation?.Name ?? string.Empty) + "'";
+
+    // The aircraft that keep the action ("Only in the ..."): the node's own meaning.
+    private string KeepPlanesWords(AircraftCheckItem item)
+    {
+        IReadOnlyList<string> keep = item.KeepPlanes.Count > 0 ? item.KeepPlanes : OwnPlanesOf(item);
+        return keep.Count > 0 ? PlaneNamesShort(item.Game, keep) : T("the other aircraft");
+    }
+
+    // "F/A-18C: RADAR Switch - EMERG · F-16C: KY-58 MODE Knob - RV": each meaning with up to three aircraft.
+    private string MeaningsWords(AircraftCheckItem item)
+    {
+        List<string> parts = [KeepPlanesWords(item) + ": " + item.Title];
+        foreach (IGrouping<string, AircraftCheckPlane> other in item.Planes.GroupBy(p => p.TitleText, StringComparer.OrdinalIgnoreCase))
+            parts.Add(PlaneNamesShort(item.Game, other.Select(p => p.Plane).ToList()) + ": " + other.Key);
+        return string.Join(" · ", parts);
+    }
+
+    // "BTN 20 does different things in these aircraft: F/A-18C: RADAR Switch - EMERG · F-16C: KY-58 MODE Knob - RV.
+    // Where should BTN 20 work?"
     public string RelationCheckText
     {
         get
@@ -419,17 +474,10 @@ public sealed partial class MainWindowViewModel
             AircraftCheckItem? first = RelationCheckItems.FirstOrDefault();
             if (first == null || first.Planes.Count == 0)
                 return string.Empty;
-            AircraftCheckPlane example = first.Planes[0];
-            string own = OwnPlaneOf(first);
-            string text = own.Length > 0
-                ? T("The '{0}' command of the {1} has another meaning in {2} aircraft (e.g. {3}: '{4}').", first.Title, own, first.Planes.Count, example.Plane, example.Title)
-                : T("The '{0}' command has another meaning in {1} aircraft (e.g. {2}: '{3}').", first.Title, first.Planes.Count, example.Plane, example.Title);
-            int more = RelationCheckItems.Count - 1;
-            if (more == 1)
-                text += " " + T("One more action of this relation, too.");
-            else if (more > 1)
-                text += " " + T("{0} more actions of this relation, too.", more);
-            return text + " " + T("Should this relation also apply there?");
+            string button = RelationCheckButtonWords;
+            if (RelationCheckItems.Count == 1)
+                return T("{0} does different things in these aircraft: {1}. Where should {0} work?", button, MeaningsWords(first));
+            return T("{0} does different things in the aircraft of {1} of its actions, e.g. {2}. Where should {0} work?", button, RelationCheckItems.Count, MeaningsWords(first));
         }
     }
 
@@ -437,15 +485,34 @@ public sealed partial class MainWindowViewModel
         : RelationCheckItems.Count > 1 ? T("Show what these commands do in the other {0} aircraft", RelationCheckPlaneCount)
         : T("Show what this command does in the other {0} aircraft", RelationCheckPlaneCount);
 
-    // "Only where it is 'Rudder'"
-    public string RelationCheckOnlyLabel => RelationCheckItems.Count == 1 ? T("Only where it is '{0}'", RelationCheckItems[0].Title) : T("Only where the meaning is the same");
+    // "Only in the F/A-18C (take it off the F-16C)"
+    public string RelationCheckOnlyLabel => RelationCheckItems.Count == 1
+        ? T("Only in the {0} (take it off the {1})", KeepPlanesWords(RelationCheckItems[0]), PlaneNamesShort(RelationCheckItems[0].Game, RelationCheckItems[0].Drop))
+        : T("Only where it does the same (take it off {0} aircraft)", RelationCheckPlaneCount);
 
-    // An aircraft of the open relation's action where the command is the action's own meaning ("of the AH-64D").
-    private string OwnPlaneOf(AircraftCheckItem item)
+    // "Keep it in both (F-16C keeps KY-58 MODE Knob - RV)"
+    public string RelationCheckKeepLabel
+    {
+        get
+        {
+            AircraftCheckItem? first = RelationCheckItems.FirstOrDefault();
+            if (first == null || RelationCheckItems.Count > 1)
+                return T("Keep it everywhere");
+            List<IGrouping<string, AircraftCheckPlane>> others = first.Planes.GroupBy(p => p.TitleText, StringComparer.OrdinalIgnoreCase).ToList();
+            if (others.Count != 1)
+                return T("Keep it in all ({0} aircraft keep their own command)", first.Planes.Count);
+            return T("Keep it in both ({0} keeps {1})", PlaneNamesShort(first.Game, others[0].Select(p => p.Plane).ToList()), others[0].Key);
+        }
+    }
+
+    // The aircraft of the open relation's action where the command is the action's own meaning.
+    private IReadOnlyList<string> OwnPlanesOf(AircraftCheckItem item)
     {
         RelationNodeItem? node = RelationNodes.FirstOrDefault(n => string.Equals(n.Id, item.Id, StringComparison.OrdinalIgnoreCase) && string.Equals(n.Game, item.Game, StringComparison.OrdinalIgnoreCase));
-        AircraftChoiceItem? own = node?.Aircraft?.Items.FirstOrDefault(i => i.IsChecked && i.IsSame) ?? node?.Aircraft?.Items.FirstOrDefault(i => i.IsChecked && !i.IsDiffers);
-        return own?.Plane ?? string.Empty;
+        List<string> own = node?.Aircraft?.Items.Where(i => i.IsChecked && i.IsSame).Select(i => i.Plane).ToList() ?? [];
+        if (own.Count == 0)
+            own = node?.Aircraft?.Items.Where(i => i.IsChecked && !i.IsDiffers).Select(i => i.Plane).ToList() ?? [];
+        return own;
     }
 
     [RelayCommand]
@@ -468,6 +535,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(RelationCheckText));
         OnPropertyChanged(nameof(RelationCheckToggleText));
         OnPropertyChanged(nameof(RelationCheckOnlyLabel));
+        OnPropertyChanged(nameof(RelationCheckKeepLabel));
         OnPropertyChanged(nameof(HasProfileCheckLink));
         OnPropertyChanged(nameof(ProfileCheckLinkText));
     }
@@ -519,7 +587,11 @@ public sealed partial class MainWindowViewModel
                         }
                     }
                     AircraftCheckItems.Add(new AircraftCheckItem(relation, game, id, ReadJsonString(f, "Title"),
-                        planes.Select(p => new AircraftCheckPlane(p, titles.TryGetValue(p, out string? t) ? t : string.Empty)).ToList()));
+                        planes.Select(p => new AircraftCheckPlane(p, titles.TryGetValue(p, out string? t) ? t : string.Empty)).ToList())
+                    {
+                        // The aircraft with the action's own meaning (they keep it with "Only in the ...").
+                        KeepPlanes = ReadStringArray(f, "Planes")
+                    });
                 }
             }
         }
@@ -604,7 +676,7 @@ public sealed partial class MainWindowViewModel
         }
         SaveListPreferences();
         UpdateAircraftCheckTotals();
-        StatusText = T("'{0}' stays for all its aircraft.", relation);
+        StatusText = T("'{0}' stays as it is in all its aircraft; JoyPro does not ask about it again on this PC.", relation);
     }
 
     // "Ask me later": hides the open relation's banner until the next start.

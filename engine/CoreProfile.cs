@@ -56,6 +56,18 @@ namespace JoyPro
         [OptionalField]
         public List<string> DismissedSuggestions;
 
+        // The aircraft of the command lists when DatabaseFingerprint was stamped, "game<TAB>aircraft" (2.6.2): the load
+        // correction's "Auto Add DB Items" switches an aircraft on only when it is new since then (a module added to
+        // the lists), never one that was there and simply not chosen (docs/relation-builder.md "Load correction").
+        // Null (every profile before 2.6.2): recorded at the next correction, nothing is switched on that time.
+        [OptionalField]
+        public List<string> DatabasePlanes;
+
+        // Versions of the profile history whose aircraft the old auto-add switched on and that the user looked at
+        // ("Keep them" or a repair applied), by the version's content hash (EngineAutoAddRepair): not offered again.
+        [OptionalField]
+        public List<string> ReviewedAutoAdds;
+
         public Pr0file()
         {
             Relations = new Dictionary<string, Relation>(StringComparer.OrdinalIgnoreCase);

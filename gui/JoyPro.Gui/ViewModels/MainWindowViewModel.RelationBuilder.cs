@@ -87,6 +87,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(BuilderAddButtonLabel));
         OnPropertyChanged(nameof(CatalogAddLabel));
         OnPropertyChanged(nameof(BuilderSearchHint));
+        OnPropertyChanged(nameof(BuilderSearchStartText));
         OnPropertyChanged(nameof(CanChangeBuilderKind));
         OnPropertyChanged(nameof(BuilderKindHint));
         OnAssistantModeChanged();
@@ -114,31 +115,18 @@ public sealed partial class MainWindowViewModel
         if (suppressRelationAutoLoad || !IsRelationsStage || IsAnyRelationToolOpen)
             return;
         ShowNewRelationForm = false;
-        SeedBuilderSearch(value.Name);
+        StartBuilderSearchEmpty();
         _ = LoadBuilderSuggestionsAsync(value.Name);
         _ = EnsureBuilderLlmStatusAsync();
     }
 
-    // An opened relation: Add actions searches for its name ("Pitch"), not for what the last relation was ("gear");
-    // a copy number ("Pitch (2)") is left out. The search runs as typed (after the usual pause).
-    private void SeedBuilderSearch(string relationName)
+    // An opened relation: Add actions starts with an empty box (2.6.2, testers: the relation's name as the search was
+    // "usually irrelevant"), not with what the last relation was searched for. "Suggested for this relation" suggests by
+    // the relation itself; the empty box says where to start (ShowBuilderSearchStart).
+    private void StartBuilderSearchEmpty()
     {
-        string query = System.Text.RegularExpressions.Regex.Replace(relationName ?? string.Empty, @"\s*\(\d+\)\s*$", string.Empty).Trim();
-        // A name that says nothing ("Relation 024", "New relation (2)") is no search: the box stays empty instead of
-        // "Nothing found for 'Relation 024'".
-        if (IsPlaceholderRelationName(query))
-            query = string.Empty;
-        if (!string.Equals((BuilderSearchText ?? string.Empty).Trim(), query, StringComparison.Ordinal) && (query.Length > 0 || IsPlaceholderRelationName(relationName)))
-            BuilderSearchText = query;
-    }
-
-    // "Relation 024", "Relation", "New relation", "New relation 3", "Relation 024 (copy)" (also the translated "New relation").
-    internal static bool IsPlaceholderRelationName(string? name)
-    {
-        string text = System.Text.RegularExpressions.Regex.Replace((name ?? string.Empty).Trim(), @"(\s*\((\d+|copy)\))+\s*$", string.Empty, System.Text.RegularExpressions.RegexOptions.IgnoreCase).Trim();
-        text = System.Text.RegularExpressions.Regex.Replace(text, @"\s*\d+$", string.Empty).Trim();
-        return text.Length == 0 || text.Equals("Relation", StringComparison.OrdinalIgnoreCase) || text.Equals("New relation", StringComparison.OrdinalIgnoreCase) ||
-               text.Equals(T("New relation"), StringComparison.OrdinalIgnoreCase);
+        if ((BuilderSearchText ?? string.Empty).Length > 0)
+            BuilderSearchText = string.Empty;
     }
 
     // Coming back to the Relations page or closing a tool: the open relation's suggestions are loaded if they are not yet.
@@ -818,7 +806,78 @@ public sealed partial class MainWindowViewModel
         ? T("Search every game for what '{0}' does (\"throttle\" also finds thrust and collective). Tick what belongs and press Add selected.", SelectedRelation.Name)
         : T("Search every game for what the new relation does (\"throttle\", \"flare\", \"gear\"). Tick what belongs and press Create relation.");
 
-    partial void OnBuilderSearchTextChanged(string value) => _ = DebouncedBuilderSearchAsync();
+    // The empty box (an opened relation starts with it): where to start instead of an empty list.
+    public bool ShowBuilderSearchStart => (BuilderSearchText ?? string.Empty).Trim().Length == 0;
+
+    public bool ShowBuilderSearchHint => BuilderSearchStatus.Length == 0 && !ShowBuilderSearchStart;
+
+    public string BuilderSearchStartText => SelectedRelation != null
+        ? T("Type what to add: what it does or its name in the game (\"throttle\" also finds thrust and the collective). What JoyPro suggests for '{0}' by itself is under Suggested for this relation.", SelectedRelation.Name)
+        : BuilderSearchHint;
+
+    partial void OnBuilderSearchStatusChanged(string value) => OnPropertyChanged(nameof(ShowBuilderSearchHint));
+
+    partial void OnBuilderSearchTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(ShowBuilderSearchStart));
+        OnPropertyChanged(nameof(ShowBuilderSearchHint));
+        _ = DebouncedBuilderSearchAsync();
+    }
+
+    // ---- "Same meaning" on / off (2.6.2, docs/relation-builder.md "Same function and Related") ----
+
+    // On: the rows found by what they do ("Same function") and the looser ones ("Related") are listed below the name
+    // matches; off: only titles with every typed word. Remembered (ui-settings.json addActionsSameMeaning, null: on);
+    // the same switch is in Settings > Relations.
+    [ObservableProperty]
+    private bool builderShowSameMeaning = true;
+
+    partial void OnBuilderShowSameMeaningChanged(bool value)
+    {
+        SaveUiSettings();
+        RebuildBuilderSearchRows();
+        UpdateBuilderSearchStatus();
+    }
+
+    [RelayCommand]
+    private void ShowBuilderSameMeaning() => BuilderShowSameMeaning = true;
+
+    // "Related (7)" is folded until opened (per search; a new query folds it again). Open by itself when nothing is
+    // above it, so a search never shows only a folded header.
+    private bool builderRelatedExpanded;
+
+    [RelayCommand]
+    private void ToggleBuilderRelated()
+    {
+        builderRelatedExpanded = !builderRelatedExpanded;
+        RebuildBuilderSearchRows();
+    }
+
+    // Same meaning off and no title with every word: said plainly, with one click to switch it on.
+    public bool ShowBuilderNoNameMatches => !BuilderShowSameMeaning && allBuilderSearchResults.Count > 0 && !allBuilderSearchResults.Any(r => r.IsNameMatch && !r.IsInOpenRelation);
+
+    public string BuilderNoNameMatchesText => T("No action's name has every word of \"{0}\". The actions found by what they do are hidden because Same meaning is off ({1}).",
+        builderLastSearchedQuery, allBuilderSearchResults.Count(r => !r.IsNameMatch && !r.IsInOpenRelation).ToString(CultureInfo.InvariantCulture));
+
+    // The parts of the last search's status line (rebuilt when Same meaning is switched).
+    private (int Total, List<string> Functions, int Games, string Kind) builderStatusParts = (0, [], 0, "any");
+
+    // Reads a search row's section and reasons (relations search "Section", "Understood", ...; docs/relation-builder.md
+    // "Same function and Related").
+    private void ReadBuilderReason(BuilderSearchResultItem row, JsonElement item)
+    {
+        row.Query = (BuilderSearchText ?? string.Empty).Trim();
+        row.Section = ReadJsonString(item, "Section");
+        row.Understood = ReadJsonString(item, "Understood");
+        row.UnderstoodBy = ReadJsonString(item, "UnderstoodBy");
+        row.QueryTerm = ReadJsonString(item, "QueryTerm");
+        row.ActionFunction = ReadJsonString(item, "ActionFunction");
+        row.GameTerm = ReadJsonString(item, "GameTerm");
+        row.RelatedBy = ReadJsonString(item, "RelatedBy");
+        row.TitleWords = ReadStringArray(item, "TitleWords");
+        row.CategoryWords = ReadStringArray(item, "CategoryWords");
+        row.CloseWords = ReadStringArray(item, "CloseWords");
+    }
 
     partial void OnBuilderKindFilterChanged(string value)
     {
@@ -1016,6 +1075,7 @@ public sealed partial class MainWindowViewModel
             {
                 builderExpandedGames.Clear();
                 builderExpandedSearchKey = searchKey;
+                builderRelatedExpanded = false;
             }
             // Ticks (and changed aircraft ticks) stay on the actions that come back.
             KeepBuilderTicks(allBuilderSearchResults, found);
@@ -1024,23 +1084,38 @@ public sealed partial class MainWindowViewModel
             // The same query again: the games the user expanded show all their rows again.
             if (builderExpandedGames.Count > 0)
                 await ExpandBuilderGamesAsync(builderExpandedGames.ToList());
-            // The count is what can be added; the actions already in the open relation are named apart (greyed at the bottom).
-            List<BuilderSearchResultItem> offered = allBuilderSearchResults.Where(r => !r.IsInOpenRelation).ToList();
-            int already = allBuilderSearchResults.Count - offered.Count;
-            int gameCount = offered.Select(r => r.Game).Distinct(StringComparer.OrdinalIgnoreCase).Count();
-            string understood = (already > 0 ? T(" + {0} already in this relation", already.ToString(CultureInfo.InvariantCulture)) : string.Empty) +
-                                (functions.Count > 0 ? T(" · understood as {0}", string.Join(", ", functions.Take(4))) : string.Empty);
-            total = Math.Max(0, total - already);
             builderLastSearchedQuery = query;
-            BuilderSearchStatus = allBuilderSearchResults.Count == 0
-                ? T("Nothing found for \"{0}\"{1}{2}{3}. Try other words: what it does, or its name in the game.", query, (BuilderSearchPlanes.Count > 0 ? T(" with these aircraft") : string.Empty), (kind != "any" ? T(" among the {0}{1}", kind, (kind == "axis" ? "es" : "s")) : string.Empty), (games.Count > 0 ? T(" in the ticked games") : string.Empty))
-                : T("{0}{1}{2} in {3}{4}{5}", offered.Count.ToString(CultureInfo.InvariantCulture), (total > offered.Count ? T(" of {0}", total.ToString(CultureInfo.InvariantCulture)) : string.Empty), (offered.Count == 1 ? " action" : " actions"), gameCount.ToString(CultureInfo.InvariantCulture), (gameCount == 1 ? " game" : " games"), understood);
+            builderStatusParts = (total, functions, games.Count, kind);
+            UpdateBuilderSearchStatus();
         }
         finally
         {
             if (version == builderSearchVersion)
                 IsBuilderSearching = false;
         }
+    }
+
+    // The line above the list: what can be added (the actions already in the open relation named apart, greyed at the
+    // bottom), in how many games, what the words were understood as; with Same meaning off, how many it hides.
+    private void UpdateBuilderSearchStatus()
+    {
+        OnPropertyChanged(nameof(ShowBuilderNoNameMatches));
+        OnPropertyChanged(nameof(BuilderNoNameMatchesText));
+        string query = builderLastSearchedQuery;
+        if (query.Length == 0 || !string.Equals(query, (BuilderSearchText ?? string.Empty).Trim(), StringComparison.Ordinal))
+            return;
+        (int total, List<string> functions, int tickedGames, string kind) = builderStatusParts;
+        List<BuilderSearchResultItem> offered = allBuilderSearchResults.Where(r => !r.IsInOpenRelation).ToList();
+        int already = allBuilderSearchResults.Count - offered.Count;
+        int hidden = BuilderShowSameMeaning ? 0 : offered.Count(r => !r.IsNameMatch);
+        int gameCount = offered.Select(r => r.Game).Distinct(StringComparer.OrdinalIgnoreCase).Count();
+        string understood = (already > 0 ? T(" + {0} already in this relation", already.ToString(CultureInfo.InvariantCulture)) : string.Empty) +
+                            (functions.Count > 0 ? T(" · understood as {0}", string.Join(", ", functions.Take(4))) : string.Empty) +
+                            (hidden > 0 ? T(" · {0} with the same meaning hidden (Same meaning is off)", hidden.ToString(CultureInfo.InvariantCulture)) : string.Empty);
+        total = Math.Max(0, total - already);
+        BuilderSearchStatus = allBuilderSearchResults.Count == 0
+            ? T("Nothing found for \"{0}\"{1}{2}{3}. Try other words: what it does, or its name in the game.", query, (BuilderSearchPlanes.Count > 0 ? T(" with these aircraft") : string.Empty), (kind != "any" ? T(" among the {0}{1}", kind, (kind == "axis" ? "es" : "s")) : string.Empty), (tickedGames > 0 ? T(" in the ticked games") : string.Empty))
+            : T("{0}{1}{2} in {3}{4}{5}", offered.Count.ToString(CultureInfo.InvariantCulture), (total > offered.Count ? T(" of {0}", total.ToString(CultureInfo.InvariantCulture)) : string.Empty), (offered.Count == 1 ? " action" : " actions"), gameCount.ToString(CultureInfo.InvariantCulture), (gameCount == 1 ? " game" : " games"), understood);
     }
 
     private void SetBuilderSearchResults(List<BuilderSearchResultItem> found, bool rebuildChips)
@@ -1098,40 +1173,46 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(BuilderAddButtonLabel));
     }
 
-    // Two sections - "Name has every word" (titles with every typed word), then "Same meaning" - each with a header per
-    // game (or per function) and its rows; at most BuilderRowsShown rows. A name match stays above every row that only
-    // means the same in every sort and grouping: the sort levels order the rows within a section (a "Game" level with
-    // the title as its tie-break put "Exterior Lights Master" above "MASTER RESET" for "master reset").
+    // Three sections (docs/relation-builder.md "Same function and Related") - "Name has every word" (titles with every
+    // typed word), "Same function" (actions of the function the words were read as) and "Related" (looser links, folded
+    // until opened) - each with a header per game (or per function) and its rows; at most BuilderRowsShown rows. A
+    // section stays above the next in every sort and grouping: the sort levels order the rows within a section (a "Game"
+    // level with the title as its tie-break put "Exterior Lights Master" above "MASTER RESET" for "master reset"). Same
+    // meaning off: only the name matches.
+    private static readonly string[] BuilderSectionKinds = ["name", "function", "related"];
+
     private void RebuildBuilderSearchRows()
     {
         EnsureActionSorts();
         List<object> next = [];
         int budget = BuilderRowsShown;
         bool filtered = BuilderSearchGames.Any(c => c.IsSelected);
+        bool sameMeaning = BuilderShowSameMeaning;
         // Actions already in the open relation are not offered at their rank: greyed, without a tick box, in a group of
         // their own at the bottom (after every action that can be added).
-        List<BuilderSearchResultItem> addable = allBuilderSearchResults.Where(r => !r.IsInOpenRelation).ToList();
-        List<BuilderSearchResultItem> inRelation = allBuilderSearchResults.Where(r => r.IsInOpenRelation).ToList();
+        List<BuilderSearchResultItem> addable = allBuilderSearchResults.Where(r => !r.IsInOpenRelation && (sameMeaning || r.IsNameMatch)).ToList();
+        List<BuilderSearchResultItem> inRelation = allBuilderSearchResults.Where(r => r.IsInOpenRelation && (sameMeaning || r.IsNameMatch)).ToList();
+        // "Related" opens by itself when nothing is above it.
+        bool relatedOpen = builderRelatedExpanded || addable.All(r => r.IsRelated);
+        bool Shown(string kind) => kind != "related" || relatedOpen;
         // Per section: its headers and rows, in order.
-        List<object> named = [];
-        List<object> meaning = [];
-        int namedCount = addable.Count(r => r.IsNameMatch);
+        Dictionary<string, List<object>> sections = BuilderSectionKinds.ToDictionary(k => k, _ => new List<object>());
         if (BuilderGroupByFunction)
         {
             List<string> order = builderFunctionGroups.Select(g => g.Name).Where(n => n.Length > 0).ToList();
-            foreach (bool nameMatches in new[] { true, false })
+            foreach (string kind in BuilderSectionKinds)
             {
-                List<object> section = nameMatches ? named : meaning;
-                foreach (IGrouping<string, BuilderSearchResultItem> function in addable.Where(r => r.IsNameMatch == nameMatches)
+                foreach (IGrouping<string, BuilderSearchResultItem> function in addable.Where(r => r.SectionKind == kind)
                              .GroupBy(r => r.FunctionName.Length > 0 ? r.FunctionName : "Other matches", StringComparer.OrdinalIgnoreCase)
                              .OrderBy(g => order.IndexOf(g.Key) is int i && i >= 0 ? i : int.MaxValue).ThenByDescending(g => g.Count()))
                 {
                     List<BuilderSearchResultItem> rows = function.ToList();
                     int take = Math.Max(Math.Min(rows.Count, 6), Math.Min(rows.Count, budget));
                     List<BuilderSearchResultItem> shown = SortBuilderRows(rows.Take(take));
-                    budget = Math.Max(0, budget - shown.Count);
-                    section.Add(new BuilderSearchGroupItem(string.Empty, shown, rows.Count - shown.Count, function.Key));
-                    section.AddRange(shown);
+                    if (Shown(kind))
+                        budget = Math.Max(0, budget - shown.Count);
+                    sections[kind].Add(new BuilderSearchGroupItem(string.Empty, shown, rows.Count - shown.Count, function.Key));
+                    sections[kind].AddRange(shown);
                 }
             }
         }
@@ -1146,8 +1227,9 @@ public sealed partial class MainWindowViewModel
                     : gameGroups.OrderBy(g => DisplayText.Game(g.Key), Comparer<string>.Create(ListSortRow.Natural));
             foreach (IGrouping<string, BuilderSearchResultItem> game in gameGroups)
             {
-                // The game's name matches first (in the engine's order), so a capped game shows them before the rest.
-                List<BuilderSearchResultItem> rows = game.Where(r => r.IsNameMatch).Concat(game.Where(r => !r.IsNameMatch)).ToList();
+                // The game's rows section by section (in the engine's order), so a capped game shows its name matches
+                // first.
+                List<BuilderSearchResultItem> rows = BuilderSectionKinds.SelectMany(k => game.Where(r => r.SectionKind == k)).ToList();
                 bool expanded = builderExpandedGames.Contains(game.Key);
                 // An expanded game shows every row it has; the others their best rows: every game at least a few, the
                 // big ones share what is left (without a ticked game chip at most BuilderSearchPerGame); "Show n more"
@@ -1158,37 +1240,31 @@ public sealed partial class MainWindowViewModel
                 else if (!filtered)
                     take = Math.Min(take, Math.Max(BuilderSearchPerGame, Math.Min(rows.Count, 6)));
                 List<BuilderSearchResultItem> best = rows.Take(take).ToList();
-                budget = Math.Max(0, budget - best.Count);
+                budget = Math.Max(0, budget - best.Count(r => Shown(r.SectionKind)));
                 int known = 0;
-                int all = !filtered && builderGameTotals.TryGetValue(game.Key, out known) && known - inRelation.Count(r => string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase)) > rows.Count
-                    ? known - inRelation.Count(r => string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase)) : rows.Count;
+                int inThisRelation = allBuilderSearchResults.Count(r => r.IsInOpenRelation && string.Equals(r.Game, game.Key, StringComparison.OrdinalIgnoreCase));
+                int all = sameMeaning && !filtered && builderGameTotals.TryGetValue(game.Key, out known) && known - inThisRelation > rows.Count ? known - inThisRelation : rows.Count;
                 int hidden = Math.Max(0, all - best.Count);
                 // The best matches are shown (and "Show n more" loads the rest); the sort levels order what is shown
-                // within each section. "Show more" sits on the game's last header.
-                List<BuilderSearchResultItem> shownNamed = SortBuilderRows(best.Where(r => r.IsNameMatch));
-                List<BuilderSearchResultItem> shownMeaning = SortBuilderRows(best.Where(r => !r.IsNameMatch));
-                if (shownNamed.Count > 0)
+                // within each section. "Show more" sits on the game's last header in view.
+                List<(string Kind, List<BuilderSearchResultItem> Rows)> parts = BuilderSectionKinds
+                    .Select(k => (k, SortBuilderRows(best.Where(r => r.SectionKind == k)))).Where(p => p.Item2.Count > 0).ToList();
+                string lastInView = parts.Where(p => Shown(p.Kind)).Select(p => p.Kind).LastOrDefault() ?? string.Empty;
+                foreach ((string kind, List<BuilderSearchResultItem> part) in parts)
                 {
-                    bool last = shownMeaning.Count == 0;
-                    named.Add(new BuilderSearchGroupItem(game.Key, shownNamed, last ? hidden : 0) { IsExpanded = last && expanded });
-                    named.AddRange(shownNamed);
-                }
-                if (shownMeaning.Count > 0)
-                {
-                    meaning.Add(new BuilderSearchGroupItem(game.Key, shownMeaning, hidden) { IsExpanded = expanded });
-                    meaning.AddRange(shownMeaning);
+                    bool last = kind == lastInView;
+                    sections[kind].Add(new BuilderSearchGroupItem(game.Key, part, last ? hidden : 0) { IsExpanded = last && expanded });
+                    sections[kind].AddRange(part);
                 }
             }
         }
-        if (named.Count > 0)
+        foreach (string kind in BuilderSectionKinds)
         {
-            next.Add(new BuilderSearchSectionItem(true, namedCount));
-            next.AddRange(named);
-        }
-        if (meaning.Count > 0)
-        {
-            next.Add(new BuilderSearchSectionItem(false, addable.Count - namedCount));
-            next.AddRange(meaning);
+            if (sections[kind].Count == 0)
+                continue;
+            next.Add(new BuilderSearchSectionItem(kind, addable.Count(r => r.SectionKind == kind), Shown(kind)));
+            if (Shown(kind))
+                next.AddRange(sections[kind]);
         }
         if (inRelation.Count > 0)
         {
@@ -1200,6 +1276,8 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(CanExpandAllBuilderGames));
         OnPropertyChanged(nameof(CanCollapseAllBuilderGames));
         OnPropertyChanged(nameof(HasBuilderSearchResults));
+        OnPropertyChanged(nameof(ShowBuilderNoNameMatches));
+        OnPropertyChanged(nameof(BuilderNoNameMatchesText));
         OnBuilderCheckedChanged();
     }
 
@@ -1277,7 +1355,7 @@ public sealed partial class MainWindowViewModel
             await ReplaceWithBuilderRowsAsync(chosen);
             return;
         }
-        await AddBuilderRowsAsync(chosen, text => BuilderSearchStatus = text, seedSearch: (BuilderSearchText ?? string.Empty).Trim().Length == 0);
+        await AddBuilderRowsAsync(chosen, text => BuilderSearchStatus = text, seedSearch: false);
     }
 
     // Ticked rows (of the search or of the catalog) into the open relation, or a new relation with them.
@@ -1350,7 +1428,7 @@ public sealed partial class MainWindowViewModel
             .Select(g => DisplayText.Game(g.Game) + " " + g.Count.ToString(CultureInfo.InvariantCulture) + (g.Game == "DCS" ? " aircraft" : string.Empty)));
 
     // Reloads the list and opens the relation (its actions and suggestions loaded here, not twice by the selection hook).
-    // seedSearch: Add actions searches for what the relation is (its name), not for the previous relation's words.
+    // seedSearch: Add actions starts empty, not with the previous relation's words.
     private async Task OpenBuilderRelationAsync(string name, bool seedSearch = true)
     {
         suppressRelationAutoLoad = true;
@@ -1372,7 +1450,7 @@ public sealed partial class MainWindowViewModel
         {
             BuilderRenameText = SelectedRelation.Name;
             if (seedSearch)
-                SeedBuilderSearch(SelectedRelation.Name);
+                StartBuilderSearchEmpty();
             await ShowRelationAsync(SelectedRelation.Name);
             RefreshBuilderRowsInRelation();
             await LoadBuilderSuggestionsAsync(SelectedRelation.Name);
