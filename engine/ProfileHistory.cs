@@ -979,7 +979,7 @@ namespace JoyPro.History
 
         // Versions JoyPro made by itself that stay alone even when the user's next click follows within the coalescing
         // time (the load correction's step, its repair): one undo takes exactly them back.
-        private static readonly string[] StandaloneLabelPrefixes = { "Updated to the new command lists", "Took out aircraft JoyPro added" };
+        private static readonly string[] StandaloneLabelPrefixes = { "Updated to the new command lists", "Took out aircraft JoyPro added", "Took out input layers JoyPro added" };
 
         internal static bool IsStandaloneLabel(string label)
         {

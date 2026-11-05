@@ -138,6 +138,8 @@ public sealed partial class MainWindowViewModel
         string from = SelectedRelation?.Name ?? string.Empty;
         RememberPlace();
         RememberCheckReturn(item.Name, from.Length > 0 ? from : T("the search"));
+        if (RelationHiddenByFilter(item.Name))
+            ShowRelationDespiteFilter(item.Name);
         suppressRelationAutoLoad = true;
         try
         {

@@ -22,7 +22,9 @@ the binds you made in a game into JoyPro; **Export** writes them back. The impor
   not used yet: Auto Assign", "Write your binds into your games: Export").
 - **Your games**: one card per game with **Import**, **Export**, **Update** (its command list), **Undo export**,
   **Watch for changes** and a hide button. **Set up my devices automatically...** runs the setup wizard.
-- **Your devices**: the connected devices with their pictures; a click opens the Layout page.
+- **Your devices**: the connected devices with their pictures; a click opens the Layout page. An orange **Which grip?**
+  or **Which model?** on a device means JoyPro cannot tell which one it is: a click on it opens the Layout page with the
+  choice open, and your answer stays.
 - **Recent activity** per game and the game watcher switch; the **HUD** card.
 :::
 
@@ -264,6 +266,11 @@ whose list ships with JoyPro say so.
 
 <!-- entry: OpenDeviceCardInLayoutCommand -->
 Opens the Layout page with this device's picture.
+
+<!-- entry: AnswerDeviceCardQuestionCommand -->
+The orange **Which grip?** or **Which model?** on a device card: opens the Layout page with this device and its choice
+open. **Which grip?**: a base does not say which grip is on it. **Which model?**: several products report the same USB
+id. Your answer is kept for this device, also after a restart, and the chip goes away.
 
 <!-- entry: CardPhotoNoCommand -->
 No maker's photo for this device; JoyPro's drawing stays. Asked again only from Settings > Privacy.

@@ -264,6 +264,7 @@ public sealed partial class MainWindowViewModel
             RefDevice? model = null;
             RefDevice? baseOnly = null;
             bool needsAnswer = false;
+            string questionKind = "grip";
             string chosenClass = string.Empty;
             string? answer = gripOf(info.Device);
             if (answer is { Length: > 0 } && answer.StartsWith(DeviceReferenceService.ClassChoicePrefix, StringComparison.OrdinalIgnoreCase))
@@ -291,6 +292,7 @@ public sealed partial class MainWindowViewModel
                 if (question is { Kind: "grip" or "model" })
                 {
                     needsAnswer = true;
+                    questionKind = question.Kind;
                     baseOnly = question.Base;
                 }
                 else if (question is { Kind: "unknown" })
@@ -335,6 +337,7 @@ public sealed partial class MainWindowViewModel
                 KindLabel = kindLabel.Length > 0 ? kindLabel : chosenClass.Length > 0 ? DeviceClasses.Title(chosenClass) : modelClass == "keyboard" ? "Keyboard" : string.Empty,
                 IsVirtual = isVirtual,
                 NeedsGrip = needsAnswer,
+                QuestionKind = questionKind,
                 IsKeyboardLike = kind == "keyboard" || modelClass == "keyboard" || chosenClass == "keyboard" || KeyboardLikeDevices.IsKeyboardLike(info.Device)
             };
 
@@ -656,6 +659,39 @@ public sealed partial class MainWindowViewModel
     // A card: the Layout page with the device (its picture, markers and binds).
     private string? layoutDeviceToShow;
     private bool layoutStageRefreshing;
+    // The card's chip "Which grip?" / "Which model?" was clicked: the page opens with the chooser of that device.
+    private bool layoutAskWhenShown;
+
+    [RelayCommand]
+    private async Task AnswerDeviceCardQuestionAsync(DeviceCardItem? card)
+    {
+        if (card == null)
+            return;
+        layoutAskWhenShown = true;
+        await OpenDeviceCardInLayoutAsync(card);
+    }
+
+    // The device is on the Layout page: its chooser, when its chip was clicked.
+    private async Task AskDeviceQuestionIfWantedAsync(string device)
+    {
+        if (!layoutAskWhenShown)
+            return;
+        layoutAskWhenShown = false;
+        LayoutSuggestionItem? item = LayoutSuggestions.FirstOrDefault(s => SameDevice(s.Device, device));
+        // The question the card has (its candidates only), over the reference picture; a device without an open question
+        // gets the wider "Choose another model...".
+        LayoutShowsLayoutFile = false;
+        await ShowDeviceReferenceForAsync(device);
+        if (DeviceReference.HasQuestion)
+        {
+            if (!modelChoiceUndo.ContainsKey(device))
+                modelChoiceUndo[device] = DeviceReferenceService.ChoiceOf(device);
+            CanUndoModelChoice = true;
+            OnPropertyChanged(nameof(ShowReferenceQuestion));
+            return;
+        }
+        await AskModelAgainAsync(item, device, notMine: false);
+    }
 
     [RelayCommand]
     private async Task OpenDeviceCardInLayoutAsync(DeviceCardItem? card)
@@ -672,6 +708,7 @@ public sealed partial class MainWindowViewModel
             string device = layoutDeviceToShow;
             layoutDeviceToShow = null;
             await ShowWorkspaceDeviceAsync(device);
+            await AskDeviceQuestionIfWantedAsync(device);
         }
     }
 

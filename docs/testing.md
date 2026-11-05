@@ -64,6 +64,10 @@ the bottom and not counted, Replace from a Check card, the testers' F-14 "master
 through the real engine. Engine side: `engine\tests\smoke\searchliteral.ps1` (titles with every word first, brackets in
 the query, `[Inc]` / `[Dec]` / `[Next]` read right, the F-14 cases, "increase tacan channel").
 
+The 2.6.3 batch: `TesterBatch263Tests` and `GameChipsPersistTests` (a row partly in the open relation, the game chips that
+stay, the Relations page's filter that stays, "Which model?" and its chooser); engine side `searchliteral.ps1` ("LMFD OSB
+15": a number or side typed tells actions apart, "Recommended" follows the query).
+
 The 2.6.0 batch: `TesterBatch251Tests` (hidden games left out of the telemetry force feedback and telemetry recording
 lists and not looked for, back after Show again; the Relations page's filter block folded up and kept over a restart,
 its folded line naming the active filters; the Check card's fix buttons all as high as "More", no ▾ / ✓ characters on

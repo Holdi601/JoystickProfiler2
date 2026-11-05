@@ -34,7 +34,9 @@ the device reports. It checks them against the catalog (`DB/Devices`, 340 models
    - **grip**: the base does not say which grip is on it. Virpil names the base ("L-VPC Stick WarBRD"); VKB names the
      grip ("... Modern Combat Pro Twist") and is not asked. The question is "Which grip is on your Virpil VPC WarBRD
      Base?".
-   - **model**: one USB id for several products, and nothing else tells them apart.
+   - **model**: one USB id for several products, and nothing else tells them apart. Not asked when the device's own name
+     lists them and their inputs are the same: `MFG Crosswind V2/3` is both Crosswind models, the answer would change
+     nothing about its binds (`NameNamesAll`, `SameInputs`; `Model...` can still say which).
    - **unknown**: the device is not in the catalog. "Which device is this?" offers a catalog search. If the device is
      not in the catalog, the user picks the kind of device. The kind is guessed from the name and the inputs.
 5. **"Which one is it?"** is shown over the picture (the Layout page):
@@ -44,6 +46,10 @@ the device reports. It checks them against the catalog (`DB/Devices`, 340 models
 
    The answer is kept per device in `<data>\DeviceReference\grips.json`. It is either a model id or
    `class:<class>`. The device cards, the HUD and the engine (`hud devices --grip`) use it from then on.
+
+   The Start page's device card asks the same: a chip `Which grip?` or `Which model?` (`DeviceCardItem.QuestionKind`); a
+   click opens the Layout page with the device and this question. Before 2.6.3 the chip always said "Which grip?", and
+   the Layout page did not ask when the engine had named a model of a shared USB id, so only `Model...` could answer.
 6. **Asked again at any time**: `Model...` on a device of the Layout page's list (also after an answer, a wrong pick
    or a weak match such as "Placeholder ... (match 30%)"):
    - `Choose another model...`: the question again with the device's candidates (its identification, the shown model

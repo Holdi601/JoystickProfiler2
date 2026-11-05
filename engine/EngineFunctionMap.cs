@@ -121,6 +121,22 @@ namespace JoyPro.Engine
             public string Class = string.Empty;
             // PrimaryRank per function id, worked out once when a search asks.
             internal Dictionary<string, int> PrimaryRanks;
+            private string[] words;
+
+            // Every word the title shows, also the panel tag CleanTitle leaves out for the function rules (Falcon BMS
+            // "LMFD: OSB-15 Button - Push"): what a name search and the highlight read.
+            public string[] Words
+            {
+                get
+                {
+                    if (words == null)
+                    {
+                        string panel = PanelOf(Command == null ? string.Empty : Command.Game, Command == null ? string.Empty : Command.Title);
+                        words = panel.Length == 0 ? TitleTokens : TitleTokens.Concat(Tokenize(panel)).Distinct().ToArray();
+                    }
+                    return words;
+                }
+            }
 
             public Assignment Of(string functionId)
             {
@@ -364,8 +380,20 @@ namespace JoyPro.Engine
             // as "minus" and every [Inc], [Next] and [Toggle] became a "decrease").
             text = TrailingSeatTag.Replace(text, string.Empty);
             if (string.Equals(game, "FalconBMS", StringComparison.OrdinalIgnoreCase))
-                text = Regex.Replace(text, @"^\s*[A-Z0-9][A-Z0-9 ]{1,14}:\s+", string.Empty);
+                text = PanelTag.Replace(text, string.Empty);
             return text;
+        }
+
+        private static readonly Regex PanelTag = new Regex(@"^\s*([A-Z0-9][A-Z0-9 ]{1,14}):\s+", RegexOptions.Compiled);
+
+        // The panel tag CleanTitle takes off a title: "LMFD" of Falcon BMS "LMFD: OSB-15 Button - Push", "" for none. It
+        // says which panel the action is on: no word of what it does, but a word of its name.
+        internal static string PanelOf(string game, string title)
+        {
+            if (string.IsNullOrEmpty(title) || !string.Equals(game, "FalconBMS", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+            Match m = PanelTag.Match(title);
+            return m.Success ? m.Groups[1].Value : string.Empty;
         }
 
         // Ids that read as words ("v_strafe_longitudinal", "KEY_THROTTLE_AXIS_SET_EX1", "ThrottleAxis", "axis/throttle_1").
@@ -1449,6 +1477,9 @@ namespace JoyPro.Engine
             {
                 if (union[i] || map.DirectionWords.Contains(tokens[i]) || map.QueryFiller.Contains(tokens[i]))
                     continue;
+                // A number next to a named function is which one of it: "15" of "OSB 15" is no "SPO-15" radar warning receiver.
+                if (chosen.Count > 0 && tokens[i].All(char.IsDigit))
+                    continue;
                 // A word a named function's own description has only says more about it ("drop countermeasures").
                 List<Resolved> explaining = chosen.Where(c => DocHas(map, c.Function, tokens[i])).ToList();
                 if (explaining.Count > 0)
@@ -1469,6 +1500,9 @@ namespace JoyPro.Engine
                         open.Add(i);
                 }
             }
+            // A number alone describes nothing.
+            if (open.All(i => tokens[i].All(char.IsDigit)))
+                open.Clear();
             // One word left next to a named function ("distance" of "long distance jump") brings no second function: it
             // only lifts the titles that have it.
             if (open.Count == 1 && chosen.Any(c => !c.Related && c.Covered >= 2))

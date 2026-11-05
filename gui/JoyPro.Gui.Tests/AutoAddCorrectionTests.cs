@@ -13,7 +13,8 @@ using Xunit;
 namespace JoyPro.Gui.Tests;
 
 // 2.6.2: the repair of profiles an earlier load correction filled up (engine profile auto-added: the notice with the
-// list to untick, Take them out as one engine run, Keep them), the check banner's words (the button, the aircraft by
+// list to untick, Take them out as one engine run, Keep them; "Default" and the other input layers are no aircraft: not
+// counted, last in the list, no notice when there is nothing else), the check banner's words (the button, the aircraft by
 // name and what the command does in each; the buttons say the outcome) and its drop rule (the engine's Drop only, never
 // an imported aircraft), and a node's title when its aircraft call the id differently.
 [SupportedOSPlatform("windows")]
@@ -33,13 +34,23 @@ public sealed class AutoAddCorrectionTests
 
         Assert.True(vm.HasAutoAddRepairNotice);
         string day = DateTime.Parse("2026-11-03T13:26:39.0794492Z", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).ToLocalTime().ToString("d", CultureInfo.CurrentCulture);
-        Assert.Equal("JoyPro added 19 aircraft to 2 relations on " + day + " after the command lists changed.", vm.AutoAddRepairTitle);
-        Assert.StartsWith("These were not bound by you", vm.AutoAddRepairText);
-        Assert.Contains("'" + Helo + "' goes back to", vm.AutoAddRepairText);
+        // "Default" is no aircraft: the title and the button count the 18 real ones.
+        Assert.Equal("JoyPro switched on 18 aircraft you did not choose, in 2 relations, on " + day + ".", vm.AutoAddRepairTitle);
+        Assert.StartsWith("When the command lists changed, an older version of JoyPro added every aircraft", vm.AutoAddRepairText);
+        Assert.Contains("your own binds stay", vm.AutoAddRepairText);
+        Assert.DoesNotContain("not bound by you", vm.AutoAddRepairText);
+        Assert.Contains("For example, '" + Helo + "' stays on ", vm.AutoAddRepairText);
+        Assert.DoesNotContain("Default,", vm.AutoAddRepairText[..vm.AutoAddRepairText.IndexOf("The entries marked", StringComparison.Ordinal)]);
+        Assert.Contains("The entries marked 'not an aircraft' at the end of the list", vm.AutoAddRepairText);
         Assert.Equal(19, vm.AutoAddRepairItems.Count);
         Assert.Equal(17, vm.AutoAddRepairItems.Count(i => i.Text.StartsWith("'" + Helo + "'", StringComparison.Ordinal)));
         Assert.All(vm.AutoAddRepairItems, i => Assert.True(i.IsTicked));
-        Assert.Equal("Show the list (19 aircraft in 2 relations)", vm.AutoAddRepairListToggleText);
+        Assert.Equal("Show the list (18 aircraft in 2 relations)", vm.AutoAddRepairListToggleText);
+        // The layer's row comes last and says what it is; a command named like the relation is not repeated.
+        Assert.Equal("'" + Helo + "': Default (not an aircraft), command 'Thrust'", vm.AutoAddRepairItems[^1].Text);
+        Assert.Equal(1, vm.AutoAddRepairItems.Count(i => i.Text.Contains("not an aircraft", StringComparison.Ordinal)));
+        Assert.Contains(vm.AutoAddRepairItems, i => i.Text == "'Pitch': " + vm.AircraftWords("DCS", ["A-10C"]));
+        Assert.Contains(vm.AutoAddRepairItems, i => i.Text == "'" + Helo + "': " + vm.AircraftWords("DCS", ["F-15C"]) + ", command 'Thrust'");
 
         // Untick one: it is skipped; everything else goes in one engine run.
         DuplicateChangeItem keep = vm.AutoAddRepairItems.Single(i => i.Key.EndsWith("\tpitcha10c", StringComparison.Ordinal));
@@ -49,7 +60,65 @@ public sealed class AutoAddCorrectionTests
         IReadOnlyList<string> apply = Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "profile", "auto-added", "--apply"));
         Assert.True(AxisTuningTests.Seq(apply, "--skip", "pitcha10c"));
         Assert.False(vm.HasAutoAddRepairNotice);
-        Assert.Equal("Took out 18 aircraft JoyPro had added. Ctrl+Z undoes it.", vm.StatusText);
+        Assert.Equal("Took out 17 aircraft JoyPro had added. Ctrl+Z undoes it.", vm.StatusText);
+    }
+
+    // A tester's 17 "F1 Cockpit view": Default rows and no aircraft: no notice at all, and nothing is changed for it.
+    [Fact]
+    public async Task Repair_OnlyInputLayersGiveNoNotice()
+    {
+        AutoAddFakeEngine fake = new() { OnlyLayers = true };
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake);
+        fake.Calls.Clear();
+        await vm.CheckAutoAddRepairAsync();
+        Assert.False(vm.HasAutoAddRepairNotice);
+        Assert.Empty(vm.AutoAddRepairItems);
+        Assert.Equal(string.Empty, vm.AutoAddRepairText);
+        Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "profile", "auto-added"));
+        Assert.DoesNotContain(fake.Calls, c => c.Contains("--apply") || c.Contains("--keep"));
+    }
+
+    // One relation left: the singular, in the title and on the button. Without a date the title still reads.
+    [Fact]
+    public async Task Repair_OneRelationReadsInTheSingular()
+    {
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(new AutoAddFakeEngine());
+        vm.ApplyAutoAddRepair("{\"Found\":true,\"Steps\":[],\"Relations\":[{\"Relation\":\"Pitch\",\"KeepsAircraft\":[]}]," +
+                              "\"Entries\":[{\"Key\":\"k\",\"Relation\":\"Pitch\",\"Game\":\"DCS\",\"Plane\":\"A-10C\",\"Title\":\"- PITCH -\",\"NonAircraft\":false}]}");
+        Assert.Equal("JoyPro switched on 1 aircraft you did not choose, in 1 relation.", vm.AutoAddRepairTitle);
+        Assert.Equal("Show the list (1 aircraft in 1 relation)", vm.AutoAddRepairListToggleText);
+        Assert.DoesNotContain("For example", vm.AutoAddRepairText);
+        Assert.DoesNotContain("not an aircraft", vm.AutoAddRepairText);
+        Assert.Equal("'Pitch': " + vm.AircraftWords("DCS", ["A-10C"]), Assert.Single(vm.AutoAddRepairItems).Text);
+    }
+
+    // The example takes a relation a person named, and an input layer reads as a name, not as an id.
+    [Fact]
+    public async Task Repair_ExampleAndLayerRowsReadAsWords()
+    {
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(new AutoAddFakeEngine());
+        const string raw = "Sound_On_Off__Keyboard__S__d122pnilunilcdnilvdnilvpnilvunil__button";
+        static string Row(string key, string relation, string plane, bool layer) =>
+            "{\"Key\":\"" + key + "\",\"Relation\":\"" + relation + "\",\"Game\":\"DCS\",\"Plane\":\"" + plane + "\",\"Title\":\"\",\"NonAircraft\":" + (layer ? "true" : "false") + "}";
+        vm.ApplyAutoAddRepair("{\"Found\":true,\"Steps\":[]," +
+                              "\"Relations\":[{\"Relation\":\"" + raw + "\",\"KeepsAircraft\":[\"SA342M\"]},{\"Relation\":\"Pitch\",\"KeepsAircraft\":[\"F-16C_50\"]}]," +
+                              "\"Entries\":[" + Row("a", raw, "A-10C", false) + "," + Row("b", raw, "F-15C", false) + "," + Row("c", "Pitch", "A-10C", false) + "," + Row("d", "Pitch", "ground_unit", true) + "]}");
+        Assert.Contains("For example, 'Pitch' stays on ", vm.AutoAddRepairText);
+        Assert.DoesNotContain(raw, vm.AutoAddRepairText);
+        Assert.Equal("'Pitch': Ground Unit (not an aircraft)", vm.AutoAddRepairItems[^1].Text);
+    }
+
+    // Unticking every aircraft leaves the input layers: the status names them, not "0 aircraft".
+    [Fact]
+    public async Task Repair_TakingOutOnlyTheLayersSaysSo()
+    {
+        AutoAddFakeEngine fake = new();
+        MainWindowViewModel vm = await RelationBuilderTests.CreateVmAsync(fake);
+        await vm.CheckAutoAddRepairAsync();
+        foreach (DuplicateChangeItem item in vm.AutoAddRepairItems.Where(i => !i.Text.Contains("not an aircraft", StringComparison.Ordinal)))
+            item.IsTicked = false;
+        await vm.TakeOutAutoAddedCommand.ExecuteAsync(null);
+        Assert.Equal("Took out the input layers JoyPro had added. Ctrl+Z undoes it.", vm.StatusText);
     }
 
     [Fact]
@@ -136,6 +205,9 @@ internal sealed class AutoAddFakeEngine : IEngineCliClient
     // relations aircraft: Flare's node with four ticked aircraft and three titles.
     public bool MixedNode { get; set; }
 
+    // profile auto-added: nothing but "Default" rows, as in a tester's profile.
+    public bool OnlyLayers { get; set; }
+
     private bool repaired;
 
     public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
@@ -156,7 +228,7 @@ internal sealed class AutoAddFakeEngine : IEngineCliClient
     }
 
     private static string Entry(string key, string relation, string id, string plane, string title) =>
-        "{\"Key\":\"" + key + "\",\"Version\":117,\"Relation\":\"" + relation + "\",\"Game\":\"DCS\",\"Id\":\"" + id + "\",\"Plane\":\"" + plane + "\",\"Title\":\"" + title + "\",\"Skipped\":false}";
+        "{\"Key\":\"" + key + "\",\"Version\":117,\"Relation\":\"" + relation + "\",\"Game\":\"DCS\",\"Id\":\"" + id + "\",\"Plane\":\"" + plane + "\",\"Title\":\"" + title + "\",\"NonAircraft\":" + (plane == "Default" ? "true" : "false") + ",\"Skipped\":false}";
 
     private string? Output(IReadOnlyList<string> args)
     {
@@ -166,7 +238,7 @@ internal sealed class AutoAddFakeEngine : IEngineCliClient
             {
                 repaired = true;
                 int skipped = args.Contains("--skip") ? args[args.ToList().IndexOf("--skip") + 1].Split(';').Length : 0;
-                return "{\"Found\":true,\"Applied\":true,\"Removed\":" + (19 - skipped) + ",\"Message\":\"\"}";
+                return "{\"Found\":true,\"Applied\":true,\"Removed\":" + (19 - skipped) + ",\"RemovedNonAircraft\":1,\"Message\":\"\"}";
             }
             if (args.Contains("--keep"))
             {
@@ -175,16 +247,24 @@ internal sealed class AutoAddFakeEngine : IEngineCliClient
             }
             if (repaired)
                 return "{\"Found\":false,\"Entries\":[]}";
+            if (OnlyLayers)
+            {
+                return "{\"Found\":true,\"Aircraft\":0,\"NonAircraft\":2,\"RelationCount\":0," +
+                       "\"Steps\":[{\"Version\":39,\"Utc\":\"2026-10-28T10:00:00.0000000Z\",\"Local\":\"2026-10-28 11:00:00\",\"Label\":\"Deleting relation\",\"Aircraft\":0,\"NonAircraft\":2,\"Relations\":0}]," +
+                       "\"Relations\":[{\"Relation\":\"F1 Cockpit view\",\"Remove\":[\"Default\"],\"Keeps\":[\"F-16C_50\"],\"KeepsAircraft\":[\"F-16C_50\"],\"NonAircraft\":[\"Default\"]}," +
+                       "{\"Relation\":\"F10 Theater map view\",\"Remove\":[\"Default\"],\"Keeps\":[\"F-16C_50\"],\"KeepsAircraft\":[\"F-16C_50\"],\"NonAircraft\":[\"Default\"]}]," +
+                       "\"Entries\":[" + Entry("f1", "F1 Cockpit view", "d7001pnil", "Default", "F1 Cockpit view") + "," + Entry("f10", "F10 Theater map view", "d7010pnil", "Default", "F10 Theater map view") + "],\"Warnings\":[]}";
+            }
             List<string> entries = [];
             int n = 0;
             foreach (string plane in new[] { "a-10a", "A-10C II", "A-10C", "AV8BNA", "Default", "F-15C", "F-4E-45MC", "F-5E-3", "FA-18C_hornet", "J-11A", "mig-29", "mig-29c", "mig-29g", "su-25", "su-25T", "su-27", "su-33" })
                 entries.Add(Entry("helo" + (n++).ToString(CultureInfo.InvariantCulture), "THROTTLE - SLIDER -HELO POWER BOTH", "a2004cdnil", plane, plane.StartsWith("A-10C", StringComparison.Ordinal) ? "Throttle Both" : "Thrust"));
             entries.Add(Entry("pitchfa18", "Pitch", "a2001cdnil", "FA-18C_hornet", "Pitch"));
             entries.Add(Entry("pitcha10c", "Pitch", "a2001cdnil", "A-10C", "Pitch"));
-            return "{\"Found\":true,\"Aircraft\":19,\"RelationCount\":2,\"Applied\":false,\"Kept\":false,\"Removed\":0," +
-                   "\"Steps\":[{\"Version\":117,\"Utc\":\"2026-11-03T13:26:39.0794492Z\",\"Local\":\"2026-11-03 14:26:39\",\"Label\":\"Keeping the action in one relation\",\"Aircraft\":19,\"Relations\":2}]," +
-                   "\"Relations\":[{\"Relation\":\"Pitch\",\"Remove\":[\"FA-18C_hornet\",\"A-10C\"],\"Keeps\":[\"F-16C_50\"]}," +
-                   "{\"Relation\":\"THROTTLE - SLIDER -HELO POWER BOTH\",\"Remove\":[" + string.Join(",", entries.Take(17).Select((_, i) => "\"p" + i + "\"")) + "],\"Keeps\":[\"AH-64D_BLK_II_CPG\",\"AH-64D_BLK_II_PLT\",\"Ka-50 III\",\"MosquitoFBMkVI\"]}]," +
+            return "{\"Found\":true,\"Aircraft\":18,\"NonAircraft\":1,\"RelationCount\":2,\"Applied\":false,\"Kept\":false,\"Removed\":0," +
+                   "\"Steps\":[{\"Version\":117,\"Utc\":\"2026-11-03T13:26:39.0794492Z\",\"Local\":\"2026-11-03 14:26:39\",\"Label\":\"Keeping the action in one relation\",\"Aircraft\":18,\"NonAircraft\":1,\"Relations\":2}]," +
+                   "\"Relations\":[{\"Relation\":\"Pitch\",\"Remove\":[\"FA-18C_hornet\",\"A-10C\"],\"Keeps\":[\"F-16C_50\"],\"KeepsAircraft\":[\"F-16C_50\"],\"NonAircraft\":[]}," +
+                   "{\"Relation\":\"THROTTLE - SLIDER -HELO POWER BOTH\",\"Remove\":[" + string.Join(",", entries.Take(17).Select((_, i) => "\"p" + i + "\"")) + "],\"Keeps\":[\"AH-64D_BLK_II_CPG\",\"AH-64D_BLK_II_PLT\",\"Ka-50 III\",\"MosquitoFBMkVI\"],\"KeepsAircraft\":[\"AH-64D_BLK_II_CPG\",\"AH-64D_BLK_II_PLT\",\"Ka-50 III\",\"MosquitoFBMkVI\"],\"NonAircraft\":[\"Default\"]}]," +
                    "\"Entries\":[" + string.Join(",", entries) + "],\"Warnings\":[]}";
         }
         if (AxisTuningTests.Seq(args, "relations", "check-aircraft"))

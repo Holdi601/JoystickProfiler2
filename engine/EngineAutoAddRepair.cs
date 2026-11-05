@@ -16,12 +16,16 @@ namespace JoyPro.Engine
     // MiG-29, Su-25, "Default" by the shared FC3 thrust id), saved under the label of his next click.
     //
     // engine profile auto-added: the profile history finds such a step - a version made by a change (not an undo,
-    // restore, import or builder) whose content has another DB fingerprint than the version it was made on, and in which
-    // aircraft went from "not in the node" to "on" in existing nodes of at least MinRelations relations. Offered are the
-    // aircraft of those steps that are still on now (and that no import has brought since); the user unticks any to
-    // keep. --apply takes them out (the node gets back to the aircraft it had), --keep only stops asking; both are one
-    // profile version (one undo step) and mark the steps as looked at (Pr0file.ReviewedAutoAdds). Nothing changes
-    // without one of them.
+    // restore, import or builder: IsBuilderStep, CameAfterImportCheckpoint, BuiltSomething) whose content has another DB
+    // fingerprint than the version it was made on, and in which aircraft went from "not in the node" to "on" in existing
+    // nodes of at least MinRelations relations. Offered are the aircraft of those steps that are still on now (and that
+    // no import has brought since); the user unticks any to keep. --apply takes them out (the node gets back to the
+    // aircraft it had), --keep only stops asking; both are one profile version (one undo step) and mark the steps as
+    // looked at (Pr0file.ReviewedAutoAdds). Nothing changes without one of them.
+    //
+    // "Default" and the other input layers (EngineDcsExport.IsNonAircraftLayer) are listed and taken out like the rest,
+    // but marked NonAircraft and counted apart: an export writes them into the layer's own folder, never into a module.
+    // A profile with nothing else gets no notice in the GUI (MainWindowViewModel.AutoAddRepair.cs).
     internal static class EngineAutoAddRepair
     {
         // A step counts when it switched on aircraft in at least this many relations (the old pass did it in dozens; a
@@ -29,13 +33,37 @@ namespace JoyPro.Engine
         internal const int MinRelations = 3;
 
         // Labels of steps whose own work switches on aircraft in many relations: such a step is not taken for the old
-        // pass (an import is the user's own binds).
+        // pass (an import is the user's own binds). The history keeps what the label was when the step was made: the
+        // engine's name of the command (EngineProfileHistory.DescribeCommand, or a Note it sets), or the words of the
+        // GUI's busy area (busyLabel, historyNote), past and present. They are matched from the start of the label, so
+        // "Importing" also covers "Importing from Microsoft Flight Simulator 2024 (experimental)".
         private static readonly string[] BuilderLabels =
         {
-            "Import from", "Import relations", "Import binds", "Take over changes made in a game", "Auto Group", "Auto Assign",
-            "Group by description", "Add suggested actions", "Change by AI chat", "JoyPro assistant", "Merge profiles",
-            "Setup wizard", "Lay out with AI", "Updated to the new command lists", "Took out aircraft JoyPro added"
+            // Imports and take-overs
+            "Import from", "Import relations", "Import binds", "Importing",
+            "Take over changes made in a game", "Taking over",
+            // Auto Group, Auto Assign, grouping by description
+            "Auto Group", "Auto grouping", "Auto Assign", "Assigning controls",
+            "Group by description", "Creating relations from your description",
+            // Suggestions for many relations (one relation's are named in the label)
+            "Add suggested actions", "Suggest missing",
+            // The assistant and the plans of the AI pages
+            "Change by AI chat", "JoyPro assistant", "The JoyPro assistant", "Edit with AI", "Manage with AI", "engine relations plan",
+            // Layouts, the setup wizard
+            "Lay out with AI", "Applying your layout", "Reading your preferences and laying out", "Suggesting layouts",
+            "Setup wizard", "Game setup", "engine setup",
+            // Merges
+            "Merge profiles", "Merging profiles", "Merging copied relations", "Merging throttle relations",
+            "Detent mode: merged", "engine relations merge-copies",
+            // The user's own changes of many relations at once
+            "Running mass operation", "Change relations (", "Edit relations", "Opening relations editor",
+            // The load correction's own step since 2.6.2, and this repair
+            "Updated to the new command lists", "Took out aircraft JoyPro added", "Took out input layers JoyPro added",
+            "Taking out the aircraft JoyPro added", "Kept the aircraft JoyPro added", "Keeping the aircraft JoyPro added"
         };
+
+        // The checkpoint an import keeps of the profile just before it (EngineProfileHistory.CheckpointLabel).
+        private const string ImportCheckpointLabel = "Before import from";
 
         internal sealed class Entry
         {
@@ -46,6 +74,8 @@ namespace JoyPro.Engine
             public string Id = string.Empty;
             public string Plane = string.Empty;
             public string Title = string.Empty;
+            // "Default", the cameras, the radio menu: an input layer, no aircraft.
+            public bool NonAircraft;
         }
 
         internal sealed class Step
@@ -84,7 +114,7 @@ namespace JoyPro.Engine
                 ProfileVersion version = chain[i];
                 if (version.Kind != ProfileVersionKind.Change || string.IsNullOrWhiteSpace(version.Hash) || version.Hash == parent.Hash)
                     continue;
-                if (reviewed.Contains(version.Hash) || IsBuilderStep(version.Label))
+                if (reviewed.Contains(version.Hash) || IsBuilderStep(version.Label) || CameAfterImportCheckpoint(parent))
                     continue;
                 // Cheap first: the items (one line per relation with its count of switched-on aircraft).
                 if (RelationsThatGained(log.Folder, parent.Hash, version.Hash) < MinRelations)
@@ -105,6 +135,8 @@ namespace JoyPro.Engine
                     continue;
                 // The command lists changed in this step (the pass runs only then).
                 if (string.Equals(Fingerprint(before), Fingerprint(after), StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (BuiltSomething(before, after))
                     continue;
                 HashSet<string> named = NamedRelations(version.Label);
                 List<Entry> entries = SwitchedOnInExistingNodes(before, after, version.Id)
@@ -128,10 +160,36 @@ namespace JoyPro.Engine
             return steps.Where(s => s.Entries.Count > 0).ToList();
         }
 
+        // Several saves of one click are one version, with their labels joined: "Opening the profile + Importing from
+        // DCS" (ProfileHistory.MergeLabels).
         private static bool IsBuilderStep(string label)
         {
-            string text = (label ?? string.Empty).Trim();
-            return BuilderLabels.Any(b => text.StartsWith(b, StringComparison.OrdinalIgnoreCase)) || text.StartsWith("Undo", StringComparison.OrdinalIgnoreCase);
+            return (label ?? string.Empty).Split(new[] { " + " }, StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).Any(part =>
+                BuilderLabels.Any(b => part.StartsWith(b, StringComparison.OrdinalIgnoreCase)) ||
+                part.StartsWith("Undo", StringComparison.OrdinalIgnoreCase) || part.StartsWith("Redo", StringComparison.OrdinalIgnoreCase));
+        }
+
+        // The two guards that do not depend on a step's own label (a label this list does not know, or one that went into
+        // the history translated). An import always keeps a checkpoint just before it, under a label no language changes.
+        private static bool CameAfterImportCheckpoint(ProfileVersion parent)
+        {
+            return parent != null && parent.Kind == ProfileVersionKind.Checkpoint &&
+                   (parent.Label ?? string.Empty).StartsWith(ImportCheckpointLabel, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // The old pass only switched on aircraft in nodes that were there: it made no relation and no bind. A step with
+        // several new ones was a builder, whatever its label says (one click makes one).
+        private static bool BuiltSomething(Pr0file before, Pr0file after)
+        {
+            return CountNew(before.Relations, after.Relations) >= MinRelations || CountNew(before.Binds, after.Binds) >= MinRelations;
+        }
+
+        private static int CountNew<T>(Dictionary<string, T> before, Dictionary<string, T> after)
+        {
+            if (after == null)
+                return 0;
+            HashSet<string> had = new HashSet<string>(before == null ? Enumerable.Empty<string>() : before.Keys, StringComparer.OrdinalIgnoreCase);
+            return after.Keys.Count(k => !had.Contains(k));
         }
 
         private static string Fingerprint(Pr0file profile)
@@ -219,7 +277,10 @@ namespace JoyPro.Engine
                             Relation = name,
                             Game = GameOf(node),
                             Id = node.ID,
-                            Plane = plane.Key
+                            Plane = plane.Key,
+                            // The UI layer is no aircraft either, but DCS uses its binds in every aircraft: it counts.
+                            NonAircraft = InternalDataManagement.IsPseudoPlane(GameOf(node), plane.Key) &&
+                                          !string.Equals(plane.Key, "UiLayer", StringComparison.OrdinalIgnoreCase)
                         });
                     }
                 }
@@ -291,15 +352,16 @@ namespace JoyPro.Engine
                     Utc = step.Version.Utc.ToString("o", CultureInfo.InvariantCulture),
                     Local = ProfileHistory.FormatLocal(step.Version.Utc),
                     Label = step.Version.Label ?? string.Empty,
-                    Aircraft = step.Entries.Count,
-                    Relations = step.Entries.Select(e => e.Relation).Distinct(StringComparer.OrdinalIgnoreCase).Count()
+                    Aircraft = step.Entries.Count(e => !e.NonAircraft),
+                    NonAircraft = step.Entries.Count(e => e.NonAircraft),
+                    Relations = step.Entries.Where(e => !e.NonAircraft).Select(e => e.Relation).Distinct(StringComparer.OrdinalIgnoreCase).Count()
                 });
                 foreach (Entry entry in step.Entries)
                 {
                     result.Entries.Add(new EngineAutoAddEntry
                     {
                         Key = entry.Key, Version = entry.Version, Relation = entry.Relation, Game = entry.Game, Id = entry.Id,
-                        Plane = entry.Plane, Title = entry.Title, Skipped = skipped.Contains(entry.Key)
+                        Plane = entry.Plane, Title = entry.Title, NonAircraft = entry.NonAircraft, Skipped = skipped.Contains(entry.Key)
                     });
                 }
             }
@@ -313,11 +375,23 @@ namespace JoyPro.Engine
                     .Where(n => n != null && n.AIRCRAFT != null)
                     .SelectMany(n => n.AIRCRAFT.Where(p => p.Value && !taken.Contains(GameOf(n) + "\t" + n.ID + "\t" + p.Key)).Select(p => p.Key))
                     .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
-                result.Relations.Add(new EngineAutoAddRelation { Relation = relation.Key, Remove = relation.Select(e => e.Plane).Distinct(StringComparer.OrdinalIgnoreCase).ToList(), Keeps = keeps });
+                List<string> removes = relation.Select(e => e.Plane).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                result.Relations.Add(new EngineAutoAddRelation
+                {
+                    Relation = relation.Key,
+                    Remove = removes,
+                    Keeps = keeps,
+                    KeepsAircraft = now == null || now.NODES == null ? new List<string>() : now.NODES
+                        .Where(n => n != null && n.AIRCRAFT != null && string.Equals(GameOf(n), "DCS", StringComparison.OrdinalIgnoreCase))
+                        .SelectMany(n => n.AIRCRAFT.Where(p => p.Value && !taken.Contains(GameOf(n) + "\t" + n.ID + "\t" + p.Key) && !EngineDcsExport.IsNonAircraftLayer(p.Key)).Select(p => p.Key))
+                        .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList(),
+                    NonAircraft = removes.Concat(keeps).Where(EngineDcsExport.IsNonAircraftLayer).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
+                });
             }
             result.Found = result.Entries.Count > 0;
-            result.Aircraft = result.Entries.Count;
-            result.RelationCount = result.Relations.Count;
+            result.Aircraft = result.Entries.Count(e => !e.NonAircraft);
+            result.NonAircraft = result.Entries.Count(e => e.NonAircraft);
+            result.RelationCount = result.Entries.Where(e => !e.NonAircraft).Select(e => e.Relation).Distinct(StringComparer.OrdinalIgnoreCase).Count();
             if (!apply && !keep)
                 return result;
             if (!result.Found)
@@ -327,6 +401,7 @@ namespace JoyPro.Engine
             }
 
             int removed = 0;
+            int removedNonAircraft = 0;
             HashSet<string> touched = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (apply)
             {
@@ -344,6 +419,8 @@ namespace JoyPro.Engine
                         // Back to "not in the node", as before the correction.
                         node.AIRCRAFT.Remove(key);
                         removed++;
+                        if (entry.NonAircraft)
+                            removedNonAircraft++;
                         touched.Add(relation.NAME ?? entry.Relation);
                         relation.RecalculateElementCount();
                     }
@@ -357,14 +434,18 @@ namespace JoyPro.Engine
             result.Applied = apply;
             result.Kept = keep && !apply;
             result.Removed = removed;
+            result.RemovedNonAircraft = removedNonAircraft;
             result.KeptAircraft = result.Entries.Count - removed;
-            result.HistoryLabel = apply
-                ? "Took out aircraft JoyPro added: " + removed.ToString(CultureInfo.InvariantCulture) + " aircraft in " + touched.Count.ToString(CultureInfo.InvariantCulture) + (touched.Count == 1 ? " relation" : " relations")
-                : "Kept the aircraft JoyPro added";
+            int removedAircraft = removed - removedNonAircraft;
+            string relationsWord = touched.Count.ToString(CultureInfo.InvariantCulture) + (touched.Count == 1 ? " relation" : " relations");
+            result.HistoryLabel = !apply ? "Kept the aircraft JoyPro added"
+                : removedAircraft == 0 && removedNonAircraft > 0 ? "Took out input layers JoyPro added: " + removedNonAircraft.ToString(CultureInfo.InvariantCulture) + " in " + relationsWord
+                : "Took out aircraft JoyPro added: " + removedAircraft.ToString(CultureInfo.InvariantCulture) + " aircraft in " + relationsWord;
+            string layers = removedNonAircraft > 0 ? " and " + removedNonAircraft.ToString(CultureInfo.InvariantCulture) + " input layers (no aircraft)" : string.Empty;
             result.Message = apply
-                ? "Took out " + removed.ToString(CultureInfo.InvariantCulture) + " aircraft in " + touched.Count.ToString(CultureInfo.InvariantCulture) + " relations that an earlier load correction had switched on" +
+                ? "Took out " + removedAircraft.ToString(CultureInfo.InvariantCulture) + " aircraft" + layers + " in " + relationsWord + " that an earlier load correction had switched on" +
                   (result.KeptAircraft > 0 ? "; kept " + result.KeptAircraft.ToString(CultureInfo.InvariantCulture) + " you unticked" : string.Empty) + "."
-                : "Kept the " + result.Entries.Count.ToString(CultureInfo.InvariantCulture) + " aircraft; JoyPro does not ask about them again.";
+                : "Kept the " + result.Entries.Count.ToString(CultureInfo.InvariantCulture) + " entries; JoyPro does not ask about them again.";
             return result;
         }
 
@@ -381,10 +462,14 @@ namespace JoyPro.Engine
             else
             {
                 sb.AppendLine("Aircraft an earlier load correction switched on: " + result.Aircraft.ToString(CultureInfo.InvariantCulture) + " in " + result.RelationCount.ToString(CultureInfo.InvariantCulture) + " relations");
+                if (result.NonAircraft > 0)
+                    sb.AppendLine("Not aircraft (input layers such as Default; an export writes them into the layer's own folder, not into a module): " + result.NonAircraft.ToString(CultureInfo.InvariantCulture));
                 foreach (EngineAutoAddStep step in result.Steps)
-                    sb.AppendLine("  Step #" + step.Version.ToString(CultureInfo.InvariantCulture) + " " + step.Local + " '" + step.Label + "': " + step.Aircraft.ToString(CultureInfo.InvariantCulture) + " aircraft in " + step.Relations.ToString(CultureInfo.InvariantCulture) + " relations");
+                    sb.AppendLine("  Step #" + step.Version.ToString(CultureInfo.InvariantCulture) + " " + step.Local + " '" + step.Label + "': " + step.Aircraft.ToString(CultureInfo.InvariantCulture) + " aircraft in " + step.Relations.ToString(CultureInfo.InvariantCulture) + " relations" +
+                                  (step.NonAircraft > 0 ? ", " + step.NonAircraft.ToString(CultureInfo.InvariantCulture) + " not aircraft" : string.Empty));
                 foreach (EngineAutoAddRelation relation in result.Relations)
-                    sb.AppendLine("  - " + relation.Relation + " | take out: " + string.Join(", ", relation.Remove) + " | keeps: " + (relation.Keeps.Count == 0 ? "-" : string.Join(", ", relation.Keeps)));
+                    sb.AppendLine("  - " + relation.Relation + " | take out: " + string.Join(", ", relation.Remove.Select(p => relation.NonAircraft.Contains(p, StringComparer.OrdinalIgnoreCase) ? p + " (not an aircraft)" : p)) +
+                                  " | keeps: " + (relation.Keeps.Count == 0 ? "-" : string.Join(", ", relation.Keeps)));
             }
             foreach (string warning in result.Warnings)
                 sb.AppendLine("Warning: " + warning);
@@ -399,6 +484,7 @@ namespace JoyPro.Engine
         public string Local { get; set; }
         public string Label { get; set; }
         public int Aircraft { get; set; }
+        public int NonAircraft { get; set; }
         public int Relations { get; set; }
     }
 
@@ -411,6 +497,7 @@ namespace JoyPro.Engine
         public string Id { get; set; }
         public string Plane { get; set; }
         public string Title { get; set; }
+        public bool NonAircraft { get; set; }
         public bool Skipped { get; set; }
     }
 
@@ -419,16 +506,24 @@ namespace JoyPro.Engine
         public string Relation { get; set; }
         public List<string> Remove { get; set; } = new List<string>();
         public List<string> Keeps { get; set; } = new List<string>();
+        // Of Keeps the DCS aircraft (what the GUI's example names; a game's own key or a layer is no aircraft).
+        public List<string> KeepsAircraft { get; set; } = new List<string>();
+        // Those of Remove and Keeps that are input layers, no aircraft ("Default").
+        public List<string> NonAircraft { get; set; } = new List<string>();
     }
 
     public sealed class EngineAutoAddRepairResult
     {
         public bool Found { get; set; }
+        // Real aircraft and the relations they are in; NonAircraft: input layers such as "Default". Found also when there
+        // are only input layers (--apply and --keep work on them).
         public int Aircraft { get; set; }
+        public int NonAircraft { get; set; }
         public int RelationCount { get; set; }
         public bool Applied { get; set; }
         public bool Kept { get; set; }
         public int Removed { get; set; }
+        public int RemovedNonAircraft { get; set; }
         public int KeptAircraft { get; set; }
         public string Message { get; set; } = string.Empty;
         public string HistoryLabel { get; set; } = string.Empty;

@@ -86,6 +86,25 @@ public sealed class HighlightTextBlock : TextBlock
         return w[..^1];
     }
 
+    // The search reads "OSB15" and "OSB-15" as "OSB" and "15": the title found by them shows those words marked. A part of
+    // one letter marks nothing.
+    private static IEnumerable<string> Parts(string word) =>
+        System.Text.RegularExpressions.Regex.Split(word ?? string.Empty, @"[^\p{L}\p{N}]+|(?<=\p{L})(?=\p{N})|(?<=\p{N})(?=\p{L})")
+            .Where(p => p.Length > 1 || (p.Length == 1 && char.IsDigit(p[0])));
+
+    // The search reads "LMFD" as "Left MFD" too: those words marked, as whole words ("FMFD" has no MFD to mark).
+    private static IEnumerable<(int Start, int Length)> DisplayWords(string text, string query)
+    {
+        foreach (string term in query.Split([' ', '\t', ',', ';'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            string side = term.Equals("lmfd", StringComparison.OrdinalIgnoreCase) ? "left" : term.Equals("rmfd", StringComparison.OrdinalIgnoreCase) ? "right" : string.Empty;
+            if (side.Length == 0)
+                continue;
+            foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(text, @"(?<![\p{L}\p{N}])(" + side + @"|mfd)(?![\p{L}\p{N}])", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                yield return (m.Index, m.Length);
+        }
+    }
+
     internal static List<(int Start, int Length)> FindHighlightSegments(string text, string query)
     {
         if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(query))
@@ -94,7 +113,7 @@ public sealed class HighlightTextBlock : TextBlock
         string[] terms = query
             .Split([' ', '\t', ',', ';'], StringSplitOptions.RemoveEmptyEntries)
             .Where(v => !string.IsNullOrWhiteSpace(v))
-            .SelectMany(v => new[] { v, Singular(v) })
+            .SelectMany(v => new[] { v, Singular(v) }.Concat(Parts(v)))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
         if (terms.Length == 0)
@@ -116,6 +135,7 @@ public sealed class HighlightTextBlock : TextBlock
             }
         }
 
+        matches.AddRange(DisplayWords(text, query));
         if (matches.Count == 0)
             return [];
 

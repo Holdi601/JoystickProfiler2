@@ -1130,10 +1130,15 @@ public partial class MainWindow : Window
     }
 
     // A pick in the function picker closes it (the command does the change).
-    private void RelationFunctionPicked(object? sender, RoutedEventArgs e) => this.FindControl<Button>("RelationFunctionChip")?.Flyout?.Hide();
+    private void RelationFunctionPicked(object? sender, RoutedEventArgs e) => HideFlyoutAfterCommand("RelationFunctionChip");
 
     // Copy to another axis was pressed: its flyout closes.
-    private void AxisTuningCopyClicked(object? sender, RoutedEventArgs e) => this.FindControl<Button>("AxisTuningCopyButton")?.Flyout?.Hide();
+    private void AxisTuningCopyClicked(object? sender, RoutedEventArgs e) => HideFlyoutAfterCommand("AxisTuningCopyButton");
+
+    // A button runs its command after its Click event, and a closed flyout's content has lost its DataContext (and with
+    // it the command): the flyout closes only after the click is through.
+    private void HideFlyoutAfterCommand(string owner) =>
+        Dispatcher.UIThread.Post(() => this.FindControl<Button>(owner)?.Flyout?.Hide());
 
     // The open relation's name, edited in place: Enter renames, Esc puts the old name back, leaving the box renames.
     private async void RelationNameEditKeyDown(object? sender, KeyEventArgs e)

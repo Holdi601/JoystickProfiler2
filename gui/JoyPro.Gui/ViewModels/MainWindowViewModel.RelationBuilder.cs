@@ -97,6 +97,8 @@ public sealed partial class MainWindowViewModel
     private void BuilderFollowSelection(RelationListItem? value)
     {
         BuilderRenameText = value?.Name ?? string.Empty;
+        if (value != null && !string.Equals(value.Name, relationShownDespiteFilter, StringComparison.OrdinalIgnoreCase))
+            relationShownDespiteFilter = string.Empty;
         if (!string.Equals(builderLastSearchKind, BuilderEffectiveKind, StringComparison.Ordinal))
             _ = RefreshBuilderSearchForKindAsync();
         else
@@ -410,16 +412,27 @@ public sealed partial class MainWindowViewModel
     // Why the last suggestion run shows nothing although it ran ("Could not read the suggestions.").
     private string builderSuggestReadError = string.Empty;
 
+    // The games ticked for the suggestions stay for the next relation and after a restart (ui-settings.json
+    // suggestedGames), also when the next relation has no suggestion for them: the chip is there, the list says so.
+    private readonly List<string> builderSuggestionChosenGames = [];
+
     private void RebuildBuilderGameChips()
     {
-        HashSet<string> ticked = BuilderSuggestionGames.Where(c => c.IsSelected).Select(c => c.GameId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        HashSet<string> ticked = builderSuggestionChosenGames.ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (BuilderGameChip chip in BuilderSuggestionGames)
             chip.PropertyChanged -= OnBuilderGameChipChanged;
         BuilderSuggestionGames.Clear();
-        foreach (IGrouping<string, BuilderSuggestionItem> game in allBuilderSuggestions.Where(s => BuilderShowWeakMatches || !s.IsLow)
-                     .GroupBy(s => s.Game, StringComparer.OrdinalIgnoreCase).OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
+        List<IGrouping<string, BuilderSuggestionItem>> found = allBuilderSuggestions.Where(s => BuilderShowWeakMatches || !s.IsLow)
+            .GroupBy(s => s.Game, StringComparer.OrdinalIgnoreCase).OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase).ToList();
+        foreach (IGrouping<string, BuilderSuggestionItem> game in found)
         {
             BuilderGameChip chip = new(game.Key, game.Count()) { IsSelected = ticked.Contains(game.Key) };
+            chip.PropertyChanged += OnBuilderGameChipChanged;
+            BuilderSuggestionGames.Add(chip);
+        }
+        foreach (string game in builderSuggestionChosenGames.Where(g => !IsGameHidden(g) && !found.Any(f => string.Equals(f.Key, g, StringComparison.OrdinalIgnoreCase))))
+        {
+            BuilderGameChip chip = new(game, 0) { IsSelected = true };
             chip.PropertyChanged += OnBuilderGameChipChanged;
             BuilderSuggestionGames.Add(chip);
         }
@@ -427,8 +440,13 @@ public sealed partial class MainWindowViewModel
 
     private void OnBuilderGameChipChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(BuilderGameChip.IsSelected))
-            ApplyBuilderSuggestionFilter();
+        if (e.PropertyName != nameof(BuilderGameChip.IsSelected) || sender is not BuilderGameChip chip)
+            return;
+        builderSuggestionChosenGames.RemoveAll(g => string.Equals(g, chip.GameId, StringComparison.OrdinalIgnoreCase));
+        if (chip.IsSelected)
+            builderSuggestionChosenGames.Add(chip.GameId);
+        SaveUiSettings();
+        ApplyBuilderSuggestionFilter();
     }
 
     private void ApplyBuilderSuggestionFilter()
@@ -710,6 +728,59 @@ public sealed partial class MainWindowViewModel
 
     public bool HasMoreBuilderSearchGames => BuilderSearchGamesMore.Count > 0;
 
+    // The game chips stay on: for the next search, for every relation opened and after a restart (2.6.3, a tester adding
+    // Falcon BMS to one relation after the other; ui-settings.json addActionsGames). The chips themselves are rebuilt per
+    // search from what it finds.
+    private readonly List<string> builderChosenGames = [];
+
+    private List<string> BuilderActiveChosenGames => builderChosenGames.Where(g => !IsGameHidden(g)).ToList();
+
+    public bool ShowBuilderSearchGameChips => BuilderSearchGames.Count > 0;
+
+    // The search the chips' numbers belong to (query, kind, aircraft); with chips on, the numbers of the other games come
+    // from a search over every game.
+    private string builderChipsSearchKey = string.Empty;
+
+    // Nothing in the chosen games, what the other games have: said plainly, one click shows them (never a silent reset).
+    public bool ShowBuilderChosenGamesEmpty => BuilderActiveChosenGames.Count > 0 && allBuilderSearchResults.Count == 0 && !IsBuilderSearching &&
+                                               builderLastSearchedQuery.Length > 0 && string.Equals(builderLastSearchedQuery, (BuilderSearchText ?? string.Empty).Trim(), StringComparison.Ordinal);
+
+    public string BuilderChosenGamesEmptyText
+    {
+        get
+        {
+            string names = string.Join(", ", BuilderActiveChosenGames.Select(DisplayText.Game));
+            int others = builderGameTotals.Where(g => !BuilderActiveChosenGames.Contains(g.Key, StringComparer.OrdinalIgnoreCase) && !IsGameHidden(g.Key)).Sum(g => g.Value);
+            return others > 0
+                ? T("Nothing found for \"{0}\" in {1}. Other games have results: {2}.", builderLastSearchedQuery, names, others.ToString(CultureInfo.InvariantCulture))
+                : T("Nothing found for \"{0}\" in {1}, and in no other game either.", builderLastSearchedQuery, names);
+        }
+    }
+
+    [RelayCommand]
+    private void ShowAllBuilderSearchGames()
+    {
+        builderChosenGames.Clear();
+        foreach (BuilderGameChip chip in BuilderSearchGames)
+        {
+            chip.PropertyChanged -= OnBuilderSearchGameChanged;
+            chip.IsSelected = false;
+            chip.PropertyChanged += OnBuilderSearchGameChanged;
+        }
+        SaveUiSettings();
+        OnBuilderChosenGamesChanged();
+        _ = SearchBuilderActionsAsync();
+    }
+
+    private void OnBuilderChosenGamesChanged()
+    {
+        OnPropertyChanged(nameof(ShowBuilderChosenGamesEmpty));
+        OnPropertyChanged(nameof(BuilderChosenGamesEmptyText));
+        OnPropertyChanged(nameof(ShowBuilderSearchGameChips));
+    }
+
+    partial void OnIsBuilderSearchingChanged(bool value) => OnBuilderChosenGamesChanged();
+
     public string BuilderMoreGamesLabel => T("+{0} more games", BuilderSearchGamesMore.Count.ToString(CultureInfo.InvariantCulture));
 
     // Aircraft the search is limited to (chips with a remove button); picked from BuilderPlaneOptions.
@@ -877,6 +948,7 @@ public sealed partial class MainWindowViewModel
         row.TitleWords = ReadStringArray(item, "TitleWords");
         row.CategoryWords = ReadStringArray(item, "CategoryWords");
         row.CloseWords = ReadStringArray(item, "CloseWords");
+        row.MissingWords = ReadStringArray(item, "MissingWords");
     }
 
     partial void OnBuilderKindFilterChanged(string value)
@@ -987,43 +1059,60 @@ public sealed partial class MainWindowViewModel
         string query = (BuilderSearchText ?? string.Empty).Trim();
         if (query.Length == 0)
         {
+            // The chosen games stay (without numbers: nothing was searched).
+            builderGameTotals.Clear();
+            builderChipsSearchKey = string.Empty;
+            builderLastSearchedQuery = string.Empty;
             SetBuilderSearchResults([], rebuildChips: true);
             BuilderSearchStatus = string.Empty;
             BuilderDidYouMean = string.Empty;
             return;
         }
-        List<string> games = BuilderSearchGames.Where(c => c.IsSelected).Select(c => c.GameId).ToList();
-        List<string> args = ["relations", "search", query];
-        if (games.Count > 0)
-            args.AddRange(["--game", string.Join("|", games)]);
+        List<string> games = BuilderActiveChosenGames;
+        List<string> filters = [];
         if (BuilderSearchPlanes.Count > 0)
-            args.AddRange(["--plane", string.Join("|", BuilderSearchPlanes)]);
+            filters.AddRange(["--plane", string.Join("|", BuilderSearchPlanes)]);
         string kind = BuilderEffectiveKind;
         builderLastSearchKind = kind;
         if (kind == "axis")
-            args.Add("--axis");
+            filters.Add("--axis");
         else if (kind == "button")
-            args.Add("--button");
+            filters.Add("--button");
+        List<string> args = ["relations", "search", query];
         if (games.Count > 0)
-            args.AddRange(["--limit", BuilderSearchLimit.ToString(CultureInfo.InvariantCulture)]);
-        else
-            args.AddRange(["--limit", BuilderSearchLimitAll.ToString(CultureInfo.InvariantCulture), "--per-game", BuilderSearchPerGame.ToString(CultureInfo.InvariantCulture)]);
+            args.AddRange(["--game", string.Join("|", games)]);
+        args.AddRange(filters);
+        List<string> everyGame = ["--limit", BuilderSearchLimitAll.ToString(CultureInfo.InvariantCulture), "--per-game", BuilderSearchPerGame.ToString(CultureInfo.InvariantCulture)];
+        args.AddRange(games.Count > 0 ? ["--limit", BuilderSearchLimit.ToString(CultureInfo.InvariantCulture)] : everyGame);
+        string chipsKey = query + "\u0001" + kind + "\u0001" + string.Join("|", BuilderSearchPlanes);
         IsBuilderSearching = true;
         try
         {
+            // Chips on and a new search: the numbers of every game (and whether another game has it) first.
+            bool newChips = games.Count == 0 || !string.Equals(chipsKey, builderChipsSearchKey, StringComparison.Ordinal);
+            if (games.Count > 0 && newChips)
+            {
+                EngineCommandResult? counts = await RunEngineAsync([.. new[] { "relations", "search", query }, .. filters, .. everyGame], includeProfile: HasProfile, mutatesProfile: false,
+                    busyLabel: N("Searching every game..."), forceText: false, background: true, stillWanted: () => version == builderSearchVersion);
+                if (version != builderSearchVersion)
+                    return;
+                builderGameTotals.Clear();
+                if (counts is { ExitCode: 0 })
+                    ReadBuilderGameTotals(counts.StandardOutput);
+            }
             EngineCommandResult? result = await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: N("Searching every game..."), forceText: false, background: true,
                 stillWanted: () => version == builderSearchVersion);
             if (version != builderSearchVersion)
                 return;
             if (result == null)
             {
-                SetBuilderSearchResults([], rebuildChips: games.Count == 0);
+                SetBuilderSearchResults([], rebuildChips: newChips);
                 BuilderSearchStatus = T("The search could not run: {0}", StatusText);
                 return;
             }
             if (result.ExitCode != 0)
             {
-                SetBuilderSearchResults([], rebuildChips: games.Count == 0);
+                SetBuilderSearchResults([], rebuildChips: newChips);
                 BuilderSearchStatus = result.StandardError.Trim();
                 return;
             }
@@ -1046,14 +1135,8 @@ public sealed partial class MainWindowViewModel
                     foreach (JsonElement group in functionGroups.EnumerateArray())
                         builderFunctionGroups.Add((ReadJsonString(group, "Function"), ReadJsonString(group, "Name")));
                 }
-                if (games.Count == 0 && root.TryGetProperty("Groups", out JsonElement gameGroups) && gameGroups.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (JsonElement group in gameGroups.EnumerateArray())
-                    {
-                        int all = group.TryGetProperty("Total", out JsonElement gt) && gt.ValueKind == JsonValueKind.Number ? gt.GetInt32() : 0;
-                        builderGameTotals[ReadJsonString(group, "Game")] = all;
-                    }
-                }
+                if (games.Count == 0)
+                    ReadBuilderGameTotals(root);
                 if (root.TryGetProperty("Results", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
                 {
                     foreach (JsonElement item in list.EnumerateArray())
@@ -1080,11 +1163,12 @@ public sealed partial class MainWindowViewModel
             // Ticks (and changed aircraft ticks) stay on the actions that come back.
             KeepBuilderTicks(allBuilderSearchResults, found);
             BuilderDidYouMean = string.Equals(didYouMean, query, StringComparison.OrdinalIgnoreCase) ? string.Empty : didYouMean;
-            SetBuilderSearchResults(found, rebuildChips: games.Count == 0);
+            builderLastSearchedQuery = query;
+            builderChipsSearchKey = chipsKey;
+            SetBuilderSearchResults(found, rebuildChips: newChips);
             // The same query again: the games the user expanded show all their rows again.
             if (builderExpandedGames.Count > 0)
                 await ExpandBuilderGamesAsync(builderExpandedGames.ToList());
-            builderLastSearchedQuery = query;
             builderStatusParts = (total, functions, games.Count, kind);
             UpdateBuilderSearchStatus();
         }
@@ -1093,6 +1177,28 @@ public sealed partial class MainWindowViewModel
             if (version == builderSearchVersion)
                 IsBuilderSearching = false;
         }
+    }
+
+    // Per game: how many actions the search found in all (relations search "Groups").
+    private void ReadBuilderGameTotals(string output)
+    {
+        try
+        {
+            using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(output));
+            ReadBuilderGameTotals(doc.RootElement);
+        }
+        catch (JsonException)
+        {
+            // Without numbers the chips still show the chosen games.
+        }
+    }
+
+    private void ReadBuilderGameTotals(JsonElement root)
+    {
+        if (!root.TryGetProperty("Groups", out JsonElement gameGroups) || gameGroups.ValueKind != JsonValueKind.Array)
+            return;
+        foreach (JsonElement group in gameGroups.EnumerateArray())
+            builderGameTotals[ReadJsonString(group, "Game")] = group.TryGetProperty("Total", out JsonElement gt) && gt.ValueKind == JsonValueKind.Number ? gt.GetInt32() : 0;
     }
 
     // The line above the list: what can be added (the actions already in the open relation named apart, greyed at the
@@ -1133,12 +1239,20 @@ public sealed partial class MainWindowViewModel
             BuilderSearchGames.Clear();
             BuilderSearchGamesTop.Clear();
             BuilderSearchGamesMore.Clear();
-            foreach (IGrouping<string, BuilderSearchResultItem> game in allBuilderSearchResults.GroupBy(r => r.Game, StringComparer.OrdinalIgnoreCase)
-                         .Select(g => (Group: g, Total: builderGameTotals.TryGetValue(g.Key, out int all) && all > 0 ? all : g.Count()))
-                         .OrderByDescending(g => g.Total).ThenBy(g => DisplayText.Game(g.Group.Key), StringComparer.OrdinalIgnoreCase).Select(g => g.Group))
+            // Every game the search found (also the ones the chosen chips leave out of the list), and the chosen games even
+            // when the search found nothing there: they come first, so they are never hidden under "more games".
+            Dictionary<string, int> counts = new(StringComparer.OrdinalIgnoreCase);
+            foreach (IGrouping<string, BuilderSearchResultItem> game in allBuilderSearchResults.GroupBy(r => r.Game, StringComparer.OrdinalIgnoreCase))
+                counts[game.Key] = game.Count();
+            foreach (KeyValuePair<string, int> total in builderGameTotals.Where(t => t.Value > 0 && !IsGameHidden(t.Key)))
+                counts[total.Key] = total.Value;
+            List<string> chosen = BuilderActiveChosenGames;
+            foreach (string game in chosen.Where(g => !counts.ContainsKey(g)))
+                counts[game] = 0;
+            foreach (KeyValuePair<string, int> game in counts.OrderByDescending(g => chosen.Contains(g.Key, StringComparer.OrdinalIgnoreCase)).ThenByDescending(g => g.Value)
+                         .ThenBy(g => DisplayText.Game(g.Key), StringComparer.OrdinalIgnoreCase))
             {
-                int count = builderGameTotals.TryGetValue(game.Key, out int all) && all > 0 ? all : game.Count();
-                BuilderGameChip chip = new(game.Key, count);
+                BuilderGameChip chip = new(game.Key, game.Value) { IsSelected = chosen.Contains(game.Key, StringComparer.OrdinalIgnoreCase) };
                 chip.PropertyChanged += OnBuilderSearchGameChanged;
                 BuilderSearchGames.Add(chip);
                 if (BuilderSearchGamesTop.Count < BuilderGameChipsShown)
@@ -1151,13 +1265,20 @@ public sealed partial class MainWindowViewModel
         }
         MarkBuilderRowsInRelation();
         RebuildBuilderSearchRows();
+        OnBuilderChosenGamesChanged();
     }
 
-    // A game chip: the search runs again for the ticked games (all their rows), or for every game.
+    // A game chip: remembered, and the search runs again for the ticked games (all their rows), or for every game.
     private void OnBuilderSearchGameChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(BuilderGameChip.IsSelected))
-            _ = SearchBuilderActionsAsync();
+        if (e.PropertyName != nameof(BuilderGameChip.IsSelected) || sender is not BuilderGameChip chip)
+            return;
+        builderChosenGames.RemoveAll(g => string.Equals(g, chip.GameId, StringComparison.OrdinalIgnoreCase));
+        if (chip.IsSelected)
+            builderChosenGames.Add(chip.GameId);
+        SaveUiSettings();
+        OnBuilderChosenGamesChanged();
+        _ = SearchBuilderActionsAsync();
     }
 
     private void OnBuilderSearchRowChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1287,7 +1408,8 @@ public sealed partial class MainWindowViewModel
     private List<BuilderSearchResultItem> SortBuilderRows(IEnumerable<BuilderSearchResultItem> rows) =>
         BuilderSearchSort.HasLevels ? BuilderSearchSort.Sort(rows, r => SortRowOfAction(r)).ToList() : rows.ToList();
 
-    // Rows whose every aircraft is in the open relation are shown as "already in this relation".
+    // Rows whose every aircraft is in the open relation are shown as "already in this relation"; a row with some of them
+    // says how many (BuilderSearchResultItem.MarkInOpenRelation).
     // The rows' marks after the open relation changed; a search row that came into the relation (or left it) moves to
     // (or from) the greyed group at the bottom.
     private void RefreshBuilderRowsInRelation()
@@ -1318,11 +1440,13 @@ public sealed partial class MainWindowViewModel
         foreach (BuilderSearchResultItem row in allBuilderSearchResults.Concat(CatalogRows()))
         {
             row.OpenRelationName = open;
-            bool inside = present.TryGetValue(row.Game + "|" + row.Id, out HashSet<string>? planes) &&
-                          (row.Game != "DCS" || row.SelectedPlanes.Count > 0 && row.SelectedPlanes.All(p => planes.Contains(p)));
-            if (row.IsInOpenRelation != inside && allBuilderSearchResults.Contains(row))
+            bool before = row.IsInOpenRelation;
+            present.TryGetValue(row.Game + "|" + row.Id, out HashSet<string>? planes);
+            // All of the row's aircraft: greyed at the bottom. Some of them: it stays addable, says how many are in and
+            // offers only the others.
+            bool inside = row.MarkInOpenRelation(planes);
+            if (before != inside && allBuilderSearchResults.Contains(row))
                 changed = true;
-            row.IsInOpenRelation = inside;
             if (inside)
                 row.IsChecked = false;
         }
@@ -1436,9 +1560,9 @@ public sealed partial class MainWindowViewModel
         {
             RelationSearchText = string.Empty;
             await RefreshRelationsAsync();
-            // The filters would hide it: they go off.
+            // The filters would hide it: they stay, it is listed as long as it is open.
             if (RelationHiddenByFilter(name))
-                RelationFilter.ClearAll();
+                ShowRelationDespiteFilter(name);
             SelectedRelation = Relations.FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.Ordinal))
                                ?? Relations.FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));
         }

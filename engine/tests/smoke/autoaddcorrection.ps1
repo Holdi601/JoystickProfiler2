@@ -4,7 +4,9 @@
 # aircraft ("Default"); a profile without the lists' aircraft set gets it recorded and nothing switched on; what the
 # pass changes is a history step of its own ("Updated to the new command lists: ..."), a read-only command saves
 # nothing; and "profile auto-added" offers exactly the aircraft an earlier pass switched on (a fixture built like a
-# tester's history: "THROTTLE - SLIDER -HELO POWER BOTH" 4 -> 21 aircraft) and takes them out as one undo step.
+# tester's history: "THROTTLE - SLIDER -HELO POWER BOTH" 4 -> 21 aircraft) and takes them out as one undo step. "Default"
+# is listed but no aircraft: marked and counted apart. A step that was an import or a builder is never offered, by its
+# label (old and new, also joined "A + B"), by the checkpoint before it, or by the relations and binds it made.
 # Dot-sourced by engine_smoke_test.ps1 (Run-Engine, Assert-*, $tempDir, $engineBin); needs the development DCS lists.
 
 $aaDir = Join-Path $tempDir "autoadd"
@@ -116,16 +118,17 @@ try {
         "Roll" = @(, @("a2002cdnil", @("F-16C_50"), @("FA-18C_hornet")));
         "Gear" = @(, @("d3001pnilu3001cd28vd1vpnilvu0", @("F-16C_50"))) } $null "fp-after-refresh"
 
-    function New-AaRepairFixture([string]$Name) {
+    # $Steps: @(kind, label, profile content), the last one is the profile file.
+    function New-AaRepairFixture([string]$Name, [object[]]$Steps = @(@("open", "Before the history started", $aaBefore), @("change", "Keeping the action in one relation", $aaAfter), @("change", "Setting bind", $aaLater))) {
         $file = Join-Path $aaDir ($Name + ".pr0file")
-        [IO.File]::WriteAllText($file, $aaLater, $aaUtf8)
+        [IO.File]::WriteAllText($file, $Steps[-1][2], $aaUtf8)
         $folder = (Invoke-AaJson $file @("profile", "history", "list")).Json.Folder
         $blobs = Join-Path $folder "blobs"
         New-Item -ItemType Directory -Force -Path $blobs | Out-Null
         $versions = @()
         $id = 0
         $sha = [System.Security.Cryptography.SHA256]::Create()
-        foreach ($step in @(@("open", "Before the history started", $aaBefore), @("change", "Keeping the action in one relation", $aaAfter), @("change", "Setting bind", $aaLater))) {
+        foreach ($step in $Steps) {
             $id++
             $bytes = $aaUtf8.GetBytes($step[2])
             $hash = (($sha.ComputeHash($bytes) | ForEach-Object { $_.ToString("x2") }) -join "").Substring(0, 32)
@@ -148,23 +151,27 @@ try {
     Assert-SetEquivalent @($aaFound.Json.Entries | Where-Object { $_.Relation -eq "Pitch" } | ForEach-Object { $_.Plane }) @("FA-18C_hornet", "A-10C") "profile auto-added does not offer the pitch aircraft."
     Assert-True (@($aaFound.Json.Entries | Where-Object { $_.Relation -eq "Roll" }).Count -eq 0) "profile auto-added offers an aircraft the user switched off since."
     Assert-True (@($aaFound.Json.Entries | Where-Object { $_.Relation -eq "Gear" }).Count -eq 0) "profile auto-added offers an unchanged relation."
-    Assert-True ($aaFound.Json.Aircraft -eq 19 -and $aaFound.Json.RelationCount -eq 2) ("profile auto-added counts wrong: " + $aaFound.Json.Aircraft + " in " + $aaFound.Json.RelationCount)
+    # "Default" is in the list, marked, and not in the aircraft count.
+    Assert-True ($aaFound.Json.Aircraft -eq 18 -and $aaFound.Json.NonAircraft -eq 1 -and $aaFound.Json.RelationCount -eq 2) ("profile auto-added counts wrong: " + $aaFound.Json.Aircraft + " + " + $aaFound.Json.NonAircraft + " in " + $aaFound.Json.RelationCount)
+    Assert-SetEquivalent @($aaFound.Json.Entries | Where-Object { $_.NonAircraft } | ForEach-Object { $_.Plane }) @("Default") "profile auto-added does not mark exactly 'Default' as not an aircraft."
+    Assert-True ($aaFound.Json.Steps[0].Aircraft -eq 18 -and $aaFound.Json.Steps[0].NonAircraft -eq 1) "the step does not count 'Default' apart."
+    Assert-Match (Run-Engine @("--profile", $aaRepair, "profile", "auto-added", "--text")).Output "Default \(not an aircraft\)" "the text output does not mark 'Default'."
     Assert-True (@($aaFound.Json.Steps).Count -eq 1 -and $aaFound.Json.Steps[0].Version -eq 2) "profile auto-added does not name the step that added them."
     $aaHeloKeeps = @($aaFound.Json.Relations | Where-Object { $_.Relation -eq $aaHelo })[0].Keeps
     Assert-SetEquivalent $aaHeloKeeps ($aaHeloOwn + @("MosquitoFBMkVI")) "the preview does not say which aircraft stay."
     $aaSame = Invoke-AaJson $aaRepair @("profile", "auto-added")
-    Assert-True ($aaSame.Json.Aircraft -eq 19) "profile auto-added changed something without --apply."
+    Assert-True ($aaSame.Json.Aircraft -eq 18) "profile auto-added changed something without --apply."
 
     $aaSkip = @($aaFound.Json.Entries | Where-Object { $_.Relation -eq "Pitch" -and $_.Plane -eq "A-10C" })[0].Key
     $aaApply = Invoke-AaJson $aaRepair @("profile", "auto-added", "--apply", "--skip", $aaSkip)
-    Assert-True ($aaApply.ExitCode -eq 0 -and $aaApply.Json.Applied -and $aaApply.Json.Removed -eq 18) ("profile auto-added --apply failed: " + $aaApply.Output)
+    Assert-True ($aaApply.ExitCode -eq 0 -and $aaApply.Json.Applied -and $aaApply.Json.Removed -eq 18 -and $aaApply.Json.RemovedNonAircraft -eq 1) ("profile auto-added --apply failed: " + $aaApply.Output)
     $aaHeloShow = Run-Engine @("--profile", $aaRepair, "--load-corrections", "false", "relations", "show", $aaHelo, "--text")
     Assert-Match $aaHeloShow.Output "(?m)id=a2004cdnil, aircraft=AH-64D_BLK_II_CPG, AH-64D_BLK_II_PLT, Ka-50 III\r?$" ("the helicopter power relation is not back to its own aircraft: " + $aaHeloShow.Output)
     Assert-Match $aaHeloShow.Output "(?m)id=a3044cd3, aircraft=MosquitoFBMkVI" "the repair touched the Mosquito's own action."
     $aaPitchShow = Run-Engine @("--profile", $aaRepair, "--load-corrections", "false", "relations", "show", "Pitch", "--text")
     Assert-Match $aaPitchShow.Output "(?m)id=a2001cdnil, aircraft=A-10C, F-16C_50\r?$" ("the unticked aircraft was taken out, or the other one stayed: " + $aaPitchShow.Output)
     $aaRepairHistory = Invoke-AaJson $aaRepair @("profile", "history", "list")
-    Assert-True ($aaRepairHistory.Json.Versions[0].Label -eq "Took out aircraft JoyPro added: 18 aircraft in 2 relations") ("the repair is not one labelled step: " + $aaRepairHistory.Json.Versions[0].Label)
+    Assert-True ($aaRepairHistory.Json.Versions[0].Label -eq "Took out aircraft JoyPro added: 17 aircraft in 2 relations") ("the repair is not one labelled step: " + $aaRepairHistory.Json.Versions[0].Label)
     $aaDone = Invoke-AaJson $aaRepair @("profile", "auto-added")
     Assert-True (-not $aaDone.Json.Found) "profile auto-added offers the repair again after it was applied."
     $aaUndo = Run-Engine @("--profile", $aaRepair, "profile", "history", "undo", "--text")
@@ -178,6 +185,59 @@ try {
     Assert-True (-not (Invoke-AaJson $aaKeep @("profile", "auto-added")).Json.Found) "profile auto-added asks again after 'Keep them'."
     $aaKeepShow = Run-Engine @("--profile", $aaKeep, "--load-corrections", "false", "relations", "show", $aaHelo, "--text")
     Assert-Match $aaKeepShow.Output "aircraft=a-10a, A-10C, A-10C II, " "'Keep them' took aircraft out."
+
+    # 3b. Only input layers: still listed, nothing counted as an aircraft, --apply works and says what it took out.
+    $aaLayerBefore = New-AaProfileJson @{
+        "F1 Cockpit view" = @(, @("d2001pnil", @("F-16C_50")));
+        "F2 View" = @(, @("d2002pnil", @("F-16C_50")));
+        "F3 View" = @(, @("d2003pnil", @("F-16C_50"))) } $null "fp-before-refresh"
+    $aaLayerAfter = New-AaProfileJson @{
+        "F1 Cockpit view" = @(, @("d2001pnil", @("F-16C_50", "Default")));
+        "F2 View" = @(, @("d2002pnil", @("F-16C_50", "Default")));
+        "F3 View" = @(, @("d2003pnil", @("F-16C_50", "CameraRoom"))) } $null "fp-after-refresh"
+    $aaLayers = New-AaRepairFixture "layers" @(@("open", "Before the history started", $aaLayerBefore), @("change", "Deleting relation", $aaLayerAfter))
+    $aaLayerFound = Invoke-AaJson $aaLayers @("profile", "auto-added")
+    Assert-True ($aaLayerFound.Json.Found -and $aaLayerFound.Json.Aircraft -eq 0 -and $aaLayerFound.Json.NonAircraft -eq 3 -and $aaLayerFound.Json.RelationCount -eq 0) ("input layers alone are counted wrong: " + $aaLayerFound.Output)
+    Assert-True (@($aaLayerFound.Json.Entries | Where-Object { -not $_.NonAircraft }).Count -eq 0) "an input layer is not marked."
+    $aaLayerApply = Invoke-AaJson $aaLayers @("profile", "auto-added", "--apply")
+    Assert-True ($aaLayerApply.Json.Removed -eq 3 -and $aaLayerApply.Json.RemovedNonAircraft -eq 3) ("--apply does not work on input layers: " + $aaLayerApply.Output)
+    Assert-True ((Invoke-AaJson $aaLayers @("profile", "history", "list")).Json.Versions[0].Label -eq "Took out input layers JoyPro added: 3 in 3 relations") "the repair of input layers is not labelled as such."
+    $aaLayerShow = Run-Engine @("--profile", $aaLayers, "--load-corrections", "false", "relations", "show", "F1 Cockpit view", "--text")
+    Assert-Match $aaLayerShow.Output "(?m)aircraft=F-16C_50\r?$" ("--apply did not take 'Default' out: " + $aaLayerShow.Output)
+
+    # The UI layer is no aircraft either, but DCS uses its binds in every aircraft: it counts, so the notice comes.
+    $aaUiAfter = New-AaProfileJson @{
+        "F1 Cockpit view" = @(, @("d2001pnil", @("F-16C_50", "Default")));
+        "F2 View" = @(, @("d2002pnil", @("F-16C_50", "Default")));
+        "F3 View" = @(, @("d2003pnil", @("F-16C_50", "UiLayer"))) } $null "fp-after-refresh"
+    $aaUi = New-AaRepairFixture "uilayer" @(@("open", "Before the history started", $aaLayerBefore), @("change", "Deleting relation", $aaUiAfter))
+    $aaUiFound = Invoke-AaJson $aaUi @("profile", "auto-added")
+    Assert-True ($aaUiFound.Json.Found -and $aaUiFound.Json.Aircraft -eq 1 -and $aaUiFound.Json.NonAircraft -eq 2) ("the UI layer does not count: " + $aaUiFound.Output)
+
+    # 3c. An import is the user's own binds: nothing from it is offered, though its fingerprint changed too. The labels are
+    #     the ones real histories have ("Importing from DCS": a tester's version 57, 274 relation changes; joined labels
+    #     from one click). Labels this list does not know (a translated one) are caught by the checkpoint before the
+    #     import, or by the relations and binds the step made.
+    foreach ($aaLabel in @("Importing from DCS", "Importing from Microsoft Flight Simulator 2024 (experimental)", "Opening the profile + Importing from DCS", "Import from DCS", "Taking over the game's changes", "Merging copied relations", "Game setup: DCS", "Manage with AI")) {
+        $aaImport = New-AaRepairFixture ("import-" + [Guid]::NewGuid().ToString("N")) @(@("open", "Before the history started", $aaBefore), @("change", $aaLabel, $aaAfter))
+        $aaImportFound = Invoke-AaJson $aaImport @("profile", "auto-added")
+        Assert-True ($aaImportFound.ExitCode -eq 0 -and -not $aaImportFound.Json.Found) ("a step labelled '" + $aaLabel + "' is offered for removal: " + $aaImportFound.Output)
+    }
+    $aaCheckpoint = New-AaRepairFixture "import-checkpoint" @(@("open", "Before the history started", $aaBefore), @("checkpoint", "Before import from DCS", $aaBefore), @("change", "Aus DCS importieren", $aaAfter))
+    Assert-True (-not (Invoke-AaJson $aaCheckpoint @("profile", "auto-added")).Json.Found) "a step right after 'Before import from DCS' is offered for removal."
+    $aaBuilt = New-AaProfileJson @{
+        $aaHelo = @(@("a2004cdnil", ($aaHeloOwn + $aaHeloAdded)), @("a3044cd3", @("MosquitoFBMkVI")));
+        "Pitch" = @(, @("a2001cdnil", @("F-16C_50", "FA-18C_hornet", "A-10C")));
+        "Roll" = @(, @("a2002cdnil", @("F-16C_50", "FA-18C_hornet")));
+        "Gear" = @(, @("d3001pnilu3001cd28vd1vpnilvu0", @("F-16C_50")));
+        "New one" = @(, @("a2005cdnil", @("F-16C_50")));
+        "New two" = @(, @("a2006cdnil", @("F-16C_50")));
+        "New three" = @(, @("a2007cdnil", @("F-16C_50"))) } $null "fp-after-refresh"
+    $aaMade = New-AaRepairFixture "import-built" @(@("open", "Before the history started", $aaBefore), @("change", "Etwas Unbekanntes", $aaBuilt))
+    Assert-True (-not (Invoke-AaJson $aaMade @("profile", "auto-added")).Json.Found) "a step that made three new relations is offered for removal."
+    # The old pass under a click that names no builder is still found, also right after an export's checkpoint.
+    $aaAfterExport = New-AaRepairFixture "after-export" @(@("open", "Before the history started", $aaBefore), @("checkpoint", "Before export to DCS", $aaBefore), @("change", "Deleting relation", $aaAfter))
+    Assert-True ((Invoke-AaJson $aaAfterExport @("profile", "auto-added")).Json.Found) "the old pass right after an export's checkpoint is no longer found."
 
     # 4. The meaning check never proposes the user's own aircraft (and a helicopter's throttle is the engine power).
     $aaCheck = Invoke-AaJson $aaKeep @("--load-corrections", "false", "relations", "check-aircraft", "--relation", $aaHelo)

@@ -125,6 +125,46 @@ try {
     # Plurals with "es": "switches" has every word of "MASTER Switch" (before 2.6.2: "switche" matched no "Switch").
     $slSwitches = Invoke-SlJson @("relations", "search", "master switches", "--plane", "F-16C_50", "--game", "DCS", "--limit", "400")
     Assert-True (@($slSwitches.Results | Where-Object { $_.Literal -and $_.Title -like "MASTER Switch*" }).Count -ge 3) "search 'master switches' (F-16C) does not name-match the MASTER Switch titles."
+    # A number or side typed tells actions apart (2.6.3, the tester's "LMFD OSB 15"; docs/relation-builder.md "Words that
+    # tell actions apart"). Falcon BMS: the panel tag is a word of the name; only the LMFD's OSB 15 is recommended; the other
+    # displays and the MFD switch are the function, but Related, without the recommendation or the "differs" line.
+    foreach ($q in @("LMFD OSB 15", "lmfd osb15", "LMFD OSB-15")) {
+        $r = Invoke-SlJson @("relations", "search", $q, "--game", "FalconBMS")
+        $first = @($r.Results)[0]
+        Assert-True ($first.Id -eq "SimCBEOSB_15L" -and $first.Literal -and $first.Section -eq "name" -and $first.Recommended -and -not $first.Variant) ("search '" + $q + "' (BMS): first is not LMFD's OSB 15 as a recommended name match (" + $first.Title + ", " + $first.Section + ", " + $first.Recommended + ", " + $first.Variant + ").")
+        Assert-True (@($r.Results | Where-Object { $_.Recommended }).Count -eq 1) ("search '" + $q + "' (BMS): more than one row is recommended.")
+        Assert-True (@($r.Results | Where-Object { $_.Section -ne "name" -and ($_.Section -ne "related" -or $_.Variant) }).Count -eq 0) ("search '" + $q + "' (BMS): a row without every word is not plainly Related.")
+        foreach ($other in @("SimCBEOSB_15F", "SimCBEOSB_15R", "SimCBEOSB_15T")) {
+            $row = @($r.Results | Where-Object { $_.Id -eq $other })
+            Assert-True ($row.Count -eq 1 -and $row[0].RelatedBy -eq "lacks-word" -and @($row[0].MissingWords).Count -eq 1) ("search '" + $q + "' (BMS): " + $other + " does not say which word it lacks.")
+        }
+    }
+    # "OSB 15" names no display: the OSB 15 of each, none a variant of another; the MFD switch and others are Related.
+    $slOsb = Invoke-SlJson @("relations", "search", "OSB 15", "--game", "FalconBMS")
+    Assert-True (@($slOsb.Results | Where-Object { $_.Literal -and $_.Recommended -and $_.Title -like "*OSB-15*" -and -not $_.Variant }).Count -eq 4) "search 'OSB 15' (BMS): the four displays' OSB 15 are not all recommended name matches."
+    Assert-True (@($slOsb.Results | Where-Object { $_.Title -like "AVIONICS*" -and ($_.Section -ne "related" -or $_.Recommended) }).Count -eq 0) "search 'OSB 15' (BMS): the MFD switch is more than Related."
+    # DCS F-16: the same; a number is no description ("15" is no SPO-15 radar warning receiver).
+    $slOsbDcs = Invoke-SlJson @("relations", "search", "OSB 15", "--game", "DCS", "--plane", "F-16C_50", "--limit", "200")
+    Assert-True (@($slOsbDcs.Resolved | Where-Object { $_.Id -eq "rwr" }).Count -eq 0) "search 'OSB 15' (F-16): '15' is read as the radar warning receiver."
+    foreach ($title in @("Left MFD OSB 15", "Right MFD OSB 15")) {
+        $row = @($slOsbDcs.Results | Where-Object { $_.Title -eq $title })
+        Assert-True ($row.Count -eq 1 -and $row[0].Literal -and $row[0].Recommended -and $row[0].Function -eq "mfd_button") ("search 'OSB 15' (F-16): " + $title + " is no recommended name match of the MFD buttons.")
+    }
+    Assert-True (@(@($slOsbDcs.Results)[0..1] | Where-Object { $_.Title -notlike "* MFD OSB 15" }).Count -eq 0) "search 'OSB 15' (F-16): the OSB 15 rows do not come first."
+    Assert-True (@($slOsbDcs.Results | Where-Object { $_.Title -notlike "* MFD OSB 15" -and ($_.Section -ne "related" -or $_.Recommended) }).Count -eq 0) "search 'OSB 15' (F-16): another row is more than Related."
+    # "LMFD" is the left display, as "Left MFD" is.
+    $slLeft = Invoke-SlJson @("relations", "search", "LMFD OSB 15", "--game", "DCS", "--plane", "F-16C_50", "--limit", "200")
+    Assert-True (@($slLeft.Results)[0].Title -eq "Left MFD OSB 15" -and @($slLeft.Results)[0].Section -eq "function" -and @($slLeft.Results)[0].Recommended) "search 'LMFD OSB 15' (F-16): Left MFD OSB 15 is not the recommended first row."
+    Assert-True (@($slLeft.Results | Where-Object { $_.Title -eq "Right MFD OSB 15" -and $_.Section -eq "related" -and -not $_.Recommended }).Count -eq 1) "search 'LMFD OSB 15' (F-16): Right MFD OSB 15 is more than Related."
+    # What must stay: the word of an aircraft's name and of a function's own name is no such word, directions keep their
+    # rules, synonyms stay Same function; an axis that goes both ways stays for a side; a title with every word wins.
+    Assert-True (@((Invoke-SlJson @("relations", "search", "gear up", "--game", "WarThunder")).Results | Where-Object { $_.Title -eq "Toggle Gear" -and $_.Section -eq "function" -and $_.Recommended }).Count -ge 1) "search 'gear up' (War Thunder): Toggle Gear is no recommended Same function row any more."
+    Assert-True (@((Invoke-SlJson @("relations", "search", "yaw left", "--game", "DCS", "--plane", "F-16C_50", "--limit", "100")).Results | Where-Object { $_.Title -eq "Rudder" -and $_.Section -eq "function" }).Count -eq 1) "search 'yaw left' (F-16): the rudder axis is no Same function row any more."
+    $slViper = Invoke-SlJson @("relations", "search", "F-16 thrust", "--game", "DCS", "--plane", "F-16C_50", "--limit", "100")
+    Assert-True (@($slViper.Results | Where-Object { $_.Title -eq "Thrust" -and $_.Section -ne "related" }).Count -eq 1) "search 'F-16 thrust': the 16 of the aircraft's name makes the throttle Related."
+    $slCenter = Invoke-SlJson @("relations", "search", "center view", "--game", "IL2Game")
+    Assert-True (@($slCenter.Results | Where-Object { $_.Title -eq "Reset camera" -and $_.Section -eq "function" -and $_.Recommended }).Count -eq 1) "search 'center view' (IL-2): Reset camera is no recommended action of the named function."
+    Assert-True (@(@($slCenter.Results)[0].Functions | Where-Object { $_ -like "view_center*" }).Count -ge 1) "search 'center view' (IL-2): the function's rows do not lead."
     # The whole catalog (Browse) has no sections: it lists, it does not search.
     $slBrowse = Invoke-SlJson @("relations", "browse", "--game", "DCS", "--plane", "F-4E-45MC", "--axis")
     Assert-True (@($slBrowse.Results | Where-Object { $_.Section }).Count -eq 0) "relations browse marks rows with a search section."

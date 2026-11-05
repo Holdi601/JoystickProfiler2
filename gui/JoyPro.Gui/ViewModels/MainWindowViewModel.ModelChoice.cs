@@ -21,18 +21,18 @@ public sealed partial class MainWindowViewModel
     private bool canUndoModelChoice;
 
     [RelayCommand]
-    private Task ChooseAnotherModelAsync(LayoutSuggestionItem? item) => AskModelAgainAsync(item, notMine: false);
+    private Task ChooseAnotherModelAsync(LayoutSuggestionItem? item) => AskModelAgainAsync(item ?? SelectedLayoutSuggestion, null, notMine: false);
 
     [RelayCommand]
-    private Task NotMyDeviceAsync(LayoutSuggestionItem? item) => AskModelAgainAsync(item, notMine: true);
+    private Task NotMyDeviceAsync(LayoutSuggestionItem? item) => AskModelAgainAsync(item ?? SelectedLayoutSuggestion, null, notMine: true);
 
-    private async Task AskModelAgainAsync(LayoutSuggestionItem? item, bool notMine)
+    // item: the device's card on the Layout page; a device without one (no layout listed for it yet) by its name.
+    private async Task AskModelAgainAsync(LayoutSuggestionItem? item, string? deviceName, bool notMine)
     {
-        item ??= SelectedLayoutSuggestion;
-        string device = (item?.Device ?? string.Empty).Trim();
-        if (item == null || device.Length == 0)
+        string device = (item?.Device ?? deviceName ?? string.Empty).Trim();
+        if (device.Length == 0)
             return;
-        if (!ReferenceEquals(SelectedLayoutSuggestion, item))
+        if (item != null && !ReferenceEquals(SelectedLayoutSuggestion, item))
             SelectedLayoutSuggestion = item;
         // The question is asked over the reference picture (a layout file of the user's own stays one click away).
         LayoutShowsLayoutFile = false;
@@ -51,7 +51,7 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(ShowReferenceQuestion));
         StatusText = notMine
             ? T("Find your device in the catalog or pick what kind of device it is. 'Undo the last model choice' in its Model menu puts the old answer back.")
-            : T("Pick the model of '{0}'. 'Undo the last model choice' in its Model menu puts the old answer back.", item.DisplayName);
+            : T("Pick the model of '{0}'. 'Undo the last model choice' in its Model menu puts the old answer back.", item?.DisplayName ?? JoyPro.DeviceReference.DeviceProbe.RemoveGuid(device));
     }
 
     [RelayCommand]

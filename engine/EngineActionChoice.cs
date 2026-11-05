@@ -57,6 +57,10 @@ namespace JoyPro.Engine
             // Worked out once per Mark: the direction it names and its words without the filler.
             internal string Dir;
             internal HashSet<string> Twin;
+            // The panel of its title (Falcon BMS "LMFD: ..."), and that when another action of the group is the same
+            // control on another panel: then it is an action of its own.
+            internal string Panel = string.Empty;
+            internal string OwnPanel = string.Empty;
 
             // The function's general explanation fits it: no word the game leaves unexplained, no rule that makes it
             // something else (a view, a weapon, another seat).
@@ -199,6 +203,13 @@ namespace JoyPro.Engine
         // (a row is recommended when it is the best for one of its aircraft).
         public static void Mark(IList<Item> items)
         {
+            Mark(items, false);
+        }
+
+        // splitPanels (a search): the same control on another panel is no alternative but an action of its own: "OSB 15" in
+        // Falcon BMS recommends the OSB of every display, none of them is a variant of another.
+        internal static void Mark(IList<Item> items, bool splitPanels)
+        {
             List<Rule> all = Rules();
             foreach (Item item in items)
             {
@@ -206,6 +217,8 @@ namespace JoyPro.Engine
                 string[] tokens = EngineFunctionMap.Tokenize(title);
                 item.Dir = DirectionOf(tokens);
                 item.Twin = new HashSet<string>(tokens.Where(t => !TwinFiller.Contains(t)), StringComparer.Ordinal);
+                item.Panel = EngineFunctionMap.PanelOf(item.Game, item.Title);
+                item.OwnPanel = string.Empty;
                 List<string> text = tokens.Concat(EngineFunctionMap.Tokenize(item.Category)).ToList();
                 item.Rules = all.Where(r => Fits(r, text, title, item.Known)).ToList();
                 Rule family = item.Rules.FirstOrDefault(r => r.Family.Length > 0);
@@ -221,13 +234,24 @@ namespace JoyPro.Engine
                 item.HasOne = false;
                 item.Best = null;
             }
+            if (splitPanels)
+            {
+                foreach (IGrouping<string, Item> same in items.Where(i => i.Panel.Length > 0).GroupBy(i => i.Game + "|" + i.Function + "|" + string.Join(" ", i.Twin.OrderBy(t => t, StringComparer.Ordinal))))
+                {
+                    if (same.Select(i => i.Panel).Distinct(StringComparer.OrdinalIgnoreCase).Skip(1).Any())
+                    {
+                        foreach (Item item in same)
+                            item.OwnPanel = item.Panel;
+                    }
+                }
+            }
             Dictionary<string, List<Item>> groups = new Dictionary<string, List<Item>>(StringComparer.OrdinalIgnoreCase);
             foreach (Item item in items)
             {
                 IEnumerable<string> places = item.Game == "DCS" && item.Planes.Count > 0 ? item.Planes : new List<string> { item.Game };
                 foreach (string place in places)
                     // Opposite directions ("increase" / "decrease") are groups of their own: each gets its recommendation.
-                    Add(groups, item.Game + "|" + place + "|" + item.Function + "~" + item.Dir + "|" + item.FamilyId, item);
+                    Add(groups, item.Game + "|" + place + "|" + item.Function + "~" + item.Dir + (item.OwnPanel.Length > 0 ? "~" + item.OwnPanel : string.Empty) + "|" + item.FamilyId, item);
             }
             Dictionary<Item, HashSet<Item>> under = new Dictionary<Item, HashSet<Item>>();
             Dictionary<string, HashSet<string>> familiesOf = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
@@ -242,7 +266,7 @@ namespace JoyPro.Engine
                         i.HasOne = true;
                     continue;
                 }
-                Item best = group.Value.OrderBy(i => i.Rules.Any(r => r.Demote) ? 1 : 0).ThenBy(i => i.Unknown.Count > 0 ? 1 : 0)
+                Item best = group.Value.OrderBy(i => i.Rules.Any(r => r.Demote) ? 1 : 0).ThenBy(i => i.Unknown.Count > 0 ? 1 : 0).ThenBy(PanelSideRank)
                     .ThenBy(i => i.PrimaryRank < 0 ? 1 : 0).ThenBy(i => i.PrimaryRank).ThenByDescending(i => i.Score)
                     .ThenBy(i => i.Title.Length).ThenBy(i => i.Id, StringComparer.Ordinal).First();
                 best.Recommended = true;
@@ -279,6 +303,16 @@ namespace JoyPro.Engine
                 }
                 item.Variant = Explain(item);
             }
+        }
+
+        // 0: the panel's side is the one the relation or query says ("MFD LEFT BTN12": the LMFD's OSB, not the first one).
+        private static int PanelSideRank(Item item)
+        {
+            if (item.Panel.Length == 0 || item.Known == null)
+                return 1;
+            string panel = item.Panel.ToUpperInvariant();
+            string side = panel.StartsWith("L", StringComparison.Ordinal) ? "left" : panel.StartsWith("R", StringComparison.Ordinal) ? "right" : string.Empty;
+            return side.Length > 0 && item.Known.Contains(side) && !item.Known.Contains(side == "left" ? "right" : "left") ? 0 : 1;
         }
 
         private static string FamilyText(string family)
@@ -390,6 +424,9 @@ namespace JoyPro.Engine
         internal static bool NearDuplicate(Item a, Item b)
         {
             if (OppositeDirs(a.Dir ?? Direction(a.Game, a.Title), b.Dir ?? Direction(b.Game, b.Title)))
+                return false;
+            // The same control on another panel is another control ("LMFD: OSB-15" / "RMFD: OSB-15").
+            if (!string.Equals(EngineFunctionMap.PanelOf(a.Game, a.Title), EngineFunctionMap.PanelOf(b.Game, b.Title), StringComparison.OrdinalIgnoreCase))
                 return false;
             HashSet<string> x = TwinWords(a);
             return x.Count > 0 && x.SetEquals(TwinWords(b));

@@ -140,7 +140,7 @@ namespace JoyPro.Engine
         private static readonly HashSet<string> Acronyms = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "AA", "AG", "ADF", "ADI", "AP", "APU", "ATC", "AUTO", "AVTR", "CDI", "CDU", "CMDS", "COM", "DED", "DME", "DSS", "ECM", "EFIS", "EGT", "ELT",
-            "EPU", "ESP", "EVA", "FADEC", "FCR", "FD", "FLIR", "FMS", "FSD", "FSS", "GNS", "GPS", "HMCS", "HOTAS", "HSI", "HUD", "IAS", "ICP", "IFCS", "IFF", "ILS",
+            "EPU", "ESP", "EVA", "FADEC", "FCR", "FD", "FLIR", "FMS", "FOIP", "FSD", "FSS", "GNS", "GPS", "HMCS", "HOTAS", "HSI", "HUD", "IAS", "ICP", "IFCS", "IFF", "ILS",
             "INS", "JFS", "MFD", "MCDU", "MFDS", "NAV", "NVG", "OBS", "PC", "PFD", "PFL", "PWR", "RPM", "RWR", "SNSR", "SRV", "TACAN", "TCAS", "TGP", "TV",
             "UFC", "UHF", "UI", "VHF", "VNAV", "VOR", "VR", "VTOL", "XPDR"
         };

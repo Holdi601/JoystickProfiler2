@@ -250,7 +250,7 @@ public sealed partial class MainWindowViewModel
     {
         Stopwatch watch = Stopwatch.StartNew();
         List<RelationListItem> shown = RankBySearch(RelationFilter, allRelations
-            .Where(r => RelationFilter.Matches(relationSubjects.GetValueOrDefault(r.Name)))
+            .Where(r => RelationFilter.Matches(relationSubjects.GetValueOrDefault(r.Name)) || string.Equals(r.Name, relationShownDespiteFilter, StringComparison.OrdinalIgnoreCase))
             .OrderBy(v => v.Name, StringComparer.OrdinalIgnoreCase), r => relationSubjects.GetValueOrDefault(r.Name), rows => RelationSort.Sort(rows, SortRowOf))
             .ToList();
         UpdateRelationSearchHits(shown);
@@ -276,7 +276,17 @@ public sealed partial class MainWindowViewModel
         return list;
     }
 
-    // Unbound relations of the profile that a page's filter hides: a reason to clear the filter when one should open.
+    // A relation opened from elsewhere (a tag, a check, a new relation) that the filters hide: the filters stay as the user
+    // set them (2.6.3: they went off); this one relation is in the list until another one is opened.
+    private string relationShownDespiteFilter = string.Empty;
+
+    internal void ShowRelationDespiteFilter(string name)
+    {
+        relationShownDespiteFilter = name;
+        ApplyRelationFilter();
+    }
+
+    // A relation of the profile that the filters hide.
     internal bool RelationHiddenByFilter(string name) =>
         allRelations.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase)) &&
         !Relations.Any(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));

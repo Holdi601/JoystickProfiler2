@@ -208,7 +208,12 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
 4. Filters: `All` / `Axes` / `Buttons` (a relation holds one kind; an open relation with actions shows only its own,
    an empty one every kind), the game chips of the result with how many actions each game has (none ticked = every
    game, the best 12 rows of each: `--limit 200 --per-game 12`; a ticked chip searches that game again for all its
-   rows; the first eight as chips, `+n more games` for the rest), and the aircraft picker. `By function` groups the
+   rows; the first eight as chips, `+n more games` for the rest). **The chips stay on** (2.6.3, a tester adding Falcon
+   BMS to one relation after the other): for the next search, for every relation opened and after a restart
+   (`ui-settings.json` `addActionsGames`); they are the first chips, also with an empty box. With chips on, a new search
+   asks the engine twice: over every game for the other chips' numbers, then the chosen games for the rows. A chosen
+   game without a result says so with what the others have and **Show all games** (never an empty list or a silent
+   reset); the chips of `Suggested for this relation` stay the same way (`suggestedGames`). And the aircraft picker. `By function` groups the
    rows by the function they are (the engine's `FunctionGroups`) instead of by game. Each row shows how it was found
    (`main control`, `exact title`, `same function`, `synonym`, `by description`, `name match`, `related`; the chip's
    tooltip says why in a sentence), and a typo offers `Did you mean: throttle?`. **Same meaning** next to All / Axes /
@@ -225,8 +230,13 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    buttons together are refused with a hint. The new relation opens.
 
 For an open relation the same panel says `Add selected (n)` (`engine relations suggest apply <relation> --add
-game:id:planes ...`). Rows whose aircraft are all in the relation are marked `already in this relation` and cannot be
-ticked. Ticks survive a new search when the same action comes back. Every change can be undone with Ctrl+Z.
+game:id:planes ...`). Rows whose aircraft are all in the relation are marked `already in this relation`, cannot be
+ticked and are greyed at the bottom. A row the relation has for only **some** of its aircraft stays addable: it says
+`already in this relation for 19 of 20 aircraft`, its aircraft line and `Add selected` hold only the free ones, and in its
+aircraft list the others are marked and have no tick to change (`BuilderSearchResultItem.MarkInOpenRelation`, "some" from
+the row's own same-meaning aircraft; the tester's "F1 Cockpit view" had `ground_unit`, whose id means something else or
+nothing, and not `su-25T`, so before 2.6.3 it looked like a new action). Adding merges into the node. Ticks survive a new
+search when the same action comes back. Every change can be undone with Ctrl+Z.
 
 ### How the search finds things
 
@@ -313,6 +323,32 @@ title (`BuilderSearchResultItem.ReasonText`):
 
 The ranking does not change (the sections only group what the search finds; `engine relations phrase-check` gives the
 same pass rates and the same failing phrases before and after 2.6.2). `relations browse` rows have no section.
+
+### Words that tell actions apart
+
+A number or a side the query names tells actions of one function apart (2.6.3, a tester's `LMFD OSB 15`:
+`FMFD: OSB-15 Button - Push` was recommended and `LMFD: OSB-15 Button - Push` was "another action for the same thing"; `AVIONICS: MFD
+Switch - OFF` and DCS's `APU Fire Pushbutton` were "Same function" too):
+
+- **The panel tag is part of the name.** `CleanTitle` takes Falcon BMS's `LMFD: ` off a title so that the function rules
+  read `OSB-15 Button - Push` (a `GEAR: ` panel is no gear function). The name search (`Entry.Words`, `WordIndex.Shown`)
+  also has it: `LMFD OSB 15`, `lmfd osb15` and `LMFD OSB-15` are name matches, as the Catalog tab's plain filter always
+  found them (it reads the raw title). `Tokenize` splits `OSB-15` and `OSB15` into `osb` + `15`; the title's highlight
+  does too (`HighlightTextBlock.Parts`), and marks `Left MFD` for `LMFD`.
+- **Such a word is needed** (`EngineRelationSearch.DistinguishingWords`): a number (`15`), a side (`left`, `right`, `lh`,
+  `rh`, `port`, `starboard`, `LMFD`, `RMFD`, `LMFCD`, `LDDI`, `MPCDL` ...), another display (`FMFD`, `TMFD`) or a position
+  (`top`, `bottom`, `center`, `upper` ...). A row found as the function without it goes down and to **Related**
+  (`RelatedBy: lacks-word`, `MissingWords`; "Related: it is an action of 'MFD button (OSB)', but its title does not have
+  'LMFD'."). `LMFD` is left: DCS's `Left MFD OSB 15` has it.
+- **What is not such a word**: the number of an aircraft's name (`F-16`, `A-10`, `Mi 8`: one or two letters before it), a
+  word of the function's own name that found it (`fox 2`, `center view`), and up, down, forward, aft (directions of the
+  functions, with their own rules: `gear up` still finds War Thunder's `Toggle Gear`). An axis of a function without one
+  axis per side stays for a side (`yaw left` is still the rudder); `left throttle` wants the left lever.
+- A title with every word leads when the query has such a word, and a number alone next to a named function brings no
+  second one (`15` of `OSB 15` was read as the "SPO-15" radar warning receiver). The key of a display's OSB (`left 15`) is
+  that key when the query names no side, so `OSB 15` is an action of the MFD buttons in the F-16 too.
+
+`engine relations phrase-check` (gate check I11) on 2.6.2 and 2.6.3: see docs/releases/v2.6.3.md.
 
 **Sim-pit switch axes**: the F-4E lists 199 `[SimPit] ... (Switch)` / `(Button)` / `(Knob)` commands (pilot and WSO) as
 axis commands (DCS ids `a3016cd20` ...): Heatblur made them for home cockpits that wire a switch or a potentiometer as
@@ -455,6 +491,15 @@ others sit collapsed under it (`+2 other actions in this game`), never ticked, e
 - families: a helicopter (or ground vehicle) action next to a plane action of the same game is recommended too, `for
   helicopters` / `for planes` (space games: `for ships`);
 - a game or aircraft the relation has an action for already gets no recommendation.
+
+**In a search `Recommended` follows the query** (2.6.3, `EngineRelationSearch.FollowQuery`; the suggestions above and the
+catalog keep the rules as they are). A row's fit (`QueryFit`): 4 the whole title typed, 3 every typed word in the title or an
+action of the function the query names with all of its words, 2 a function it only partly names or describes, 0 Related.
+Per game (DCS: per aircraft) only the rows of the best fit compete by the rules above, so a row never gets it from a row
+that fits better, a Related row never gets it, and a title with every word can win without a function of the map. A row
+that fits best is no `Differs:` of one that fits worse. The same control on another panel is an action of its own, not a
+variant: `OSB 15` in Falcon BMS recommends the OSB of every display, none says "differs". In the suggestions the
+panel's side counts when the relation's name says it (`MFD LEFT BTN12`: the LMFD's OSB, `PanelSideRank`).
 
 Every row shows the game's readable name (`EngineActionInfo.Readable`: MSFS / FSX / P3D events whose list has no menu
 name get one from the event name, `KEY_AXIS_ELEVATOR_SET` -> `Elevator Axis`; an id shown as its title gets its words),
@@ -752,13 +797,35 @@ by a change (not an undo, a restore, an import, a take-over or a builder like Au
 fingerprint than the one it was made on and in which aircraft went from "not in the node" to "on" in existing nodes of
 at least 3 relations (relations its label names, such as `Adding 1 actions to 'Pitch'`, are the user's). Offered are
 the aircraft of those steps that are still on now and that no import brought since; `Relations` says per relation what
-goes (`Remove`) and what stays (`Keeps`). On the tester's profile (history of 2 and 3 Nov) it finds step #117: 448
-aircraft in 180 relations, `THROTTLE - SLIDER -HELO POWER BOTH` back to its 4 aircraft. `--apply [--skip "key;key"]`
-takes them out (the node gets back to the aircraft it had; the skipped ones stay), `--keep` stops asking; either is one
-profile version (`Took out aircraft JoyPro added: n aircraft in m relations` / `Kept the aircraft JoyPro added`, one
-undo step) and marks the steps as looked at (`Pr0file.ReviewedAutoAdds`). Nothing changes without one of them. The app
-asks after a profile opens (a notice under the bar: `JoyPro added 448 aircraft to 180 relations on 03.11.2026 after the
-command lists changed.`, the list per relation and aircraft to untick, `Take them out`, `Keep these aircraft`, `Later`).
+goes (`Remove`) and what stays (`Keeps`, `KeepsAircraft`). On the tester's profile (history of 2 and 3 Nov) it finds
+step #117: 448 entries in 180 relations, of them 426 aircraft in 167 relations and 22 input layers (13 relations have
+only a layer), `THROTTLE - SLIDER -HELO POWER BOTH` back to its 4 aircraft. `--apply [--skip "key;key"]` takes them out
+(the node gets back to the aircraft it had; the skipped ones stay), `--keep` stops asking; either is one profile version
+(`Took out aircraft JoyPro added: n aircraft in m relations`, `Took out input layers JoyPro added: n in m relations` when
+no aircraft went, or `Kept the aircraft JoyPro added`, one undo step) and marks the steps as looked at
+(`Pr0file.ReviewedAutoAdds`). Nothing changes without one of them. The app asks after a profile opens (a notice under the
+bar: `JoyPro switched on 426 aircraft you did not choose, in 167 relations, on 03.11.2026.`, the list per relation and
+aircraft to untick, `Take them out`, `Keep these aircraft`, `Later`).
+
+*Input layers are no aircraft.* `Default` and the other `EngineDcsExport.IsNonAircraftLayer` layers are marked `NonAircraft`
+on their entry and counted in `NonAircraft` on the result; `Aircraft` and `RelationCount` are real aircraft only. An export writes such a layer to `Config\Input\<layer>\` like an aircraft folder and never into a module's; the
+module's files are byte for byte the same with and without it (checked on a tester's profile), and nuke and "clean all
+aircraft" skip the layers. Whether DCS itself reads the `Default` folder for a module is not something the code can show;
+a tester reports it does not. A profile with only such layers gets no notice and its entries stay (a tester had 17 such
+rows, "17 aircraft", all `Default`); the command still lists them and `--apply` works. With real aircraft too they come
+last in the list as `Default (not an aircraft)`, ticked like the rest.
+
+*What is never offered.* The history label is what the step was called when it was made, so `BuilderLabels` has both the
+engine's name of a command and the GUI's busy words, past and present (`Import from`, `Importing`, `Taking over`, `Auto
+grouping`, `Assigning controls`, `Creating relations from your description`, `Manage with AI`, `Merging copied relations`,
+`Game setup`, ...); it missed `Importing from DCS` and `Taking over the game's changes` until 2.6.3, so a tester's import
+of 21 Oct (329 aircraft) was offered for removal. A label is matched per part of a joined label (`Opening the profile +
+Importing from DCS`: one click, several saves). Two guards do not depend on the step's own label (a GUI label can go into
+the history translated): the step right after a `Before import from` checkpoint, and a step that made 3 or more new
+relations or binds (the old pass made none). No signal says more: nothing in the history records what the game's files
+held, an export writes the old pass's aircraft into those files as well, and `RelationItem.FromGameFiles` exists only for
+imports since 2.6.2. An import that also held the old pass's aircraft (the old pass ran inside the same save) is therefore
+offered in no part: a real bind must never be called a mistake. `relations check-aircraft` still looks at those.
 
 `relations duplicates` lists them as cards per relation pair (`Groups`: the relations with device and input, the actions
 with their aircraft as the cockpit catalog names them, `Suggested` or `SuggestOff`, `Confidence` 0-100, `Reasons`) and as
@@ -902,7 +969,13 @@ function id when the map proposed it); `Source` is `function map` for those rows
 - Engine: `engine/tests/smoke/searchliteral.ps1` (real game lists): titles with every word, every word covered, and
   (2.6.2) the sections: `brakes` with Axes for the F-4E and the Spitfire names every Wheel Brake axis (`name`), the
   seven category hits `related` by `category` with `Category match`, `thrust` the throttles as `function` by a synonym,
-  `make the plane go faster` by its description, `master switches` name-matches "MASTER Switch", Browse has no sections.
+  `make the plane go faster` by its description, `master switches` name-matches "MASTER Switch", Browse has no sections;
+  (2.6.3) `LMFD OSB 15`, `lmfd osb15` and `LMFD OSB-15` in Falcon BMS (the LMFD row the one recommended name match, the
+  others `related` by `lacks-word`), `OSB 15` in BMS and the DCS F-16, `LMFD OSB 15` in the F-16 and what must stay
+  (`gear up` Toggle Gear, `yaw left` the rudder axis, `F-16 thrust`, `center view`).
+- GUI: `TesterBatch263Tests` (a row with some of its aircraft in the relation, the highlight, the game chips over
+  relations and new searches, nothing in the chosen games, the left filter, "Which model?", its click and the answer after
+  a restart), `GameChipsPersistTests`. Pictures: `JOYPRO_263_RENDER_OUT`, `JOYPRO_263_ENGINE`, `JOYPRO_263_PROFILE`.
 - GUI: `gui/JoyPro.Gui.Tests/SameMeaningTests.cs`: the real engine with "Wheel Brakes (analog)" (the Spitfire's axis)
   for the tester's aircraft: the empty start, "brakes" (name matches, `Related (7)` folded and opened, the reasons,
   `axis (sim-pit switch)`), Same meaning off (only names, the hidden count; `thrust`: "no name match" and Show same

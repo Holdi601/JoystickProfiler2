@@ -229,10 +229,43 @@ namespace JoyPro.DeviceReference
             {
                 string vidPid = DeviceCatalog.NormalizeVidPid(probe.VidPid);
                 List<RefDevice> same = catalog.Devices.Where(d => d.Kind != "base" && !d.IsGrip && vidPid.Length > 0 && d.VidPids.Contains(vidPid)).ToList();
-                if (same.Count >= 2)
+                if (same.Count >= 2 && !(NameNamesAll(probe, same) && SameInputs(same)))
                     return new DeviceQuestion { Kind = "model", Candidates = Rank(same, probe, catalog, model) };
             }
             return null;
+        }
+
+        // The device's own name lists every one of these models, and they have the same inputs: "MFG Crosswind V2/3" for
+        // the Crosswind V2 and V3. The answer would change nothing about its binds, so JoyPro does not ask (Model... on the
+        // Layout page can still say which one it is).
+        private static bool NameNamesAll(DeviceProbe probe, List<RefDevice> models)
+        {
+            string raw = (probe.ProductName ?? string.Empty).Length > 0 ? probe.ProductName : DeviceProbe.RemoveGuid(probe.InstanceName ?? string.Empty);
+            if (raw == null || raw.IndexOfAny(new[] { '/', '&', ',', '_' }) < 0 || models.Count == 0)
+                return false;
+            string name = DeviceCatalog.Normalize(raw);
+            List<string> names = models.SelectMany(m => m.Names).Select(DeviceCatalog.Normalize).Where(n => n.Length > 0).Distinct().ToList();
+            if (names.Count < models.Count)
+                return false;
+            // What the models' names have in common comes first in the device's name, then what tells them apart.
+            string common = names[0];
+            foreach (string other in names.Skip(1))
+            {
+                int n = 0;
+                while (n < common.Length && n < other.Length && common[n] == other[n])
+                    n++;
+                common = common.Substring(0, n);
+            }
+            if (common.Length < 4 || !name.StartsWith(common, StringComparison.Ordinal))
+                return false;
+            string rest = name.Substring(common.Length);
+            return names.All(n => n.Length > common.Length && rest.Contains(n.Substring(common.Length)));
+        }
+
+        private static bool SameInputs(List<RefDevice> models)
+        {
+            Func<RefDevice, string> inputs = m => string.Join(",", m.AllControls.Select(c => c.Input).Where(i => !string.IsNullOrEmpty(i)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(i => i, StringComparer.OrdinalIgnoreCase));
+            return models.Select(inputs).Distinct(StringComparer.OrdinalIgnoreCase).Count() == 1;
         }
 
         // Whether the device's own name tells this grip apart from the other grips of the base: a word of the grip's

@@ -27,6 +27,8 @@ namespace JoyPro.Engine
         // A title with every typed word, when the query does not name a function with all of its words: before every
         // row that only means the same (docs/relation-builder.md "Ranking").
         private const int LiteralScore = 2000;
+        // A row of the function without a number or side the query names (FollowDistinguishing): after every row that has it.
+        private const int LacksWordPenalty = 300;
 
         private static readonly HashSet<string> Filler = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -52,7 +54,12 @@ namespace JoyPro.Engine
             public int Cluster;
             // The title has every typed word (LiteralHits); LiteralShare: how much of the title they are, in percent.
             public bool Literal;
+            // All of them as whole words ("hot" is only the start of "HOTAS").
+            public bool LiteralWhole;
             public double LiteralShare;
+            // A number or side the query names and this row does not have (DistinguishingWords): it is the function, but
+            // not what was asked for, so it is listed under Related.
+            public List<string> Lacks = new List<string>();
             // The functions of the query that found it (FunctionHits), and whether the game id or command key typed found
             // it (KeyHits): the precision rule keeps those rows.
             public readonly HashSet<string> FoundBy = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -103,6 +110,9 @@ namespace JoyPro.Engine
             Dictionary<string, Row> rows = new Dictionary<string, Row>(StringComparer.OrdinalIgnoreCase);
             // The functions the query was read as (by id, the first reading of each): a row's section and why it was found.
             Dictionary<string, EngineFunctionMap.Resolved> understood = new Dictionary<string, EngineFunctionMap.Resolved>(StringComparer.OrdinalIgnoreCase);
+            // The functions the query names with all of its words ("center view", "thrust"): an action of one fits like a
+            // title with every word (QueryFit).
+            HashSet<string> namedFunctions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (words.Length == 0)
             {
                 // A whole category, by title.
@@ -151,6 +161,8 @@ namespace JoyPro.Engine
                             rows.Remove(key);
                     }
                 }
+                string[] mustCover = NeededWords(map, words);
+                namedFunctions.UnionWith(u.Functions.Where(r => !r.Related && !r.Described && Covers(map, r, mustCover)).Select(r => r.Function.Id));
                 foreach (EngineFunctionMap.Resolved r in u.Functions)
                 {
                     EngineFunctionMap.Resolved first;
@@ -190,6 +202,7 @@ namespace JoyPro.Engine
             List<Row> shown = Limit(capped, limit, words.Where(w => !map.QueryFiller.Contains(w) && !map.Stopwords.Contains(w)).ToArray());
             result.More = shown.Count < ranked.Count;
             List<KeyValuePair<string, string>> typed = TypedWords(map, words, result.DidYouMean.Length > 0 ? result.DidYouMean : result.Query);
+            Dictionary<EngineRelationSearchHit, int> fits = new Dictionary<EngineRelationSearchHit, int>();
             foreach (Row row in shown)
             {
                 // A DCS row holds every aircraft whose meaning of the id is the row's (same or near title and category),
@@ -258,7 +271,10 @@ namespace JoyPro.Engine
                     InRelations = inRelations.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(r => r, StringComparer.OrdinalIgnoreCase).ToList()
                 };
                 if (words.Length > 0)
-                    Explain(map, row, hit, understood, typed);
+                {
+                    Explain(map, row, hit, understood, typed, result.DidYouMean.Length > 0 ? result.DidYouMean : result.Query);
+                    fits[hit] = QueryFit(row, hit, namedFunctions);
+                }
                 result.Results.Add(hit);
             }
             foreach (IGrouping<string, EngineRelationSearchHit> game in result.Results.GroupBy(h => h.Game).OrderByDescending(g => g.Max(h => h.Score)).ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase))
@@ -288,7 +304,7 @@ namespace JoyPro.Engine
             result.ElapsedMilliseconds = watch.ElapsedMilliseconds;
             // After the search's own time: the explanations come from an index read once per run.
             if (!wholeList)
-                Choose(map, result.Results, false);
+                Choose(map, result.Results, false, words.Length > 0 ? fits : null);
             return result;
         }
 
@@ -305,8 +321,107 @@ namespace JoyPro.Engine
             // Every title with all the typed words is a hit, and it leads unless the query names a function with
             // all its words ("pitch", "gear up": that function's rows lead as before).
             bool literalLeads = !u.Functions.Any(r => !r.Related && !r.Described) || u.Extra.Count > 0;
-            LiteralHits(map, LiteralWords(query), wanted, rows, literalLeads);
-            return KeyHits(map, query, wanted, rows);
+            string[] distinguishing = DistinguishingWords(words, u);
+            LiteralHits(map, LiteralWords(query), wanted, rows, literalLeads || distinguishing.Length > 0);
+            bool keyHit = KeyHits(map, query, wanted, rows);
+            FollowDistinguishing(u, distinguishing, rows);
+            return keyHit;
+        }
+
+        // ---- A number or side the query names (docs/relation-builder.md "Words that tell actions apart") ----
+
+        // A side and what names it in a title: "LMFD" is the left display, as "Left MFD" is.
+        private static readonly Dictionary<string, string> SideOfWord = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "left", "left" }, { "lh", "left" }, { "port", "left" }, { "lmfd", "left" }, { "lmfcd", "left" }, { "lddi", "left" }, { "lmpcd", "left" }, { "mpcdl", "left" }, { "mpdl", "left" },
+            { "right", "right" }, { "rh", "right" }, { "starboard", "right" }, { "stbd", "right" }, { "rmfd", "right" }, { "rmfcd", "right" }, { "rddi", "right" }, { "rmpcd", "right" }, { "mpcdr", "right" }, { "mpdr", "right" }
+        };
+
+        // Other displays: words of the title only ("FMFD: OSB-15" is not "TMFD: OSB-15").
+        private static readonly HashSet<string> DisplayWords = new HashSet<string>(StringComparer.Ordinal) { "fmfd", "tmfd", "mmfd" };
+
+        // Positions; up, down, forward and aft are directions of the functions, read by the direction rules ("gear up"
+        // still finds "Toggle Gear").
+        private static readonly HashSet<string> PositionWords = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "top", "bottom", "center", "centre", "middle", "upper", "inner", "outer"
+        };
+
+        // The words of a query that tell actions of one function apart: a number ("15"), a side or position ("LMFD",
+        // "left"). The number of an aircraft's name ("F-16", "A-10", "Mi 8") tells nothing about the action, and neither
+        // does a number or position that is part of the function's own name ("fox 2", "center view").
+        internal static string[] DistinguishingWords(string[] words, EngineFunctionMap.Understanding u)
+        {
+            List<string> found = new List<string>();
+            Func<string, bool> named = w => u != null && u.Functions.Any(r => !r.Related && r.Words.Contains(w));
+            for (int i = 0; i < words.Length; i++)
+            {
+                string w = words[i];
+                if (w.All(char.IsDigit))
+                {
+                    if (i > 0 && words[i - 1].Length <= 2 && words[i - 1].All(char.IsLetter))
+                        continue;
+                    if (!named(w))
+                        found.Add(w);
+                }
+                else if (SideOfWord.ContainsKey(w) || DisplayWords.Contains(w) || (PositionWords.Contains(w) && !named(w)))
+                {
+                    found.Add(w);
+                }
+            }
+            return found.Distinct().ToArray();
+        }
+
+        // Rows found as a function of the query that do not have such a word go down and to Related: for "LMFD OSB 15" the
+        // MFD switches and the other displays' OSB 15, not "the same function". A row of the query's own direction has it
+        // (an OSB's key), an axis of a function without one axis per side too ("yaw left" is still the rudder).
+        private static void FollowDistinguishing(EngineFunctionMap.Understanding u, string[] distinguishing, Dictionary<string, Row> rows)
+        {
+            if (distinguishing.Length == 0)
+                return;
+            foreach (Row row in rows.Values)
+            {
+                row.Lacks.Clear();
+                if (row.Literal || row.Key || row.Function.Length == 0)
+                    continue;
+                EngineFunctionMap.Resolved r = u.Functions.FirstOrDefault(x => string.Equals(x.Function.Id, row.Function, StringComparison.OrdinalIgnoreCase));
+                if (r == null || r.Related)
+                    continue;
+                foreach (string word in distinguishing)
+                {
+                    if (!HasDistinguishing(row, r, word))
+                        row.Lacks.Add(word);
+                }
+                if (row.Lacks.Count > 0)
+                    row.Score -= LacksWordPenalty;
+            }
+        }
+
+        private static bool HasDistinguishing(Row row, EngineFunctionMap.Resolved r, string word)
+        {
+            string[] title = row.Entry.Words;
+            if (title.Contains(word))
+                return true;
+            string[] dir = (row.Dir ?? string.Empty).Split(' ');
+            if (word.All(char.IsDigit))
+                return dir.Contains(word) || r.Words.Contains(word);
+            string side;
+            if (!SideOfWord.TryGetValue(word, out side))
+                return false;
+            string own;
+            return dir.Contains(side) || title.Any(t => SideOfWord.TryGetValue(t, out own) && own == side) || (row.First.IsAxis && !r.Function.Sided);
+        }
+
+        // How well a row fits the query, for the recommendation: 0 related, 2 a function the query only partly names or
+        // describes, 3 every typed word as a whole word in its title, or an action of the function the query names, 4 the
+        // whole title typed.
+        private static int QueryFit(Row row, EngineRelationSearchHit hit, HashSet<string> namedFunctions)
+        {
+            if (hit.Section == "related")
+                return 0;
+            if (row.Match == "exact" || (row.LiteralWhole && row.LiteralShare >= 100))
+                return 4;
+            return row.LiteralWhole || row.Primary || (row.Function.Length > 0 && namedFunctions.Contains(row.Function)) ? 3 : 2;
         }
 
         // The words a result must cover for the precision rule: the query's words without filler ("the", "please",
@@ -343,7 +458,7 @@ namespace JoyPro.Engine
         //   related   everything looser: a related function, the function catalog alone (the title does not say so), a
         //             word of the category only, some of the words, a similar word (a word start or a typo).
         private static void Explain(EngineFunctionMap.Map map, Row row, EngineRelationSearchHit hit, Dictionary<string, EngineFunctionMap.Resolved> understood,
-            List<KeyValuePair<string, string>> typed)
+            List<KeyValuePair<string, string>> typed, string query)
         {
             EngineFunctionMap.Resolved r = null;
             EngineFunctionMap.Function f = null;
@@ -368,9 +483,15 @@ namespace JoyPro.Engine
                     EngineFunctionMap.Tokenize(r.Term).Intersect(EngineFunctionMap.Tokenize(r.Function.Name)).Any() ? "name" : "synonym";
             }
             bool functionHit = r != null && !r.Related && (row.Match == "exact" || row.Match == "function" || row.Match == "synonym" || row.Match == "described");
-            hit.Section = row.Literal ? "name" : functionHit || row.Key ? "function" : "related";
+            hit.Section = row.Literal ? "name" : row.Lacks.Count == 0 && (functionHit || row.Key) ? "function" : "related";
             if (hit.Section != "related")
                 return;
+            if (row.Lacks.Count > 0)
+            {
+                hit.RelatedBy = "lacks-word";
+                hit.MissingWords = row.Lacks.Select(w => AsTyped(query, w)).ToList();
+                return;
+            }
             if (row.Match == "catalog")
             {
                 hit.RelatedBy = "catalog";
@@ -392,6 +513,17 @@ namespace JoyPro.Engine
                     hit.CloseWords.Add(word.Value);
             }
             hit.RelatedBy = hit.TitleWords.Count == 0 && hit.CategoryWords.Count > 0 ? "category" : hit.TitleWords.Count == 0 && hit.CloseWords.Count > 0 ? "similar" : "some-words";
+        }
+
+        // The word as typed ("LMFD" for the token "lmfd").
+        private static string AsTyped(string query, string token)
+        {
+            foreach (string piece in Regex.Split(query ?? string.Empty, @"[^\p{L}\p{N}]+"))
+            {
+                if (EngineFunctionMap.Tokenize(piece).Contains(token))
+                    return EngineFunctionMap.Tokenize(piece).Length == 1 ? piece : token;
+            }
+            return token;
         }
 
         // A function of the query explains every needed word: by the phrase or description that found it, by its name or
@@ -548,7 +680,7 @@ namespace JoyPro.Engine
                         result.Results.Add(hit);
                     }
                     result.Results.Sort((a, b) => string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase));
-                    Choose(map, result.Results, true);
+                    Choose(map, result.Results, true, null);
                     foreach (KeyValuePair<string, int> category in categories.OrderBy(c => c.Key == NoCategory ? 1 : 0).ThenBy(c => c.Key, StringComparer.OrdinalIgnoreCase))
                     {
                         int n;
@@ -570,7 +702,8 @@ namespace JoyPro.Engine
         // The recommended action per game (DCS: aircraft) and function among the rows, the others explained, and what
         // each action is in words (EngineActionChoice, EngineActionInfo). A row found as a function is grouped by it;
         // ownFunction (the catalog browser): every row by the function the map reads it as surely (weight 0.9+).
-        private static void Choose(EngineFunctionMap.Map map, List<EngineRelationSearchHit> hits, bool ownFunction)
+        // fits (a search with words, QueryFit): the recommendation follows the query (FollowQuery).
+        private static void Choose(EngineFunctionMap.Map map, List<EngineRelationSearchHit> hits, bool ownFunction, Dictionary<EngineRelationSearchHit, int> fits)
         {
             List<EngineActionChoice.Item> items = new List<EngineActionChoice.Item>();
             List<EngineRelationSearchHit> grouped = new List<EngineRelationSearchHit>();
@@ -628,6 +761,68 @@ namespace JoyPro.Engine
                 hit.Explanation = info.Explanation;
                 hit.ExplanationSource = info.Source;
             }
+            if (fits != null)
+                FollowQuery(hits, grouped, items, fits);
+        }
+
+        // In a search "Recommended" answers the words typed: per game (DCS: aircraft) only the rows that fit them best
+        // compete, by the same rules as everywhere else (docs/relation-builder.md "Recommended action"). A row without
+        // the query's words never gets it from a row with them, a related row never gets it, and a row that fits best is
+        // no "variant" of one that fits worse. A title with every word needs no function of the map to win.
+        private static void FollowQuery(List<EngineRelationSearchHit> hits, List<EngineRelationSearchHit> grouped, List<EngineActionChoice.Item> items, Dictionary<EngineRelationSearchHit, int> fits)
+        {
+            Dictionary<EngineRelationSearchHit, EngineActionChoice.Item> first = new Dictionary<EngineRelationSearchHit, EngineActionChoice.Item>();
+            for (int i = 0; i < grouped.Count; i++)
+                first[grouped[i]] = items[i];
+            Func<EngineRelationSearchHit, IEnumerable<string>> places = h => h.Game == "DCS" && h.Planes.Count > 0 ? h.Planes.Select(p => "DCS|" + p) : new[] { h.Game };
+            Dictionary<string, int> best = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (EngineRelationSearchHit hit in hits)
+            {
+                int fit;
+                fits.TryGetValue(hit, out fit);
+                foreach (string place in places(hit))
+                {
+                    int known;
+                    if (!best.TryGetValue(place, out known) || fit > known)
+                        best[place] = fit;
+                }
+            }
+            List<EngineRelationSearchHit> top = new List<EngineRelationSearchHit>();
+            List<EngineActionChoice.Item> topItems = new List<EngineActionChoice.Item>();
+            foreach (EngineRelationSearchHit hit in hits)
+            {
+                int fit;
+                fits.TryGetValue(hit, out fit);
+                hit.Recommended = false;
+                hit.RecommendedFor = string.Empty;
+                hit.Group = string.Empty;
+                hit.Alternatives = 0;
+                if (fit == 0)
+                    hit.Variant = string.Empty;
+                List<string> at = places(hit).Where(p => best[p] == fit).ToList();
+                if (fit == 0 || at.Count == 0)
+                    continue;
+                EngineActionChoice.Item known;
+                first.TryGetValue(hit, out known);
+                top.Add(hit);
+                topItems.Add(new EngineActionChoice.Item
+                {
+                    Game = hit.Game, Id = hit.Id, Title = hit.Readable, Category = hit.Category,
+                    Planes = hit.Game == "DCS" ? at.Select(p => p.Substring(4)).ToList() : hit.Planes.ToList(),
+                    Function = known != null ? known.Function : "|" + (hit.IsAxis ? "a" : "b"),
+                    Known = known != null ? known.Known : new HashSet<string>(StringComparer.Ordinal),
+                    Score = hit.Score, PrimaryRank = known != null ? known.PrimaryRank : -1
+                });
+            }
+            EngineActionChoice.Mark(topItems, true);
+            for (int i = 0; i < top.Count; i++)
+            {
+                top[i].Recommended = topItems[i].Recommended;
+                top[i].RecommendedFor = topItems[i].RecommendedFor;
+                top[i].Variant = topItems[i].Variant;
+                top[i].Group = topItems[i].Group;
+                top[i].Alternatives = topItems[i].Alternatives;
+            }
         }
 
         internal const string NoCategory = "Other";
@@ -672,7 +867,8 @@ namespace JoyPro.Engine
                     // action without one and an axis follow; the opposite direction is no hit.
                     if (r.Dir.Length > 0)
                     {
-                        if (string.Equals(a.Dir, r.Dir, StringComparison.OrdinalIgnoreCase))
+                        // "OSB 15" names no side: the key of either display ("left 15", "right 15") is that key.
+                        if (string.Equals(a.Dir, r.Dir, StringComparison.OrdinalIgnoreCase) || (r.Function.Keyed == "number" && r.Dir.All(char.IsDigit) && a.Dir.EndsWith(" " + r.Dir, StringComparison.Ordinal)))
                             dirScore = 40;
                         else if (a.Dir == "toggle")
                             dirScore = -100;
@@ -734,7 +930,7 @@ namespace JoyPro.Engine
 
         private static bool HasWord(EngineFunctionMap.Entry entry, string word)
         {
-            foreach (string t in entry.TitleTokens)
+            foreach (string t in entry.Words)
             {
                 if (t == word || (word.Length >= 3 && t.StartsWith(word, StringComparison.Ordinal)))
                     return true;
@@ -754,6 +950,8 @@ namespace JoyPro.Engine
         private sealed class WordIndex
         {
             public readonly Dictionary<string, List<int>> Title = new Dictionary<string, List<int>>(StringComparer.Ordinal);
+            // Every word the title shows, its panel tag too (Entry.Words): what "the title has every word" reads.
+            public readonly Dictionary<string, List<int>> Shown = new Dictionary<string, List<int>>(StringComparer.Ordinal);
             public readonly Dictionary<string, List<int>> Id = new Dictionary<string, List<int>>(StringComparer.Ordinal);
             public readonly Dictionary<string, List<int>> Category = new Dictionary<string, List<int>>(StringComparer.Ordinal);
             public string[] Vocabulary = new string[0];
@@ -773,6 +971,8 @@ namespace JoyPro.Engine
                 EngineFunctionMap.Entry entry = map.Entries[i];
                 foreach (string t in entry.TitleTokens.Distinct())
                     AddTo(index.Title, t, i);
+                foreach (string t in entry.Words.Distinct())
+                    AddTo(index.Shown, t, i);
                 if (entry.Command.Game != "DCS")
                 {
                     string[] ids;
@@ -789,7 +989,7 @@ namespace JoyPro.Engine
                     AddTo(index.Category, t, i);
             }
             index.Vocabulary = index.Title.Keys.Concat(index.Id.Keys).Distinct(StringComparer.Ordinal).ToArray();
-            index.TitleVocabulary = index.Title.Keys.ToArray();
+            index.TitleVocabulary = index.Shown.Keys.ToArray();
             wordIndex = index;
             return index;
         }
@@ -970,14 +1170,14 @@ namespace JoyPro.Engine
             {
                 HashSet<int> set = new HashSet<int>();
                 List<int> list;
-                if (index.Title.TryGetValue(term, out list))
+                if (index.Shown.TryGetValue(term, out list))
                     set.UnionWith(list);
                 whole.Add(list ?? new List<int>());
                 if (term.Length >= 3)
                 {
                     foreach (string token in index.TitleVocabulary)
                     {
-                        if (token.Length > term.Length && token.StartsWith(term, StringComparison.Ordinal) && index.Title.TryGetValue(token, out list))
+                        if (token.Length > term.Length && token.StartsWith(term, StringComparison.Ordinal) && index.Shown.TryGetValue(token, out list))
                             set.UnionWith(list);
                     }
                 }
@@ -1003,7 +1203,7 @@ namespace JoyPro.Engine
                 EngineFunctionMap.Entry entry = map.Entries[e];
                 if (!wanted(entry.Command))
                     continue;
-                int titleWords = Math.Max(literal.Length, entry.TitleTokens.Count(t => !Filler.Contains(t)));
+                int titleWords = Math.Max(literal.Length, entry.Words.Count(t => !Filler.Contains(t)));
                 double share = 100.0 * literal.Length / titleWords;
                 Row row = Add(rows, entry, WordScore + share * 1.5, "Title has every word", "words", null);
                 if (literalRows.Add(row))
@@ -1015,7 +1215,10 @@ namespace JoyPro.Engine
                         row.LiteralShare += 0.5;
                 }
                 if (wholeWords.Contains(e))
+                {
                     leading.Add(row);
+                    row.LiteralWhole = true;
+                }
             }
             foreach (Row row in literalRows)
             {
@@ -1264,11 +1467,14 @@ namespace JoyPro.Engine
         public string GameTerm { get; set; }
         // A related row: "function" (a related function), "catalog" (only the function catalog says so), "category" (a
         // word of its category only), "some-words" (some of the words are in the title), "similar" (a word start or a
-        // typo); the typed words found in the title, only in the category, or only as something similar.
+        // typo), "lacks-word" (the function, without a number or side typed: MissingWords); the typed words found in the
+        // title, only in the category, or only as something similar.
         public string RelatedBy { get; set; }
         public List<string> TitleWords { get; set; }
         public List<string> CategoryWords { get; set; }
         public List<string> CloseWords { get; set; }
+        // A related row by "lacks-word": the number or side typed that its title does not have ("LMFD").
+        public List<string> MissingWords { get; set; }
 
         public EngineRelationSearchHit()
         {
@@ -1278,6 +1484,7 @@ namespace JoyPro.Engine
             TitleWords = new List<string>();
             CategoryWords = new List<string>();
             CloseWords = new List<string>();
+            MissingWords = new List<string>();
             Functions = new List<string>();
             Planes = new List<string>();
             InRelations = new List<string>();

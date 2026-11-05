@@ -1069,7 +1069,10 @@
                                                                         <Border Classes="chip device" IsVisible="{Binding HasKindLabel}"><TextBlock Text="{Binding KindLabel}" /></Border>
                                                                         <Border Classes="chip ok" IsVisible="{Binding InProfile}"><TextBlock Text="{l:T 'In your profile'}" /></Border>
                                                                         <Border Classes="chip warn" IsVisible="{Binding !InProfile}"><TextBlock Text="{l:T 'Not used yet'}" /></Border>
-                                                                        <Border Classes="chip warn" IsVisible="{Binding NeedsGrip}"><TextBlock Text="{l:T 'Which grip?'}" /></Border>
+                                                                        <Button Classes="chipButton" IsVisible="{Binding NeedsGrip}"
+                                                                                Command="{Binding #RootWindow.DataContext.AnswerDeviceCardQuestionCommand}" CommandParameter="{Binding}" ToolTip.Tip="{Binding QuestionTip}">
+                                                                            <Border Classes="chip warn"><TextBlock Text="{Binding QuestionChip}" /></Border>
+                                                                        </Button>
                                                                     </WrapPanel>
                                                                 </StackPanel>
                                                             </Grid>
@@ -1272,7 +1275,7 @@
                                              SelectionChanged="RelationsListSelectionChanged"
                                              KeyDown="RelationsListKeyDown"
                                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                             MinHeight="120">
+                                             MinHeight="60">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate x:DataType="models:RelationListItem">
                                                 <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="5" ToolTip.Tip="{Binding Groups}" Background="Transparent">
@@ -2227,7 +2230,7 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
-                                            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="4" IsVisible="{Binding HasBuilderSearchResults}">
+                                            <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="4" IsVisible="{Binding ShowBuilderSearchGameChips}">
                                                 <ItemsControl ItemsSource="{Binding BuilderSearchGamesTop}">
                                                     <ItemsControl.ItemsPanel>
                                                         <ItemsPanelTemplate>
@@ -2277,6 +2280,15 @@
                                                                IsVisible="{Binding BuilderSearchStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                                                     <TextBlock Classes="caption" Text="{Binding BuilderSearchHint}" TextWrapping="Wrap"
                                                                IsVisible="{Binding ShowBuilderSearchHint}" />
+                                                    <!-- The chosen game chips have nothing for this search: said plainly, one click shows every game -->
+                                                    <Border x:Name="BuilderChosenGamesEmptyCallout" Classes="callout" IsVisible="{Binding ShowBuilderChosenGamesEmpty}" Margin="0,4,0,0">
+                                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                                            <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" VerticalAlignment="Top" />
+                                                            <TextBlock Grid.Column="1" Text="{Binding BuilderChosenGamesEmptyText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                                                            <Button Grid.Column="2" Classes="small accent" Content="{l:T 'Show all games'}" Command="{Binding ShowAllBuilderSearchGamesCommand}" VerticalAlignment="Top"
+                                                                    ToolTip.Tip="{l:T 'Switches the game chips off: the search goes over every game again'}" />
+                                                        </Grid>
+                                                    </Border>
                                                     <!-- Same meaning off and no title with every word: said plainly, one click switches it on -->
                                                     <Border x:Name="BuilderNoNameMatchesCallout" Classes="callout" IsVisible="{Binding ShowBuilderNoNameMatches}" Margin="0,4,0,0">
                                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
@@ -2384,7 +2396,7 @@
                                                                         <TextBlock Grid.Column="2" Classes="caption" Text="{Binding KindLabel}" VerticalAlignment="Center" ToolTip.Tip="{Binding KindTip}" />
                                                                     </Grid>
                                                                     <WrapPanel ItemSpacing="6" IsVisible="{Binding IsRecommended}">
-                                                                        <Border Classes="chip recommended" ToolTip.Tip="{l:T 'The one action to take in this game (or aircraft): the function\'s main control, not a variant'}">
+                                                                        <Border Classes="chip recommended" ToolTip.Tip="{l:T 'What fits your words best in this game (or aircraft); of several actions for one thing the main control, not a variant'}">
                                                                             <TextBlock Text="{Binding RecommendedLabel}" />
                                                                         </Border>
                                                                     </WrapPanel>

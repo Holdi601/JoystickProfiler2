@@ -769,6 +769,12 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     public void AddFiveActionRelation() => relations.Add(("Button CP2 B3", false, Stick + "::JOY_BTN3",
         [("DCS", "d3001pnilu3001", "F-5E-3"), ("DCS", "d3002pnilu3002", "AJS37"), ("DCS", "d3003pnilu3003", "SpitfireLFMkIX"), ("DCS", "d3004pnilu3004", "FA-18C_hornet"), ("DCS", "d3005pnilu3005", "AH-64D_BLK_II")]));
 
+    // Any relation (TesterBatch263Tests).
+    public void AddRelation(string name, bool axis, string bind, params (string Game, string Id, string Planes)[] nodes) => relations.Add((name, axis, bind, nodes.ToList()));
+
+    // "relations search" answers with this when it returns something (the arguments; null: the usual rows).
+    public Func<IReadOnlyList<string>, string?>? SearchOverride { get; set; }
+
     // "relations aircraft" answers with this when set (the nodes' titles in their games).
     public string AircraftJson { get; set; } = string.Empty;
 
@@ -923,6 +929,8 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
                    "\"Misfits\":[{\"Game\":\"DCS\",\"Id\":\"d3015\",\"Title\":\"Countermeasures Management Switch - Aft\",\"Planes\":[\"F-16C_50\"],\"Reason\":\"The function catalog files it under 'CMS Aft'.\",\"BelongsTo\":\"CMS Aft\",\"MoveTo\":\"Chaff\"}]," +
                    "\"Dismissed\":[" + dismissedJson + "],\"Relations\":[],\"Warnings\":[],\"Errors\":[]}";
         }
+        if (AxisTuningTests.Seq(args, "relations", "search") && SearchOverride?.Invoke(args) is { } searchAnswer)
+            return searchAnswer;
         if (AxisTuningTests.Seq(args, "relations", "search"))
         {
             bool axisOnly = args.Contains("--axis");

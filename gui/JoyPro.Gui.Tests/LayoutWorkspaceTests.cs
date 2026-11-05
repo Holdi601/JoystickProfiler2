@@ -336,6 +336,10 @@ public sealed class LayoutWorkspaceTests
         Assert.NotNull(vm.WorkspaceSchematic);
         Assert.Empty(vm.DeviceReference.CanvasMarkers);
         Assert.NotEmpty(vm.ReferenceLegendItems);
+        // Its USB id is also the Dual Throttle's: JoyPro asks which one first, as on the device's card on the Start page.
+        Assert.True(vm.ShowReferenceQuestion);
+        Assert.False(vm.ShowPlaceMarkersHint);
+        vm.DeviceReference.DismissQuestionCommand.Execute(null);
         Assert.True(vm.ShowPlaceMarkersHint);
         Assert.Same(vm.DeviceReference.CanvasMarkers, vm.WorkspaceMarkers);
         Assert.Contains("No layout file of Throttle - HOTAS Warthog yet", vm.LayoutEditorStatus, StringComparison.Ordinal);

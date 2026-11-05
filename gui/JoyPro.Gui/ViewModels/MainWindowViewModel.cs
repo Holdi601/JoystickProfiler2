@@ -6073,6 +6073,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         {
             layoutDeviceToShow = null;
             await ShowWorkspaceDeviceAsync(device);
+            await AskDeviceQuestionIfWantedAsync(device);
             return;
         }
         PickFirstLayoutDevice();
@@ -10862,9 +10863,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             string.Equals(v.Name, target, StringComparison.OrdinalIgnoreCase));
         if (match == null)
         {
-            // The filters hide it: they go off (the search box too).
-            if (RelationFilter.IsFiltered)
-                RelationFilter.ClearAll();
+            // The filters hide it: they stay, it is listed as long as it is open.
+            ShowRelationDespiteFilter(allRelations.FirstOrDefault(v => string.Equals(v.Name, target, StringComparison.OrdinalIgnoreCase))?.Name ?? string.Empty);
 
             match = Relations.FirstOrDefault(v =>
                 string.Equals(v.Name, target, StringComparison.OrdinalIgnoreCase));
@@ -12341,6 +12341,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             UseUsageStyle = state.UsageStyle ?? true;
             SupportIncludeProfile = state.SupportIncludeProfile ?? true;
             BuilderShowSameMeaning = state.AddActionsSameMeaning ?? true;
+            builderChosenGames.Clear();
+            builderChosenGames.AddRange((state.AddActionsGames ?? []).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.OrdinalIgnoreCase));
+            builderSuggestionChosenGames.Clear();
+            builderSuggestionChosenGames.AddRange((state.SuggestedGames ?? []).Where(g => !string.IsNullOrWhiteSpace(g)).Distinct(StringComparer.OrdinalIgnoreCase));
             if (state.MarkerAssistantX is double assistantX && double.IsFinite(assistantX) && state.MarkerAssistantY is double assistantY && double.IsFinite(assistantY))
                 SetMarkerAssistantOffset(Math.Min(assistantX, 4000), Math.Min(assistantY, 3000), keep: false);
             if (!string.IsNullOrWhiteSpace(state.OverlayPlaneChoice))
@@ -12422,6 +12426,8 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 UsageStyle = UseUsageStyle,
                 SupportIncludeProfile = SupportIncludeProfile,
                 AddActionsSameMeaning = BuilderShowSameMeaning,
+                AddActionsGames = builderChosenGames.ToList(),
+                SuggestedGames = builderSuggestionChosenGames.ToList(),
                 MarkerAssistantX = MarkerAssistantOffsetX > 0 || MarkerAssistantOffsetY > 0 ? MarkerAssistantOffsetX : null,
                 MarkerAssistantY = MarkerAssistantOffsetX > 0 || MarkerAssistantOffsetY > 0 ? MarkerAssistantOffsetY : null
             };
@@ -12703,6 +12709,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         // Relations > Add actions (and Settings > Relations): also the actions found by what they do, not only the titles
         // with every typed word (null: on).
         public bool? AddActionsSameMeaning { get; set; }
+
+        // Relations > Add actions: the game chips that are on (empty: every game); the same for Suggested for this relation.
+        public List<string>? AddActionsGames { get; set; }
+
+        public List<string>? SuggestedGames { get; set; }
 
         // The Layout page's switches, the picks of Apply Selected and the cheat-sheet options (MainWindowViewModel.LayoutUiSettings.cs).
         public LayoutUiSettings? Layout { get; set; }

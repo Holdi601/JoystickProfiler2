@@ -53,8 +53,8 @@ namespace JoyPro.Engine.Games
             "AXIS_PAN_TILT|a|" + Views + "|View pan tilt axis",
 
             // Flight controls as buttons.
-            "ELEV_UP|b|" + Flight + "|Elevator up (nose down)",
-            "ELEV_DOWN|b|" + Flight + "|Elevator down (nose up)",
+            "ELEV_UP|b|" + Flight + "|Elevator up (nose up)",
+            "ELEV_DOWN|b|" + Flight + "|Elevator down (nose down)",
             "AILERONS_LEFT|b|" + Flight + "|Ailerons left",
             "AILERONS_RIGHT|b|" + Flight + "|Ailerons right",
             "RUDDER_LEFT|b|" + Flight + "|Rudder left",
@@ -63,8 +63,8 @@ namespace JoyPro.Engine.Games
             "CENTER_AILER_RUDDER|b|" + Flight + "|Centre ailerons and rudder",
 
             // Trim.
-            "ELEV_TRIM_UP|b|" + Trim + "|Elevator trim up (nose down)",
-            "ELEV_TRIM_DN|b|" + Trim + "|Elevator trim down (nose up)",
+            "ELEV_TRIM_UP|b|" + Trim + "|Elevator trim up (nose up)",
+            "ELEV_TRIM_DN|b|" + Trim + "|Elevator trim down (nose down)",
             "AILERON_TRIM_LEFT|b|" + Trim + "|Aileron trim left",
             "AILERON_TRIM_RIGHT|b|" + Trim + "|Aileron trim right",
             "RUDDER_TRIM_LEFT|b|" + Trim + "|Rudder trim left",

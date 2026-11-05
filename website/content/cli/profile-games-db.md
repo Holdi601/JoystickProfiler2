@@ -189,15 +189,19 @@ engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile aut
 - A step counts when it was made by a change (not an undo, a restore, an import, a take-over or a builder such as Auto
   Group), its version has another DB fingerprint than the version it was made on, and aircraft went from "not in the
   action" to "on" in existing actions of at least 3 relations. Relations the step's label names (your own edit) are
-  left out; so is an aircraft an import brought in since.
+  left out; so is an aircraft an import brought in since. A step right after a `Before import from` checkpoint, or one
+  that made 3 or more new relations or binds, counts as an import or builder too.
+- `Default` and the other input layers of DCS are no aircraft: listed with `NonAircraft`, not in `Aircraft` and
+  `RelationCount`. `--apply` takes them out like the rest. The GUI shows no notice when there is nothing else.
 - `--apply` puts each aircraft back to "not in the action", except the keys given with `--skip`; `--keep` changes no
   relation. Both are one profile version (one undo step) and mark the steps as looked at, so they are not offered again.
 :::
 
 :::layer technical
-- Output: JSON `Found`, `Aircraft`, `RelationCount`, `Steps` (`Version`, `Utc`, `Local`, `Label`, `Aircraft`,
-  `Relations`), `Relations` (`Relation`, `Remove`, `Keeps`), `Entries` (`Key`, `Version`, `Relation`, `Game`, `Id`,
-  `Plane`, `Title`, `Skipped`), after `--apply`/`--keep` also `Applied`, `Kept`, `Removed`, `KeptAircraft`, `Message`;
+- Output: JSON `Found`, `Aircraft`, `NonAircraft`, `RelationCount`, `Steps` (`Version`, `Utc`, `Local`, `Label`,
+  `Aircraft`, `NonAircraft`, `Relations`), `Relations` (`Relation`, `Remove`, `Keeps`, `KeepsAircraft`, `NonAircraft`),
+  `Entries` (`Key`, `Version`, `Relation`, `Game`, `Id`, `Plane`, `Title`, `NonAircraft`, `Skipped`), after
+  `--apply`/`--keep` also `Applied`, `Kept`, `Removed`, `RemovedNonAircraft`, `KeptAircraft`, `Message`;
   `--text` for a table.
 - History labels: `Took out aircraft JoyPro added: n aircraft in m relations`, `Kept the aircraft JoyPro added`.
 - Exit code `0`. Related: [[cli:profile history]], [[cli:profile load]].

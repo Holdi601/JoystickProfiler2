@@ -210,11 +210,13 @@ public sealed class RelationFiltersTests : IAsyncLifetime
         Assert.Equal(["Hornet dispense"], vm.Relations.Select(r => r.Name).ToArray());
         Assert.True(vm.RelationFilterMilliseconds < 300);
 
-        // Opening a relation the filters hide clears them.
+        // Opening a relation the filters hide (2.6.3): the filters stay as they are, it is listed while it is open.
         await vm.SuggestMissingForAllCommand.ExecuteAsync(null);
         vm.OpenMissingReviewRelationCommand.Execute(vm.MissingReview.Single());
         Assert.Equal("Chaff", vm.SelectedRelation?.Name);
-        Assert.False(vm.RelationFilter.HasActiveFilters);
+        Assert.True(vm.RelationFilter.HasActiveFilters);
+        Assert.Equal(["Chaff", "Hornet dispense"], vm.Relations.Select(r => r.Name).ToArray());
+        vm.RelationFilter.ClearAll();
 
         // The Binds page has its own filters.
         vm.BindFilter.SetBoundCommand.Execute("bound");

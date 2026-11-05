@@ -83,13 +83,19 @@ the notice.
 
 ## Notice: aircraft JoyPro added by itself
 
-Up to JoyPro 2.6.1 the repair that runs when the command lists change (**Refresh DB**, an update with new lists) could
-switch on aircraft in your relations that you never bound: every other aircraft that shares the command, for example
-the F-15C, A-10C and MiG-29 in a helicopter power lever relation. Since 2.6.2 JoyPro only adds aircraft that are new in
-the lists (a module you added), and when you open a profile it looks in the profile's history for such a step. If it
-finds one, a notice under the bar says how many aircraft it added to how many relations and when, with the list per
-relation and aircraft: **Take them out** (the ticked ones, one undo step), **Keep these aircraft** (JoyPro stops asking) or
-**Later**. Nothing changes until you choose.
+Up to JoyPro 2.6.1, when the command lists changed (**Refresh DB**, an update with new lists), JoyPro could switch on
+aircraft in your relations that you never chose: every other aircraft that shares a command with one of your actions,
+for example the F-15C, A-10C and MiG-29 in a helicopter power lever relation. That was JoyPro's mistake. Since 2.6.2 it
+only adds aircraft that are new in the lists (a module you added), and when you open a profile it looks in the
+profile's history for such a step. If it finds one, a notice under the bar says how many aircraft it switched on, in
+how many relations and when, with the list per relation and aircraft: **Take them out** (the ticked ones, one undo
+step; your own binds stay), **Keep these aircraft** (JoyPro stops asking) or **Later**. Nothing changes until you choose.
+If you did want one of them, untick it.
+
+"Default" and the other input layers of DCS (the cameras, the radio menu, ground units) are no aircraft. An export writes
+them into the layer's own folder, never into a module. They are not counted, they come last in the list marked "not an
+aircraft", and when a profile has nothing else there is no notice at all. Imports and builders such as Auto Group are
+never offered: those aircraft are your own.
 
 ## Replace device window
 
@@ -305,10 +311,11 @@ version before the move.
 
 <!-- entry: TakeOutAutoAddedCommand -->
 **Take them out** in the notice about aircraft JoyPro added: up to JoyPro 2.6.1, after **Refresh DB** or an update
-with new command lists, JoyPro switched on aircraft in your relations that you never bound (for example a helicopter
+with new command lists, JoyPro switched on aircraft in your relations that you did not choose (for example a helicopter
 power lever relation suddenly also for the F-15C and the MiG-29). This takes the ticked ones out again, back to how
-you had them. One version of your profile: Ctrl+Z takes all of it back. In the game: nothing changes until the next
-export, which then no longer gives those aircraft a second bind. Engine: `engine profile auto-added --apply`.
+you had them; your own binds stay. One version of your profile: Ctrl+Z takes all of it back. In the game: nothing
+changes until the next export, which then no longer binds these actions in those aircraft. Engine: `engine profile
+auto-added --apply`.
 
 <!-- entry: KeepAutoAddedCommand -->
 **Keep these aircraft** in the notice about aircraft JoyPro added: the aircraft stay switched on as they are, and JoyPro does
@@ -320,7 +327,8 @@ Nothing changes.
 
 <!-- entry: ToggleAutoAddRepairListCommand -->
 Shows or hides the list of the aircraft JoyPro added, one line per relation and aircraft with what the command is
-called there ("'THROTTLE - SLIDER -HELO POWER BOTH': F-15C ('Thrust')").
+called there when that says more than the relation's name ("'THROTTLE - SLIDER -HELO POWER BOTH': F-15C, command
+'Thrust'"). Input layers come last: "'F1 Cockpit view': Default (not an aircraft)".
 
 <!-- entry: bind:IsTicked -->
 A tick in the list of the aircraft JoyPro added: ticked ones are taken out with **Take them out**; untick an aircraft

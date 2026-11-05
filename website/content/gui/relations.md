@@ -421,7 +421,9 @@ remove-part, export), a **Value**, and **On** (the selected relations, all, or a
 
 <!-- entry: bind:IsSelected -->
 A tick or chip that picks an item: a group under **Remove Groups**, a step or action of an AI plan or a By description
-preview, or a game chip over the search results or suggestions. A game chip filters at once; the other ticks only
+preview, or a game chip over the search results or suggestions. A game chip stays on for the next search, for the next
+relation you open and after a restart; when the chosen game has nothing for a search, the list says so and **Show all
+games** switches the chips off in one click. A game chip filters at once; the other ticks only
 decide what **Remove Selected**, **Apply selected** or **Create** use.
 
 <!-- entry: ShowEditWithAiCommand -->
@@ -585,6 +587,10 @@ Add actions: **Same meaning** (on by default) also lists, below the actions whos
 ones that do the same (**Same function**) and the looser ones (**Related**, folded). Off: only the name matches; the
 line above the list says how many are hidden. Kept for the next start; the same switch is in Settings > Relations.
 
+<!-- entry: ShowAllBuilderSearchGamesCommand -->
+Add actions: when the game chips that are on have nothing for your search, the list says so and how many results the
+other games have. **Show all games** switches the chips off in one click, and the search goes over every game again.
+
 <!-- entry: ShowBuilderSameMeaningCommand -->
 Add actions: **Same meaning** next to All / Axes / Buttons switches the Same function and Related parts on or off. Off,
 only actions whose name has every word you typed are listed, and the line above the list says how many are hidden.
@@ -631,7 +637,9 @@ game. The groups of **Name has every word** still come before those of **Same fu
 <!-- entry: CheckAllShownBuilderResultsCommand -->
 Add actions: **Tick all shown** ticks every action in the list; narrow the list with the game chips first. Actions
 already in the open relation are not ticked: they are listed greyed at the bottom under **Already in this relation**,
-without a tick box, and the count above the list says how many ("+ 1 already in this relation").
+without a tick box, and the count above the list says how many ("+ 1 already in this relation"). An action the relation
+has for only some of its aircraft stays in the list and says "already in this relation for 19 of 20 aircraft"; it offers
+only the aircraft still free.
 
 <!-- entry: OpenOtherRelationsTagCommand -->
 Add actions and Suggested for this relation: the tag under an action that is switched on in other relations. **in 'Name'** opens that relation;

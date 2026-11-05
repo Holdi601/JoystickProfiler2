@@ -325,9 +325,42 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanCheck))]
     [NotifyPropertyChangedFor(nameof(InOtherRelationsText))]
+    [NotifyPropertyChangedFor(nameof(HasNote))]
     private bool isInOpenRelation;
 
     public bool CanCheck => !IsInOpenRelation;
+
+    // How many of the row's aircraft the open relation has already, of how many: 19 of 20 is no "new" action, and no
+    // "already in this relation" either: it stays addable and offers only the aircraft still free.
+    public int InRelationPlanes { get; private set; }
+
+    public int RowPlanes { get; private set; }
+
+    public bool IsPartlyInOpenRelation => !IsInOpenRelation && InRelationPlanes > 0;
+
+    // The row's own aircraft (same or nearly the same meaning of the id): what "already in this relation" is about.
+    private IReadOnlyList<string> OwnPlanes => Aircraft != null ? Aircraft.OwnPlanes : Planes;
+
+    // The open relation's aircraft of this action (null: it does not have the action). Returns whether all of the row's
+    // aircraft are in it (another game: the action is).
+    internal bool MarkInOpenRelation(HashSet<string>? present)
+    {
+        IReadOnlyList<string> own = OwnPlanes;
+        bool dcs = Game == "DCS";
+        int inside = present == null || !dcs ? 0 : own.Count(present.Contains);
+        Aircraft?.MarkInOpenRelation(dcs ? present : null);
+        InRelationPlanes = inside;
+        RowPlanes = own.Count;
+        bool all = present != null && (!dcs || (own.Count > 0 && inside == own.Count));
+        IsInOpenRelation = all;
+        OnPropertyChanged(nameof(IsPartlyInOpenRelation));
+        OnPropertyChanged(nameof(InOtherRelationsText));
+        OnPropertyChanged(nameof(HasNote));
+        OnPropertyChanged(nameof(SelectedPlanes));
+        OnPropertyChanged(nameof(NodeSpec));
+        OnPropertyChanged(nameof(PlanesText));
+        return all;
+    }
 
     public string KindLabel => IsSimPitSwitchAxis ? T("axis (sim-pit switch)") : IsAxis ? "axis" : "button";
 
@@ -354,7 +387,9 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
 
     public string PlanesTooltip => Game == "DCS" ? string.Join(", ", Planes) : DisplayText.Game(Game) + (Category.Length > 0 ? " · " + Category : string.Empty);
 
-    public string InOtherRelationsText => IsInOpenRelation ? T("already in this relation") : string.Empty;
+    public string InOtherRelationsText => IsInOpenRelation
+        ? T("already in this relation")
+        : IsPartlyInOpenRelation ? T("already in this relation for {0} of {1} aircraft", InRelationPlanes, RowPlanes) : string.Empty;
 
     public bool HasNote => InOtherRelationsText.Length > 0;
 
@@ -529,6 +564,9 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
 
     public IReadOnlyList<string> CloseWords { get; set; } = [];
 
+    // "lacks-word": the number or side typed that its title does not have ("LMFD").
+    public IReadOnlyList<string> MissingWords { get; set; } = [];
+
     public string SectionKind => IsNameMatch ? "name"
         : Section is "function" or "related" ? Section
         : Match is "exact" or "function" or "synonym" or "described" ? "function" : "related";
@@ -569,6 +607,7 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
                         "category" => T("Related: its category '{0}' has the word '{1}'; its title has none of the words you typed.", CategoryWithWord(), Words(CategoryWords)),
                         "similar" => T("Related: only something like '{0}' was found (a word start, a typo or the game's id), not the word itself.", Words(CloseWords)),
                         "some-words" when TitleWords.Count > 0 => T("Related: its title has only some of the words you typed ('{0}').", Words(TitleWords)),
+                        "lacks-word" when MissingWords.Count > 0 => T("Related: it is an action of '{0}', but its title does not have '{1}'.", Understood.Length > 0 ? Understood : function, Words(MissingWords)),
                         _ => T("Related: found by some of the words, not by its name or its function.")
                     };
             }
@@ -942,6 +981,7 @@ public sealed partial class AircraftChoiceItem : ObservableObject
         Note = note;
         this.isChecked = isChecked;
         InitiallyChecked = isChecked;
+        Offered = isChecked;
     }
 
     public string Plane { get; }
@@ -956,8 +996,20 @@ public sealed partial class AircraftChoiceItem : ObservableObject
 
     public bool InitiallyChecked { get; set; }
 
+    // The row's own proposal for this aircraft, whatever the open relation has.
+    internal bool Offered { get; set; }
+
     [ObservableProperty]
     private bool isChecked;
+
+    // The open relation has it already (the rows of Add actions): marked and no tick to change, it is not offered.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChange))]
+    [NotifyPropertyChangedFor(nameof(MarkerText))]
+    [NotifyPropertyChangedFor(nameof(HasMarker))]
+    private bool isInOpenRelation;
+
+    public bool CanChange => !IsInOpenRelation;
 
     // Opened from a card of the check: this aircraft is one the card is about (tinted).
     [ObservableProperty]
@@ -987,7 +1039,7 @@ public sealed partial class AircraftChoiceItem : ObservableObject
     // was built (engine "FromYourFiles"; the next rebuild of the list brings it with its category).
     public bool FromYourFiles { get; }
 
-    public string MarkerText => IsDiffers ? (SameFunction ? "same function" : "differs") : IsNear ? "near" : IsUnknown ? T("not in its list") :
+    public string MarkerText => IsInOpenRelation ? T("already in this relation") : IsDiffers ? (SameFunction ? "same function" : "differs") : IsNear ? "near" : IsUnknown ? T("not in its list") :
         FromYourFiles ? T("from your DCS files") : string.Empty;
 
     // The selector lists the aircraft by meaning: the same meaning, near, not in its list, another meaning.
@@ -1071,8 +1123,34 @@ public sealed partial class AircraftSelector : ObservableObject
 
     public bool HasChanges => Items.Any(i => i.IsChecked != i.InitiallyChecked);
 
-    // "82 of 84 aircraft"
-    public string Badge => T("{0} of {1} aircraft", CheckedCount, Total);
+    // The aircraft the row stands for (same or nearly the same meaning), with or without a tick.
+    internal IReadOnlyList<string> OwnPlanes => Items.Where(i => i.Offered).Select(i => i.Plane).ToList();
+
+    public int InRelationCount => Items.Count(i => i.IsInOpenRelation);
+
+    // The open relation's aircraft of this action are not offered: unticked, no tick to change, marked. Aircraft that
+    // left it (another relation opened) get the row's own proposal back.
+    internal void MarkInOpenRelation(HashSet<string>? present)
+    {
+        bool changed = false;
+        bulk = true;
+        foreach (AircraftChoiceItem item in Items)
+        {
+            bool inside = present != null && present.Contains(item.Plane);
+            if (item.IsInOpenRelation == inside)
+                continue;
+            changed = true;
+            item.IsInOpenRelation = inside;
+            item.InitiallyChecked = !inside && item.Offered;
+            item.IsChecked = !inside && item.Offered;
+        }
+        bulk = false;
+        if (changed)
+            Changed();
+    }
+
+    // "82 of 84 aircraft"; with aircraft the open relation has already, only the others count ("1 of 1 free aircraft").
+    public string Badge => InRelationCount > 0 ? T("{0} of {1} free aircraft", CheckedCount, Total - InRelationCount) : T("{0} of {1} aircraft", CheckedCount, Total);
 
     // "a-10a, A-10C +69 more" (the ticked ones).
     public string Summary
@@ -1153,7 +1231,10 @@ public sealed partial class AircraftSelector : ObservableObject
     {
         bulk = true;
         foreach (AircraftChoiceItem item in items.ToList())
-            item.IsChecked = state(item);
+        {
+            if (!item.IsInOpenRelation)
+                item.IsChecked = state(item);
+        }
         bulk = false;
         Changed();
     }

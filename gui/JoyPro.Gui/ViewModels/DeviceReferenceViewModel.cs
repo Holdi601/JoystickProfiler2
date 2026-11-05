@@ -211,6 +211,14 @@ public sealed partial class DeviceReferenceViewModel : ObservableObject
             : DeviceReferenceService.Identify(probe);
         // The engine's pick is checked like an own identification: a grip it only guessed is asked for.
         DeviceQuestion? question = pickedGrip ? null : DeviceChoices.Question(match, probe, catalog);
+        // The engine's model of a USB id that several products share is as much a guess as JoyPro's own: the same question
+        // as on the device's card on the Start page.
+        if (question == null && known != null && !pickedGrip)
+        {
+            DeviceMatch own = DeviceReferenceService.Identify(probe);
+            if (own.Model != null && own.Method == "vidpid" && DeviceChoices.Question(own, probe, catalog) is { Kind: "model" } shared)
+                question = shared;
+        }
         if (known != null && pickedGrip && known.IsGrip)
         {
             foreach (RefDevice grip in catalog.GripsOf(known.Base))

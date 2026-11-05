@@ -77,6 +77,16 @@ public sealed partial class DeviceCardItem : ObservableObject
     // A base that takes several grips and none is set yet: the card shows the base and asks for the grip.
     public bool NeedsGrip { get; init; }
 
+    // What the question is about: "grip" (a base that does not say which grip is on it) or "model" (one USB id, several
+    // products).
+    public string QuestionKind { get; init; } = "grip";
+
+    public string QuestionChip => QuestionKind == "model" ? T("Which model?") : T("Which grip?");
+
+    public string QuestionTip => QuestionKind == "model"
+        ? T("Several products report this USB id. Click to pick yours on the Layout page.")
+        : T("Which grip is on the base? Click to pick it on the Layout page.");
+
     // Interfaces of the same device (a keyboard reports several) shown as this one card.
     public int Interfaces { get; init; } = 1;
 
@@ -98,7 +108,7 @@ public sealed partial class DeviceCardItem : ObservableObject
 
     public string Tooltip => DisplayText.DeviceTip(Device) + (ModelId.Length > 0 ? T("\nModel: {0} ({1})", ModelName, ModelId) : string.Empty) +
                              (PictureSource.Length > 0 ? T("\nPicture: {0}", PictureSource) : string.Empty) +
-                             (NeedsGrip ? T("\nWhich grip is on the base? Pick it on the Layout page.") : string.Empty);
+                             (NeedsGrip ? "\n" + QuestionTip : string.Empty);
 
     // The user's layout picture or photo, JoyPro's line drawing of the model, or the maker's photo (null = JoyPro's
     // schematic drawing or nothing).
