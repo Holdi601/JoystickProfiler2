@@ -96,11 +96,14 @@
             <ToggleButton Classes="filterChip trimmed" Content="{Binding BoundLabel}" IsChecked="{Binding IsBoundOnly, Mode=OneWay}" Command="{Binding SetBoundCommand}" CommandParameter="bound"
                           ToolTip.Tip="{l:T 'Only relations on an input of a device'}" />
             <ToggleButton Classes="filterChip trimmed" Content="{Binding UnboundLabel}" IsChecked="{Binding IsUnboundOnly, Mode=OneWay}" Command="{Binding SetBoundCommand}" CommandParameter="unbound"
-                          ToolTip.Tip="{l:T 'Only relations not bound yet'}" />
+                          ToolTip.Tip="{l:T 'Only relations with no input at all, in any game. For the ones with no action in one game: tick the game under Games, then No action in ...'}" />
             <ToggleButton Classes="filterChip trimmed" Content="{Binding AxisLabel}" IsChecked="{Binding IsKindAxis, Mode=OneWay}" Command="{Binding SetKindCommand}" CommandParameter="axis"
                           ToolTip.Tip="{l:T 'Only axis relations (again: axes and buttons)'}" />
             <ToggleButton Classes="filterChip trimmed" Content="{Binding ButtonLabel}" IsChecked="{Binding IsKindButton, Mode=OneWay}" Command="{Binding SetKindCommand}" CommandParameter="button"
                           ToolTip.Tip="{l:T 'Only button relations (again: axes and buttons)'}" />
+            <!-- With a game or aircraft ticked: the relations WITHOUT an action there (with Devices: what a device still lacks) -->
+            <ToggleButton x:Name="NoActionChip" Classes="filterChip trimmed" Content="{Binding NoActionLabel}" IsChecked="{Binding NoActionInGames, Mode=OneWay}"
+                          Command="{Binding ToggleNoActionInGamesCommand}" IsVisible="{Binding HasGameFilter}" ToolTip.Tip="{Binding NoActionTooltip}" />
         </WrapPanel>
 
         <!-- The active filters, each with x -->

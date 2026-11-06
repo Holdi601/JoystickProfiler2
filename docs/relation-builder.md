@@ -121,6 +121,29 @@ with n actions`); a DCS action takes its ticked aircraft (the browsed one; its a
 meaning). The open relation's kind decides what is listed (an axis relation: only axes). The list builds only the rows in view, so a filter or
 `Open all` on a big aircraft (the F-4E has 1635 actions) stays instant.
 
+**The filter** (2.6.4, a tester's `RMFD OSB 20` on Falcon BMS: seven rows, all open and equal, by category, RMFD neither
+first nor marked, while `relations search` said name / Recommended for RMFD and related for the rest) keeps a row when:
+
+- its title has every word as typed (`20` is in `OSB-20`), a word typed without the title's separator included (`OSB20`
+  and `OSB-20` find `OSB-20` and `OSB 20`, `CatalogJoinedWord`), or a DCS key of its title (`cms_aft`);
+- or its id has every word (`KEY_AXIS_ELEVATOR_SET`, `d68`), never some words in the title and the others in the id: `OSB 3`
+  on the F-16 is not `OSB 1` because its id `d3001...` has a 3;
+- or its category's name has every word (the whole category);
+- or `relations search` (asked for the open list: game, aircraft, kind) lists it under section `name` or, with **Same
+  meaning** on, `function`: `thrust` finds the throttles, `RMFD OSB 20` DCS's `Right MFD OSB 20`.
+
+Rows of section `related` are no hits: the Catalog's layout is the game's categories, with no place for a folded "Related"
+as in Add actions, and the filter is there to narrow the list. Only when nothing at all is a hit it lists them (as Add actions
+opens Related when nothing is above it, so the filter never ends empty while the search has something), and the status
+line says so ("no action has these words: related actions shown (1)"). **Same meaning** is the same remembered switch as in Add
+actions (the chip is in both, and in Settings > Relations): off, the status line says how many rows it hides ("7 with the
+same meaning hidden"), and no related row is listed.
+
+While a filter text is on, `Recommended` follows the words: the chip is the search's own flag for that row, not the
+browse's best action per function, and no row has it until the search has answered (below three letters it never asks).
+Without a filter text it is the browse's again. Without a sort level the search's best rows and their categories come first
+(the recommended ones first of all); a sort level keeps its order.
+
 **Sort** (the catalog and the search results have the same sort bar as the Relations and Binds lists,
 `ListSortViewModel.ForActions`, remembered as `catalog` / `action-search`): game, aircraft, category, title, axis /
 button, last updated (the date of the game's command list; DCS: of the aircraft's DB file). No level = their own order
@@ -218,8 +241,19 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
    (`main control`, `exact title`, `same function`, `synonym`, `by description`, `name match`, `related`; the chip's
    tooltip says why in a sentence), and a typo offers `Did you mean: throttle?`. **Same meaning** next to All / Axes /
    Buttons (on by default, remembered in `ui-settings.json` `addActionsSameMeaning`, the same switch in Settings >
-   Relations): off lists only the name matches, the status line says how many it hides, and a search without a name
-   match says so plainly with **Show same meaning** to switch it on in one click.
+   Relations): off lists only the name matches and the status line says how many it hides. **Nothing new** (2.6.4): a
+   search never reads as "found nothing" while actions are in the open relation. Every result in the relation and
+   nothing new hidden (switch on or off): no callout, only the status line `No new actions: the 2 found are already in
+   this relation (see below)`. The name matches in the relation and others hidden by the switch: the callout `No new
+   actions with every word of "X": the 2 found are already in this relation (see below). 4 more found by what they do
+   are hidden because Same meaning is off.` with **Show same meaning**. No name match anywhere the search looked and only
+   hidden rows: `No action found whose name has every word of "X". 2 found by what they do are hidden because Same meaning
+   is off.` (not "no action's name": the kind, aircraft and game filters may have narrowed the search). Only rows of the
+   relation, all hidden: `No new actions: the 2 found by what they do are already in this relation, hidden because Same
+   meaning is off.` `Nothing found for ...`, with or without game chips, only when the search has no row at all. With the
+   switch off the status line counts what is listed, not what it hides: `No new actions + 2 already in this relation ·
+   understood as Weapon release (pickle) · 11 with the same meaning hidden (Same meaning is off) · 5 more in this relation
+   hidden`.
    The search needs no open profile (the profile only marks which relations use a row). Under a game, `Show n more`
    loads the rest of that game's hits for the same search (`--game <game> --limit 400`), `Show less` folds them;
    `Expand all` / `Collapse all` above the list do every game. The state stays while the query, kind and aircraft stay
@@ -231,7 +265,10 @@ first ones and `+n`, chips wrap. Tested at 1280x800 and 1920x1080 (`RelationBuil
 
 For an open relation the same panel says `Add selected (n)` (`engine relations suggest apply <relation> --add
 game:id:planes ...`). Rows whose aircraft are all in the relation are marked `already in this relation`, cannot be
-ticked and are greyed at the bottom. A row the relation has for only **some** of its aircraft stays addable: it says
+ticked and are greyed at the bottom; their aircraft line names their own aircraft (two rows of one title, such as the
+F-4E's pilot and WSO "Bomb Release Button", are told apart by it), their aircraft button says `1 of 3 aircraft in this
+relation`, and the list it opens only shows: nothing there can be ticked, because the row adds nothing (2.6.4). A row the
+relation has for only **some** of its aircraft stays addable: it says
 `already in this relation for 19 of 20 aircraft`, its aircraft line and `Add selected` hold only the free ones, and in its
 aircraft list the others are marked and have no tick to change (`BuilderSearchResultItem.MarkInOpenRelation`, "some" from
 the row's own same-meaning aircraft; the tester's "F1 Cockpit view" had `ground_unit`, whose id means something else or
@@ -651,8 +688,8 @@ By description): the function must come first (second for a phrase that may also
 gate's I11 runs it (docs/testing.md). A sentence ("open the thing so I can climb out") is read as a whole: a name that
 covers only a small part of it does not decide when another function's document fits the whole sentence clearly
 better. Typos count only for long words JoyPro does not know ("warp" never finds "Warm Air" or "Warn"), and a generic
-word (drive, set, system, mode) alone never makes a match. The catalog filter finds rows by meaning too (the search,
-restricted to the open list). By description and Manage / Edit with AI use the map where the word rules know nothing
+word (drive, set, system, mode) alone never makes a match. The catalog filter finds rows by meaning too (the search's
+name and function rows in the open list, [Browse the catalog](#browse-the-catalog)). By description and Manage / Edit with AI use the map where the word rules know nothing
 or something else: every function, not only the catalog's.
 
 Every action of every game list on the PC is mapped at run time: the function catalog where it knows the action (slot
@@ -973,6 +1010,9 @@ function id when the map proposed it); `Source` is `function map` for those rows
   (2.6.3) `LMFD OSB 15`, `lmfd osb15` and `LMFD OSB-15` in Falcon BMS (the LMFD row the one recommended name match, the
   others `related` by `lacks-word`), `OSB 15` in BMS and the DCS F-16, `LMFD OSB 15` in the F-16 and what must stay
   (`gear up` Toggle Gear, `yaw left` the rudder axis, `F-16 thrust`, `center view`).
+- GUI: `TesterBatch264Tests`: the real engine with "Stick Red Button" holding the F-4E's "Bomb Release Button" of pilot and
+  WSO, Same meaning off: the callout, the status line's counts, the rows' aircraft line and button, the list they open;
+  every kind of row and the cases of the callout. Pictures and texts: `JOYPRO_264_RENDER_OUT`.
 - GUI: `TesterBatch263Tests` (a row with some of its aircraft in the relation, the highlight, the game chips over
   relations and new searches, nothing in the chosen games, the left filter, "Which model?", its click and the answer after
   a restart), `GameChipsPersistTests`. Pictures: `JOYPRO_263_RENDER_OUT`, `JOYPRO_263_ENGINE`, `JOYPRO_263_PROFILE`.

@@ -69,6 +69,10 @@ try {
     $slResetOnly = Invoke-SlJson @("relations", "search", "reset", "--plane", "F-14", "--game", "DCS", "--limit", "400")
     Assert-True (@($slResetOnly.Results | Where-Object { $_.Title -eq "MASTER RESET" }).Count -eq 1) "search 'reset' (F-14) does not list MASTER RESET."
 
+    # Everyday words are no side (2.6.4): "right now" and "left and right" do not send the function's rows to Related.
+    $slNow = Invoke-SlJson @("relations", "search", "stop my ship completely right now", "--game", "X4", "--limit", "200")
+    Assert-True (@($slNow.Results | Where-Object { $_.Section -eq "function" }).Count -gt 0) "search '...right now' (X4): no row of the function."
+
     # Every word covered (2.6.1, the tester's report on 2.6.0): "master reset" in the F-14 is exactly the two titles with
     # both words, understood as the master caution reset only (not every "master" function by its first word).
     $slBoth = Invoke-SlJson @("relations", "search", "master reset", "--plane", "F-14", "--game", "DCS", "--limit", "400")

@@ -26,6 +26,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Arma 3",
+                Units = "sensitivity -1..1, dead zone 0..0.1 (0.07 is 7 %), steepness 1..3",
                 Description = "Per device and physical axis, for every vehicle and on foot (Controls > Controllers > Customize): sensitivity per half axis (-1 cubic, 0 linear, +1 cube root), dead zone (max 10 %), steepness (output multiplier, saturates earlier). Formula read from arma3_x64.exe; the dead zone rescaling is DirectInput's. Arma 3 does not take over the base curve: only values set for Arma 3 (or imported) are written.",
                 Parameters =
                 {

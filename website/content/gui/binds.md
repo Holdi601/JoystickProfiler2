@@ -131,10 +131,18 @@ X-Plane: free curve points), so the sliders on the right change with the scope. 
 JoyPro fits that game's parameters to the base curve as closely as the game can express it.
 
 Drag the white points to shape the curve, or use the sliders. Every setting also has a number box with its range
-next to it ("0 .. 1"): type the exact value, or press Up / Down (Shift: ten steps) or turn the mouse wheel over the
-box you are in; a number outside the range goes back to its nearest end when you press Enter or leave the box. The
-**user curve** has 11 number boxes, one per 10 % of stick travel (0 % ... 100 %), in step with the white points on
-the curve. Edits preview at once (also with the live position of your stick as a dot); **Save for this scope** stores
+next to it: type the exact value, or press Up / Down (Shift: ten steps) or turn the mouse wheel over the box you are
+in. A number outside the range goes back to its nearest end when you press Enter or leave the box, and the line under
+the box says so. The **user curve** has 11 number boxes, one per 10 % of stick travel (0 % ... 100 %), in step with
+the white points on the curve.
+
+**The numbers are in each game's own units**; the line above the boxes says which. For DCS (and the base) they are the
+ones of DCS's own axis tune dialog: dead zone, saturation X/Y and the user curve points 0 .. 100, curvature
+-100 .. 100, so you type 8 for a dead zone of 8. Your profile and the export keep what DCS's files keep (0.08), and
+a value with more decimals stays exact until you change it. Falcon BMS has the launcher's steps 0 .. 3, FSX 0 .. 127,
+and so on.
+
+Edits preview at once (also with the live position of your stick as a dot); **Save for this scope** stores
 them. **Inherit (clear)** removes the scope's own settings. **Reload** reads them again.
 
 **Copy to another axis...** puts the same settings on another bound axis in one step, e.g. Thrust Left to Thrust
@@ -144,14 +152,22 @@ scope of the other axis; one Ctrl+Z takes it back.
 ## Detent mode: one throttle for all aircraft
 
 A throttle with an afterburner detent used to need one throttle relation per afterburner position. In detent mode
-**one** throttle relation serves every aircraft: JoyPro bends the curve per aircraft so your device's detent is
+**one** throttle relation serves every aircraft: JoyPro bends the curve per aircraft so your throttle's detent is
 exactly where that aircraft's afterburner starts (F-16C at 77 %, F-14 at 70 %, ...). Resting in the detent stays just
 below the afterburner; pushing over it lights it.
 
+- **The calibration belongs to the device axis.** Every throttle relation on that axis shares it; a left and a right
+  lever are separate axes, each with its own. The line under the buttons says whether this axis is calibrated, and its
+  values.
+- **Without a calibration** detent mode changes nothing on that axis: every aircraft keeps the relation's curve. The
+  calibration is part of the profile, so Undo or a restored version can bring back the state before you made it.
+- **Why "full power at the detent" is on by default:** an aircraft without afterburner has nothing behind the detent, so
+  it reaches full power there; otherwise you would have to push through the detent for the last part. Untick it and its
+  curve runs over the whole travel.
+
 1. **Calibrate detent...**: move the throttle to idle, then to the detent, then fully forward, then (optional) behind
    the idle detent (cut-off). **Confirm** each position; JoyPro reads the axis live. **Save calibration**.
-2. Tick **Detent mode on**. Aircraft without afterburner get full power at the detent (or the relation's curve when
-   you untick the second box).
+2. Tick **Detent mode on**.
 3. Already have one throttle relation per aircraft? **Merge my throttle relations...** shows a plan per device axis;
    **Merge** joins them into one relation in detent mode; **Undo merge** takes it back.
 
@@ -592,8 +608,9 @@ broader one (aircraft, game, family, base). Not for the base. Ctrl+Z undoes it. 
 the game: the next export writes the inherited curve.
 
 <!-- entry: bind:DetentNoAbFull -->
-Detent mode: ticked (the default), aircraft without afterburner get full power at the detent. Off: they keep the
-relation's curve over the whole travel. Saved in the profile at once (`--no-ab full|linear`). In the game: how far you
+Detent mode: ticked (the default), aircraft without afterburner get full power at the detent: they have nothing behind
+it, and otherwise you would have to push through the detent for the last part. Off: their curve runs over the whole
+travel. Saved in the profile at once (`--no-ab full|linear`). In the game: how far you
 push those aircraft's throttle for full power.
 
 <!-- entry: StartDetentWizardCommand -->

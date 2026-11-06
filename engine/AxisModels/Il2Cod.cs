@@ -34,6 +34,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "IL-2 Sturmovik: Cliffs of Dover",
+                Units = "confUser.ini's slider positions 0..1",
                 Description = "Per axis command (confUser.ini [Config pilotMove]): stick, rudder: sensitivity (0 linear .. 1 most curved), centre and end dead zone; other axes: low and high end dead zone; " +
                               "throttles: five values kept as the game wrote them. Slider positions 0..1. The preview assumes a linear-to-cubic blend (not yet verified in game).",
                 Evaluate = Evaluate,

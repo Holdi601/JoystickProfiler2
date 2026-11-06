@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using JoyPro.Gui.Models;
 
 namespace JoyPro.Gui.Views;
 
@@ -11,8 +12,10 @@ namespace JoyPro.Gui.Views;
 // tester report: the sliders were hard to set exactly and to repeat on another axis). Typing sets the number (the view
 // model checks it and shows a message while it is no number of the range); Up / Down and the mouse wheel over the
 // focused box change it by Step (Shift or Page Up / Page Down: ten steps); Enter or leaving the box puts a number outside
-// the range back to its nearest end. The text is set through the box, so the binding carries it to the view model.
-//   <TextBox views:NumberBox.Step="0.01" views:NumberBox.Minimum="0" views:NumberBox.Maximum="1" Text="{Binding Text}" />
+// the range back to its nearest end and tells the value it edits (INumberBoxOwner), so the page says so next to the box.
+// Minimum, Maximum and Step are in the unit the box shows. The text is set through the box, so the binding carries it to
+// the view model.
+//   <TextBox views:NumberBox.Step="1" views:NumberBox.Minimum="0" views:NumberBox.Maximum="100" Text="{Binding Text}" />
 public static class NumberBox
 {
     public static readonly AttachedProperty<double> StepProperty =
@@ -97,14 +100,17 @@ public static class NumberBox
         return true;
     }
 
-    // A number outside the range goes back to its nearest end; text that is no number stays (its message shows).
+    // A number outside the range goes back to its nearest end, and the page says so; text that is no number stays (its
+    // message shows).
     internal static void Commit(TextBox box)
     {
         if (!TryParse(box.Text, out double number))
             return;
         double kept = Clamp(number, GetMinimum(box), GetMaximum(box));
-        if (kept != number)
-            SetText(box, kept, GetStep(box));
+        if (kept == number)
+            return;
+        SetText(box, kept, GetStep(box));
+        (box.DataContext as INumberBoxOwner)?.OnPutBackInRange(number, kept);
     }
 
     internal static double Clamp(double value, double minimum, double maximum) =>

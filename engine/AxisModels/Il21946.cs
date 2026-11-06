@@ -33,6 +33,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "IL-2 Sturmovik: 1946",
+                Units = "conf.ini's units: dead band 0..50 of 1023, curve points in % of the linear output, filter 0..100",
                 Description = "Per device axis (conf.ini [rts_joystick], shared by every command on that axis): dead band (raw units of the half travel, 0..50 of 1023, cut without rescaling), " +
                               "10 curve points at 10 %..100 % stick as percent of the linear output (100 = linear, the curve can only be at or below linear), filter (smoothing 0..100) and " +
                               "one-sided axis (throttle type). Formula from the game's input code (not yet verified in game).",

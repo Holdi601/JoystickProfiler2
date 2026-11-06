@@ -13,7 +13,9 @@ namespace JoyPro.Gui.ViewModels;
 // search, groups, games with their aircraft (tick DCS for every DCS relation; open it and tick A-10C, A-10C II for the
 // relations with an action for those aircraft), devices, bound / not bound, axis / button. The filters combine (all of
 // them must fit; several ticks of one filter: any of them), every tick shows how many relations it would show with the
-// other filters as they are, and the page remembers its ticks (ListFilterState). The relations are FilterSubjects, built
+// other filters as they are, and the page remembers its ticks (ListFilterState). With a game or aircraft ticked, the chip "No action in Falcon BMS (4)"
+// turns that filter round: the relations without an action there (2.6.3 tester report, adding Falcon BMS to the relations
+// of one device: he compared lists by eye). The relations are FilterSubjects, built
 // once per list: a filter change is set lookups only (524 relations / 3 300 actions: a few milliseconds).
 public sealed partial class ListFilterViewModel : ObservableObject
 {
@@ -214,6 +216,9 @@ public sealed partial class ListFilterViewModel : ObservableObject
     [ObservableProperty]
     private int buttonCount;
 
+    // How many relations have no action in the games / aircraft ticked (with the other filters as they are).
+    private int noActionCount;
+
     public string BoundAllLabel => T("All {0}", BoundCount + UnboundCount);
 
     public string BoundLabel => T("Bound {0}", BoundCount);
@@ -225,6 +230,48 @@ public sealed partial class ListFilterViewModel : ObservableObject
     public string AxisLabel => T("Axes {0}", AxisCount);
 
     public string ButtonLabel => T("Buttons {0}", ButtonCount);
+
+    // ---- no action in the games / aircraft ticked ----
+
+    private bool noActionInGames;
+
+    // The games and aircraft ticked list the relations that do NOT have an action there. Needs a tick: without one it
+    // has nothing to say and goes off.
+    public bool NoActionInGames
+    {
+        get => noActionInGames;
+        set
+        {
+            bool wanted = value && HasGameFilter;
+            if (noActionInGames == wanted)
+                return;
+            noActionInGames = wanted;
+            RaiseChanged();
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleNoActionInGames() => NoActionInGames = !NoActionInGames;
+
+    private string TickedGameNames
+    {
+        get
+        {
+            List<string> names = wholeGames.Select(DisplayText.Game)
+                .Concat(planes.Select(p => p[(p.IndexOf('|') + 1)..]))
+                .OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
+            return names.Count <= 3 ? string.Join(", ", names) : string.Join(", ", names.Take(3)) + " +" + (names.Count - 3).ToString(CultureInfo.InvariantCulture);
+        }
+    }
+
+    private string NoActionText => HasOnlyPlaneFilter ? T("No action for {0}", TickedGameNames) : T("No action in {0}", TickedGameNames);
+
+    // "No action in Falcon BMS (4)".
+    public string NoActionLabel => NoActionText + " (" + noActionCount.ToString(CultureInfo.InvariantCulture) + ")";
+
+    public string NoActionTooltip => Page == "binds"
+        ? T("Only relations with no action for {0} yet: their input does nothing there. Combine it with Devices to see what a device still lacks. Again: the relations that have one.", TickedGameNames)
+        : T("Only relations with no action for {0} yet. Combine it with Devices to see what a device still lacks. Again: the relations that have one.", TickedGameNames);
 
     public bool HasActiveFilters => groups.Count > 0 || wholeGames.Count > 0 || planes.Count > 0 || devices.Count > 0 || Bound != "all" || Kind != "all";
 
@@ -319,10 +366,12 @@ public sealed partial class ListFilterViewModel : ObservableObject
 
     private bool PassGroups(FilterSubject s) => groups.Count == 0 || s.Groups.Overlaps(groups);
 
-    private bool PassGames(FilterSubject s)
+    private bool PassGames(FilterSubject s) =>
+        (wholeGames.Count == 0 && planes.Count == 0) || HasTickedGameAction(s) != noActionInGames;
+
+    // A switched-on action of a game or aircraft ticked.
+    private bool HasTickedGameAction(FilterSubject s)
     {
-        if (wholeGames.Count == 0 && planes.Count == 0)
-            return true;
         foreach (string game in s.Games)
         {
             if (wholeGames.Contains(game))
@@ -449,6 +498,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
         OnPropertyChanged(nameof(HasGroups));
         OnPropertyChanged(nameof(HasGames));
         OnPropertyChanged(nameof(HasDevices));
+        noActionInGames = noActionInGames && HasGameFilter;
         RebuildChips();
     }
 
@@ -606,6 +656,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
             foreach (FilterOptionItem option in Groups.Concat(Devices))
                 option.SetChecked(false);
             SyncGameTicks();
+            noActionInGames = false;
             Bound = "all";
             Kind = "all";
             ClearSearchRequested?.Invoke(this, EventArgs.Empty);
@@ -678,6 +729,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
         Groups = groups.OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList(),
         Games = wholeGames.OrderBy(g => g, StringComparer.OrdinalIgnoreCase).ToList(),
         Planes = planes.OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList(),
+        NoActionInGames = noActionInGames,
         Devices = devices.OrderBy(d => d, StringComparer.OrdinalIgnoreCase).ToList(),
         Bound = Bound,
         Kind = Kind,
@@ -697,6 +749,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
             wholeGames.UnionWith(state.Games ?? []);
             planes.Clear();
             planes.UnionWith((state.Planes ?? []).Where(p => p.Contains('|')));
+            noActionInGames = state.NoActionInGames;
             devices.Clear();
             devices.UnionWith(state.Devices ?? []);
             Bound = state.Bound is "bound" or "unbound" ? state.Bound : "all";
@@ -722,6 +775,8 @@ public sealed partial class ListFilterViewModel : ObservableObject
         {
             return;
         }
+        // The last game ticked went: the next tick is a plain "relations of this game" again.
+        noActionInGames = noActionInGames && HasGameFilter;
         UpdateCounts();
         RebuildChips();
         Changed?.Invoke(this, EventArgs.Empty);
@@ -733,7 +788,8 @@ public sealed partial class ListFilterViewModel : ObservableObject
         Dictionary<string, int> gameCounts = new(StringComparer.OrdinalIgnoreCase);
         Dictionary<string, int> planeCounts = new(StringComparer.OrdinalIgnoreCase);
         Dictionary<string, int> deviceCounts = new(StringComparer.OrdinalIgnoreCase);
-        int shown = 0, boundN = 0, unboundN = 0, axisN = 0, buttonN = 0;
+        int shown = 0, boundN = 0, unboundN = 0, axisN = 0, buttonN = 0, noActionN = 0;
+        bool anyGameTicked = HasGameFilter;
         foreach (FilterSubject s in subjects)
         {
             if (!PassSearch(s))
@@ -750,6 +806,8 @@ public sealed partial class ListFilterViewModel : ObservableObject
                     gameCounts[game] = gameCounts.GetValueOrDefault(game) + 1;
                 foreach (string plane in s.GamePlanes)
                     planeCounts[plane] = planeCounts.GetValueOrDefault(plane) + 1;
+                if (anyGameTicked && !HasTickedGameAction(s))
+                    noActionN++;
             }
             if (g && ga && b && k && s.Device.Length > 0)
                 deviceCounts[s.Device] = deviceCounts.GetValueOrDefault(s.Device) + 1;
@@ -786,6 +844,9 @@ public sealed partial class ListFilterViewModel : ObservableObject
         UnboundCount = unboundN;
         AxisCount = axisN;
         ButtonCount = buttonN;
+        noActionCount = noActionN;
+        OnPropertyChanged(nameof(NoActionLabel));
+        OnPropertyChanged(nameof(NoActionTooltip));
         OnPropertyChanged(nameof(BoundAllLabel));
         OnPropertyChanged(nameof(BoundLabel));
         OnPropertyChanged(nameof(UnboundLabel));
@@ -805,13 +866,18 @@ public sealed partial class ListFilterViewModel : ObservableObject
             ActiveChips.Add(new FilterChipItem(T("Group: {0}", name == FilterSubject.NoGroup ? T("no group") : name), T("Only relations in this group"),
                 () => { groups.Remove(name); SyncOptionTicks(); RaiseChanged(); }));
         }
-        foreach (string game in wholeGames.OrderBy(g => DisplayText.Game(g), StringComparer.OrdinalIgnoreCase))
+        // Turned round: one chip says what is listed; its x gives the plain game filter back.
+        if (noActionInGames)
+            ActiveChips.Add(new FilterChipItem(NoActionText, NoActionTooltip, () => NoActionInGames = false));
+        IEnumerable<string> gameChips = noActionInGames ? [] : wholeGames.OrderBy(g => DisplayText.Game(g), StringComparer.OrdinalIgnoreCase);
+        foreach (string game in gameChips)
         {
             string id = game;
             ActiveChips.Add(new FilterChipItem(DisplayText.Game(id), T("Only relations with an action of {0}", DisplayText.Game(id)),
                 () => { wholeGames.Remove(id); SyncGameTicks(); RaiseChanged(); }));
         }
-        foreach (IGrouping<string, string> game in planes.GroupBy(p => p[..p.IndexOf('|')], StringComparer.OrdinalIgnoreCase).OrderBy(g => DisplayText.Game(g.Key), StringComparer.OrdinalIgnoreCase))
+        IEnumerable<IGrouping<string, string>> planeChips = noActionInGames ? [] : planes.GroupBy(p => p[..p.IndexOf('|')], StringComparer.OrdinalIgnoreCase).OrderBy(g => DisplayText.Game(g.Key), StringComparer.OrdinalIgnoreCase);
+        foreach (IGrouping<string, string> game in planeChips)
         {
             string id = game.Key;
             List<string> names = game.Select(p => p[(p.IndexOf('|') + 1)..]).OrderBy(p => p, StringComparer.OrdinalIgnoreCase).ToList();
@@ -825,7 +891,7 @@ public sealed partial class ListFilterViewModel : ObservableObject
             ActiveChips.Add(new FilterChipItem(T("Device: {0}", DisplayText.ShortDevice(key)), key, () => { devices.Remove(key); SyncOptionTicks(); RaiseChanged(); }));
         }
         if (Bound != "all")
-            ActiveChips.Add(new FilterChipItem(Bound == "bound" ? T("Bound") : T("Not bound"), Bound == "bound" ? T("Only bound relations") : T("Only relations not bound yet"), () => Bound = "all"));
+            ActiveChips.Add(new FilterChipItem(Bound == "bound" ? T("Bound") : T("Not bound"), Bound == "bound" ? T("Only bound relations") : T("Only relations with no input at all, in any game"), () => Bound = "all"));
         if (Kind != "all")
             ActiveChips.Add(new FilterChipItem(Kind == "axis" ? T("Axes") : T("Buttons"), Kind == "axis" ? T("Only axis relations") : T("Only button relations"), () => Kind = "all"));
         OnPropertyChanged(nameof(HasActiveFilters));
@@ -835,6 +901,9 @@ public sealed partial class ListFilterViewModel : ObservableObject
         OnPropertyChanged(nameof(DevicesLabel));
         OnPropertyChanged(nameof(HasGroupFilter));
         OnPropertyChanged(nameof(HasGameFilter));
+        OnPropertyChanged(nameof(NoActionInGames));
+        OnPropertyChanged(nameof(NoActionLabel));
+        OnPropertyChanged(nameof(NoActionTooltip));
         OnPropertyChanged(nameof(HasDeviceFilter));
         OnPropertyChanged(nameof(HasOnlyPlaneFilter));
         OnPropertyChanged(nameof(HasOnlyWholeGameFilter));

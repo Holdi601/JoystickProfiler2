@@ -394,5 +394,9 @@ profile); `gui\JoyPro.Gui.Tests\ProfileHistoryTests.cs` covers the debounce, flu
 simulated timestamps for the retention, the size caps, kept versions, a 3 MB profile, auto-open and the view model's
 undo, History panel, drafts and profile switch. GUI tests set `JOYPRO_PROFILES_DIR` so "New profile" never writes to
 Documents.
+In the GUI tests the autosave's timer never fires (`TestEnvironment`: `AutosaveDelay` 1 h; a test of it sets its own delay or calls
+`FlushAutosaveAsync`): a view model a test leaves behind wrote its unsaved marker positions 2 s later into the shared data
+folder, in the middle of another test ("Reset to default" found the file it had just moved away). Fake engines' call lists
+are written from other threads: reading one gives a snapshot (`LayoutFakeEngine.Calls`).
 
 In-game tests of the integrations (each game started, its own controls menu checked) are run before a release; their results are in each game's page ([games](games/README.md)).

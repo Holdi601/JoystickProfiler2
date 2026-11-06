@@ -26,6 +26,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "War Thunder",
+                Units = "the game's file units (the Axis setup dialog shows nonlinearity + 1 and the correction x 50)",
                 Description = "Per axis function (machine.blk axes{}), all aircraft: dead zone, nonlinearity, multiplier, correction, invert, relative control (sensitivity, step), keep value for a disabled axis, output range; file units (the Axis setup dialog shows nonlinearity + 1 and the correction x 50).",
                 Parameters =
                 {

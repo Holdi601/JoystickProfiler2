@@ -35,6 +35,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Microsoft Flight Simulator 2020/2024",
+                Units = "the game's %: sensitivity and neutral -100..100, dead zones 0..100",
                 Description = "Sensitivity page of the device axis (one set per physical axis, shared by every action on it): " +
                               "sensitivity -/+ per half, neutral, dead zone, extremity dead zone, reactivity; per action: no sensitivity curve, " +
                               "axis override (own values for this action, MSFS 2024 profiles), invert. File units (the game's %). " +

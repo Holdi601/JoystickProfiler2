@@ -21,6 +21,28 @@ Storage: `Bind.TuningOverrides` (`[OptionalField] Dictionary<string, string>`), 
 (`inv=0;sl=0;dz=0.05;sx=1;sy=1;cv=0.2;n.sensitivity=22`). Framework types only, so JoyPro 1 still opens the profile
 (binary formatter version tolerance skips the unknown member).
 
+## Units: what the number boxes show (`AxisModel.Units`, `AxisParameter.DisplayScale`)
+Min, Max, Step and Default of a parameter, the profile, the export and the engine's `binds tuning` options are always in
+the stored unit. Only the GUI's number boxes, the range next to them, the curve's labels and the live line follow
+`DisplayScale`.
+
+- **DCS** (scale 100, also the base scope, which uses DCS's model): `Scripts\Input\AxesTuneDialog.lua` shows
+  `value * 100` in its edit boxes and reads `text / 100`, kept in the slider's range. Dead zone, saturation X/Y and the 11
+  user curve points run 0..100 there (stored 0..1, step 0.01, page step 0.1), curvature -100..100 (stored -1..1; the
+  dialog's tooltip says "between 0 and 100" also for this box, but its slider's range is -1..1). In and Out show
+  `value * 100`, on a slider axis `(value * 100 + 100) / 2`; JoyPro's curve and live line do the same (`in 50 -> out 40`).
+- **Precision**: the dialog's boxes take whole numbers (`acceptDecimalPoint = false`), so its files normally have two
+  decimals; its float slider can leave more. JoyPro steps by 1 (Shift 10) as the dialog does and also takes decimals in
+  the box (8.5 is 0.085). A loaded value is never parsed back from what the box shows: `AxisParameterEditor.Value` keeps it,
+  `binds tuning show` gives the base scope with every digit (`AxisTuning.FormatExact`) and Save sends every digit, so a
+  load and a save change nothing. Scopes keep six decimals as they always did (`AxisTuning.Format`): four of a shown
+  0..100. The white points on the curve move in whole numbers on DCS.
+- **Outside the range**: while typed, a message and no save; Enter or leaving the box puts it back to the nearest end and
+  a line under the box says so (`INumberBoxOwner`). 0 < |x| < 1 typed in a box of 0..100 is valid but asks "Did you mean
+  8?" (0..1 was the unit up to 2.6.3).
+- **Every other model** keeps its game's unit (scale 1) and says it in `AxisModel.Units` (`binds tuning models`, the line
+  above the boxes): Falcon BMS's steps 0..3, FSX's 0..127, MSFS's %, Arma 3's dead zone 0..0.1, War Thunder's file units...
+
 ## Response models (`engine/AxisTuning.cs`)
 The file is plain math with no engine dependencies; the GUI links it for the live preview.
 
@@ -226,7 +248,11 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
   (`--ab-source game`: the gate data where it has one); a full-at-detent aircraft with gate data gets the gate data;
   aircraft without afterburner that flew past the detent keep the relation's curve. The merge is one history version of
   its own (`profile history undo`; the GUI's "Undo merge" restores the version it was made on).
-- **GUI**: Binds page, axis relation, "Detent mode": on/off, no-afterburner rule, "Calibrate detent..." (idle, detent,
+- **Without a calibration** `EngineAxisDetents.Resolve` answers nothing: detent mode changes no curve, every aircraft keeps
+  the relation's. The calibration is part of the profile and of every history version, so Undo or a restored version can
+  bring back the state before it; the panel's state line says plainly whether this axis is calibrated, with its values.
+- **GUI**: Binds page, axis relation, "Detent mode": what it does and whose the calibration is in two lines, why full power
+  at the detent is the default, on/off, no-afterburner rule, "Calibrate detent..." (idle, detent,
   full and cut-off with Confirm/Skip/Back on the live axis), "Merge my throttle relations..." (plan, Merge, Undo merge),
   and the aircraft groups ("F-16C, F/A-18C: afterburner at 77 %") with a travel/throttle preview (detent line, afterburner
   band), the source, per game the method and error, and the afterburner start editable per group.

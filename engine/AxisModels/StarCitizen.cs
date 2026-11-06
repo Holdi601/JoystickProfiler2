@@ -30,6 +30,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Star Citizen",
+                Units = "dead zone, saturation and curve points 0..1 of the travel; exponent 1..3 and sensitivity as the game's options show them",
                 Description = "Per device axis (all actions on it): dead zone and saturation; per joystick slot and option group (e.g. Flight Pitch, shared by the actions of the group): invert, exponent or a curve (9 points at 10..90 %; setting one deletes the other in the game), sensitivity. No one-sided axes: throttle modes are separate actions. Preview from the documented behaviour, not measured in the game (unverified).",
                 Parameters =
                 {

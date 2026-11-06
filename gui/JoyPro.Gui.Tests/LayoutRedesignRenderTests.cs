@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -92,10 +93,22 @@ public sealed class LayoutRedesignRenderTests
         return vm;
     }
 
-    internal static async Task WaitForAsync(Func<bool> condition)
+    // The fake engines' call lists are written from other threads: a list that changed while the condition read it counts
+    // as "not yet".
+    internal static async Task WaitForAsync(Func<bool> condition, int tries = 300)
     {
-        for (int i = 0; i < 300 && !condition(); i++)
+        for (int i = 0; i < tries; i++)
+        {
+            try
+            {
+                if (condition())
+                    return;
+            }
+            catch (InvalidOperationException)
+            {
+            }
             await Task.Delay(10);
+        }
     }
 
     // The pages and how to reach them. The "before" pictures (docs/ui/layout-*-before-*.png) were rendered with the first
@@ -290,11 +303,17 @@ public sealed class LayoutRedesignRenderTests
                 File.WriteAllText(layoutFile, "stand-in");
         }
 
-        public List<IReadOnlyList<string>> Calls { get; } = [];
+        // Written from other threads (a refresh the view model runs in the background) while a test reads it: reading
+        // gives a snapshot, never "Collection was modified".
+        public ConcurrentQueue<IReadOnlyList<string>> Calls { get; } = new();
+
+        // Runs at the start of every engine call (a test: "this happens while that command runs").
+        public Action<IReadOnlyList<string>>? OnCall { get; set; }
 
         public Task<EngineCommandResult> RunAsync(string engineExePath, IReadOnlyList<string> arguments, CancellationToken cancellationToken = default)
         {
-            Calls.Add(arguments.ToArray());
+            Calls.Enqueue(arguments.ToArray());
+            OnCall?.Invoke(arguments);
             string? output = LayoutOutput(arguments);
             if (output == null)
                 return design.RunAsync(engineExePath, arguments, cancellationToken);

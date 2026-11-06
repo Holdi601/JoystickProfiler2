@@ -123,7 +123,7 @@ public sealed class TesterBatch263Tests
         Assert.False(row.CanCheck);
         Assert.Equal("already in this relation", row.InOtherRelationsText);
         Assert.Contains(vm.BuilderSearchRows.OfType<BuilderSearchGroupItem>(), g => g.IsInRelationGroup);
-        Assert.Contains("1 already in this relation", vm.BuilderSearchStatus);
+        Assert.Contains("the 1 found is already in this relation", vm.BuilderSearchStatus);
     }
 
     // ---- 2: what a row says when it lacks a word, and the highlight ---------------------------------------------------

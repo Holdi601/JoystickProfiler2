@@ -227,7 +227,7 @@ public sealed class TesterBatch262Tests
         // Typed: the point moves on the graph (the white handle at 50%).
         AxisCurvePointEditor half = curve.Points[5];
         double before = vm.AxisTuningHandles![5].Y;
-        half.Text = "0.8";
+        half.Text = "80";
         Assert.Equal(0.8, half.Value, 9);
         Assert.NotEqual(before, vm.AxisTuningHandles![5].Y);
         Assert.Equal(0.8, Math.Abs(vm.AxisTuningHandles[5].Y), 2);
@@ -236,20 +236,20 @@ public sealed class TesterBatch262Tests
         // Dragged on the graph: the box shows the new number.
         vm.DragAxisTuningHandleCommand.Execute(new AxisCurveHandleMove(3, vm.AxisTuningHandles[3].X, 0.25));
         Assert.Equal(0.25, curve.Points[3].Value, 3);
-        Assert.Equal("0.25", curve.Points[3].Text);
+        Assert.Equal("25", curve.Points[3].Text);
 
         // A decimal comma counts; no number / out of range: a message, nothing sent, the curve kept.
-        curve.Points[2].Text = "0,4";
-        Assert.Equal(0.4, curve.Points[2].Value, 9);
+        curve.Points[2].Text = "40,5";
+        Assert.Equal(0.405, curve.Points[2].Value, 9);
         IReadOnlyList<Point> kept = vm.AxisTuningCurve;
         curve.Points[7].Text = "x";
         Assert.False(curve.Points[7].IsValid);
         Assert.Contains("70%", vm.AxisTuningValidation);
         Assert.False(vm.CanSaveAxisTuning);
         Assert.Same(kept, vm.AxisTuningCurve);
-        curve.Points[7].Text = "1.5";
-        Assert.Contains("must be 0 .. 1", vm.AxisTuningValidation);
-        curve.Points[7].Text = "0.9";
+        curve.Points[7].Text = "150";
+        Assert.Contains("must be 0 .. 100", vm.AxisTuningValidation);
+        curve.Points[7].Text = "90";
         Assert.Equal(string.Empty, vm.AxisTuningValidation);
         Assert.True(vm.CanSaveAxisTuning);
         // Editing is all in the GUI: the engine is asked only on Save.
@@ -260,7 +260,7 @@ public sealed class TesterBatch262Tests
         string sent = set[set.ToList().IndexOf("--curvature") + 1];
         string[] points = sent.Split(',');
         Assert.Equal(11, points.Length);
-        Assert.Equal("0.4", points[2]);
+        Assert.Equal("0.405", points[2]);
         Assert.Equal("0.25", points[3]);
         Assert.Equal("0.8", points[5]);
         Assert.Equal("0.9", points[7]);
@@ -283,7 +283,7 @@ public sealed class TesterBatch262Tests
                 AvaloniaRenderThread.Wait(AxisTuningTests.SelectScopeAsync(vm, "plane:DCS:F-16C_50"));
                 AxisParameterEditor curve = UserCurve(vm);
                 curve.IsOn = true;
-                vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "0.04";
+                vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "4";
                 using (HiddenWindow main = HiddenWindow.Create(new MainWindow { DataContext = vm }, new Size(1280, 2400)))
                 {
                     main.Settle();
@@ -295,7 +295,7 @@ public sealed class TesterBatch262Tests
                     Assert.DoesNotContain(panel.GetVisualDescendants().OfType<Slider>(), s => s.Orientation == Avalonia.Layout.Orientation.Vertical && s.IsEffectivelyVisible);
 
                     // Typed into the box: the point and the graph follow.
-                    boxes[6].Text = "0.7";
+                    boxes[6].Text = "70";
                     Assert.Equal(0.7, curve.Points[6].Value, 9);
                     // Up: one step (0.01), Shift+Up: ten, Down back.
                     Key(boxes[6], Avalonia.Input.Key.Up);
@@ -305,32 +305,32 @@ public sealed class TesterBatch262Tests
                     Key(boxes[6], Avalonia.Input.Key.Down);
                     Assert.Equal(0.8, curve.Points[6].Value, 9);
                     // At the end of the range it stays there.
-                    boxes[10].Text = "1";
+                    boxes[10].Text = "100";
                     Key(boxes[10], Avalonia.Input.Key.Up);
-                    Assert.Equal("1", boxes[10].Text);
+                    Assert.Equal("100", boxes[10].Text);
                     // Out of range: a message while typed, Enter puts it back to the nearest end.
-                    boxes[9].Text = "1.7";
+                    boxes[9].Text = "170";
                     Assert.False(curve.Points[9].IsValid);
                     Assert.Contains("90%", vm.AxisTuningValidation);
                     Key(boxes[9], Avalonia.Input.Key.Enter);
-                    Assert.Equal("1", boxes[9].Text);
+                    Assert.Equal("100", boxes[9].Text);
                     Assert.True(curve.Points[9].IsValid);
                     Assert.Equal(string.Empty, vm.AxisTuningValidation);
                     // The graph's drag shows in the box.
                     vm.DragAxisTuningHandleCommand.Execute(new AxisCurveHandleMove(2, vm.AxisTuningHandles![2].X, 0.15));
                     main.Settle();
-                    Assert.Equal("0.15", boxes[2].Text);
+                    Assert.Equal("15", boxes[2].Text);
 
                     // The dead zone's box: steps of its own, the range shown next to it, kept in the range.
                     TextBox deadzone = panel.GetVisualDescendants().OfType<TextBox>().First(t => t.Name == "AxisParameterNumber" && t.DataContext is AxisParameterEditor { Key: "deadzone" });
-                    Assert.Equal("0.04", deadzone.Text);
+                    Assert.Equal("4", deadzone.Text);
                     Key(deadzone, Avalonia.Input.Key.Up);
                     Assert.Equal(0.05, vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Value, 9);
-                    deadzone.Text = "-0.3";
+                    deadzone.Text = "-30";
                     Key(deadzone, Avalonia.Input.Key.Enter);
                     Assert.Equal("0", deadzone.Text);
-                    Assert.Contains(panel.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "0 .. 1" && t.IsEffectivelyVisible);
-                    deadzone.Text = "0.04";
+                    Assert.Contains(panel.GetVisualDescendants().OfType<TextBlock>(), t => t.Text == "0 .. 100" && t.IsEffectivelyVisible);
+                    deadzone.Text = "4";
                     main.Settle();
                 }
                 foreach ((string theme, ThemeVariant variant) in new[] { ("dark", ThemeVariant.Dark), ("light", ThemeVariant.Light) })
@@ -343,8 +343,8 @@ public sealed class TesterBatch262Tests
                         UserCurve(vm).IsOn = true;
                         double[] soft = [0, 0.04, 0.09, 0.15, 0.23, 0.33, 0.44, 0.57, 0.7, 0.85, 1];
                         for (int i = 0; i < soft.Length; i++)
-                            UserCurve(vm).Points[i].Text = soft[i].ToString(System.Globalization.CultureInfo.InvariantCulture);
-                        vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "0.04";
+                            UserCurve(vm).Points[i].Text = (soft[i] * 100).ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+                        vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "4";
                         RenderAxisPanel(vm, width, outDir, "axis-response-" + width + "-" + theme + ".png");
                     }
                 }
@@ -400,11 +400,11 @@ public sealed class TesterBatch262Tests
         fake.OtherAxes.Add(("Yaw", "JOY_RZ"));
         MainWindowViewModel vm = await AxisTuningTests.CreateLoadedVmAsync(fake);
         await AxisTuningTests.SelectScopeAsync(vm, "plane:DCS:F-16C_50");
-        vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "0.12";
-        vm.AxisTuningEditors.Single(e => e.Key == "saturationY").Text = "0.9";
+        vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "12";
+        vm.AxisTuningEditors.Single(e => e.Key == "saturationY").Text = "90";
         AxisParameterEditor curve = UserCurve(vm);
         curve.IsOn = true;
-        curve.Points[5].Text = "0.3";
+        curve.Points[5].Text = "30";
         vm.AxisTuningEditors.Single(e => e.Key == "invert").IsOn = true;
 
         vm.PrepareAxisTuningCopyCommand.Execute(null);
@@ -635,7 +635,7 @@ public sealed class AxisTuningCopyRealEngineTests
             Assert.True(vm.IsAxisTuningExpanded);
             Assert.Equal(0.1, vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Value, 6);
             // An edit goes along (the curve's edits are saved by themselves, too).
-            vm.AxisTuningEditors.Single(e => e.Key == "saturationY").Text = "0.8";
+            vm.AxisTuningEditors.Single(e => e.Key == "saturationY").Text = "80";
             vm.PrepareAxisTuningCopyCommand.Execute(null);
             Assert.Equal("Thrust Right", vm.AxisTuningCopyTarget?.Relation);
             await vm.FlushAutosaveAsync();

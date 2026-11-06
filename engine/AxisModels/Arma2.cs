@@ -23,6 +23,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Arma 2 / Operation Arrowhead",
+                Units = "the slider as the dialog shows it, -1..1",
                 Description = "Per device and physical axis, for every vehicle and on foot (Controls > Controllers > Customize): one sensitivity slider p (-1..1 as the dialog shows it, stored as 10^p; output = v^(10^-p) per half axis) after the game's fixed 7 % dead zone (X, Y, Z, RX, RY, RZ; the preview assumes such an axis). Exact formula from ArmA2OA.exe. Arma 2 does not take over the base curve: only values set for Arma 2 (or imported) are written.",
                 Parameters =
                 {

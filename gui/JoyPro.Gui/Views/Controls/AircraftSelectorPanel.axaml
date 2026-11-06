@@ -11,15 +11,15 @@
     <Border Classes="sunken" Padding="8,6" Margin="0,2,0,8">
     <StackPanel Spacing="4">
         <WrapPanel ItemSpacing="4" LineSpacing="4">
-            <Button Classes="small" Content="{l:T 'All'}" Command="{Binding SelectAllCommand}" ToolTip.Tip="{l:T 'Tick every aircraft shown'}" />
-            <Button Classes="small" Content="{l:T 'None'}" Command="{Binding SelectNoneCommand}" ToolTip.Tip="{l:T 'Untick every aircraft shown'}" />
-            <Button Classes="small" Content="{l:T 'Only same meaning'}" Command="{Binding OnlySameMeaningCommand}"
+            <Button Classes="small" Content="{l:T 'All'}" Command="{Binding SelectAllCommand}" IsVisible="{Binding CanTick}" ToolTip.Tip="{l:T 'Tick every aircraft shown'}" />
+            <Button Classes="small" Content="{l:T 'None'}" Command="{Binding SelectNoneCommand}" IsVisible="{Binding CanTick}" ToolTip.Tip="{l:T 'Untick every aircraft shown'}" />
+            <Button Classes="small" Content="{l:T 'Only same meaning'}" Command="{Binding OnlySameMeaningCommand}" IsVisible="{Binding CanTick}"
                     ToolTip.Tip="{l:T 'Tick the aircraft where this id means the same (also the nearly same ones), untick the ones where it means something else'}" />
-            <Button Classes="small" Content="{l:T 'Only same function'}" Command="{Binding OnlySameFunctionCommand}" IsVisible="{Binding HasSameFunction}"
+            <Button Classes="small" Content="{l:T 'Only same function'}" Command="{Binding OnlySameFunctionCommand}" IsVisible="{Binding CanTickSameFunction}"
                     ToolTip.Tip="{l:T 'Tick every aircraft where this id is this function, also under another title (a helicopter\'s cyclic pitch for pitch)'}" />
-            <Button Classes="small" Content="{l:T 'Only same title'}" Command="{Binding OnlySameTitleCommand}"
+            <Button Classes="small" Content="{l:T 'Only same title'}" Command="{Binding OnlySameTitleCommand}" IsVisible="{Binding CanTick}"
                     ToolTip.Tip="{l:T 'Tick only the aircraft whose title of this id is exactly the row\'s (not the near ones, never the ones where it means something else)'}" />
-            <Button Classes="small" Content="{l:T 'Invert'}" Command="{Binding InvertCommand}" ToolTip.Tip="{l:T 'Swap the ticks of the aircraft shown'}" />
+            <Button Classes="small" Content="{l:T 'Invert'}" Command="{Binding InvertCommand}" IsVisible="{Binding CanTick}" ToolTip.Tip="{l:T 'Swap the ticks of the aircraft shown'}" />
             <TextBox Text="{Binding FilterText}" Watermark="{l:T 'Filter: aircraft or title'}" MinWidth="150" MaxWidth="220"
                      ToolTip.Tip="{l:T 'Shows only the aircraft whose name, title or category has these letters (\'differs\' shows the ones with another meaning)'}" />
         </WrapPanel>

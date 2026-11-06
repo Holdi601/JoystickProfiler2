@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -53,7 +54,15 @@ public sealed partial class MainWindowViewModel
     private bool catalogOnlyFree;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CatalogStatusLine))]
     private string catalogStatus = string.Empty;
+
+    // " · 3 with the same meaning hidden (Same meaning is off)" while a filter text is on.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CatalogStatusLine))]
+    private string catalogFilterNote = string.Empty;
+
+    public string CatalogStatusLine => CatalogStatus + CatalogFilterNote;
 
     [ObservableProperty]
     private bool isCatalogLoading;
@@ -173,20 +182,29 @@ public sealed partial class MainWindowViewModel
         _ = RefreshCatalogMeaningAsync(value);
     }
 
-    // The filter by meaning: what the engine's search finds for the words in this game's list ("fast travel" = the
-    // jump drive, "drop the wheels" = gear down), besides the rows whose title has the words.
-    private HashSet<string> catalogMeaningKeys = new(StringComparer.OrdinalIgnoreCase);
+    // The filter by meaning: what the engine's search says about the words in this game's list ("fast travel" = the
+    // jump drive, "drop the wheels" = gear down), besides the rows whose title has the words. Only its sections name and
+    // function are hits, as in Add actions (docs/relation-builder.md "Browse the catalog"): for "RMFD OSB 20" the other
+    // displays' OSB-20 and the MFD power switch are related rows, they are not what was asked for.
+    private readonly record struct CatalogQueryRow(int Rank, string Section, bool Recommended, string RecommendedFor);
+
+    private static readonly Dictionary<string, CatalogQueryRow> NoCatalogQueryRows = [];
+    private Dictionary<string, CatalogQueryRow> catalogQueryRows = NoCatalogQueryRows;
     private string catalogMeaningText = string.Empty;
+
+    // The text the engine's answer is for (the tests wait for it).
+    internal string CatalogAnsweredText => catalogMeaningText;
 
     internal async Task RefreshCatalogMeaningAsync(string text)
     {
         string wanted = (text ?? string.Empty).Trim();
         CatalogGameOption? game = CatalogGame;
+        CatalogPlaneOption? plane = CatalogPlane;
         if (wanted.Length < 3 || game == null)
         {
-            if (catalogMeaningKeys.Count > 0)
+            if (catalogQueryRows.Count > 0)
             {
-                catalogMeaningKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                catalogQueryRows = NoCatalogQueryRows;
                 catalogMeaningText = string.Empty;
                 ApplyCatalogFilter();
             }
@@ -194,15 +212,22 @@ public sealed partial class MainWindowViewModel
         }
         // Typing: only the last text asks the engine.
         await Task.Delay(CatalogMeaningDelayMs);
-        if (!string.Equals((CatalogFilterText ?? string.Empty).Trim(), wanted, StringComparison.Ordinal) || game != CatalogGame)
+        bool Current() => string.Equals((CatalogFilterText ?? string.Empty).Trim(), wanted, StringComparison.Ordinal) && game == CatalogGame && plane == CatalogPlane;
+        if (!Current())
             return;
         List<string> args = ["relations", "search", wanted, "--game", game.Game, "--limit", "200"];
-        if (game.HasPlanes && CatalogPlane != null)
-            args.AddRange(["--plane", CatalogPlane.Plane]);
+        if (game.HasPlanes && plane != null)
+            args.AddRange(["--plane", plane.Plane]);
+        // The kind the catalog lists: "Recommended" is the best action among the rows shown.
+        string kind = BuilderEffectiveKind;
+        if (kind == "axis")
+            args.Add("--axis");
+        else if (kind == "button")
+            args.Add("--button");
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: HasProfile, mutatesProfile: false, busyLabel: T("Looking up \"{0}\"...", wanted), forceText: false, background: true);
-        if (result == null || result.ExitCode != 0 || !string.Equals((CatalogFilterText ?? string.Empty).Trim(), wanted, StringComparison.Ordinal))
+        if (result == null || result.ExitCode != 0 || !Current())
             return;
-        HashSet<string> keys = new(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, CatalogQueryRow> found = new(StringComparer.OrdinalIgnoreCase);
         try
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
@@ -210,10 +235,12 @@ public sealed partial class MainWindowViewModel
             {
                 foreach (JsonElement row in rows.EnumerateArray())
                 {
-                    // Rows found as the function the words mean, not plain word matches (those the title filter has).
-                    string match = ReadJsonString(row, "Match");
-                    if (match is "exact" or "function" or "synonym" or "described" or "catalog")
-                        keys.Add(ReadJsonString(row, "Game") + "|" + ReadJsonString(row, "Id"));
+                    // An older engine without sections: from Literal and Match (BuilderSearchResultItem.SectionKind).
+                    string section = ReadJsonString(row, "Section");
+                    if (section.Length == 0)
+                        section = ReadJsonBool(row, "Literal") ? "name" : ReadJsonString(row, "Match") is "exact" or "function" or "synonym" or "described" ? "function" : "related";
+                    found.TryAdd(ReadJsonString(row, "Game") + "|" + ReadJsonString(row, "Id"),
+                        new CatalogQueryRow(found.Count, section, ReadJsonBool(row, "Recommended"), ReadJsonString(row, "RecommendedFor")));
                 }
             }
         }
@@ -221,7 +248,7 @@ public sealed partial class MainWindowViewModel
         {
             return;
         }
-        catalogMeaningKeys = keys;
+        catalogQueryRows = found;
         catalogMeaningText = wanted;
         ApplyCatalogFilter();
     }
@@ -335,7 +362,12 @@ public sealed partial class MainWindowViewModel
                 return;
             }
             catalogLoadedKey = key;
+            // The answer for the list before (another aircraft or kind) says nothing about these rows.
+            catalogQueryRows = NoCatalogQueryRows;
+            catalogMeaningText = string.Empty;
             SetCatalogRows(rows, categories.Select(c => c.Name).ToList());
+            if ((CatalogFilterText ?? string.Empty).Trim().Length > 0)
+                _ = RefreshCatalogMeaningAsync(CatalogFilterText ?? string.Empty);
             int used = rows.Count(r => r.IsUsed);
             CatalogStatus = DisplayText.Game(game.Game) + (CatalogPlane != null ? " " + CatalogPlane.Plane : string.Empty) + ": " +
                             T("{0} actions in {1} categories", rows.Count, categories.Count) + (kind == "axis" ? " (" + T("axes") + ")" : kind == "button" ? " (" + T("buttons") + ")" : string.Empty) +
@@ -458,35 +490,93 @@ public sealed partial class MainWindowViewModel
         OnPropertyChanged(nameof(CatalogAddLabel));
     }
 
-    // The filter text and "only free": a category with a match opens while a filter is typed.
+    // The filter text and "only free": a category with a match opens while a filter is typed. A row is a hit by its title
+    // (CatalogTitleHasWords) or when the engine's search lists it under name or, with Same meaning on, function. Its related
+    // rows only when there is no hit at all (Add actions opens Related then too), and the status line says so. While
+    // the search's answer is there and no sort level is set, its best rows and their categories come first, and
+    // "Recommended" is the search's own, the one action for these words; without a filter text it is the browse's.
     private void ApplyCatalogFilter()
     {
-        string[] words = (CatalogFilterText ?? string.Empty).ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        string text = (CatalogFilterText ?? string.Empty).Trim();
+        string[] words = text.ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         bool filtering = words.Length > 0;
-        // The engine's meaning matches count for this text only.
-        HashSet<string> meaning = string.Equals(catalogMeaningText, (CatalogFilterText ?? string.Empty).Trim(), StringComparison.Ordinal) ? catalogMeaningKeys : [];
+        bool sameMeaning = BuilderShowSameMeaning;
+        // The engine's answer counts for this text only.
+        Dictionary<string, CatalogQueryRow> query = string.Equals(catalogMeaningText, text, StringComparison.Ordinal) ? catalogQueryRows : NoCatalogQueryRows;
+        foreach (CatalogRowItem row in catalogRows)
+        {
+            if (!filtering)
+                row.Row.SetQueryRecommended(null);
+            else if (query.TryGetValue(CatalogRowKey(row), out CatalogQueryRow found))
+                row.Row.SetQueryRecommended(found.Recommended, found.RecommendedFor);
+            else
+                row.Row.SetQueryRecommended(false);
+        }
         // DCS's English names only for words that name a command by its key ("flaps_1"); read once per filter, not per
         // row and word (each read asked the disk whether the DCS folder is there).
         IDictionary<string, string>? english = words.Any(JoyPro.Engine.DcsCommandNames.LooksLikeKeyQuery) ? DcsEnglishNames() : null;
-        List<object> entries = [];
+        Regex?[] joined = words.Select(CatalogJoinedWord).ToArray();
+        bool TitleHit(CatalogRowItem row) => CatalogTitleHasWords(words, joined, row.Row, english);
+        bool Free(CatalogRowItem row) => !CatalogOnlyFree || !row.IsUsed;
+        bool CategoryHit(CatalogCategoryItem category) => filtering && words.All(w => category.Name.Contains(w, StringComparison.OrdinalIgnoreCase));
+        bool Section(CatalogRowItem row, string section) => query.TryGetValue(CatalogRowKey(row), out CatalogQueryRow found) && found.Section == section;
+        bool AnyHit(bool meaning) => CatalogCategories.Any(CategoryHit) || catalogRows.Any(r => Free(r) && (TitleHit(r) || Section(r, "name") || (meaning && Section(r, "function"))));
+        int relatedOnly = filtering && query.Count > 0 && !AnyHit(true) ? catalogRows.Count(r => Free(r) && Section(r, "related")) : 0;
+        bool showRelated = sameMeaning && relatedOnly > 0;
+        bool QueryHit(CatalogRowItem row) => Section(row, "name") || (sameMeaning && Section(row, "function")) || (showRelated && Section(row, "related"));
+        // The recommended rows first, each kind in the search's order; rows it does not list (their category has the words) last.
+        int Rank(CatalogRowItem row) => !query.TryGetValue(CatalogRowKey(row), out CatalogQueryRow found) ? int.MaxValue : found.Recommended ? found.Rank - query.Count : found.Rank;
+        bool ranked = filtering && query.Count > 0 && !CatalogSort.HasLevels;
+        List<(int Best, CatalogCategoryItem Category)> shown = [];
         foreach (CatalogCategoryItem category in CatalogCategories)
         {
-            bool nameHit = filtering && words.All(w => category.Name.Contains(w, StringComparison.OrdinalIgnoreCase));
-            List<CatalogRowItem> matching = category.Rows.Where(r => (!CatalogOnlyFree || !r.IsUsed) &&
-                (!filtering || nameHit || meaning.Contains(r.Row.Game + "|" + r.Row.Id) || words.All(w => (r.Row.Title + " " + r.Row.Id).Contains(w, StringComparison.OrdinalIgnoreCase) ||
-                                        (english != null && r.Row.Game == "DCS" && JoyPro.Engine.DcsCommandNames.KeyMatches(w, r.Row.Title, english))))).ToList();
+            bool nameHit = CategoryHit(category);
+            List<CatalogRowItem> matching = category.Rows.Where(r => Free(r) && (!filtering || nameHit || QueryHit(r) || TitleHit(r))).ToList();
+            if (ranked)
+                matching = matching.OrderBy(Rank).ToList();
             category.Matching = matching.Count;
             category.IsVisible = matching.Count > 0;
             if (filtering && matching.Count > 0)
                 category.IsExpanded = true;
             FillCategoryRows(category, matching);
-            if (!category.IsVisible)
-                continue;
+            if (category.IsVisible)
+                shown.Add((ranked ? Rank(matching[0]) : 0, category));
+        }
+        List<object> entries = [];
+        foreach ((int _, CatalogCategoryItem category) in shown.OrderBy(c => c.Best))
+        {
             entries.Add(category);
             foreach (CatalogRowItem row in category.VisibleRows)
                 entries.Add(category.EntryOf(row));
         }
         CatalogEntries.ReplaceAll(entries);
+        // Said in the status line, so that a short or an empty list explains itself. Same meaning off: what it would bring back.
+        int hidden = !filtering || sameMeaning ? 0 : relatedOnly > 0 ? relatedOnly : catalogRows.Count(r => Free(r) && Section(r, "function") && !TitleHit(r));
+        CatalogFilterNote = showRelated ? T(" · no action has these words: related actions shown ({0})", relatedOnly.ToString(CultureInfo.InvariantCulture))
+            : hidden > 0 ? T(" · {0} with the same meaning hidden (Same meaning is off)", hidden.ToString(CultureInfo.InvariantCulture)) : string.Empty;
+    }
+
+    private static string CatalogRowKey(CatalogRowItem row) => row.Row.Game + "|" + row.Row.Id;
+
+    // The plain filter: every word in the title (as typed: "20" is in "OSB-20"), or every word in the game's id or key.
+    // Never some in each: "OSB 20" is not "OSB 1" whose DCS id happens to have a 20.
+    private static bool CatalogTitleHasWords(string[] words, Regex?[] joined, BuilderSearchResultItem row, IDictionary<string, string>? english)
+    {
+        bool title = true;
+        for (int i = 0; i < words.Length && title; i++)
+        {
+            title = row.Title.Contains(words[i], StringComparison.OrdinalIgnoreCase) || joined[i]?.IsMatch(row.Title) == true ||
+                    (english != null && row.Game == "DCS" && JoyPro.Engine.DcsCommandNames.KeyMatches(words[i], row.Title, english));
+        }
+        return title || words.All(w => row.Id.Contains(w, StringComparison.OrdinalIgnoreCase));
+    }
+
+    // A word typed without the title's separator: "OSB20" and "OSB-20" find "OSB-20" and "OSB 20" in a title, from the
+    // start of a word on ("a1" is not the end of "Data 1"). Null: a word of one part, the plain Contains is enough.
+    internal static Regex? CatalogJoinedWord(string word)
+    {
+        List<string> parts = Regex.Matches(word, @"\p{L}+|\p{Nd}+").Select(m => m.Value).ToList();
+        return parts.Count < 2 ? null : new Regex(@"(?<![\p{L}\p{Nd}])" + string.Join(@"[^\p{L}\p{Nd}]*", parts.Select(Regex.Escape)), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     }
 
     private static void FillCategoryRows(CatalogCategoryItem category, List<CatalogRowItem> matching)

@@ -35,6 +35,7 @@ public sealed partial class MainWindowViewModel
         string device = (item?.Device ?? string.Empty).Trim();
         if (item == null || device.Length == 0)
             return;
+        SaveLayoutEditsNow();
         if (!ReferenceEquals(SelectedLayoutSuggestion, item))
         {
             SelectedLayoutSuggestion = item;
@@ -55,7 +56,8 @@ public sealed partial class MainWindowViewModel
         if (!await ConfirmAsync(T("Reset {0} to JoyPro's default?", item.DisplayName),
                 T("JoyPro's own picture and positions come back. {0} Undo reset puts everything back.", what), T("Reset"), isDanger: true))
             return;
-        DeviceLayoutReset.Backup backup = DeviceLayoutReset.Reset(files, [device], device, model);
+        ForgetLayoutEdits();
+        DeviceLayoutReset.Backup backup = DeviceLayoutReset.Reset(DeviceLayoutReset.FilesOf(model), [device], device, model);
         if (own)
         {
             string previous = await LayoutImageOfAsync(device, "--clear");
@@ -70,6 +72,7 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task ResetAllLayoutChangesAsync()
     {
+        SaveLayoutEditsNow();
         List<string> files = DeviceLayoutReset.AllFiles();
         List<string> devices = LayoutSuggestions.Select(s => (s.Device ?? string.Empty).Trim()).Where(d => d.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
         Dictionary<string, string> images = [];
@@ -89,7 +92,8 @@ public sealed partial class MainWindowViewModel
                 T("Every device shows JoyPro's own picture and positions again: your marker positions, tables and lines, renamed parts, photos and own device definitions ({0} files) and the layout files the profile uses ({1}; the files themselves stay). Undo reset puts everything back.",
                     files.Count, images.Count), T("Reset all"), isDanger: true))
             return;
-        DeviceLayoutReset.Backup backup = DeviceLayoutReset.Reset(files, devices);
+        ForgetLayoutEdits();
+        DeviceLayoutReset.Backup backup = DeviceLayoutReset.Reset(DeviceLayoutReset.AllFiles(), devices);
         foreach (KeyValuePair<string, string> image in images)
         {
             string previous = await LayoutImageOfAsync(image.Key, "--clear");
@@ -106,6 +110,7 @@ public sealed partial class MainWindowViewModel
         DeviceLayoutReset.Backup? backup = lastLayoutReset;
         if (backup == null)
             return;
+        ForgetLayoutEdits();
         DeviceLayoutReset.Restore(backup);
         foreach (KeyValuePair<string, string> image in backup.LayoutImages.Where(i => i.Value.Length > 0))
             await LayoutImageOfAsync(image.Key, "--set", image.Value);
@@ -118,6 +123,26 @@ public sealed partial class MainWindowViewModel
             DeviceReferenceService.SetCalloutFileOf(pointer.Key, pointer.Value);
         LayoutResetStatus = T("Your layout changes are back.");
         StatusText = LayoutResetStatus;
+    }
+
+    // An edit the autosave has not written yet (it waits 2 s after the last edit) is written before a reset looks at the
+    // files: it is one of the user's changes like the others, so it goes into the backup and Undo reset brings it back.
+    private void SaveLayoutEditsNow()
+    {
+        if (deviceReference?.HasModel == true && deviceReference.HasUnsavedChanges)
+            deviceReference.SaveMarkersCommand.Execute(null);
+        if (layoutCallouts?.HasSheet == true && layoutCallouts.HasUnsavedChanges)
+            SaveLayoutCalloutsFile(markSaved: true);
+    }
+
+    // Right before the files move: the autosave that is still pending must find nothing, or it writes the positions of the
+    // picture as it was shown back while the page reloads, and the reset has undone itself.
+    private void ForgetLayoutEdits()
+    {
+        if (deviceReference != null)
+            deviceReference.HasUnsavedChanges = false;
+        if (layoutCallouts != null)
+            layoutCallouts.HasUnsavedChanges = false;
     }
 
     private async Task AfterLayoutResetAsync(DeviceLayoutReset.Backup backup, List<string> devices)

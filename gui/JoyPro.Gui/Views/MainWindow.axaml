@@ -2289,12 +2289,12 @@
                                                                     ToolTip.Tip="{l:T 'Switches the game chips off: the search goes over every game again'}" />
                                                         </Grid>
                                                     </Border>
-                                                    <!-- Same meaning off and no title with every word: said plainly, one click switches it on -->
+                                                    <!-- Same meaning off and no title with every word left to add: said plainly, one click switches it on -->
                                                     <Border x:Name="BuilderNoNameMatchesCallout" Classes="callout" IsVisible="{Binding ShowBuilderNoNameMatches}" Margin="0,4,0,0">
                                                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
                                                             <PathIcon Data="{StaticResource Icon.Info}" Width="16" Height="16" Classes="info" VerticalAlignment="Top" />
                                                             <TextBlock Grid.Column="1" Text="{Binding BuilderNoNameMatchesText}" TextWrapping="Wrap" VerticalAlignment="Center" />
-                                                            <Button Grid.Column="2" Classes="small accent" Content="{l:T 'Show same meaning'}" Command="{Binding ShowBuilderSameMeaningCommand}" VerticalAlignment="Top"
+                                                            <Button Grid.Column="2" Classes="small accent" Content="{l:T 'Show same meaning'}" Command="{Binding ShowBuilderSameMeaningCommand}" VerticalAlignment="Top" IsVisible="{Binding CanShowBuilderSameMeaning}"
                                                                     ToolTip.Tip="{l:T 'Switches Same meaning on: the actions that do the same and the related ones are listed again'}" />
                                                         </Grid>
                                                     </Border>
@@ -3678,7 +3678,9 @@
                                                                         StickInput="{Binding AxisTuningStickInput}"
                                                                         StickOutput="{Binding AxisTuningStickOutput}"
                                                                         Handles="{Binding AxisTuningHandles}"
-                                                                        HandleMovedCommand="{Binding DragAxisTuningHandleCommand}" />
+                                                                        HandleMovedCommand="{Binding DragAxisTuningHandleCommand}"
+                                                                        ShowsPercent="{Binding AxisTuningShowsPercent}"
+                                                                        OneSided="{Binding AxisTuningOneSided}" />
                                                 <TextBlock Text="{l:T 'Blue: this scope. Dashed orange: all games (base), while inherited. Drag the white points (user curve or curve points) to shape the curve.'}"
                                                            FontSize="{DynamicResource JP.FontSize.11}"
                                                            Opacity="0.8"
@@ -3686,13 +3688,16 @@
                                                 <TextBlock Text="{Binding AxisTuningLiveText}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" Spacing="6">
+                                                <!-- The unit of the numbers below: DCS's own 0 .. 100, or what the game's model says -->
+                                                <TextBlock x:Name="AxisTuningUnits" Classes="caption" Text="{Binding AxisTuningUnitsText}" TextWrapping="Wrap" />
                                                 <ItemsControl ItemsSource="{Binding AxisTuningEditors}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate x:DataType="models:AxisParameterEditor">
                                                             <StackPanel Spacing="2" Margin="0,0,0,4">
-                                                                <!-- A slider for the feel, a number box for the exact value (typed, Up / Down, the wheel when
-                                                                     focused; outside the range it goes back to the nearest end), the range next to it -->
-                                                                <Grid IsVisible="{Binding IsNumber}" ColumnDefinitions="140,*,76,64" ColumnSpacing="8">
+                                                                <!-- A slider for the feel, a number box for the exact value in the unit of the game's dialog (typed,
+                                                                     Up / Down, the wheel when focused; outside the range it goes back to the nearest end and the
+                                                                     line below says so), the range next to it -->
+                                                                <Grid IsVisible="{Binding IsNumber}" ColumnDefinitions="140,*,76,72" ColumnSpacing="8">
                                                                     <TextBlock Text="{Binding Label}" VerticalAlignment="Center" ToolTip.Tip="{Binding RangeText}" TextTrimming="CharacterEllipsis" />
                                                                     <Slider Grid.Column="1"
                                                                             Minimum="{Binding Minimum}"
@@ -3707,9 +3712,9 @@
                                                                              x:Name="AxisParameterNumber"
                                                                              Text="{Binding Text}"
                                                                              IsEnabled="{Binding IsActive}"
-                                                                             views:NumberBox.Minimum="{Binding Minimum}"
-                                                                             views:NumberBox.Maximum="{Binding Maximum}"
-                                                                             views:NumberBox.Step="{Binding Step}"
+                                                                             views:NumberBox.Minimum="{Binding BoxMinimum}"
+                                                                             views:NumberBox.Maximum="{Binding BoxMaximum}"
+                                                                             views:NumberBox.Step="{Binding BoxStep}"
                                                                              ToolTip.Tip="{l:T 'Type the exact value. Up / Down or the mouse wheel: one step, with Shift: ten steps.'}"
                                                                              VerticalAlignment="Center" />
                                                                     <TextBlock Grid.Column="3" Classes="caption" Text="{Binding RangeText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
@@ -3720,7 +3725,7 @@
                                                                     <CheckBox Content="{Binding Label}" IsChecked="{Binding IsOn}" />
                                                                     <!-- The 11 points as number boxes (2.6.2: no second set of sliders next to the curve's points) -->
                                                                     <TextBlock Classes="caption" TextWrapping="Wrap" IsVisible="{Binding IsOn}"
-                                                                               Text="{l:T 'The output (0 .. 1) at each point of the stick travel: type it, use Up / Down or the mouse wheel, or drag the white points on the curve.'}" />
+                                                                               Text="{Binding CurveHint}" />
                                                                     <ItemsControl x:Name="AxisUserCurvePoints" ItemsSource="{Binding Points}" IsVisible="{Binding IsOn}">
                                                                         <ItemsControl.ItemsPanel>
                                                                             <ItemsPanelTemplate>
@@ -3735,15 +3740,18 @@
                                                                                              Classes="numberCell"
                                                                                              Classes.invalid="{Binding !IsValid}"
                                                                                              Text="{Binding Text}"
-                                                                                             views:NumberBox.Minimum="0"
-                                                                                             views:NumberBox.Maximum="1"
-                                                                                             views:NumberBox.Step="0.01"
+                                                                                             views:NumberBox.Minimum="{Binding BoxMinimum}"
+                                                                                             views:NumberBox.Maximum="{Binding BoxMaximum}"
+                                                                                             views:NumberBox.Step="{Binding BoxStep}"
                                                                                              ToolTip.Tip="{Binding Tooltip}" />
                                                                                 </StackPanel>
                                                                             </DataTemplate>
                                                                         </ItemsControl.ItemTemplate>
                                                                     </ItemsControl>
                                                                 </StackPanel>
+                                                                <!-- A number put back into the range, or 0.08 typed where 8 was meant: said where it happened -->
+                                                                <TextBlock x:Name="AxisParameterNote" Text="{Binding InputNote}" Foreground="{DynamicResource JP.WarnTextBrush}"
+                                                                           FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" IsVisible="{Binding HasInputNote}" />
                                                             </StackPanel>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -3836,20 +3844,25 @@
                                     <Border IsVisible="{Binding SelectedBindIsAxis}">
                                 <Expander Header="{l:T 'Detent mode: one throttle for all aircraft (afterburner detent)'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsDetentExpanded}">
                                     <StackPanel Margin="0,6,0,0" Spacing="8">
-                                        <TextBlock Text="{l:T 'With detent mode, this one throttle relation serves every aircraft: JoyPro bends the curve per aircraft so that your device\'s afterburner detent is exactly where that aircraft\'s afterburner starts. Aircraft with the same start share one curve.'}"
+                                        <TextBlock x:Name="DetentExplanation" Text="{l:T 'One throttle relation for every aircraft: JoyPro bends the curve per aircraft, so your throttle\'s afterburner detent is exactly where that aircraft\'s afterburner starts.'}"
+                                                   FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="DetentAxisExplanation" Text="{l:T 'The calibration belongs to the device axis: every throttle relation on it shares it, and a left and a right lever are separate axes.'}"
                                                    FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" />
                                         <WrapPanel>
                                             <CheckBox Content="{l:T 'Detent mode on'}" IsChecked="{Binding DetentOn}" IsEnabled="{Binding DetentLoaded}" Margin="0,0,16,0" />
                                             <CheckBox Content="{l:T 'Aircraft without afterburner: full power at the detent'}" IsChecked="{Binding DetentNoAbFull}" IsEnabled="{Binding DetentLoaded}"
-                                                      ToolTip.Tip="{l:T 'Off: they keep the relation\'s curve over the whole travel.'}" Margin="0,0,16,0" />
+                                                      ToolTip.Tip="{l:T 'An aircraft without afterburner has nothing behind the detent, so it reaches full power there; otherwise you would have to push through the detent for the last part. Off: its curve runs over the whole travel.'}" Margin="0,0,16,0" />
                                             <Button Command="{Binding StartDetentWizardCommand}" Content="{l:T 'Calibrate detent...'}" Margin="0,0,8,0"
-                                                    ToolTip.Tip="{l:T 'Move the throttle to idle, to the detent and to full; JoyPro reads the device live.'}" />
+                                                    ToolTip.Tip="{l:T 'Move the throttle to idle, to the detent and to full; JoyPro reads the device live. Stored for this device axis, for every throttle relation on it.'}" />
                                             <Button Command="{Binding OpenDetentMergeCommand}" Content="{l:T 'Merge my throttle relations...'}" Margin="0,0,8,0"
                                                     ToolTip.Tip="{l:T 'Your per-aircraft throttle relations on one device axis become one relation in detent mode (preview first, undo afterwards).'}" />
                                             <Button Command="{Binding ReloadDetentCommand}" Content="{l:T 'Reload'}" />
                                         </WrapPanel>
+                                        <TextBlock x:Name="DetentNoAfterburnerExplanation" Text="{l:T 'Full power at the detent is on by default: an aircraft without afterburner has nothing behind the detent, so it reaches full power there; otherwise you would have to push through the detent for the last part. Off: its curve runs over the whole travel.'}"
+                                                   FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.85" TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding DetentStatus}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                        <TextBlock Text="{Binding DetentCalibrationText}" FontSize="{DynamicResource JP.FontSize.11.5}" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="DetentCalibrationState" Text="{Binding DetentCalibrationText}" FontSize="{DynamicResource JP.FontSize.11.5}" TextWrapping="Wrap"
+                                                   ToolTip.Tip="{l:T 'The calibration is part of the profile: Undo or restoring an older version can bring back the state before it. Without one, every aircraft keeps the relation\'s curve.'}" />
                                         <TextBlock Text="{Binding DetentWarningText}" Foreground="{DynamicResource JP.WarnTextBrush}" FontSize="{DynamicResource JP.FontSize.11}" TextWrapping="Wrap" IsVisible="{Binding HasDetentWarning}" />
 
                                         <!-- Calibration wizard -->
@@ -7017,7 +7030,7 @@
                                  next to All / Axes / Buttons, docs/relation-builder.md "Same function and Related") -->
                             <controls:SettingsSection SectionId="relations" Title="{l:T 'Relations'}" Icon="{StaticResource Icon.Link}">
                                 <StackPanel Spacing="6">
-                                    <CheckBox x:Name="SettingsSameMeaningCheckBox" Content="{l:T 'Add actions: also list actions with the same meaning, not only those whose name has every word'}"
+                                    <CheckBox x:Name="SettingsSameMeaningCheckBox" Content="{l:T 'Add actions and catalog: also list actions with the same meaning, not only those whose name has every word'}"
                                               IsChecked="{Binding BuilderShowSameMeaning}"
                                               ToolTip.Tip="{l:T 'On: below the name matches come Same function (the same function, found by a synonym or a description) and Related (folded). Off: only actions whose name has every word you typed. The same switch is next to All / Axes / Buttons.'}" />
                                 </StackPanel>

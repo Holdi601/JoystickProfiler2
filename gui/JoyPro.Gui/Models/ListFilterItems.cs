@@ -236,6 +236,9 @@ public sealed class ListFilterState
     // "game|plane" of games filtered by some aircraft.
     public List<string> Planes { get; set; } = [];
 
+    // The games and aircraft ticked list the relations WITHOUT an action there.
+    public bool NoActionInGames { get; set; }
+
     public List<string> Devices { get; set; } = [];
 
     // "all", "bound", "unbound"

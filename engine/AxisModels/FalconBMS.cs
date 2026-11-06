@@ -30,6 +30,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Falcon BMS",
+                Units = "the launcher's steps 0..3 (None, Small, Medium, Large); User.cfg's exponent 0..100 and exponential saturation 0..99",
                 Description = "Per physical axis (launcher device file): invert, dead zone and saturation in the launcher's steps (0 None, 1 Small, 2 Medium, 3 Large); one-sided axes (Slider: throttles, brakes, volumes, brightness, knobs) have no dead zone. Pitch, roll, yaw and cursor X/Y also have Falcon BMS User.cfg's exponential curve (g_nAxisExp_AXIS_*) and exponential saturation (g_nAxisSat_AXIS_*). Preview: dead zone/saturation as DirectInput applies its ints (UNVERIFIED in game), exponent as a linear-to-cubic blend and saturation as less travel to full output (described by the BMS forum, UNVERIFIED).",
                 Parameters =
                 {

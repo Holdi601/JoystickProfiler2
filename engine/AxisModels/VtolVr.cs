@@ -30,6 +30,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Byoj,
                 Title = "VTOL VR (BYOJoystick mod)",
+                Units = "the mod's Deadzone number, 0..1",
                 Description = "Per binding: invert and the mod's one \"Deadzone\" number, which is a dead zone only for SOI slew X/Y and Articulate Tilt (a cut without rescale; the preview shows it when the slew switch is on). On the stick (pitch/roll/yaw) and throttle/power/collective it is the multi-crew takeover threshold and does not change the response (linear). No curves.",
                 Parameters =
                 {
@@ -80,6 +81,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Native,
                 Title = "VTOL VR (native rudder and toe brakes)",
+                Units = "a switch, 0 or 1",
                 Description = "Per bind (inputbindings.cfg element map): invert and, for the toe brakes, the axis range. VTOL VR reads a brake as 0..1: a toe brake that reports -1..1 brakes only on the second half of its travel unless the range is Positive. Rewired's own calibration (dead zone, sensitivity) has no UI and stays as the game has it.",
                 Parameters =
                 {

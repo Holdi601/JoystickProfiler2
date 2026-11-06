@@ -271,16 +271,24 @@ public sealed partial class MainWindowViewModel
                 string when = GetJsonString(cal, "When");
                 string idleText = DetentGroupItem.Percent(idleTravel);
                 string detentText = DetentGroupItem.Percent(detentTravel);
+                // The ends only when they were measured (raw axis positions; the wizard's Skip leaves them out).
+                bool increasing = !cal.TryGetProperty("Increasing", out JsonElement rising) || rising.ValueKind != JsonValueKind.False;
+                string Ends(string name, string text) => cal.TryGetProperty(name, out JsonElement raw) && raw.ValueKind == JsonValueKind.Number
+                    ? T(text, DetentGroupItem.Percent(increasing ? raw.GetDouble() : 1 - raw.GetDouble()))
+                    : string.Empty;
+                string ends = Ends("Full", N(", full at {0}")) + Ends("Cutoff", N(", cut-off at {0}"));
                 DetentCalibrationText = source == "profile"
-                    ? T("{0}: idle at {1}, afterburner detent at {2} of the travel (read from your old throttle curves; run the wizard to measure it)", deviceLabel, idleText, detentText)
+                    ? T("{0} is calibrated from your old throttle curves: idle at {1}, afterburner detent at {2}{3} of the travel. Run Calibrate detent... to measure it.", deviceLabel, idleText, detentText, ends)
                     : source == "wizard"
-                        ? T("{0}: idle at {1}, afterburner detent at {2} of the travel (measured {3})", deviceLabel, idleText, detentText, when)
-                        : T("{0}: idle at {1}, afterburner detent at {2} of the travel ({3})", deviceLabel, idleText, detentText, source);
+                        ? T("{0} is calibrated: idle at {1}, afterburner detent at {2}{3} of the travel (measured {4}).", deviceLabel, idleText, detentText, ends, when)
+                        : T("{0} is calibrated: idle at {1}, afterburner detent at {2}{3} of the travel ({4}).", deviceLabel, idleText, detentText, ends, source);
                 DetentHasCalibration = true;
             }
             else
             {
-                DetentCalibrationText = deviceLabel.Length > 0 ? T("{0}: not calibrated yet. Run the detent wizard so JoyPro knows where your detent is.", deviceLabel) : T("Bind the throttle axis first.");
+                DetentCalibrationText = deviceLabel.Length > 0
+                    ? T("{0} is not calibrated: detent mode changes nothing on this axis yet, every aircraft keeps the relation's curve. Run Calibrate detent...", deviceLabel)
+                    : T("Bind the throttle axis first.");
                 DetentHasCalibration = false;
             }
             DetentCalibratedTravel = detentTravel;
@@ -290,7 +298,9 @@ public sealed partial class MainWindowViewModel
                 DetentGroups.Add(ParseDetentGroup(group, detentTravel));
             OnPropertyChanged(nameof(HasDetentGroups));
 
-            List<string> warnings = root.GetProperty("Warnings").EnumerateArray().Select(w => w.GetString() ?? string.Empty).Where(w => w.Length > 0).ToList();
+            // "Not calibrated" is the state line's to say, once.
+            List<string> warnings = root.GetProperty("Warnings").EnumerateArray().Select(w => w.GetString() ?? string.Empty)
+                .Where(w => w.Length > 0 && !w.StartsWith("The device axis is not calibrated", StringComparison.Ordinal)).ToList();
             DetentWarningText = string.Join(" ", warnings);
             string message = GetJsonString(root, "Message");
             int aircraft = DetentGroups.Sum(g => g.Aircraft.Count);

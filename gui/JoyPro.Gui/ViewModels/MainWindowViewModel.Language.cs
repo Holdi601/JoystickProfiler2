@@ -87,6 +87,8 @@ public partial class MainWindowViewModel
             GameWatchStatus = T("Off: game configs are not watched.");
         foreach (AxisTuningScopeItem scope in AxisTuningScopes)
             scope.Label = AxisTuningScopeLabelNow(scope);
+        if (SelectedAxisTuningScope != null && AxisTuningUnitsText.Length > 0)
+            AxisTuningUnitsText = AxisUnitsText(SelectedAxisTuningScope.Model);
         if (cockpits != null)
         {
             cockpits.RefreshPicturesStatus();

@@ -937,7 +937,7 @@ Used by every recording, also **Move to another button**.
 Settings > Relations, on by default: the Add actions search also lists the actions that do what your words mean
 (**Same function**: the same function, found by a synonym or a description) and the looser ones (**Related**, folded),
 below the actions whose name has every word you typed. Off: only those name matches. The same switch is **Same meaning**
-next to All / Axes / Buttons on the Relations page. Kept for the next start.
+next to All / Axes / Buttons on the Relations page. Kept for the next start. The Catalog's filter follows it too.
 
 <!-- entry: MoveNavPageUpCommand -->
 Moves this page one place up in the list, which is one place to the left in the bottom bar. The order is kept for the

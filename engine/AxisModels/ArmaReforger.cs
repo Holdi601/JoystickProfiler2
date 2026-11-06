@@ -20,6 +20,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Arma Reforger",
+                Units = "a factor, 0..3",
                 Description = "Per bind: the multiplier of the axis filter (InputFilterValue Multiplier) and whether the game's invert options apply (UseInvert); invert itself swaps the half axes. Not verified in the game.",
                 Parameters =
                 {

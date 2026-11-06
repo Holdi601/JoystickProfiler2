@@ -32,6 +32,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "X-Plane 11/12",
+                Units = "0..1 of the travel and of the output (curvature -1..1); fixed range points in %",
                 Description = "Per hardware axis (Joysticks.prf axis_response_curve): a response curve with any number of stops and LINEAR, CATMULL_ROM or CUBIC_AVG interpolation, " +
                               "throttle/prop/mixture fixed ranges (beta & reverse, feather, cutoff, FADEC), reverse. Dead zone, saturation, curvature and the 11-point curve become the curve's stops; " +
                               "a curve imported from X-Plane keeps its exact stops until one of those changes. Null zone and centre are X-Plane's calibration and are never written. " +

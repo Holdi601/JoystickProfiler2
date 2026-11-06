@@ -299,6 +299,7 @@ namespace JoyPro.Engine
                         m.Id,
                         m.Title,
                         m.Description,
+                        m.Units,
                         CurvePoints = m.CurveStops != null,
                         Parameters = m.Parameters.Select(p => new { p.Key, p.Label, Kind = p.Kind.ToString(), p.Min, p.Max, p.Step, p.Default }).ToList()
                     }).ToList()
@@ -310,6 +311,7 @@ namespace JoyPro.Engine
             {
                 sb.AppendLine(model.Id + " - " + model.Title);
                 sb.AppendLine("  " + model.Description);
+                sb.AppendLine("  Units: " + model.Units);
                 foreach (AxisParameter p in model.Parameters)
                     sb.AppendLine("  - " + p.Key + " (" + p.Label + ", " + p.Kind + (p.Kind == AxisParameterKind.Number ? " " + AxisTuning.Num(p.Min) + ".." + AxisTuning.Num(p.Max) : string.Empty) + ")");
                 if (model.CurveStops != null)
@@ -322,7 +324,7 @@ namespace JoyPro.Engine
         private static int EmitTuningShow(string relationName, Bind bind, string game, string plane, string outPath, bool textOutput)
         {
             Dictionary<string, string> scopes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            scopes[BindTuning.BaseScope] = BindTuning.Base(bind).Format();
+            scopes[BindTuning.BaseScope] = BindTuning.Base(bind).FormatExact();
             if (bind != null && bind.TuningOverrides != null)
             {
                 foreach (KeyValuePair<string, string> entry in bind.TuningOverrides.Where(e => BindTuning.IsTuningScopeKey(e.Key)).OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase))

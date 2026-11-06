@@ -230,7 +230,7 @@ public sealed class AxisTuningTests
         // A DCS aircraft: the DCS options, a user curve as 11 points.
         await SelectScopeAsync(vm, "plane:DCS:F-16C_50");
         Assert.Contains(fake.Calls, c => Seq(c, "binds", "tuning", "show", "Pitch", "--game", "DCS", "--plane", "F-16C_50"));
-        vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "0.1";
+        vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Text = "10";
         vm.AxisTuningEditors.Single(e => e.Key == "slider").IsOn = true;
         fake.Calls.Clear();
         await vm.SaveAxisTuningCommand.ExecuteAsync(null);
@@ -398,7 +398,7 @@ public sealed class AxisTuningTests
         vm.OnAxisTuningAxes(new JoystickAxisSnapshot(Stick, [0.1, 0.75, 0, 0, 0, 0, 0, 0]));
         Assert.Equal(0.5, vm.AxisTuningStickInput, 9);
         Assert.Equal(0.1646, vm.AxisTuningStickOutput, 4);
-        Assert.Equal("in 0.50 -> out 0.16", vm.AxisTuningLiveText);
+        Assert.Equal("in 50 -> out 16", vm.AxisTuningLiveText);
 
         // Edits move the output at once.
         vm.AxisTuningEditors.Single(e => e.Key == "curvature").Value = 0;

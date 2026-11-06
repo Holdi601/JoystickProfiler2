@@ -14,6 +14,7 @@ using CommunityToolkit.Mvvm.Input;
 using JoyPro.Engine.Axis;
 using JoyPro.Gui.Models;
 using JoyPro.Gui.Services;
+using JoyPro.Gui.Views.Controls;
 
 namespace JoyPro.Gui.ViewModels;
 
@@ -69,6 +70,17 @@ public sealed partial class MainWindowViewModel
 
     [ObservableProperty]
     private string axisTuningModelText = string.Empty;
+
+    // The unit of the numbers below: DCS's own 0 .. 100, or what the game's model says.
+    [ObservableProperty]
+    private string axisTuningUnitsText = string.Empty;
+
+    // The curve's numbers follow the model's unit (DCS's dialog: In / Out -100 .. 100, a slider axis 0 .. 100).
+    [ObservableProperty]
+    private bool axisTuningShowsPercent;
+
+    [ObservableProperty]
+    private bool axisTuningOneSided;
 
     [ObservableProperty]
     private string axisTuningValidation = string.Empty;
@@ -188,6 +200,7 @@ public sealed partial class MainWindowViewModel
         AxisTuningHandles = null;
         AxisTuningValidation = string.Empty;
         AxisTuningModelText = string.Empty;
+        AxisTuningUnitsText = string.Empty;
         AxisTuningStatus = SelectedBindIsAxis ? T("Loading...") : T("Select an axis relation.");
         // An axis: the section opens by itself, unless the user closed it last time (that open loads it).
         bool opened = ApplyAxisResponseOpen();
@@ -411,10 +424,19 @@ public sealed partial class MainWindowViewModel
             ? T("Own settings for {0}", scope.Label)
             : T("Inherited from {0}{1}", AxisTuningScopeLabel(source), (fitted ? T(" — fitted to this game's model") : string.Empty));
         AxisTuningModelText = T("Model: {0}. {1}{2}", model.Title, model.Description, (axisTuningHasBind ? string.Empty : T(" Bind a device axis before saving.")));
+        AxisTuningUnitsText = AxisUnitsText(model);
+        AxisTuningShowsPercent = ModelShowsPercent(model);
         AxisTuningReferenceCurve = isOwn ? null : SampleAxisCurve(AxisModels.Get(AxisModels.Dcs), baseTuning);
         LoadAxisTuningEditors(model, values);
         AxisTuningLoaded = true;
     }
+
+    // The numbers of this model are shown as its game's dialog shows them, not as stored (AxisParameter.DisplayScale).
+    private static bool ModelShowsPercent(AxisModel model) => model.Parameters.Any(p => p.DisplayScale == 100);
+
+    internal static string AxisUnitsText(AxisModel model) => ModelShowsPercent(model)
+        ? T("Numbers as in DCS's own dialog: 0 .. 100 (curvature -100 .. 100). The file keeps them divided by 100: 8 here is 0.08 there.")
+        : T("Units: {0}", model.Units);
 
     // ---- editors ------------------------------------------------------------------------------------------------
 
@@ -681,7 +703,9 @@ public sealed partial class MainWindowViewModel
         if (move.Index < 0 || move.Index >= points.Count)
             return;
         (_, _, double sign, double slope, double offset) = AxisTuningHandleGeometry(model, tuning, points[move.Index].Travel, points[move.Index].SetOutput);
-        double value = Math.Abs(slope) < 1e-6 ? double.NaN : Math.Round(Math.Clamp((move.Y - offset) / slope, 0.0, 1.0), 3);
+        // A point shown in DCS's 0 .. 100 moves in its whole numbers.
+        int decimals = AxisTuningEditors.Any(e => e.IsUserCurve && e.Parameter.DisplayScale == 100) ? 2 : 3;
+        double value = Math.Abs(slope) < 1e-6 ? double.NaN : Math.Round(Math.Clamp((move.Y - offset) / slope, 0.0, 1.0), decimals);
 
         if (model.CurveStops != null && AxisTuningUseControlPoints)
         {
@@ -748,7 +772,7 @@ public sealed partial class MainWindowViewModel
                     break;
                 case AxisParameterKind.UserCurve:
                     if (editor.IsOn)
-                        tuning.Curvature = editor.Points.Select(p => Math.Round(p.Value, 4)).ToList();
+                        tuning.Curvature = editor.Points.Select(p => p.Value).ToList(); // every decimal the point has
                     else if (!AxisTuningEditors.Any(e => e.Key == "curvature"))
                         tuning.Curvature = [0.0];
                     break;
@@ -781,6 +805,7 @@ public sealed partial class MainWindowViewModel
         if (tuning == null)
             return;
         axisTuningCurrent = tuning;
+        AxisTuningOneSided = tuning.Slider;
         AxisTuningHasEdits = tuning.Format() != axisTuningEditorBaseline;
         AxisModel model = SelectedAxisTuningScope?.Model ?? AxisModels.Get(AxisModels.Dcs);
         AxisTuningCurve = SampleAxisCurve(model, tuning);
@@ -880,7 +905,13 @@ public sealed partial class MainWindowViewModel
         }
         return args;
 
-        static string Num(double value) => value.ToString("0.######", CultureInfo.InvariantCulture);
+        // Every decimal: what was not edited goes back as it was loaded (no silent rewriting of a profile).
+        static string Num(double value)
+        {
+            // A slider's 0.08000000000000002 is 0.08; a loaded 0.0799999982118607 stays what it is.
+            double rounded = Math.Round(value, 10);
+            return Math.Abs(rounded - value) < 1e-13 ? rounded.ToString("0.##########", CultureInfo.InvariantCulture) : value.ToString("R", CultureInfo.InvariantCulture);
+        }
     }
 
     [RelayCommand]
@@ -1010,6 +1041,7 @@ public sealed partial class MainWindowViewModel
             return;
         AxisModel model = SelectedAxisTuningScope?.Model ?? AxisModels.Get(AxisModels.Dcs);
         AxisTuningStickOutput = model.Evaluate(axisTuningCurrent, AxisTuningStickInput);
-        AxisTuningLiveText = T("in {0} -> out {1}", AxisTuningStickInput.ToString("0.00", CultureInfo.InvariantCulture), AxisTuningStickOutput.ToString("0.00", CultureInfo.InvariantCulture));
+        AxisTuningLiveText = T("in {0} -> out {1}", AxisCurveView.Number(AxisTuningStickInput, AxisTuningShowsPercent, AxisTuningOneSided),
+            AxisCurveView.Number(AxisTuningStickOutput, AxisTuningShowsPercent, AxisTuningOneSided));
     }
 }

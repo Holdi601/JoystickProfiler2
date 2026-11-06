@@ -99,13 +99,25 @@ namespace JoyPro.Engine.Axis
         // strings so a .pr0file keeps only framework types (JoyPro 1 can still open it).
         public string Format()
         {
+            return Format(Num);
+        }
+
+        // Every digit of the dead zone, saturations and curve (binds tuning show for the base scope, which the bind keeps
+        // as numbers: a value read with more than six decimals survives the GUI's load and save).
+        public string FormatExact()
+        {
+            return Format(v => v.ToString("R", CultureInfo.InvariantCulture));
+        }
+
+        private string Format(Func<double, string> number)
+        {
             StringBuilder sb = new StringBuilder();
             sb.Append("inv=").Append(Inverted ? "1" : "0");
             sb.Append(";sl=").Append(Slider ? "1" : "0");
-            sb.Append(";dz=").Append(Num(Deadzone));
-            sb.Append(";sx=").Append(Num(SaturationX));
-            sb.Append(";sy=").Append(Num(SaturationY));
-            sb.Append(";cv=").Append(string.Join("|", (Curvature ?? new List<double> { 0.0 }).Select(Num)));
+            sb.Append(";dz=").Append(number(Deadzone));
+            sb.Append(";sx=").Append(number(SaturationX));
+            sb.Append(";sy=").Append(number(SaturationY));
+            sb.Append(";cv=").Append(string.Join("|", (Curvature ?? new List<double> { 0.0 }).Select(number)));
             foreach (KeyValuePair<string, double> native in (Native ?? new Dictionary<string, double>()).OrderBy(n => n.Key, StringComparer.OrdinalIgnoreCase))
                 sb.Append(";n.").Append(native.Key).Append('=').Append(Num(native.Value));
             return sb.ToString();
@@ -176,6 +188,9 @@ namespace JoyPro.Engine.Axis
         public double Step;
         public double Default;
         public string Help;
+        // What the GUI's number box shows per stored unit: 100 where the game's own dialog shows 0..100 for a stored 0..1
+        // (DCS). Min, Max, Step, Default and everything stored, exported or sent to the engine stay in the stored unit.
+        public double DisplayScale = 1;
     }
 
     // Marks a static method in engine\AxisModels\*.cs that returns a game's response model; the ids are the games
@@ -197,6 +212,8 @@ namespace JoyPro.Engine.Axis
         public string Id;
         public string Title;
         public string Description;
+        // The unit of the model's numbers, in words (docs/axis-curves.md; the GUI shows it with the model).
+        public string Units;
         public List<AxisParameter> Parameters = new List<AxisParameter>();
         // Stick position -1..1 (sliders: -1 = start) -> what the game uses, -1..1.
         public Func<AxisTuning, double, double> Evaluate;
@@ -301,13 +318,15 @@ namespace JoyPro.Engine.Axis
                 Id = Dcs,
                 Title = "DCS World",
                 Description = "Per aircraft, device and axis: dead zone, saturation X/Y, curvature (exponential) or an 11-point user curve, slider, invert (lua-gui_axes_tune.dll).",
+                // Scripts\Input\AxesTuneDialog.lua: the edit boxes show value * 100 and read text / 100, kept in the slider's range.
+                Units = "as in DCS's axis tune dialog: dead zone, saturation and user curve 0..100, curvature -100..100; the file keeps them / 100 (8 here is 0.08 there)",
                 Parameters =
                 {
-                    new AxisParameter { Key = "deadzone", Label = "Dead zone", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 0 },
-                    new AxisParameter { Key = "saturationX", Label = "Saturation X", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 1 },
-                    new AxisParameter { Key = "saturationY", Label = "Saturation Y", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 1 },
-                    new AxisParameter { Key = "curvature", Label = "Curvature", Kind = AxisParameterKind.Number, Min = -1, Max = 1, Step = 0.01, Default = 0 },
-                    new AxisParameter { Key = "userCurve", Label = "User curve", Kind = AxisParameterKind.UserCurve, Min = 0, Max = 1, Step = 0.01, Default = 0 },
+                    new AxisParameter { Key = "deadzone", Label = "Dead zone", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 0, DisplayScale = 100 },
+                    new AxisParameter { Key = "saturationX", Label = "Saturation X", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 1, DisplayScale = 100 },
+                    new AxisParameter { Key = "saturationY", Label = "Saturation Y", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 1, DisplayScale = 100 },
+                    new AxisParameter { Key = "curvature", Label = "Curvature", Kind = AxisParameterKind.Number, Min = -1, Max = 1, Step = 0.01, Default = 0, DisplayScale = 100 },
+                    new AxisParameter { Key = "userCurve", Label = "User curve", Kind = AxisParameterKind.UserCurve, Min = 0, Max = 1, Step = 0.01, Default = 0, DisplayScale = 100 },
                     new AxisParameter { Key = "slider", Label = "Slider", Kind = AxisParameterKind.Toggle },
                     new AxisParameter { Key = "invert", Label = "Invert", Kind = AxisParameterKind.Toggle }
                 },
@@ -318,6 +337,7 @@ namespace JoyPro.Engine.Axis
                 Id = Il2Korea,
                 Title = "IL-2 Series: Korea",
                 Description = "Per action (pitch: per pitch profile): exponent, dead zones (centre/edges; low/high on one-sided axes such as throttles, which Slider marks), centre offset (pitch only), built-in curve and control surface loading (pitch, roll, yaw), relative control; file units.",
+                Units = "the game's file units; the range next to each box says what each takes",
                 Parameters =
                 {
                     new AxisParameter { Key = "sensitivity", Label = "Exponent", Kind = AxisParameterKind.Number, Min = -100, Max = 100, Step = 1, Default = 0 },
@@ -345,6 +365,7 @@ namespace JoyPro.Engine.Axis
                 Id = Il2,
                 Title = "IL-2 Great Battles",
                 Description = "Per action, all aircraft: centred axes (current.responses type1) sensitivity balance, centre and side dead zone, pitch also the centre shift (global.pitch); one-sided axes such as throttles (Slider, type2) low and high dead zone; file units (0.5 balance and 0.25 dead zone are 100 % in the game).",
+                Units = "the game's file units: 0.5 balance and 0.25 dead zone are 100 % in the game",
                 Parameters =
                 {
                     new AxisParameter { Key = "sensitivityBallance", Label = "Sensitivity balance", Kind = AxisParameterKind.Number, Min = 0, Max = 0.5, Step = 0.01, Default = 0 },
@@ -367,6 +388,7 @@ namespace JoyPro.Engine.Axis
                 Id = Generic,
                 Title = "Invert, dead zone, saturation",
                 Description = "Games whose response JoyPro does not model: invert, a linear dead zone and saturation as far as the game supports them.",
+                Units = "0..1 of the half travel",
                 Parameters =
                 {
                     new AxisParameter { Key = "deadzone", Label = "Dead zone", Kind = AxisParameterKind.Number, Min = 0, Max = 1, Step = 0.01, Default = 0 },

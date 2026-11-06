@@ -382,8 +382,10 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
 
     public bool HasIdHint => IdHint.Length > 0;
 
-    // The aircraft (DCS) in one line, the full list in the tooltip; outside DCS the category (never the raw id).
-    public string PlanesText => Game == "DCS" ? BuilderText.Where(Game, SelectedPlanes) : Category;
+    // The aircraft (DCS) in one line, the full list in the tooltip; outside DCS the category (never the raw id). A row that
+    // can be added names what goes in; a row wholly in the open relation has nothing to add and names its own aircraft (two
+    // rows of one title are told apart by this line).
+    public string PlanesText => Game == "DCS" ? BuilderText.Where(Game, IsInOpenRelation ? OwnPlanes : SelectedPlanes) : Category;
 
     public string PlanesTooltip => Game == "DCS" ? string.Join(", ", Planes) : DisplayText.Game(Game) + (Category.Length > 0 ? " · " + Category : string.Empty);
 
@@ -475,6 +477,36 @@ public sealed partial class BuilderSearchResultItem : ObservableObject, IOtherRe
     public bool HasVariant => !IsRecommended && Variant.Length > 0;
 
     public string VariantText => T("Differs: {0}", Translate(Variant));
+
+    // The catalog (docs/relation-builder.md "Browse the catalog"): its rows come from relations browse, whose Recommended
+    // is the best action of each function. While a filter text is on, the chip says what the search says for these words.
+    private bool? queryRecommended;
+    private string queryRecommendedFor = string.Empty;
+
+    public bool ShownRecommended => queryRecommended ?? IsRecommended;
+
+    public string ShownRecommendedLabel
+    {
+        get
+        {
+            string recommendedFor = queryRecommended == null ? RecommendedFor : queryRecommendedFor;
+            return recommendedFor.Length > 0 ? T("Recommended {0}", Translate(recommendedFor)) : T("Recommended");
+        }
+    }
+
+    public bool ShownHasVariant => !ShownRecommended && Variant.Length > 0;
+
+    // null: no filter text, the row's own value again.
+    internal void SetQueryRecommended(bool? recommended, string recommendedFor = "")
+    {
+        if (queryRecommended == recommended && queryRecommendedFor == recommendedFor)
+            return;
+        queryRecommended = recommended;
+        queryRecommendedFor = recommendedFor;
+        OnPropertyChanged(nameof(ShownRecommended));
+        OnPropertyChanged(nameof(ShownRecommendedLabel));
+        OnPropertyChanged(nameof(ShownHasVariant));
+    }
 
     public string Explanation { get; init; } = string.Empty;
 
@@ -1009,7 +1041,12 @@ public sealed partial class AircraftChoiceItem : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasMarker))]
     private bool isInOpenRelation;
 
-    public bool CanChange => !IsInOpenRelation;
+    // A row wholly in the open relation adds nothing, so a tick on its other aircraft would do nothing: the list only shows.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChange))]
+    private bool isShowOnly;
+
+    public bool CanChange => !IsInOpenRelation && !IsShowOnly;
 
     // Opened from a card of the check: this aircraft is one the card is about (tinted).
     [ObservableProperty]
@@ -1128,6 +1165,12 @@ public sealed partial class AircraftSelector : ObservableObject
 
     public int InRelationCount => Items.Count(i => i.IsInOpenRelation);
 
+    // Every aircraft the row stands for is in the open relation: the row is not addable, and neither is anything in its
+    // list (BuilderSearchResultItem.MarkInOpenRelation decides the same way).
+    public bool IsWhollyInOpenRelation => Items.Any(i => i.Offered) && Items.Where(i => i.Offered).All(i => i.IsInOpenRelation);
+
+    public bool CanTick => !IsWhollyInOpenRelation;
+
     // The open relation's aircraft of this action are not offered: unticked, no tick to change, marked. Aircraft that
     // left it (another relation opened) get the row's own proposal back.
     internal void MarkInOpenRelation(HashSet<string>? present)
@@ -1144,13 +1187,27 @@ public sealed partial class AircraftSelector : ObservableObject
             item.InitiallyChecked = !inside && item.Offered;
             item.IsChecked = !inside && item.Offered;
         }
+        bool showOnly = IsWhollyInOpenRelation;
+        foreach (AircraftChoiceItem item in Items)
+        {
+            if (item.IsShowOnly != showOnly)
+                changed = true;
+            item.IsShowOnly = showOnly;
+            if (showOnly && item.IsChecked)
+            {
+                changed = true;
+                item.IsChecked = false;
+            }
+        }
         bulk = false;
         if (changed)
             Changed();
     }
 
-    // "82 of 84 aircraft"; with aircraft the open relation has already, only the others count ("1 of 1 free aircraft").
-    public string Badge => InRelationCount > 0 ? T("{0} of {1} free aircraft", CheckedCount, Total - InRelationCount) : T("{0} of {1} aircraft", CheckedCount, Total);
+    // "82 of 84 aircraft"; with aircraft the open relation has already, only the others count ("1 of 1 free aircraft"); with
+    // all the row's aircraft in it nothing can be added, so it says what the relation has ("1 of 3 aircraft in this relation").
+    public string Badge => IsWhollyInOpenRelation ? T("{0} of {1} aircraft in this relation", InRelationCount, Total)
+        : InRelationCount > 0 ? T("{0} of {1} free aircraft", CheckedCount, Total - InRelationCount) : T("{0} of {1} aircraft", CheckedCount, Total);
 
     // "a-10a, A-10C +69 more" (the ticked ones).
     public string Summary
@@ -1200,6 +1257,8 @@ public sealed partial class AircraftSelector : ObservableObject
 
     public bool HasSameFunction => SameFunctionCount > 0;
 
+    public bool CanTickSameFunction => HasSameFunction && CanTick;
+
     private static string Norm(string text) => new string((text ?? string.Empty).ToLowerInvariant().Where(char.IsLetterOrDigit).ToArray());
 
     // Only the aircraft where the id means the row's or the action's function: same and near, never another meaning.
@@ -1232,7 +1291,7 @@ public sealed partial class AircraftSelector : ObservableObject
         bulk = true;
         foreach (AircraftChoiceItem item in items.ToList())
         {
-            if (!item.IsInOpenRelation)
+            if (item.CanChange)
                 item.IsChecked = state(item);
         }
         bulk = false;
@@ -1274,6 +1333,9 @@ public sealed partial class AircraftSelector : ObservableObject
     {
         OnPropertyChanged(nameof(CheckedCount));
         OnPropertyChanged(nameof(CheckedPlanes));
+        OnPropertyChanged(nameof(IsWhollyInOpenRelation));
+        OnPropertyChanged(nameof(CanTick));
+        OnPropertyChanged(nameof(CanTickSameFunction));
         OnPropertyChanged(nameof(Badge));
         OnPropertyChanged(nameof(Summary));
         OnPropertyChanged(nameof(HasChanges));

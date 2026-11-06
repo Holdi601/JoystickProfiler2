@@ -154,6 +154,108 @@ public sealed class LayoutWorkspaceTests
             File.Delete(file);
     }
 
+    // The user's positions of the shown model, on whichever picture the earlier tests left chosen.
+    private static string[] PositionFiles(MainWindowViewModel vm)
+    {
+        string slug = JoyPro.DeviceReference.DeviceVocabulary.Slug(vm.DeviceReference.Model!.Id);
+        return new[] { "Layouts", "Markers" }.Select(f => Path.Combine(DeviceReferenceService.DataFolder(), f)).Where(Directory.Exists)
+            .SelectMany(f => Directory.GetFiles(f, slug + ".*")).ToArray();
+    }
+
+    private static void DeletePositionFiles(MainWindowViewModel vm)
+    {
+        foreach (string file in PositionFiles(vm))
+            File.Delete(file);
+    }
+
+    // An edit the autosave has not written yet (it waits 2 s after the last edit) when Reset to default is pressed.
+    // The autosave firing while the question is open wrote a file the list of files (made before the question) did not
+    // have: the reset left the user's positions in place. Now the edit is written first: it goes into the backup too.
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ResetToDefault_EditNotSavedYet_SavedDuringTheQuestion_GoesWithTheRest(bool all)
+    {
+        (MainWindowViewModel vm, _, _) = await CreateLoadedAsync(layoutFile: false);
+        DeletePositionFiles(vm);
+        try
+        {
+            vm.DeviceReference.MoveMarker(vm.DeviceReference.Markers.First(), 0.123, 0.456);
+            Assert.True(vm.DeviceReference.HasUnsavedChanges);
+            Assert.Empty(PositionFiles(vm));
+            vm.ConfirmHandler = async _ =>
+            {
+                await vm.FlushAutosaveAsync();
+                return true;
+            };
+
+            await (all ? vm.ResetAllLayoutChangesCommand.ExecuteAsync(null) : vm.ResetDeviceLayoutCommand.ExecuteAsync(vm.SelectedLayoutSuggestion));
+
+            vm.ConfirmHandler = null;
+            Assert.Contains(vm.AskedConfirmations, c => c.Title.StartsWith("Reset ", StringComparison.Ordinal));
+            Assert.Empty(PositionFiles(vm));
+            Assert.True(vm.CanUndoLayoutReset);
+            await vm.FlushAutosaveAsync();
+            Assert.Empty(PositionFiles(vm));
+
+            // Undo brings the edit back, as it was.
+            await vm.UndoLayoutResetCommand.ExecuteAsync(null);
+            Assert.Contains("0.123", File.ReadAllText(Assert.Single(PositionFiles(vm))), StringComparison.Ordinal);
+        }
+        finally
+        {
+            DeletePositionFiles(vm);
+        }
+    }
+
+    // The autosave firing after the files moved, while the page reads its device list again: it wrote the positions back,
+    // so the reset undid itself (the picture's marker list still had the edit until the page had reloaded).
+    [Fact]
+    public async Task ResetToDefault_AutosaveFiringDuringTheRefresh_DoesNotBringTheFileBack()
+    {
+        (MainWindowViewModel vm, LayoutRedesignRenderTests.LayoutFakeEngine fake, _) = await CreateLoadedAsync(layoutFile: false);
+        DeletePositionFiles(vm);
+        try
+        {
+            vm.DeviceReference.MoveMarker(vm.DeviceReference.Markers.First(), 0.321, 0.654);
+            bool fired = false;
+            bool cameBack = false;
+            vm.ConfirmHandler = _ =>
+            {
+                // Every engine call from here on is the refresh after the files moved.
+                fake.OnCall = _ =>
+                {
+                    fake.OnCall = null;
+                    fired = true;
+                    vm.FlushAutosaveAsync().GetAwaiter().GetResult();
+                    cameBack = PositionFiles(vm).Length > 0;
+                };
+                return Task.FromResult(true);
+            };
+
+            await vm.ResetDeviceLayoutCommand.ExecuteAsync(vm.SelectedLayoutSuggestion);
+
+            vm.ConfirmHandler = null;
+            Assert.True(fired);
+            Assert.False(cameBack, "the autosave wrote the positions back during the reset");
+            Assert.Empty(PositionFiles(vm));
+            Assert.False(vm.DeviceReference.HasUnsavedChanges);
+            await vm.UndoLayoutResetCommand.ExecuteAsync(null);
+            Assert.Contains("0.321", File.ReadAllText(Assert.Single(PositionFiles(vm))), StringComparison.Ordinal);
+        }
+        finally
+        {
+            DeletePositionFiles(vm);
+        }
+    }
+
+    // Test isolation: no view model of an earlier test may write into this one's files by its 2 s timer.
+    [Fact]
+    public void Autosave_NeverFiresByItsTimer_InTheseTests()
+    {
+        Assert.True(MainWindowViewModel.AutosaveDelay >= TimeSpan.FromMinutes(10), "A view model left behind by a test saves into the next test's files: " + MainWindowViewModel.AutosaveDelay);
+    }
+
     [Fact]
     public async Task Markers_ShowWhatTheInputDoes_AndTheLegendFilters()
     {
@@ -425,7 +527,8 @@ public sealed class LayoutWorkspaceTests
         // Right-click > Clear frees the trigger.
         fake.Calls.Clear();
         vm.LayoutCallouts.ClearRow(trigger, triggerRow, false);
-        await LayoutRedesignRenderTests.WaitForAsync(() => fake.Calls.Any(c => AxisTuningTests.Seq(c, "binds", "clear")));
+        // Up to 15 s: in the full test run on a busy machine this took longer than the usual 3 s.
+        await LayoutRedesignRenderTests.WaitForAsync(() => fake.Calls.Any(c => AxisTuningTests.Seq(c, "binds", "clear")), tries: 1500);
         Assert.True(AxisTuningTests.Seq(Assert.Single(fake.Calls, c => AxisTuningTests.Seq(c, "binds", "clear")), "Gun Trigger", "--input-only"));
 
         // A game and aircraft: the rows show that game's own menu titles, with a GAME / PLANE header.

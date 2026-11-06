@@ -87,6 +87,9 @@ after the next export the action is on this relation's button instead.
 <!-- entry: OpenCatalogCommand -->
 Opens the catalog: every action of a game (DCS: of an aircraft) by its categories, with ticks and **Only free**
 (actions no relation uses yet). Engine: `engine relations browse`.
+The filter box keeps the actions whose name has your words and, with **Same meaning** on, those that do what they mean
+("thrust" finds the throttles); while it has text, **Recommended** marks the best action for your words and the best rows
+come first.
 
 <!-- entry: AskAssistantCommand -->
 Sends your sentence to the JoyPro assistant. It changes relations at once and answers with what it did, the ids it
@@ -326,7 +329,14 @@ bound to them.
 
 <!-- entry: SetBoundCommand -->
 Filter switches **All** / **Bound** / **Not bound** (each with its count): every relation, only those on an input of a
-device, or only those not bound yet. A click on the active switch goes back to all.
+device, or only those with no input at all, in any game. A click on the active switch goes back to all.
+
+<!-- entry: ToggleNoActionInGamesCommand -->
+With a game or aircraft ticked under **Games**, one more switch appears, e.g. **No action in Falcon BMS (4)**: the
+relations that do NOT have an action there yet. Together with **Devices** it shows what one device still lacks in that
+game. An action added to the open relation counts at once; the relation leaves the list when you open the next one. A
+click on the switch again, or the x of its chip, goes back to the relations that have one. On the Binds page it works
+the same.
 
 <!-- entry: SetKindCommand -->
 Filter switches **Axes** / **Buttons** (each with its count): only axis or only button relations. A second click on
@@ -585,7 +595,8 @@ switch as an axis); they say **axis (sim-pit switch)**.
 <!-- entry: bind:BuilderShowSameMeaning -->
 Add actions: **Same meaning** (on by default) also lists, below the actions whose name has every word you typed, the
 ones that do the same (**Same function**) and the looser ones (**Related**, folded). Off: only the name matches; the
-line above the list says how many are hidden. Kept for the next start; the same switch is in Settings > Relations.
+line above the list says how many are hidden. Kept for the next start; the same switch is in Settings > Relations. The
+Catalog's filter has the same switch: on, it also finds the actions that do what your words mean.
 
 <!-- entry: ShowAllBuilderSearchGamesCommand -->
 Add actions: when the game chips that are on have nothing for your search, the list says so and how many results the
@@ -593,9 +604,10 @@ other games have. **Show all games** switches the chips off in one click, and th
 
 <!-- entry: ShowBuilderSameMeaningCommand -->
 Add actions: **Same meaning** next to All / Axes / Buttons switches the Same function and Related parts on or off. Off,
-only actions whose name has every word you typed are listed, and the line above the list says how many are hidden.
-When no name has every word, the list says so and **Show same meaning** switches it on again in one click. The switch
-is remembered and is the same as Settings > Relations.
+only actions whose name has every word you typed are listed; the line above the list counts those and says how many
+are hidden. When no action with every word was found, the list says so and **Show same meaning** switches it on again in one click.
+A search whose only results are already in the open relation says so too ("No new actions: the 2 found are already in
+this relation (see below)"), and they are listed under **Already in this relation**. The switch is remembered and is the same as Settings > Relations.
 
 <!-- entry: ToggleBuilderRelatedCommand -->
 Add actions: a click on **Related (n)** shows or hides the related actions (folded at first; open by itself when the
@@ -637,9 +649,10 @@ game. The groups of **Name has every word** still come before those of **Same fu
 <!-- entry: CheckAllShownBuilderResultsCommand -->
 Add actions: **Tick all shown** ticks every action in the list; narrow the list with the game chips first. Actions
 already in the open relation are not ticked: they are listed greyed at the bottom under **Already in this relation**,
-without a tick box, and the count above the list says how many ("+ 1 already in this relation"). An action the relation
-has for only some of its aircraft stays in the list and says "already in this relation for 19 of 20 aircraft"; it offers
-only the aircraft still free.
+without a tick box, and the count above the list says how many ("+ 1 already in this relation"). Each names its aircraft,
+so two actions of one title are told apart, and its aircraft button says how many are in ("1 of 3 aircraft in this
+relation"); the list it opens only shows them. An action the relation has for only some of its aircraft stays in the list
+and says "already in this relation for 19 of 20 aircraft"; it offers only the aircraft still free.
 
 <!-- entry: OpenOtherRelationsTagCommand -->
 Add actions and Suggested for this relation: the tag under an action that is switched on in other relations. **in 'Name'** opens that relation;

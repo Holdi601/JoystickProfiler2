@@ -191,7 +191,7 @@ public sealed class SameMeaningRealEngineTests
             vm.BuilderShowSameMeaning = false;
             Assert.True(vm.ShowBuilderNoNameMatches);
             Assert.Empty(vm.BuilderSearchRows.OfType<BuilderSearchResultItem>());
-            Assert.Equal("No action's name has every word of \"thrust\". The actions found by what they do are hidden because Same meaning is off (" + all.Count + ").", vm.BuilderNoNameMatchesText);
+            Assert.Equal("No action found whose name has every word of \"thrust\". " + all.Count + " found by what they do are hidden because Same meaning is off.", vm.BuilderNoNameMatchesText);
             vm.ShowBuilderSameMeaningCommand.Execute(null);
             Assert.True(vm.BuilderShowSameMeaning);
             Assert.False(vm.ShowBuilderNoNameMatches);

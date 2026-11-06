@@ -26,6 +26,11 @@ internal static class TestEnvironment
     internal static void Initialize()
     {
         ExternalProcess.Start = _ => null;
+        // The autosave never fires by its timer: a view model a test leaves behind would otherwise write its unsaved marker
+        // positions 2 s later, into the same data folder, in the middle of the next test (seen: "Reset to default" found
+        // the file it had just moved away, written by the marker assistant test's view model). A test of the autosave sets
+        // its own delay (ProfileHistoryTests) or flushes (FlushAutosaveAsync).
+        JoyPro.Gui.ViewModels.MainWindowViewModel.AutosaveDelay = TimeSpan.FromHours(1);
         // No picture is downloaded from the internet (manufacturers' product pictures, docs/device-reference.md).
         DeviceImageCache.InternetPicturesEnabled = false;
         DeviceImageCache.InternetPicturesBlocked = true;

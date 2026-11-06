@@ -364,12 +364,31 @@ namespace JoyPro.Engine
                     if (!named(w))
                         found.Add(w);
                 }
+                else if (IsPhraseNotASide(words, i))
+                {
+                    continue;
+                }
                 else if (SideOfWord.ContainsKey(w) || DisplayWords.Contains(w) || (PositionWords.Contains(w) && !named(w)))
                 {
                     found.Add(w);
                 }
             }
             return found.Distinct().ToArray();
+        }
+
+        // "stop my ship right now", "a wider area left and right": everyday words, not one side.
+        private static bool IsPhraseNotASide(string[] words, int i)
+        {
+            string w = words[i];
+            if (w == "right" && i + 1 < words.Length && (words[i + 1] == "now" || words[i + 1] == "away"))
+                return true;
+            if (w != "left" && w != "right")
+                return false;
+            string other = w == "left" ? "right" : "left";
+            return (i + 2 < words.Length && words[i + 1] == "and" && words[i + 2] == other) ||
+                   (i >= 2 && words[i - 1] == "and" && words[i - 2] == other) ||
+                   (i + 1 < words.Length && words[i + 1] == other) ||
+                   (i >= 1 && words[i - 1] == other);
         }
 
         // Rows found as a function of the query that do not have such a word go down and to Related: for "LMFD OSB 15" the

@@ -21,6 +21,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Elite Dangerous",
+                Units = "the game's file units: dead zone 0..1 of the half travel",
                 Description = "Per axis element (all ships): invert and dead zone (0..1 of the half travel, file units); Slider on the throttle axis = Throttle Axis Range \"Forward only\" (game-wide ThrottleRange), else full range with reverse.",
                 Parameters =
                 {

@@ -68,6 +68,8 @@ the profile uses for the device (`engine layout image <device> --clear`; the fil
 the files move to `<data>\DeviceReference\ResetBackups\<time>\` and `Undo the reset of <device>` puts everything back
 (also the profile's layout file, `layout image --set`). Settings > Drawings > `Reset all my layout changes...` does
 the same for every model and device (`GUI: Services/DeviceLayoutReset.cs`, `MainWindowViewModel.LayoutReset.cs`).
+An edit the autosave has not written yet (it waits 2 s after the last edit) is written first, so it goes into the backup
+with the rest; a pending autosave finds nothing to write afterwards, so it cannot bring a file back.
 
 ### Several views on one page
 

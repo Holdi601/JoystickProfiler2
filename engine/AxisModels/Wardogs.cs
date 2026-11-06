@@ -28,6 +28,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "WARDOGS",
+                Units = "as the HOTAS page shows them",
                 Description = "Per axis (Roll, Pitch, Yaw, Collective; the look axes have the same fields without a menu row): sensitivity and dead zone as the HOTAS page shows them (GameUserSettings.ini). No curve: curvature and user curves cannot be exported. The game's formula is not readable (packed code); the preview assumes a rescaled dead zone times the sensitivity, clipped at full deflection (unverified).",
                 Parameters =
                 {

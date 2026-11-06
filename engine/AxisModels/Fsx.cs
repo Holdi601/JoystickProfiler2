@@ -24,6 +24,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "FSX / Prepar3D",
+                Units = "Standard.xml's 0..127",
                 Description = "Per device axis (Standard.xml <AxScale>, <AxNull>): sensitivity 0..127 (the file stores a reversed axis as a negative value) and null zone 0..127. " +
                               "The preview assumes a rescaled null zone and an output scaled by sensitivity / 127 (not yet verified in the sim).",
                 Parameters =

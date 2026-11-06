@@ -21,6 +21,7 @@ namespace JoyPro.Engine.Axis
             {
                 Id = Id,
                 Title = "Project Wingman",
+                Units = "curve as the menu shows it, 0..2 (1 is straight); dead zone 0..1 (the menu's percent / 100)",
                 Description = "Per axis action (Pitch, Roll, Thrust, Yaw, View X/Y), for all devices together: curve (menu 0.00-2.00, 1.00 = straight) and dead zone (0-100 %), as the CURVES + DEADZONES page shows them (savegame.sav). The formula is not readable (nativized blueprint); the preview assumes a rescaled dead zone and the curve as an exponent (unverified).",
                 Parameters =
                 {

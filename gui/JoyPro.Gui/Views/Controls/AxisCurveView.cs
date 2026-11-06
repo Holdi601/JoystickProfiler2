@@ -35,6 +35,14 @@ public sealed class AxisCurveView : Control
     public static readonly StyledProperty<ICommand?> HandleMovedCommandProperty =
         AvaloniaProperty.Register<AxisCurveView, ICommand?>(nameof(HandleMovedCommand));
 
+    // The numbers follow the unit of the boxes next to the curve: DCS's dialog shows In / Out -100 .. 100, and 0 .. 100 on a
+    // slider axis. Only the labels change; the curve's coordinates stay -1..1.
+    public static readonly StyledProperty<bool> ShowsPercentProperty =
+        AvaloniaProperty.Register<AxisCurveView, bool>(nameof(ShowsPercent));
+
+    public static readonly StyledProperty<bool> OneSidedProperty =
+        AvaloniaProperty.Register<AxisCurveView, bool>(nameof(OneSided));
+
     private const double Pad = 22;
     private const double HandleRadius = 4.5;
     private const double GrabDistance = 9;
@@ -60,7 +68,28 @@ public sealed class AxisCurveView : Control
 
     static AxisCurveView()
     {
-        AffectsRender<AxisCurveView>(CurveProperty, ReferenceCurveProperty, StickInputProperty, StickOutputProperty, HandlesProperty);
+        AffectsRender<AxisCurveView>(CurveProperty, ReferenceCurveProperty, StickInputProperty, StickOutputProperty, HandlesProperty, ShowsPercentProperty, OneSidedProperty);
+    }
+
+    public bool ShowsPercent
+    {
+        get => GetValue(ShowsPercentProperty);
+        set => SetValue(ShowsPercentProperty, value);
+    }
+
+    public bool OneSided
+    {
+        get => GetValue(OneSidedProperty);
+        set => SetValue(OneSidedProperty, value);
+    }
+
+    // A curve coordinate -1..1 as the curve and the live line say it.
+    public static string Number(double value, bool percent, bool oneSided)
+    {
+        if (!percent)
+            return value.ToString("0.00", CultureInfo.InvariantCulture);
+        double shown = oneSided ? (value + 1) * 50 : value * 100;
+        return Math.Round(shown).ToString("0", CultureInfo.InvariantCulture);
     }
 
     public IReadOnlyList<Point>? Handles
@@ -124,11 +153,14 @@ public sealed class AxisCurveView : Control
         context.DrawRectangle(null, FramePen, plot);
         context.DrawLine(IdentityPen, Map(-1, -1), Map(1, 1));
 
-        DrawLabel(context, "-1", new Point(plot.Left, plot.Bottom + 3), 0.5);
-        DrawLabel(context, "0", new Point(plot.Center.X, plot.Bottom + 3), 0.5);
-        DrawLabel(context, "1", new Point(plot.Right, plot.Bottom + 3), 0.5);
-        DrawLabel(context, "1", new Point(plot.Left - 4, plot.Top - 6), 1);
-        DrawLabel(context, "-1", new Point(plot.Left - 4, plot.Bottom - 6), 1);
+        string low = !ShowsPercent ? "-1" : OneSided ? "0" : "-100";
+        string middle = !ShowsPercent ? "0" : OneSided ? "50" : "0";
+        string high = ShowsPercent ? "100" : "1";
+        DrawLabel(context, low, new Point(plot.Left, plot.Bottom + 3), 0.5);
+        DrawLabel(context, middle, new Point(plot.Center.X, plot.Bottom + 3), 0.5);
+        DrawLabel(context, high, new Point(plot.Right, plot.Bottom + 3), 0.5);
+        DrawLabel(context, high, new Point(plot.Left - 4, plot.Top - 6), 1);
+        DrawLabel(context, low, new Point(plot.Left - 4, plot.Bottom - 6), 1);
 
         using (context.PushClip(plot.Inflate(2)))
         {
@@ -151,7 +183,7 @@ public sealed class AxisCurveView : Control
             context.DrawLine(GuidePen, Map(input, -1), dot);
             context.DrawLine(GuidePen, Map(-1, output), dot);
             context.DrawEllipse(DotBrush, new Pen(Brushes.White, 1.5), dot, 5, 5);
-            string text = T("in {0} -> out {1}", input.ToString("0.00", CultureInfo.InvariantCulture), output.ToString("0.00", CultureInfo.InvariantCulture));
+            string text = T("in {0} -> out {1}", Number(input, ShowsPercent, OneSided), Number(output, ShowsPercent, OneSided));
             FormattedText formatted = new(text, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, Font, 12, TextBrush);
             context.DrawRectangle(new SolidColorBrush(Color.Parse("#CC0F172A")), null, new Rect(plot.X + 4, plot.Y + 4, formatted.Width + 8, formatted.Height + 4), 3, 3);
             context.DrawText(formatted, new Point(plot.X + 8, plot.Y + 6));

@@ -276,6 +276,16 @@ public sealed partial class MainWindowViewModel
         return list;
     }
 
+    // "No action in Falcon BMS": the relation an action was just added to stays in the list while it is open (the list holds
+    // still under the editor); opening the next one takes it off, so the list shrinks to what is left to do.
+    private void DropFinishedNoActionRelations(RelationListItem opened)
+    {
+        if (!RelationFilter.NoActionInGames || rebuildingVisibleRelations ||
+            !Relations.Any(r => !ReferenceEquals(r, opened) && !RelationFilter.Matches(relationSubjects.GetValueOrDefault(r.Name))))
+            return;
+        Avalonia.Threading.Dispatcher.UIThread.Post(ApplyRelationFilter);
+    }
+
     // A relation opened from elsewhere (a tag, a check, a new relation) that the filters hide: the filters stay as the user
     // set them (2.6.3: they went off); this one relation is in the list until another one is opened.
     private string relationShownDespiteFilter = string.Empty;
