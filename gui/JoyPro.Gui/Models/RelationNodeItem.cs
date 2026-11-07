@@ -41,8 +41,44 @@ public sealed partial class RelationNodeItem : ObservableObject
     // Pictures of the node's first aircraft (DCS module icons); the game's box art for other games.
     public ObservableCollection<PlaneChoice> PlanePictures { get; } = [];
 
+    // The card's picture: the first aircraft's module icon (DCS) or the game's cover.
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Cover))]
     private Bitmap? gameCover;
+
+    // ---- The order the page names its aircraft in (display only; ActivePlanesText keeps the relation's order) ----
+
+    // The switched-on aircraft in the relation's order.
+    public System.Collections.Generic.IReadOnlyList<string> Planes { get; set; } = [];
+
+    // Under the Games filter: the filter's aircraft when they are not the first ones anyway (null: as always). The card's
+    // picture is then that aircraft's.
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Cover))]
+    [NotifyPropertyChangedFor(nameof(CoverPlane))]
+    private string? leadPlane;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Cover))]
+    private Bitmap? leadCover;
+
+    // The picture the card shows: the filter's aircraft's while it leads, else as always.
+    public Bitmap? Cover => LeadPlane != null ? LeadCover : GameCover;
+
+    // The aircraft the card's picture stands for (DCS; empty for another game).
+    public string CoverPlane => LeadPlane ?? (Game.Equals("DCS", System.StringComparison.OrdinalIgnoreCase) ? Planes.FirstOrDefault() ?? string.Empty : string.Empty);
+
+    // The aircraft in the order shown: "F-16C_50, F-100D" (the summary and the tooltip's lines follow it).
+    public void ShowPlanesInOrder(System.Collections.Generic.IReadOnlyList<string> ordered, string summary, string display)
+    {
+        if (ordered.Count == 0 || (string.Equals(PlanesSummary, summary, System.StringComparison.Ordinal) && string.Equals(PlanesDisplay, display, System.StringComparison.Ordinal)))
+            return;
+        PlanesSummary = summary;
+        PlanesDisplay = display;
+        OnPropertyChanged(nameof(PlanesSummary));
+        OnPropertyChanged(nameof(PlanesDisplay));
+        OnPropertyChanged(nameof(DetailsText));
+    }
 
     // ---- Per aircraft (engine relations aircraft, EngineIdMeanings) ----
 
@@ -119,13 +155,8 @@ public sealed partial class RelationNodeItem : ObservableObject
 
     private System.Func<string, bool>? filteredPlane;
 
-    private void MarkFilteredAircraft()
-    {
-        if (Aircraft == null)
-            return;
-        foreach (AircraftChoiceItem item in Aircraft.Items)
-            item.IsFilterMatch = filteredPlane != null && filteredPlane(item.Plane);
-    }
+    // The aircraft list ticks the filter's aircraft and lists them first.
+    private void MarkFilteredAircraft() => Aircraft?.LeadWithFilter(filteredPlane);
 
     // The game's own title of the action (engine relations aircraft), for the games whose node id is no title
     // ("KEY_AXIS_ELEVATOR_SET" -> "Elevator Axis", "elevator" -> "Pitch axis"); explanation: what it does (the cockpit

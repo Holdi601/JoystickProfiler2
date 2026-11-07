@@ -411,7 +411,7 @@ public sealed class TesterBatch262Tests
         Assert.Equal(["Roll", "Yaw"], vm.AxisTuningCopyTargets.Select(t => t.Relation).ToArray());
         Assert.DoesNotContain(vm.AxisTuningCopyTargets, t => t.Relation == "Pitch");
         Assert.StartsWith("Roll · ", vm.AxisTuningCopyTargets[0].Label);
-        Assert.Contains("DCS / F-16C_50", vm.AxisTuningCopyText);
+        Assert.Contains("for " + MainWindowViewModel.AxisTuningAircraftLabel("F-16C_50") + ",", vm.AxisTuningCopyText);
         vm.AxisTuningCopyTarget = vm.AxisTuningCopyTargets.Single(t => t.Relation == "Yaw");
         Assert.False(vm.AxisTuningCopyInvert);
         Assert.True(vm.CanCopyAxisTuning);
@@ -631,6 +631,9 @@ public sealed class AxisTuningCopyRealEngineTests
             await vm.RefreshRelationsCommand.ExecuteAsync(null);
             await vm.RefreshBindsCommand.ExecuteAsync(null);
             vm.SelectedBind = vm.Binds.Single(b => b.RelationName == "Thrust Left");
+            // A DCS relation opens on DCS's curve (its aircraft ticked); the copy here is of the curve for all games.
+            await WaitLongAsync(() => vm.AxisTuningLoaded && vm.SelectedAxisTuningScope != null && !vm.IsBusy);
+            vm.SelectedAxisTuningScope = vm.AxisTuningScopes.Single(s => s.IsBase);
             await WaitLongAsync(() => vm.AxisTuningLoaded && vm.SelectedAxisTuningScope?.IsBase == true && !vm.IsBusy);
             Assert.True(vm.IsAxisTuningExpanded);
             Assert.Equal(0.1, vm.AxisTuningEditors.Single(e => e.Key == "deadzone").Value, 6);

@@ -219,6 +219,7 @@ public sealed partial class MainWindowViewModel
                 OnPropertyChanged(nameof(HasNoBindSelected));
                 OnPropertyChanged(nameof(SelectedBindDevicePicture));
                 OnPropertyChanged(nameof(HasSelectedBindDevicePicture));
+                RefreshExtraBindRows();
                 break;
             case nameof(SelectedModifierItem):
                 OnPropertyChanged(nameof(HasModifierSelected));
@@ -374,7 +375,8 @@ public sealed partial class MainWindowViewModel
     // The window focuses the name box of the new relation form.
     public event EventHandler? NewRelationFormRequested;
 
-    // The Binds page with the relation selected (from the relation's card: "Bind it").
+    // The Binds page with the relation's bind selected: "Not bound yet: Binds page" of an unbound relation, the bind chip
+    // under a bound relation's name (2.6.4 tester: "a link to take us from the relation to the binds"). Back returns.
     [RelayCommand]
     private void BindSelectedRelation()
     {

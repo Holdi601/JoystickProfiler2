@@ -81,6 +81,14 @@ game's active defaults of an imported device come into the profile on import (St
 for example), and an export writes only what really differs from the game's defaults, never a default removed and
 added again. The smoke test checks this with synthetic files (`engine\tests\smoke\roundtrip.ps1`).
 
+
+## Several inputs per relation (experimental)
+
+With Settings > Experimental "Several inputs per relation" on, a relation's extra binds are exported like its main bind
+where the game keeps several inputs per action; games with one input per action get the main bind and a warning per
+relation, and with the setting off an export names the extra binds it left out once. The modes (clean, nuke, keyboard
+rules) are unchanged. Table per game with the evidence: [multi-bind.md](multi-bind.md#export-per-game).
+
 ## Remembered settings
 
 The page remembers its last settings in `export-settings.json` (the GUI's settings folder, `%APPDATA%\JoyPro2`): the

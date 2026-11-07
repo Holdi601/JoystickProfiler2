@@ -69,4 +69,42 @@ public sealed class BindListItem
 
     // What the Binds page's search found in the relation's actions (set by the list's filter before the row shows).
     public SearchMatchInfo SearchHits { get; set; } = new();
+
+    // Experimental multi-bind (docs/multi-bind.md): the relation's other inputs (engine binds list "ExtraBinds"), input 2..
+    public IReadOnlyList<ExtraBindRow> ExtraBinds { get; set; } = [];
+
+    // Shown only while Settings > Experimental "Several inputs per relation" is on (set when the list is built).
+    public bool ShowExtraBinds { get; set; }
+
+    public bool HasExtraBinds => ShowExtraBinds && ExtraBinds.Count > 0;
+
+    // "+1" on the card, the other inputs in its tooltip.
+    public string ExtraBindsBadge => HasExtraBinds ? "+" + ExtraBinds.Count : string.Empty; // nonloc
+
+    public string ExtraBindsTooltip => HasExtraBinds ? T("Also on: {0}", string.Join(", ", System.Linq.Enumerable.Select(ExtraBinds, e => e.Label))) : string.Empty;
+}
+
+// One extra input of a relation (experimental multi-bind): its number as the engine counts them (2..).
+public sealed class ExtraBindRow
+{
+    public string Relation { get; set; } = string.Empty;
+
+    public int Number { get; set; }
+
+    public string Device { get; set; } = string.Empty;
+
+    public string Input { get; set; } = string.Empty;
+
+    public bool IsAxis { get; set; }
+
+    public IReadOnlyList<string> Modifiers { get; set; } = [];
+
+    public string NumberText => T("Input {0}", Number);
+
+    // "WarBRD · BTN 8 · Shift A".
+    public string Label => DisplayText.BindLabel(Device, Input, Modifiers);
+
+    public string Tooltip => DisplayText.BindTooltip(Device, Input, Modifiers);
+
+    public string InputShort => DeviceMarkerText.ShortLabel(DisplayText.Input(Input));
 }

@@ -40,6 +40,7 @@ public sealed partial class MainWindowViewModel
         ("command-lists", N("Command lists of DCS, Star Citizen and IL-2 (for experts)"), "refresh dcs star citizen il-2 il2 command list db", N("Command lists")),
         ("ffb-games", N("Force feedback settings of the games"), "ffb force feedback strength effects game settings", N("Game force feedback")),
         ("dcs-ffb", N("DCS force feedback: swap and invert per device"), "dcs ffb swap invert axis force feedback", N("DCS force feedback")),
+        (ExperimentalSettingsSectionId, N("Experimental"), "experimental several inputs per relation multi bind two devices same grip two bases second input copy device", N("Experimental")),
     ];
 
     // Open at the first start: the games (the rest is a click away).

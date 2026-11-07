@@ -228,13 +228,17 @@ namespace JoyPro.Engine
                 List<string> relationGames = gameList.Where(g => relation.NODES.Any(n => n != null && NodeMatches(g, n.Game) && NodeActive(n))).ToList();
                 if (relationGames.Count == 0)
                     continue;
-                string input = relation.ISAXIS ? bind.JAxis : bind.JButton;
-                AddUsed(used, bind.Joystick, input, relation.NAME ?? entry.Key, relationGames);
-                foreach (string reformer in bind.AllReformers ?? new List<string>())
+                // The main bind and the extra binds in use (experimental multi-bind): each input gets its slot.
+                foreach (Bind used1 in MultiBind.ActiveBinds(relation, bind))
                 {
-                    Modifier modifier = Modifier.ReformerToMod(reformer);
-                    if (modifier != null)
-                        AddUsed(used, modifier.device, modifier.key, (relation.NAME ?? entry.Key) + " (modifier " + modifier.name + ")", relationGames);
+                    string input = relation.ISAXIS ? used1.JAxis : used1.JButton;
+                    AddUsed(used, used1.Joystick, input, relation.NAME ?? entry.Key, relationGames);
+                    foreach (string reformer in used1.AllReformers ?? new List<string>())
+                    {
+                        Modifier modifier = Modifier.ReformerToMod(reformer);
+                        if (modifier != null)
+                            AddUsed(used, modifier.device, modifier.key, (relation.NAME ?? entry.Key) + " (modifier " + modifier.name + ")", relationGames);
+                    }
                 }
             }
             return used.Values.OrderBy(u => u.Source, StringComparer.OrdinalIgnoreCase).ToList();
@@ -1614,7 +1618,7 @@ namespace JoyPro.Engine
 
             private void SwapForward(Dictionary<int, string> names)
             {
-                foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds)
+                foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
                 {
                     Bind bind = entry.Value;
                     if (bind == null)
@@ -1775,7 +1779,7 @@ namespace JoyPro.Engine
                     return;
                 reverseAfter = false;
                 // Binds the import put on vJoy slots: back to the physical inputs.
-                foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds)
+                foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
                 {
                     Bind bind = entry.Value;
                     if (bind == null)

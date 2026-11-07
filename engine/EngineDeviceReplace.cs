@@ -197,7 +197,7 @@ namespace JoyPro.Engine
                 }
                 return use;
             };
-            foreach (Bind bind in InternalDataManagement.AllBinds.Values)
+            foreach (Bind bind in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds).Select(e => e.Value))
             {
                 if (bind == null)
                     continue;
@@ -639,12 +639,12 @@ namespace JoyPro.Engine
                 }
                 return m;
             };
-            foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 Bind bind = entry.Value;
                 if (bind == null)
                     continue;
-                if (ReplaceSameInstance(bind.Joystick, oldDevice) && BindInput(bind).Length > 0)
+                if (ReplaceSameInstance(bind.Joystick, oldDevice) && BindInput(bind).Length > 0 && !mappingOf(BindInput(bind)).Relations.Contains(entry.Key))
                     mappingOf(BindInput(bind)).Relations.Add(entry.Key);
                 foreach (string reformer in bind.AllReformers ?? new List<string>())
                 {
@@ -709,9 +709,9 @@ namespace JoyPro.Engine
                     m.Note = "left out by you";
                 if (m.Mapped)
                 {
-                    m.TargetRelations = InternalDataManagement.AllBinds
+                    m.TargetRelations = MultiBind.WithActiveExtras(InternalDataManagement.AllBinds)
                         .Where(b => b.Value != null && ReplaceSameInstance(b.Value.Joystick, newDevice) && string.Equals(BindInput(b.Value), m.NewInput, StringComparison.OrdinalIgnoreCase))
-                        .Select(b => b.Key).OrderBy(r => r, StringComparer.OrdinalIgnoreCase).ToList();
+                        .Select(b => b.Key).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(r => r, StringComparer.OrdinalIgnoreCase).ToList();
                 }
             }
             plan.Mappings = ordered;
@@ -962,6 +962,44 @@ namespace JoyPro.Engine
                 InternalDataManagement.AllBinds[relationName] = bind;
                 if (InternalDataManagement.AllRelations.ContainsKey(relationName) && InternalDataManagement.AllRelations[relationName] != null)
                     InternalDataManagement.AllRelations[relationName].bind = bind;
+            }
+
+            // The extra binds in use (experimental multi-bind, setting on) move the same way.
+            foreach (KeyValuePair<string, Relation> owner in InternalDataManagement.AllRelations.Where(r => r.Value != null).ToList())
+            {
+                foreach (Bind extra in MultiBind.ActiveExtras(owner.Value))
+                {
+                    ReplaceMapping m;
+                    if (ReplaceSameInstance(extra.Joystick, plan.OldDevice))
+                    {
+                        string input = BindInput(extra);
+                        bool blocked = plan.Merge == "keep" && byInput.TryGetValue(input, out m) && m.TargetRelations.Count > 0;
+                        if (byInput.TryGetValue(input, out m) && !blocked)
+                        {
+                            extra.Joystick = plan.NewDevice;
+                            if (!string.IsNullOrWhiteSpace(extra.JAxis))
+                                extra.JAxis = m.NewInput;
+                            else
+                                extra.JButton = m.NewInput;
+                            if (ReplaceSameInstance(extra.JoyBackup, plan.OldDevice))
+                                extra.JoyBackup = plan.NewDevice;
+                            if (ReplaceSameInstance(extra.AliasJoystick, plan.OldDevice))
+                                extra.AliasJoystick = plan.NewDevice;
+                            plan.MovedBinds++;
+                        }
+                        else
+                            plan.KeptOnOld++;
+                    }
+                    for (int i = 0; extra.AllReformers != null && i < extra.AllReformers.Count; i++)
+                    {
+                        Modifier modifier = Modifier.ReformerToMod(extra.AllReformers[i]);
+                        if (modifier == null || !ReplaceSameInstance(modifier.device, plan.OldDevice) || !byInput.TryGetValue((modifier.key ?? string.Empty).Trim(), out m))
+                            continue;
+                        modifier.device = plan.NewDevice;
+                        modifier.key = m.NewInput;
+                        extra.AllReformers[i] = modifier.toReformerString();
+                    }
+                }
             }
 
             // Nothing left on the old device: its other settings follow (name, force feedback; a picture and USB id only

@@ -10,9 +10,10 @@ using JoyPro.Gui.Models;
 namespace JoyPro.Gui.ViewModels;
 
 // The Binds page's axis response, 2.6.2 tester report ("the slider is difficult to duplicate between left and right"):
-// - Copy to another axis: the values shown for the scope (dead zone, saturations, curvature, user curve, slider, the
-//   model's own settings, invert only when ticked: left and right often differ there) go to the same scope of another
-//   bound axis in one engine run (binds tuning set <other> --scope ...), so one Ctrl+Z undoes it.
+// - Copy to another axis: the values shown (dead zone, saturations, curvature, user curve, slider, the model's own
+//   settings, invert only when ticked: left and right often differ there) go to the same games / aircraft (the ticked
+//   rows) of another bound axis in one engine run (binds tuning set <other> --scope ... --scope ...), so one Ctrl+Z
+//   undoes it.
 // - The section opens by itself for an axis; closing it is remembered (list-preferences.json "AxisResponseOpen").
 // - The "Modifiers on this bind" panel has a close button; closed, only its title line stays, with Show
 //   (list-preferences.json "BindModifiersOpen").
@@ -32,9 +33,8 @@ public sealed partial class MainWindowViewModel
 
     public bool CanCopyAxisTuning => CanSaveAxisTuning && AxisTuningCopyTarget != null;
 
-    // "Copies the settings of DCS / F-5E-3 shown here to the same scope of:"
-    public string AxisTuningCopyText => T("Copies the settings of {0} shown here to the same scope of:",
-        SelectedAxisTuningScope?.Label ?? T("All games (base)"));
+    // "Copies the curve shown here, for F-5E-3, Ka-50 III, to the same games or aircraft of:"
+    public string AxisTuningCopyText => T("Copies the curve shown here, for {0}, to the same games or aircraft of:", AxisTuningTickedLabels());
 
     // The other bound axes, picked again each time the copy opens (binds change on the way).
     [RelayCommand]
@@ -91,12 +91,13 @@ public sealed partial class MainWindowViewModel
             return;
         }
         string from = axisTuningRelation;
+        string labels = AxisTuningTickedLabels();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Copying the axis response..."));
         if (result?.ExitCode != 0)
             return;
         StatusText = AxisTuningCopyInvert
-            ? T("The axis response of '{0}' ({1}) is copied to '{2}', with invert. Ctrl+Z undoes it.", from, scope.Label, target.Relation)
-            : T("The axis response of '{0}' ({1}) is copied to '{2}'; its invert stays as it was. Ctrl+Z undoes it.", from, scope.Label, target.Relation);
+            ? T("The axis response of '{0}' ({1}) is copied to '{2}', with invert. Ctrl+Z undoes it.", from, labels, target.Relation)
+            : T("The axis response of '{0}' ({1}) is copied to '{2}'; its invert stays as it was. Ctrl+Z undoes it.", from, labels, target.Relation);
     }
 
     // ---- the section opens by itself for an axis ------------------------------------------------------------------

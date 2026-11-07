@@ -1298,21 +1298,51 @@ public sealed partial class AircraftSelector : ObservableObject
         Changed();
     }
 
+    // The Relations page's Games filter (null: none): its aircraft are marked and listed first under "Filter: F-16C_50",
+    // the others after them by meaning as always (2.6.4 tester report: "the order!"). Only the list shown changes; Items
+    // and the ticks keep their order.
+    internal void LeadWithFilter(Func<string, bool>? isFiltered)
+    {
+        bool changed = false;
+        foreach (AircraftChoiceItem item in Items)
+        {
+            bool match = isFiltered != null && isFiltered(item.Plane);
+            if (item.IsFilterMatch == match)
+                continue;
+            item.IsFilterMatch = match;
+            changed = true;
+        }
+        if (changed)
+            ApplyFilter();
+    }
+
+    // The filter's aircraft lead the list (when some, not all of them are the filter's).
+    public bool HasFilterLead => Visible.Any(i => i.IsFilterMatch) && Visible.Any(i => !i.IsFilterMatch);
+
     private void ApplyFilter()
     {
         string filter = (FilterText ?? string.Empty).Trim();
-        Visible.Clear();
+        List<AircraftChoiceItem> shown = [];
         foreach (AircraftChoiceItem item in Items)
         {
             if (filter.Length == 0 || item.Plane.Contains(filter, StringComparison.OrdinalIgnoreCase) || item.Title.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
                 item.Category.Contains(filter, StringComparison.OrdinalIgnoreCase) || (filter.Equals("differs", StringComparison.OrdinalIgnoreCase) && item.IsDiffers))
-                Visible.Add(item);
+                shown.Add(item);
         }
-        // A heading over each meaning group of the shown aircraft.
+        List<AircraftChoiceItem> lead = shown.Where(i => i.IsFilterMatch).ToList();
+        bool leads = lead.Count > 0 && lead.Count < shown.Count;
+        List<AircraftChoiceItem> rest = leads ? shown.Where(i => !i.IsFilterMatch).ToList() : shown;
+        Visible.Clear();
+        foreach (AircraftChoiceItem item in leads ? lead.Concat(rest) : shown)
+            Visible.Add(item);
+        // A heading over each meaning group of the shown aircraft; the filter's aircraft first under their own.
         foreach (AircraftChoiceItem item in Items)
             item.GroupHeader = string.Empty;
-        foreach (IGrouping<int, AircraftChoiceItem> group in Visible.GroupBy(i => i.MeaningGroup))
+        if (leads)
+            lead[0].GroupHeader = T("Filter: {0}", string.Join(", ", lead.Select(i => i.Plane)));
+        foreach (IGrouping<int, AircraftChoiceItem> group in rest.GroupBy(i => i.MeaningGroup))
             group.First().GroupHeader = GroupTitle(group.Key, group.Count());
+        OnPropertyChanged(nameof(HasFilterLead));
     }
 
     // "Same meaning: 'Pitch' (60)", "Nearly the same (9)", "Not in its list (2)", "Does something else here (its own name shown) (14)".

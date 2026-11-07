@@ -110,6 +110,8 @@ public sealed partial class MainWindowViewModel
                 listPreferences = persistUiFiles ? ListPreferences.Load(ListPreferencesPath) : new ListPreferences();
             return listPreferences;
         }
+        // Tests: the preferences of a restart (read from a file).
+        set => listPreferences = value;
     }
 
     private void SaveListPreferences()
@@ -141,6 +143,8 @@ public sealed partial class MainWindowViewModel
         {
             ApplyBindFilter();
             RememberFilter(BindFilter);
+            // The peek's aircraft: the filter's first (BindPeek.cs).
+            ShowBindPeekPlanesFilterFirst();
         };
         if (ListPrefs.Sorts.TryGetValue(RelationSort.Page, out List<string>? relationSort))
             RelationSort.LoadState(relationSort);

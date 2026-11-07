@@ -110,17 +110,41 @@ public sealed partial class MainWindowViewModel
         await EnsureCatalogOverviewAsync();
         if (CatalogGame == null && CatalogGames.Count > 0)
         {
-            // The open relation's first DCS aircraft, else its first game, else DCS.
-            RelationNodeItem? dcs = SelectedRelation != null ? RelationNodes.FirstOrDefault(n => n.Game == "DCS" && n.ActivePlanesText.Length > 0) : null;
-            string game = dcs != null ? "DCS" : SelectedRelation != null ? RelationNodes.Select(n => n.Game).FirstOrDefault(g => g.Length > 0) ?? "DCS" : "DCS";
+            (string game, string plane) = CatalogStartForOpenRelation();
             CatalogGameOption? option = CatalogGames.FirstOrDefault(g => string.Equals(g.Game, game, StringComparison.OrdinalIgnoreCase)) ?? CatalogGames[0];
-            string plane = dcs?.ActivePlanesText.Split(',').Select(p => p.Trim()).FirstOrDefault(p => p.Length > 0) ?? string.Empty;
             await SelectCatalogAsync(option.Game, plane);
         }
         else if (CatalogGame != null && !string.Equals(catalogLoadedKey, CatalogKey(), StringComparison.Ordinal))
         {
             await LoadCatalogListAsync();
         }
+    }
+
+    // The game and aircraft "Open catalog" starts on. Under the Relations page's Games filter the filter's aircraft (or
+    // game) when the open relation has it (2.6.4 tester report: "DCS World: F-16C_50" filtered, the catalog still opened
+    // the relation's first aircraft, the F-100D). Else, and without a filter, as always: the relation's first DCS
+    // aircraft, else its first game, else DCS.
+    private (string Game, string Plane) CatalogStartForOpenRelation()
+    {
+        if (SelectedRelation == null)
+            return ("DCS", string.Empty);
+        ListFilterViewModel filter = RelationFilter;
+        if (filter.HasGameFilter)
+        {
+            foreach (RelationNodeItem node in RelationNodes.Where(n => n.Game == "DCS"))
+            {
+                string? filtered = NodePlanes(node).FirstOrDefault(p => filter.IsFilteredPlane("DCS", p));
+                if (filtered != null)
+                    return ("DCS", filtered);
+            }
+            RelationNodeItem? other = RelationNodes.FirstOrDefault(n => n.Game.Length > 0 && n.Game != "DCS" && filter.GameFilterMatches(n.Game, NodePlanes(n)).Count > 0);
+            if (other != null)
+                return (other.Game, string.Empty);
+        }
+        RelationNodeItem? dcs = RelationNodes.FirstOrDefault(n => n.Game == "DCS" && n.ActivePlanesText.Length > 0);
+        if (dcs != null)
+            return ("DCS", NodePlanes(dcs).FirstOrDefault() ?? string.Empty);
+        return (RelationNodes.Select(n => n.Game).FirstOrDefault(g => g.Length > 0) ?? "DCS", string.Empty);
     }
 
     // Browse this game (and aircraft) at once (also for the tests and the journey).

@@ -17,6 +17,31 @@ model's parameters that reproduce the base curve best (least squares on 20 point
 set once is carried to every game as closely as each game can express it, and any game or aircraft can still get its
 own values.
 
+## Applies to: the GUI's checkboxes (2.6.5)
+The Binds page's axis response has no scope dropdown any more (testers did not understand it). **Applies to** lists all
+games (`base`), each game of the relation (`game:<g>`), under DCS each active aircraft (`plane:DCS:<p>`, display names
+from the media index with the seat: "AH-64D BLK.II CPG"; two rows with one name show the id) and a family row where it
+applies (two of its games in the relation, or a `family:` tuning stored). Only DCS has aircraft rows: it is the only game
+whose export resolves per aircraft (`EngineSync`: `plane` only for `Kind == "dcs"`; MSFS 2024's per-aircraft input
+records share the device's Sensitivity page, written per device axis). Next to each row: "own curve", "same as A, B"
+(aircraft of the game with an identical own curve, compared as `AxisTuning.Parse(..).Format()`), "uses DCS" / "uses All
+games" ("..., bent at the detent" when detent mode bends it), from `binds tuning show`'s `Uses`.
+
+Ticking (`MainWindowViewModel.AxisTuningAppliesTo.cs`): aircraft of one game can be ticked together; the game row ticks
+its **default set**, the aircraft without an own curve (on a fresh relation all of them); any other row is ticked alone.
+The save plan (said above the buttons):
+- the default set or more ticked: `binds tuning set --scope game:DCS` (one curve the aircraft keep following, not a copy
+  per aircraft); ticked aircraft with an own curve get `--clear-scope plane:DCS:<p>` in the same run and the page says
+  "This replaces the own curve of ..." before;
+- a real subset: `--scope plane:DCS:<p>` per ticked aircraft (curves differing today: said, the first ticked one's
+  shown, never merged);
+- all games / a game without aircraft / a family: that scope.
+One engine run each, so one history version (Ctrl+Z). "Use the game's curve again" = `binds tuning clear` with a
+`--scope` per ticked row that has an own curve. Copy to another axis sends the plan's `--scope`s (no `--clear-scope`) to
+the other relation. The ticks last saved are kept per relation in `list-preferences.json` (`AxisCurveTicks`: `game:DCS`
+for the default set, else the scopes) and ticked again when the relation opens; without one the game with aircraft rows
+starts on its default set, else all games. **Curves now** groups the aircraft by shared curve; a click ticks the group.
+
 Storage: `Bind.TuningOverrides` (`[OptionalField] Dictionary<string, string>`), scope -> `AxisTuning.Format()`
 (`inv=0;sl=0;dz=0.05;sx=1;sy=1;cv=0.2;n.sensitivity=22`). Framework types only, so JoyPro 1 still opens the profile
 (binary formatter version tolerance skips the unknown member).
@@ -273,6 +298,11 @@ into the GUI; `engine\EngineAxisDetents*.cs`).
 - What each game offers and what JoyPro lacks: the author's private per-game survey notes (research 2026-10-05).
 
 ## CLI
+`binds tuning set --scope A --scope B ...` stores the same options for every scope in one run (each starts from its own
+values; nothing is stored unless the options are valid for all), `--clear-scope C` removes C's own tuning in that run;
+`binds tuning clear --scope A --scope B` clears several; `binds tuning show` lists `Uses` (per game / DCS aircraft of the
+relation: the scope its curve comes from, fitted, detent). Smoke: `engine\tests\smoke\axisscopes.ps1`; GUI:
+`gui\JoyPro.Gui.Tests\AxisTuningAppliesToTests.cs` (real engine, the tester's helicopter collective).
 `engine binds tuning models | show | set | clear | preview` and `engine binds detent show | set | calibrate |
 uncalibrate | gates | merge` (see the CLI wiki).
 

@@ -130,7 +130,7 @@ try {
     Assert-Match $sbHistory.Output "Relation 'Path %USERPROFILE%\\Saved Games\\smoke' created" "the unpacked history is not cleaned."
     Assert-Match (Run-Engine @("--profile", $sbCaseProfile, "relations", "list", "--text")).Output "(?m)^Gear \|" "the unpacked profile is not the newest version."
     $sbRestore = Run-Engine @("--profile", $sbCaseProfile, "profile", "history", "restore", "1", "--text")
-    Assert-Match $sbRestore.Output "^Restored the version of" ("profile history restore of the unpacked history failed: " + $sbRestore.Output)
+    Assert-Match $sbRestore.Output "^Rolled back to the version of" ("profile history restore of the unpacked history failed: " + $sbRestore.Output)
     Assert-Match (Run-Engine @("--profile", $sbCaseProfile, "relations", "list", "--text")).Output "(?m)^Relations: 0" "the restored first version should have no relations."
     $env:JOYPRO_DATA_DIR = $sbData
 

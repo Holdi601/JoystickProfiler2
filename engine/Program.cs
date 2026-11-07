@@ -237,6 +237,11 @@ namespace JoyPro.Engine
             // (docs/usage-statistics.md#style-reference): on unless the GUI's setting is off.
             string usageStyle = PopOptionValue(tokens, "--usage-style");
             UsageStyleEnabled = !string.Equals((usageStyle ?? "on").Trim(), "off", StringComparison.OrdinalIgnoreCase);
+            // Experimental: several binds per relation (docs/multi-bind.md); off unless the GUI's setting is on.
+            bool multiBind;
+            if (!MultiBind.ParseOption(PopOptionValue(tokens, MultiBind.Option), out multiBind))
+                return Fail(MultiBind.Option + " takes on or off.");
+            MultiBind.Enabled = multiBind;
 
             profilePath = NormalizePath(profilePath);
             EngineProfileHistory.ProfilePath = profilePath ?? string.Empty;
@@ -632,6 +637,24 @@ namespace JoyPro.Engine
                     return RelationConflictsCommand(command, outPath, textOutput);
                 case "merge-copies":
                     return RelationMergeCopiesCommand(command, outPath, textOutput);
+                case "join-inputs":
+                    {
+                        // Experimental multi-bind: relations that do the same on other inputs -> one relation with several
+                        // inputs (preview without --apply; docs/multi-bind.md).
+                        List<string> args = command.Skip(1).ToList();
+                        string game = PopOptionValue(args, "--game");
+                        string only = PopOptionValue(args, "--relation");
+                        bool apply = PopFlag(args, "--apply");
+                        if (args.Count > 0)
+                            return Fail("Unknown relations join-inputs argument(s): " + string.Join(" ", args));
+                        if (apply && !MultiBind.Enabled)
+                            return Fail("Several inputs per relation is an experimental setting and it is off: switch it on in Settings > Experimental, or pass " + MultiBind.Option + " on.");
+                        EngineJoinInputsResult joined = EngineJoinInputs.Run(game, only, apply);
+                        if (!joined.Applied)
+                            CommandChangedNothing = true;
+                        EmitPayload(textOutput ? EngineJoinInputs.ToText(joined) : EngineSerialization.ToJson(joined), outPath);
+                        return 0;
+                    }
                 case "meanings":
                     {
                         // relations meanings [--game g] [--top N]: ids with another meaning in some aircraft, per game.
@@ -688,6 +711,9 @@ namespace JoyPro.Engine
                     return EditBindModifiers(command, outPath, textOutput);
                 case "unbind":
                     return UnbindBindInputs(command, outPath, textOutput);
+                case "extra":
+                    // Experimental: the other inputs of a relation (docs/multi-bind.md).
+                    return RunBindsExtra(command, outPath, textOutput);
                 case "export":
                     if (command.Count > 1)
                         outPath = NormalizePath(command[1]);
@@ -7241,8 +7267,19 @@ namespace JoyPro.Engine
                 else
                 {
                     InternalDataManagement.AllBinds.Remove(relationName);
-                    if (InternalDataManagement.AllRelations[relationName] != null)
-                        InternalDataManagement.AllRelations[relationName].bind = null;
+                    Relation cleared = InternalDataManagement.AllRelations[relationName];
+                    if (cleared != null)
+                        cleared.bind = null;
+                    // Experimental multi-bind: the next input becomes the relation's bind (a relation has extra binds
+                    // only next to a main bind).
+                    if (cleared != null && MultiBind.HasExtras(cleared))
+                    {
+                        Bind next = MultiBind.Extras(cleared)[0];
+                        cleared.ExtraBinds.Remove(next);
+                        next.Rl = cleared;
+                        cleared.bind = next;
+                        InternalDataManagement.AllBinds[relationName] = next;
+                    }
                     removedBind = true;
                 }
             }
@@ -8339,8 +8376,7 @@ namespace JoyPro.Engine
 
                     using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
                     {
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        formatter.Binder = new LegacyJoyProSerializationBinder();
+                        BinaryFormatter formatter = ProfileFormatter.Writer();
                         formatter.Serialize(stream, exportMap);
                     }
                 }
@@ -11095,6 +11131,9 @@ namespace JoyPro.Engine
                     return RunDevicesExchange(command.Skip(1).ToList(), outPath, textOutput);
                 case "replace":
                     return RunDevicesReplace(command.Skip(1).ToList(), outPath, textOutput);
+                case "copy-to":
+                    // Experimental multi-bind: device A's binds also on device B (docs/multi-bind.md).
+                    return RunDevicesCopyTo(command.Skip(1).ToList(), outPath, textOutput);
                 case "auto-remap":
                 case "remap":
                     return RunDevicesAutoRemap(command.Skip(1).ToList(), outPath, textOutput);
@@ -11477,7 +11516,7 @@ namespace JoyPro.Engine
             Dictionary<string, Dictionary<string, bool>> modifierUsedOnCraft =
                 new Dictionary<string, Dictionary<string, bool>>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (KeyValuePair<string, Bind> kvp in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> kvp in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 string relationName = kvp.Key ?? string.Empty;
                 Bind bind = kvp.Value;
@@ -11521,7 +11560,7 @@ namespace JoyPro.Engine
                 }
             }
 
-            foreach (KeyValuePair<string, Bind> kvp in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> kvp in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 string relationName = kvp.Key ?? string.Empty;
                 Bind bind = kvp.Value;
@@ -12462,6 +12501,37 @@ namespace JoyPro.Engine
                     InternalDataManagement.AllRelations[relationName].bind = bind;
                 if (!result.UpdatedRelations.Contains(relationName, StringComparer.OrdinalIgnoreCase))
                     result.UpdatedRelations.Add(relationName);
+            }
+
+            // The relations' extra binds (experimental multi-bind) follow the device too, also while the setting is off.
+            foreach (KeyValuePair<string, Relation> owner in InternalDataManagement.AllRelations.Where(r => MultiBind.HasExtras(r.Value)).ToList())
+            {
+                foreach (Bind extra in MultiBind.Extras(owner.Value))
+                {
+                    bool extraChanged = false;
+                    if (SameDeviceInstance(extra.Joystick, result.OldDevice))
+                    {
+                        extra.Joystick = result.NewDevice;
+                        result.UpdatedBindDevices++;
+                        extraChanged = true;
+                    }
+                    if (SameDeviceInstance(extra.JoyBackup, result.OldDevice))
+                        extra.JoyBackup = result.NewDevice;
+                    if (SameDeviceInstance(extra.AliasJoystick, result.OldDevice))
+                        extra.AliasJoystick = result.NewDevice;
+                    for (int i = 0; extra.AllReformers != null && i < extra.AllReformers.Count; i++)
+                    {
+                        Modifier parsed = Modifier.ReformerToMod(extra.AllReformers[i]);
+                        if (parsed == null || !SameDeviceInstance(parsed.device, result.OldDevice))
+                            continue;
+                        parsed.device = result.NewDevice;
+                        extra.AllReformers[i] = parsed.toReformerString();
+                        result.UpdatedBindReformers++;
+                        extraChanged = true;
+                    }
+                    if (extraChanged && !result.UpdatedRelations.Contains(owner.Key, StringComparer.OrdinalIgnoreCase))
+                        result.UpdatedRelations.Add(owner.Key);
+                }
             }
 
             foreach (string modifierName in InternalDataManagement.AllModifiers.Keys.ToList())
@@ -14754,6 +14824,8 @@ namespace JoyPro.Engine
                         return command.Any(a => ConflictsMutatingFlags.Contains(a));
                     if (action == "merge-copies")
                         return !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
+                    if (action == "join-inputs")
+                        return command.Any(a => string.Equals(a, "--apply", StringComparison.OrdinalIgnoreCase));
                     if (action == "function")
                         return command.Any(a => string.Equals(a, "--set", StringComparison.OrdinalIgnoreCase) || string.Equals(a, "--none", StringComparison.OrdinalIgnoreCase) ||
                                                 string.Equals(a, "--auto", StringComparison.OrdinalIgnoreCase));
@@ -14780,6 +14852,13 @@ namespace JoyPro.Engine
                             ? (command[1] ?? string.Empty).Trim().ToLowerInvariant()
                             : string.Empty;
                         return tuningAction == "set" || tuningAction == "clear";
+                    }
+                    if (action == "extra")
+                    {
+                        string extraAction = command != null && command.Count > 1
+                            ? (command[1] ?? string.Empty).Trim().ToLowerInvariant()
+                            : "list";
+                        return extraAction == "add" || extraAction == "set" || extraAction == "remove" || extraAction == "delete" || extraAction == "move";
                     }
                     if (action == "detent")
                     {
@@ -14818,6 +14897,8 @@ namespace JoyPro.Engine
                 case "devices":
                     if (string.IsNullOrWhiteSpace(action))
                         action = "list";
+                    if (action == "copy-to")
+                        return !command.Any(a => string.Equals(a, "--dry-run", StringComparison.OrdinalIgnoreCase));
                     return action == "exchange" ||
                            action == "replace" ||
                            action == "auto-remap" ||
@@ -14978,6 +15059,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  --history-note <text>  Name of this change in the profile history (default: the command's name)");
             Console.WriteLine("  --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: virtual mode writes there (the first vJoy device of the table, function outputs, forwarder, Gremlin import); imports and scans (dcs, il2, starcitizen, the other games) of games in native mode leave only that vJoy device out; every other vJoy device is read like any device (default: none)");
             Console.WriteLine("  --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)");
+            Console.WriteLine("  --multi-bind on|off    Experimental: a relation can have several inputs (binds extra); exports, checks and pages use them (default off: only the main bind, as always; JOYPRO_MULTI_BIND=1 also switches it on)");
             Console.WriteLine();
             Console.WriteLine("Commands:");
             Console.WriteLine("  engine summary");
@@ -15122,6 +15204,7 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine devices inputs [--include-off]   (aliases: catalog, input-catalog)");
             Console.WriteLine("  engine devices exchange <old-device> <new-device> [--old <name>] [--new <name>] [--confirm true|false]   (alias: swap; renames the device, inputs stay)");
             Console.WriteLine("  engine devices replace <old-device> <new-device> [--old <name>] [--new <name>] [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same = the same input ids, layout = by the part on the device (device catalog), auto = same for the same product, else layout; --merge where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins; --old/--from and --new/--to name the devices instead of the positions; --dry-run previews)");
+            Console.WriteLine("  engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)");
             Console.WriteLine("  engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)");
             Console.WriteLine("  engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)");
             Console.WriteLine("  engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)");
@@ -15221,6 +15304,7 @@ namespace JoyPro.Engine
             Console.WriteLine("      --keep-both) stops the check naming them until one more relation or action joins, --remove-actions takes");
             Console.WriteLine("      \"game|id|aircraft\" actions out of every relation, --forget-kept shows ignored ones again (one undo step each).");
             Console.WriteLine("  engine relations merge-copies [--dry-run] [--name <relation>]");
+            Console.WriteLine("  engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)");
             Console.WriteLine("      relations an import copied (\"<name>__N\") with the same device, input and modifiers as \"<name>\" are merged back");
             Console.WriteLine("      into one: their aircraft, groups and per-aircraft tuning; one undo step. --dry-run lists them only.");
             Console.WriteLine("  engine relations meanings [--game g] [--top N]");
@@ -15302,6 +15386,11 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine binds show <bind-or-relation>");
             Console.WriteLine("  engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]");
             Console.WriteLine("  engine binds clear <bind-or-relation> [--input-only]");
+            Console.WriteLine("  engine binds extra list <relation>   (experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)");
+            Console.WriteLine("  engine binds extra add <relation> --device <name> --input <value> [--format dcs|il2] [--modifier <name>]... [--copy-tuning true|false] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (another input that does the same; an axis starts with the main bind's tuning unless --copy-tuning false; a relation without a bind gets it as its bind)");
+            Console.WriteLine("  engine binds extra set <relation> <n> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>]... [--clear-modifiers] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (changes input n (2 or more); scoped axis tuning of it: binds tuning set <relation> --bind <n>)");
+            Console.WriteLine("  engine binds extra remove <relation> <n>|--all   (works also with the setting off)");
+            Console.WriteLine("  engine binds extra move <relation> <n> --to <m> | --to-relation <name>   (--to 1 makes it the main bind and the main bind takes its place; --to-relation moves the input to another relation of the same kind)");
             Console.WriteLine("  engine binds modifier list [bind-or-relation]");
             Console.WriteLine("  engine binds modifier add <bind-or-relation> <mod1> [mod2] [...]");
             Console.WriteLine("  engine binds modifier remove <bind-or-relation> <mod1> [mod2] [...] [--all]");
@@ -15333,9 +15422,9 @@ namespace JoyPro.Engine
             Console.WriteLine("  engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class; the game must be known and the aircraft / ship in the ranking, or already pinned / excluded)");
             Console.WriteLine("  engine usage backups | engine usage restore <day>   (the usage store's daily backups; restore takes a day engine usage backups lists)");
             Console.WriteLine("  engine binds tuning models   (the axis response models: DCS, IL-2 Great Battles, IL-2 Korea, the per-game models (Arma, Elite, BMS, FSX, IL-2 1946, Cliffs of Dover, MSFS, Project Wingman, Star Citizen, VTOL VR, WARDOGS, War Thunder, X-Plane) and the generic one, with their parameters)");
-            Console.WriteLine("  engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]");
-            Console.WriteLine("  engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]");
-            Console.WriteLine("  engine binds tuning clear <bind-or-relation> --scope game:<game>|plane:<game>:<plane>|family:<family>");
+            Console.WriteLine("  engine binds tuning show <bind-or-relation> [--bind <n>] [--game <game>] [--plane <plane>]   (every scope; per game and DCS aircraft of the relation the scope its curve comes from)");
+            Console.WriteLine("  engine binds tuning set <bind-or-relation> [--bind <n>] --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]... [--clear-scope <scope>]... [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]");
+            Console.WriteLine("  engine binds tuning clear <bind-or-relation> [--bind <n>] --scope game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]...   (several scopes: one change, one undo step)");
             Console.WriteLine("  engine binds tuning preview <bind-or-relation> --game <game> [--plane <plane>] [--points <n>]");
             Console.WriteLine("  engine binds detent show <bind-or-relation>   (detent mode: settings, the device axis calibration, the aircraft grouped by afterburner start, per game the curve it gets and how exactly)");
             Console.WriteLine("  engine binds detent set <bind-or-relation> [--on|--off] [--no-ab full|linear] [--unknown full|linear] [--margin <0..0.1>] [--target <game>:<plane>=ab:<0..1>|full|linear|default]...");

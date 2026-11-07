@@ -36,6 +36,29 @@ public sealed class RelationListItem : CommunityToolkit.Mvvm.ComponentModel.Obse
         }
     }
 
+    private IReadOnlyList<string> moreInputs = [];
+
+    // Experimental multi-bind: the relation's other inputs ("MOZA AB9 · BTN 8"), empty while the setting is off.
+    public IReadOnlyList<string> MoreInputs
+    {
+        get => moreInputs;
+        set
+        {
+            if (SetProperty(ref moreInputs, value ?? []))
+            {
+                OnPropertyChanged(nameof(HasMoreInputs));
+                OnPropertyChanged(nameof(MoreInputsBadge));
+                OnPropertyChanged(nameof(MoreInputsTooltip));
+            }
+        }
+    }
+
+    public bool HasMoreInputs => MoreInputs.Count > 0;
+
+    public string MoreInputsBadge => HasMoreInputs ? "+" + MoreInputs.Count : string.Empty; // nonloc
+
+    public string MoreInputsTooltip => HasMoreInputs ? T("Also on: {0}", string.Join(", ", MoreInputs)) : string.Empty;
+
     private IReadOnlyList<string> modifiers = [];
 
     // The modifiers of its bind ("Shift A"): held with the input.

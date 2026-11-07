@@ -9,10 +9,13 @@ namespace JoyPro.Engine
 {
     // engine binds tuning ...: the axis curve manager on the command line (docs/axis-curves.md).
     //   binds tuning models                                   response models and their parameters
-    //   binds tuning show <relation> [--game G] [--plane P]   every scope of the bind; with --game, what G (P) uses
-    //   binds tuning set <relation> --scope S [options]       base | game:G | plane:G:P | family:F
+    //   binds tuning show <relation> [--game G] [--plane P]   every scope of the bind; with --game, what G (P) uses;
+    //                                                         always: per game / DCS aircraft of the relation the scope it uses
+    //   binds tuning set <relation> --scope S [--scope S2 ...] [options]   base | game:G | plane:G:P | family:F; several
+    //                                                         scopes get the same options in one run (one history version);
+    //                                                         --clear-scope S3: also removes S3's own tuning in that run
     //                                                         (--curve-points x:y,x:y,...|none: a curve with any number of stops)
-    //   binds tuning clear <relation> --scope S
+    //   binds tuning clear <relation> --scope S [--scope S2 ...]
     //   binds tuning preview <relation> --game G [--plane P] [--points N]
     internal static partial class Program
     {
@@ -37,7 +40,8 @@ namespace JoyPro.Engine
 
             string query = args[0];
             args.RemoveAt(0);
-            string scope;
+            List<string> scopeOptions;
+            List<string> clearScopeOptions;
             string game;
             string plane;
             string pointsRaw;
@@ -51,10 +55,14 @@ namespace JoyPro.Engine
             string satYRaw;
             List<string> curvatureOptions;
             string curvePointsRaw;
+            string bindNumberRaw;
             try
             {
+                // --bind <n>: input n of the relation (experimental multi-bind; 1 = the main bind, the default).
+                bindNumberRaw = PopOptionValue(args, "--bind");
                 curvePointsRaw = PopOptionValue(args, "--curve-points");
-                scope = PopOptionValue(args, "--scope");
+                scopeOptions = PopOptionValues(args, "--scope");
+                clearScopeOptions = PopOptionValues(args, "--clear-scope");
                 game = PopOptionValue(args, "--game");
                 plane = PopOptionValue(args, "--plane");
                 pointsRaw = PopOptionValue(args, "--points");
@@ -84,9 +92,17 @@ namespace JoyPro.Engine
                 return Fail("Axis tuning is only for axis relations; '" + relationName + "' is a button relation.");
             Bind bind;
             InternalDataManagement.AllBinds.TryGetValue(relationName, out bind);
+            if (!string.IsNullOrWhiteSpace(bindNumberRaw) && bindNumberRaw.Trim() != "1")
+            {
+                int bindIndex;
+                string bindError;
+                if (!TryExtraIndex(relation, bindNumberRaw, out bindIndex, out bindError))
+                    return Fail(bindError);
+                bind = MultiBind.Extras(relation)[bindIndex];
+            }
 
             if (action == "show")
-                return EmitTuningShow(relationName, bind, game, plane, outPath, textOutput);
+                return EmitTuningShow(relationName, relation, bind, game, plane, outPath, textOutput);
             if (action == "preview")
             {
                 if (string.IsNullOrWhiteSpace(game))
@@ -97,31 +113,106 @@ namespace JoyPro.Engine
                 return EmitTuningPreview(relationName, bind, game, plane, points, outPath, textOutput);
             }
 
-            if (string.IsNullOrWhiteSpace(scope))
-                return Fail("binds tuning " + action + " requires --scope (base, game:<game>, plane:<game>:<plane>, family:<family>).");
-            scope = scope.Trim();
-            if (!BindTuning.IsValidScope(scope))
-                return Fail("Invalid scope '" + scope + "'. Use base, game:<game>, plane:<game>:<plane> or family:<family>.");
+            // One or more scopes (--scope repeated): the same change for each, in this one run, so one undo takes it back.
+            List<string> scopes = new List<string>();
+            foreach (string raw in scopeOptions)
+            {
+                string one = (raw ?? string.Empty).Trim();
+                if (one.Length == 0)
+                    continue;
+                if (!BindTuning.IsValidScope(one))
+                    return Fail("Invalid scope '" + one + "'. Use base, game:<game>, plane:<game>:<plane> or family:<family>.");
+                if (!scopes.Contains(one, StringComparer.OrdinalIgnoreCase))
+                    scopes.Add(one);
+            }
+            // set --clear-scope: scopes that lose their own tuning in the same run (e.g. aircraft that follow the game's
+            // curve again when it is set for all of them).
+            List<string> clearScopes = new List<string>();
+            foreach (string raw in clearScopeOptions)
+            {
+                string one = (raw ?? string.Empty).Trim();
+                if (one.Length == 0)
+                    continue;
+                if (action != "set")
+                    return Fail("--clear-scope is an option of binds tuning set; binds tuning clear takes --scope.");
+                if (!BindTuning.IsValidScope(one) || one == BindTuning.BaseScope)
+                    return Fail("Invalid --clear-scope '" + one + "'. Use game:<game>, plane:<game>:<plane> or family:<family> (the base cannot be cleared).");
+                if (scopes.Contains(one, StringComparer.OrdinalIgnoreCase))
+                    return Fail("'" + one + "' is both set (--scope) and cleared (--clear-scope).");
+                if (!clearScopes.Contains(one, StringComparer.OrdinalIgnoreCase))
+                    clearScopes.Add(one);
+            }
+            if (scopes.Count == 0)
+                return Fail("binds tuning " + action + " requires --scope (base, game:<game>, plane:<game>:<plane>, family:<family>; repeat it for several).");
             if (bind == null)
                 return Fail("Relation '" + relationName + "' has no bind; bind an axis first.");
 
             if (action == "clear")
             {
-                if (scope == BindTuning.BaseScope)
+                if (scopes.Contains(BindTuning.BaseScope))
                     return Fail("The base tuning cannot be cleared; set its values instead.");
-                bool removed = BindTuning.Clear(bind, scope);
-                return EmitTuningResult(relationName, removed ? "Cleared " + scope + "." : "No tuning for " + scope + ".", outPath, textOutput);
+                List<string> cleared = scopes.Where(s => BindTuning.Clear(bind, s)).ToList();
+                List<string> without = scopes.Where(s => !cleared.Contains(s)).ToList();
+                List<string> lines = new List<string>();
+                if (cleared.Count > 0)
+                    lines.Add("Cleared " + string.Join(", ", cleared) + ".");
+                if (without.Count > 0)
+                    lines.Add("No tuning for " + string.Join(", ", without) + ".");
+                return EmitTuningResult(relationName, string.Join("\n", lines), outPath, textOutput);
             }
 
-            // set: start from the scope's tuning, else from what that scope resolves to now.
-            AxisTuning tuning = BindTuning.Get(bind, scope);
-            if (tuning == null)
+            // set: each scope starts from its own tuning, else from what it resolves to now; nothing is stored until the
+            // options are valid for every scope.
+            List<KeyValuePair<string, AxisTuning>> results = new List<KeyValuePair<string, AxisTuning>>();
+            foreach (string scope in scopes)
             {
-                string[] parts = scope.Split(':');
-                tuning = parts[0] == "game" ? BindTuning.Resolve(bind, parts[1], null).Tuning
-                    : parts[0] == "plane" ? BindTuning.Resolve(bind, parts[1], string.Join(":", parts.Skip(2))).Tuning
-                    : BindTuning.Base(bind);
+                AxisTuning start = BindTuning.Get(bind, scope);
+                if (start == null)
+                {
+                    string[] parts = scope.Split(':');
+                    start = parts[0] == "game" ? BindTuning.Resolve(bind, parts[1], null).Tuning
+                        : parts[0] == "plane" ? BindTuning.Resolve(bind, parts[1], string.Join(":", parts.Skip(2))).Tuning
+                        : BindTuning.Base(bind);
+                }
+                string error = ApplyTuningOptions(start, scope, invertedProvided, inverted, sliderProvided, slider, deadzoneRaw, satXRaw, satYRaw,
+                    curvatureOptions, paramOptions, curvePointsRaw);
+                if (error != null)
+                    return Fail(error);
+                results.Add(new KeyValuePair<string, AxisTuning>(scope, start));
             }
+            foreach (KeyValuePair<string, AxisTuning> result in results)
+                BindTuning.Set(bind, result.Key, result.Value);
+            List<string> clearedToo = clearScopes.Where(c => BindTuning.Clear(bind, c)).ToList();
+            string conflicts = SharedAxisConflicts(relationName, InternalDataManagement.AllRelations[relationName], bind);
+            StringBuilder message = new StringBuilder();
+            foreach (KeyValuePair<string, AxisTuning> result in results)
+            {
+                if (message.Length > 0)
+                    message.Append("\n");
+                message.Append("Set " + result.Key + ": " + (result.Key == BindTuning.BaseScope ? BindTuning.Base(bind).Format() : result.Value.Format()));
+            }
+            if (clearedToo.Count > 0)
+                message.Append("\nCleared " + string.Join(", ", clearedToo) + ".");
+            if (scopes.Contains(BindTuning.BaseScope))
+            {
+                // The base scope keeps only invert, slider, dead zone, saturation and curvature (the bind itself): model
+                // parameters and control points are not stored there, so the message shows what was stored and says so.
+                List<string> notStored = new List<string>();
+                if (paramOptions.Count > 0)
+                    notStored.Add("--param");
+                if (!string.IsNullOrWhiteSpace(curvePointsRaw) && !string.Equals(curvePointsRaw.Trim(), "none", StringComparison.OrdinalIgnoreCase))
+                    notStored.Add("--curve-points");
+                if (notStored.Count > 0)
+                    message.Append("\nNot set: " + string.Join(" and ", notStored) + (notStored.Count == 1 ? " does" : " do") + " not apply to the base scope (it keeps invert, slider, dead zone, " +
+                      "saturation and curvature); set " + (notStored.Count == 1 ? "it" : "them") + " on a game, plane or family scope, e.g. --scope game:<game>.");
+            }
+            return EmitTuningResult(relationName, message + conflicts, outPath, textOutput);
+        }
+
+        // The options of binds tuning set applied to one scope's tuning; an error text when one is not valid there.
+        private static string ApplyTuningOptions(AxisTuning tuning, string scope, bool invertedProvided, bool inverted, bool sliderProvided, bool slider,
+            string deadzoneRaw, string satXRaw, string satYRaw, List<string> curvatureOptions, List<string> paramOptions, string curvePointsRaw)
+        {
             AxisTuning before = tuning.Clone();
             double number;
             if (invertedProvided)
@@ -131,19 +222,19 @@ namespace JoyPro.Engine
             if (!string.IsNullOrWhiteSpace(deadzoneRaw))
             {
                 if (!TryParseUnit(deadzoneRaw, out number))
-                    return Fail("--deadzone must be 0..1.");
+                    return "--deadzone must be 0..1.";
                 tuning.Deadzone = number;
             }
             if (!string.IsNullOrWhiteSpace(satXRaw))
             {
                 if (!TryParseUnit(satXRaw, out number))
-                    return Fail("--saturation-x must be 0..1.");
+                    return "--saturation-x must be 0..1.";
                 tuning.SaturationX = number;
             }
             if (!string.IsNullOrWhiteSpace(satYRaw))
             {
                 if (!TryParseUnit(satYRaw, out number))
-                    return Fail("--saturation-y must be 0..1.");
+                    return "--saturation-y must be 0..1.";
                 tuning.SaturationY = number;
             }
             if (curvatureOptions.Count > 0)
@@ -152,22 +243,22 @@ namespace JoyPro.Engine
                 foreach (string item in string.Join(",", curvatureOptions).Split(','))
                 {
                     if (!double.TryParse(item.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out number))
-                        return Fail("--curvature takes numbers (one value, or 11 user-curve points).");
+                        return "--curvature takes numbers (one value, or 11 user-curve points).";
                     curve.Add(number);
                 }
                 if (curve.Count != 1 && curve.Count != AxisModels.UserCurvePoints)
-                    return Fail("--curvature takes one value or 11 user-curve points.");
+                    return "--curvature takes one value or 11 user-curve points.";
                 if (curve.Count == 1 && (curve[0] < -1 || curve[0] > 1))
-                    return Fail("A single curvature must be -1..1.");
+                    return "A single curvature must be -1..1.";
                 if (curve.Count == AxisModels.UserCurvePoints && curve.Any(c => c < 0 || c > 1))
-                    return Fail("User-curve points must be 0..1.");
+                    return "User-curve points must be 0..1.";
                 tuning.Curvature = curve;
             }
             foreach (string option in paramOptions)
             {
                 int eq = option.IndexOf('=');
                 if (eq <= 0 || !double.TryParse(option.Substring(eq + 1), NumberStyles.Float, CultureInfo.InvariantCulture, out number))
-                    return Fail("--param takes name=value, e.g. --param sensitivity=22.");
+                    return "--param takes name=value, e.g. --param sensitivity=22.";
                 string key = option.Substring(0, eq).Trim();
                 // The scope's own model first: several models share a key name with other ranges ("sensitivity").
                 AxisModel scopeModel = BindTuning.ModelForScope(scope);
@@ -176,14 +267,14 @@ namespace JoyPro.Engine
                     .FirstOrDefault(p => string.Equals(p.Key, key, StringComparison.OrdinalIgnoreCase) &&
                                          (p.Kind == AxisParameterKind.Number || (p.Kind == AxisParameterKind.Toggle && p.Key != "invert" && p.Key != "slider")));
                 if (parameter == null)
-                    return Fail("Unknown model parameter '" + key + "'. See: engine binds tuning models.");
+                    return "Unknown model parameter '" + key + "'. See: engine binds tuning models.";
                 if (parameter.Kind == AxisParameterKind.Toggle)
                 {
                     if (number != 0 && number != 1)
-                        return Fail(key + " is a switch: 0 or 1.");
+                        return key + " is a switch: 0 or 1.";
                 }
                 else if (number < parameter.Min || number > parameter.Max)
-                    return Fail(key + " must be " + AxisTuning.Num(parameter.Min) + ".." + AxisTuning.Num(parameter.Max) + ".");
+                    return key + " must be " + AxisTuning.Num(parameter.Min) + ".." + AxisTuning.Num(parameter.Max) + ".";
                 tuning.Native[parameter.Key] = number;
             }
             // Control points (a game curve with any number of stops, e.g. X-Plane): "x:y,x:y,..." or "none". A curve
@@ -201,35 +292,19 @@ namespace JoyPro.Engine
                         double x;
                         double y;
                         if (xy.Length != 2 || !TryParseUnit(xy[0].Trim(), out x) || !TryParseUnit(xy[1].Trim(), out y))
-                            return Fail("--curve-points takes x:y pairs in 0..1, e.g. 0:0,0.4:0.3,1:1 (or none).");
+                            return "--curve-points takes x:y pairs in 0..1, e.g. 0:0,0.4:0.3,1:1 (or none).";
                         if (points.Count > 0 && x <= points[points.Count - 1].Key)
-                            return Fail("--curve-points: x must increase from point to point.");
+                            return "--curve-points: x must increase from point to point.";
                         points.Add(new KeyValuePair<double, double>(x, y));
                     }
                     if (points.Count < 2)
-                        return Fail("--curve-points needs at least two points.");
+                        return "--curve-points needs at least two points.";
                     tuning.SetControlPoints(points);
                 }
             }
             else if (tuning.HasControlPoints && CurveFieldsChanged(before, tuning))
                 tuning.ClearControlPoints();
-            BindTuning.Set(bind, scope, tuning);
-            string conflicts = SharedAxisConflicts(relationName, InternalDataManagement.AllRelations[relationName], bind);
-            if (scope == BindTuning.BaseScope)
-            {
-                // The base scope keeps only invert, slider, dead zone, saturation and curvature (the bind itself): model
-                // parameters and control points are not stored there, so the message shows what was stored and says so.
-                List<string> notStored = new List<string>();
-                if (paramOptions.Count > 0)
-                    notStored.Add("--param");
-                if (!string.IsNullOrWhiteSpace(curvePointsRaw) && !string.Equals(curvePointsRaw.Trim(), "none", StringComparison.OrdinalIgnoreCase))
-                    notStored.Add("--curve-points");
-                string note = notStored.Count == 0 ? string.Empty
-                    : "\nNot set: " + string.Join(" and ", notStored) + (notStored.Count == 1 ? " does" : " do") + " not apply to the base scope (it keeps invert, slider, dead zone, " +
-                      "saturation and curvature); set " + (notStored.Count == 1 ? "it" : "them") + " on a game, plane or family scope, e.g. --scope game:<game>.";
-                return EmitTuningResult(relationName, "Set " + scope + ": " + BindTuning.Base(bind).Format() + note + conflicts, outPath, textOutput);
-            }
-            return EmitTuningResult(relationName, "Set " + scope + ": " + tuning.Format() + conflicts, outPath, textOutput);
+            return null;
         }
 
         // Games that keep some axis values once per physical device axis (MSFS's Sensitivity page): other relations bound
@@ -321,8 +396,45 @@ namespace JoyPro.Engine
             return 0;
         }
 
-        private static int EmitTuningShow(string relationName, Bind bind, string game, string plane, string outPath, bool textOutput)
+        // Per game of the relation (DCS: per aircraft, the only game whose curves are written per aircraft) the scope its
+        // curve comes from, before detent mode; Detent: detent mode bends it for that aircraft. The GUI's "Applies to" list
+        // shows it ("own curve", "uses DCS").
+        internal sealed class TuningUse
         {
+            public string Game;
+            public string Plane;
+            public string Source;
+            public bool Fitted;
+            public bool Detent;
+        }
+
+        internal static List<TuningUse> TuningUses(Relation relation, Bind bind)
+        {
+            List<TuningUse> uses = new List<TuningUse>();
+            if (relation == null || relation.NODES == null)
+                return uses;
+            HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (RelationItem node in relation.NODES)
+            {
+                string game = node == null ? null : (node.Game ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(game))
+                    continue;
+                IEnumerable<string> planes = EngineAxisDetents.HasPlaneCurves(game) ? node.GetActiveAircraftList() : new List<string> { null };
+                foreach (string plane in planes)
+                {
+                    if (!seen.Add(game + "|" + (plane ?? string.Empty)))
+                        continue;
+                    ResolvedTuning normal = BindTuning.ResolveWithoutDetent(bind, game, plane);
+                    ResolvedTuning used = BindTuning.Resolve(bind, game, plane);
+                    uses.Add(new TuningUse { Game = game, Plane = plane, Source = normal.Source, Fitted = normal.Fitted, Detent = used.Source == BindTuning.DetentSource });
+                }
+            }
+            return uses.OrderBy(u => u.Game, StringComparer.OrdinalIgnoreCase).ThenBy(u => u.Plane ?? string.Empty, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static int EmitTuningShow(string relationName, Relation relation, Bind bind, string game, string plane, string outPath, bool textOutput)
+        {
+            List<TuningUse> uses = TuningUses(relation, bind);
             Dictionary<string, string> scopes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             scopes[BindTuning.BaseScope] = BindTuning.Base(bind).FormatExact();
             if (bind != null && bind.TuningOverrides != null)
@@ -339,7 +451,8 @@ namespace JoyPro.Engine
                     Scopes = scopes,
                     Game = game,
                     Plane = plane,
-                    Resolved = resolved == null ? null : new { Model = resolved.Model.Id, resolved.Source, resolved.Fitted, Tuning = resolved.Tuning.Format(), resolved.Note }
+                    Resolved = resolved == null ? null : new { Model = resolved.Model.Id, resolved.Source, resolved.Fitted, Tuning = resolved.Tuning.Format(), resolved.Note },
+                    Uses = uses.Select(u => new { u.Game, u.Plane, u.Source, u.Fitted, u.Detent }).ToList()
                 }), outPath);
                 return 0;
             }
@@ -349,6 +462,14 @@ namespace JoyPro.Engine
                 sb.AppendLine("  " + entry.Key + ": " + entry.Value);
             if (resolved != null)
                 sb.AppendLine(game + (string.IsNullOrWhiteSpace(plane) ? string.Empty : " / " + plane) + " uses (" + resolved.Model.Id + ", from " + resolved.Source + (resolved.Source == BindTuning.DetentSource ? ", detent mode: " + resolved.Note : resolved.Fitted ? ", fitted to the base curve" : string.Empty) + "): " + resolved.Tuning.Format());
+            if (uses.Count > 0)
+            {
+                sb.AppendLine("Curve per game and aircraft:");
+                foreach (TuningUse use in uses)
+                    sb.AppendLine("  " + use.Game + (use.Plane == null ? string.Empty : " / " + use.Plane) + ": " +
+                                  (use.Source == BindTuning.PlaneScope(use.Game, use.Plane ?? string.Empty) || use.Source == BindTuning.GameScope(use.Game) && use.Plane == null ? "own (" + use.Source + ")" : "from " + use.Source) +
+                                  (use.Fitted ? ", fitted" : string.Empty) + (use.Detent ? ", detent mode" : string.Empty));
+            }
             EmitPayload(sb.ToString(), outPath);
             return 0;
         }

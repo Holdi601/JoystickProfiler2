@@ -26,6 +26,10 @@ public sealed class ListPreferences
     // The Binds page's "Modifiers on this bind" panel is open (its close button: only the title line stays).
     public bool BindModifiersOpen { get; set; } = true;
 
+    // The Binds page's axis response: per relation the rows last saved for ("game:DCS" = the aircraft that use DCS's
+    // curve, else plane / game / family scopes, "base"); they are ticked again when the relation opens.
+    public Dictionary<string, List<string>> AxisCurveTicks { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
     // The Relations page's filter block (groups, games, devices, bound, axes / buttons, sort, search scope) is open.
     public bool RelationFiltersOpen { get; set; } = true;
 
@@ -57,6 +61,7 @@ public sealed class ListPreferences
                     loaded.KeptAircraft ??= [];
                     loaded.WatcherHintShownGames ??= [];
                     loaded.Sorts = new Dictionary<string, List<string>>(loaded.Sorts ?? [], StringComparer.OrdinalIgnoreCase);
+                    loaded.AxisCurveTicks = new Dictionary<string, List<string>>(loaded.AxisCurveTicks ?? [], StringComparer.OrdinalIgnoreCase);
                     return loaded;
                 }
             }

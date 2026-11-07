@@ -345,6 +345,10 @@ public sealed partial class MainWindowViewModel
                           !item.Device.Equals("<unbound>", StringComparison.OrdinalIgnoreCase) && !item.Input.Equals("<unbound>", StringComparison.OrdinalIgnoreCase)
                 ? item.Device.Trim() + "::" + item.Input.Trim()
                 : "unbound";
+            // Experimental multi-bind: the other inputs (empty while the setting is off).
+            List<string> more = item != null && item.HasExtraBinds ? item.ExtraBinds.Select(e => e.Label).ToList() : [];
+            if (!more.SequenceEqual(relation.MoreInputs))
+                relation.MoreInputs = more;
             if (string.Equals(relation.Bind, bind, StringComparison.Ordinal))
                 continue;
             // "unbound" and an empty bind column mean the same.

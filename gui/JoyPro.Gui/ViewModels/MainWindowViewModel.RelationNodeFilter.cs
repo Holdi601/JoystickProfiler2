@@ -55,8 +55,8 @@ public sealed partial class MainWindowViewModel
         foreach (RelationNodeItem node in RelationNodes)
         {
             IReadOnlyList<string> names = filtered ? filter.GameFilterMatches(node.Game, NodePlanes(node)) : [];
-            string game = node.Game;
-            node.SetFilterMatch(names, filtered ? plane => filter.IsFilteredPlane(game, plane) : null);
+            node.SetFilterMatch(names, filter.FilteredPlaneTest(node.Game));
+            ShowNodePlanesFilterFirst(node, filter);
             (names.Count > 0 ? matches : others).Add(node);
         }
         RelationNodeFilterMatchCount = matches.Count;
@@ -93,6 +93,33 @@ public sealed partial class MainWindowViewModel
     // The action's switched-on aircraft (DCS); another game's action is for the game itself.
     private static IEnumerable<string> NodePlanes(RelationNodeItem node) =>
         node.ActivePlanesText.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    // The action's row names the filter's aircraft first ("DCS World · F-16C_50, F-100D · axis") and shows its picture
+    // (2.6.4 tester report on "THROTTLE - THRUST SINGLE ENGINE - F-100D" under "DCS World: F-16C_50": "the order!").
+    // Display only: ActivePlanesText, the relation and the export keep the relation's order. No filter: as always.
+    private void ShowNodePlanesFilterFirst(RelationNodeItem node, ListFilterViewModel filter)
+    {
+        if (node.Planes.Count == 0)
+            return;
+        IReadOnlyList<string> ordered = filter.FilteredFirst(node.Game, node.Planes);
+        node.ShowPlanesInOrder(ordered, BuildNodeListSummary(ordered), string.Join(Environment.NewLine, ordered));
+        bool dcs = node.Game.Equals("DCS", StringComparison.OrdinalIgnoreCase);
+        string? lead = dcs && !string.Equals(ordered[0], node.Planes[0], StringComparison.OrdinalIgnoreCase) ? ordered[0] : null;
+        if (string.Equals(node.LeadPlane, lead, StringComparison.OrdinalIgnoreCase))
+            return;
+        node.LeadCover = null;
+        node.LeadPlane = lead;
+        if (lead != null)
+            _ = LoadNodeLeadCoverAsync(node, lead);
+    }
+
+    private async System.Threading.Tasks.Task LoadNodeLeadCoverAsync(RelationNodeItem node, string plane)
+    {
+        Avalonia.Media.Imaging.Bitmap? picture = node.PlanePictures.FirstOrDefault(p => string.Equals(p.Name, plane, StringComparison.OrdinalIgnoreCase))?.Image
+                                                 ?? await LoadAircraftPictureAsync(plane);
+        if (string.Equals(node.LeadPlane, plane, StringComparison.OrdinalIgnoreCase))
+            node.LeadCover = picture;
+    }
 
     // An action of the folded others was picked (a search match line, the check): the fold opens so it can be seen.
     private void RevealRelationNode(RelationNodeItem? node)

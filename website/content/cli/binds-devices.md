@@ -260,8 +260,9 @@ engine binds modifier rename LAlt "Pinky Shift" --profile "C:\Users\Pilot\Docume
 <!-- entry: binds tuning show -->
 :::layer beginner
 Shows an axis relation's curves: the base curve every game gets and each scope with its own curve (an aircraft, a game,
-a game family). With `--game` (and `--plane`) it also says which curve that game uses. The axis response panel on the
-Binds page runs it when it loads a scope (**Reload**).
+a game family), and for every game and DCS aircraft of the relation which of them its curve comes from. With `--game`
+(and `--plane`) it also gives the curve that game uses. The axis response panel on the Binds page runs it to fill its
+**Applies to** list ("own curve", "same as ...", "uses DCS") and to load the curve shown (**Reload**).
 
 ```powershell
 engine binds tuning show "Pitch" --game DCS --plane F-16C_50 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
@@ -272,12 +273,15 @@ engine binds tuning show "Pitch" --game DCS --plane F-16C_50 --profile "C:\Users
 - The resolved curve: the most specific stored scope (aircraft, game, family), else the base; for a game whose curve
   differs from DCS's it is fitted to the base curve; in detent mode the detent curve.
 - Values are written as `inv=0;sl=0;dz=0.05;sx=1;sy=1;cv=0.2` plus the game's own parameters.
+- Per game / DCS aircraft (`Uses`, text: "Curve per game and aircraft"): the scope its curve comes from before detent
+  mode, whether it is fitted to the base, and whether detent mode bends it. Only DCS is listed per aircraft: it is the
+  game whose curves are written per aircraft.
 - Read-only. Axis relations only.
 :::
 
 :::layer technical
-- Output: JSON `Relation`, `Scopes`, `Game`, `Plane`, `Resolved` (`Model`, `Source`, `Fitted`, `Tuning`, `Note`), or
-  text; exit code `0`.
+- Output: JSON `Relation`, `Scopes`, `Game`, `Plane`, `Resolved` (`Model`, `Source`, `Fitted`, `Tuning`, `Note`),
+  `Uses` (`Game`, `Plane` (null for a game without aircraft), `Source`, `Fitted`, `Detent`), or text; exit code `0`.
 - Failures (exit `1`): `Axis tuning is only for axis relations; '...' is a button relation.`, `No relation/bind
   matched query: ...`.
 - Reference: [[doc:axis-curves]]. Related: [[cli:binds tuning set]], [[cli:binds tuning clear]],
@@ -286,25 +290,31 @@ engine binds tuning show "Pitch" --game DCS --plane F-16C_50 --profile "C:\Users
 
 <!-- entry: binds tuning set -->
 :::layer beginner
-Stores an axis curve for one scope: the base (every game), a game, an aircraft of a game or a game family. **Save for
-this scope** in the axis response panel on the Binds page runs it.
+Stores an axis curve for one scope or several at once: the base (every game), a game, an aircraft of a game or a game
+family. Several scopes (`--scope` repeated) get the same values in one run, so one undo takes them all back. **Save**
+in the axis response panel on the Binds page runs it for the ticked rows.
 
 ```powershell
 engine binds tuning set "Pitch" --scope plane:DCS:F-16C_50 --deadzone 0.03 --curvature 0.2 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
+engine binds tuning set "Collective" --scope plane:DCS:AH-64D_BLK_II_CPG --scope plane:DCS:AH-64D_BLK_II_PLT --scope plane:DCS:Ka-50_3 --deadzone 0.12 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
+engine binds tuning set "Collective" --scope game:DCS --clear-scope plane:DCS:Ka-50_3 --deadzone 0.07 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file"
 ```
 :::
 
 :::layer advanced
 | Option | Values |
 |---|---|
-| `--scope` (required) | `base`, `game:<game>`, `plane:<game>:<plane>`, `family:<family>` |
+| `--scope` (required, repeatable) | `base`, `game:<game>`, `plane:<game>:<plane>`, `family:<family>`; each gets the values |
+| `--clear-scope` (repeatable) | a scope whose own curve is removed in the same run (not `base`, not one of the `--scope`s) |
 | `--inverted`, `--slider` | `true` / `false` |
 | `--deadzone`, `--saturation-x`, `--saturation-y` | `0..1` |
 | `--curvature` | one value `-1..1`, or 11 user-curve points `0..1` |
 | `--param <name>=<value>` | a parameter of the game's own curve model, checked against its range ([[cli:binds tuning models]]) |
 | `--curve-points x:y,...` \| `none` | a curve with free stops in `0..1`, x increasing, at least two points |
 
-- A scope without values of its own starts from what it uses now (game and aircraft scopes) or from the base.
+- A scope without values of its own starts from what it uses now (game and aircraft scopes) or from the base; with
+  several scopes each starts from its own and gets the options given (all values given: all the same).
+- Nothing is stored unless the options are valid for every scope.
 - Curve points stay until dead zone, saturation or curvature change without new points.
 - The base scope writes the bind's own values: invert, slider, dead zone, saturation and curvature. `--param` and
   `--curve-points` are not stored there: the result shows only the stored values and a line "Not set: ... do not apply
@@ -315,22 +325,25 @@ engine binds tuning set "Pitch" --scope plane:DCS:F-16C_50 --deadzone 0.03 --cur
 :::
 
 :::layer technical
-- Output: `Relation` and `Message` (`Set <scope>: <values>`, for the base scope a `Not set: ...` line when `--param` or
+- Output: `Relation` and `Message` (`Set <scope>: <values>` per scope, `Cleared <scope>, ...` for `--clear-scope`, for the base scope a `Not set: ...` line when `--param` or
   `--curve-points` were given, plus warnings); exit code `0`.
-- Failures (exit `1`): `binds tuning set requires --scope (...)`, `Invalid scope '...'`, `Relation '...' has no bind;
+- Failures (exit `1`): `binds tuning set requires --scope (...)`, `Invalid scope '...'`, `Invalid --clear-scope '...'`,
+  `'...' is both set (--scope) and cleared (--clear-scope).`, `Relation '...' has no bind;
   bind an axis first.`, `--deadzone must be 0..1.`, `Unknown model parameter '...'. See: engine binds tuning
   models.`, `--curve-points: x must increase from point to point.`
-- Stored per bind in `TuningOverrides` (scope -> values). One undo step with `--profile`.
+- Stored per bind in `TuningOverrides` (scope -> values). One undo step with `--profile`, however many scopes.
 - Related: [[cli:binds tuning show]], [[cli:binds tuning clear]], [[cli:binds set]] (base values only).
 :::
 
 <!-- entry: binds tuning clear -->
 :::layer beginner
-Removes a scope's own curve, so that game, aircraft or family uses the next wider curve again (in the end the base).
-**Inherit (clear)** in the axis response panel runs it.
+Removes the own curve of one scope or several (`--scope` repeated, one undo step), so that game, aircraft or family uses
+the next wider curve again (in the end the base). **Use the game's curve again** in the axis response panel runs it for
+the ticked rows.
 
 ```powershell
 engine binds tuning clear "Pitch" --scope plane:DCS:F-16C_50 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+engine binds tuning clear "Collective" --scope plane:DCS:AH-64D_BLK_II_CPG --scope plane:DCS:AH-64D_BLK_II_PLT --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
 ```
 :::
 
@@ -342,8 +355,9 @@ engine binds tuning clear "Pitch" --scope plane:DCS:F-16C_50 --profile "C:\Users
 :::
 
 :::layer technical
-- Output: `Relation` and `Message` (`Cleared <scope>.`); exit code `0`.
-- Failures (exit `1`): `The base tuning cannot be cleared; set its values instead.`, `Invalid scope '...'`,
+- Output: `Relation` and `Message` (`Cleared <scope>, ....` and `No tuning for <scope>, ....`); exit code `0`.
+- Failures (exit `1`): `The base tuning cannot be cleared; set its values instead.` (also among several), `Invalid
+  scope '...'`, `--clear-scope is an option of binds tuning set; binds tuning clear takes --scope.`,
   `Relation '...' has no bind; bind an axis first.`
 - One undo step with `--profile`. Related: [[cli:binds tuning show]].
 :::
@@ -1903,4 +1917,42 @@ engine vjoy recover --dry-run --text
   (use --force to restore anyway).`
 - Exit codes: `0`; `1` failed; `2` the administrator prompt was declined.
 - The journal: `%LOCALAPPDATA%\JoyPro2\VirtualJoystick\hidhide-session.txt`. Reference: [[doc:virtual-joystick]].
+:::
+
+<!-- entry: binds extra add -->
+:::layer beginner
+Experimental (Settings > Experimental > Several inputs per relation, or `--multi-bind on`): one more input for a
+relation, with its own device, modifiers and axis curve. The Binds page's **More inputs** panel runs it.
+
+```powershell
+engine --multi-bind on binds extra add "Weapon Release" --device "MOZA AB9 Base {...}" --input JOY_BTN2 --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- Inputs are numbered as the pages show them: 1 = the main bind, 2.. = the others; [[cli:binds extra list]],
+  `binds extra set <relation> <n>`, `binds extra remove <relation> <n>|--all`, `binds extra move <relation> <n> --to <m>`
+  (`--to 1` makes it the main bind) or `--to-relation <name>`.
+- An axis starts with the main bind's tuning (`--copy-tuning false`: neutral); `binds tuning set <relation> --bind <n>`
+  tunes one input per game or aircraft.
+- Without `--multi-bind on` changes are refused; list and remove always work. Exports and the table per game:
+  docs/multi-bind.md.
+:::
+
+<!-- entry: devices copy-to -->
+:::layer beginner
+Experimental: every bind of device A also gets the matching input of device B, in the same relations (the same grip
+on two bases). Device A keeps its binds. **Copy every bind of a device to another device** on the Binds page runs it
+(Preview, then Copy).
+
+```powershell
+engine --multi-bind on devices copy-to "L-VPC Stick MT-50CM2 {...}" "MOZA AB9 Base {...}" --dry-run --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- Inputs are matched like [[cli:devices replace]]: the same ids for the same product (`--mode same`), else by layout
+  (`--mode layout`, `--grip <device>=<grip id>`), `--map OLD=NEW` for your own choices.
+- An input of B another relation uses is left out (warning) unless `--merge add`; inputs the relation has already are
+  counted as "already there". One profile version: Ctrl+Z undoes the whole copy.
 :::

@@ -69,6 +69,10 @@ aircraft count (a click shows the names) and axis / button, and `Open in Relatio
 relation). `Hide` / `Show` folds it; the state is remembered (`list-preferences.json` `BindPeekOpen`), folded it
 reads nothing.
 
+A relation has one bind (device, input, modifiers, axis tuning); with the experimental setting "Several inputs per
+relation" it can have more, each with its own device, modifiers and tuning ([multi-bind.md](multi-bind.md)): the
+relation editor shows "+1" next to the bind chip.
+
 ## Filters (Relations and Binds pages)
 
 Both pages have the same filter bar (`ListFilterViewModel`, `Views/Controls/ListFilterBar.axaml`), each with its own

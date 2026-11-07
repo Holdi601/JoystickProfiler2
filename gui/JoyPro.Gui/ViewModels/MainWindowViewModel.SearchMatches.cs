@@ -27,7 +27,7 @@ public sealed partial class MainWindowViewModel
                 relation.SearchHits.Clear();
                 continue;
             }
-            List<SearchMatchLine> lines = BuildSearchMatchLines(relation, RelationFilter.SearchWords, out int more);
+            List<SearchMatchLine> lines = BuildSearchMatchLines(relation, RelationFilter.SearchWords, out int more, RelationFilter);
             relation.SearchHits.Set(lines, more);
         }
     }
@@ -49,14 +49,15 @@ public sealed partial class MainWindowViewModel
                 row.SearchHits.Clear();
                 continue;
             }
-            List<SearchMatchLine> lines = BuildSearchMatchLines(relation, BindFilter.SearchWords, out int more);
+            List<SearchMatchLine> lines = BuildSearchMatchLines(relation, BindFilter.SearchWords, out int more, BindFilter);
             row.SearchHits.Set(lines, more);
         }
     }
 
     // The titles that have a searched word: the ones with the whole search first, then the ones with more of its words;
-    // the same title in one game is one line with all its aircraft.
-    internal List<SearchMatchLine> BuildSearchMatchLines(RelationListItem relation, IReadOnlyList<string> words, out int more)
+    // the same title in one game is one line with all its aircraft. Under the page's Games filter the filter's aircraft
+    // are named first ("Thrust · DCS World · F-16C bl.50 +1 more"; 2.6.4 tester report).
+    internal List<SearchMatchLine> BuildSearchMatchLines(RelationListItem relation, IReadOnlyList<string> words, out int more, ListFilterViewModel? filter = null)
     {
         more = 0;
         if (words.Count == 0 || relation.ActionTitleEntries.Count == 0)
@@ -97,7 +98,7 @@ public sealed partial class MainWindowViewModel
         foreach ((ActionTitleEntry entry, List<string> planes, _, _) in found.OrderByDescending(f => f.Score).ThenBy(f => f.Order).Take(MaxSearchMatchLines))
         {
             (string before, string hit, string after) = MarkSearchHit(entry.Title, words, whole);
-            lines.Add(new SearchMatchLine(relation.Name, before, hit, after, SearchMatchWhere(entry.Game, planes), entry.Game, entry.Node, entry.Id));
+            lines.Add(new SearchMatchLine(relation.Name, before, hit, after, SearchMatchWhere(entry.Game, filter != null ? filter.FilteredFirst(entry.Game.Length == 0 ? "DCS" : entry.Game, planes) : planes), entry.Game, entry.Node, entry.Id));
         }
         more = found.Count - lines.Count;
         return lines;

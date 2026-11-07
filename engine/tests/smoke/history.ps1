@@ -74,7 +74,7 @@ try {
     # Restore, keep, checkpoint, prune, usage.
     $phFirst = @($phList2.Json.Versions)[-1].Id
     $phRestore = Run-Engine @("--profile", $phProfile, "profile", "history", "restore", [string]$phFirst, "--text")
-    Assert-Match $phRestore.Output "^Restored the version of" "history restore failed."
+    Assert-Match $phRestore.Output "^Rolled back to the version of" "history restore failed."
     Assert-Match (Run-Engine @("--profile", $phProfile, "relations", "list", "--text")).Output "(?m)^Relations: 0" "restore of the empty first version left relations."
     Run-Engine @("--profile", $phProfile, "profile", "history", "undo", "--text") | Out-Null
     Assert-Match (Run-Engine @("--profile", $phProfile, "relations", "list", "--text")).Output "(?m)^Gear \|" "undo of a restore did not bring the relations back."

@@ -260,6 +260,8 @@ namespace JoyPro.Engine
             Dictionary<string, Dictionary<string, DiffPayload>> payloads =
                 new Dictionary<string, Dictionary<string, DiffPayload>>(StringComparer.OrdinalIgnoreCase);
             HashSet<string> wantedPlanes = options.Planes.Count == 0 ? null : new HashSet<string>(options.Planes, StringComparer.OrdinalIgnoreCase);
+            int extrasOff = 0;
+            int extrasOffRelations = 0;
 
             foreach (KeyValuePair<string, Relation> entry in InternalDataManagement.AllRelations)
             {
@@ -281,6 +283,24 @@ namespace JoyPro.Engine
                     continue;
                 }
 
+                // The main bind, then the relation's extra binds (experimental multi-bind; DCS keeps any number of
+                // keys per command and device). With the setting off: the main bind alone, the extra binds counted for
+                // one note.
+                List<Bind> relationBinds = new List<Bind> { bind };
+                List<Bind> boundExtras = MultiBind.Extras(relation).Where(b => MultiBind.IsBound(relation, b)).ToList();
+                if (boundExtras.Count > 0 && relation.NODES.Any(n => n != null && string.Equals(NormalizeGame(n.Game), "DCS", StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (MultiBind.Enabled)
+                        relationBinds.AddRange(boundExtras);
+                    else
+                    {
+                        extrasOff += boundExtras.Count;
+                        extrasOffRelations++;
+                    }
+                }
+              foreach (Bind relationBind in relationBinds)
+              {
+                bind = relationBind;
                 string key = relation.ISAXIS ? bind.JAxis : bind.JButton;
                 if (string.IsNullOrWhiteSpace(key))
                 {
@@ -344,8 +364,11 @@ namespace JoyPro.Engine
                             result.EntriesWritten++;
                     }
                 }
+              }
             }
 
+            if (extrasOff > 0)
+                result.Warnings.Add(MultiBind.OffNote("DCS", extrasOff, extrasOffRelations));
             AttachForceFeedbackPayloads(payloads, result);
             return payloads;
         }
@@ -370,7 +393,9 @@ namespace JoyPro.Engine
                 Bind bind = relation.bind;
                 if (bind == null && InternalDataManagement.AllBinds.ContainsKey(entry.Key))
                     bind = InternalDataManagement.AllBinds[entry.Key];
-                if (bind == null || bind.AllReformers == null || bind.AllReformers.Count == 0)
+                // The extra binds' modifiers too (experimental multi-bind, setting on).
+                List<Bind> withModifiers = MultiBind.ActiveBinds(relation, bind).Where(b => b != null && b.AllReformers != null && b.AllReformers.Count > 0).ToList();
+                if (withModifiers.Count == 0)
                     continue;
 
                 for (int i = 0; i < relation.NODES.Count; i++)
@@ -392,7 +417,8 @@ namespace JoyPro.Engine
                         string plane = SanitizePathSegment(planes[p]);
                         if (!modifiersByPlane.ContainsKey(plane))
                             continue;
-                        AddBindModifiersToPlane(modifiersByPlane[plane], bind);
+                        foreach (Bind withModifier in withModifiers)
+                            AddBindModifiersToPlane(modifiersByPlane[plane], withModifier);
                     }
                 }
             }

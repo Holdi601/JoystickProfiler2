@@ -87,10 +87,10 @@ public sealed class UiDesignRenderTests
         });
     }
 
-    internal static async Task<MainWindowViewModel> CreateLoadedVmAsync(DesignFakeEngine? engine = null)
+    internal static async Task<MainWindowViewModel> CreateLoadedVmAsync(DesignFakeEngine? engine = null, IEngineCliClient? client = null)
     {
         DesignFakeEngine fake = engine ?? new();
-        MainWindowViewModel vm = new(fake, new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
+        MainWindowViewModel vm = new(client ?? fake, new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
         {
             EnginePath = typeof(MainWindowViewModel).Assembly.Location
         };

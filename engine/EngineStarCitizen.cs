@@ -2255,6 +2255,8 @@ namespace JoyPro.Engine
         private static List<ScBindSource> CollectProfileBindings(EngineStarCitizenExportResult result)
         {
             List<ScBindSource> output = new List<ScBindSource>();
+            int scExtrasOff = 0;
+            int scExtrasOffRelations = 0;
             foreach (KeyValuePair<string, Relation> relationEntry in InternalDataManagement.AllRelations.OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase))
             {
                 Relation relation = relationEntry.Value;
@@ -2272,6 +2274,24 @@ namespace JoyPro.Engine
                 {
                     result.SkippedEntries++;
                     continue;
+                }
+
+                // Extra binds (experimental multi-bind): Star Citizen keeps one joystick input per action, so only the
+                // main bind is written, with a warning naming the relation (off: one note for all).
+                int scExtras = MultiBind.Extras(relation).Count(b => MultiBind.IsBound(relation, b));
+                if (scExtras > 0 && relation.NODES.Any(n => n != null && string.Equals((n.Game ?? string.Empty).Trim(), "StarCitizen", StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (MultiBind.Enabled)
+                    {
+                        string scReason;
+                        MultiBind.SupportOf("StarCitizen", out scReason);
+                        result.Warnings.Add(MultiBind.LimitedNote("Star Citizen", relation.NAME ?? relationEntry.Key, scExtras, scReason));
+                    }
+                    else
+                    {
+                        scExtrasOff += scExtras;
+                        scExtrasOffRelations++;
+                    }
                 }
 
                 string input = relation.ISAXIS ? bind.JAxis : bind.JButton;
@@ -2311,6 +2331,8 @@ namespace JoyPro.Engine
                     output.Add(source);
                 }
             }
+            if (scExtrasOff > 0)
+                result.Warnings.Add(MultiBind.OffNote("Star Citizen", scExtrasOff, scExtrasOffRelations));
             return output;
         }
 

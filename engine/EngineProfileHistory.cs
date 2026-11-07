@@ -257,7 +257,19 @@ namespace JoyPro.Engine
 
                 Dictionary<string, Modifier> modifiers = new Dictionary<string, Modifier>(StringComparer.OrdinalIgnoreCase);
                 Dictionary<string, Bind> binds = profile.Binds ?? new Dictionary<string, Bind>();
+                // Experimental multi-bind: a relation's extra binds are items of their own, "<relation> (input 2)".
+                List<KeyValuePair<string, Bind>> everyBind = new List<KeyValuePair<string, Bind>>();
                 foreach (KeyValuePair<string, Bind> pair in binds.OrderBy(p => p.Key, StringComparer.OrdinalIgnoreCase))
+                {
+                    everyBind.Add(pair);
+                    Relation owner;
+                    if (pair.Value == null || !relations.TryGetValue(pair.Key, out owner) || owner == null || owner.ExtraBinds == null)
+                        continue;
+                    int number = 2;
+                    foreach (Bind extra in owner.ExtraBinds.Where(b => b != null))
+                        everyBind.Add(new KeyValuePair<string, Bind>(pair.Key + " (input " + (number++).ToString(CultureInfo.InvariantCulture) + ")", extra));
+                }
+                foreach (KeyValuePair<string, Bind> pair in everyBind)
                 {
                     Bind bind = pair.Value;
                     if (bind == null)
@@ -283,7 +295,7 @@ namespace JoyPro.Engine
                         bind.doubleTap.ToString(),
                         bind.TuningOverrides == null ? string.Empty : string.Join(";", bind.TuningOverrides.OrderBy(t => t.Key, StringComparer.OrdinalIgnoreCase).Select(t => t.Key + "=" + t.Value))
                     });
-                    string name = Clean(bind.Rl != null && !string.IsNullOrWhiteSpace(bind.Rl.NAME) ? bind.Rl.NAME : pair.Key);
+                    string name = Clean(bind.Rl != null && !string.IsNullOrWhiteSpace(bind.Rl.NAME) && !ReferenceEquals(pair.Value, null) && binds.ContainsKey(pair.Key) ? bind.Rl.NAME : pair.Key);
                     lines.Add("B\t" + name + "\t\t" + Clean(DeviceLabel(bind.Joystick) + " " + (input ?? string.Empty)) + "\t" +
                               hash((bind.Joystick ?? string.Empty) + "|" + (bind.JAxis ?? string.Empty) + "|" + (bind.JButton ?? string.Empty)) + "\t" +
                               hash(string.Join("\n", reformers)) + "\t" + hash(tuning));

@@ -127,6 +127,11 @@ namespace JoyPro
         // (EngineRelationPurpose).
         [OptionalField]
         public string Function;
+        // Experimental (2.6.5, docs/multi-bind.md): more inputs that do the same as the main bind, each with its own
+        // device, input, modifiers and axis tuning (Bind.Rl is this relation; relation.bind stays the main bind). Null or
+        // empty for every relation without them; such a relation is written exactly as before (ProfileFormatter).
+        [OptionalField]
+        public List<Bind> ExtraBinds;
 
         public int ElementCount
         {
@@ -157,6 +162,8 @@ namespace JoyPro
                 : NODES.Where(n => n != null).Select(n => n.Copy()).ToList();
             if (bind != null)
                 relation.bind = bind.Copy(relation);
+            if (ExtraBinds != null && ExtraBinds.Count > 0)
+                relation.ExtraBinds = ExtraBinds.Where(b => b != null).Select(b => b.CopyAsExtra(relation)).ToList();
             relation.RecalculateElementCount();
             return relation;
         }
@@ -353,6 +360,16 @@ namespace JoyPro
             bind.doubleTap = doubleTap;
             bind.TuningOverrides = TuningOverrides == null ? null : new Dictionary<string, string>(TuningOverrides, StringComparer.OrdinalIgnoreCase);
             return bind;
+        }
+
+        // A copy that is one of the relation's extra binds (Relation.ExtraBinds): relation.bind stays as it is.
+        public Bind CopyAsExtra(Relation relation)
+        {
+            Bind main = relation == null ? null : relation.bind;
+            Bind copy = Copy(relation);
+            if (relation != null)
+                relation.bind = main;
+            return copy;
         }
 
         public bool ReformerInBind(string reformerName)

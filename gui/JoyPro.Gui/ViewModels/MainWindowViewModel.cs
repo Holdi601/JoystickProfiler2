@@ -3978,6 +3978,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 Game = game,
                 Id = nodeId,
                 ActivePlanesText = planes.Length == 0 ? string.Empty : string.Join(",", planes),
+                Planes = planes,
                 PlanesDisplay = planesDisplay,
                 TitlesDisplay = titlesDisplay,
                 PlanesSummary = planesSummary,
@@ -4098,6 +4099,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         SyncModifierSelectionFromSelectedBind();
         RebuildModifierTargetRelationOptions();
         RefreshModifierValidationState();
+        RefreshExtraBindRows();
         // Bound counts: Bind Studio header, Start page tile, next steps and device cards (the relation cards follow
         // their Bind property).
         if (boundChanged)
@@ -4199,7 +4201,10 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                     Deadzone = GetJsonNullableDouble(bindEl, "Deadzone"),
                     SaturationX = GetJsonNullableDouble(bindEl, "SaturationX"),
                     SaturationY = GetJsonNullableDouble(bindEl, "SaturationY"),
-                    CurvatureCsv = string.Join(",", curvature.Select(v => v.ToString(CultureInfo.InvariantCulture)))
+                    CurvatureCsv = string.Join(",", curvature.Select(v => v.ToString(CultureInfo.InvariantCulture))),
+                    // Experimental multi-bind: the relation's other inputs (MainWindowViewModel.MultiBind.cs).
+                    ExtraBinds = ParseExtraBinds(bindEl, relationName.Trim(), isAxis),
+                    ShowExtraBinds = MultiBindEnabled
                 });
             }
 
@@ -8252,6 +8257,13 @@ public sealed partial class MainWindowViewModel : ViewModelBase
             args.Add("--usage-style");
             args.Add("off");
         }
+        // Experimental: several inputs per relation (Settings > Experimental, docs/multi-bind.md). Off: nothing is passed
+        // and the engine uses the main binds only, as before.
+        if (MultiBindEnabled)
+        {
+            args.Add("--multi-bind");
+            args.Add("on");
+        }
 
         // Parsers need text output; the "Use Text Output" toggle only applies to hand-typed commands.
         if (isCustomCommand ? UseTextOutput : forceText)
@@ -11092,6 +11104,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         target.SaturationX = source.SaturationX;
         target.SaturationY = source.SaturationY;
         target.CurvatureCsv = source.CurvatureCsv;
+        // Experimental multi-bind: the relation's other inputs and whether they show.
+        target.ExtraBinds = source.ExtraBinds;
+        target.ShowExtraBinds = source.ShowExtraBinds;
     }
 
     private IEnumerable<BindListItem> ApplyBindSorting(IEnumerable<BindListItem> source)
@@ -12339,6 +12354,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 SetDcsStripSkipUiLayerQuietly(keepUiLayer);
             ShowStatisticsPage = state.ShowStatisticsPage;
             UseUsageStyle = state.UsageStyle ?? true;
+            MultiBindEnabled = state.MultiBind ?? false;
             SupportIncludeProfile = state.SupportIncludeProfile ?? true;
             BuilderShowSameMeaning = state.AddActionsSameMeaning ?? true;
             builderChosenGames.Clear();
@@ -12424,6 +12440,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase
                 DcsStripSkipUiLayer = DcsStripSkipUiLayer,
                 ShowStatisticsPage = ShowStatisticsPage,
                 UsageStyle = UseUsageStyle,
+                MultiBind = MultiBindEnabled,
                 SupportIncludeProfile = SupportIncludeProfile,
                 AddActionsSameMeaning = BuilderShowSameMeaning,
                 AddActionsGames = builderChosenGames.ToList(),
@@ -12701,6 +12718,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase
         public bool ShowStatisticsPage { get; set; }
 
         public bool? UsageStyle { get; set; }
+
+    // Settings > Experimental "Several inputs per relation" (docs/multi-bind.md; off by default).
+    public bool? MultiBind { get; set; }
 
         // Settings > Report a problem: the support file holds the open profile, its history and the games' bind files
         // (null: on).

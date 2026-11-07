@@ -531,7 +531,8 @@ namespace JoyPro.History
             });
         }
 
-        // Writes an older version back as a new version (undo returns to the state before the restore).
+        // Writes an older version back as a new version (undo returns to the state before the restore). The GUI calls it
+        // "Roll back to here": every change after that version is taken back in one step; the label says so too.
         public static ProfileHistoryWriteResult Restore(string profilePath, int versionId)
         {
             return WriteBack(profilePath, (log, result) =>
@@ -545,10 +546,10 @@ namespace JoyPro.History
                     result.Message = "The profile is already at this version.";
                     return null;
                 }
-                string label = "Restored the version of " + FormatLocal(target.Utc) + " (" + target.Title + ")";
+                string label = "Rolled back to the version of " + FormatLocal(target.Utc) + " (" + target.Title + ")";
                 ProfileVersion version = WriteVersionLocked(log, profilePath, target, ProfileVersionKind.Restore, label, log.Logical(current));
                 log.Redo.Clear();
-                result.Message = "Restored the version of " + FormatLocal(target.Utc) + ".";
+                result.Message = "Rolled back to the version of " + FormatLocal(target.Utc) + ".";
                 return version;
             });
         }

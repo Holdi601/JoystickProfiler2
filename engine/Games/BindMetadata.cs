@@ -26,6 +26,11 @@ namespace JoyPro.Engine.Games
         // How the game file read back right after JoyPro's export (FileTuningOf): if the file still reads so on import,
         // nothing was changed in the game and the stored tuning alone is the bind's.
         public string FileTuning { get; set; }
+        // Experimental multi-bind: which input of the relation the bind is (1 = the main bind, 2.. = its extra binds).
+        // Not a JSON member of the entry: the sidecar keeps it in "Inputs" only when a bind is an extra bind, and the IL-2
+        // comment as a seventh field, so files without extra binds stay as they were.
+        [System.Web.Script.Serialization.ScriptIgnore]
+        public int Input { get; set; }
 
         public BindMetadata()
         {
@@ -65,6 +70,7 @@ namespace JoyPro.Engine.Games
                 .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             if (bind == null)
                 return meta;
+            meta.Input = MultiBind.NumberOf(relation, bind);
             meta.Alias = !string.IsNullOrWhiteSpace(bind.AliasJoystick)
                 ? bind.AliasJoystick
                 : (InternalDataManagement.JoystickAliases != null && bind.Joystick != null && InternalDataManagement.JoystickAliases.ContainsKey(bind.Joystick)
@@ -121,7 +127,8 @@ namespace JoyPro.Engine.Games
                 string.Join(",", (Reformers ?? new List<string>()).Select(MetadataCodec.Encode)),
                 MetadataCodec.Encode(BaseTuning),
                 string.Join(",", (Overrides ?? new Dictionary<string, string>()).OrderBy(o => o.Key, StringComparer.OrdinalIgnoreCase)
-                    .Select(o => MetadataCodec.Encode(o.Key) + "=" + MetadataCodec.Encode(o.Value)))
+                    .Select(o => MetadataCodec.Encode(o.Key) + "=" + MetadataCodec.Encode(o.Value))),
+                Input > 1 ? Input.ToString(CultureInfo.InvariantCulture) : string.Empty
             }).TrimEnd(';');
         }
 
@@ -146,6 +153,9 @@ namespace JoyPro.Engine.Games
                         meta.Overrides[scope] = MetadataCodec.Decode(item.Substring(eq + 1));
                 }
             }
+            int input;
+            if (parts.Length > 6 && int.TryParse(parts[6].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out input))
+                meta.Input = input;
             return meta;
         }
 
@@ -216,6 +226,30 @@ namespace JoyPro.Engine.Games
             public Dictionary<string, BindMetadata> Binds { get; set; }
         }
 
+        // The same with the input numbers of extra binds (experimental multi-bind): written only when the file has one,
+        // read always (a file without "Inputs" reads as before; an older JoyPro ignores the member).
+        private sealed class DocumentWithInputs
+        {
+            public string Game { get; set; }
+            public string UpdatedUtc { get; set; }
+            public Dictionary<string, BindMetadata> Binds { get; set; }
+            public Dictionary<string, int> Inputs { get; set; }
+        }
+
+        private static string Serialize(string game, string updatedUtc, Dictionary<string, BindMetadata> binds)
+        {
+            Dictionary<string, BindMetadata> ordered = binds.OrderBy(b => b.Key, StringComparer.Ordinal).ToDictionary(b => b.Key, b => b.Value);
+            if (!ordered.Values.Any(m => m != null && m.Input > 1))
+                return EngineSerialization.ToJson(new Document { Game = game, UpdatedUtc = updatedUtc, Binds = ordered });
+            return EngineSerialization.ToJson(new DocumentWithInputs
+            {
+                Game = game,
+                UpdatedUtc = updatedUtc,
+                Binds = ordered,
+                Inputs = ordered.Where(b => b.Value != null && b.Value.Input > 1).ToDictionary(b => b.Key, b => b.Value.Input)
+            });
+        }
+
         public static string Key(string actionId, string device, bool isAxis, string input, IEnumerable<string> reformers)
         {
             return (actionId ?? string.Empty).Trim().ToLowerInvariant() + KeySeparator + GameProfileBridge.BuildSignature(device, isAxis, input, reformers);
@@ -229,13 +263,18 @@ namespace JoyPro.Engine.Games
                 return binds;
             try
             {
-                Document document = EngineSerialization.FromJson<Document>(File.ReadAllText(path, Encoding.UTF8));
+                DocumentWithInputs document = EngineSerialization.FromJson<DocumentWithInputs>(File.ReadAllText(path, Encoding.UTF8));
                 if (document != null && document.Binds != null)
                 {
                     foreach (KeyValuePair<string, BindMetadata> entry in document.Binds)
                     {
                         if (entry.Value != null && !string.IsNullOrWhiteSpace(entry.Value.RelationName))
+                        {
+                            int input;
+                            if (document.Inputs != null && document.Inputs.TryGetValue(entry.Key, out input))
+                                entry.Value.Input = input;
                             binds[entry.Key] = entry.Value;
+                        }
                     }
                 }
             }
@@ -269,6 +308,8 @@ namespace JoyPro.Engine.Games
                 Bind bind = relation.bind;
                 if (bind == null && InternalDataManagement.AllBinds.ContainsKey(binding.RelationName))
                     bind = InternalDataManagement.AllBinds[binding.RelationName];
+                // The relation's bind this binding came from (an extra bind of the experimental multi-bind, else the main).
+                bind = MultiBind.BindOf(relation, bind, binding.Device, binding.Input);
                 string key = Key(binding.ActionId, binding.Device, binding.IsAxis, binding.Input, binding.Reformers);
                 BindMetadata meta = BindMetadata.FromRelation(relation, bind);
                 string read;
@@ -278,25 +319,26 @@ namespace JoyPro.Engine.Games
             }
             if (binds.Count == 0 && before == 0)
                 return;
-            Document document = new Document
-            {
-                Game = game,
-                UpdatedUtc = DateTime.UtcNow.ToString("o"),
-                Binds = binds.OrderBy(b => b.Key, StringComparer.Ordinal).ToDictionary(b => b.Key, b => b.Value)
-            };
+            string updatedUtc = DateTime.UtcNow.ToString("o");
             string path = GameConfigLocation.SidecarPath(configPath, Suffix);
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? string.Empty);
-            string json = EngineSerialization.ToJson(document);
+            string json = Serialize(game, updatedUtc, binds);
             // Same content but the timestamp: no rewrite.
             if (File.Exists(path))
             {
-                Document stored = null;
-                try { stored = EngineSerialization.FromJson<Document>(File.ReadAllText(path, Encoding.UTF8)); }
+                DocumentWithInputs stored = null;
+                try { stored = EngineSerialization.FromJson<DocumentWithInputs>(File.ReadAllText(path, Encoding.UTF8)); }
                 catch (Exception) { }
                 if (stored != null)
                 {
-                    stored.UpdatedUtc = document.UpdatedUtc;
-                    if (EngineSerialization.ToJson(stored) == json)
+                    Dictionary<string, BindMetadata> storedBinds = stored.Binds ?? new Dictionary<string, BindMetadata>();
+                    foreach (KeyValuePair<string, BindMetadata> entry in storedBinds)
+                    {
+                        int input;
+                        if (entry.Value != null && stored.Inputs != null && stored.Inputs.TryGetValue(entry.Key, out input))
+                            entry.Value.Input = input;
+                    }
+                    if (stored.Binds != null && Serialize(stored.Game, updatedUtc, storedBinds) == json)
                         return;
                 }
             }

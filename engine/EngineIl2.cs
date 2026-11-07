@@ -377,6 +377,10 @@ namespace JoyPro.Engine
 
             ReportStatus(effectiveOptions, "Applying IL2 import candidates.");
             ApplyImport(candidates, merge, effectiveOptions, result);
+            // Experimental multi-bind (setting on): functions the file has on several inputs, offered as one relation each.
+            string joinOffer = EngineJoinInputs.ImportOffer(Il2Game);
+            if (joinOffer != null)
+                result.Warnings.Add(joinOffer);
             ReportStatus(
                 effectiveOptions,
                 "IL2 import complete. Relations: " +
@@ -411,6 +415,39 @@ namespace JoyPro.Engine
                 if (TryGetCompatibleExistingRelation(relationName, candidate, relations, binds, out Relation existingRelation, out Bind existingBind))
                 {
                     MergeCandidateIntoExisting(candidate, existingRelation, existingBind, aliases);
+                    result.MergedIntoExisting++;
+                    continue;
+                }
+
+                // Experimental multi-bind (setting on): JoyPro's //JP: comment names the relation, which has another
+                // input: this line is one of its inputs (an extra bind exported by JoyPro), not a second relation.
+                Relation owner;
+                Bind ownerMain;
+                if (MultiBind.Enabled && candidate.Meta != null && relations.TryGetValue(relationName, out owner) && owner != null &&
+                    owner.ISAXIS == candidate.IsAxis && binds.TryGetValue(relationName, out ownerMain) && ownerMain != null)
+                {
+                    string inputSignature = JoyPro.Engine.Games.GameProfileBridge.BuildSignature(candidate.Joystick, candidate.IsAxis, candidate.Input, candidate.Reformers);
+                    Bind extra = MultiBind.FindExtra(owner, inputSignature);
+                    if (extra == null)
+                    {
+                        extra = MultiBind.NewExtra(owner);
+                        extra.Joystick = candidate.Joystick;
+                        extra.JoyBackup = candidate.Joystick;
+                        extra.JAxis = candidate.IsAxis ? candidate.Input : string.Empty;
+                        extra.JButton = candidate.IsAxis ? string.Empty : candidate.Input;
+                        extra.AdditionalImportInfo = candidate.Description;
+                        extra.AllReformers = candidate.Reformers == null ? new List<string>() : new List<string>(candidate.Reformers);
+                        extra.Curvature = new List<double> { candidate.Sensitivity };
+                        extra.Slider = candidate.Slider;
+                        extra.Deadzone = candidate.Deadzone;
+                        extra.Inverted = candidate.IsAxis ? (bool?)candidate.Inverted : Bind.Inverted_Default;
+                        extra.AliasJoystick = candidate.Alias ?? string.Empty;
+                        ApplyStoredTuning(extra, candidate);
+                        ApplyImportedResponse(extra, candidate);
+                        MultiBind.Add(owner, extra);
+                        result.ImportedBinds++;
+                    }
+                    owner.AddNode(candidate.NodeId, Il2Game, candidate.IsAxis, Il2Game, false);
                     result.MergedIntoExisting++;
                     continue;
                 }
@@ -1359,6 +1396,8 @@ namespace JoyPro.Engine
         private static List<ExportTemplate> BuildExportTemplates(EngineIl2ExportResult result)
         {
             List<ExportNodeSource> sources = new List<ExportNodeSource>();
+            int extrasOff = 0;
+            int extrasOffRelations = 0;
             foreach (KeyValuePair<string, Relation> relationEntry in InternalDataManagement.AllRelations.OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase))
             {
                 Relation relation = relationEntry.Value;
@@ -1378,6 +1417,29 @@ namespace JoyPro.Engine
                     continue;
                 }
 
+                // The main bind, then the extra binds (experimental multi-bind): IL-2 keeps one line per action and
+                // input. With the setting off the extra binds are counted for one note.
+                List<Bind> relationBinds = new List<Bind> { bind };
+                List<Bind> boundExtras = MultiBind.Extras(relation).Where(b => MultiBind.IsBound(relation, b)).ToList();
+                if (boundExtras.Count > 0 && relation.NODES.Any(n => n != null && string.Equals(NormalizeGame(n.Game), Il2Game, StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (MultiBind.Enabled)
+                    {
+                        relationBinds.AddRange(boundExtras);
+                        // One response curve per axis action: the extra inputs get the main bind's.
+                        if (relation.ISAXIS && boundExtras.Any(b => JoyPro.Engine.Axis.BindTuning.Resolve(b, Il2Game, null).Tuning.Format() !=
+                                                                     JoyPro.Engine.Axis.BindTuning.Resolve(bind, Il2Game, null).Tuning.Format()))
+                            result.Warnings.Add("IL-2 keeps one response curve per axis action: relation '" + relation.NAME + "' has inputs with other tuning; the game uses one of them for all.");
+                    }
+                    else
+                    {
+                        extrasOff += boundExtras.Count;
+                        extrasOffRelations++;
+                    }
+                }
+              foreach (Bind relationBind in relationBinds)
+              {
+                bind = relationBind;
                 string input = relation.ISAXIS ? bind.JAxis : bind.JButton;
                 if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(bind.Joystick))
                 {
@@ -1414,8 +1476,11 @@ namespace JoyPro.Engine
                     source.Meta = JoyPro.Engine.Games.BindMetadata.FromRelation(relation, bind);
                     sources.Add(source);
                 }
+              }
             }
 
+            if (extrasOff > 0)
+                result.Warnings.Add(MultiBind.OffNote("IL-2 Great Battles", extrasOff, extrasOffRelations));
             if (sources.Count == 0)
                 return new List<ExportTemplate>();
 

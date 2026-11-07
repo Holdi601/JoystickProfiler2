@@ -56,14 +56,19 @@ namespace JoyPro.Engine
                 string title;
                 titles.TryGetValue(node == null ? string.Empty : node.ID ?? string.Empty, out title);
                 string relationName = string.IsNullOrWhiteSpace(relation.NAME) ? entry.Key : relation.NAME;
-                map.Entries.Add(new EngineOverlayEntry
+                // The main bind and the extra binds in use (experimental multi-bind): the overlay shows the function on
+                // every input that does it.
+                foreach (Bind shown in MultiBind.ActiveBinds(relation, bind).Where(b => MultiBind.IsBound(relation, b)))
                 {
-                    Relation = relationName,
-                    Title = string.IsNullOrWhiteSpace(title) || string.Equals(title, relationName, StringComparison.OrdinalIgnoreCase) ? string.Empty : title,
-                    Device = bind.Joystick.Trim(),
-                    Input = bind.JButton.Trim(),
-                    Modifiers = Modifiers(bind)
-                });
+                    map.Entries.Add(new EngineOverlayEntry
+                    {
+                        Relation = relationName,
+                        Title = string.IsNullOrWhiteSpace(title) || string.Equals(title, relationName, StringComparison.OrdinalIgnoreCase) ? string.Empty : title,
+                        Device = shown.Joystick.Trim(),
+                        Input = shown.JButton.Trim(),
+                        Modifiers = Modifiers(shown)
+                    });
+                }
             }
             return map;
         }

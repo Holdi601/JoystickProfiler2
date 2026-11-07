@@ -7,6 +7,7 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JoyPro.Gui.Localization;
 using JoyPro.Gui.Models;
 using JoyPro.Gui.Services;
 using JoyPro.Gui.ViewModels;
@@ -719,10 +720,147 @@ public sealed class ProfileHistoryTests : IDisposable
         await vm.RestoreHistoryVersionCommand.ExecuteAsync(oldest);
         Assert.Equal("A", File.ReadAllText(profile));
         Assert.Equal(3, vm.HistoryVersions.Count);
-        Assert.Contains("Restored", vm.HistoryVersions[0].Title);
+        Assert.StartsWith("Rolled back to the version of", vm.HistoryVersions[0].Title);
 
         await vm.CleanUpHistoryCommand.ExecuteAsync(null);
         Assert.Equal(3, ProfileHistory.Read(profile).Versions.Count);
+    }
+
+    // 2.6.4 tester: "it's what I hoped it would do, but it's not what it says it does" (he wanted to go back to X-5,
+    // so X-4..X-0 are taken back too). The button says so now: "Roll back to here" on X-3 of four changes takes back
+    // the three after it in one step, they stay in the list, and one Undo brings all three back.
+    [Fact]
+    public async Task HistoryPanel_RollBackToHere_TakesBackEveryLaterChange_AndOneUndoBringsThemBack()
+    {
+        HistoryFakeEngine fake = new();
+        MainWindowViewModel vm = CreateVm(fake);
+        List<ConfirmRequest> asked = [];
+        vm.ConfirmHandler = r => { asked.Add(r); return Task.FromResult(true); };
+        string profile = NewProfile("roll-back");
+        Save(profile, "A", Items(("One", 1)), "First");
+        now = now.AddSeconds(5);
+        Save(profile, "B", Items(("One", 1), ("Two", 2)), "Adding relation");
+        now = now.AddSeconds(5);
+        Save(profile, "C", Items(("One", 1), ("Two", 2), ("Three", 3)), "Adding relation");
+        now = now.AddSeconds(5);
+        Save(profile, "D", Items(("One", 1), ("Two", 2), ("Three", 3), ("Four", 4)), "Adding relation");
+        vm.ProfilePath = profile;
+        vm.IsHistoryPanelOpen = true;
+        Assert.Equal(4, vm.HistoryVersions.Count);
+        HistoryVersionItem first = vm.HistoryVersions[3];
+        Assert.True(first.CanRestore);
+        Assert.False(vm.HistoryVersions[0].CanRestore);
+
+        now = now.AddSeconds(5);
+        await vm.RestoreHistoryVersionCommand.ExecuteAsync(first);
+
+        // The dialog says what happens, in the button's words.
+        ConfirmRequest request = Assert.Single(asked);
+        Assert.Equal("Roll back to " + first.WhenText + "?", request.Title);
+        Assert.Equal("The profile becomes exactly as it was at this point (First): every change after it is taken back in one step. Those changes stay in the history: Undo (Ctrl+Z) brings them back.", request.Message);
+        Assert.Equal("Roll back", request.ConfirmLabel);
+        // Every change after it is gone from the profile, in one step.
+        Assert.Equal("A", File.ReadAllText(profile));
+        Assert.Equal("Rolled back to " + first.WhenText + ": every change after it is taken back. Undo (Ctrl+Z) brings them back.", vm.StatusText);
+        // The later versions stay in the history; the roll back is a version of its own and the profile is at it.
+        Assert.Equal(5, vm.HistoryVersions.Count);
+        Assert.True(vm.HistoryVersions[0].IsCurrent);
+        Assert.StartsWith("Rolled back to the version of", vm.HistoryVersions[0].Title);
+        Assert.EndsWith("(First)", vm.HistoryVersions[0].Title);
+        Assert.Equal(["Adding relation", "Adding relation", "Adding relation", "First"], vm.HistoryVersions.Skip(1).Select(v => v.Title).ToArray());
+
+        // One Undo brings all of them back.
+        now = now.AddSeconds(5);
+        await vm.UndoLastChangeCommand.ExecuteAsync(null);
+        Assert.Equal("D", File.ReadAllText(profile));
+        // And Redo rolls back again.
+        now = now.AddSeconds(5);
+        await vm.RedoLastChangeCommand.ExecuteAsync(null);
+        Assert.Equal("A", File.ReadAllText(profile));
+
+        // Cancelled: nothing changes.
+        vm.ConfirmHandler = _ => Task.FromResult(false);
+        HistoryVersionItem third = vm.HistoryVersions.First(v => !v.IsCurrent && v.Title == "Adding relation");
+        await vm.RestoreHistoryVersionCommand.ExecuteAsync(third);
+        Assert.Equal("A", File.ReadAllText(profile));
+        Assert.StartsWith("Cancelled: Roll back to", vm.StatusText);
+    }
+
+    // The button, its tooltip and the panel's line name the same action ("Roll back to here"), in English and German;
+    // the longer label is not cut at 1280 px. Pictures with JOYPRO_UI_DESIGN_OUT: history-rollback-<theme>[-de].png.
+    [Fact]
+    public void HistoryPanel_RollBackToHere_LabelTooltipAndWidth()
+    {
+        string? outDir = Environment.GetEnvironmentVariable("JOYPRO_UI_DESIGN_OUT") is { Length: > 0 } o ? o : null;
+        if (outDir != null)
+            Directory.CreateDirectory(outDir);
+        string language = Loc.Current.Code;
+        try
+        {
+            AvaloniaRenderThread.Run(() =>
+            {
+                string profile = NewProfile("My Sticks");
+                DateTime real = DateTime.UtcNow;
+                now = real.AddDays(-2);
+                Save(profile, "A", Items(("Pitch", 3), ("Roll", 3)), "Import from DCS");
+                now = real.AddHours(-3);
+                ProfileHistory.Checkpoint(profile, "Before export to DCS");
+                now = real.AddMinutes(-20);
+                Save(profile, "B", Items(("Pitch", 3), ("Roll", 3), ("Throttle ALL", 42)), "Adding relation");
+                now = real.AddMinutes(-5);
+                Save(profile, "C", Items(("Pitch", 5), ("Roll", 3), ("Throttle ALL", 42)), "Adding actions");
+                foreach (string lang in new[] { "en", "de" })
+                {
+                    Loc.SetLanguage(lang);
+                    string label = Loc.T("Roll back to here");
+                    string tip = Loc.T("Makes the profile exactly as it was at this point: every change after it is taken back in one step. Undo brings them back.");
+                    if (lang == "de")
+                        Assert.NotEqual("Roll back to here", label);
+                    MainWindowViewModel vm = new(new UiDesignRenderTests.DesignFakeEngine(), new AxisTuningFakeCapture(), loadPersistedUiSettings: false)
+                    {
+                        EnginePath = typeof(MainWindowViewModel).Assembly.Location
+                    };
+                    vm.ProfilePath = profile;
+                    vm.IsHistoryPanelOpen = true;
+                    vm.ShowHistoryVersionChangesCommand.Execute(vm.HistoryVersions[1]);
+                    foreach ((string theme, Avalonia.Styling.ThemeVariant variant) in new[] { ("dark", Avalonia.Styling.ThemeVariant.Dark), ("light", Avalonia.Styling.ThemeVariant.Light) })
+                    {
+                        Avalonia.Application.Current!.RequestedThemeVariant = variant;
+                        using HiddenWindow main = HiddenWindow.Create(new Views.MainWindow { DataContext = vm }, new Avalonia.Size(1280, 800));
+                        main.Settle();
+                        List<Avalonia.Controls.Button> buttons = Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(main.Page).OfType<Avalonia.Controls.Button>()
+                            .Where(b => Equals(b.Content, label) && b.IsEffectivelyVisible).ToList();
+                        Assert.Equal(vm.HistoryVersions.Count, buttons.Count);
+                        Avalonia.Controls.ListBox list = Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(main.Page).OfType<Avalonia.Controls.ListBox>()
+                            .Single(l => ReferenceEquals(l.ItemsSource, vm.HistoryVersions));
+                        foreach (Avalonia.Controls.Button button in buttons)
+                        {
+                            Assert.Equal(tip, Avalonia.Controls.ToolTip.GetTip(button));
+                            // The whole label fits the button, and the button is inside the list.
+                            Avalonia.Controls.TextBlock? text = Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(button).OfType<Avalonia.Controls.TextBlock>().FirstOrDefault(t => t.Text == label);
+                            Assert.NotNull(text);
+                            Assert.True(text!.Bounds.Width + 0.5 >= text.DesiredSize.Width, lang + ": the label is cut: " + text.Bounds.Width + " < " + text.DesiredSize.Width);
+                            Avalonia.Point? right = Avalonia.VisualExtensions.TranslatePoint(button, new Avalonia.Point(button.Bounds.Width, 0), list);
+                            Assert.NotNull(right);
+                            Assert.True(right!.Value.X <= list.Bounds.Width + 0.5, lang + ": the button runs out of the list: " + right.Value.X + " > " + list.Bounds.Width);
+                        }
+                        if (outDir != null)
+                        {
+                            using Avalonia.Media.Imaging.RenderTargetBitmap bitmap = main.Render();
+                            bitmap.Save(Path.Combine(outDir, "history-rollback-" + theme + (lang == "en" ? string.Empty : "-" + lang) + ".png"));
+                        }
+                    }
+                }
+            });
+        }
+        finally
+        {
+            AvaloniaRenderThread.Run(() =>
+            {
+                Loc.SetLanguage(language);
+                Avalonia.Application.Current!.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Default;
+            });
+        }
     }
 
     [Fact]

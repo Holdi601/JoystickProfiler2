@@ -122,6 +122,9 @@ namespace JoyPro.Engine
                     relation.Name +
                     " | type=" + mode +
                     " | bind=" + bindLabel +
+                    (relation.Bind != null && relation.Bind.ExtraBinds != null && relation.Bind.ExtraBinds.Count > 0
+                        ? " | more inputs=" + string.Join(", ", relation.Bind.ExtraBinds.Where(e => e != null).Select(e => Safe(e.Joystick) + "::" + Safe(BindKey(e))))
+                        : string.Empty) +
                     " | mods=" + modCount +
                     " | games=" + FormatList(games) +
                     " | planes=" + planeCount +
@@ -154,8 +157,27 @@ namespace JoyPro.Engine
                     " | device=" + Safe(bind.Joystick) +
                     " | input=" + Safe(key) +
                     " | modifiers(" + modCount + ")=" + mods);
+                AppendExtraBindLines(sb, bind, "  ");
             }
             return sb.ToString();
+        }
+
+        // "  + input 2: device=..., input=..., modifiers(n)=..." per extra bind (experimental multi-bind; nothing without).
+        private static void AppendExtraBindLines(StringBuilder sb, EngineBindDto bind, string indent)
+        {
+            if (bind == null || bind.ExtraBinds == null)
+                return;
+            for (int i = 0; i < bind.ExtraBinds.Count; i++)
+            {
+                EngineBindDto extra = bind.ExtraBinds[i];
+                if (extra == null)
+                    continue;
+                int count = extra.AllReformers == null ? 0 : extra.AllReformers.Count;
+                sb.AppendLine(indent + "+ input " + (i + 2) + ": device=" + Safe(extra.Joystick) + " | input=" + Safe(BindKey(extra)) +
+                              " | modifiers(" + count + ")=" + (count == 0 ? "<none>" : FormatList(extra.AllReformers)) +
+                              (bind.IsAxis ? " | tuning=" + FormatNullableBool(extra.Inverted) + "/" + Num(extra.Deadzone) + "/" + Num(extra.SaturationX) + "/" + Num(extra.SaturationY) + "/" + string.Join(" ", (extra.Curvature ?? new List<double>()).Select(Num)) +
+                                             (extra.TuningOverrides == null || extra.TuningOverrides.Count == 0 ? string.Empty : " +" + extra.TuningOverrides.Count + " scope(s)") : string.Empty));
+            }
         }
 
         public static string ToText(EngineRelationDto relation)
@@ -180,6 +202,11 @@ namespace JoyPro.Engine
                 sb.AppendLine("Bind Inverted/Slider/DoubleTap: " + FormatNullableBool(relation.Bind.Inverted) + " / " + FormatNullableBool(relation.Bind.Slider) + " / " + relation.Bind.DoubleTap.ToString().ToLowerInvariant());
                 sb.AppendLine("Bind Curvature: " + FormatCurvature(relation.Bind.Curvature));
                 sb.AppendLine("Bind Deadzone/SatX/SatY: " + relation.Bind.Deadzone + " / " + relation.Bind.SaturationX + " / " + relation.Bind.SaturationY);
+                if (relation.Bind.ExtraBinds != null && relation.Bind.ExtraBinds.Count > 0)
+                {
+                    sb.AppendLine("More inputs (experimental): " + relation.Bind.ExtraBinds.Count);
+                    AppendExtraBindLines(sb, relation.Bind, "  ");
+                }
             }
 
             int nodeCount = relation.Nodes == null ? 0 : relation.Nodes.Count;
@@ -220,6 +247,11 @@ namespace JoyPro.Engine
                 sb.AppendLine("Bind Inverted/Slider/DoubleTap: " + FormatNullableBool(bindWithRelation.Bind.Inverted) + " / " + FormatNullableBool(bindWithRelation.Bind.Slider) + " / " + bindWithRelation.Bind.DoubleTap.ToString().ToLowerInvariant());
                 sb.AppendLine("Bind Curvature: " + FormatCurvature(bindWithRelation.Bind.Curvature));
                 sb.AppendLine("Bind Deadzone/SatX/SatY: " + bindWithRelation.Bind.Deadzone + " / " + bindWithRelation.Bind.SaturationX + " / " + bindWithRelation.Bind.SaturationY);
+                if (bindWithRelation.Bind.ExtraBinds != null && bindWithRelation.Bind.ExtraBinds.Count > 0)
+                {
+                    sb.AppendLine("More inputs (experimental): " + bindWithRelation.Bind.ExtraBinds.Count);
+                    AppendExtraBindLines(sb, bindWithRelation.Bind, "  ");
+                }
             }
 
             sb.AppendLine();
@@ -257,7 +289,7 @@ namespace JoyPro.Engine
 
                 if (InternalDataManagement.AllBinds.ContainsKey(relation.NAME))
                 {
-                    relationDto.Bind = ToBindDto(relation.NAME, relation.ISAXIS, InternalDataManagement.AllBinds[relation.NAME]);
+                    relationDto.Bind = ToBindDtoWithExtras(relation.NAME, relation.ISAXIS, InternalDataManagement.AllBinds[relation.NAME], relation);
                 }
 
                 doc.Relations.Add(relationDto);
@@ -436,7 +468,9 @@ namespace JoyPro.Engine
             foreach (KeyValuePair<string, Bind> entry in source)
             {
                 bool isAxis = InternalDataManagement.AllRelations.ContainsKey(entry.Key) && InternalDataManagement.AllRelations[entry.Key].ISAXIS;
-                doc.Binds.Add(ToBindDto(entry.Key, isAxis, entry.Value));
+                Relation owner;
+                InternalDataManagement.AllRelations.TryGetValue(entry.Key, out owner);
+                doc.Binds.Add(ToBindDtoWithExtras(entry.Key, isAxis, entry.Value, owner));
             }
             return doc;
         }
@@ -506,6 +540,7 @@ namespace JoyPro.Engine
                     Bind bind = ToBind(relationDto.Bind, relation);
                     binds[relationKey] = bind;
                     relation.bind = bind;
+                    RestoreExtraBinds(relationDto.Bind, relation);
                 }
             }
 
@@ -632,6 +667,7 @@ namespace JoyPro.Engine
                 Bind bind = ToBind(bindDto, relation);
                 binds[relationName] = bind;
                 relation.bind = bind;
+                RestoreExtraBinds(bindDto, relation);
             }
 
             InternalDataManagement.AllBinds = binds;
@@ -665,7 +701,37 @@ namespace JoyPro.Engine
             }
         }
 
-        private static EngineBindDto ToBindDto(string relationName, bool isAxis, Bind bind)
+        // The main bind with the relation's extra binds (experimental multi-bind; listed also while the setting is off,
+        // so they can be seen and removed).
+        private static EngineBindDto ToBindDtoWithExtras(string relationName, bool isAxis, Bind bind, Relation relation)
+        {
+            EngineBindDto dto = ToBindDto(relationName, isAxis, bind);
+            List<Bind> extras = MultiBind.Extras(relation);
+            if (extras.Count > 0)
+                dto.ExtraBinds = extras.Select(extra => ToBindDto(relationName, isAxis, extra)).ToList();
+            return dto;
+        }
+
+        // The relation's extra binds from a document (relations import / binds import); each as its own bind of the relation.
+        private static void RestoreExtraBinds(EngineBindDto dto, Relation relation)
+        {
+            relation.ExtraBinds = null;
+            if (dto == null || dto.ExtraBinds == null)
+                return;
+            foreach (EngineBindDto extraDto in dto.ExtraBinds)
+            {
+                if (extraDto == null)
+                    continue;
+                extraDto.RelationName = relation.NAME;
+                extraDto.IsAxis = relation.ISAXIS;
+                Bind main = relation.bind;
+                Bind extra = ToBind(extraDto, relation);
+                relation.bind = main;
+                MultiBind.Add(relation, extra);
+            }
+        }
+
+        internal static EngineBindDto ToBindDto(string relationName, bool isAxis, Bind bind)
         {
             EngineBindDto dto = new EngineBindDto();
             dto.RelationName = relationName;
@@ -744,6 +810,11 @@ namespace JoyPro.Engine
             if (clean.Count == 0)
                 return "<none>";
             return string.Join(", ", clean);
+        }
+
+        private static string Num(double value)
+        {
+            return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private static string FormatCurvature(List<double> curvature)

@@ -21,7 +21,7 @@ namespace JoyPro.Gui.ViewModels;
 //     holds before it reaches the profile (axis tuning edits, marker positions and callout tables of the Layout page,
 //     modifiers that are not on a bind yet) is saved 2 s after the last change, and at once when JoyPro closes, another
 //     profile opens, and before an export or import. The top bar shows "Saving..." / "Saved".
-//   - History panel: the versions with what changed, details, compare with now, restore (a version itself), keep, the
+//   - History panel: the versions with what changed, details, compare with now, roll back to one, keep, the
 //     space used and Clean up. Undo / Redo (Ctrl+Z / Ctrl+Y) walk the history, also across sessions.
 //   - The last profile opens after the window shows (Settings: "Open the last profile at start").
 public sealed partial class MainWindowViewModel
@@ -286,7 +286,8 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task RedoLastChangeAsync() => await WriteHistoryAsync(ProfileHistory.Redo, "Redo");
 
-    private async Task WriteHistoryAsync(Func<string, ProfileHistoryWriteResult> write, string what)
+    // changedStatus: the status line when the profile changed (else the engine's message).
+    private async Task WriteHistoryAsync(Func<string, ProfileHistoryWriteResult> write, string what, string? changedStatus = null)
     {
         if (!HasProfile)
         {
@@ -315,7 +316,7 @@ public sealed partial class MainWindowViewModel
             engineCallGate.Release();
         }
         EndProfileWrite(true, string.Empty);
-        StatusText = Translate(result.Message);
+        StatusText = result.Changed && changedStatus != null ? changedStatus : Translate(result.Message);
         if (result.Changed)
             await ReloadAfterHistoryWriteAsync();
         RefreshHistoryState();
@@ -421,17 +422,20 @@ public sealed partial class MainWindowViewModel
         }
     }
 
-    // Writes the version back (a new version: Undo returns to the state before).
+    // "Roll back to here" (2.6.4 tester: "it's what I hoped it would do, but it's not what it says it does"): writes
+    // the version's whole profile back as a new version, so every change after it is taken back in one step; the
+    // versions after it stay in the list and one Undo returns to the state before the roll back.
     [RelayCommand]
     private async Task RestoreHistoryVersionAsync(HistoryVersionItem? item)
     {
         if (item == null || !HasProfile || item.IsCurrent)
             return;
-        if (!await ConfirmAsync(T("Go back to {0}?", item.WhenText),
-                T("The profile becomes as it was then ({0}). The current state stays in the history: Undo (Ctrl+Z) brings it back.", item.Title), T("Restore")))
+        if (!await ConfirmAsync(T("Roll back to {0}?", item.WhenText),
+                T("The profile becomes exactly as it was at this point ({0}): every change after it is taken back in one step. Those changes stay in the history: Undo (Ctrl+Z) brings them back.", item.Title), T("Roll back")))
             return;
         int id = item.Id;
-        await WriteHistoryAsync(profile => ProfileHistory.Restore(profile, id), "Restore");
+        await WriteHistoryAsync(profile => ProfileHistory.Restore(profile, id), T("Roll back"),
+            T("Rolled back to {0}: every change after it is taken back. Undo (Ctrl+Z) brings them back.", item.WhenText));
     }
 
     // What this version changed against the one it was made on.

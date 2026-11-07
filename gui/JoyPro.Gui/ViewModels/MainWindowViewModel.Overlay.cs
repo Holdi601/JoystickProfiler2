@@ -303,6 +303,9 @@ public sealed partial class MainWindowViewModel
         if (string.IsNullOrWhiteSpace(engine) || !File.Exists(engine) || string.IsNullOrWhiteSpace(ProfilePath))
             return;
         List<string> args = ["--profile", ProfilePath, "--status", "false", "overlay", "map"];
+        // Experimental multi-bind: the overlay names the function on each of its inputs.
+        if (MultiBindEnabled)
+            args.InsertRange(4, ["--multi-bind", "on"]);
         if (overlayGame.Length > 0)
             args.AddRange(["--game", overlayGame]);
         if (overlayGame == "DCS" || overlayGame.Length == 0)

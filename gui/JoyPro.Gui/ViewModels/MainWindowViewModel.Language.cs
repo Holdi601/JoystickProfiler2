@@ -85,8 +85,9 @@ public partial class MainWindowViewModel
             ApplyGameWatchChoices([]);
         else if (!WatchGameConfigs)
             GameWatchStatus = T("Off: game configs are not watched.");
-        foreach (AxisTuningScopeItem scope in AxisTuningScopes)
-            scope.Label = AxisTuningScopeLabelNow(scope);
+        // The "Applies to" rows: names, what each uses, the Save / clear texts.
+        if (AxisTuningScopes.Count > 0)
+            UpdateAxisTuningRowStatuses();
         if (SelectedAxisTuningScope != null && AxisTuningUnitsText.Length > 0)
             AxisTuningUnitsText = AxisUnitsText(SelectedAxisTuningScope.Model);
         if (cockpits != null)

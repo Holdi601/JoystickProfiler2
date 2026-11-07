@@ -325,6 +325,21 @@ public sealed partial class ListFilterViewModel : ObservableObject
     public bool IsFilteredPlane(string game, string plane) =>
         !string.IsNullOrWhiteSpace(game) && (wholeGames.Contains(game) || planes.Contains(FilterSubject.Key(game, plane)));
 
+    // An action's aircraft as the page names them (2.6.4 tester report: "DCS World: F-16C_50" filtered, the open relation
+    // still said "F-100D, F-16C_50"): the filter's aircraft first, then the others in their order. Display only; without
+    // a Games filter (or with every one of them filtered) the order as given.
+    public IReadOnlyList<string> FilteredFirst(string game, IEnumerable<string> actionPlanes)
+    {
+        List<string> list = (actionPlanes ?? []).ToList();
+        if (!HasGameFilter || list.Count < 2)
+            return list;
+        List<string> lead = list.Where(p => IsFilteredPlane(game, p)).ToList();
+        return lead.Count == 0 || lead.Count == list.Count ? list : [.. lead, .. list.Where(p => !IsFilteredPlane(game, p))];
+    }
+
+    // The filter's aircraft test for one game's aircraft lists; null without a Games filter.
+    public Func<string, bool>? FilteredPlaneTest(string game) => HasGameFilter ? plane => IsFilteredPlane(game, plane) : null;
+
     public bool HasGroups => Groups.Count > 0;
 
     public bool HasDevices => Devices.Count > 0;

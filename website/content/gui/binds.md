@@ -21,7 +21,7 @@ flowchart LR
   S --> H["Pick the input by hand"]
   R & P & H --> E["engine binds set<br/>(profile, one undo step)"]
   E --> M["Modifiers on this bind<br/>engine binds modifier add"]
-  E --> C["Axis response per scope<br/>engine binds tuning set"]
+  E --> C["Axis response for the ticked games / aircraft<br/>engine binds tuning set"]
   E -.Export.-> G["Game control files"]
 ```
 
@@ -113,22 +113,46 @@ everywhere (advanced)**: free one physical input in the whole profile.
 
 ## Axis curves per game and aircraft
 
-![The axis response panel: scope, curve, parameters](shot:binds-axis-tuning)
+![The axis response panel: Applies to, curve, parameters](shot:binds-axis-tuning)
 
-An axis relation has one **base** curve that every game gets. On top of it you can give a **scope** its own curve:
+A curve for all games, one per game, or one for the aircraft you tick. An aircraft with its own curve uses it; the
+others use their game's curve, else the one for all games. **Applies to** lists them with checkboxes:
 
-| Scope | Example | Used for |
+| Row | Example | Used for |
 |---|---|---|
-| Aircraft | DCS · F-16C | one aircraft of one game |
-| Game | IL-2 Korea | every aircraft of a game |
-| Game family | IL-2 family (Great Battles + Korea) | games that store curves the same way |
-| All games (base) | | every game without its own curve |
+| All games | | every game and aircraft without its own curve |
+| A game | DCS, IL-2 Korea | every aircraft of that game without its own curve |
+| An aircraft (DCS) | AH-64D BLK.II CPG | that aircraft only |
+| A game family | MSFS family (MSFS 2024, MSFS 2020) | both games together; shown only when the relation has two of them (or a curve for the family is stored) |
 
-A game uses the most specific one: aircraft, then game, then family, then the base. The panel shows the scope's
-curve in blue and the base as a dashed orange line while the scope inherits. Each game has its own kind of curve
-(DCS: dead zone, saturation X/Y, curvature or an 11-point user curve; IL-2: its own sensitivity and dead zones;
-X-Plane: free curve points), so the sliders on the right change with the scope. When a game falls back to the base,
-JoyPro fits that game's parameters to the base curve as closely as the game can express it.
+Next to each row stands what it uses today: **own curve**, **same as ...** (aircraft whose own curves are identical),
+**uses DCS** / **uses All games** (no curve of its own; a change there changes it too). Its tooltip says the same in a
+sentence. Only DCS has a row per aircraft: it is the only game whose curves are written per aircraft.
+
+**What is ticked when you open a relation:** the aircraft that use DCS's curve (for a fresh relation: all of them).
+Aircraft with their own curve stay unticked, so a save does not overwrite them by accident. The rows you last saved
+for this relation come back instead, also after a restart, with their curve shown.
+
+**What Save does** is written above the buttons:
+
+- all the aircraft that use DCS's curve ticked (the default): "Save stores it for DCS, all its aircraft (5)." The curve
+  is stored once for DCS, not once per aircraft, so these aircraft keep following DCS's curve later;
+- some of them: "Save stores it for these aircraft (3 of 5): ...". Each ticked aircraft gets this curve as its own,
+  in one step;
+- an aircraft that has its own curve ticked as well: a line in orange says "This replaces the own curve of ...". With
+  DCS's curve it then follows DCS again; ticked among a few aircraft it gets the curve shown;
+- all games, a game without aircraft rows, a family: that one row.
+
+Several aircraft can be ticked together; any other row is ticked alone. When the ticked aircraft have different
+curves today, the line above says so and shows the first ticked one's curve; nothing is merged. **Curves now (click to
+tick)** groups the aircraft by the curve they share ("AH-64D BLK.II CPG, AH-64D BLK.II Pilot, Ka-50 III: same curve",
+"SA342 Copilot, SA342 Pilot: uses DCS"); a click ticks that group.
+
+The panel shows the curve in blue and the one for all games as a dashed orange line while the curve shown is not its
+own. Each game has its own kind of curve (DCS: dead zone, saturation X/Y, curvature or an 11-point user curve; IL-2:
+its own sensitivity and dead zones; X-Plane: free curve points), so the sliders on the right change with the row. When
+a game falls back to the curve for all games, JoyPro fits that game's parameters to it as closely as the game can
+express it.
 
 Drag the white points to shape the curve, or use the sliders. Every setting also has a number box with its range
 next to it: type the exact value, or press Up / Down (Shift: ten steps) or turn the mouse wheel over the box you are
@@ -142,12 +166,13 @@ ones of DCS's own axis tune dialog: dead zone, saturation X/Y and the user curve
 a value with more decimals stays exact until you change it. Falcon BMS has the launcher's steps 0 .. 3, FSX 0 .. 127,
 and so on.
 
-Edits preview at once (also with the live position of your stick as a dot); **Save for this scope** stores
-them. **Inherit (clear)** removes the scope's own settings. **Reload** reads them again.
+Edits preview at once (also with the live position of your stick as a dot); **Save** stores them for the ticked rows,
+in one step (one Ctrl+Z). **Use the game's curve again** removes the own curve of the ticked aircraft (for a game:
+**Use the curve for all games again**), also in one step. **Reload** reads them again.
 
 **Copy to another axis...** puts the same settings on another bound axis in one step, e.g. Thrust Left to Thrust
 Right: pick the axis, tick **Copy invert too** only if both should invert alike, then **Copy**. It goes to the same
-scope of the other axis; one Ctrl+Z takes it back.
+games or aircraft of the other axis (the ticked ones); one Ctrl+Z takes it back.
 
 ## Detent mode: one throttle for all aircraft
 
@@ -188,13 +213,30 @@ aircraft get what most of the relation's aircraft need, and the export lists the
   with a preview: for a new stick of the same kind or one that got a new id.
 - The same button on two relations is allowed; the [[gui:check|Check]] tells you where that means two jobs in one
   aircraft.
+
+## More inputs (experimental)
+
+With **Settings > Experimental > Several inputs per relation** on, a relation can be on more than one input, each with
+its own device, modifiers and axis curve (the same grip on two bases, a second fire button). The card shows **+1**, and
+the selected relation gets the panel **More inputs (experimental)**:
+
+- **Record another input** / **Add the input picked by hand**: one more input of this relation.
+- **Make main**: that input becomes the main input (games that keep one input per action get the main input).
+- **Remove**: takes the input off.
+- **Copy every bind of a device to another device**: pick the **First device** and the **Second device**, **Preview**
+  shows which input goes where (matched like Replace device), **Copy** adds them in one step (Ctrl+Z undoes it). The
+  first device keeps its binds.
+
+Exports write every input where the game can hold several per action and name the relations where it cannot
+([[page:flows/export.html|Export]]). Details and the table per game: docs/multi-bind.md. Off, everything is as before.
 :::
 
 :::layer technical
 ## Behind the page
 
 View model: `MainWindowViewModel.cs` (bind list, record, set/clear, modifiers), `MainWindowViewModel.AxisTuning.cs`
-(scopes, live preview with the linked `engine/AxisTuning.cs`), `MainWindowViewModel.Detent.cs`,
+(curve, live preview with the linked `engine/AxisTuning.cs`), `MainWindowViewModel.AxisTuningAppliesTo.cs` (the
+"Applies to" ticks, the save plan, groups, remembered ticks), `MainWindowViewModel.Detent.cs`,
 `MainWindowViewModel.AutoAssign.cs`, `MainWindowViewModel.LayoutWithAi.cs`, `MainWindowViewModel.LayoutWorkspace.cs`
 and `MainWindowViewModel.VisualAssign.cs` (bind on the picture), `MainWindowViewModel.LiveInput.cs` (follow input),
 `MainWindowViewModel.BindPeek.cs` (What it does), `MainWindowViewModel.MoveAction.cs`.
@@ -365,18 +407,29 @@ share one button (the Check shows it).
 Unticks every modifier in the list.
 
 <!-- entry: ReloadAxisTuningCommand -->
-Reads the selected axis relation's tuning again from the profile (`engine binds tuning show`) and drops unsaved
-edits of the panel.
+Reads the selected axis relation's curves again from the profile (`engine binds tuning show`: what each game and
+aircraft uses, the curve shown) and drops unsaved edits of the panel.
 
 <!-- entry: bind:IsOn -->
 A switch among a curve's parameters: **Invert** (the axis works the other way round) or **Slider** / "One-sided axis"
-(throttle, brakes: no centre). Saved with **Save for this scope** as `--inverted` / `--slider`. In the game: the
+(throttle, brakes: no centre). Saved with **Save** as `--inverted` / `--slider`. In the game: the
 axis's invert and slider settings of that game.
 
 <!-- entry: SaveAxisTuningCommand -->
-Stores the panel's curve for the chosen scope (`engine binds tuning set --scope ...`). For the base scope it also
-updates the bind's own axis values. In the game: the next export writes this curve into the game's axis settings for
-that aircraft, game or family.
+Stores the curve shown for the ticked rows, in one engine run (one Ctrl+Z): the line above the button says what it does.
+All the aircraft that use DCS's curve ticked: DCS's curve (`engine binds tuning set --scope game:DCS`, ticked aircraft
+with an own curve lose it in the same run with `--clear-scope`); some of them: a curve per aircraft (`--scope` once
+each). For all games it also updates the bind's own axis values. The ticks are remembered for the relation. In the game:
+the next export writes this curve into the game's axis settings for those aircraft, that game or family.
+
+<!-- entry: bind:IsChecked -->
+Axis response, **Applies to**: ticks where the curve shown is saved. Several aircraft of a game can be ticked together;
+the game's row ticks the aircraft that use its curve (aircraft with an own curve stay unticked); any other row is ticked
+alone. The text next to it says what the row uses today; nothing is stored until **Save**.
+
+<!-- entry: TickAxisTuningGroupCommand -->
+Axis response, **Curves now**: ticks the aircraft that share this curve (or the ones that use the game's curve) and
+shows their curve. Nothing is stored until **Save**.
 
 <!-- entry: bind:DetentOn -->
 Switches detent mode on or off for this throttle relation (`engine binds detent set --on/--off`). On: per aircraft
@@ -591,21 +644,22 @@ restarts.
 
 <!-- entry: bind:AxisTuningUseControlPoints -->
 Axis response, for games with free curve points (X-Plane): replaces dead zone, saturation and curvature with a curve
-of any number of stops: x = axis travel, y = output, both 0..1, x increasing. Stored with **Save for this scope**
+of any number of stops: x = axis travel, y = output, both 0..1, x increasing. Stored with **Save**
 (`--curve-points`).
 
 <!-- entry: RemoveAxisTuningControlPointCommand -->
 Curve points: removes this stop from the curve; at least two stops stay. Nothing is stored until
-**Save for this scope**.
+**Save**.
 
 <!-- entry: AddAxisTuningControlPointCommand -->
 Curve points: adds a stop in the middle of the widest gap, between its two neighbours. Nothing is stored until
-**Save for this scope**.
+**Save**.
 
 <!-- entry: ClearAxisTuningCommand -->
-**Inherit (clear)** removes the chosen scope's own curve settings without a question; the scope then uses the next
-broader one (aircraft, game, family, base). Not for the base. Ctrl+Z undoes it. Engine: [[cli:binds tuning clear]]. In
-the game: the next export writes the inherited curve.
+**Use the game's curve again** (for a game: **Use the curve for all games again**) removes the own curve of the ticked
+rows without a question, all in one step: an aircraft then uses its game's curve, a game its family's or the one for
+all games. Not for all games. Ctrl+Z undoes it. Engine: [[cli:binds tuning clear]] with `--scope` per row. In the game:
+the next export writes the curve they use then.
 
 <!-- entry: bind:DetentNoAbFull -->
 Detent mode: ticked (the default), aircraft without afterburner get full power at the detent: they have nothing behind
@@ -639,13 +693,44 @@ of the page move up. JoyPro remembers it (also after a restart); **Show** opens 
 
 <!-- entry: PrepareAxisTuningCopyCommand -->
 **Copy to another axis...** in the axis response: opens a small panel to pick another bound axis (the other side
-first: Thrust Left offers Thrust Right). It copies the settings shown for the scope (dead zone, saturation X/Y,
-curvature or the user curve, slider and the game's own settings) to the same scope of that axis.
+first: Thrust Left offers Thrust Right). It copies the settings shown (dead zone, saturation X/Y, curvature or
+the user curve, slider and the game's own settings) to the same games or aircraft of that axis (the ticked ones).
 
 <!-- entry: bind:AxisTuningCopyInvert -->
 **Copy invert too** in Copy to another axis: off, the other axis keeps its own invert (left and right often differ
 there); on, it gets this axis's invert as well.
 
+<!-- entry: MakeExtraBindMainCommand -->
+**Make main** (More inputs, experimental): this input becomes the relation's main input and the old main input becomes
+an extra one. Games that keep only one input per action get the main input, so this decides which one they use. One
+Ctrl+Z takes it back.
+
+<!-- entry: RemoveExtraBindCommand -->
+**Remove** (More inputs, experimental): takes this extra input off the relation, with its modifiers and its axis curve.
+The main input and the relation's actions stay. One Ctrl+Z puts it back.
+
+<!-- entry: RecordExtraInputCommand -->
+**Record another input** (More inputs, experimental): press or move the input on any device; it becomes one more input
+of the selected relation, next to the main one. If that input already carries another relation, the Check page lists it
+as an input that does two things.
+
+<!-- entry: AddPickedExtraInputCommand -->
+**Add the input picked by hand** (More inputs, experimental): adds the device and input chosen in the pickers above as
+one more input of the selected relation, for an input that is hard to record (a detent, a very light axis).
+
+<!-- entry: RefreshCopyDevicesCommand -->
+**Refresh Options** (Copy every bind of a device to another device): builds the two device lists again from the devices
+of the profile's binds and the devices in the input picker, e.g. after a new bind.
+
+<!-- entry: PreviewCopyToDeviceCommand -->
+**Preview** (Copy every bind of a device to another device): lists every bind of the first device and the input of the
+second device it would get, matched like Replace device (the same input ids for the same product, else by the part on
+the device). Nothing changes yet; inputs that have no match are named.
+
+<!-- entry: ApplyCopyToDeviceCommand -->
+**Copy** (Copy every bind of a device to another device): adds the matched inputs of the second device as extra inputs
+of the same relations, in one step that one Ctrl+Z takes back. The first device keeps all its binds.
+
 <!-- entry: CopyAxisTuningToAxisCommand -->
 **Copy** in Copy to another axis: writes the settings to the picked axis in one step, [[cli:binds tuning set]] for
-the other relation with the same `--scope`. One Ctrl+Z takes it back; this axis keeps its values.
+the other relation with the same `--scope`s. One Ctrl+Z takes it back; this axis keeps its values.

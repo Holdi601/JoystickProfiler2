@@ -778,6 +778,12 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
     // "relations aircraft" answers with this when set (the nodes' titles in their games).
     public string AircraftJson { get; set; } = string.Empty;
 
+    // Node id -> its title: "relations list" then carries the TitleList (the search's match lines on the cards).
+    public Dictionary<string, string> NodeTitles { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+    // "media" answers with this when set (the aircraft's module icons).
+    public string MediaJson { get; set; } = string.Empty;
+
     private static string Choice(string game, string id, string title, string readable, bool recommended, string recommendedFor, string variant, string group, int alternatives, string explanation) =>
         "{\"Game\":\"" + game + "\",\"Id\":\"" + id + "\",\"Title\":\"" + title + "\",\"IsAxis\":true,\"Planes\":[\"" + game + "\"],\"Confidence\":\"high\",\"Score\":90," +
         "\"Source\":\"function map\",\"Why\":\"Same function: Pitch axis\",\"Reasons\":[],\"InOtherRelations\":[],\"Missing\":\"game\",\"NewGame\":true,\"NewPlanes\":[\"" + game + "\"]," +
@@ -846,7 +852,12 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
         {
             return "{\"Relations\":[" + string.Join(",", relations.Select(r =>
                 "{\"Name\":\"" + r.Name + "\",\"IsAxis\":" + (r.Axis ? "true" : "false") + ",\"Groups\":[],\"Nodes\":[" +
-                string.Join(",", r.Nodes.Select(n => "{\"Id\":\"" + n.Id + "\",\"Game\":\"" + n.Game + "\",\"Aircraft\":{\"" + n.Planes + "\":true}}")) + "]," +
+                string.Join(",", r.Nodes.Select(n => "{\"Id\":\"" + n.Id + "\",\"Game\":\"" + n.Game + "\",\"Aircraft\":{" +
+                                                     string.Join(",", n.Planes.Split(',').Select(p => "\"" + p + "\":true")) + "}}")) + "]," +
+                (NodeTitles.Count == 0 ? string.Empty : "\"TitleList\":[" + string.Join(",", r.Nodes.Select((n, i) => (n, i)).Where(x => NodeTitles.ContainsKey(x.n.Id)).Select(x =>
+                    "{\"Title\":\"" + NodeTitles[x.n.Id] + "\",\"Game\":\"" + x.n.Game + "\",\"Node\":" + x.i + ",\"Id\":\"" + x.n.Id + "\",\"Planes\":[" +
+                    string.Join(",", x.n.Planes.Split(',').Select(p => "\"" + p + "\"")) + "]}")) + "]," +
+                 "\"Titles\":[" + string.Join(",", r.Nodes.Where(n => NodeTitles.ContainsKey(n.Id)).Select(n => "\"" + NodeTitles[n.Id] + "\"")) + "],") +
                 "\"Bind\":" + (r.Bind.Length == 0 ? "null" : "{\"Joystick\":\"" + r.Bind[..r.Bind.LastIndexOf("::", StringComparison.Ordinal)] + "\",\"JButton\":\"" +
                                                                r.Bind[(r.Bind.LastIndexOf("::", StringComparison.Ordinal) + 2)..] + "\"}") + "}")) + "]}";
         }
@@ -1000,6 +1011,8 @@ internal sealed class BuilderFakeEngine : IEngineCliClient
                    "{\"Id\":\"qwen3-8b-q4_k_m\",\"Label\":\"Qwen3 8B\",\"Tier\":\"large\",\"Size\":\"4.68 GB\",\"License\":\"Apache-2.0\",\"LicenseUrl\":\"\",\"Source\":\"\",\"Installed\":true,\"Recommended\":true}]}";
         if (AxisTuningTests.Seq(args, "binds", "list"))
             return "{\"Binds\":[]}";
+        if (MediaJson.Length > 0 && args.Contains("media"))
+            return MediaJson;
         if (AircraftJson.Length > 0 && AxisTuningTests.Seq(args, "relations", "aircraft"))
             return AircraftJson;
         return "ok";

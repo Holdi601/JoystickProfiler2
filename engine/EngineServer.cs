@@ -580,8 +580,7 @@ namespace JoyPro.Engine
         {
             using (MemoryStream buffer = new MemoryStream())
             {
-                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                formatter.Binder = new LegacyJoyProSerializationBinder();
+                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter formatter = ProfileFormatter.Writer();
                 formatter.Serialize(buffer, profile);
                 return buffer.ToArray();
             }

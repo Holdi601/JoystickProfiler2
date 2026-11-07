@@ -51,7 +51,7 @@ public static class EngineServerCommands
     // Global options that take a value (engine Program.Run).
     private static readonly HashSet<string> ValueOptions = Set("--profile", "--out", "--editor", "--status", "--progress", "--benchmark", "--load-corrections",
         "--auto-add-db-items", "--remap-missing-devices", "--confirm-device-remap", "--confirm-corrections", "--correction-mode", "--correction-auto-threshold",
-        "--correction-report", "--history-note", "--usage-style");
+        "--correction-report", "--history-note", "--usage-style", "--multi-bind");
 
     private static HashSet<string> Set(params string[] values) => new(values, StringComparer.OrdinalIgnoreCase);
 

@@ -127,7 +127,7 @@ public sealed class LocalizationTests
             Assert.Equal("Pedale", DeviceReferenceViewModel.KindName("pedals"));
             Assert.Equal("Alle", TConverter.Instance.Convert("All", typeof(string), null, CultureInfo.InvariantCulture));
             Assert.Equal("Starrflügler", TConverter.Instance.Convert("Fixed-wing", typeof(string), null, CultureInfo.InvariantCulture));
-            Assert.Equal("Alle Spiele (Basis)", Loc.T("All games (base)"));
+            Assert.Equal("Alle Spiele", Loc.T("All games"));
             // A status line written in German is shown in the next language (live language change).
             LanguageInfo german = Loc.Current;
             string germanReady = Loc.T("Ready.");

@@ -338,7 +338,7 @@ namespace JoyPro.Engine
         private static List<string> CollectProfileDevices()
         {
             HashSet<string> output = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<string, Bind> pair in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> pair in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 if (pair.Value == null)
                     continue;

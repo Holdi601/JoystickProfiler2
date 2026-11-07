@@ -19,6 +19,7 @@ namespace JoyPro.Engine.Games
             IGameAircraftScope scope = game as IGameAircraftScope;
             string pickedAircraft = scope == null || string.IsNullOrWhiteSpace(scope.ExportAircraft) ? null : scope.ExportAircraft.Trim();
             HashSet<string> warnedRelations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, int> extrasOff = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             int limitedExported = 0;
             if (pickedAircraft != null)
             {
@@ -33,9 +34,12 @@ namespace JoyPro.Engine.Games
                 if (relation == null || relation.NODES == null)
                     continue;
 
-                Bind bind = relation.bind;
-                if (bind == null && InternalDataManagement.AllBinds.ContainsKey(entry.Key))
-                    bind = InternalDataManagement.AllBinds[entry.Key];
+                Bind mainBind = relation.bind;
+                if (mainBind == null && InternalDataManagement.AllBinds.ContainsKey(entry.Key))
+                    mainBind = InternalDataManagement.AllBinds[entry.Key];
+                // The main bind, and the relation's extra binds where the game keeps several inputs per action
+                // (experimental multi-bind; off: the main bind alone, as always).
+                List<Bind> relationBinds = ExportedBinds(game, relation, mainBind, result, extrasOff);
 
                 foreach (RelationItem node in relation.NODES)
                 {
@@ -45,6 +49,8 @@ namespace JoyPro.Engine.Games
                     if (scope == null ? !IsNodeActive(node, game.GameId) : limitedTo != null && limitedTo.Count == 0)
                         continue;
 
+                  foreach (Bind bind in relationBinds)
+                  {
                     string input = bind == null ? string.Empty : (relation.ISAXIS ? bind.JAxis : bind.JButton);
                     if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick) || string.IsNullOrWhiteSpace(input))
                     {
@@ -88,13 +94,43 @@ namespace JoyPro.Engine.Games
                         Tuning = relation.ISAXIS ? tuning : null,
                         Aircraft = perAircraft
                     });
+                  }
                 }
             }
 
+            if (extrasOff.Count > 0)
+                result.Warnings.Add(MultiBind.OffNote(game.DisplayName, extrasOff.Values.Sum(), extrasOff.Count));
             if (pickedAircraft != null)
                 result.Steps.Add("Aircraft picked: " + pickedAircraft + ". Exported the relations for all aircraft and " + limitedExported.ToString(CultureInfo.InvariantCulture) +
                                  " bind(s) limited to it. " + scope.PerAircraftNote);
             return output;
+        }
+
+        // The binds of a relation an export writes: the main bind (also when it is missing: counted as skipped, as
+        // always), then its bound extra binds if the setting is on and the game keeps several inputs per action. A game
+        // with one input per action gets the main bind and a warning naming the relation; with the setting off the
+        // extra binds are counted for one note (never dropped without a word).
+        internal static List<Bind> ExportedBinds(IGameIntegration game, Relation relation, Bind main, GameIoResult result, Dictionary<string, int> extrasOff)
+        {
+            List<Bind> binds = new List<Bind> { main };
+            List<Bind> extras = MultiBind.Extras(relation).Where(b => MultiBind.IsBound(relation, b)).ToList();
+            if (extras.Count == 0 || relation.NODES == null || !relation.NODES.Any(n => n != null && GameRegistry.GameMatches(game, n.Game)))
+                return binds;
+            string name = relation.NAME ?? string.Empty;
+            if (!MultiBind.Enabled)
+            {
+                if (extrasOff != null)
+                    extrasOff[name] = extras.Count;
+                return binds;
+            }
+            string reason;
+            if (MultiBind.SupportOf(game.GameId, out reason) == MultiBind.ExportSupport.MainOnly)
+            {
+                result.Warnings.Add(MultiBind.LimitedNote(game.DisplayName, name, extras.Count, reason));
+                return binds;
+            }
+            binds.AddRange(extras);
+            return binds;
         }
 
         // Games with an aircraft list: null when the node is for all aircraft (no entry, or the game id active), else
@@ -145,6 +181,8 @@ namespace JoyPro.Engine.Games
 
             // JoyPro's own data of the binds it exported to this file (relation names, groups, modifiers, tuning).
             Dictionary<string, BindMetadata> stored = GameMetadataStore.Load(result.ConfigPath, result.Warnings);
+            // Relations this import made from an extra input JoyPro exported (multi-bind): their main input may still come.
+            HashSet<string> extrasFirst = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             Dictionary<string, string> relationBySignature = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (KeyValuePair<string, Relation> entry in relations)
             {
@@ -191,8 +229,10 @@ namespace JoyPro.Engine.Games
                         if (unbound == null && relations[name].ISAXIS == isAxis)
                             unbound = name;
                     }
-                    else if (string.Equals(BuildSignature(existing.Joystick, relations[name].ISAXIS, existingInput, existing.AllReformers), bindingSignature, StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(BuildSignature(existing.Joystick, relations[name].ISAXIS, existingInput, existing.AllReformers), bindingSignature, StringComparison.OrdinalIgnoreCase) ||
+                             (MultiBind.Enabled && relations[name].ISAXIS == isAxis && MultiBind.FindExtra(relations[name], bindingSignature) != null))
                     {
+                        // The relation has the input (its bind, or one of its extra inputs with the setting on).
                         alreadyThere = true;
                         alreadyIn = name;
                         break;
@@ -222,6 +262,49 @@ namespace JoyPro.Engine.Games
                     string.Equals(BuildSignature(binds[meta.RelationName].Joystick, isAxis, isAxis ? binds[meta.RelationName].JAxis : binds[meta.RelationName].JButton, binds[meta.RelationName].AllReformers),
                         bindingSignature, StringComparison.OrdinalIgnoreCase))
                 {
+                    known.AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
+                    ScopeNode(known, binding, action, game, result, true);
+                    result.NodesAddedToExisting++;
+                    applied.Add(binding);
+                    continue;
+                }
+
+                // Experimental multi-bind (setting on): JoyPro exported this input as another input of the relation
+                // (its metadata names the relation): it comes back as that, with its own modifiers and tuning, instead
+                // of a second relation. The input JoyPro wrote as the main bind becomes the main bind again.
+                if (MultiBind.Enabled && meta != null && relations.TryGetValue(meta.RelationName, out known) && known != null && known.ISAXIS == isAxis &&
+                    binds.ContainsKey(meta.RelationName) && binds[meta.RelationName] != null)
+                {
+                    Bind main = binds[meta.RelationName];
+                    if (MultiBind.FindExtra(known, bindingSignature) != null)
+                    {
+                        known.AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
+                        ScopeNode(known, binding, action, game, result, true);
+                        result.NodesAddedToExisting++;
+                        applied.Add(binding);
+                        continue;
+                    }
+                    Bind extra = CreateBind(known, binding, action, game);
+                    known.bind = main;
+                    List<string> extraReformers = meta.ReformersMatching(binding.Device, isAxis, binding.Input, binding.Reformers);
+                    if (extraReformers != null)
+                        extra.AllReformers = extraReformers;
+                    if (isAxis && meta.HasTuning)
+                        meta.ApplyTuning(extra);
+                    if (!string.IsNullOrWhiteSpace(meta.Alias))
+                        extra.AliasJoystick = meta.Alias;
+                    if (meta.Input <= 1 && extrasFirst.Contains(meta.RelationName))
+                    {
+                        // The main input arrived after an extra one made the relation: they swap.
+                        Bind formerMain = main.CopyAsExtra(known);
+                        extra.Rl = known;
+                        known.bind = extra;
+                        binds[meta.RelationName] = extra;
+                        MultiBind.Add(known, formerMain);
+                        extrasFirst.Remove(meta.RelationName);
+                    }
+                    else
+                        MultiBind.Add(known, extra);
                     known.AddNode(binding.ActionId, game.GameId, isAxis, game.GameId, false);
                     ScopeNode(known, binding, action, game, result, true);
                     result.NodesAddedToExisting++;
@@ -280,6 +363,8 @@ namespace JoyPro.Engine.Games
                 relations[relationName] = relation;
                 binds[relationName] = bind;
                 relationBySignature[bindingSignature] = relationName;
+                if (MultiBind.Enabled && meta != null && meta.Input > 1)
+                    extrasFirst.Add(relationName);
                 result.RelationsImported++;
                 applied.Add(binding);
             }

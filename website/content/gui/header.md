@@ -31,7 +31,7 @@ is on the left of the bar; hover it to see where the file is.
   position). They never change the profile.
 - **Undo / Redo**: take back the last change of the profile, or do it again (Ctrl+Z, Ctrl+Y). The tooltip names the
   change ("Undo Adding relation").
-- **History**: every saved version of the profile, to look at, compare, restore or keep.
+- **History**: every saved version of the profile, to look at, compare, roll back to or keep.
 - **More**: open the last profile, save a copy, rename, add another profile, reload, close, check for updates, about.
 - **Options**: settings for experts (paths and how a profile is repaired when it loads).
 
@@ -49,7 +49,7 @@ Feedback**, **Virtual Joystick**, **Statistics**, **Cockpits**, **Settings**, **
 |---|---|---|
 | **Back / Forward** | the places you were: page, sub-view, open relation or device, search texts, filters, scroll position (at most 50) | no |
 | **Undo / Redo** | the profile's versions, one step at a time, also after a restart | yes |
-| **History** | every version with what it changed; restore any of them | yes (a restore is a new version, so Undo goes back) |
+| **History** | every version with what it changed; roll back to any of them | yes (a roll back is a new version, so Undo goes back) |
 
 Back and Forward also work with **Alt+Left** / **Alt+Right** and the mouse's back and forward buttons.
 
@@ -59,7 +59,8 @@ Back and Forward also work with **Alt+Left** / **Alt+Right** and the mouse's bac
   version the profile is at and **kept** on versions you keep.
 - **Details** shows what a version changed ("Relation 'Gear' renamed to 'Landing gear'"); **Compare** shows what
   differs between that version and the profile now.
-- **Keep** protects a version from the clean-up; **Restore** makes the profile as it was then.
+- **Keep** protects a version from the clean-up; **Roll back to here** makes the profile exactly as it was at that
+  point: every change after it is taken back in one step, and one Undo brings them back.
 - **Clean up** thins out old versions of all profiles now: all of the last day, then fewer per hour, day and week.
   JoyPro also does this by itself in the background. Kept versions always stay.
 
@@ -228,7 +229,7 @@ redo.
 
 <!-- entry: bind:IsHistoryPanelOpen -->
 Opens or closes the History panel below the bar: every saved version of this profile, newest first, with **Details**,
-**Compare**, **Keep** and **Restore**. Only with a profile open. Opening it changes nothing.
+**Compare**, **Keep** and **Roll back to here**. Only with a profile open. Opening it changes nothing.
 
 <!-- entry: label:More -->
 Opens the menu of the less used profile actions: **Open last profile**, **Save as...**, **Rename...**, **Add another
@@ -293,9 +294,10 @@ now. Changes nothing.
 remove it like any other version.
 
 <!-- entry: RestoreHistoryVersionCommand -->
-**Restore** on a version: asks first, then makes the profile as it was then. The restore is a new version, so the
-current state stays in the History and Undo (Ctrl+Z) brings it back. In the game: the restored binds arrive with the
-next export.
+**Roll back to here** on a version: asks first, then makes the profile exactly as it was at that point: every change
+after it is taken back in one step (to go back to the version five changes ago, click that one; the four after it go
+too). The roll back is a new version: the later versions stay in the History, and one Undo (Ctrl+Z) brings all of them
+back. In the game: the rolled back binds arrive with the next export.
 
 <!-- entry: CloseHistoryCompareCommand -->
 Closes the list of **Details** or **Compare** on the right of the History panel.
@@ -306,7 +308,7 @@ yourself, input by input, with a preview, for example a new stick or a device Jo
 
 <!-- entry: UndoDeviceRemapCommand -->
 **Undo** in the notice about moved devices: puts the binds back on the old devices and closes the notice. Works while
-the move is still the last change; after other changes JoyPro opens the History panel instead, where you restore the
+the move is still the last change; after other changes JoyPro opens the History panel instead, where you roll back to the
 version before the move.
 
 <!-- entry: TakeOutAutoAddedCommand -->

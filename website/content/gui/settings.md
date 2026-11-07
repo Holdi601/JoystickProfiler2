@@ -353,6 +353,12 @@ DCS reads the force feedback direction per device at start: a swapped or inverte
 aircraft.
 :::
 
+### Experimental
+
+**Several inputs per relation (experimental)**: a relation can have more than one input, each with its own device,
+modifiers and axis curve, for example the same grip on two bases. The Binds page then shows **More inputs** and **Copy
+every bind of a device to another device** ([[gui:binds|Binds]]). Exports write every input where the game can hold
+them and name the relations where it cannot. Off (the default): only the main input is used, exactly as before.
 :::layer advanced
 ## Tips and interactions
 
@@ -496,6 +502,13 @@ Nothing is uploaded by JoyPro.
 <!-- entry: OpenLogFolderCommand -->
 Opens JoyPro's log folder in Explorer: the background logs of the GUI and the engine and the session log of the Output
 panel.
+
+<!-- entry: bind:MultiBindEnabled -->
+**Several inputs per relation (experimental)**: on, a relation can be on more than one input (two sticks for the same
+functions, a second fire button), each with its own modifiers and axis curve; the Binds page gets the panel More inputs
+and Copy every bind of a device to another device. Exports write every input where the game can hold several per action
+and name the relations where it cannot. Off (the default), profiles and exports are exactly as before. Kept after a
+restart.
 
 <!-- entry: bind:LlmEnabled -->
 Switches the optional local AI model on or off for every AI action (Manage with AI, Edit with AI, the JoyPro assistant,

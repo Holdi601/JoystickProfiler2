@@ -299,8 +299,7 @@ namespace JoyPro
             byte[] content;
             using (MemoryStream buffer = new MemoryStream())
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Binder = new LegacyJoyProSerializationBinder();
+                BinaryFormatter formatter = ProfileFormatter.Writer();
                 formatter.Serialize(buffer, profile);
                 content = buffer.ToArray();
             }
@@ -344,9 +343,12 @@ namespace JoyPro
         {
             Dictionary<string, Modifier> rebuilt = new Dictionary<string, Modifier>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (KeyValuePair<string, Bind> relationBind in AllBinds)
+            // The main binds, then the extra binds of the relations (experimental multi-bind, kept also while it is off).
+            IEnumerable<Bind> everyBind = AllBinds.Values;
+            if (AllRelations != null && AllRelations.Values.Any(r => r != null && r.ExtraBinds != null && r.ExtraBinds.Count > 0))
+                everyBind = everyBind.Concat(AllRelations.Values.Where(r => r != null && r.ExtraBinds != null).SelectMany(r => r.ExtraBinds)).ToList();
+            foreach (Bind bind in everyBind)
             {
-                Bind bind = relationBind.Value;
                 if (bind == null)
                     continue;
 
@@ -410,6 +412,7 @@ namespace JoyPro
                 }
 
                 relation.RecalculateElementCount();
+                JoyPro.Engine.MultiBind.Normalize(relation);
 
                 if (AllBinds.ContainsKey(key))
                 {
@@ -460,6 +463,26 @@ namespace JoyPro
             RebuildJoystickActivity();
         }
 
+        // Every bind by relation name: the main binds, then the relations' extra binds (experimental multi-bind; all of
+        // them, also while the setting is off, so device names, modifiers and the device list stay right for them).
+        // Without extra binds exactly AllBinds.
+        internal static IEnumerable<KeyValuePair<string, Bind>> BindsWithExtras()
+        {
+            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+                yield return entry;
+            if (AllRelations == null)
+                yield break;
+            foreach (KeyValuePair<string, Relation> relation in AllRelations)
+            {
+                if (relation.Value == null || relation.Value.ExtraBinds == null)
+                    continue;
+                foreach (Bind extra in relation.Value.ExtraBinds)
+                {
+                    if (extra != null)
+                        yield return new KeyValuePair<string, Bind>(relation.Key, extra);
+                }
+            }
+        }
         public static void RecalcFigures()
         {
             foreach (KeyValuePair<string, Relation> entry in AllRelations)
@@ -864,8 +887,7 @@ namespace JoyPro
             sb.Append("db-planes=").Append(snapshot.DatabasePlanes == null ? "-" : snapshot.DatabasePlanes.Count.ToString(System.Globalization.CultureInfo.InvariantCulture) + ":" + string.Join(",", snapshot.DatabasePlanes)).Append('\n');
             using (MemoryStream buffer = new MemoryStream())
             {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Binder = new LegacyJoyProSerializationBinder();
+                BinaryFormatter formatter = ProfileFormatter.Writer();
                 formatter.Serialize(buffer, snapshot);
                 using (System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create())
                     sb.Append("profile=").Append(Convert.ToBase64String(sha.ComputeHash(buffer.ToArray()))).Append('\n');
@@ -961,6 +983,12 @@ namespace JoyPro
             // Games split into versions (MSFS, XPlane): one node per version.
             JoyPro.Engine.Games.LegacyGameIds.MigrateRelation(relation);
             relation.RecalculateElementCount();
+
+            // Extra binds (experimental multi-bind): normalized like the main bind.
+            JoyPro.Engine.MultiBind.Normalize(relation);
+            if (relation.ExtraBinds != null)
+                foreach (Bind extra in relation.ExtraBinds)
+                    NormalizeBind(extra, relation);
         }
 
         // Games without aircraft (IL-2, Star Citizen, the registry games) keep their node state under the game name,
@@ -1023,7 +1051,7 @@ namespace JoyPro
         private static void RebuildJoystickActivity()
         {
             Dictionary<string, bool> activity = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick))
@@ -1617,7 +1645,7 @@ namespace JoyPro
 
         private static void CorrectModifiersInBindsForLoad()
         {
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null)
@@ -2746,7 +2774,7 @@ namespace JoyPro
                 }
             }
 
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null)
@@ -3025,7 +3053,7 @@ namespace JoyPro
                     .Where(v => !string.IsNullOrWhiteSpace(v)),
                 StringComparer.OrdinalIgnoreCase);
 
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick))
@@ -3092,7 +3120,7 @@ namespace JoyPro
                 }
             }
 
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick))
@@ -3273,7 +3301,7 @@ namespace JoyPro
             if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(replacement))
                 return;
 
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick))
@@ -3303,7 +3331,7 @@ namespace JoyPro
                     modifier.device = replacement;
             }
 
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null || bind.AllReformers == null)
@@ -3354,7 +3382,7 @@ namespace JoyPro
         private static List<string> GetJoysticksActiveInBinds()
         {
             List<string> result = new List<string>();
-            foreach (KeyValuePair<string, Bind> entry in AllBinds)
+            foreach (KeyValuePair<string, Bind> entry in BindsWithExtras())
             {
                 Bind bind = entry.Value;
                 if (bind == null || string.IsNullOrWhiteSpace(bind.Joystick))

@@ -104,6 +104,8 @@ namespace JoyPro.Engine
         public string AliasJoystick { get; set; }
         public bool DoubleTap { get; set; }
         public Dictionary<string, string> TuningOverrides { get; set; }
+        // Experimental multi-bind (docs/multi-bind.md): the relation's other binds (main bind only; null when it has none).
+        public List<EngineBindDto> ExtraBinds { get; set; }
 
         public EngineBindDto()
         {

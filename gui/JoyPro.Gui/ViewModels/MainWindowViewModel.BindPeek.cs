@@ -140,10 +140,18 @@ public sealed partial class MainWindowViewModel
         BindPeekGroups.Clear();
         foreach (IGrouping<string, BindPeekAction> game in actions.GroupBy(a => a.Game, StringComparer.OrdinalIgnoreCase))
             BindPeekGroups.Add(new BindPeekGroup(game.Key, game.ToList()));
+        ShowBindPeekPlanesFilterFirst();
         OnPropertyChanged(nameof(BindPeekActionCount));
         OnPropertyChanged(nameof(HasBindPeekActions));
         OnPropertyChanged(nameof(ShowBindPeekEmpty));
         OnPropertyChanged(nameof(BindPeekTitle));
+    }
+
+    // The Binds page's Games filter: each action names the filter's aircraft first (display only, 2.6.4 tester report).
+    internal void ShowBindPeekPlanesFilterFirst()
+    {
+        foreach (BindPeekAction action in BindPeekGroups.SelectMany(g => g.Actions))
+            action.ShowPlanes(BindFilter.FilteredFirst(action.Game, action.Planes));
     }
 
     // "Open in Relations": the relation editor with this relation.
@@ -203,7 +211,19 @@ public sealed partial class BindPeekAction : ObservableObject
 
     public string PlanesText => Plural("{0} aircraft", "{0} aircraft", Planes.Count);
 
-    public string PlaneNames => string.Join(", ", Planes);
+    // The aircraft as the page names them: the Games filter's first (BindPeekAction.ShowPlanes), else in their order.
+    public string PlaneNames => string.Join(", ", shownPlanes ?? Planes);
+
+    private IReadOnlyList<string>? shownPlanes;
+
+    public void ShowPlanes(IReadOnlyList<string> ordered)
+    {
+        IReadOnlyList<string>? next = ordered.SequenceEqual(Planes, StringComparer.Ordinal) ? null : ordered;
+        if ((next == null && shownPlanes == null) || (next != null && shownPlanes != null && next.SequenceEqual(shownPlanes, StringComparer.Ordinal)))
+            return;
+        shownPlanes = next;
+        OnPropertyChanged(nameof(PlaneNames));
+    }
 
     [ObservableProperty]
     private bool isExpanded;

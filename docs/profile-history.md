@@ -91,8 +91,9 @@ Undo / Redo (Ctrl+Z, Ctrl+Y or Ctrl+Shift+Z) walk the versions like an editor's 
 - a change's `parent` is the version it was made on; Undo writes the parent's content back and records an `undo`
   version (`from` = the parent), the undone version goes on the redo stack;
 - Redo writes the newest entry of the redo stack back (`redo` version); any new change clears the redo stack;
-- `Restore` of an older version is a change of its own (parent = the state before it), so Undo returns to the state
-  before the restore;
+- `Restore` of an older version (GUI: `Roll back to here`) is a change of its own (parent = the state before it): the
+  profile becomes that version, so every change after it is taken back in one step, and one Undo returns to the state
+  before the restore; its label is "Rolled back to the version of <time> (<title>)";
 - a checkpoint of the content the profile is at does not move the undo cursor, so an undo after an export takes back
   the last change, not the export;
 - versions removed by the clean-up are skipped: a parent that is gone is replaced by its own parent.

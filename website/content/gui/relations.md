@@ -86,7 +86,8 @@ after the next export the action is on this relation's button instead.
 
 <!-- entry: OpenCatalogCommand -->
 Opens the catalog: every action of a game (DCS: of an aircraft) by its categories, with ticks and **Only free**
-(actions no relation uses yet). Engine: `engine relations browse`.
+(actions no relation uses yet). It starts on the open relation's game and aircraft; with the **Games** filter on, on the
+filtered aircraft (or game) when the relation has it. Engine: `engine relations browse`.
 The filter box keeps the actions whose name has your words and, with **Same meaning** on, those that do what they mean
 ("thrust" finds the throttles); while it has text, **Recommended** marks the best action for your words and the best rows
 come first.
@@ -120,7 +121,10 @@ Deletes the open relation (Ctrl+Z brings it back). In the game: at the next expo
 the same DCS id where it means the same.
 
 <!-- entry: BindSelectedRelationCommand -->
-Opens the Binds page with this relation selected, ready to record its button or axis.
+Opens the Binds page with this relation's bind selected: **Not bound yet: Binds page** for a relation without a bind,
+ready to record its button or axis; the bind chip under the name ("MFD CENTER · BTN 11", with an arrow) for a bound
+one. **Back** (Alt+Left) brings you to the relation again. The way the other way round: **Open in Relations** on the
+Binds page.
 
 <!-- entry: bind:Item.Row.IsChecked -->
 Catalog: ticks one action of the game or aircraft. **Add** at the bottom of the catalog puts the ticked actions into

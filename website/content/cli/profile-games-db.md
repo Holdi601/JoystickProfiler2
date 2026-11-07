@@ -334,7 +334,8 @@ engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile his
 <!-- entry: profile history restore -->
 :::layer beginner
 Puts an older version of the profile back, or takes the last change back (`undo`) and brings it back again (`redo`). The
-top bar's **Undo**, **Redo** and the **History** panel's **Restore** do the same.
+top bar's **Undo**, **Redo** and the **History** panel's **Roll back to here** do the same (a restore takes back every change
+after that version in one step).
 
 ```powershell
 engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile history restore 12 --text
@@ -353,7 +354,7 @@ engine --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" profile his
 :::
 
 :::layer technical
-- Output: JSON (`Action`, `Changed`, `Message`, `Version`), or the message with `--text`: `Restored the version of
+- Output: JSON (`Action`, `Changed`, `Message`, `Version`), or the message with `--text`: `Rolled back to the version of
   <time>.`, `Undone: <description>.`, `Redone: <description>.`, `The profile is already at this version.`, `Nothing to
   undo.`, `Nothing to redo.` or `This profile has no history yet.` (exit code `0`, `Changed` false for the last four).
 - Exit code `1` with `engine profile history restore <version id> (a version of 'engine profile history list').` when

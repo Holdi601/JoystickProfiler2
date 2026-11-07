@@ -195,6 +195,10 @@ namespace JoyPro.Engine
 
             ReportStatus(effectiveOptions, "Applying parsed bindings to in-memory profile.");
             ApplyImport(parsed, parsedFfb, merge, effectiveOptions, result);
+            // Experimental multi-bind (setting on): functions the files have on several inputs, offered as one relation each.
+            string joinOffer = EngineJoinInputs.ImportOffer("DCS");
+            if (joinOffer != null)
+                result.Warnings.Add(joinOffer);
             ReportStatus(
                 effectiveOptions,
                 "DCS import complete. Relations: " +
@@ -1484,6 +1488,27 @@ namespace JoyPro.Engine
                     family[familyKey] = existingRelation;
                     if (titleKey != null && !byTitle.ContainsKey(titleKey))
                         byTitle[titleKey] = existingRelation;
+                    continue;
+                }
+
+                // Experimental multi-bind (setting on): JoyPro's own .jp names the relation, which has another input: this
+                // bind is one of its inputs (an extra bind exported on another device or button), not a "__N" copy.
+                Relation owner;
+                Bind ownerMain;
+                if (MultiBind.Enabled && !parsedBind.IsDefault && !string.IsNullOrWhiteSpace(parsedBind.RelationName) &&
+                    relations.TryGetValue(relationName, out owner) && owner != null && owner.ISAXIS == parsedBind.IsAxis &&
+                    binds.TryGetValue(relationName, out ownerMain) && ownerMain != null)
+                {
+                    string inputSignature = Games.GameProfileBridge.BuildSignature(parsedBind.Device, parsedBind.IsAxis, parsedBind.Key, parsedBind.Reformers);
+                    Bind extra = MultiBind.FindExtra(owner, inputSignature);
+                    if (extra == null)
+                    {
+                        extra = CreateBind(parsedBind, owner, options);
+                        owner.bind = ownerMain;
+                        MultiBind.Add(owner, extra);
+                        result.ImportedBinds++;
+                    }
+                    MergeIntoExistingRelation(parsedBind, owner, extra, options);
                     continue;
                 }
 

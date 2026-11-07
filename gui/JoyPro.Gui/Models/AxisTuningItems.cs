@@ -7,17 +7,95 @@ using JoyPro.Engine.Axis;
 
 namespace JoyPro.Gui.Models;
 
-// One entry of the axis curve manager's scope list: where a tuning is stored ("base", "game:DCS", "plane:DCS:F-16C_50",
-// "family:il2") and which game's response model edits and previews it.
+// The aircraft of one game that share a curve today ("AH-64D CPG, AH-64D PLT: same curve", "Ka-50 III: uses DCS"); a click
+// ticks them. Scopes: what is ticked ("game:DCS" = the aircraft that use the game's curve, else their plane scopes).
+public sealed class AxisTuningGroupItem : ObservableObject
+{
+    public AxisTuningGroupItem(string text, string tip, System.Collections.Generic.IReadOnlyList<string> scopes)
+    {
+        Text = text;
+        Tip = tip;
+        Scopes = scopes;
+    }
+
+    public string Text { get; }
+
+    public string Tip { get; }
+
+    public System.Collections.Generic.IReadOnlyList<string> Scopes { get; }
+
+    // These are the ticked rows now.
+    public bool IsCurrent
+    {
+        get => isCurrent;
+        set => SetProperty(ref isCurrent, value);
+    }
+
+    private bool isCurrent;
+}
+
+// One row of the axis curve manager's "Applies to" list: where a tuning is stored ("base", "game:DCS",
+// "plane:DCS:F-16C_50", "family:il2"), which game's response model edits and previews it, whether it is ticked and what
+// it uses today ("own curve", "same as ...", "uses DCS").
 public sealed class AxisTuningScopeItem : ObservableObject
 {
-    public AxisTuningScopeItem(string scope, string label, string game, string plane)
+    public AxisTuningScopeItem(string scope, string label, string game, string plane, bool isShown = true)
     {
         Scope = scope;
         Label = label;
         Game = game;
         Plane = plane;
+        this.isShown = isShown;
     }
+
+    // Ticked: the curve shown is saved for this row (several aircraft of one game can be ticked together).
+    public bool IsChecked
+    {
+        get => isChecked;
+        set => SetProperty(ref isChecked, value);
+    }
+
+    private bool isChecked;
+
+    // A family row shows only where it applies (two of its games in the relation, or a curve stored for it).
+    public bool IsShown
+    {
+        get => isShown;
+        set => SetProperty(ref isShown, value);
+    }
+
+    private bool isShown;
+
+    // "own curve", "same as AH-64D CPG", "uses DCS".
+    public string UsesText
+    {
+        get => usesText;
+        set => SetProperty(ref usesText, value);
+    }
+
+    private string usesText = string.Empty;
+
+    public string UsesTip
+    {
+        get => usesTip;
+        set => SetProperty(ref usesTip, value);
+    }
+
+    private string usesTip = string.Empty;
+
+    // The row has a curve of its own (the base always has).
+    public bool IsOwn
+    {
+        get => isOwn;
+        set => SetProperty(ref isOwn, value);
+    }
+
+    private bool isOwn;
+
+    public bool IsAircraft => Scope.StartsWith("plane:", StringComparison.Ordinal);
+
+    // Aircraft rows sit under their game.
+    public double IndentWidth => IsAircraft ? 26 : 0;
 
     public string Scope { get; }
 

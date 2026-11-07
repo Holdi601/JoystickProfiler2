@@ -1952,3 +1952,19 @@ engine cockpits get f-16 f-16c-block-50 --text
   `%LOCALAPPDATA%\JoyPro2\GameData\CockpitPictures\<game>`.
 - Reference: [[doc:cockpits]]. Related: [[cli:setup plan]] (`--cockpit-file`).
 :::
+
+<!-- entry: relations join-inputs -->
+:::layer beginner
+Experimental: relations that do exactly the same (the same actions with the same aircraft on) on other inputs become
+one relation with several inputs. An import names them when the setting is on ("keep each as one relation with
+several inputs?").
+
+```powershell
+engine --multi-bind on relations join-inputs --game DCS --apply --profile "C:\Users\Pilot\Documents\JoyPro\My Sticks.pr0file" --text
+```
+:::
+
+:::layer advanced
+- Without `--apply` a preview. The relation kept is one without a copy suffix, else the shortest name; the others'
+  inputs become its extra inputs, their groups join it, and they are removed (one undo step).
+:::

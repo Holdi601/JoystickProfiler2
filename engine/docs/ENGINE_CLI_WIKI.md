@@ -115,6 +115,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   --history-note <text>  Name of this change in the profile history (default: the command's name)
   --vjoy-tunnel <1-16>|none  The vJoy device JoyPro tunnels into: virtual mode writes there (the first vJoy device of the table, function outputs, forwarder, Gremlin import); imports and scans (dcs, il2, starcitizen, the other games) of games in native mode leave only that vJoy device out; every other vJoy device is read like any device (default: none)
   --usage-style on|off   Auto Assign, Auto Group, Setup wizard, Lay out with AI: new aircraft follow your most used one (usage ranking; default on)
+  --multi-bind on|off    Experimental: a relation can have several inputs (binds extra); exports, checks and pages use them (default off: only the main bind, as always; JOYPRO_MULTI_BIND=1 also switches it on)
 ```
 
 ### Commands
@@ -423,6 +424,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine devices inputs [--include-off]   (aliases: catalog, input-catalog)
   engine devices exchange <old-device> <new-device> [--old <name>] [--new <name>] [--confirm true|false]   (alias: swap; renames the device, inputs stay)
   engine devices replace <old-device> <new-device> [--old <name>] [--new <name>] [--mode auto|same|layout] [--map OLD=NEW]... [--merge add|keep|replace] [--grip <device>=<grip id>]... [--dry-run]   (moves binds and modifiers input by input: same = the same input ids, layout = by the part on the device (device catalog), auto = same for the same product, else layout; --merge where the new device already has a bind on the input: add = both stay (default), keep = the new device's bind wins, replace = the old device's bind wins; --old/--from and --new/--to name the devices instead of the positions; --dry-run previews)
+  engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)
   engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)
   engine devices remove <device-name> [--device <name>] [--confirm true|false]   (aliases: purge, clear)
   engine devices alias list | set <device> <alias> | clear <device>   (a name of your own for a device; display only, exports use the real device)
@@ -475,6 +477,7 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine relations duplicates --instruction "keep trim in the Trim relations, everything else in ..." [--llm off|auto|on] [--apply]
   engine relations conflicts [--keys "k;k"] [--keep <relation> | --keep-action <id> | --off | --ignore | --remove-actions | --forget-kept] [--include-kept | --list-kept]
   engine relations merge-copies [--dry-run] [--name <relation>]
+  engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)
   engine relations meanings [--game g] [--top N]
   engine relations action-info --coverage [--game g] [--all-examples]
   engine relations auto-group [--preset all|wing|era|purist] [--no-substitutes] [--planes p1|p2|Game] [--replace] [--dry-run] [--no-map]   (--replace first removes the relations tagged AutoGroup (an earlier Auto Group) with their binds; your other relations stay)
@@ -508,6 +511,11 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine binds show <bind-or-relation>
   engine binds set <bind-or-relation> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>] [--clear-modifiers] [--clear-input] [--inverted true|false] [--slider true|false] [--curvature <csv>] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--double-tap true|false]
   engine binds clear <bind-or-relation> [--input-only]
+  engine binds extra list <relation>   (experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)
+  engine binds extra add <relation> --device <name> --input <value> [--format dcs|il2] [--modifier <name>]... [--copy-tuning true|false] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (another input that does the same; an axis starts with the main bind's tuning unless --copy-tuning false; a relation without a bind gets it as its bind)
+  engine binds extra set <relation> <n> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>]... [--clear-modifiers] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (changes input n (2 or more); scoped axis tuning of it: binds tuning set <relation> --bind <n>)
+  engine binds extra remove <relation> <n>|--all   (works also with the setting off)
+  engine binds extra move <relation> <n> --to <m> | --to-relation <name>   (--to 1 makes it the main bind and the main bind takes its place; --to-relation moves the input to another relation of the same kind)
   engine binds modifier list [bind-or-relation]
   engine binds modifier add <bind-or-relation> <mod1> [mod2] [...]
   engine binds modifier remove <bind-or-relation> <mod1> [mod2] [...] [--all]
@@ -539,9 +547,9 @@ engine profile save "C:\profiles\my_setup.pr0file"
   engine usage pin|unpin|exclude|include <game> [<aircraft/ship>]   (your choices on the ranking; pinned = the model for new aircraft of its class; the game must be known and the aircraft / ship in the ranking, or already pinned / excluded)
   engine usage backups | engine usage restore <day>   (the usage store's daily backups; restore takes a day engine usage backups lists)
   engine binds tuning models   (the axis response models: DCS, IL-2 Great Battles, IL-2 Korea, the per-game models (Arma, Elite, BMS, FSX, IL-2 1946, Cliffs of Dover, MSFS, Project Wingman, Star Citizen, VTOL VR, WARDOGS, War Thunder, X-Plane) and the generic one, with their parameters)
-  engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]
-  engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]
-  engine binds tuning clear <bind-or-relation> --scope game:<game>|plane:<game>:<plane>|family:<family>
+  engine binds tuning show <bind-or-relation> [--bind <n>] [--game <game>] [--plane <plane>]   (every scope; per game and DCS aircraft of the relation the scope its curve comes from)
+  engine binds tuning set <bind-or-relation> [--bind <n>] --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]... [--clear-scope <scope>]... [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]
+  engine binds tuning clear <bind-or-relation> [--bind <n>] --scope game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]...   (several scopes: one change, one undo step)
   engine binds tuning preview <bind-or-relation> --game <game> [--plane <plane>] [--points <n>]
   engine binds detent show <bind-or-relation>   (detent mode: settings, the device axis calibration, the aircraft grouped by afterburner start, per game the curve it gets and how exactly)
   engine binds detent set <bind-or-relation> [--on|--off] [--no-ab full|linear] [--unknown full|linear] [--margin <0..0.1>] [--target <game>:<plane>=ab:<0..1>|full|linear|default]...
@@ -750,6 +758,14 @@ What it does: Global option: on (default) lets Auto Assign, Auto Group, the Setu
 Example:
 ```powershell
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' --usage-style off relations auto-assign --dry-run --text
+```
+
+### `--multi-bind`
+What it does: Command argument. See examples for typical values.
+
+Example:
+```powershell
+engine --help
 ```
 
 
@@ -6037,6 +6053,26 @@ engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace 'Old St
 engine --profile 'C:\JoyPro\profiles\pilot_main.pr0file' devices replace --from 'Old Stick' --to 'New Stick' --mode layout --merge keep --text
 ```
 
+### `engine devices copy-to <device-A> <device-B> [--mode auto|same|layout] [--map OLD=NEW]... [--grip <device>=<grip id>]... [--merge skip|add] [--dry-run]   (experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step)`
+What it does: Experimental, needs --multi-bind on to apply: every bind of A gets the matching input of B as one more input of the same relation, matched like devices replace; A keeps its binds; an input of B another relation uses is left out unless --merge add; --dry-run previews; one undo step.
+
+Arguments and example values:
+- `<device-A>`: Command argument. See examples for typical values.
+- `<device-B>`: Command argument. See examples for typical values.
+- `--mode`: Export mode for DCS/IL2 export commands: clean, add, merge, merge-overwrite.
+- `--map`: Command argument. See examples for typical values.
+- `--grip`: Command argument. See examples for typical values.
+- `<device>`: Command argument. See examples for typical values.
+- `<grip id>`: Command argument. See examples for typical values.
+- `--merge`: Merge import results into existing in-memory profile.
+- `--dry-run`: Report what the command would do; nothing is written or changed.
+- `--multi-bind`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine devices copy-to <device-A> <device-B> --text
+```
+
 ### `engine devices auto-remap [--dry-run]   (alias: remap; a profile device that is not connected gets the connected device of the same product with a new GUID)`
 What it does: A profile device that is not connected gets the connected device of the same product with a new GUID (alias: remap); --dry-run previews.
 
@@ -6897,6 +6933,22 @@ Examples:
 engine relations merge-copies --text
 ```
 
+### `engine relations join-inputs [--game <id>] [--relation <name>] [--apply]   (experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on)`
+What it does: Experimental, --apply needs --multi-bind on: relations that do the same (the same actions with the same aircraft on) on other inputs become one relation with several inputs; without --apply a preview; an import names them when the setting is on.
+
+Arguments and example values:
+- `--game`: Game filter value. Example: DCS or IL2Game.
+- `<id>`: Command argument. See examples for typical values.
+- `--relation`: Select one relation per flag for mass operations. Example: --relation 'Trim Pitch'.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--apply`: Command argument. See examples for typical values.
+- `--multi-bind`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine relations join-inputs --text
+```
+
 ### `engine relations meanings [--game g] [--top N]`
 What it does: Per game: ids shared by several aircraft lists and how many of them mean something else in some aircraft.
 
@@ -7529,6 +7581,99 @@ engine binds clear 'Gear Toggle' --text
 engine binds clear 'Gear Toggle' --input-only --text
 ```
 
+### `engine binds extra list <relation>   (experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning)`
+What it does: Experimental, changes need --multi-bind on: the relation's inputs numbered as the pages show them, 1 = the main bind, 2.. = the other inputs, each with its own device, input, modifiers and axis tuning.
+
+Arguments and example values:
+- `<relation>`: Command argument. See examples for typical values.
+- `--multi-bind`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine binds extra list <relation> --text
+```
+
+### `engine binds extra add <relation> --device <name> --input <value> [--format dcs|il2] [--modifier <name>]... [--copy-tuning true|false] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (another input that does the same; an axis starts with the main bind's tuning unless --copy-tuning false; a relation without a bind gets it as its bind)`
+What it does: Another input that does the same; an axis starts with the main bind's tuning unless --copy-tuning false; a relation without a bind gets it as its bind.
+
+Arguments and example values:
+- `<relation>`: Command argument. See examples for typical values.
+- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--input`: Input token. Example: --input JOY_BTN1 or --input joy0_b0.
+- `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
+- `--format`: Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export.
+- `--modifier`: Modifier key token. Example: --modifier LShift.
+- `--copy-tuning`: Command argument. See examples for typical values.
+- `--inverted`: Set axis inversion flag on selected bind (true/false).
+- `--slider`: Set axis slider flag on selected bind (true/false).
+- `--deadzone`: Set deadzone numeric value. Example: --deadzone 0.15.
+- `<v>`: Command argument. See examples for typical values.
+- `--saturation-x`: Set saturation X numeric value. Example: --saturation-x 0.9.
+- `--saturation-y`: Set saturation Y numeric value. Example: --saturation-y 0.8.
+- `--curvature`: Set curvature list. Example: --curvature 0.1,0.2,0.3.
+
+Examples:
+```powershell
+engine binds extra add <relation> --device <name> --input <value> --text
+```
+
+### `engine binds extra set <relation> <n> [--device <name>] [--input <value>] [--format dcs|il2] [--modifier <name>]... [--clear-modifiers] [--inverted true|false] [--slider true|false] [--deadzone <v>] [--saturation-x <v>] [--saturation-y <v>] [--curvature <v>]   (changes input n (2 or more); scoped axis tuning of it: binds tuning set <relation> --bind <n>)`
+What it does: Changes input n (2 or more); scoped axis tuning of it: binds tuning set <relation> --bind <n>.
+
+Arguments and example values:
+- `<relation>`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--device`: Include one device per flag. Example: --device LEFT VPC Throttle.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+- `--input`: Input token. Example: --input JOY_BTN1 or --input joy0_b0.
+- `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
+- `--format`: Format selector. Example values: dcs/il2 for binds unbind, rl/json for relations mass export.
+- `--modifier`: Modifier key token. Example: --modifier LShift.
+- `--clear-modifiers`: Clears all modifiers from the selected bind.
+- `--inverted`: Set axis inversion flag on selected bind (true/false).
+- `--slider`: Set axis slider flag on selected bind (true/false).
+- `--deadzone`: Set deadzone numeric value. Example: --deadzone 0.15.
+- `<v>`: Command argument. See examples for typical values.
+- `--saturation-x`: Set saturation X numeric value. Example: --saturation-x 0.9.
+- `--saturation-y`: Set saturation Y numeric value. Example: --saturation-y 0.8.
+- `--curvature`: Set curvature list. Example: --curvature 0.1,0.2,0.3.
+- `--bind`: Command argument. See examples for typical values.
+
+Examples:
+```powershell
+engine binds extra set <relation> <n> --text
+```
+
+### `engine binds extra remove <relation> <n>|--all   (works also with the setting off)`
+What it does: Works also with the setting off.
+
+Arguments and example values:
+- `<relation>`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--all`: Apply operation to all matches (or select all relations/devices where supported).
+
+Examples:
+```powershell
+engine binds extra remove <relation> <n>|--all --text
+```
+
+### `engine binds extra move <relation> <n> --to <m> | --to-relation <name>   (--to 1 makes it the main bind and the main bind takes its place; --to-relation moves the input to another relation of the same kind)`
+What it does: --to 1 makes it the main bind and the main bind takes its place; --to-relation moves the input to another relation of the same kind.
+
+Arguments and example values:
+- `<relation>`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
+- `--to`: The target: the new position (relations item move), the file or folder to write (telemetry export), the folder to unpack into (support unpack). Example: C:\Cases\case1.
+- `<m>`: Command argument. See examples for typical values.
+- `--to-relation`: Command argument. See examples for typical values.
+- `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
+
+Examples:
+```powershell
+engine binds extra move <relation> <n> --to <m> --text
+```
+
 ### `engine binds modifier list [bind-or-relation]`
 What it does: Lists modifiers on one bind, or all modifiers across all binds.
 
@@ -7970,11 +8115,13 @@ Examples:
 engine binds tuning models --text
 ```
 
-### `engine binds tuning show <bind-or-relation> [--game <game>] [--plane <plane>]`
+### `engine binds tuning show <bind-or-relation> [--bind <n>] [--game <game>] [--plane <plane>]   (every scope; per game and DCS aircraft of the relation the scope its curve comes from)`
 What it does: Shows the axis tuning of a bind per scope (base, game, plane, family) and, with --game, what that game (and plane) uses.
 
 Arguments and example values:
 - `<bind-or-relation>`: Relation name or bind selector. Example: Trim Pitch.
+- `--bind`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
 - `--game`: Game filter value. Example: DCS or IL2Game.
 - `<game>`: Command argument. See examples for typical values.
 - `--plane`: Include one plane/module per flag. Example: --plane A-10C_2.
@@ -7985,15 +8132,20 @@ Examples:
 engine binds tuning show 'Pitch Axis' --game IL2Korea --text
 ```
 
-### `engine binds tuning set <bind-or-relation> --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]`
+### `engine binds tuning set <bind-or-relation> [--bind <n>] --scope base|game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]... [--clear-scope <scope>]... [--param <name>=<value>]... [--inverted true|false] [--slider true|false] [--deadzone <value>] [--saturation-x <value>] [--saturation-y <value>] [--curvature <csv>] [--curve-points <x:y,...>|none]`
 What it does: Sets axis tuning for one scope: base (all games), game:<game>, plane:<game>:<plane> or family:<family>. A game without its own tuning gets the base curve fitted to its model.
 
 Arguments and example values:
 - `<bind-or-relation>`: Relation name or bind selector. Example: Trim Pitch.
+- `--bind`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
 - `--scope`: Axis tuning scope: base, game:<game>, plane:<game>:<plane> or family:<family>. Example: --scope game:IL2Korea.
 - `<game>`: Command argument. See examples for typical values.
 - `<plane>`: Command argument. See examples for typical values.
 - `<family>`: Command argument. See examples for typical values.
+- `<another>`: Command argument. See examples for typical values.
+- `--clear-scope`: Command argument. See examples for typical values.
+- `<scope>`: Command argument. See examples for typical values.
 - `--param`: A model parameter as name=value, repeatable; game, plane and family scopes only (the base scope does not keep it). Example: --param sensitivity=22.
 - `<name>`: Name value for surrounding option. Example: A-10C_2 or LEFT VPC Throttle.
 - `<value>`: Generic value placeholder. Example for --input: JOY_BTN1 or joy0_b0.
@@ -8016,15 +8168,18 @@ engine binds tuning set 'Pitch Axis' --scope game:IL2Korea --param sensitivity=2
 engine binds tuning set 'Pitch Axis' --scope plane:DCS:F-16C_50 --curvature 0.2 --deadzone 0.02 --text
 ```
 
-### `engine binds tuning clear <bind-or-relation> --scope game:<game>|plane:<game>:<plane>|family:<family>`
+### `engine binds tuning clear <bind-or-relation> [--bind <n>] --scope game:<game>|plane:<game>:<plane>|family:<family> [--scope <another>]...   (several scopes: one change, one undo step)`
 What it does: Removes the tuning of one scope; the scope inherits again.
 
 Arguments and example values:
 - `<bind-or-relation>`: Relation name or bind selector. Example: Trim Pitch.
+- `--bind`: Command argument. See examples for typical values.
+- `<n>`: Integer numeric value. Example: 45.
 - `--scope`: Axis tuning scope: base, game:<game>, plane:<game>:<plane> or family:<family>. Example: --scope game:IL2Korea.
 - `<game>`: Command argument. See examples for typical values.
 - `<plane>`: Command argument. See examples for typical values.
 - `<family>`: Command argument. See examples for typical values.
+- `<another>`: Command argument. See examples for typical values.
 
 Examples:
 ```powershell

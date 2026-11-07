@@ -127,7 +127,8 @@ public sealed partial class MainWindowViewModel
 
     public bool HasAxisTuningValidation => AxisTuningValidation.Length > 0;
 
-    public bool CanClearAxisTuning => AxisTuningLoaded && SelectedAxisTuningScope is { IsBase: false } && AxisTuningIsOwn;
+    // A ticked row (not the base) has a curve of its own to remove.
+    public bool CanClearAxisTuning => AxisTuningLoaded && AxisTuningClearRows().Count > 0;
 
     public bool CanSaveAxisTuning => AxisTuningLoaded && SelectedAxisTuningScope != null && AxisTuningValidation.Length == 0 && axisTuningHasBind;
 
@@ -159,12 +160,18 @@ public sealed partial class MainWindowViewModel
         UpdateAxisTuningMonitor();
     }
 
+    // The row whose curve is shown. Set by the ticks (the first ticked row), or from outside: then that row alone is ticked.
     partial void OnSelectedAxisTuningScopeChanged(AxisTuningScopeItem? value)
     {
         OnPropertyChanged(nameof(AxisTuningSupportsControlPoints));
         RaiseAxisTuningCommandState();
+        if (axisTuningTicking)
+            return;
+        TickOnlyAxisTuningRow(value);
         if (value != null)
             _ = LoadAxisTuningScopeAsync();
+        else
+            UpdateAxisTuningSelectionTexts();
     }
 
     partial void OnAxisTuningValidationChanged(string value)
@@ -192,7 +199,9 @@ public sealed partial class MainWindowViewModel
         axisTuningLoadVersion++;
         axisTuningRelation = string.Empty;
         AxisTuningLoaded = false;
-        AxisTuningScopes.Clear();
+        ClearAxisTuningRows();
+        axisTuningStored = new(StringComparer.OrdinalIgnoreCase);
+        axisTuningUses = new(StringComparer.OrdinalIgnoreCase);
         AxisTuningEditors.Clear();
         ClearAxisTuningControlPoints();
         AxisTuningCurve = [];
@@ -221,7 +230,7 @@ public sealed partial class MainWindowViewModel
         AxisTuningStatus = T("Loading...");
 
         EngineCommandResult? result = await RunEngineAsync(["relations", "show", relation], includeProfile: true, mutatesProfile: false,
-            busyLabel: N("Loading axis tuning scopes..."));
+            busyLabel: N("Loading axis tuning..."));
         if (version != axisTuningScopesVersion)
             return;
         if (result == null || result.ExitCode != 0)
@@ -230,13 +239,40 @@ public sealed partial class MainWindowViewModel
             return;
         }
 
+        // What each game and aircraft uses today: the default ticks depend on it (aircraft with an own curve stay unticked).
+        EngineCommandResult? show = await RunEngineAsync(["binds", "tuning", "show", relation], includeProfile: true, mutatesProfile: false,
+            busyLabel: N("Loading axis tuning..."), forceText: false);
+        if (version != axisTuningScopesVersion)
+            return;
+        if (show != null && show.ExitCode == 0)
+        {
+            try
+            {
+                using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(show.StandardOutput));
+                ReadAxisTuningShow(doc.RootElement);
+            }
+            catch (JsonException)
+            {
+                // The lead's own load reads it again.
+            }
+        }
+
         List<(string Game, IReadOnlyList<string> Planes)> nodes = ParseAxisTuningNodes(result.StandardOutput);
-        string previous = SelectedAxisTuningScope?.Scope ?? string.Empty;
-        AxisTuningScopes.Clear();
-        // Games the user does not have (Settings > Games) get no scope of their own.
+        // A reload of the same relation keeps the ticks.
+        List<string> previous = AxisTuningScopes.Count > 0 ? AxisTuningTickDescriptor() : [];
+        ClearAxisTuningRows();
+        // Games the user does not have (Settings > Games) get no row of their own.
         foreach (AxisTuningScopeItem item in BuildAxisTuningScopes(nodes.Where(n => !IsGameHidden(n.Game))))
+        {
+            HookAxisTuningRow(item);
             AxisTuningScopes.Add(item);
-        SelectedAxisTuningScope = AxisTuningScopes.FirstOrDefault(s => s.Scope == previous) ?? AxisTuningScopes.FirstOrDefault();
+        }
+        UpdateAxisTuningRowStatuses();
+        // The ticks before (a reload), else the ones last saved for this relation, else a game's aircraft that use its
+        // curve (all of them on a fresh relation), else all games.
+        TickAxisTuningRows(previous.Count > 0 ? previous : AxisTuningStartTicks(relation));
+        if (SelectedAxisTuningScope == null)
+            SelectedAxisTuningScope = AxisTuningScopes.FirstOrDefault();
     }
 
     internal static List<(string Game, IReadOnlyList<string> Planes)> ParseAxisTuningNodes(string output)
@@ -256,10 +292,11 @@ public sealed partial class MainWindowViewModel
         return nodes;
     }
 
-    // All games (base), then every game of the relation (DCS followed by its active aircraft), then the families.
+    // All games (base), then every game of the relation (DCS followed by its active aircraft), then the families (shown
+    // when two of their games are in the relation; one stored for the relation shows after the load too).
     internal static List<AxisTuningScopeItem> BuildAxisTuningScopes(IEnumerable<(string Game, IReadOnlyList<string> Planes)> nodes)
     {
-        List<AxisTuningScopeItem> scopes = [new AxisTuningScopeItem("base", T("All games (base)"), "DCS", string.Empty)];
+        List<AxisTuningScopeItem> scopes = [new AxisTuningScopeItem("base", T("All games"), "DCS", string.Empty)];
         List<string> games = [];
         Dictionary<string, SortedSet<string>> planes = new(StringComparer.OrdinalIgnoreCase);
         foreach ((string game, IReadOnlyList<string> nodePlanes) in nodes)
@@ -282,7 +319,7 @@ public sealed partial class MainWindowViewModel
             if (!game.Equals("DCS", StringComparison.OrdinalIgnoreCase))
                 continue;
             foreach (string plane in planes[game])
-                scopes.Add(new AxisTuningScopeItem("plane:" + game + ":" + plane, T("DCS / {0}", plane), game, plane));
+                scopes.Add(new AxisTuningScopeItem("plane:" + game + ":" + plane, AxisTuningAircraftLabel(plane), game, plane));
         }
 
         foreach ((string family, string label, string[] members) in AxisTuningFamilies)
@@ -292,7 +329,7 @@ public sealed partial class MainWindowViewModel
                 continue;
             // The family is edited with the first researched model among its games (Great Battles and Korea read each other's keys).
             string preview = present.FirstOrDefault(g => AxisModels.ForGame(g).Id != AxisModels.Generic) ?? present[0];
-            scopes.Add(new AxisTuningScopeItem("family:" + family, T(label), preview, string.Empty));
+            scopes.Add(new AxisTuningScopeItem("family:" + family, T(label), preview, string.Empty, isShown: present.Count >= 2));
         }
         return scopes;
     }
@@ -301,11 +338,11 @@ public sealed partial class MainWindowViewModel
     internal static string AxisTuningScopeLabelNow(AxisTuningScopeItem item)
     {
         if (item.IsBase)
-            return T("All games (base)");
+            return T("All games");
         if (item.Scope.StartsWith("game:", StringComparison.Ordinal))
             return AxisTuningGameLabel(item.Game);
         if (item.Scope.StartsWith("plane:", StringComparison.Ordinal))
-            return T("DCS / {0}", item.Plane);
+            return AxisTuningAircraftLabel(item.Plane);
         if (item.IsFamily)
         {
             string family = item.Scope["family:".Length..];
@@ -323,12 +360,12 @@ public sealed partial class MainWindowViewModel
         if (item != null)
             return item.Label;
         if (scope == "base")
-            return T("All games (base)");
+            return T("All games");
         string[] parts = scope.Split(':');
         if (parts.Length >= 2 && parts[0] == "game")
             return AxisTuningGameLabel(parts[1]);
         if (parts.Length >= 3 && parts[0] == "plane")
-            return AxisTuningGameLabel(parts[1]) + " / " + string.Join(":", parts.Skip(2));
+            return AxisTuningAircraftLabel(string.Join(":", parts.Skip(2)));
         if (parts.Length >= 2 && parts[0] == "family")
             return AxisTuningFamilies.FirstOrDefault(f => f.Family == parts[1]).Label is { } familyLabel ? T(familyLabel) : scope;
         return scope;
@@ -362,7 +399,6 @@ public sealed partial class MainWindowViewModel
             return;
         }
 
-        Dictionary<string, string> stored = new(StringComparer.OrdinalIgnoreCase);
         string resolvedTuning = string.Empty;
         string resolvedSource = string.Empty;
         bool fitted = false;
@@ -370,11 +406,7 @@ public sealed partial class MainWindowViewModel
         {
             using JsonDocument doc = JsonDocument.Parse(ExtractJsonPayload(result.StandardOutput));
             JsonElement root = doc.RootElement;
-            if (root.TryGetProperty("Scopes", out JsonElement scopes) && scopes.ValueKind == JsonValueKind.Object)
-            {
-                foreach (JsonProperty entry in scopes.EnumerateObject())
-                    stored[entry.Name] = entry.Value.ValueKind == JsonValueKind.String ? entry.Value.GetString() ?? string.Empty : string.Empty;
-            }
+            ReadAxisTuningShow(root);
             if (root.TryGetProperty("Resolved", out JsonElement resolved) && resolved.ValueKind == JsonValueKind.Object)
             {
                 resolvedTuning = GetJsonString(resolved, "Tuning");
@@ -389,6 +421,7 @@ public sealed partial class MainWindowViewModel
         }
 
         AxisModel model = scope.Model;
+        Dictionary<string, string> stored = axisTuningStored;
         AxisTuning baseTuning = AxisTuning.Parse(stored.TryGetValue("base", out string? baseText) ? baseText : string.Empty);
         AxisTuning values;
         string source;
@@ -417,18 +450,19 @@ public sealed partial class MainWindowViewModel
             fitted = model.Fit != null;
         }
 
-        bool isOwn = string.Equals(source, scope.Scope, StringComparison.OrdinalIgnoreCase);
+        bool isOwn = scope.IsBase || string.Equals(source, scope.Scope, StringComparison.OrdinalIgnoreCase);
         AxisTuningIsOwn = isOwn;
         axisTuningHasBind = SelectedBind?.HasBind ?? false;
-        AxisTuningStatus = isOwn
-            ? T("Own settings for {0}", scope.Label)
-            : T("Inherited from {0}{1}", AxisTuningScopeLabel(source), (fitted ? T(" — fitted to this game's model") : string.Empty));
+        axisTuningFittedScope = scope.Scope;
+        axisTuningFitted = fitted;
         AxisTuningModelText = T("Model: {0}. {1}{2}", model.Title, model.Description, (axisTuningHasBind ? string.Empty : T(" Bind a device axis before saving.")));
         AxisTuningUnitsText = AxisUnitsText(model);
         AxisTuningShowsPercent = ModelShowsPercent(model);
         AxisTuningReferenceCurve = isOwn ? null : SampleAxisCurve(AxisModels.Get(AxisModels.Dcs), baseTuning);
         LoadAxisTuningEditors(model, values);
         AxisTuningLoaded = true;
+        // What every row uses now, the line about the ticked ones.
+        UpdateAxisTuningRowStatuses();
     }
 
     // The numbers of this model are shown as its game's dialog shows them, not as stored (AxisParameter.DisplayScale).
@@ -831,23 +865,31 @@ public sealed partial class MainWindowViewModel
             StatusText = error;
             return;
         }
+        // The whole plan in this one engine run: one history version, one Ctrl+Z.
+        AxisTuningSavePlan plan = AxisTuningPlan();
+        foreach (string clear in plan.Clear)
+            args.AddRange(["--clear-scope", clear]);
+        string labels = AxisTuningTickedLabels();
         EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Saving axis tuning..."));
         if (result?.ExitCode != 0)
             return;
-        if (scope.IsBase)
+        if (plan.Kind == "base")
             SyncBaseTuningToBindEditor(axisTuningCurrent);
-        StatusText = T("Axis tuning saved for {0}.", scope.Label);
+        // Opened again later (another relation in between, a restart): these ticks come back.
+        RememberAxisTuningTicks();
+        StatusText = T("Axis curve saved for {0}. Ctrl+Z undoes it.", labels);
         await LoadAxisTuningScopeAsync();
     }
 
     // targetRelation: another axis gets these values (Copy to another axis); withInvert false leaves its invert as it is.
+    // The save plan's scopes get the values (--scope once each; the engine stores them in one run; Save adds the plan's --clear-scope).
     internal List<string>? BuildAxisTuningSetArguments(out string error, string? targetRelation = null, bool withInvert = true)
     {
         AxisTuningScopeItem? scope = SelectedAxisTuningScope;
         error = string.Empty;
         if (scope == null || axisTuningRelation.Length == 0)
         {
-            error = T("Select an axis relation and a scope first.");
+            error = T("Tick where this curve should apply.");
             return null;
         }
         if (!axisTuningHasBind)
@@ -859,7 +901,9 @@ public sealed partial class MainWindowViewModel
         if (tuning == null)
             return null;
 
-        List<string> args = ["binds", "tuning", "set", string.IsNullOrWhiteSpace(targetRelation) ? axisTuningRelation : targetRelation, "--scope", scope.Scope];
+        List<string> args = ["binds", "tuning", "set", string.IsNullOrWhiteSpace(targetRelation) ? axisTuningRelation : targetRelation];
+        foreach (string ticked in AxisTuningPlan().Set)
+            args.AddRange(["--scope", ticked]);
         bool userCurve = AxisTuningEditors.Any(e => e.IsUserCurve && e.IsOn);
         foreach (AxisParameterEditor editor in AxisTuningEditors)
         {
@@ -917,14 +961,17 @@ public sealed partial class MainWindowViewModel
     [RelayCommand]
     private async Task ClearAxisTuningAsync()
     {
-        AxisTuningScopeItem? scope = SelectedAxisTuningScope;
-        if (scope == null || scope.IsBase || axisTuningRelation.Length == 0)
+        // The ticked rows with a curve of their own lose it, all in one engine run (one Ctrl+Z).
+        List<AxisTuningScopeItem> own = AxisTuningClearRows();
+        if (own.Count == 0 || axisTuningRelation.Length == 0)
             return;
-        EngineCommandResult? result = await RunEngineAsync(["binds", "tuning", "clear", axisTuningRelation, "--scope", scope.Scope],
-            includeProfile: true, mutatesProfile: true, busyLabel: N("Clearing axis tuning..."));
+        List<string> args = ["binds", "tuning", "clear", axisTuningRelation];
+        foreach (AxisTuningScopeItem row in own)
+            args.AddRange(["--scope", row.Scope]);
+        EngineCommandResult? result = await RunEngineAsync(args, includeProfile: true, mutatesProfile: true, busyLabel: N("Clearing axis tuning..."));
         if (result?.ExitCode != 0)
             return;
-        StatusText = scope.Label + " inherits its axis tuning again.";
+        StatusText = T("Own curve removed for {0}. Ctrl+Z undoes it.", string.Join(", ", own.Select(r => r.Label)));
         await LoadAxisTuningScopeAsync();
     }
 

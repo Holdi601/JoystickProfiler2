@@ -47,7 +47,8 @@ JoyPro2 helps you:
   restart of JoyPro. The tooltip says what the next undo takes back.
 - `History`: every save is a version. The panel lists them, newest first, with what changed ("Relation 'Throttle
   ALL' created, 42 actions added", "Before export to DCS"). `Details` shows what a version changed, `Compare` what is
-  different now, `Restore` makes the profile as it was then (that is a change too, so `Undo` brings you back), `Keep`
+  different now, `Roll back to here` makes the profile exactly as it was then: every change after it is taken back in
+  one step (that is a change too, so one `Undo` brings them back), `Keep`
   protects a version from the clean-up. The first line shows the space the history uses; `Clean up` thins it out now.
   Old versions are thinned out by themselves: all of the last day, one per hour for 7 days, one per day for 60 days,
   one per week after that, at most 200 MB per profile and 1 GB in total. Details:
@@ -195,7 +196,9 @@ row per game:
 A relation is one function (for example "throttle" or "release flares") of all your games and aircraft: DCS F-16C
 "Throttle", IL-2 "Engines throttle control", Star Citizen "Strafe forward / backward" ... all on one input of your stick.
 The page works like JoyPro 1: pick a relation on the left, search on the right, tick what belongs, add it
-([docs/relation-builder.md](../../docs/relation-builder.md)). Binding happens on the Binds page, not here.
+([docs/relation-builder.md](../../docs/relation-builder.md)). Binding happens on the Binds page, not here: the bind
+chip under the relation's name (or `Not bound yet: Binds page`) opens it with this relation's bind selected, `Back`
+returns.
 
 The page: the relation list on the left (search, group chips, Ctrl/Shift for several); on the right the open relation
 (its name, edited in place, and its actions) and three panels: `Add actions`, `Suggested for this relation` and
@@ -861,7 +864,7 @@ Every engine feature a user needs has a place in the GUI. These options are left
 - Can not create modifier:
   - Name or input is duplicate, or fields are missing.
 - A change went wrong, or you want yesterday's profile back:
-  - `Undo` (Ctrl+Z), or `History` > `Restore` on the version you want (that can be undone too).
+  - `Undo` (Ctrl+Z), or `History` > `Roll back to here` on the version you want (that can be undone too).
 - Anything else, or JoyPro crashed:
   - Settings > `Report a Problem` (see above): the zip contains the logs the developer needs.
   - Your changes are on disk: every change is saved by itself, the file is never half written.

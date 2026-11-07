@@ -127,7 +127,7 @@ namespace JoyPro.Engine
             Dictionary<string, EngineInputConflict> byKey = new Dictionary<string, EngineInputConflict>(StringComparer.OrdinalIgnoreCase);
             List<EngineInputConflict> order = new List<EngineInputConflict>();
             Dictionary<EngineConflictSide, HashSet<string>> sideIds = new Dictionary<EngineConflictSide, HashSet<string>>();
-            foreach (KeyValuePair<string, Bind> kvp in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> kvp in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 string relationName = kvp.Key ?? string.Empty;
                 Bind bind = kvp.Value;

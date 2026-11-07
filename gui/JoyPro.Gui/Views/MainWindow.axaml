@@ -263,7 +263,7 @@
                             <StackPanel Grid.Column="1">
                                 <TextBlock Classes="h2" Text="{l:T 'History'}" />
                                 <TextBlock Classes="caption" TextWrapping="Wrap"
-                                           Text="{l:T 'Every change is saved and becomes a version. Restore one (that is a change too, so Undo brings you back), see what it changed, compare it with now, or keep it for good. Old versions are thinned out: all of the last day, then one per hour for 7 days, one per day for 60 days, one per week after that.'}" />
+                                           Text="{l:T 'Every change is saved and becomes a version. Roll back to one (every change after it is taken back in one step; Undo brings them back), see what it changed, compare it with now, or keep it for good. Old versions are thinned out: all of the last day, then one per hour for 7 days, one per day for 60 days, one per week after that.'}" />
                                 <TextBlock Classes="caption" Text="{Binding HistoryUsageText}" />
                             </StackPanel>
                             <Button Grid.Column="2" Classes="icon small" Tag="{StaticResource Icon.Delete}" Content="{l:T 'Clean up'}" Command="{Binding CleanUpHistoryCommand}"
@@ -292,8 +292,8 @@
                                                         ToolTip.Tip="{l:T 'What is different now'}" />
                                                 <ToggleButton Classes="small" Content="{l:T 'Keep'}" IsChecked="{Binding Keep, Mode=OneWay}" Command="{Binding #RootWindow.DataContext.ToggleHistoryKeepCommand}" CommandParameter="{Binding}"
                                                               ToolTip.Tip="{Binding KeepTip}" />
-                                                <Button Classes="small" Content="{l:T 'Restore'}" IsEnabled="{Binding CanRestore}" Command="{Binding #RootWindow.DataContext.RestoreHistoryVersionCommand}" CommandParameter="{Binding}"
-                                                        ToolTip.Tip="{l:T 'Make the profile as it was then (Undo brings you back)'}" />
+                                                <Button Classes="small" Content="{l:T 'Roll back to here'}" IsEnabled="{Binding CanRestore}" Command="{Binding #RootWindow.DataContext.RestoreHistoryVersionCommand}" CommandParameter="{Binding}"
+                                                        ToolTip.Tip="{l:T 'Makes the profile exactly as it was at this point: every change after it is taken back in one step. Undo brings them back.'}" />
                                             </StackPanel>
                                         </Grid>
                                     </DataTemplate>
@@ -1306,6 +1306,10 @@
                                                                 <TextBlock Text="{Binding BindDevice}" TextTrimming="CharacterEllipsis" />
                                                             </DockPanel>
                                                         </Border>
+                                                        <!-- Experimental multi-bind: the other inputs -->
+                                                        <Border Classes="chip device" IsVisible="{Binding HasMoreInputs}" ToolTip.Tip="{Binding MoreInputsTooltip}">
+                                                            <TextBlock Text="{Binding MoreInputsBadge}" FontWeight="SemiBold" />
+                                                        </Border>
                                                         <ItemsControl ItemsSource="{Binding ModifierChips}" IsVisible="{Binding HasModifierChips}">
                                                             <ItemsControl.ItemsPanel>
                                                                 <ItemsPanelTemplate>
@@ -1873,12 +1877,28 @@
                                                 <WrapPanel ItemSpacing="6" LineSpacing="4">
                                                     <Border Classes="chip axis" IsVisible="{Binding SelectedRelation.IsAxis}" ToolTip.Tip="{l:T 'An axis relation: only axes go in'}"><TextBlock Text="{l:T 'Axis'}" /></Border>
                                                     <Border Classes="chip" IsVisible="{Binding !SelectedRelation.IsAxis}" ToolTip.Tip="{l:T 'A button relation: only buttons go in'}"><TextBlock Text="{l:T 'Button'}" /></Border>
-                                                    <Border Classes="keycap" IsVisible="{Binding SelectedRelation.IsBound}" ToolTip.Tip="{Binding SelectedRelation.BindTooltip}">
-                                                        <DockPanel MaxWidth="360">
-                                                            <TextBlock DockPanel.Dock="Right" Text="{Binding SelectedRelation.BindInputPart}" />
-                                                            <TextBlock Text="{Binding SelectedRelation.BindDevice}" TextTrimming="CharacterEllipsis" />
-                                                        </DockPanel>
-                                                    </Border>
+                                                    <!-- The relation's bind: a click opens it on the Binds page (2.6.4 tester: "a link to take us from
+                                                         the relation to the binds"); Back returns here -->
+                                                    <Button x:Name="RelationBindChip" Classes="chipButton" IsVisible="{Binding SelectedRelation.IsBound}" Command="{Binding BindSelectedRelationCommand}">
+                                                        <ToolTip.Tip>
+                                                            <StackPanel Spacing="4">
+                                                                <TextBlock Text="{Binding SelectedRelation.BindTooltip}" />
+                                                                <TextBlock Text="{l:T 'Open this bind on the Binds page'}" FontWeight="SemiBold" />
+                                                            </StackPanel>
+                                                        </ToolTip.Tip>
+                                                        <Border Classes="keycap">
+                                                            <DockPanel MaxWidth="380">
+                                                                <PathIcon DockPanel.Dock="Right" Data="{StaticResource Icon.ArrowRight}" Width="10" Height="10" Margin="6,0,0,0" VerticalAlignment="Center" />
+                                                                <TextBlock DockPanel.Dock="Right" Text="{Binding SelectedRelation.BindInputPart}" />
+                                                                <TextBlock Text="{Binding SelectedRelation.BindDevice}" TextTrimming="CharacterEllipsis" />
+                                                            </DockPanel>
+                                                        </Border>
+                                                    </Button>
+                                                    <!-- Experimental multi-bind: the relation's other inputs (a click opens the bind with its More inputs) -->
+                                                    <Button x:Name="RelationMoreInputsChip" Classes="chipButton" IsVisible="{Binding SelectedRelation.HasMoreInputs}" Command="{Binding BindSelectedRelationCommand}"
+                                                            ToolTip.Tip="{Binding SelectedRelation.MoreInputsTooltip}">
+                                                        <Border Classes="chip device"><TextBlock Text="{Binding SelectedRelation.MoreInputsBadge}" FontWeight="SemiBold" /></Border>
+                                                    </Button>
                                                     <ItemsControl ItemsSource="{Binding SelectedRelation.ModifierChips}" IsVisible="{Binding SelectedRelation.HasModifierChips}">
                                                         <ItemsControl.ItemsPanel>
                                                             <ItemsPanelTemplate>
@@ -2029,7 +2049,8 @@
                                                             </Border>
                                                             <Panel Grid.Column="1" VerticalAlignment="Center" Width="34" Height="34">
                                                                 <controls:GameBadge GameId="{Binding Game}" Title="{Binding GameLabel}" />
-                                                                <Image Source="{Binding GameCover}" Stretch="UniformToFill" IsVisible="{Binding GameCover, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                                <!-- The first aircraft's icon; under the Games filter the filter's aircraft's -->
+                                                                <Image x:Name="RelationNodeCover" Source="{Binding Cover}" Stretch="UniformToFill" IsVisible="{Binding Cover, Converter={x:Static ObjectConverters.IsNotNull}}" />
                                                             </Panel>
                                                             <StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center">
                                                                 <TextBlock Text="{Binding TitlesSummary}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding TitlesDisplay}" />
@@ -2823,6 +2844,10 @@
                                                                     </DataTemplate>
                                                                 </ItemsControl.ItemTemplate>
                                                             </ItemsControl>
+                                                            <!-- Experimental multi-bind: the relation's other inputs ("+1", the inputs in the tooltip) -->
+                                                            <Border Classes="chip device" IsVisible="{Binding HasExtraBinds}" ToolTip.Tip="{Binding ExtraBindsTooltip}">
+                                                                <TextBlock Text="{Binding ExtraBindsBadge}" FontWeight="SemiBold" />
+                                                            </Border>
                                                         </StackPanel>
                                                         <!-- What the search found in its actions: the action, the word marked, its game and aircraft; a click shows it -->
                                                         <Border Classes="searchHits" IsVisible="{Binding SearchHits.HasLines}">
@@ -3542,6 +3567,68 @@
                                         </StackPanel>
                                     </Border>
 
+                                    <!-- Experimental (Settings > Experimental): the relation's other inputs, each with its own device and
+                                         modifiers; record or pick another one, make one the main input, remove one; copy a device's binds
+                                         to another device (MainWindowViewModel.MultiBind.cs) -->
+                                    <Border x:Name="MultiBindPanel" Classes="surface" IsVisible="{Binding ShowMultiBindPanel}">
+                                        <StackPanel Spacing="10">
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                                <Border Classes="iconBadge"><PathIcon Data="{StaticResource Icon.Gamepad}" /></Border>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Classes="h2" Text="{l:T 'More inputs (experimental)'}" />
+                                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                                               Text="{l:T 'The same functions on other inputs: each has its own device, modifiers and axis tuning.'}" />
+                                                </StackPanel>
+                                            </Grid>
+                                            <ItemsControl x:Name="ExtraBindsList" ItemsSource="{Binding SelectedExtraBinds}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:ExtraBindRow">
+                                                        <Border Classes="raised" Padding="8,6" Margin="0,2">
+                                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
+                                                                <TextBlock Text="{Binding NumberText}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding Label}" ToolTip.Tip="{Binding Tooltip}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                                <Border Grid.Column="2" Classes="keycap"><TextBlock Text="{Binding InputShort}" /></Border>
+                                                                <Button Grid.Column="3" Classes="small ghost" Content="{l:T 'Make main'}"
+                                                                        Command="{Binding #RootWindow.DataContext.MakeExtraBindMainCommand}" CommandParameter="{Binding}"
+                                                                        ToolTip.Tip="{l:T 'This input becomes the main input; the main input takes its place. Games that keep one input per action get the main input.'}" />
+                                                                <Button Grid.Column="4" Classes="small ghost" Content="{l:T 'Remove'}"
+                                                                        Command="{Binding #RootWindow.DataContext.RemoveExtraBindCommand}" CommandParameter="{Binding}" />
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <WrapPanel ItemSpacing="8" LineSpacing="8">
+                                                <Button Classes="icon accent" Tag="{StaticResource Icon.Record}" Command="{Binding RecordExtraInputCommand}" Content="{l:T 'Record another input'}"
+                                                        IsEnabled="{Binding !IsRecordingInput}" />
+                                                <Button Classes="icon" Tag="{StaticResource Icon.Gamepad}" Command="{Binding AddPickedExtraInputCommand}" Content="{l:T 'Add the input picked by hand'}"
+                                                        ToolTip.Tip="{l:T 'The device and input of Pick the input by hand above become one more input of this relation'}" />
+                                            </WrapPanel>
+                                            <Expander x:Name="CopyDeviceExpander" Header="{l:T 'Copy every bind of a device to another device'}" HorizontalAlignment="Stretch" IsExpanded="{Binding IsCopyDeviceOpen}">
+                                                <StackPanel Margin="0,6,0,0" Spacing="8">
+                                                    <TextBlock Classes="caption" TextWrapping="Wrap"
+                                                               Text="{l:T 'Every bind on the first device also gets the matching input of the second device, in the same relations (the same grip on two bases). The first device keeps its binds.'}" />
+                                                    <Grid ColumnDefinitions="Auto,*,Auto,*,Auto" ColumnSpacing="8">
+                                                        <TextBlock Classes="label" Text="{l:T 'First device'}" VerticalAlignment="Center" />
+                                                        <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" ItemsSource="{Binding CopyDeviceChoices}" SelectedItem="{Binding CopyFromDevice}"
+                                                                  DisplayMemberBinding="{Binding Label, x:DataType=vm:BindDeviceChoice}" />
+                                                        <TextBlock Grid.Column="2" Classes="label" Text="{l:T 'Second device'}" VerticalAlignment="Center" />
+                                                        <ComboBox Grid.Column="3" HorizontalAlignment="Stretch" ItemsSource="{Binding CopyDeviceChoices}" SelectedItem="{Binding CopyToDevice}"
+                                                                  DisplayMemberBinding="{Binding Label, x:DataType=vm:BindDeviceChoice}" />
+                                                        <Button Grid.Column="4" Classes="small ghost" Content="{l:T 'Refresh Options'}" Command="{Binding RefreshCopyDevicesCommand}" />
+                                                    </Grid>
+                                                    <WrapPanel ItemSpacing="8" LineSpacing="8">
+                                                        <Button Content="{l:T 'Preview'}" Command="{Binding PreviewCopyToDeviceCommand}" />
+                                                        <Button Classes="accent" Content="{l:T 'Copy'}" Command="{Binding ApplyCopyToDeviceCommand}" IsEnabled="{Binding CanApplyCopyDevice}" />
+                                                    </WrapPanel>
+                                                    <ScrollViewer MaxHeight="260" IsVisible="{Binding HasCopyDevicePreview}" HorizontalScrollBarVisibility="Auto">
+                                                        <SelectableTextBlock Text="{Binding CopyDevicePreview}" FontFamily="{DynamicResource JP.MonoFont}" FontSize="{DynamicResource JP.FontSize.12}" />
+                                                    </ScrollViewer>
+                                                </StackPanel>
+                                            </Expander>
+                                        </StackPanel>
+                                    </Border>
+
                                     <!-- Modifiers on this bind; its close button leaves only this title line (with Show), remembered
                                          (list-preferences.json "BindModifiersOpen") -->
                                     <Border x:Name="BindModifiersPanel" Classes="surface" IsVisible="{Binding HasBindSelected}">
@@ -3650,24 +3737,56 @@
                                     <Border x:Name="AxisResponsePanel" IsVisible="{Binding SelectedBindIsAxis}">
                                 <Expander x:Name="AxisResponseExpander" Header="{l:T 'Axis response: curve, dead zone, saturation'}" HorizontalAlignment="Stretch" IsEnabled="{Binding SelectedBindIsAxis}" IsExpanded="{Binding IsAxisTuningExpanded}">
                                     <StackPanel Margin="0,6,0,0" Spacing="8">
-                                        <TextBlock Text="{l:T 'The response curve of this axis: one setting for all games, or its own per game, DCS aircraft or game family. The most specific one wins (aircraft, game, family, all games).'}"
+                                        <!-- Where the curve applies, with checkboxes (2.6.5): all games, each game, each DCS aircraft; next
+                                             to each what it uses today. Several aircraft can be ticked: Save gives all of them the curve shown. -->
+                                        <TextBlock x:Name="AxisAppliesExplanation"
+                                                   Text="{l:T 'A curve for all games, one per game, or one for the aircraft you tick. An aircraft with its own curve uses it; the others use their game\'s curve, else the one for all games.'}"
                                                    FontSize="{DynamicResource JP.FontSize.11}"
                                                    TextWrapping="Wrap" />
-                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-                                            <TextBlock Text="{l:T 'Scope'}" VerticalAlignment="Center" />
-                                            <ComboBox Grid.Column="1"
-                                                      ItemsSource="{Binding AxisTuningScopes}"
-                                                      SelectedItem="{Binding SelectedAxisTuningScope}"
-                                                      HorizontalAlignment="Stretch">
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate x:DataType="models:AxisTuningScopeItem">
-                                                        <TextBlock Text="{Binding Label}" />
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-                                            <Button Grid.Column="2" Command="{Binding ReloadAxisTuningCommand}" Content="{l:T 'Reload'}" />
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                            <TextBlock Text="{l:T 'Applies to'}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            <Button Grid.Column="1" Command="{Binding ReloadAxisTuningCommand}" Content="{l:T 'Reload'}" />
                                         </Grid>
-                                        <TextBlock Text="{Binding AxisTuningStatus}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <Border x:Name="AxisAppliesList" BorderBrush="{DynamicResource JP.BorderBrush}" BorderThickness="1" CornerRadius="6"
+                                                Background="{DynamicResource JP.SurfaceAltBrush}" Padding="10,4">
+                                            <ScrollViewer MaxHeight="280" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                                <ItemsControl ItemsSource="{Binding AxisTuningScopes}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="models:AxisTuningScopeItem">
+                                                            <Grid ColumnDefinitions="Auto,Auto,*" IsVisible="{Binding IsShown}">
+                                                                <Border Width="{Binding IndentWidth}" />
+                                                                <CheckBox Grid.Column="1" IsChecked="{Binding IsChecked}" Content="{Binding Label}" ToolTip.Tip="{Binding UsesTip}" MinHeight="28" />
+                                                                <TextBlock Grid.Column="2" Classes="caption" Text="{Binding UsesText}" ToolTip.Tip="{Binding UsesTip}"
+                                                                           VerticalAlignment="Center" TextWrapping="Wrap" Margin="14,0,0,0" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
+                                        </Border>
+                                        <!-- The aircraft by the curve they share; a click ticks them (the last saved ticks come back per relation) -->
+                                        <StackPanel x:Name="AxisTuningGroupsPanel" Spacing="4" IsVisible="{Binding HasAxisTuningGroups}">
+                                            <TextBlock Classes="caption" Text="{l:T 'Curves now (click to tick):'}" />
+                                            <ItemsControl ItemsSource="{Binding AxisTuningGroups}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="models:AxisTuningGroupItem">
+                                                        <Button Margin="0,0,6,4" Padding="8,3" Classes.accent="{Binding IsCurrent}" ToolTip.Tip="{Binding Tip}"
+                                                                Command="{Binding #RootWindow.DataContext.TickAxisTuningGroupCommand}" CommandParameter="{Binding}">
+                                                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" FontSize="{DynamicResource JP.FontSize.11.5}" />
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                        <TextBlock x:Name="AxisTuningStatusLine" Text="{Binding AxisTuningStatus}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="AxisTuningSavePlanLine" Text="{Binding AxisTuningSavePlanText}" TextWrapping="Wrap" />
+                                        <TextBlock x:Name="AxisTuningReplaceLine" Text="{Binding AxisTuningReplaceText}" Foreground="{DynamicResource JP.WarnTextBrush}" FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" IsVisible="{Binding HasAxisTuningReplaceText}" />
                                         <TextBlock Text="{Binding AxisTuningModelText}" FontSize="{DynamicResource JP.FontSize.11}" Opacity="0.8" TextWrapping="Wrap" />
                                         <Grid ColumnDefinitions="300,*" ColumnSpacing="14">
                                             <StackPanel Spacing="4" VerticalAlignment="Top">
@@ -3681,7 +3800,7 @@
                                                                         HandleMovedCommand="{Binding DragAxisTuningHandleCommand}"
                                                                         ShowsPercent="{Binding AxisTuningShowsPercent}"
                                                                         OneSided="{Binding AxisTuningOneSided}" />
-                                                <TextBlock Text="{l:T 'Blue: this scope. Dashed orange: all games (base), while inherited. Drag the white points (user curve or curve points) to shape the curve.'}"
+                                                <TextBlock Text="{l:T 'Blue: the curve shown. Dashed orange: the one for all games, while the shown one is not its own. Drag the white points (user curve or curve points) to shape the curve.'}"
                                                            FontSize="{DynamicResource JP.FontSize.11}"
                                                            Opacity="0.8"
                                                            TextWrapping="Wrap" />
@@ -3784,15 +3903,18 @@
                                                            TextWrapping="Wrap"
                                                            IsVisible="{Binding HasAxisTuningValidation}" />
                                                 <WrapPanel>
-                                                    <Button Command="{Binding SaveAxisTuningCommand}"
-                                                            Content="{l:T 'Save for this scope'}"
+                                                    <Button x:Name="AxisTuningSaveButton"
+                                                            Command="{Binding SaveAxisTuningCommand}"
+                                                            Content="{Binding AxisTuningSaveText}"
                                                             IsEnabled="{Binding CanSaveAxisTuning}"
-                                                            Margin="0,0,8,0" />
-                                                    <Button Command="{Binding ClearAxisTuningCommand}"
-                                                            Content="{l:T 'Inherit (clear)'}"
+                                                            ToolTip.Tip="{l:T 'Saves the curve shown for every ticked row, in one step: Ctrl+Z undoes it.'}"
+                                                            Margin="0,0,8,4" />
+                                                    <Button x:Name="AxisTuningClearButton"
+                                                            Command="{Binding ClearAxisTuningCommand}"
+                                                            Content="{Binding AxisTuningClearText}"
                                                             IsEnabled="{Binding CanClearAxisTuning}"
-                                                            ToolTip.Tip="{l:T 'Remove this scope\'s own settings; it then uses the next broader scope.'}"
-                                                            Margin="0,0,8,0" />
+                                                            ToolTip.Tip="{l:T 'Removes the own curve of the ticked rows, in one step (Ctrl+Z undoes it): an aircraft then uses its game\'s curve, a game the one for all games.'}"
+                                                            Margin="0,0,8,4" />
                                                     <!-- The same response on another axis in one step (Thrust Left -> Thrust Right; Ctrl+Z undoes it) -->
                                                     <Button x:Name="AxisTuningCopyButton"
                                                             Classes="icon"
@@ -7939,6 +8061,16 @@
                                             </WrapPanel>
                                         </StackPanel>
                                     </Expander>
+                                </StackPanel>
+                            </controls:SettingsSection>
+
+                            <!-- Settings > Experimental (MainWindowViewModel.MultiBind.cs, docs/multi-bind.md): several inputs per relation -->
+                            <controls:SettingsSection SectionId="experimental" Title="{l:T 'Experimental'}" Icon="{StaticResource Icon.Wand}">
+                                <StackPanel Spacing="6">
+                                    <CheckBox x:Name="MultiBindCheckBox" Content="{l:T 'Several inputs per relation (experimental)'}" IsChecked="{Binding MultiBindEnabled}"
+                                              ToolTip.Tip="{l:T 'A relation can have more than one input, each with its own device, modifiers and axis tuning, for example the same grip on two bases. Exports write every input where the game can hold them and name the relations where it cannot. Off: only the main input is used, as before.'}" />
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.75" FontSize="{DynamicResource JP.FontSize.12}"
+                                               Text="{l:T 'On the Binds page a relation then shows More inputs: record another input, or copy every bind of one device to another device.'}" />
                                 </StackPanel>
                             </controls:SettingsSection>
                         </controls:SettingsSectionsPanel>

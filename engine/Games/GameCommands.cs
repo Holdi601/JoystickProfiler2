@@ -273,6 +273,10 @@ namespace JoyPro.Engine.Games
             GameCatalog catalog = GameCatalogStore.Load(game, new List<string>());
             List<GameInputBinding> toImport = WithoutKeyboard(result.Bindings, includeKeyboard, result, "imported");
             List<GameInputBinding> applied = GameProfileBridge.ApplyImport(game, catalog, toImport, merge, result);
+            // Experimental multi-bind (setting on): functions the file has on several inputs, offered as one relation each.
+            string joinOffer = EngineJoinInputs.ImportOffer(game.GameId);
+            if (joinOffer != null)
+                result.Warnings.Add(joinOffer);
             result.Steps.Add(merge ? "Merged into the loaded profile." : "Replaced the relations of the loaded profile.");
             IGameSettingsFile settingsFile = game as IGameSettingsFile;
             if (settingsFile != null)

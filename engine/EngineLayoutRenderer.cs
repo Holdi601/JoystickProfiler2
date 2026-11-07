@@ -379,7 +379,7 @@ namespace JoyPro.Engine
                 for (int i = 0; i < InternalDataManagement.LocalJoysticks.Length; i++)
                     AddJoystickCandidate(output, InternalDataManagement.LocalJoysticks[i]);
             }
-            foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
                 AddJoystickCandidate(output, entry.Value == null ? string.Empty : entry.Value.Joystick);
             foreach (KeyValuePair<string, Modifier> entry in InternalDataManagement.AllModifiers ?? new Dictionary<string, Modifier>(StringComparer.OrdinalIgnoreCase))
                 AddJoystickCandidate(output, entry.Value == null ? string.Empty : entry.Value.device);
@@ -707,7 +707,7 @@ namespace JoyPro.Engine
         internal static SortedDictionary<string, SortedDictionary<string, string>> TitlesFor(string joystick)
         {
             SortedDictionary<string, SortedDictionary<string, string>> targets = new SortedDictionary<string, SortedDictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 Bind bind = entry.Value;
                 if (bind == null || bind.Rl == null || !string.Equals((bind.Joystick ?? string.Empty).Trim(), (joystick ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
@@ -746,7 +746,7 @@ namespace JoyPro.Engine
         internal static string PrimaryModifierOf(string joystick)
         {
             Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 Bind bind = entry.Value;
                 if (bind == null || !string.Equals((bind.Joystick ?? string.Empty).Trim(), (joystick ?? string.Empty).Trim(), StringComparison.OrdinalIgnoreCase))
@@ -1775,7 +1775,7 @@ namespace JoyPro.Engine
 
             string targetToken = NormalizeLayoutLabelToken(modButton, BuildModifierRenameMap());
             string targetGame = NormalizeGameName(game);
-            foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 Bind bind = entry.Value;
                 if (bind == null || bind.Rl == null)
@@ -1798,7 +1798,7 @@ namespace JoyPro.Engine
         private static string GetRelationNameForJoystickButton(string joystick, string modButton)
         {
             string targetToken = NormalizeLayoutLabelToken(modButton, BuildModifierRenameMap());
-            foreach (KeyValuePair<string, Bind> entry in InternalDataManagement.AllBinds ?? new Dictionary<string, Bind>(StringComparer.OrdinalIgnoreCase))
+            foreach (KeyValuePair<string, Bind> entry in MultiBind.WithActiveExtras(InternalDataManagement.AllBinds))
             {
                 Bind bind = entry.Value;
                 if (bind == null)
