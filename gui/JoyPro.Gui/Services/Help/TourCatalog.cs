@@ -11,6 +11,9 @@ namespace JoyPro.Gui.Services.Help;
 //   tab:<English tab>  a tab by its header   section:<id>    a Settings section            page   the open page
 //   none / empty       no element: the card stands in the middle.
 //   a|b                the first of the alternatives that is shown.
+// Otherwise: when none of them shows in the user's state, the first alternative that shows, with its own text (the Start
+// page without "Set it all up for me" because the games have binds: "Fill the gaps..."). When nothing shows at all, the
+// step is left out: a step never points at nothing (only "none" and empty targets stand in the middle on purpose).
 // Stage: the page the step opens first. WaitStage: the step waits until the user opened that page (its button is the
 // target). WaitClick: the step waits for a click on the target. Essential: shown with "only the essentials" too.
 // Text and Easy are English (shown through T()); "{0}" in them is the game the tour is about.
@@ -67,7 +70,16 @@ public sealed record TourStep(string Title, string Text, string Target = "", UiS
     public string Waiting { get; init; } = string.Empty;
 
     public string WaitingEasy { get; init; } = string.Empty;
+
+    // The targets used when Target does not show in the user's state, in order, each with the text that fits it.
+    public IReadOnlyList<TourAlternative> Otherwise { get; init; } = [];
+
+    // The step points at something (not a card that stands in the middle on purpose).
+    public bool PointsAtSomething => Target.Length > 0 && Target != "none";
 }
+
+// A step's other target (TourStep.Otherwise) with its own text (English, shown through T(); empty: the step's text).
+public sealed record TourAlternative(string Target, string Text = "", string Easy = "");
 
 public static class TourActions
 {
@@ -108,6 +120,12 @@ public static class TourPrepare
 {
     // Picks the first game control of the Binds list when none is picked, so Record input shows.
     public const string SelectBind = "select-bind";
+
+    // Picks an axis in the Binds list when no axis is picked, so the curve and detent parts can open.
+    public const string SelectAxisBind = "select-axis";
+
+    // Picks the first relation when none is picked, so its game commands show on the right.
+    public const string SelectRelation = "select-relation";
 }
 
 // The small drawn pictures of the cards (Views/Controls/TourPicture.cs).
@@ -205,7 +223,17 @@ public static class TourCatalog
                 Easy = N("Click Set it all up for me. A new window opens. Then click the blue buttons there."),
                 Action = TourActions.QuickSetup,
                 Waiting = N("The setup window is open. Click the blue buttons there: first Use these buttons, then Set up the pretend controller. This card waits for you."),
-                WaitingEasy = N("Look at the new window. Click the blue buttons there. I wait here.")
+                WaitingEasy = N("Look at the new window. Click the blue buttons there. I wait here."),
+                // The games have binds already (no "Set it all up for me" on the page): the card's own button fills the gaps.
+                Otherwise =
+                [
+                    new("name:AutoSetupCard",
+                        N("Your games already have buttons (see the marked card). Click Set it all up for me on this tour card: JoyPro keeps your buttons and only fills the gaps. Then press Use these buttons, then Set up the pretend controller."),
+                        N("Your game has buttons already. Click Set it all up for me on this card. Then click the blue buttons.")),
+                    new("cmd:OpenSetupWizardCommand",
+                        N("Click Set it all up for me on this tour card. JoyPro puts the game's controls on your stick. The marked button does the same step by step. Then press Use these buttons, then Set up the pretend controller."),
+                        N("Click Set it all up for me. A new window opens. Then click the blue buttons there."))
+                ]
             },
             // The bar button's name follows the player (Pretend controller for pad-only players, else Virtual Joystick):
             // the card points at the glowing button instead of naming it.
@@ -239,9 +267,10 @@ public static class TourCatalog
             },
             new(N("Nothing to change here"),
                 N("Your game already uses the pretend controller. You do not need to change anything here."),
-                "name:VirtualJoystickGamesList", UiStage.VirtualJoystick, Essential: false)
+                "name:VirtualJoystickGamesList|name:VirtualJoystickGamesSection", UiStage.VirtualJoystick, Essential: false)
             {
-                Easy = N("Your game already uses the pretend controller. Nothing to do here.")
+                Easy = N("Your game already uses the pretend controller. Nothing to do here."),
+                OpenTab = "Overview"
             },
             // After the click on Test the card stays and says to move the stick; only Next goes on.
             new(N("Try it"),
@@ -260,6 +289,7 @@ public static class TourCatalog
                 N("First start the game. At its title screen, hold Alt and press Tab: that brings you back here. Click Start. Then press Alt+Tab again to go back to the game."),
                 "cmd:StartVirtualJoystickCommand", UiStage.VirtualJoystick)
             {
+                OpenTab = "Overview",
                 Easy = N("Start the game. At the title screen, hold Alt and press Tab. Click Start. Press Alt and Tab again to go back."),
                 Picture = TourPictures.AltTab
             },
@@ -314,7 +344,8 @@ public static class TourCatalog
                 N("On the right you see the DCS command of each aircraft in this relation. Add more aircraft with the search."),
                 "name:RelationNodeList", UiStage.Relations, Essential: false)
             {
-                Easy = N("On the right you see the same job in each plane.")
+                Easy = N("On the right you see the same job in each plane."),
+                Prepare = TourPrepare.SelectRelation
             },
             new(N("Open Binds"), N("Click Binds in the bar at the bottom."), "nav:binds", WaitStage: UiStage.Binds)
             {
@@ -325,12 +356,14 @@ public static class TourCatalog
                 "name:AxisResponseExpander", UiStage.Binds)
             {
                 Easy = N("An axis is a part you move, like the stick. Here you set how soft it feels."),
+                Prepare = TourPrepare.SelectAxisBind,
                 Picture = TourPictures.Axis
             },
             new(N("Detent"),
                 N("Detent mode: one throttle for all aircraft. The afterburner notch sits where your throttle has it."),
                 "name:DetentModeExpander", UiStage.Binds, Essential: false)
             {
+                Prepare = TourPrepare.SelectAxisBind,
                 Easy = N("Some throttles have a bump for extra power. JoyPro puts it right in every plane.")
             },
             new(N("Modifiers"),
@@ -538,18 +571,28 @@ public static class TourCatalog
         [
             new(N("Your games"), N("Each card is one game: read its binds, write yours into it, or update its list of functions."), "cmd:StartImportWizardCommand"),
             new(N("Set up automatically"), N("This button puts the functions of your games on your devices for you."), "cmd:QuickSetupCommand|cmd:OpenSetupWizardCommand")
+            {
+                // Games with binds: the page offers to fill the gaps (or to import first), not to set everything up.
+                Otherwise =
+                [
+                    new("cmd:FillAutoSetupGapsCommand",
+                        N("Your games already have binds. Fill the gaps... lets JoyPro set up the missing functions automatically. Your binds stay.")),
+                    new("cmd:ImportThenFillGapsCommand",
+                        N("Your games have binds of their own. Import, then fill the gaps reads them first. Then JoyPro sets up the missing functions automatically."))
+                ]
+            }
         ]),
         ("relations", UiStage.Relations,
         [
             new(N("The list"), N("All your relations. Click one to see its game commands on the right."), "name:RelationsListBox"),
             new(N("Search"), N("Type what you look for, in your own words."), "name:RelationSearchBox"),
-            new(N("The commands"), N("The game commands of the picked relation, per game and aircraft."), "name:RelationNodeList", Essential: false)
+            new(N("The commands"), N("The game commands of the picked relation, per game and aircraft."), "name:RelationNodeList", Essential: false) { Prepare = TourPrepare.SelectRelation }
         ]),
         ("binds", UiStage.Binds,
         [
             new(N("The list"), N("Every relation with its button. \"not bound\" means it has none yet."), "name:BindsListBox"),
             new(N("Record"), N("Press Record input, then the button on your stick."), "cmd:RecordNextInputCommand") { Prepare = TourPrepare.SelectBind },
-            new(N("Axis curves"), N("For an axis: how soft or sharp it feels, per game and aircraft."), "name:AxisResponseExpander", Essential: false),
+            new(N("Axis curves"), N("For an axis: how soft or sharp it feels, per game and aircraft."), "name:AxisResponseExpander", Essential: false) { Prepare = TourPrepare.SelectAxisBind },
             new(N("Follow input"), N("Press any button on your devices and the list jumps to what it does."), "name:FollowInputToggle", Essential: false)
         ]),
         ("modifiers", UiStage.Modifiers, []),
@@ -569,9 +612,9 @@ public static class TourCatalog
         ("ffb", UiStage.FfbTelemetry, []),
         ("vjoy", UiStage.VirtualJoystick,
         [
-            new(N("Per game"), N("For each game: your real devices, one virtual joystick, or a pretend Xbox controller."), "name:VirtualJoystickGamesList"),
+            new(N("Per game"), N("For each game: your real devices, one virtual joystick, or a pretend Xbox controller."), "name:VirtualJoystickGamesList|name:VirtualJoystickGamesSection") { OpenTab = "Overview" },
             new(N("Live test"), N("Click Test, then move your devices and watch the virtual device move."), "cmd:TestVirtualJoystickCommand", Essential: false) { OpenTab = "Live test" },
-            new(N("Start"), N("Xbox controller: start the game, wait for its title screen, then click Start. Virtual joystick: click Start before the game."), "cmd:StartVirtualJoystickCommand")
+            new(N("Start"), N("Xbox controller: start the game, wait for its title screen, then click Start. Virtual joystick: click Start before the game."), "cmd:StartVirtualJoystickCommand") { OpenTab = "Overview" }
         ]),
         ("cockpits", UiStage.Cockpits, []),
         ("statistics", UiStage.Statistics, []),

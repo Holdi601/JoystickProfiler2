@@ -220,26 +220,87 @@ public partial class HelpLayer : UserControl
 
     // ---- tours ----
 
+    // The step the card shows now (a newer step stops the looks of an older one), and whether its control was scrolled
+    // into view again after it was found outside the view.
+    private int tourStepVersion;
+    private bool tourScrolledAgain;
+
     private void OnTourStepChanged()
     {
         DetachTourClick();
         tourTarget = null;
         tourTargetKey = vm?.TourTargetKey ?? string.Empty;
-        // The step's page opens first; the control is looked up once the page has its layout.
-        Dispatcher.UIThread.Post(() =>
-        {
-            FindTourTarget();
-            tourTarget?.BringIntoView();
-            RequestPlace();
-        }, DispatcherPriority.Loaded);
+        tourScrolledAgain = false;
+        tourStepStarted = Environment.TickCount64;
+        int version = ++tourStepVersion;
+        // The step's page opens first; the control is looked up once the page has its layout (a few tries: a page,
+        // tab or section that just opened lays itself out over more than one pass).
+        Dispatcher.UIThread.Post(() => LookForTourTarget(version, 0), DispatcherPriority.Loaded);
         RequestPlace();
     }
+
+    private void LookForTourTarget(int version, int attempt)
+    {
+        if (version != tourStepVersion || vm is not { IsTourActive: true } model || model.IsWelcomeOpen)
+            return;
+        tourLookedVersion = version;
+        FindTourTarget();
+        if (tourTarget != null)
+        {
+            tourTarget.BringIntoView();
+            RequestPlace();
+            return;
+        }
+        RequestPlace();
+        // Looked again after real layout passes (a page that just opened may still lay itself out), then left out.
+        if (!ReportMissingTourTarget(version) && attempt < 6 && PointsAtSomething(tourTargetKey))
+            DispatcherTimer.RunOnce(() => LookForTourTarget(version, attempt + 1), TimeSpan.FromMilliseconds(100));
+    }
+
+    private long tourStepStarted;
+    private int tourLookedVersion = -1;
+    private int tourMissingVersion = -1;
+
+    // Nothing to point at in this state, also after about 0.4 s of layout: the step is left out (a step never points at
+    // nothing). Only once the window shows its pages (a minimized or not yet shown window finds nothing at all).
+    private bool ReportMissingTourTarget(int version)
+    {
+        if (version != tourStepVersion || tourLookedVersion != version || tourMissingVersion == version || tourTarget != null ||
+            vm is not { IsTourActive: true, IsWelcomeOpen: false } model || !PointsAtSomething(tourTargetKey) ||
+            Environment.TickCount64 - tourStepStarted < 400 || FindTarget("page") == null)
+            return false;
+        tourMissingVersion = version;
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (version == tourStepVersion && tourTarget == null)
+                model.TourTargetMissing();
+        }, DispatcherPriority.Background);
+        return true;
+    }
+
+    private static bool PointsAtSomething(string key) => !string.IsNullOrWhiteSpace(key) && key != "none";
 
     public Control? FindTourTarget()
     {
         DetachTourClick();
         OpenStepTab();
-        tourTarget = vm?.IsTourActive == true ? FindTarget(tourTargetKey) : null;
+        tourTarget = null;
+        if (vm?.IsTourActive == true)
+        {
+            tourTarget = FindTarget(tourTargetKey);
+            int alternative = -1;
+            IReadOnlyList<TourAlternative> others = vm.TourAlternatives;
+            for (int i = 0; tourTarget == null && i < others.Count; i++)
+            {
+                tourTarget = FindTarget(others[i].Target);
+                if (tourTarget != null)
+                    alternative = i;
+            }
+            vm.SetTourAlternative(alternative);
+            // A part that opens (the axis curve): opened, so what the card talks about shows.
+            if (tourTarget is Expander { IsExpanded: false, IsEnabled: true } expander)
+                expander.IsExpanded = true;
+        }
         if (tourTarget is Button button && vm?.TourListensForClick == true)
             button.AddHandler(Button.ClickEvent, TourTargetClicked, RoutingStrategies.Bubble, handledEventsToo: true);
         return tourTarget;
@@ -300,16 +361,35 @@ public partial class HelpLayer : UserControl
         string kind = colon > 0 ? key[..colon] : key;
         string value = colon > 0 ? key[(colon + 1)..] : string.Empty;
         IEnumerable<Control> shown = root.GetVisualDescendants().OfType<Control>().Where(c => c.IsEffectivelyVisible && c.Bounds.Width > 0 && c.Bounds.Height > 0);
-        return kind switch
-        {
-            "page" => shown.FirstOrDefault(c => c.Name == "PagesHost"),
-            "nav" => shown.FirstOrDefault(c => c.Name == (value == "output" ? "EngineOutputQuickToggle" : "Nav_" + value)),
-            "name" => shown.FirstOrDefault(c => c.Name == value),
-            "cmd" => shown.OfType<Button>().FirstOrDefault(b => b.Command != null && HelpResolver.CommandName(b) == value),
-            "tab" => shown.OfType<TabItem>().FirstOrDefault(t => t.Header is string h && h == T(value)),
-            "section" => shown.OfType<SettingsSection>().FirstOrDefault(s => s.SectionId == value),
-            _ => null
-        };
+        Control? match = Match(kind, value, shown);
+        if (match == null && kind is "name" or "cmd")
+            OpenCollapsedPartsAround(Match(kind, value, root.GetVisualDescendants().OfType<Control>().Where(c => c.IsVisible)));
+        return match;
+    }
+
+    private static Control? Match(string kind, string value, IEnumerable<Control> controls) => kind switch
+    {
+        "page" => controls.FirstOrDefault(c => c.Name == "PagesHost"),
+        "nav" => controls.FirstOrDefault(c => c.Name == (value == "output" ? "EngineOutputQuickToggle" : "Nav_" + value)),
+        "name" => controls.FirstOrDefault(c => c.Name == value),
+        "cmd" => controls.OfType<Button>().FirstOrDefault(b => b.Command != null && HelpResolver.CommandName(b) == value),
+        "tab" => controls.OfType<TabItem>().FirstOrDefault(t => t.Header is string h && h == T(value)),
+        "section" => controls.OfType<SettingsSection>().FirstOrDefault(s => s.SectionId == value),
+        _ => null
+    };
+
+    // A step's control inside a closed section (an Expander) of the open page: the section opens, the next look finds it.
+    private static void OpenCollapsedPartsAround(Control? hidden)
+    {
+        if (hidden == null)
+            return;
+        List<Expander> closed = hidden.GetVisualAncestors().OfType<Expander>().Where(e => !e.IsExpanded).ToList();
+        // Only when the closed sections are all that hides it (not a page, tab or panel that is hidden).
+        if (closed.Count == 0 || !closed.All(e => e.IsEnabled) || hidden.GetVisualAncestors().OfType<Control>()
+                .Any(a => !a.IsVisible && !closed.Any(e => ReferenceEquals(e, a) || a.GetVisualAncestors().Contains(e))))
+            return;
+        foreach (Expander expander in closed)
+            expander.IsExpanded = true;
     }
 
     // ---- placing ----
@@ -350,8 +430,19 @@ public partial class HelpLayer : UserControl
 
         bool tour = vm.IsTourActive && !vm.IsWelcomeOpen;
         if (tour && (tourTarget == null || !tourTarget.IsEffectivelyVisible || tourTarget.GetVisualRoot() == null))
+        {
             FindTourTarget();
+            if (tourTarget == null)
+                ReportMissingTourTarget(tourStepVersion);
+        }
         Rect? target = tour && tourTarget != null ? RectOf(tourTarget) : null;
+        // Found, but outside the view (it was scrolled into view before its page had its size): once more per step.
+        if (tour && tourTarget != null && target == null && !tourScrolledAgain)
+        {
+            tourScrolledAgain = true;
+            tourTarget.BringIntoView();
+            RequestPlace();
+        }
         double pad = vm.TourIsBig ? 8 : 5;
         SetOutline(TourOutline, target, pad);
         TourOutline.BorderThickness = new Thickness(vm.TourIsBig ? 5 : 3);

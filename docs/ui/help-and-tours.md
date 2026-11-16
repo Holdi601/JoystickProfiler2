@@ -152,6 +152,16 @@ waits for a click on the target button (**Next** goes on without it). The layer 
 target, so the target stays clickable, outlines it and places the card beside it. A target not on screen yet is looked
 up again on the next layout.
 
+A step never points at nothing. When its target does not show in the user's state, `Otherwise` lists other targets,
+each with its own text: the Start page's "Set up automatically" points at **Fill the gaps...** (or **Import, then fill
+the gaps**) when the games already have binds and **Set it all up for me** is not there. A target in a closed section
+(an `Expander`) opens it; `Prepare` picks what a control needs to show (a game control for Record input, an axis for
+the curve, a relation for its commands); `OpenTab` opens its tab; a found target outside the view is scrolled into
+view (again once it has its layout). When nothing fits after about 0.4 s, the step is left out in the direction the
+user was going (a hidden page button: the page opens, as **Next** does). Only `none` and empty targets stand in the
+middle on purpose. `TourTargetWalkTests` walks every step of every tour in an empty profile, a profile with binds in
+several games and with easy words, and checks that each step outlines a shown control inside the window.
+
 **Back**, **Next** (**Finish** on the last step, the one big blue button), **Skip** (next step without doing it) and
 **End tour** (both small text links) are on the card. A waiting step says so in a coloured box: "Waiting for you to
 click the glowing button. Or press Next ...". The tour's control glows (`TourOutline` has a blue shadow) and the rest of

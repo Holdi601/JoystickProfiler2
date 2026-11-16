@@ -423,10 +423,62 @@ public sealed partial class MainWindowViewModel
                 return StepText(EasyWords && step.WarnSkipEasy.Length > 0 ? step.WarnSkipEasy : step.WarnSkip);
             if (TourInSecondPart && step.Then.Length > 0)
                 return StepText(EasyWords && step.ThenEasy.Length > 0 ? step.ThenEasy : step.Then);
+            // The step points at its other target (its own control is not there in this state): that target's text.
+            if (tourAlternative is { Text.Length: > 0 } other)
+                return StepText(EasyWords && other.Easy.Length > 0 ? other.Easy : other.Text);
             if (EasyWords && step.Easy.Length > 0)
                 return StepText(step.Easy);
             return StepText(step.Text) + (step.Extra.Length > 0 && !EasyWords ? "\n\n" + StepText(step.Extra) : string.Empty);
         }
+    }
+
+    // The other target the window found for the step (TourStep.Otherwise), null: the step's own target.
+    private TourAlternative? tourAlternative;
+
+    // The step's other targets, in order, while its own target is the one to find (not in a second part or while the
+    // setup window is open).
+    public IReadOnlyList<TourAlternative> TourAlternatives =>
+        CurrentTourStep is { } step && !TourWaitsForSetup && !(TourInSecondPart && step.ThenTarget.Length > 0) ? step.Otherwise : [];
+
+    // The window found the step's control: -1 its own target, else the index in TourAlternatives. The card's text follows.
+    public void SetTourAlternative(int index)
+    {
+        IReadOnlyList<TourAlternative> others = TourAlternatives;
+        TourAlternative? chosen = index >= 0 && index < others.Count ? others[index] : null;
+        if (ReferenceEquals(chosen, tourAlternative))
+            return;
+        tourAlternative = chosen;
+        RaiseTourTexts();
+    }
+
+    // Back was pressed last: a step left out because its control is not there goes on backwards.
+    private bool tourGoingBack;
+
+    // The window found nothing to point at for the step (its control and every alternative are not there in this state,
+    // e.g. Record input without any game control): the step is left out, in the direction the user was going.
+    public void TourTargetMissing()
+    {
+        if (CurrentTourStep is not { } step || TourWaitsForSetup || !step.PointsAtSomething)
+            return;
+        if (tourGoingBack)
+        {
+            int index = TourStepIndex - 1;
+            while (index > tourFirstIndex && SkipsStep(activeSteps[index]))
+                index--;
+            if (index >= tourFirstIndex)
+            {
+                GoToTourStep(index, back: true);
+                return;
+            }
+        }
+        // A waiting step whose page button is hidden: its page opens, like Next does.
+        if (step.WaitStage is UiStage wanted && CurrentStage != wanted)
+        {
+            CurrentStage = wanted;
+            if (!ReferenceEquals(CurrentTourStep, step))
+                return;
+        }
+        AdvanceTour();
     }
 
     // The quick setup window, opened by the pad tour's setup step, is still open: the card waits for it.
@@ -744,7 +796,7 @@ public sealed partial class MainWindowViewModel
         while (index > tourFirstIndex && SkipsStep(activeSteps[index]))
             index--;
         if (index >= tourFirstIndex && index < TourStepIndex)
-            GoToTourStep(index);
+            GoToTourStep(index, back: true);
     }
 
     [RelayCommand]
@@ -797,11 +849,13 @@ public sealed partial class MainWindowViewModel
             GoToTourStep(next);
     }
 
-    private void GoToTourStep(int index)
+    private void GoToTourStep(int index, bool back = false)
     {
         // A step left out now (the helper is installed already) goes on to the next one.
         while (index < activeSteps.Count - 1 && SkipsStep(activeSteps[index]))
             index++;
+        tourGoingBack = back;
+        tourAlternative = null;
         tourStepClicked = false;
         tourSkipWarned = false;
         if (activeSteps[index].Action != TourActions.QuickSetup)
@@ -816,6 +870,11 @@ public sealed partial class MainWindowViewModel
         // Record input shows only with a game control picked: the step picks one when none is.
         if (step.Prepare == TourPrepare.SelectBind)
             SelectFirstBind();
+        // The curve and detent parts open only for an axis; the commands on the right only for a picked relation.
+        else if (step.Prepare == TourPrepare.SelectAxisBind && !SelectedBindIsAxis && Binds.FirstOrDefault(b => IsAxisRelation(b.RelationName)) is { } axis)
+            SelectedBind = axis;
+        else if (step.Prepare == TourPrepare.SelectRelation && SelectedRelation == null && Relations.Count > 0)
+            SelectedRelation = Relations[0];
         WatchTourConsent(step);
         toursState.ActiveTour = ActiveTour?.Id ?? string.Empty;
         toursState.ActiveStep = index;

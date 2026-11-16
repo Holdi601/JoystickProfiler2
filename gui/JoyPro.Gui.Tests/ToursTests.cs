@@ -247,16 +247,22 @@ public sealed class ToursTests : IDisposable
                     main.DataContext = null;
                 }
 
-                // Relations hidden in the bar: no button to point at; Next opens the page and the tour goes on.
+                // Relations hidden in the bar: no button to point at; the step never points at nothing, so the tour opens
+                // the page itself and goes on (as Next does).
                 vm.FindNavPage("relations")!.IsVisible = false;
+                int step = vm.TourStepIndex;
                 MainWindow hidden = HelpModeTests.Layout(vm, 1280, 800);
                 HelpLayer hiddenLayer = ((Control)hidden.Content!).GetVisualDescendants().OfType<HelpLayer>().Single();
-                Assert.Null(hiddenLayer.FindTourTarget());
-                int step = vm.TourStepIndex;
-                vm.TourNextCommand.Execute(null);
+                for (int i = 0; i < 40 && vm.TourStepIndex == step; i++)
+                {
+                    System.Threading.Thread.Sleep(30);
+                    HelpModeTests.Relayout(hidden, 1280, 800);
+                    hiddenLayer.Place();
+                }
                 Assert.Equal(UiStage.Relations, vm.CurrentStage);
                 Assert.Equal(step + 1, vm.TourStepIndex);
                 vm.EndTourCommand.Execute(null);
+                hidden.DataContext = null;
             }
             finally
             {
