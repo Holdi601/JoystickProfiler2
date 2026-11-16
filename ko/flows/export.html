@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게임으로 내보내기 · JoyPro</title>
+<meta name="description" content="프로필을 게임 자체의 조작 설정에 써넣기: 네 가지 모드, &quot;다른 장치도 지우기&quot;, 게임 종류별로 바뀌는 것, 백업과 내보내기 취소.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/site.css"><style>:root{--font:"Malgun Gothic", "Yu Gothic UI", "Microsoft YaHei UI", "Segoe UI", system-ui, sans-serif}</style>
+<link rel="alternate" hreflang="en" href="../../flows/export.html"><link rel="alternate" hreflang="bg" href="../../bg/flows/export.html"><link rel="alternate" hreflang="hr" href="../../hr/flows/export.html"><link rel="alternate" hreflang="cs" href="../../cs/flows/export.html"><link rel="alternate" hreflang="da" href="../../da/flows/export.html"><link rel="alternate" hreflang="nl" href="../../nl/flows/export.html"><link rel="alternate" hreflang="et" href="../../et/flows/export.html"><link rel="alternate" hreflang="fi" href="../../fi/flows/export.html"><link rel="alternate" hreflang="fr" href="../../fr/flows/export.html"><link rel="alternate" hreflang="de" href="../../de/flows/export.html"><link rel="alternate" hreflang="el" href="../../el/flows/export.html"><link rel="alternate" hreflang="hu" href="../../hu/flows/export.html"><link rel="alternate" hreflang="ga" href="../../ga/flows/export.html"><link rel="alternate" hreflang="it" href="../../it/flows/export.html"><link rel="alternate" hreflang="lv" href="../../lv/flows/export.html"><link rel="alternate" hreflang="lt" href="../../lt/flows/export.html"><link rel="alternate" hreflang="mt" href="../../mt/flows/export.html"><link rel="alternate" hreflang="pl" href="../../pl/flows/export.html"><link rel="alternate" hreflang="pt" href="../../pt/flows/export.html"><link rel="alternate" hreflang="ro" href="../../ro/flows/export.html"><link rel="alternate" hreflang="sk" href="../../sk/flows/export.html"><link rel="alternate" hreflang="sl" href="../../sl/flows/export.html"><link rel="alternate" hreflang="es" href="../../es/flows/export.html"><link rel="alternate" hreflang="sv" href="../../sv/flows/export.html"><link rel="alternate" hreflang="nb" href="../../nb/flows/export.html"><link rel="alternate" hreflang="is" href="../../is/flows/export.html"><link rel="alternate" hreflang="sq" href="../../sq/flows/export.html"><link rel="alternate" hreflang="bs" href="../../bs/flows/export.html"><link rel="alternate" hreflang="sr-Latn" href="../../sr-Latn/flows/export.html"><link rel="alternate" hreflang="sr-Cyrl" href="../../sr-Cyrl/flows/export.html"><link rel="alternate" hreflang="mk" href="../../mk/flows/export.html"><link rel="alternate" hreflang="ru" href="../../ru/flows/export.html"><link rel="alternate" hreflang="uk" href="../../uk/flows/export.html"><link rel="alternate" hreflang="be" href="../../be/flows/export.html"><link rel="alternate" hreflang="tr" href="../../tr/flows/export.html"><link rel="alternate" hreflang="ja" href="../../ja/flows/export.html"><link rel="alternate" hreflang="ko" href="../../ko/flows/export.html"><link rel="alternate" hreflang="zh-Hans" href="../../zh-Hans/flows/export.html"><link rel="alternate" hreflang="zh-Hant" href="../../zh-Hant/flows/export.html"><link rel="alternate" hreflang="x-default" href="../../flows/export.html">
+<script>(function(){var d=document.documentElement,l='beginner';try{var p=new URLSearchParams(location.search),q=p.get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')d.dataset.theme=t;l=p.get('show')||localStorage.getItem('jp-layer')||'beginner';}catch(e){}if(l!=='all')d.dataset.show=l;})();</script>
+</head>
+<body data-root="../../" data-lang="ko" data-page="flows/export.html" data-i18n="1">
+<header class="topbar">
+  <button class="menu-btn" aria-label="메뉴" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../../ko/index.html"><img src="../../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="버튼, 명령, 게임 검색..." autocomplete="off" aria-label="검색"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <span class="lang-slot"></span>
+  <button class="theme-btn" aria-label="밝게 또는 어둡게">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open class="nav-start"><summary>시작</summary><ul><li><a href="../../ko/index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open class="nav-getting-started"><summary>시작하기</summary><ul><li><a href="../../ko/getting-started/quick-start.html" title="빠른 시작: 내 스틱 작동시키기">빠른 시작: 내 스틱 작동시키기</a></li><li><a href="../../ko/getting-started/install.html" title="다운로드 및 설치">다운로드 및 설치</a></li><li><a href="../../ko/getting-started/first-start.html" title="처음 시작">처음 시작</a></li><li><a href="../../ko/getting-started/first-steps.html" title="10분 만에 첫 프로필 만들기">10분 만에 첫 프로필 만들기</a></li><li><a href="../../ko/getting-started/supported-devices.html" title="지원되는 장치">지원되는 장치</a></li></ul></details><details open class="nav-how-do-i"><summary>어떻게 하나요</summary><ul><li><a href="../../ko/how-do-i/index.html" title="어떻게 하나요 ...">어떻게 하나요 ...</a></li><li><a href="../../ko/how-do-i/xbox-only-games.html" title="Xbox 전용 게임을 HOTAS로 플레이하기">Xbox 전용 게임을 HOTAS로 플레이하기</a></li><li><a href="../../ko/how-do-i/dcs-kneeboard.html" title="DCS 니보드에서 바인딩 보기">DCS 니보드에서 바인딩 보기</a></li><li><a href="../../ko/how-do-i/where-is-what.html" title="무엇이 어디에? 각 버튼이 하는 일 보기">무엇이 어디에? 각 버튼이 하는 일 보기</a></li><li><a href="../../ko/how-do-i/several-inputs.html" title="한 기능에 여러 버튼, 여러 동작을 한 번에">한 기능에 여러 버튼, 여러 동작을 한 번에</a></li><li><a href="../../ko/how-do-i/change-one-button.html" title="나중에 버튼 하나 바꾸기">나중에 버튼 하나 바꾸기</a></li><li><a href="../../ko/how-do-i/undo-quick-setup.html" title="빠른 설정이 한 일 되돌리기">빠른 설정이 한 일 되돌리기</a></li><li><a href="../../ko/how-do-i/easy-words-and-help.html" title="쉬운 말, 투어, F1 도움말">쉬운 말, 투어, F1 도움말</a></li><li><a href="../../ko/how-do-i/where-functions-go.html" title="기능을 어디에 둘까요?">기능을 어디에 둘까요?</a></li><li><a href="../../ko/how-do-i/head-tracking.html" title="헤드 트래킹과 주위 둘러보기">헤드 트래킹과 주위 둘러보기</a></li></ul></details><details class="nav-games"><summary>게임</summary><ul><li><a href="../../ko/games/index.html" title="게임">모든 게임</a></li><li><a href="../../games/support.html" title="Game support">Game support</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../ko/games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../../ko/games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../../ko/games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../../ko/games/fsx-p3d.html" title="FSX와 Prepar3D">FSX와 Prepar3D</a></li><li><a href="../../ko/games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../../ko/games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../../ko/games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../../ko/games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../../ko/games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../../ko/games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../../ko/games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../../ko/games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../../ko/games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../../ko/games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../../ko/games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../../ko/games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../../ko/games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../../ko/games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../../ko/games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../../ko/games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../../ko/games/arma2.html" title="Arma 2와 Operation Arrowhead">Arma 2와 Operation Arrowhead</a></li><li><a href="../../ko/games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../../ko/games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../../ko/games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../../ko/games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../../ko/games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../../ko/games/other-games.html" title="기타 게임(문서로만 정리됨)">기타 게임(문서로만 정리됨)</a></li></ul></details><details open class="nav-help"><summary>도움말</summary><ul><li><a href="../../ko/faq.html" title="도움말 및 문제 해결">도움말 및 문제 해결</a></li><li><a href="../../ko/gui/help.html">F1 도움말, 투어, 쉬운 말</a></li></ul></details><details open class="nav-main-flows"><summary>주요 흐름</summary><ul><li><a href="../../ko/flows/import.html" title="게임 가져오기">게임 가져오기</a></li><li><a href="../../ko/flows/relations.html" title="관계 만들기">관계 만들기</a></li><li><a class="current" href="../../ko/flows/export.html" title="게임으로 내보내기">게임으로 내보내기</a></li><li><a href="../../ko/flows/check.html" title="확인">확인</a></li></ul></details><details class="nav-gui-pages"><summary>GUI 페이지</summary><ul><li><a href="../../ko/gui/header.html" title="프로필 표시줄">프로필 표시줄</a></li><li><a href="../../ko/gui/start.html" title="시작">시작</a></li><li><a href="../../ko/gui/relations.html" title="관계">관계</a></li><li><a href="../../ko/gui/binds.html" title="바인딩">바인딩</a></li><li><a href="../../ko/gui/modifiers.html" title="수정키">수정키</a></li><li><a href="../../ko/gui/layout.html" title="레이아웃">레이아웃</a></li><li><a href="../../ko/gui/export.html" title="내보내기">내보내기</a></li><li><a href="../../ko/gui/check.html" title="확인">확인</a></li><li><a href="../../ko/gui/hud.html" title="HUD">HUD</a></li><li><a href="../../ko/gui/ffb.html" title="포스 피드백">포스 피드백</a></li><li><a href="../../ko/gui/vjoy.html" title="가상 조이스틱">가상 조이스틱</a></li><li><a href="../../ko/gui/cockpits.html" title="조종석">조종석</a></li><li><a href="../../ko/gui/statistics.html" title="통계">통계</a></li><li><a href="../../ko/gui/settings.html" title="설정">설정</a></li><li><a href="../../ko/gui/advanced.html" title="고급">고급</a></li><li><a href="../../ko/gui/output.html" title="출력">출력</a></li><li><a href="../../ko/gui/overlays.html" title="대화 상자와 알림">대화 상자와 알림</a></li><li><a href="../../ko/gui/first-start.html" title="첫 시작 설정">첫 시작 설정</a></li><li><a href="../../ko/gui/setup-wizard.html" title="설정 마법사">설정 마법사</a></li><li><a href="../../ko/gui/help.html" title="도움말 모드와 투어">도움말 모드와 투어</a></li></ul></details><div class="nav-power"><div class="nav-sep">고급 사용자용</div><details class="nav-engine-cli"><summary>Engine (CLI)</summary><ul><li><a href="../../cli/index.html" title="Engine command line">Engine command line</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/arrange.html" title="engine arrange">engine arrange</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/backups.html" title="engine backups">engine backups</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/binds.html" title="engine binds">engine binds</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/cockpits.html" title="engine cockpits">engine cockpits</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/db.html" title="engine db">engine db</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/devices.html" title="engine devices">engine devices</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/export-marks.html" title="engine export-marks">engine export-marks</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/ffb.html" title="engine ffb">engine ffb</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/games.html" title="engine games">engine games</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/hud.html" title="engine hud">engine hud</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/layout.html" title="engine layout">engine layout</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/llm.html" title="engine llm">engine llm</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/media.html" title="engine media">engine media</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/overlay.html" title="engine overlay">engine overlay</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/profile.html" title="engine profile">engine profile</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/relations.html" title="engine relations">engine relations</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/setup.html" title="engine setup">engine setup</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/summary.html" title="engine summary">engine summary</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/support.html" title="engine support">engine support</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/sync.html" title="engine sync">engine sync</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/telemetry.html" title="engine telemetry">engine telemetry</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/usage.html" title="engine usage">engine usage</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/version.html" title="engine version">engine version</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/vjoy.html" title="engine vjoy">engine vjoy</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li></ul></details><details class="nav-reference"><summary>참고 자료</summary><ul><li><a href="../../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/auto-assign.html" title="Auto Assign">Auto Assign</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/auto-group.html" title="Auto Group">Auto Group</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/cockpits.html" title="Cockpit database">Cockpit database</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/devices.html" title="Device catalog (DB/Devices)">Device catalog</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/export.html" title="Export">Export</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/backups.html" title="Game config backups">Game config backups</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/natural-language-grouping.html" title="Group by description">Group by description</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ui-help-and-tours.html" title="Help mode, tours and the welcome">Help mode, tours and the welcome</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/hud.html" title="HUD">HUD</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/installs.html" title="Installed games">Installed games</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/components.html" title="Optional components (one-click install)">Optional components</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/privacy.html" title="Privacy">Privacy</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/relation-multi-select.html" title="Several actions at once (2.7.0)">Several actions at once</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/multi-bind.html" title="Several inputs per relation (experimental in 2.6.5, a normal feature since 2.7.0)">Several inputs per relation</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/updates.html" title="Version and updates">Version and updates</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li></ul></details><details class="nav-game-reference"><summary>게임 참고 자료</summary><ul><li><a href="../../games/ref/README.html" title="Game integration reference">Game integration reference</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by tools\e2e\games\Arma2Settings.ps1: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by tools\e2e\games\Arma3Settings.ps1: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/dcs.html" title="DCS World">DCS World</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by tools\e2e\games\MsfsCurves.ps1: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by tools\e2e\games\Msfs2024Settings.ps1: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by tools\e2e\games\WarThunderSettings.ps1: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li></ul></details><details class="nav-release-notes"><summary>릴리스 노트</summary><ul><li><a href="../../releases/v2.7.0.html" title="JoyPro 2.7.0">JoyPro 2.7.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.6.5.html" title="JoyPro 2.6.5">JoyPro 2.6.5</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.6.4.html" title="JoyPro 2.6.4">JoyPro 2.6.4</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.6.3.html" title="JoyPro 2.6.3">JoyPro 2.6.3</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.6.2.html" title="JoyPro 2.6.2">JoyPro 2.6.2</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.6.1.html" title="JoyPro 2.6.1">JoyPro 2.6.1</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li></ul></details><details class="nav-project"><summary>프로젝트</summary><ul><li><a href="../../ko/project/jp1-vs-jp2.html" title="JoyPro 1에서 JoyPro 2로">JoyPro 1에서 JoyPro 2로</a></li><li><a href="../../ko/project/about.html" title="소개, 라이선스, 커뮤니티">소개, 라이선스, 커뮤니티</a></li><li><a href="../../project/wiki-status.html" title="Wiki status">Wiki status</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li></ul></details><details class="nav-developers"><summary>개발자</summary><ul><li><a href="../../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/localization.html" title="Localization">Localization</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li><li><a href="../../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a><span class="en-mark" lang="en" title="이 페이지는 영어로만 제공됩니다.">EN</span></li></ul></details></div></nav>
+<main>
+<div class="page-head"><div class="crumb">주요 흐름</div><h1>게임으로 내보내기 </h1><div class="layer-switch" role="group" aria-label="설명 수준"><span>표시:</span><button data-show="beginner">초보자용</button><button data-show="advanced">고급</button><button data-show="technical">기술 정보</button><button data-show="all">전체</button></div></div>
+<div class="content">
+<p>내보내기는 스틱이 게임에서 작동하게 만드는 단계입니다. JoyPro가 관계와 바인딩을 각 게임의 조작 설정 파일, 즉 게임 자체의 조작 메뉴가 저장하는 바로 그 파일에 써넣습니다. 비행하는 동안 백그라운드에서 실행되는 것은 없습니다. 한 번 내보내면 게임은 평소처럼 자기 파일을 읽습니다.</p>
+<figure class="diagram-fig"><div class="diagram"><pre class="mermaid">flowchart LR
+  C[&quot;1 확인&lt;br/&gt;(선택 사항)&quot;] --&gt; M[&quot;2 방식 선택&lt;br/&gt;(4가지)&quot;]
+  M --&gt; G[&quot;3 게임 체크,&lt;br/&gt;체크한 게임 내보내기&quot;]
+  G --&gt; W[&quot;먼저 백업한 뒤&lt;br/&gt;게임 파일을&lt;br/&gt;써넣음&quot;]
+</pre></div><figcaption>1단계는 살펴보기만 하며, 내보내기를 막지 않습니다. 게임 카드의 '마지막 내보내기 취소'를 누르면 파일이 원래대로 돌아옵니다. Xbox 전용 게임에는 아무것도 써넣지 않으며, 가상 조이스틱 페이지의 '시작'을 사용합니다.</figcaption></figure>
+<section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">초보자용</div>
+<h2 id="export-in-three-steps"><span id="세-단계로-내보내기" class="alias"></span><a class="anchor" href="#export-in-three-steps">#</a>세 단계로 내보내기</h2>
+<p>아래쪽 막대에서 <strong>내보내기</strong>를 여세요. 페이지는 위에서 아래로 번호가 붙은 카드 세 개로 되어 있습니다:</p>
+<figure class="shot"><a href="../../assets/shots/export-light.webp"><img class="only-light" loading="lazy" src="../../assets/shots/export-light.webp" alt="내보내기 페이지: 확인, 방식, 게임"></a><a href="../../assets/shots/export-dark.webp"><img class="only-dark" loading="lazy" src="../../assets/shots/export-dark.webp" alt="내보내기 페이지: 확인, 방식, 게임"></a><figcaption>내보내기 페이지: 확인, 방식, 게임 <span class="shot-lang">(그림은 영어로 된 앱을 보여 줍니다.)</span></figcaption></figure>
+<ol>
+<li><strong>프로필 확인하기.</strong> <strong>지금 확인</strong>을 누르세요. JoyPro가 게임에서 잘못될 수 있는 부분을 찾습니다. 예를 들어 같은 기체에서 두 가지 일을 하는 버튼 하나 같은 것입니다. 찾은 문제를 고치거나(문제마다 클릭 한 번) 그대로 두세요. 확인은 내보내기를 막지 않습니다. <a href="../../ko/flows/check.html">확인</a>을 참고하세요.</li>
+<li><strong>JoyPro가 게임에 써넣는 방식.</strong> 네 가지 중 하나를 고르세요. 잘 모르겠다면 첫 번째를 그대로 두세요: <strong>다른 장치도 지우기</strong>를 체크한 <strong>내 장치에서 교체</strong>. 그러면 스틱이 프로필에 적힌 대로만 동작하고, 다른 일은 하지 않습니다.</li>
+<li><strong>게임으로 내보내기.</strong> 프로필에 바인딩이 있는 모든 게임은 이미지가 있는 카드를 받습니다. 게임을 체크하고 <strong>체크한 게임 내보내기</strong>를 누르거나, 카드 하나에서 <strong>지금 내보내기</strong>를 누르세요.</li>
+</ol>
+<p><strong>먼저 게임을 닫으세요.</strong> 게임은 종료할 때 조작 파일을 쓰기 때문에, JoyPro는 실행 중인 게임으로 내보내기를 거부하고 그 사실을 알려 줍니다.</p>
+<h3 id="which-choice-is-right-for-me"><span id="어떤-방식이-나에게-맞을까요" class="alias"></span><a class="anchor" href="#which-choice-is-right-for-me">#</a>어떤 방식이 나에게 맞을까요?</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>선택 항목</th>
+<th>이럴 때 선택</th>
+<th>게임 자체 바인딩은 어떻게 되나요</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>내 장치에서 교체</strong></td>
+<td>JoyPro에서 스틱을 설정하는 경우</td>
+<td>프로필에 있는 장치에는 내 바인딩만 남습니다(내보내는 기체에서).</td>
+</tr>
+<tr>
+<td><strong>업데이트, 게임의 바인딩 유지</strong></td>
+<td>게임 안에서도 바인딩하고 그것을 유지하고 싶은 경우</td>
+<td>내 바인딩이 들어가고, 게임 바인딩은 내가 다른 용도로 쓰는 버튼에 있는 경우에만 제거됩니다.</td>
+</tr>
+<tr>
+<td><strong>업데이트, 내 프로필 우선</strong></td>
+<td>위와 같지만, JoyPro에서 동작을 다른 버튼으로 옮긴 경우</td>
+<td>위와 같고, 바인딩한 모든 동작은 게임에서 다른 버튼을 잃으므로 옮기면 정말로 옮겨집니다.</td>
+</tr>
+<tr>
+<td><strong>추가만</strong></td>
+<td>JoyPro를 처음 써 보는 경우</td>
+<td>아무것도 제거되지 않습니다. 게임이 이미 어떤 버튼을 다른 용도로 쓰고 있으면 내 바인딩은 빠지고, 확인 기능이 알려 줍니다.</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>다른 장치도 지우기</strong>(선택지 아래의 체크 상자): 프로필에 바인딩이 없는 연결된 장치는 내보내는 기체에서 바인딩을 잃습니다. 깨끗하게 시작하고 싶다면 체크한 채로 두고, 게임 안에서만 쓰는 두 번째 장치가 있다면 체크를 해제하세요.</p>
+<h3 id="safe-by-design"><span id="안전한-설계" class="alias"></span><a class="anchor" href="#safe-by-design">#</a>안전한 설계</h3>
+<ul>
+<li>JoyPro는 게임 파일을 바꾸기 전에 <strong>백업으로 복사합니다</strong>. 각 카드에는 <strong>마지막 내보내기 취소</strong>가 있어서, 파일을 바이트 하나까지 원래 상태 그대로 되돌립니다.</li>
+<li>이미 자체 바인딩이 있는 게임으로 <strong>처음 내보낼 때</strong>는 &quot;먼저 가져올까요?&quot;라고 한 번 묻습니다. 게임에서 만든 것을 유지하려면 <strong>먼저 가져오기</strong>를, 교체하려면 <strong>그래도 내보내기</strong>를 고르세요.</li>
+<li><strong>연결되어 있지 않은</strong> 장치는 바인딩을 유지합니다. <strong>마우스</strong>와 <strong>게임패드</strong> 바인딩은 절대 건드리지 않습니다.</li>
+</ul>
+<h3 id="what-you-notice-in-the-game"><span id="게임에서-달라지는-점" class="alias"></span><a class="anchor" href="#what-you-notice-in-the-game">#</a>게임에서 달라지는 점</h3>
+<p>게임을 시작하고 조작 메뉴를 열면, 게임이 쓰는 이름으로 각 장치 열에 바인딩이 들어 있습니다. DCS에서는 기체별로, Star Citizen에서는 함선 동작별로, IL-2에서는 Key mapping에 표시됩니다. 아래 <a href="#in-the-game">게임에서</a> 섹션에 모든 종류의 게임이 나와 있습니다.</p>
+<h2 id="other-ways-your-binds-reach-the-game"><span id="바인딩이-게임에-전달되는-다른-방법" class="alias"></span><a class="anchor" href="#other-ways-your-binds-reach-the-game">#</a>바인딩이 게임에 전달되는 다른 방법</h2>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>내 게임에 쓰기</strong>(빠른 설정)</td>
+<td>빠른 설정의 내보내기입니다. 설정한 게임에 같은 백업과 함께 써넣습니다. <a href="../../ko/getting-started/quick-start.html">빠른 시작</a>을 참고하세요.</td>
+</tr>
+<tr>
+<td>가상의 컨트롤러(가상 Xbox 패드)</td>
+<td>ACE COMBAT 8과 Hell Let Loose: Vietnam에는 아무것도 써넣지 않으며, 내보내기에서도 그렇게 알려 줍니다. <strong>시작</strong>이 켜져 있는 동안 스틱이 가상의 컨트롤러를 움직입니다. <a href="../../ko/how-do-i/xbox-only-games.html">Xbox 전용 게임</a>을 참고하세요.</td>
+</tr>
+<tr>
+<td>DCS 니보드</td>
+<td>바인딩을 내보내는 것이 아니라, 조종석에서 버튼이 하는 일을 보여 주는 기체별 페이지입니다. <a href="../../ko/how-do-i/dcs-kneeboard.html">니보드</a>를 참고하세요.</td>
+</tr>
+</tbody>
+</table></div></div>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">고급</div>
+<h2 id="the-modes-in-detail"><span id="모드-자세히-보기" class="alias"></span><a class="anchor" href="#the-modes-in-detail">#</a>모드 자세히 보기</h2>
+<p>&quot;같은 입력&quot;이란 같은 장치, 같은 버튼이나 축, 같은 수정키를 뜻하며, 게임이 기체별로 바인딩을 저장하면 같은 기체(또는 함선, 차량)여야 합니다. 모든 모드는 내보내는 기체 안에서만 작용합니다.</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>추가만</th>
+<th>업데이트, 유지</th>
+<th>업데이트, 프로필 우선</th>
+<th>바꾸기</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>사용자의 바인딩</td>
+<td>입력이 비어 있는 곳에 기록</td>
+<td>작성됨</td>
+<td>작성됨</td>
+<td>작성됨</td>
+</tr>
+<tr>
+<td>다른 동작에 쓰는 입력에 있는 게임 바인딩</td>
+<td>유지됨. 사용자의 바인딩은 <strong>기록되지 않고</strong> 표시됨</td>
+<td>제거됨</td>
+<td>제거됨</td>
+<td>제거됨</td>
+</tr>
+<tr>
+<td>같은 동작의 다른 입력에 있는 게임 바인딩(이동 후)</td>
+<td>유지됨</td>
+<td>유지됨(동작이 두 입력 모두에 있음)</td>
+<td>제거됨</td>
+<td>기록하는 장치에서 제거됨</td>
+</tr>
+<tr>
+<td>사용자 장치의 다른 게임 바인딩</td>
+<td>유지됨</td>
+<td>유지됨</td>
+<td>유지됨</td>
+<td><strong>제거됨</strong></td>
+</tr>
+<tr>
+<td>사용자 장치의 게임 기본값</td>
+<td>유지됨</td>
+<td>유지됨</td>
+<td>사용자의 동작을 가지고 있지 않으면 유지됨</td>
+<td><strong>제거됨</strong></td>
+</tr>
+<tr>
+<td>프로필에 바인딩이 없는 연결된 장치</td>
+<td>유지됨</td>
+<td>유지됨</td>
+<td>사용자의 동작이 제거됨</td>
+<td>유지됨. 단, <strong>다른 장치도 지우기</strong>를 켜면 제외</td>
+</tr>
+<tr>
+<td>연결되지 않은 장치, 마우스, 게임패드</td>
+<td>건드리지 않음</td>
+<td>건드리지 않음</td>
+<td>건드리지 않음</td>
+<td>건드리지 않음</td>
+</tr>
+<tr>
+<td>키보드</td>
+<td>키보드 옵션을 켰을 때만</td>
+<td>키보드 옵션을 켰을 때만</td>
+<td>키보드 옵션을 켰을 때만</td>
+<td>키보드 옵션을 켰을 때만</td>
+</tr>
+<tr>
+<td>내보내기에 포함되지 않은 기체</td>
+<td>건드리지 않음</td>
+<td>건드리지 않음</td>
+<td>건드리지 않음</td>
+<td>건드리지 않음(DCS: &quot;다른 모든 기체에서도 DCS 기본 바인딩 제거&quot; 옵션을 켜면 제외)</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>다른 장치도 지우기</strong>는 추가만에서는 쓰이지 않습니다. 다른 모드에서는 내보내는 기체에서 프로필이 쓰지 않는 연결된 장치를 비웁니다(DCS: 그 장치의 DCS 기본값도). 가져오기에서 무시하는 장치와 JoyPro가 터널링하는 vJoy 장치는 지우지 않습니다.</p>
+<p>2.5.0부터 기본값은 <strong>내 장치에서 교체</strong> + <strong>다른 장치도 지우기</strong>입니다(JoyPro 1과 같음). 직접 고른 모드는 기억됩니다.</p>
+<h3 id="in-short-one-of-your-binds-four-modes"><span id="요약-사용자의-바인딩-하나-모드-네-가지" class="alias"></span><a class="anchor" href="#in-short-one-of-your-binds-four-modes">#</a>요약: 사용자의 바인딩 하나, 모드 네 가지</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>모드</th>
+<th>게임이 사용자의 버튼을 다른 데 씀</th>
+<th>사용자의 동작에 게임 안의 다른 버튼이 있음</th>
+<th>연결된 다른 장치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>내 장치에서 교체</strong></td>
+<td>그 바인딩이 제거되고 사용자의 바인딩이 기록됨</td>
+<td>기록하는 장치에서 제거됨</td>
+<td>유지됨. 단, <strong>다른 장치도 지우기</strong>를 켜면 제외</td>
+</tr>
+<tr>
+<td><strong>업데이트, 내 프로필 우선</strong></td>
+<td>그 바인딩이 제거되고 사용자의 바인딩이 기록됨</td>
+<td>제거됨</td>
+<td>사용자의 동작이 그 장치에서 제거됨</td>
+</tr>
+<tr>
+<td><strong>업데이트, 게임의 바인딩 유지</strong></td>
+<td>그 바인딩이 제거되고 사용자의 바인딩이 기록됨</td>
+<td>유지됨: 동작이 두 버튼 모두에 있음</td>
+<td>유지됨</td>
+</tr>
+<tr>
+<td><strong>추가만</strong></td>
+<td>유지됨. 사용자의 바인딩은 <strong>기록되지 않고</strong> 표시됨</td>
+<td>유지됨</td>
+<td>유지됨</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="options-per-game"><span id="게임별-옵션" class="alias"></span><a class="anchor" href="#options-per-game">#</a>게임별 옵션</h3>
+<p><strong>옵션 및 경로 (전문가용)</strong> 아래에:</p>
+<ul>
+<li><strong>DCS</strong>: DCS 카드의 <strong>기체...</strong> 목록(체크한 기체만 기록됨), <strong>DCS: 키보드 기본값 유지</strong>(켜짐), <em>다른 모든 기체에서도 내 장치의 DCS 기본 바인딩 제거</em>(꺼짐).</li>
+<li><strong>Star Citizen</strong>: <strong>SC: 키보드 기본값 유지</strong>, <em>로컬 순서 우선</em>.</li>
+<li><strong>다른 게임</strong>: 기록하지 않고 무엇이 바뀔지 보여 주는 <strong>시험 실행</strong> 상자.</li>
+<li><strong>경로</strong>: 게임마다 다른 Saved Games 또는 설정 폴더. <em>이 프로필 전용 경로와 무시할 장치</em>는 PC의 설정 대신 열린 프로필만의 설정을 줍니다.</li>
+</ul>
+<h3 id="marks-not-written-to-the-game"><span id="표시-게임에-기록되지-않음" class="alias"></span><a class="anchor" href="#marks-not-written-to-the-game">#</a>표시: &quot;게임에 기록되지 않음&quot;</h3>
+<p>추가만(그리고 게임에 다른 입력을 위한 빈자리가 없는 모든 모드, 예를 들어 동작마다 입력이 두 개인 Elite Dangerous)은 일부 바인딩을 빼놓습니다. 프로필은 그 입력을 차지한 게임의 동작과 날짜와 함께 각각을 기억합니다. 확인은 표시마다 <strong>'업데이트'로 내보내 교체하기</strong>, <strong>다른 버튼으로 이동</strong>, <strong>그대로 두기</strong>가 있는 카드를 보여 줍니다. 내보낼 때마다 해당 게임과 기체의 표시가 교체되므로, 나중의 내보내기가 그 바인딩을 기록하면 표시가 사라집니다.</p>
+<h3 id="remembered-settings"><span id="기억되는-설정" class="alias"></span><a class="anchor" href="#remembered-settings">#</a>기억되는 설정</h3>
+<p>모드, <strong>다른 장치도 지우기</strong> 체크, 게임별 옵션, 경로는 JoyPro 설정에 저장됩니다. 직접 체크한 게임과 DCS 기체는 프로필마다 저장됩니다. 교체와 지우기는 내보낼 때마다 묻습니다(설정 &gt; 확인에서 이 질문을 끌 수 있음).</p>
+<h3 id="after-the-export"><span id="내보낸-후" class="alias"></span><a class="anchor" href="#after-the-export">#</a>내보낸 후</h3>
+<ul>
+<li>카드의 <strong>마지막 내보내기 취소</strong>는 그 게임의 가장 최근 백업을 복원합니다. 전체 목록은 내보내기 페이지 아래쪽의 <strong>게임 설정 백업</strong>에 있습니다.</li>
+<li>내보내기는 <strong>게임 감시 기능</strong>을 위해 게임 파일을 기록해 둡니다. JoyPro 자신의 내보내기에 대해서는 나중에 &quot;변경 사항을 가져올까요?&quot;라고 묻지 않지만, 그 뒤에 게임에서 직접 바꾼 것은 묻습니다(<a href="../../reference/sync-watcher.html">감시 기능</a>).</li>
+<li>JoyPro는 게임 파일 옆에 자체 데이터를 저장하므로, 나중에 가져오면 관계 이름, 그룹, 수정키, 곡선이 되돌아옵니다(<a href="../../reference/reimport.html">다시 가져오기</a>).</li>
+</ul>
+</section>
+<h2 id="in-the-game"><span id="게임에서" class="alias"></span><a class="anchor" href="#in-the-game">#</a>게임에서</h2>
+<p>내보낸 뒤 플레이어가 보는 모습은 게임 종류에 따라 다릅니다. 아래의 모든 게임은 같은 규칙을 따릅니다. JoyPro는 명령 목록에 있는 동작만 써넣고, 게임이 실행 중이면 써넣기를 거부하며, 먼저 파일을 백업하고, 일치시킬 수 없는 장치나 동작은 추측하지 않습니다(경고와 함께 건너뜁니다).</p>
+<div class="callout ingame"><div class="callout-title">게임에서: 비행 시뮬레이터: DCS, IL-2 (Great Battles, Korea, 1946, Cliffs of Dover), Falcon BMS, X-Plane, MSFS, FSX, Prepar3D</div>
+<p>JoyPro는 써넣는 장치를 넘겨받습니다. <strong>교체</strong>를 쓰면 내보내는 기체에서 그 장치들의 다른 바인딩이 모두 사라지고, <strong>다른 장치도 지우기</strong>를 쓰면 연결된 다른 장치도 지워집니다(DCS: DCS 기본값도 포함).</p>
+<ul>
+<li><strong>DCS World</strong>: Options &gt; Controls에서 기체를 고르세요. 바인딩은 장치 열에 있고, 제거된 기본값은 빈 칸으로 표시되며, 수정키는 수정키 목록에 있습니다. 체크한 기체만 바뀝니다. JoyPro는 DCS 자체와 마찬가지로 DCS 기본값과 다른 부분만 써넣습니다.</li>
+<li><strong>IL-2 Great Battles</strong>: Settings &gt; Key mapping에 바인딩과 축 응답이 표시됩니다. 마우스 줄과 JoyPro가 모르는 줄은 그대로 남습니다.</li>
+<li><strong>IL-2 Korea</strong>: 키 매핑 프로필 &quot;General&quot;.</li>
+<li><strong>Falcon BMS</strong>: 런처가 다음 Launch 때 키 파일과 축 매핑을 만드므로, BMS는 런처를 통해 시작하세요.</li>
+<li><strong>MSFS 2024 / 2020</strong>: Controls에서 장치에 JoyPro의 프리셋이 표시됩니다.</li>
+<li><strong>X-Plane 11 / 12</strong>: Settings &gt; Joystick에 할당 내용이 표시됩니다.</li>
+</ul>
+</div>
+<div class="callout ingame"><div class="callout-title">게임에서: 보병, 차량, 메뉴가 있는 게임: Star Citizen, War Thunder, Arma 3 / 2, Arma Reforger, WARDOGS, Nuclear Option, Hell Let Loose, Battlefield</div>
+<p>JoyPro는 <strong>비행 동작만</strong> 건드립니다(항공기, 헬리콥터, 우주선). 도보, 차량, 메뉴 바인딩은 바이트 하나까지 그대로 남습니다. <strong>교체</strong>와 <strong>다른 장치도 지우기</strong>는 JoyPro가 아는 비행 동작만 비웁니다.</p>
+<ul>
+<li><strong>Star Citizen</strong>: Options &gt; Keybindings에 조이스틱(js1, js2, ...)의 함선 동작이 표시됩니다. <strong>교체</strong>나 <strong>다른 장치도 지우기</strong>를 쓰면, js1에 써넣거나 js1을 쓰지 않을 때 js1에 있는 게임 자체의 조이스틱 기본값이 꺼집니다.</li>
+<li><strong>War Thunder</strong>: Controls에 항공기 바인딩이 표시되며, 전차와 함선 조작은 바뀌지 않습니다.</li>
+<li><strong>Arma 3 / Arma 2</strong>: 프로필의 키 설정. 항공기와 헬리콥터 동작만 바뀝니다.</li>
+</ul>
+</div>
+<div class="callout ingame"><div class="callout-title">게임에서: 우주 게임: Elite Dangerous, X4: Foundations</div>
+<ul>
+<li><strong>Elite Dangerous</strong>는 동작마다 입력을 두 개(Primary와 Secondary) 둡니다. 빈자리가 없는 바인딩에는 &quot;Not written&quot; 표시가 붙고 &quot;다른 버튼으로 이동&quot; 또는 &quot;그대로 두기&quot;를 고를 수 있습니다. 도보 및 SRV 바인딩은 그대로 남습니다.</li>
+<li><strong>X4</strong>: 게임의 입력 설정. 목록에 있는 함선 동작만 바뀝니다.</li>
+</ul>
+</div>
+<div class="callout ingame"><div class="callout-title">게임에서: 장치 하나만 읽거나 Xbox 컨트롤러만 읽는 게임</div>
+<ul>
+<li><strong>vJoy로 설정한 게임</strong>(장치를 몇 개만 읽는 게임): 내보내기가 바인딩을 vJoy 장치에 써넣습니다. 플레이하는 동안 JoyPro가 스틱 입력을 vJoy 장치로 복사하고, HidHide가 그 게임에서만 실제 장치를 숨깁니다. 게임에는 모든 것이 들어 있는 장치 하나만 보입니다. <a href="../../ko/gui/vjoy.html">가상 조이스틱</a>을 참고하세요.</li>
+<li><strong>Xbox 전용 게임</strong>(ACE COMBAT 8, Hell Let Loose: Vietnam): 아무것도 써넣지 않으며, 내보내기에서도 그렇게 알려 줍니다. <strong>시작</strong>이 켜져 있는 동안 스틱이 가상의 컨트롤러(가상 Xbox 패드)를 움직입니다. HidHide는 필요 없습니다. <a href="../../ko/how-do-i/xbox-only-games.html">HOTAS로 Xbox 전용 게임 하기</a>를 참고하세요.</li>
+</ul>
+</div>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">기술 정보</div>
+<h2 id="how-it-works-inside"><span id="내부-작동-방식" class="alias"></span><a class="anchor" href="#how-it-works-inside">#</a>내부 작동 방식</h2>
+<p>클릭부터 파일 기록까지, 내보내기 한 번:</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>누가</th>
+<th>일어나는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>사용자</td>
+<td>내보내기 페이지에서 <strong>체크한 게임 내보내기</strong>를 누릅니다.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>JoyPro</td>
+<td>엔진에 게임 상태를 묻습니다(<code>profile game-state --game &lt;id&gt;</code>): 가져왔는지, 내보냈는지, 바인딩이 있는지.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>JoyPro</td>
+<td>필요할 때 묻습니다: 첫 내보내기(&quot;먼저 가져올까요?&quot;) 또는 바인딩을 지우는 모드(설정 &gt; 확인).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>엔진</td>
+<td><code>&lt;game&gt; export --mode &lt;m&gt; --nuke-untouched-devices &lt;b&gt; ...</code>을 실행합니다: 게임이 실행 중이면 거부하고, 모든 파일을 백업하며(GameBackups와 <code>.jpbak</code>), 카탈로그에 있는 동작만 씁니다.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>엔진</td>
+<td>동기화 기록(지문과 기준선)과 내보내기 표시를 저장한 뒤 답합니다: 기록됨, 건너뜀, <code>SkippedTakenInputs</code>.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>JoyPro</td>
+<td>게임의 카드에 &quot;14:02에 내보냄&quot;이 표시되고 <strong>마지막 내보내기 취소</strong>를 쓸 수 있습니다.</td>
+</tr>
+</tbody>
+</table></div></div>
+<ol>
+<li><strong>GUI.</strong> <code>ExportSelectedGamesAsync</code> / <code>ExportGameNowAsync</code>(<code>MainWindowViewModel.ExportGames.cs</code>)가 <code>AskAboutFirstExportAsync</code>(<a href="../../cli/profile.html#profile-game-state"><code>engine profile game-state</code></a>)와 <code>ConfirmRiskyExportAsync</code>로 묻고, 그다음 <code>ExportGameAsync</code>가 카드의 내보내기 모듈을 고릅니다: <code>dcs</code>, <code>il2</code>, <code>starcitizen</code> 또는 레지스트리 게임. 명령은 페이지의 설정으로 만들어집니다. 예: <code>RunDcsExportAsync</code>: <code>engine dcs export --mode clean --keep-keyboard-defaults true --nuke-untouched-devices true --clean-all-aircraft false --ignore-device &lt;d&gt; --planes F-16C_50|FA-18C_hornet</code>. 모든 엔진 호출은 <code>--profile</code>과 <code>--status true</code>(작업 영역의 진행률과 취소)를 붙여 한 곳, <code>RunEngineAsync</code>를 거치며, 두 명령이 동시에 기록하지 않도록 순서대로 실행됩니다.</li>
+<li><strong>엔진.</strong> <code>engine\Program.cs</code>는 <code>dcs</code> / <code>il2</code> / <code>starcitizen</code>을 각 내보내기 모듈로, 나머지 모든 게임을 <code>Games.GameRegistry</code>(게임마다 <code>GameIntegration</code> 하나)로 보냅니다. DCS: <code>EngineDcsExport.Modes.cs</code>가 장치 파일마다 DCS에서 활성인 바인딩(기본 프로필에서 <code>removed</code>를 빼고 <code>added</code>와 <code>changed</code>를 더함)을 계산하고, 어떤 바인딩을 활성으로 할지 정한 뒤, 기본값과 실제로 다른 것만 기록합니다.</li>
+<li><strong>안전.</strong> <code>GameExportSafety.BackupBeforeOverwrite</code>는 각 파일을 <code>&lt;file&gt;.jpbak</code>과 버전별 백업 저장소(<code>manifest.json</code>이 있는 <code>%LOCALAPPDATA%\JoyPro2\GameBackups\&lt;date-time&gt;_&lt;game&gt;\</code>, 게임마다 최신 30세트 보관)에 복사합니다. 레지스트리 게임(Nuclear Option)은 바뀔 수 있는 값의 스냅샷을 받습니다. 내보내기가 새로 만든 파일은 &quot;존재하지 않았음&quot;으로 기록되므로 복원하면 다시 지워집니다.</li>
+<li><strong>그 후.</strong> 동기화 기록(<code>&lt;data&gt;\Sync\&lt;game&gt;.json</code>: 파일마다 크기, 시간, SHA-256과 모든 바인딩의 해시)이 JoyPro 자신의 변경에 대해 감시 기능을 조용히 시킵니다. <code>ExportSkippedBinds.cs</code>가 <code>SkippedTakenInputs</code>를 채우고, 내보내기 명령이 이를 프로필의 표시로 바꿉니다. 프로필 기록 내역은 내보내기 전마다 체크포인트를 남깁니다.</li>
+</ol>
+<h3 id="the-files-each-game-gets"><span id="게임별로-기록되는-파일" class="alias"></span><a class="anchor" href="#the-files-each-game-gets">#</a>게임별로 기록되는 파일</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>게임</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS World</td>
+<td>기체와 장치마다 <code>Saved Games\DCS\Config\Input\&lt;aircraft&gt;\joystick\&lt;device&gt;.diff.lua</code>, 그 옆의 <code>.jp</code>, 기체의 <code>modifiers.lua</code></td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td><code>data\input\global.actions</code>(새 줄은 끝에, 순서 유지), 축 응답, <code>jp.actions</code></td>
+</tr>
+<tr>
+<td>IL-2 Korea</td>
+<td><code>data\input\general.actions</code></td>
+</tr>
+<tr>
+<td>Falcon BMS</td>
+<td>장치마다 런처의 <code>User\Config\Setup.v100.* {GUID}.xml</code></td>
+</tr>
+<tr>
+<td>MSFS 2024 / 2020</td>
+<td>입력 프로필(2024: Community 폴더의 프리셋 패키지 <code>joypro-input-profiles</code>와 Steam 프로필)</td>
+</tr>
+<tr>
+<td>X-Plane 11 / 12</td>
+<td><code>Output\preferences</code>의 조이스틱 환경 설정</td>
+</tr>
+<tr>
+<td>Star Citizen</td>
+<td><code>LIVE\user\client\0\Profiles\default\actionmaps.xml</code>과 <code>actionmaps.jp</code></td>
+</tr>
+<tr>
+<td>War Thunder</td>
+<td><code>Documents\My Games\WarThunder\Saves\&lt;id&gt;\production\machine.blk</code></td>
+</tr>
+<tr>
+<td>레지스트리 게임</td>
+<td>설정 파일과 <code>&lt;config&gt;.joypro-meta.json</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p>기록되지 않은 바인딩의 표시: <a href="../../cli/export-marks.html#export-marks-list"><code>engine export-marks list</code></a>, <a href="../../cli/export-marks.html#export-marks-dismiss"><code>engine export-marks dismiss</code></a>. 설정: <code>export-settings.json</code>(<code>ModeChosenByUser</code>). <code>--mode</code>가 없을 때 엔진의 기본값은 <code>merge-overwrite</code>입니다.</p>
+<h3 id="every-mode-on-the-command-line"><span id="명령줄의-모든-모드" class="alias"></span><a class="anchor" href="#every-mode-on-the-command-line">#</a>명령줄의 모든 모드</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>GUI 선택</th>
+<th>엔진 옵션</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>내 장치에서 교체 + 다른 장치도 지우기(기본값)</td>
+<td><code>--mode clean --nuke-untouched-devices true</code></td>
+</tr>
+<tr>
+<td>내 장치에서 교체</td>
+<td><code>--mode clean --nuke-untouched-devices false</code></td>
+</tr>
+<tr>
+<td>업데이트, 내 프로필 우선(+ 지우기)</td>
+<td><code>--mode merge-overwrite --nuke-untouched-devices true|false</code></td>
+</tr>
+<tr>
+<td>업데이트, 게임의 바인딩 유지(+ 지우기)</td>
+<td><code>--mode merge --nuke-untouched-devices true|false</code></td>
+</tr>
+<tr>
+<td>추가만</td>
+<td><code>--mode add</code>(nuke는 쓰이지 않음)</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>게임별: <a href="../../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>, <a href="../../cli/il2.html#il2-export"><code>engine il2 export</code></a>, <a href="../../cli/starcitizen.html#starcitizen-export"><code>engine starcitizen export</code></a>, 그리고 모든 레지스트리 게임의 <code>engine &lt;game&gt; export</code>(예: <a href="../../cli/warthunder.html#warthunder-export"><code>engine warthunder export</code></a>, <a href="../../cli/msfs2024.html#msfs2024-export"><code>engine msfs2024 export</code></a>, <a href="../../cli/xplane12.html#xplane12-export"><code>engine xplane12 export</code></a>; 모두 <code>--mode</code>, <code>--dry-run</code>, <code>--include-keyboard</code>, <code>--nuke-untouched-devices</code>를 받음). 실행 취소: <a href="../../cli/backups.html#backups-list"><code>engine backups restore</code></a>. 테스트: <code>engine\tests\smoke\dcsexportmodes.ps1</code>(모든 모드, 왕복, 바이트 단위 실행 취소)와 <code>engine\tests\smoke\roundtrip.ps1</code>(가져오기, clean + nuke, 다시 가져오기를 하면 게임이 원래대로 남음).</p>
+</section>
+<h2 id="related"><span id="관련-항목" class="alias"></span><a class="anchor" href="#related">#</a>관련 항목</h2>
+<ul>
+<li><a href="../../ko/gui/export.html">내보내기 페이지</a>, 페이지의 모든 컨트롤</li>
+<li>내보내기 전의 <a href="../../ko/flows/check.html">확인</a></li>
+<li><a href="../../reference/export.html">내보내기 참고 문서</a>와 <a href="../../reference/backups.html">게임 설정 백업</a></li>
+<li><a href="../../games/support.html">게임 지원</a>: JoyPro가 게임별로 해 주는 일</li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro는 자유 소프트웨어입니다: <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">소스</a> · <a href="../../project/wiki-status.html">위키 상태</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">이 페이지의 내용</div><ul><li class="l2"><a href="#export-in-three-steps">세 단계로 내보내기</a></li><li class="l3"><a href="#which-choice-is-right-for-me">어떤 방식이 나에게 맞을까요?</a></li><li class="l3"><a href="#safe-by-design">안전한 설계</a></li><li class="l3"><a href="#what-you-notice-in-the-game">게임에서 달라지는 점</a></li><li class="l2"><a href="#other-ways-your-binds-reach-the-game">바인딩이 게임에 전달되는 다른 방법</a></li><li class="l2"><a href="#the-modes-in-detail">모드 자세히 보기</a></li><li class="l3"><a href="#in-short-one-of-your-binds-four-modes">요약: 사용자의 바인딩 하나, 모드 네 가지</a></li><li class="l3"><a href="#options-per-game">게임별 옵션</a></li><li class="l3"><a href="#marks-not-written-to-the-game">표시: &quot;게임에 기록되지 않음&quot;</a></li><li class="l3"><a href="#remembered-settings">기억되는 설정</a></li><li class="l3"><a href="#after-the-export">내보낸 후</a></li><li class="l2"><a href="#in-the-game">게임에서</a></li><li class="l2"><a href="#how-it-works-inside">내부 작동 방식</a></li><li class="l3"><a href="#the-files-each-game-gets">게임별로 기록되는 파일</a></li><li class="l3"><a href="#every-mode-on-the-command-line">명령줄의 모든 모드</a></li><li class="l2"><a href="#related">관련 항목</a></li></ul></aside>
+</div>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/i18n.js"></script>
+<script src="../../assets/site.js"></script>
+</body>
+</html>

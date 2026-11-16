@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>匯出到您的遊戲 · JoyPro</title>
+<meta name="description" content="把您的設定檔寫入遊戲自己的控制設定：四種模式、「同時清除我的其他裝置」、各類遊戲中會改變什麼、備份，以及復原匯出。">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/site.css"><style>:root{--font:"Microsoft JhengHei UI", "Microsoft YaHei UI", "Yu Gothic UI", "Malgun Gothic", "Segoe UI", system-ui, sans-serif}</style>
+<link rel="alternate" hreflang="en" href="../../flows/export.html"><link rel="alternate" hreflang="bg" href="../../bg/flows/export.html"><link rel="alternate" hreflang="hr" href="../../hr/flows/export.html"><link rel="alternate" hreflang="cs" href="../../cs/flows/export.html"><link rel="alternate" hreflang="da" href="../../da/flows/export.html"><link rel="alternate" hreflang="nl" href="../../nl/flows/export.html"><link rel="alternate" hreflang="et" href="../../et/flows/export.html"><link rel="alternate" hreflang="fi" href="../../fi/flows/export.html"><link rel="alternate" hreflang="fr" href="../../fr/flows/export.html"><link rel="alternate" hreflang="de" href="../../de/flows/export.html"><link rel="alternate" hreflang="el" href="../../el/flows/export.html"><link rel="alternate" hreflang="hu" href="../../hu/flows/export.html"><link rel="alternate" hreflang="ga" href="../../ga/flows/export.html"><link rel="alternate" hreflang="it" href="../../it/flows/export.html"><link rel="alternate" hreflang="lv" href="../../lv/flows/export.html"><link rel="alternate" hreflang="lt" href="../../lt/flows/export.html"><link rel="alternate" hreflang="mt" href="../../mt/flows/export.html"><link rel="alternate" hreflang="pl" href="../../pl/flows/export.html"><link rel="alternate" hreflang="pt" href="../../pt/flows/export.html"><link rel="alternate" hreflang="ro" href="../../ro/flows/export.html"><link rel="alternate" hreflang="sk" href="../../sk/flows/export.html"><link rel="alternate" hreflang="sl" href="../../sl/flows/export.html"><link rel="alternate" hreflang="es" href="../../es/flows/export.html"><link rel="alternate" hreflang="sv" href="../../sv/flows/export.html"><link rel="alternate" hreflang="nb" href="../../nb/flows/export.html"><link rel="alternate" hreflang="is" href="../../is/flows/export.html"><link rel="alternate" hreflang="sq" href="../../sq/flows/export.html"><link rel="alternate" hreflang="bs" href="../../bs/flows/export.html"><link rel="alternate" hreflang="sr-Latn" href="../../sr-Latn/flows/export.html"><link rel="alternate" hreflang="sr-Cyrl" href="../../sr-Cyrl/flows/export.html"><link rel="alternate" hreflang="mk" href="../../mk/flows/export.html"><link rel="alternate" hreflang="ru" href="../../ru/flows/export.html"><link rel="alternate" hreflang="uk" href="../../uk/flows/export.html"><link rel="alternate" hreflang="be" href="../../be/flows/export.html"><link rel="alternate" hreflang="tr" href="../../tr/flows/export.html"><link rel="alternate" hreflang="ja" href="../../ja/flows/export.html"><link rel="alternate" hreflang="ko" href="../../ko/flows/export.html"><link rel="alternate" hreflang="zh-Hans" href="../../zh-Hans/flows/export.html"><link rel="alternate" hreflang="zh-Hant" href="../../zh-Hant/flows/export.html"><link rel="alternate" hreflang="x-default" href="../../flows/export.html">
+<script>(function(){var d=document.documentElement,l='beginner';try{var p=new URLSearchParams(location.search),q=p.get('theme');var t=q||localStorage.getItem('jp-theme');if(t==='light'||t==='dark')d.dataset.theme=t;l=p.get('show')||localStorage.getItem('jp-layer')||'beginner';}catch(e){}if(l!=='all')d.dataset.show=l;})();</script>
+</head>
+<body data-root="../../" data-lang="zh-Hant" data-page="flows/export.html" data-i18n="1">
+<header class="topbar">
+  <button class="menu-btn" aria-label="選單" aria-expanded="false">&#9776;</button>
+  <a class="brand" href="../../zh-Hant/index.html"><img src="../../assets/logo.svg" alt="" width="28" height="28"><span>JoyPro<sup>2</sup></span></a>
+  <div class="search"><input type="search" id="q" placeholder="搜尋按鈕、指令、遊戲..." autocomplete="off" aria-label="搜尋"><div id="results" class="results" hidden></div></div>
+  <a class="top-link" href="https://discord.gg/yK4gQA9xgk">Discord</a>
+  <a class="top-link" href="https://github.com/Holdi601/JoystickProfiler2">GitHub</a>
+  <span class="lang-slot"></span>
+  <button class="theme-btn" aria-label="淺色或深色">&#9680;</button>
+</header>
+<div class="layout">
+<nav class="sidenav" aria-label="Site"><details open class="nav-start"><summary>開始</summary><ul><li><a href="../../zh-Hant/index.html" title="JoyPro 2">JoyPro 2</a></li></ul></details><details open class="nav-getting-started"><summary>入門</summary><ul><li><a href="../../zh-Hant/getting-started/quick-start.html" title="快速入門：讓我的搖桿能用">快速入門：讓我的搖桿能用</a></li><li><a href="../../zh-Hant/getting-started/install.html" title="下載與安裝">下載與安裝</a></li><li><a href="../../zh-Hant/getting-started/first-start.html" title="第一次啟動">第一次啟動</a></li><li><a href="../../zh-Hant/getting-started/first-steps.html" title="10 分鐘建立您的第一個設定檔">10 分鐘建立您的第一個設定檔</a></li><li><a href="../../zh-Hant/getting-started/supported-devices.html" title="支援的裝置">支援的裝置</a></li></ul></details><details open class="nav-how-do-i"><summary>我要如何</summary><ul><li><a href="../../zh-Hant/how-do-i/index.html" title="我要如何...">我要如何...</a></li><li><a href="../../zh-Hant/how-do-i/xbox-only-games.html" title="用 HOTAS 玩只支援 Xbox 的遊戲">用 HOTAS 玩只支援 Xbox 的遊戲</a></li><li><a href="../../zh-Hant/how-do-i/dcs-kneeboard.html" title="在 DCS 膝板上查看我的綁定">在 DCS 膝板上查看我的綁定</a></li><li><a href="../../zh-Hant/how-do-i/where-is-what.html" title="什麼在哪裡？查看每個按鈕的功能">什麼在哪裡？查看每個按鈕的功能</a></li><li><a href="../../zh-Hant/how-do-i/several-inputs.html" title="一個功能用多個按鈕，同時處理多個動作">一個功能用多個按鈕，同時處理多個動作</a></li><li><a href="../../zh-Hant/how-do-i/change-one-button.html" title="之後更改一個按鈕">之後更改一個按鈕</a></li><li><a href="../../zh-Hant/how-do-i/undo-quick-setup.html" title="復原快速設定所做的事">復原快速設定所做的事</a></li><li><a href="../../zh-Hant/how-do-i/easy-words-and-help.html" title="簡單用語、導覽和 F1 說明">簡單用語、導覽和 F1 說明</a></li><li><a href="../../zh-Hant/how-do-i/where-functions-go.html" title="功能要放在哪裡？">功能要放在哪裡？</a></li><li><a href="../../zh-Hant/how-do-i/head-tracking.html" title="頭部追蹤與環顧四周">頭部追蹤與環顧四周</a></li></ul></details><details class="nav-games"><summary>遊戲</summary><ul><li><a href="../../zh-Hant/games/index.html" title="遊戲">所有遊戲</a></li><li><a href="../../games/support.html" title="Game support">Game support</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../zh-Hant/games/msfs2024.html" title="Microsoft Flight Simulator 2024">Microsoft Flight Simulator 2024</a></li><li><a href="../../zh-Hant/games/msfs2020.html" title="Microsoft Flight Simulator 2020">Microsoft Flight Simulator 2020</a></li><li><a href="../../zh-Hant/games/xplane.html" title="X-Plane 12 / 11">X-Plane 12 / 11</a></li><li><a href="../../zh-Hant/games/fsx-p3d.html" title="FSX 與 Prepar3D">FSX 與 Prepar3D</a></li><li><a href="../../zh-Hant/games/dcs.html" title="DCS World">DCS World</a></li><li><a href="../../zh-Hant/games/il2-great-battles.html" title="IL-2 Sturmovik: Great Battles">IL-2 Sturmovik: Great Battles</a></li><li><a href="../../zh-Hant/games/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a></li><li><a href="../../zh-Hant/games/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a></li><li><a href="../../zh-Hant/games/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover">IL-2 Sturmovik: Cliffs of Dover</a></li><li><a href="../../zh-Hant/games/falcon-bms.html" title="Falcon BMS">Falcon BMS</a></li><li><a href="../../zh-Hant/games/vtol-vr.html" title="VTOL VR">VTOL VR</a></li><li><a href="../../zh-Hant/games/nuclear-option.html" title="Nuclear Option">Nuclear Option</a></li><li><a href="../../zh-Hant/games/war-thunder.html" title="War Thunder">War Thunder</a></li><li><a href="../../zh-Hant/games/tiny-combat-arena.html" title="Tiny Combat Arena">Tiny Combat Arena</a></li><li><a href="../../zh-Hant/games/wardogs.html" title="WARDOGS">WARDOGS</a></li><li><a href="../../zh-Hant/games/g-rebels.html" title="G-Rebels">G-Rebels</a></li><li><a href="../../zh-Hant/games/starcitizen.html" title="Star Citizen">Star Citizen</a></li><li><a href="../../zh-Hant/games/elite-dangerous.html" title="Elite Dangerous">Elite Dangerous</a></li><li><a href="../../zh-Hant/games/x4.html" title="X4: Foundations">X4: Foundations</a></li><li><a href="../../zh-Hant/games/arma3.html" title="Arma 3">Arma 3</a></li><li><a href="../../zh-Hant/games/arma2.html" title="Arma 2 與 Operation Arrowhead">Arma 2 與 Operation Arrowhead</a></li><li><a href="../../zh-Hant/games/arma-reforger.html" title="Arma Reforger">Arma Reforger</a></li><li><a href="../../zh-Hant/games/ace-combat.html" title="ACE COMBAT">ACE COMBAT</a></li><li><a href="../../zh-Hant/games/project-wingman.html" title="Project Wingman">Project Wingman</a></li><li><a href="../../zh-Hant/games/hll-vietnam.html" title="Hell Let Loose: Vietnam">Hell Let Loose: Vietnam</a></li><li><a href="../../zh-Hant/games/battlefield.html" title="Battlefield">Battlefield</a></li><li><a href="../../zh-Hant/games/other-games.html" title="其他遊戲（僅有文件說明）">其他遊戲（僅有文件說明）</a></li></ul></details><details open class="nav-help"><summary>說明</summary><ul><li><a href="../../zh-Hant/faq.html" title="說明與疑難排解">說明與疑難排解</a></li><li><a href="../../zh-Hant/gui/help.html">F1 說明、導覽和簡單用語</a></li></ul></details><details open class="nav-main-flows"><summary>主要流程</summary><ul><li><a href="../../zh-Hant/flows/import.html" title="匯入遊戲">匯入遊戲</a></li><li><a href="../../zh-Hant/flows/relations.html" title="建立關聯">建立關聯</a></li><li><a class="current" href="../../zh-Hant/flows/export.html" title="匯出到您的遊戲">匯出到您的遊戲</a></li><li><a href="../../zh-Hant/flows/check.html" title="檢查">檢查</a></li></ul></details><details class="nav-gui-pages"><summary>GUI 頁面</summary><ul><li><a href="../../zh-Hant/gui/header.html" title="設定檔列">設定檔列</a></li><li><a href="../../zh-Hant/gui/start.html" title="開始">開始</a></li><li><a href="../../zh-Hant/gui/relations.html" title="關聯">關聯</a></li><li><a href="../../zh-Hant/gui/binds.html" title="綁定">綁定</a></li><li><a href="../../zh-Hant/gui/modifiers.html" title="修飾鍵">修飾鍵</a></li><li><a href="../../zh-Hant/gui/layout.html" title="配置">配置</a></li><li><a href="../../zh-Hant/gui/export.html" title="匯出">匯出</a></li><li><a href="../../zh-Hant/gui/check.html" title="檢查">檢查</a></li><li><a href="../../zh-Hant/gui/hud.html" title="HUD">HUD</a></li><li><a href="../../zh-Hant/gui/ffb.html" title="力回饋">力回饋</a></li><li><a href="../../zh-Hant/gui/vjoy.html" title="虛擬 Joystick">虛擬 Joystick</a></li><li><a href="../../zh-Hant/gui/cockpits.html" title="座艙">座艙</a></li><li><a href="../../zh-Hant/gui/statistics.html" title="統計">統計</a></li><li><a href="../../zh-Hant/gui/settings.html" title="設定">設定</a></li><li><a href="../../zh-Hant/gui/advanced.html" title="進階">進階</a></li><li><a href="../../zh-Hant/gui/output.html" title="輸出">輸出</a></li><li><a href="../../zh-Hant/gui/overlays.html" title="對話方塊與通知">對話方塊與通知</a></li><li><a href="../../zh-Hant/gui/first-start.html" title="首次啟動設定">首次啟動設定</a></li><li><a href="../../zh-Hant/gui/setup-wizard.html" title="設定精靈">設定精靈</a></li><li><a href="../../zh-Hant/gui/help.html" title="說明模式與導覽">說明模式與導覽</a></li></ul></details><div class="nav-power"><div class="nav-sep">給進階使用者</div><details class="nav-engine-cli"><summary>Engine (CLI)</summary><ul><li><a href="../../cli/index.html" title="Engine command line">Engine command line</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/ac7.html" title="engine ac7 (ACE COMBAT 7: Skies Unknown)">engine ac7 (ACE COMBAT 7: Skies Unknown)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/ac8.html" title="engine ac8 (ACE COMBAT 8: Wings of Theve)">engine ac8 (ACE COMBAT 8: Wings of Theve)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/arma2.html" title="engine arma2 (Arma 2)">engine arma2 (Arma 2)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/arma2oa.html" title="engine arma2oa (Arma 2: Operation Arrowhead)">engine arma2oa (Arma 2: Operation Arrowhead)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/arma3.html" title="engine arma3 (Arma 3)">engine arma3 (Arma 3)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/arrange.html" title="engine arrange">engine arrange</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/backups.html" title="engine backups">engine backups</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/bf2042.html" title="engine bf2042 (Battlefield 2042)">engine bf2042 (Battlefield 2042)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/bf6.html" title="engine bf6 (Battlefield 6)">engine bf6 (Battlefield 6)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/binds.html" title="engine binds">engine binds</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/bms.html" title="engine bms (Falcon BMS)">engine bms (Falcon BMS)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/cockpits.html" title="engine cockpits">engine cockpits</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/db.html" title="engine db">engine db</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/dcs.html" title="engine dcs (DCS World)">engine dcs (DCS World)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/devices.html" title="engine devices">engine devices</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/elite.html" title="engine elite (Elite Dangerous)">engine elite (Elite Dangerous)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/export-marks.html" title="engine export-marks">engine export-marks</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/ffb.html" title="engine ffb">engine ffb</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/fsx.html" title="engine fsx (Microsoft Flight Simulator X)">engine fsx (Microsoft Flight Simulator X)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/fsxse.html" title="engine fsxse (Microsoft Flight Simulator X: Steam Edition)">engine fsxse (Microsoft Flight Simulator X: Steam Edition)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/games.html" title="engine games">engine games</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/grebels.html" title="engine grebels (G-Rebels)">engine grebels (G-Rebels)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/hllv.html" title="engine hllv (Hell Let Loose: Vietnam)">engine hllv (Hell Let Loose: Vietnam)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/hud.html" title="engine hud">engine hud</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/il2.html" title="engine il2 (IL-2 Sturmovik: Great Battles)">engine il2 (IL-2 Sturmovik: Great Battles)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/il21946.html" title="engine il21946 (IL-2 Sturmovik: 1946)">engine il21946 (IL-2 Sturmovik: 1946)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/il2cod.html" title="engine il2cod (IL-2 Sturmovik: Cliffs of Dover)">engine il2cod (IL-2 Sturmovik: Cliffs of Dover)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/il2codblitz.html" title="engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)">engine il2codblitz (IL-2 Sturmovik: Cliffs of Dover Blitz)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/il2korea.html" title="engine il2korea (IL-2 Series: Korea)">engine il2korea (IL-2 Series: Korea)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/layout.html" title="engine layout">engine layout</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/llm.html" title="engine llm">engine llm</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/media.html" title="engine media">engine media</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/msfs2020.html" title="engine msfs2020 (Microsoft Flight Simulator 2020)">engine msfs2020 (Microsoft Flight Simulator 2020)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/msfs2024.html" title="engine msfs2024 (Microsoft Flight Simulator 2024)">engine msfs2024 (Microsoft Flight Simulator 2024)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/nuclearoption.html" title="engine nuclearoption (Nuclear Option)">engine nuclearoption (Nuclear Option)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/overlay.html" title="engine overlay">engine overlay</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/p3d4.html" title="engine p3d4 (Prepar3D v4)">engine p3d4 (Prepar3D v4)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/p3d5.html" title="engine p3d5 (Prepar3D v5)">engine p3d5 (Prepar3D v5)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/p3d6.html" title="engine p3d6 (Prepar3D v6)">engine p3d6 (Prepar3D v6)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/profile.html" title="engine profile">engine profile</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/pw.html" title="engine pw (Project Wingman)">engine pw (Project Wingman)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/reforger.html" title="engine reforger (Arma Reforger)">engine reforger (Arma Reforger)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/relations.html" title="engine relations">engine relations</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/setup.html" title="engine setup">engine setup</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/starcitizen.html" title="engine starcitizen (Star Citizen)">engine starcitizen (Star Citizen)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/summary.html" title="engine summary">engine summary</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/support.html" title="engine support">engine support</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/sync.html" title="engine sync">engine sync</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/telemetry.html" title="engine telemetry">engine telemetry</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/tinycombatarena.html" title="engine tinycombatarena (Tiny Combat Arena)">engine tinycombatarena (Tiny Combat Arena)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/usage.html" title="engine usage">engine usage</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/version.html" title="engine version">engine version</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/vjoy.html" title="engine vjoy">engine vjoy</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/vtolvr.html" title="engine vtolvr (VTOL VR (BYOJoystick mod))">engine vtolvr (VTOL VR (BYOJoystick mod))</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/vtolvr-native.html" title="engine vtolvr-native (VTOL VR (native: rudder and brakes))">engine vtolvr-native (VTOL VR (native: rudder and brakes))</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/wardogs.html" title="engine wardogs (WARDOGS)">engine wardogs (WARDOGS)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/warthunder.html" title="engine warthunder (War Thunder)">engine warthunder (War Thunder)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/x4.html" title="engine x4 (X4: Foundations)">engine x4 (X4: Foundations)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/xplane11.html" title="engine xplane11 (X-Plane 11)">engine xplane11 (X-Plane 11)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../cli/xplane12.html" title="engine xplane12 (X-Plane 12)">engine xplane12 (X-Plane 12)</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li></ul></details><details class="nav-reference"><summary>參考資料</summary><ul><li><a href="../../reference/ui-themes.html" title="Appearance: themes, text size, UI scale, fonts">Appearance: themes, text size, UI scale, fonts</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/auto-assign.html" title="Auto Assign">Auto Assign</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/auto-group.html" title="Auto Group">Auto Group</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/profile-history.html" title="Autosave, profile history and the last profile at start">Autosave, profile history and the last profile at start</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/axis-curves.html" title="Axis curve manager">Axis curve manager</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/logging.html" title="Background logs and problem reports">Background logs and problem reports</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/cockpits.html" title="Cockpit database">Cockpit database</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/devices.html" title="Device catalog (DB/Devices)">Device catalog</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/device-reference.html" title="Device reference pictures">Device reference pictures</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/export.html" title="Export">Export</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/backups.html" title="Game config backups">Game config backups</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/sync-watcher.html" title="Game config watcher">Game config watcher</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/natural-language-grouping.html" title="Group by description">Group by description</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ui-help-and-tours.html" title="Help mode, tours and the welcome">Help mode, tours and the welcome</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/hud.html" title="HUD">HUD</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/installs.html" title="Installed games">Installed games</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/layout-with-ai.html" title="Lay out with AI">Lay out with AI</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ui-live-input.html" title="Live input: Record, Follow input, live highlight">Live input: Record, Follow input, live highlight</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ai-plans.html" title="Manage with AI / Edit with AI">Manage with AI / Edit with AI</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/components.html" title="Optional components (one-click install)">Optional components</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/privacy.html" title="Privacy">Privacy</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/reimport.html" title="Re-import: JoyPro&#x27;s own data next to the game files">Re-import: JoyPro&#x27;s own data next to the game files</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/relation-builder.html" title="Relations page: search, tick, add (and the JoyPro assistant)">Relations page: search, tick, add</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/setup-wizard.html" title="Setup wizard">Setup wizard</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/relation-multi-select.html" title="Several actions at once (2.7.0)">Several actions at once</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/multi-bind.html" title="Several inputs per relation (experimental in 2.6.5, a normal feature since 2.7.0)">Several inputs per relation</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/suggest-additions.html" title="Suggest additions">Suggest additions</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ffb-telemetry.html" title="Telemetry force feedback (JoyPro.Ffb)">Telemetry force feedback</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/telemetry-recording.html" title="Telemetry recording">Telemetry recording</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ui-check.html" title="The Check: &quot;Problems found by the check&quot;">The Check: &quot;Problems found by the check&quot;</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/usage-statistics.html" title="Usage statistics, ranking and the Statistics page">Usage statistics, ranking and the Statistics page</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/updates.html" title="Version and updates">Version and updates</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/virtual-joystick.html" title="Virtual joystick mode (vJoy + HidHide)">Virtual joystick mode</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li></ul></details><details class="nav-game-reference"><summary>遊戲參考</summary><ul><li><a href="../../games/ref/README.html" title="Game integration reference">Game integration reference</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/ace-combat.html" title="ACE COMBAT on PC">ACE COMBAT on PC</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/arma2.html" title="Arma 2 and Arma 2: Operation Arrowhead (experimental; verified in game by tools\e2e\games\Arma2Settings.ps1: Arma 2 17/17 on 2026-10-10, Operation Arrowhead 17/17 on 2026-10-05)">Arma 2 and Arma 2: Operation Arrowhead</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/arma3.html" title="Arma 3 (experimental; verified in game 2026-10-10 by tools\e2e\games\Arma3Settings.ps1: 25/25, settings and binds; config watcher run 2026-10-11: 29/30, all watcher steps pass)">Arma 3</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/arma-reforger.html" title="Arma Reforger (experimental; first started and checked in game 2026-10-05, 1.9.0.13 Steam, settings menu only)">Arma Reforger</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/battlefield.html" title="Battlefield (Frostbite): one-device games">Battlefield: one-device games</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/dcs.html" title="DCS World">DCS World</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/elite-dangerous.html" title="Elite Dangerous (live 4.x client: Odyssey and Horizons-live)">Elite Dangerous</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/falcon-bms.html" title="Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena">Falcon BMS 4.38, Falcon 4.0 / Allied Force, Tiny Combat Arena</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/flyout.html" title="Flyout (Stonext Games, Unity, Early Access)">Flyout</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/fsx-p3d.html" title="FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6">FSX, FSX: Steam Edition and Prepar3D v4 / v5 / v6</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/g-rebels.html" title="G-Rebels (Reakktor Studios / Senatis, Unreal Engine 5.8, Early Access since 2026-07-20)">G-Rebels</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/hll-vietnam.html" title="Hell Let Loose: Vietnam (virtual Xbox pad game)">Hell Let Loose: Vietnam</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/integration-architecture.html" title="How games plug into the engine">How games plug into the engine</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/il2-korea.html" title="IL-2 Series: Korea">IL-2 Series: Korea</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/il2-1946.html" title="IL-2 Sturmovik: 1946">IL-2 Sturmovik: 1946</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/il2-cliffs-of-dover.html" title="IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz">IL-2 Sturmovik: Cliffs of Dover and Cliffs of Dover Blitz</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/kerbal-space-program.html" title="Kerbal Space Program 1 and 2">Kerbal Space Program 1 and 2</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/msfs.html" title="Microsoft Flight Simulator 2020 / 2024 (experimental; 2020 verified in game 2026-10-10 by tools\e2e\games\MsfsCurves.ps1: binds, Sensitivity page, buttons and axis curves in a flight; 2024 verified in the sim 2026-10-10 by tools\e2e\games\Msfs2024Settings.ps1: presets as a Community2024 package, random vJoy axes and buttons and the per-action curve override show in Controls)">Microsoft Flight Simulator 2020 / 2024</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/no-mans-sky.html" title="No Man&#x27;s Sky (Hello Games)">No Man&#x27;s Sky</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/nuclear-option.html" title="Nuclear Option (Shockfront Studios, Steam app 2168680, early access)">Nuclear Option</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/one-device-games.html" title="One-device and XInput-only games (virtual-only class)">One-device and XInput-only games</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/project-wingman.html" title="Project Wingman (Sector D2, Unreal Engine 4.27)">Project Wingman</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/rising-storm-2.html" title="Rising Storm 2: Vietnam (Tripwire / Antimatter, Unreal Engine 3)">Rising Storm 2: Vietnam</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/starcitizen.html" title="Star Citizen">Star Citizen</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/star-wars-squadrons.html" title="STAR WARS: Squadrons (EA / Motive, Frostbite, 2020)">STAR WARS: Squadrons</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/tiny-combat-arena.html" title="Tiny Combat Arena (Why485 / MicroProse, Unity)">Tiny Combat Arena</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/hawx.html" title="Tom Clancy&#x27;s H.A.W.X (2009) and H.A.W.X 2 (2010), Ubisoft">Tom Clancy&#x27;s H.A.W.X and H.A.W.X 2, Ubisoft</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/vtol-vr.html" title="VTOL VR (Boundless Dynamics, Steam app 667970) (experimental, not tested in game)">VTOL VR</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/war-thunder.html" title="War Thunder (experimental; verified in game 2026-10-10 by tools\e2e\games\WarThunderSettings.ps1: 29/29, settings and binds; config watcher runs 2026-10-11: 32/34 and 31/32)">War Thunder</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/wardogs.html" title="WARDOGS">WARDOGS</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/xplane.html" title="X-Plane 11 / 12 (experimental; X-Plane 12.4.3 checked in game, X-Plane 11 from its installed files)">X-Plane 11 / 12</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../games/ref/x4.html" title="X4: Foundations, X Rebirth, X3">X4: Foundations, X Rebirth, X3</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li></ul></details><details class="nav-release-notes"><summary>版本資訊</summary><ul><li><a href="../../releases/v2.7.0.html" title="JoyPro 2.7.0">JoyPro 2.7.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.6.5.html" title="JoyPro 2.6.5">JoyPro 2.6.5</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.6.4.html" title="JoyPro 2.6.4">JoyPro 2.6.4</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.6.3.html" title="JoyPro 2.6.3">JoyPro 2.6.3</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.6.2.html" title="JoyPro 2.6.2">JoyPro 2.6.2</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.6.1.html" title="JoyPro 2.6.1">JoyPro 2.6.1</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.6.0.html" title="JoyPro 2.6.0">JoyPro 2.6.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.5.0.html" title="JoyPro 2.5.0">JoyPro 2.5.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.4.3.html" title="JoyPro 2.4.3">JoyPro 2.4.3</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.4.2.html" title="JoyPro 2.4.2">JoyPro 2.4.2</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.4.1.html" title="JoyPro 2.4.1">JoyPro 2.4.1</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.4.0.html" title="JoyPro 2.4.0">JoyPro 2.4.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.3.1.html" title="JoyPro 2.3.1">JoyPro 2.3.1</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.3.0.html" title="JoyPro 2.3.0">JoyPro 2.3.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.17.html" title="JoyPro 2.2.17">JoyPro 2.2.17</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.16.html" title="JoyPro 2.2.16">JoyPro 2.2.16</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.15.html" title="JoyPro 2.2.15">JoyPro 2.2.15</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.14.html" title="JoyPro 2.2.14">JoyPro 2.2.14</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.13.html" title="JoyPro 2.2.13">JoyPro 2.2.13</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.12.html" title="JoyPro 2.2.12">JoyPro 2.2.12</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.11.html" title="JoyPro 2.2.11">JoyPro 2.2.11</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.10.html" title="JoyPro 2.2.10">JoyPro 2.2.10</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.9.html" title="JoyPro 2.2.9">JoyPro 2.2.9</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.8.html" title="JoyPro 2.2.8">JoyPro 2.2.8</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.7.html" title="JoyPro 2.2.7">JoyPro 2.2.7</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.6.html" title="JoyPro 2.2.6">JoyPro 2.2.6</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.5.html" title="JoyPro 2.2.5">JoyPro 2.2.5</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.4.html" title="JoyPro 2.2.4">JoyPro 2.2.4</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.3.html" title="JoyPro 2.2.3">JoyPro 2.2.3</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.2.html" title="JoyPro 2.2.2">JoyPro 2.2.2</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.1.html" title="JoyPro 2.2.1">JoyPro 2.2.1</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.2.0.html" title="JoyPro 2.2.0">JoyPro 2.2.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.1.1.html" title="JoyPro 2.1.1">JoyPro 2.1.1</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.1.0.html" title="JoyPro 2.1.0">JoyPro 2.1.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../releases/v2.0.0.html" title="JoyPro 2.0.0">JoyPro 2.0.0</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li></ul></details><details class="nav-project"><summary>專案</summary><ul><li><a href="../../zh-Hant/project/jp1-vs-jp2.html" title="從 JoyPro 1 到 JoyPro 2">從 JoyPro 1 到 JoyPro 2</a></li><li><a href="../../zh-Hant/project/about.html" title="關於、授權與社群">關於、授權與社群</a></li><li><a href="../../project/wiki-status.html" title="Wiki status">Wiki status</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li></ul></details><details class="nav-developers"><summary>開發者</summary><ul><li><a href="../../reference/ui-navigation.html" title="Back and Forward">Back and Forward</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/gui-cli-parity.html" title="GUI / CLI parity">GUI / CLI parity</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ui-layout-redesign.html" title="Layout pages">Layout pages</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/localization.html" title="Localization">Localization</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li><li><a href="../../reference/ui-pages.html" title="Pages in the bottom bar">Pages in the bottom bar</a><span class="en-mark" lang="en" title="此頁面只有英文版。">EN</span></li></ul></details></div></nav>
+<main>
+<div class="page-head"><div class="crumb">主要流程</div><h1>匯出到您的遊戲 </h1><div class="layer-switch" role="group" aria-label="詳細程度"><span>顯示：</span><button data-show="beginner">新手</button><button data-show="advanced">進階</button><button data-show="technical">技術細節</button><button data-show="all">全部</button></div></div>
+<div class="content">
+<p>匯出是讓您的搖桿在遊戲中能用的步驟。JoyPro 會把您的關聯和綁定寫入每款遊戲的控制設定檔，也就是遊戲自己的 Controls 選單所儲存的同一批檔案。飛行時不會有任何東西在背景執行：匯出之後，遊戲會一如往常讀取它自己的檔案。</p>
+<figure class="diagram-fig"><div class="diagram"><pre class="mermaid">flowchart LR
+  C[&quot;1 檢查&lt;br/&gt;（選用）&quot;] --&gt; M[&quot;2 選擇方式&lt;br/&gt;（4 種選擇）&quot;]
+  M --&gt; G[&quot;3 勾選遊戲，&lt;br/&gt;匯出已勾選的遊戲&quot;]
+  G --&gt; W[&quot;先備份，&lt;br/&gt;再寫入遊戲&lt;br/&gt;檔案&quot;]
+</pre></div><figcaption>步驟 1 只會查看；它絕不會停止匯出。遊戲卡片上的「復原上次匯出」會把它的檔案放回去。只支援 Xbox 手把的遊戲不會被寫入任何東西：它們使用虛擬 Joystick 頁面上的「開始」。</figcaption></figure>
+<section class="layer layer-beginner" data-layer="beginner"><div class="layer-badge">給新手</div>
+<h2 id="export-in-three-steps"><span id="三個步驟完成匯出" class="alias"></span><a class="anchor" href="#export-in-three-steps">#</a>三個步驟完成匯出</h2>
+<p>開啟底部列中的 <strong>匯出</strong>。這個頁面由上到下有三張編號的卡片：</p>
+<figure class="shot"><a href="../../assets/shots/export-light.webp"><img class="only-light" loading="lazy" src="../../assets/shots/export-light.webp" alt="匯出頁面：檢查、方式、遊戲"></a><a href="../../assets/shots/export-dark.webp"><img class="only-dark" loading="lazy" src="../../assets/shots/export-dark.webp" alt="匯出頁面：檢查、方式、遊戲"></a><figcaption>匯出頁面：檢查、方式、遊戲 <span class="shot-lang">(圖片顯示的是英文版應用程式。)</span></figcaption></figure>
+<ol>
+<li><strong>檢查您的設定檔。</strong> 按 <strong>立即檢查</strong>。JoyPro 會找出在遊戲中會出問題的地方，例如在同一架飛機中做兩件事的按鈕。修正它找到的問題（每個問題點一下即可），或保持不動；檢查絕不會阻擋匯出。請參閱<a href="../../zh-Hant/flows/check.html">檢查</a>。</li>
+<li><strong>JoyPro 如何寫入遊戲。</strong> 從四種選擇中挑一種。如果您不確定，就保留第一種：<strong>取代我的裝置上的綁定</strong> 並勾選 <strong>同時清除我的其他裝置</strong>。這樣您的搖桿就會完全照您的設定檔運作，不會多做別的事。</li>
+<li><strong>匯出到遊戲。</strong> 您的設定檔中有綁定的每款遊戲都會有一張帶圖片的卡片。勾選遊戲並按 <strong>匯出已勾選的遊戲</strong>，或按某張卡片上的 <strong>立即匯出</strong>。</li>
+</ol>
+<p><strong>請先關閉遊戲。</strong> 遊戲會在結束時寫入它的控制檔案，所以 JoyPro 會拒絕匯出到正在執行的遊戲，並告訴您原因。</p>
+<h3 id="which-choice-is-right-for-me"><span id="哪種選擇適合我" class="alias"></span><a class="anchor" href="#which-choice-is-right-for-me">#</a>哪種選擇適合我？</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>選項</th>
+<th>適合的情況</th>
+<th>遊戲自己的綁定會怎樣</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>取代我的裝置上的綁定</strong></td>
+<td>JoyPro 是您設定搖桿的地方</td>
+<td>在您設定檔中的裝置上，只會保留您的綁定（針對您匯出的飛機）。</td>
+</tr>
+<tr>
+<td><strong>更新，保留遊戲的綁定</strong></td>
+<td>您也會在遊戲中綁定東西，並想保留它們</td>
+<td>您的綁定會寫入；只有當遊戲綁定位於您用於其他功能的按鈕上時，才會被移除。</td>
+</tr>
+<tr>
+<td><strong>更新，以我的設定檔為準</strong></td>
+<td>和上面一樣，但您在 JoyPro 中把動作移到了其他按鈕</td>
+<td>和上面一樣，而且您綁定的每個動作在遊戲中都會失去它的其他按鈕，所以移動就是真正的移動。</td>
+</tr>
+<tr>
+<td><strong>僅新增</strong></td>
+<td>您第一次試用 JoyPro</td>
+<td>不會移除任何東西。如果遊戲已經把某個按鈕用於別的功能，您的綁定就會被略過，並由檢查告訴您。</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>同時清除我的其他裝置</strong>（選項下方的勾選方塊）：您設定檔中沒有綁定的已連接裝置，在匯出的飛機中會失去它們的綁定。如果您想要乾淨地重新開始，請保持勾選；如果您只在遊戲中使用第二個裝置，請取消勾選。</p>
+<h3 id="safe-by-design"><span id="設計上就很安全" class="alias"></span><a class="anchor" href="#safe-by-design">#</a>設計上就很安全</h3>
+<ul>
+<li>JoyPro 在更改遊戲檔案之前，會 <strong>先把它複製成備份</strong>。每張卡片都有 <strong>復原上次匯出</strong>：它會把檔案完全放回原本的樣子，一個位元組都不差。</li>
+<li><strong>第一次匯出</strong> 到已經有自己綁定的遊戲時，會詢問一次：「要先匯入嗎？」。如果您想保留您在遊戲中做的設定，請選擇 <strong>先匯入</strong>；若要取代它，請選擇 <strong>仍然匯出</strong>。</li>
+<li><strong>沒有插上</strong> 的裝置會保留它們的綁定。您的 <strong>滑鼠</strong> 和 <strong>手把</strong> 綁定絕不會被更動。</li>
+</ul>
+<h3 id="what-you-notice-in-the-game"><span id="您在遊戲中會注意到什麼" class="alias"></span><a class="anchor" href="#what-you-notice-in-the-game">#</a>您在遊戲中會注意到什麼</h3>
+<p>啟動遊戲並開啟它的控制選單：您的綁定就在那裡，位於每個裝置的欄中，使用遊戲的名稱。在 DCS 中依飛機顯示；在 Star Citizen 中依艦船動作顯示；在 IL-2 中則在 Key mapping 中。下方的<a href="#in-the-game">在遊戲中</a>一節列出了每一類遊戲。</p>
+<h2 id="other-ways-your-binds-reach-the-game"><span id="讓綁定進入遊戲的其他方式" class="alias"></span><a class="anchor" href="#other-ways-your-binds-reach-the-game">#</a>讓綁定進入遊戲的其他方式</h2>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>它的作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>寫入我的遊戲</strong>（快速設定）</td>
+<td>快速設定的匯出。它會寫入它設定的遊戲，並同樣先備份。請參閱<a href="../../zh-Hant/getting-started/quick-start.html">快速入門</a>。</td>
+</tr>
+<tr>
+<td>模擬手把（虛擬 Xbox 手把）</td>
+<td>ACE COMBAT 8 和 Hell Let Loose: Vietnam 不會被寫入任何東西。它們的匯出會說明這一點。當 <strong>開始</strong> 開啟時，您的搖桿會驅動模擬手把。請參閱<a href="../../zh-Hant/how-do-i/xbox-only-games.html">只支援 Xbox 手把的遊戲</a>。</td>
+</tr>
+<tr>
+<td>DCS 膝板</td>
+<td>這不是綁定的匯出：而是每架飛機一頁、在座艙中列出您按鈕功能的頁面。請參閱<a href="../../zh-Hant/how-do-i/dcs-kneeboard.html">膝板</a>。</td>
+</tr>
+</tbody>
+</table></div></div>
+</section>
+<section class="layer layer-advanced" data-layer="advanced"><div class="layer-badge">進階</div>
+<h2 id="the-modes-in-detail"><span id="各模式詳解" class="alias"></span><a class="anchor" href="#the-modes-in-detail">#</a>各模式詳解</h2>
+<p>「相同的輸入」是指相同的裝置、相同的按鈕或軸以及相同的修飾鍵，如果遊戲依飛機保存綁定，還要是同一架飛機（或船艦、載具）。每種模式都只作用在匯出的飛機上。</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th></th>
+<th>僅新增</th>
+<th>更新，保留</th>
+<th>更新，以設定檔為準</th>
+<th>取代</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>您的綁定</td>
+<td>寫入輸入空閒的地方</td>
+<td>已撰寫</td>
+<td>已撰寫</td>
+<td>已撰寫</td>
+</tr>
+<tr>
+<td>遊戲在您用於另一個動作的輸入上的綁定</td>
+<td>保留；您的綁定 <strong>不寫入</strong> 並加上標記</td>
+<td>移除</td>
+<td>移除</td>
+<td>移除</td>
+</tr>
+<tr>
+<td>同一動作在另一個輸入上的遊戲綁定（移動之後）</td>
+<td>已保留</td>
+<td>保留（動作同時在兩個輸入上）</td>
+<td>移除</td>
+<td>在寫入的裝置上移除</td>
+</tr>
+<tr>
+<td>您裝置上的其他遊戲綁定</td>
+<td>已保留</td>
+<td>已保留</td>
+<td>已保留</td>
+<td><strong>移除</strong></td>
+</tr>
+<tr>
+<td>您裝置上的遊戲預設值</td>
+<td>已保留</td>
+<td>已保留</td>
+<td>保留，除非它們佔用了您的某個動作</td>
+<td><strong>移除</strong></td>
+</tr>
+<tr>
+<td>設定檔中沒有綁定的已連接裝置</td>
+<td>已保留</td>
+<td>已保留</td>
+<td>從中移除您的動作</td>
+<td>保留，除非勾選 <strong>同時清除我的其他裝置</strong></td>
+</tr>
+<tr>
+<td>未連接的裝置、滑鼠、手把</td>
+<td>從不更動</td>
+<td>從不更動</td>
+<td>從不更動</td>
+<td>從不更動</td>
+</tr>
+<tr>
+<td>鍵盤</td>
+<td>只在開啟鍵盤選項時</td>
+<td>只在開啟鍵盤選項時</td>
+<td>只在開啟鍵盤選項時</td>
+<td>只在開啟鍵盤選項時</td>
+</tr>
+<tr>
+<td>不在匯出範圍內的飛機</td>
+<td>從不更動</td>
+<td>從不更動</td>
+<td>從不更動</td>
+<td>從不更動（DCS：除非開啟「在其他所有飛機中也失去 DCS 預設綁定」選項）</td>
+</tr>
+</tbody>
+</table></div></div>
+<p><strong>同時清除我的其他裝置</strong> 不會與「僅新增」一起使用。搭配其他模式時，它會在匯出的飛機中清除設定檔未使用的已連接裝置（DCS：包括它們的 DCS 預設值）。匯入時忽略的裝置以及 JoyPro 轉送輸入用的 vJoy 裝置從不會被清除。</p>
+<p>從 2.5.0 起，預設為 <strong>取代我的裝置上的綁定</strong> + <strong>同時清除我的其他裝置</strong>（與 JoyPro 1 相同）。您自己選擇的模式會被記住。</p>
+<h3 id="in-short-one-of-your-binds-four-modes"><span id="簡單來說您的一個綁定四種模式" class="alias"></span><a class="anchor" href="#in-short-one-of-your-binds-four-modes">#</a>簡單來說：您的一個綁定，四種模式</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>遊戲把您的按鈕用在別的地方</th>
+<th>您的動作在遊戲中還有其他按鈕</th>
+<th>其他已連接的裝置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>取代我的裝置上的綁定</strong></td>
+<td>移除該綁定；寫入您的綁定</td>
+<td>在寫入的裝置上移除</td>
+<td>保留，除非勾選 <strong>同時清除我的其他裝置</strong></td>
+</tr>
+<tr>
+<td><strong>更新，以我的設定檔為準</strong></td>
+<td>移除該綁定；寫入您的綁定</td>
+<td>已移除</td>
+<td>從中移除您的動作</td>
+</tr>
+<tr>
+<td><strong>更新，保留遊戲的綁定</strong></td>
+<td>移除該綁定；寫入您的綁定</td>
+<td>保留：動作同時在兩者上</td>
+<td>已保留</td>
+</tr>
+<tr>
+<td><strong>僅新增</strong></td>
+<td>保留；您的綁定 <strong>不寫入</strong> 並加上標記</td>
+<td>已保留</td>
+<td>已保留</td>
+</tr>
+</tbody>
+</table></div></div>
+<h3 id="options-per-game"><span id="各遊戲的選項" class="alias"></span><a class="anchor" href="#options-per-game">#</a>各遊戲的選項</h3>
+<p>在 <strong>選項與路徑（進階）</strong> 中：</p>
+<ul>
+<li><strong>DCS</strong>：DCS 卡片上的 <strong>飛機...</strong> 清單（只寫入勾選的飛機）；<strong>DCS：保留鍵盤預設值</strong>（開啟）；<em>我的裝置在其他所有飛機中也失去 DCS 預設綁定</em>（關閉）。</li>
+<li><strong>Star Citizen</strong>：<strong>SC：保留鍵盤預設值</strong>、<em>優先採用本機順序</em>。</li>
+<li><strong>其他遊戲</strong>：一個 <strong>試執行</strong> 方塊，顯示會變更什麼但不寫入。</li>
+<li><strong>路徑</strong>：每個遊戲可使用不同的 Saved Games 或設定資料夾；<em>此設定檔專用的路徑和忽略的裝置</em> 讓目前開啟的設定檔使用自己的設定，而不是這台電腦的設定。</li>
+</ul>
+<h3 id="marks-not-written-to-the-game"><span id="標記未寫入遊戲" class="alias"></span><a class="anchor" href="#marks-not-written-to-the-game">#</a>標記：「未寫入遊戲」</h3>
+<p>「僅新增」（以及遊戲沒有空位可放另一個輸入的任何模式，例如每個動作只有兩個輸入的 Elite Dangerous）會略過部分綁定。設定檔會記住每一個被略過的綁定，連同佔用該輸入的遊戲動作和日期；檢查會為每個標記顯示一張卡片，提供 <strong>用「更新」匯出以取代</strong>、<strong>移到另一個按鈕</strong> 和 <strong>保持原樣</strong>。每次匯出都會取代該遊戲和飛機的標記，所以之後的匯出寫入該綁定時，標記就會消失。</p>
+<h3 id="remembered-settings"><span id="記住的設定" class="alias"></span><a class="anchor" href="#remembered-settings">#</a>記住的設定</h3>
+<p>模式、<strong>同時清除</strong> 勾選、各遊戲選項和路徑都保存在 JoyPro 的設定中；您自己勾選的遊戲和 DCS 飛機則依設定檔保存。「取代」和「同時清除」在每次匯出前都會詢問（可在 設定 &gt; 確認 中關閉這個詢問）。</p>
+<h3 id="after-the-export"><span id="匯出之後" class="alias"></span><a class="anchor" href="#after-the-export">#</a>匯出之後</h3>
+<ul>
+<li>卡片上的 <strong>復原上次匯出</strong> 會還原該遊戲最新的備份。完整清單位於匯出頁面底部的 <strong>遊戲設定備份</strong> 中。</li>
+<li>匯出會為 <strong>遊戲監看</strong> 記錄遊戲的檔案：JoyPro 自己的匯出之後不會再詢問「要採用變更嗎？」；但您之後在遊戲中所做的變更會（<a href="../../reference/sync-watcher.html">監看程式</a>）。</li>
+<li>JoyPro 會在遊戲檔案旁保存自己的資料，因此之後匯入時能找回關聯名稱、群組、修飾鍵和曲線（<a href="../../reference/reimport.html">重新匯入</a>）。</li>
+</ul>
+</section>
+<h2 id="in-the-game"><span id="在遊戲中" class="alias"></span><a class="anchor" href="#in-the-game">#</a>在遊戲中</h2>
+<p>匯出後玩家會看到什麼，取決於遊戲的類型。下面每款遊戲都遵循相同的規則：JoyPro 只寫入其指令清單中的動作、遊戲執行時拒絕寫入、先備份檔案，而且絕不會猜測它無法對應的裝置或動作（它會略過並發出警告）。</p>
+<div class="callout ingame"><div class="callout-title">在遊戲中: 飛行模擬器：DCS、IL-2（Great Battles、Korea、1946、Cliffs of Dover）、Falcon BMS、X-Plane、MSFS、FSX、Prepar3D</div>
+<p>JoyPro 會接管它寫入的裝置。使用 <strong>取代</strong> 時，這些裝置的其他所有綁定在匯出的飛機中都會消失；使用 <strong>同時清除</strong> 時，其他已連接的裝置也會被清除（DCS：連同它們的 DCS 預設綁定）。</p>
+<ul>
+<li><strong>DCS World</strong>：在 Options &gt; Controls 中選擇飛機：您的綁定位於裝置的欄中，被移除的預設綁定會顯示為空白儲存格，您的修飾鍵位於修飾鍵清單中。只有勾選的飛機會改變。JoyPro 只寫入與 DCS 預設值不同的部分，就像 DCS 自己的做法一樣。</li>
+<li><strong>IL-2 Great Battles</strong>：Settings &gt; Key mapping 會顯示您的綁定和軸回應。滑鼠相關的行和 JoyPro 不認得的行都會保留。</li>
+<li><strong>IL-2 Korea</strong>：按鍵對應設定檔「General」。</li>
+<li><strong>Falcon BMS</strong>：啟動器會在下次 Launch 時建立按鍵檔和軸對應，所以請透過啟動器啟動 BMS。</li>
+<li><strong>MSFS 2024 / 2020</strong>：在 Controls 中，裝置會顯示 JoyPro 的預設組合。</li>
+<li><strong>X-Plane 11 / 12</strong>：Settings &gt; Joystick 會顯示指派。</li>
+</ul>
+</div>
+<div class="callout ingame"><div class="callout-title">在遊戲中: 有步兵、載具或選單的遊戲：Star Citizen、War Thunder、Arma 3 / 2、Arma Reforger、WARDOGS、Nuclear Option、Hell Let Loose、Battlefield</div>
+<p>JoyPro <strong>只更動飛行動作</strong>（飛機、直升機、太空船）。您的步行、載具和選單綁定會一個位元組都不差地保留。<strong>取代</strong> 和 <strong>同時清除</strong> 只會釋放 JoyPro 認得的飛行動作。</p>
+<ul>
+<li><strong>Star Citizen</strong>：Options &gt; Keybindings 會顯示您 joystick（js1、js2、...）上的艦船動作。使用 <strong>取代</strong> 或 <strong>同時清除</strong> 時，若 js1 被寫入或未使用，遊戲自己在 js1 上的 joystick 預設綁定會被關閉。</li>
+<li><strong>War Thunder</strong>：Controls 會顯示飛機綁定；戰車和船艦的控制不變。</li>
+<li><strong>Arma 3 / Arma 2</strong>：設定檔的按鍵設定；只有飛機和直升機動作會改變。</li>
+</ul>
+</div>
+<div class="callout ingame"><div class="callout-title">在遊戲中: 太空遊戲：Elite Dangerous、X4: Foundations</div>
+<ul>
+<li><strong>Elite Dangerous</strong> 每個動作保留兩個輸入（Primary 和 Secondary）。沒有空位的綁定會被標示為「未寫入」，並提供「移到另一個按鈕」或「保持原樣」。步行和 SRV 綁定會保留。</li>
+<li><strong>X4</strong>：遊戲的輸入設定；只有已收錄的艦船動作會改變。</li>
+</ul>
+</div>
+<div class="callout ingame"><div class="callout-title">在遊戲中: 只讀取一個裝置或只支援 Xbox 手把的遊戲</div>
+<ul>
+<li><strong>設為 vJoy 的遊戲</strong>（只讀取少數裝置的遊戲）：匯出會把綁定寫到 vJoy 裝置上。您遊玩時，JoyPro 會把您的搖桿複製到它上面，而 HidHide 只對該遊戲隱藏您的實體裝置。遊戲會看到一個包含所有功能的裝置。請參閱<a href="../../zh-Hant/gui/vjoy.html">虛擬 Joystick</a>。</li>
+<li><strong>只支援 Xbox 手把的遊戲</strong>（ACE COMBAT 8、Hell Let Loose: Vietnam）：不會寫入任何東西，匯出也會說明這一點。當 <strong>開始</strong> 開啟時，您的搖桿會驅動模擬手把（虛擬 Xbox 手把）。不需要 HidHide。請參閱<a href="../../zh-Hant/how-do-i/xbox-only-games.html">用 HOTAS 玩只支援 Xbox 手把的遊戲</a>。</li>
+</ul>
+</div>
+<section class="layer layer-technical" data-layer="technical"><div class="layer-badge">技術細節</div>
+<h2 id="how-it-works-inside"><span id="內部如何運作" class="alias"></span><a class="anchor" href="#how-it-works-inside">#</a>內部如何運作</h2>
+<p>一次匯出，從點擊到寫入檔案：</p>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>誰</th>
+<th>會發生什麼</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>您</td>
+<td>在匯出頁面上按 <strong>匯出已勾選的遊戲</strong>。</td>
+</tr>
+<tr>
+<td>2</td>
+<td>JoyPro</td>
+<td>向引擎詢問該遊戲的狀態（<code>profile game-state --game &lt;id&gt;</code>）：是否已匯入、已匯出、有綁定。</td>
+</tr>
+<tr>
+<td>3</td>
+<td>JoyPro</td>
+<td>需要時詢問您：第一次匯出（「先匯入？」），或會移除綁定的模式（設定 &gt; 確認）。</td>
+</tr>
+<tr>
+<td>4</td>
+<td>引擎</td>
+<td>執行 <code>&lt;game&gt; export --mode &lt;m&gt; --nuke-untouched-devices &lt;b&gt; ...</code>：遊戲執行時會拒絕，先備份每個檔案（GameBackups 和 <code>.jpbak</code>），並只寫入目錄中收錄的動作。</td>
+</tr>
+<tr>
+<td>5</td>
+<td>引擎</td>
+<td>儲存同步記錄（指紋和基準）以及匯出標記，然後回答：已寫入、已略過、<code>SkippedTakenInputs</code>。</td>
+</tr>
+<tr>
+<td>6</td>
+<td>JoyPro</td>
+<td>遊戲的卡片顯示「已匯出 14:02」，並且 <strong>復原上次匯出</strong> 已可使用。</td>
+</tr>
+</tbody>
+</table></div></div>
+<ol>
+<li><strong>GUI。</strong> <code>ExportSelectedGamesAsync</code> / <code>ExportGameNowAsync</code>（<code>MainWindowViewModel.ExportGames.cs</code>）會詢問 <code>AskAboutFirstExportAsync</code>（<a href="../../cli/profile.html#profile-game-state"><code>engine profile game-state</code></a>）和 <code>ConfirmRiskyExportAsync</code>，然後 <code>ExportGameAsync</code> 選擇卡片對應的匯出程式：<code>dcs</code>、<code>il2</code>、<code>starcitizen</code> 或登錄表中的遊戲。指令依頁面上的設定組成，例如 <code>RunDcsExportAsync</code>：<code>engine dcs export --mode clean --keep-keyboard-defaults true --nuke-untouched-devices true --clean-all-aircraft false --ignore-device &lt;d&gt; --planes F-16C_50|FA-18C_hornet</code>。每次呼叫引擎都經過同一個地方 <code>RunEngineAsync</code>，帶有 <code>--profile</code> 和 <code>--status true</code>（忙碌區域的進度和取消），並依序執行，確保兩個指令不會同時寫入。</li>
+<li><strong>引擎。</strong> <code>engine\Program.cs</code> 把 <code>dcs</code> / <code>il2</code> / <code>starcitizen</code> 交給各自的匯出程式，其他每個遊戲交給 <code>Games.GameRegistry</code>（每個遊戲一個 <code>GameIntegration</code>）。DCS：<code>EngineDcsExport.Modes.cs</code> 會針對每個裝置檔案計算 DCS 目前生效的綁定（乾淨設定檔減去 <code>removed</code>，加上 <code>added</code> 和 <code>changed</code>），決定哪些應該生效，並只寫入與預設值真正不同的部分。</li>
+<li><strong>安全措施。</strong> <code>GameExportSafety.BackupBeforeOverwrite</code> 會把每個檔案複製為 <code>&lt;file&gt;.jpbak</code>，並存入版本化備份區（<code>%LOCALAPPDATA%\JoyPro2\GameBackups\&lt;date-time&gt;_&lt;game&gt;\</code>，附 <code>manifest.json</code>；每個遊戲保留最新的 30 組）。使用登錄檔的遊戲（Nuclear Option）會對可能變更的值建立快照。匯出時新建立的檔案會記錄為「原本不存在」，所以還原時會再把它移除。</li>
+<li><strong>之後。</strong> 同步記錄（<code>&lt;data&gt;\Sync\&lt;game&gt;.json</code>：每個檔案的大小、時間和 SHA-256，以及每個綁定的雜湊）讓監看程式對 JoyPro 自己的變更保持安靜。<code>ExportSkippedBinds.cs</code> 會填入 <code>SkippedTakenInputs</code>；匯出指令再把它們轉成設定檔的標記。設定檔的歷程記錄會在每次匯出前保留一個檢查點。</li>
+</ol>
+<h3 id="the-files-each-game-gets"><span id="每個遊戲寫入的檔案" class="alias"></span><a class="anchor" href="#the-files-each-game-gets">#</a>每個遊戲寫入的檔案</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>遊戲</th>
+<th>檔案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DCS World</td>
+<td>每架飛機和每個裝置的 <code>Saved Games\DCS\Config\Input\&lt;aircraft&gt;\joystick\&lt;device&gt;.diff.lua</code>、旁邊的 <code>.jp</code>，以及該飛機的 <code>modifiers.lua</code></td>
+</tr>
+<tr>
+<td>IL-2 Great Battles</td>
+<td><code>data\input\global.actions</code>（新的行加在最後，保留原順序）、軸反應設定、<code>jp.actions</code></td>
+</tr>
+<tr>
+<td>IL-2 Korea</td>
+<td><code>data\input\general.actions</code></td>
+</tr>
+<tr>
+<td>Falcon BMS</td>
+<td>啟動器的 <code>User\Config\Setup.v100.* {GUID}.xml</code>，每個裝置一個</td>
+</tr>
+<tr>
+<td>MSFS 2024 / 2020</td>
+<td>輸入設定檔（2024：Community 資料夾中的預設配置套件 <code>joypro-input-profiles</code>，以及 Steam 設定檔）</td>
+</tr>
+<tr>
+<td>X-Plane 11 / 12</td>
+<td><code>Output\preferences</code> 中的 joystick 偏好設定</td>
+</tr>
+<tr>
+<td>Star Citizen</td>
+<td><code>LIVE\user\client\0\Profiles\default\actionmaps.xml</code> 和 <code>actionmaps.jp</code></td>
+</tr>
+<tr>
+<td>War Thunder</td>
+<td><code>Documents\My Games\WarThunder\Saves\&lt;id&gt;\production\machine.blk</code></td>
+</tr>
+<tr>
+<td>登錄表中的遊戲</td>
+<td>它們的設定檔案和 <code>&lt;config&gt;.joypro-meta.json</code></td>
+</tr>
+</tbody>
+</table></div></div>
+<p>未寫入綁定的標記：<a href="../../cli/export-marks.html#export-marks-list"><code>engine export-marks list</code></a>、<a href="../../cli/export-marks.html#export-marks-dismiss"><code>engine export-marks dismiss</code></a>。設定：<code>export-settings.json</code>（<code>ModeChosenByUser</code>）；不指定 <code>--mode</code> 時，引擎的預設值是 <code>merge-overwrite</code>。</p>
+<h3 id="every-mode-on-the-command-line"><span id="命令列上的每種模式" class="alias"></span><a class="anchor" href="#every-mode-on-the-command-line">#</a>命令列上的每種模式</h3>
+<div class="table-wrap"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>GUI 選項</th>
+<th>引擎選項</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>取代我的裝置上的綁定 + 同時清除我的其他裝置（預設）</td>
+<td><code>--mode clean --nuke-untouched-devices true</code></td>
+</tr>
+<tr>
+<td>取代我的裝置上的綁定</td>
+<td><code>--mode clean --nuke-untouched-devices false</code></td>
+</tr>
+<tr>
+<td>更新，以我的設定檔為準（+ 同時清除）</td>
+<td><code>--mode merge-overwrite --nuke-untouched-devices true|false</code></td>
+</tr>
+<tr>
+<td>更新，保留遊戲的綁定（+ 同時清除）</td>
+<td><code>--mode merge --nuke-untouched-devices true|false</code></td>
+</tr>
+<tr>
+<td>僅新增</td>
+<td><code>--mode add</code>（不使用 nuke）</td>
+</tr>
+</tbody>
+</table></div></div>
+<p>各遊戲：<a href="../../cli/dcs.html#dcs-export"><code>engine dcs export</code></a>、<a href="../../cli/il2.html#il2-export"><code>engine il2 export</code></a>、<a href="../../cli/starcitizen.html#starcitizen-export"><code>engine starcitizen export</code></a>，以及登錄表中每個遊戲的 <code>engine &lt;game&gt; export</code>（例如 <a href="../../cli/warthunder.html#warthunder-export"><code>engine warthunder export</code></a>、<a href="../../cli/msfs2024.html#msfs2024-export"><code>engine msfs2024 export</code></a>、<a href="../../cli/xplane12.html#xplane12-export"><code>engine xplane12 export</code></a>；每個都接受 <code>--mode</code>、<code>--dry-run</code>、<code>--include-keyboard</code> 和 <code>--nuke-untouched-devices</code>）。復原：<a href="../../cli/backups.html#backups-list"><code>engine backups restore</code></a>。測試：<code>engine\tests\smoke\dcsexportmodes.ps1</code>（每種模式、往返、逐位元組復原）和 <code>engine\tests\smoke\roundtrip.ps1</code>（匯入、clean + nuke、再次匯入後遊戲維持原樣）。</p>
+</section>
+<h2 id="related"><span id="相關內容" class="alias"></span><a class="anchor" href="#related">#</a>相關內容</h2>
+<ul>
+<li><a href="../../zh-Hant/gui/export.html">匯出頁面</a>，以及其中的每個控制項</li>
+<li>匯出前的<a href="../../zh-Hant/flows/check.html">檢查</a></li>
+<li><a href="../../reference/export.html">匯出參考資料</a>和<a href="../../reference/backups.html">遊戲設定備份</a></li>
+<li><a href="../../games/support.html">遊戲支援</a>：JoyPro 為每款遊戲做了什麼</li>
+</ul>
+
+</div>
+<footer class="foot">JoyPro 是自由軟體： <a href="https://github.com/Holdi601/JoystickProfiler2/blob/main/LICENSE">GPL-3.0</a> · <a href="https://discord.gg/yK4gQA9xgk">Discord</a> · <a href="https://github.com/Holdi601/JoystickProfiler2">來源</a> · <a href="../../project/wiki-status.html">Wiki 狀態</a></footer>
+</main>
+<aside class="toc"><div class="toc-title">本頁內容</div><ul><li class="l2"><a href="#export-in-three-steps">三個步驟完成匯出</a></li><li class="l3"><a href="#which-choice-is-right-for-me">哪種選擇適合我？</a></li><li class="l3"><a href="#safe-by-design">設計上就很安全</a></li><li class="l3"><a href="#what-you-notice-in-the-game">您在遊戲中會注意到什麼</a></li><li class="l2"><a href="#other-ways-your-binds-reach-the-game">讓綁定進入遊戲的其他方式</a></li><li class="l2"><a href="#the-modes-in-detail">各模式詳解</a></li><li class="l3"><a href="#in-short-one-of-your-binds-four-modes">簡單來說：您的一個綁定，四種模式</a></li><li class="l3"><a href="#options-per-game">各遊戲的選項</a></li><li class="l3"><a href="#marks-not-written-to-the-game">標記：「未寫入遊戲」</a></li><li class="l3"><a href="#remembered-settings">記住的設定</a></li><li class="l3"><a href="#after-the-export">匯出之後</a></li><li class="l2"><a href="#in-the-game">在遊戲中</a></li><li class="l2"><a href="#how-it-works-inside">內部如何運作</a></li><li class="l3"><a href="#the-files-each-game-gets">每個遊戲寫入的檔案</a></li><li class="l3"><a href="#every-mode-on-the-command-line">命令列上的每種模式</a></li><li class="l2"><a href="#related">相關內容</a></li></ul></aside>
+</div>
+<script src="../../assets/vendor/mermaid.min.js"></script>
+<script src="../../assets/i18n.js"></script>
+<script src="../../assets/site.js"></script>
+</body>
+</html>
